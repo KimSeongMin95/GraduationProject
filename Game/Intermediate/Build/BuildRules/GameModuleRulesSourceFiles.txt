@@ -1,0 +1,3 @@
+D:\Github\GraduationProject\Game\Source\Game\Game.Build.cs
+D:\Github\GraduationProject\Game\Source\Game.Target.cs
+D:\Github\GraduationProject\Game\Source\GameEditor.Target.cs
