@@ -763,3 +763,191 @@ LogConfig: Setting CVar [[r.setres:1280x720]]
 [2019.09.19-13.30.20:441][412]LogUObjectHash: Compacting FUObjectHashTables data took   0.63ms
 [2019.09.19-13.30.20:455][412]LogContentBrowser: Native class hierarchy populated in 0.0088 seconds. Added 2866 classes and 684 folders.
 [2019.09.19-13.30.20:458][412]Display: HotReload took  0.1s.
+[2019.09.19-13.36.17:106][477]LogHttp: Warning: 0000012DD8A26700: invalid HTTP response code received. URL: https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BBE9547A5-4EB2-50FE-2883-038B5F6ED0E0%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream, HTTP code: 0, content length: -1, actual payload size: 0
+[2019.09.19-13.36.17:106][477]LogHttp: Warning: 0000012DD8A26700: request failed, libcurl error: 0 (No error)
+[2019.09.19-13.36.17:106][477]LogHttp: Warning: 0000012DD8A26700: libcurl info message cache 0 (Found bundle for host datarouter.ol.epicgames.com: 0x12dd0967f70 [can pipeline])
+[2019.09.19-13.36.17:106][477]LogHttp: Warning: 0000012DD8A26700: libcurl info message cache 1 (Re-using existing connection! (#18) with host datarouter.ol.epicgames.com)
+[2019.09.19-13.36.17:106][477]LogHttp: Warning: 0000012DD8A26700: libcurl info message cache 2 (Connected to datarouter.ol.epicgames.com (54.88.250.173) port 443 (#18))
+[2019.09.19-13.36.17:106][477]LogHttp: Warning: 0000012DD8A26700: libcurl info message cache 3 (We are completely uploaded and fine)
+[2019.09.19-13.36.17:106][477]LogHttp: Warning: 0000012DD8A26700: libcurl info message cache 4 (TLSv1.2 (IN), TLS alert, Client hello (1):)
+[2019.09.19-13.36.17:106][477]LogHttp: Warning: 0000012DD8A26700: libcurl info message cache 5 (Connection died, retrying a fresh connect)
+[2019.09.19-13.36.17:106][477]LogHttp: Warning: 0000012DD8A26700: libcurl info message cache 6 (necessary data rewind wasn't possible)
+[2019.09.19-13.36.17:107][477]LogHttp: Warning: 0000012DD8A26700: libcurl info message cache 7 (Closing connection 18)
+[2019.09.19-13.36.17:107][477]LogHttp: Warning: 0000012DD8A26700: libcurl info message cache 8 (TLSv1.2 (OUT), TLS alert, Client hello (1):)
+[2019.09.19-13.36.17:445][478]LogHttp: Warning: Retry exhausted on https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BBE9547A5-4EB2-50FE-2883-038B5F6ED0E0%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream
+[2019.09.19-13.49.11:357][920]Candidate modules for hot reload:
+[2019.09.19-13.49.11:357][920]  Game
+[2019.09.19-13.49.11:357][920]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,7882 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.19-13.49.11:361][920]Warning: Starting HotReload took  0.0s.
+[2019.09.19-13.49.26:865][686]CompilerResultsLog: New page: Compilation - Sep 20, 2019, 7:49:26 AM
+[2019.09.19-13.49.26:865][686]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.19-13.49.26:865][686]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.19-13.49.26:865][686]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.19-13.49.26:865][686]CompilerResultsLog: Reflection code generated for GameEditor in 10.0474632 seconds
+[2019.09.19-13.49.26:865][686]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.19-13.49.26:865][686]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.19-13.49.26:865][686]CompilerResultsLog:   [1/6] Game.init.gen.cpp
+[2019.09.19-13.49.26:865][686]CompilerResultsLog:   [2/6] Pioneer.cpp
+[2019.09.19-13.49.26:865][686]CompilerResultsLog:   [3/6] Pioneer.gen.cpp
+[2019.09.19-13.49.26:865][686]CompilerResultsLog:   [4/6] UE4Editor-Game-7882.lib
+[2019.09.19-13.49.26:865][686]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7882.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7882.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.19-13.49.26:865][686]CompilerResultsLog:   [5/6] UE4Editor-Game-7882.dll
+[2019.09.19-13.49.26:865][686]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7882.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7882.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.19-13.49.26:865][686]CompilerResultsLog:   [6/6] GameEditor.target
+[2019.09.19-13.49.26:865][686]CompilerResultsLog: Total time in Parallel executor: 3.20 seconds
+[2019.09.19-13.49.26:865][686]CompilerResultsLog: Total execution time: 15.29 seconds
+[2019.09.19-13.49.26:865][686]LogMainFrame: MainFrame: Module compiling took 15.512 seconds
+[2019.09.19-13.49.26:890][686]LogUObjectHash: Compacting FUObjectHashTables data took   1.05ms
+[2019.09.19-13.49.26:916][686]LogClass: Could not find existing class Pioneer in package /Script/Game for HotReload, assuming new class
+[2019.09.19-13.49.26:920][686]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.19-13.49.27:005][686]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0005 seconds. Added 2 classes and 2 folders.
+[2019.09.19-13.49.27:007][686]Display: HotReload successful (0 functions remapped  0 scriptstructs remapped)
+[2019.09.19-13.49.27:066][686]LogUObjectHash: Compacting FUObjectHashTables data took   1.14ms
+[2019.09.19-13.49.27:082][686]LogContentBrowser: Native class hierarchy populated in 0.0106 seconds. Added 2866 classes and 684 folders.
+[2019.09.19-13.49.27:082][686]Display: HotReload took 15.8s.
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: invalid HTTP response code received. URL: https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BBE9547A5-4EB2-50FE-2883-038B5F6ED0E0%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream, HTTP code: 0, content length: -1, actual payload size: 0
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: request failed, libcurl error: 0 (No error)
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: libcurl info message cache 0 (Found bundle for host datarouter.ol.epicgames.com: 0x12dd0967f70 [can pipeline])
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: libcurl info message cache 1 (Re-using existing connection! (#27) with host datarouter.ol.epicgames.com)
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: libcurl info message cache 2 (Connected to datarouter.ol.epicgames.com (34.203.172.183) port 443 (#27))
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: libcurl info message cache 3 (We are completely uploaded and fine)
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: libcurl info message cache 4 (TLSv1.2 (IN), TLS alert, Client hello (1):)
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: libcurl info message cache 5 (Connection died, retrying a fresh connect)
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: libcurl info message cache 6 (necessary data rewind wasn't possible)
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: libcurl info message cache 7 (Closing connection 27)
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: 0000012DD06207C0: libcurl info message cache 8 (TLSv1.2 (OUT), TLS alert, Client hello (1):)
+[2019.09.19-13.59.17:055][794]LogHttp: Warning: Retry exhausted on https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BBE9547A5-4EB2-50FE-2883-038B5F6ED0E0%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream
+[2019.09.19-14.48.43:921][716]Candidate modules for hot reload:
+[2019.09.19-14.48.43:921][716]  Game
+[2019.09.19-14.48.43:921][716]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,3290 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.19-14.48.43:928][716]Warning: Starting HotReload took  0.0s.
+[2019.09.19-14.48.56:358][930]CompilerResultsLog: New page: Compilation - Sep 20, 2019, 8:48:56 AM
+[2019.09.19-14.48.56:358][930]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.19-14.48.56:358][930]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.19-14.48.56:358][930]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.19-14.48.56:358][930]CompilerResultsLog: Reflection code generated for GameEditor in 9.2349894 seconds
+[2019.09.19-14.48.56:358][930]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.19-14.48.56:358][930]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.19-14.48.56:358][930]CompilerResultsLog:   [1/6] Pioneer.gen.cpp
+[2019.09.19-14.48.56:358][930]CompilerResultsLog:    D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.gen.cpp(21) : error C4430: ???? ?????ڰ? ?????ϴ?. int?? ?????մϴ?. ????: C++?????? ?⺻ int?? ???????? ?ʽ??ϴ?.
+[2019.09.19-14.48.56:358][930]CompilerResultsLog:    D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.gen.cpp(21) : error C2146: ???? ????: ';'??(??) 'UClass' ?ĺ??? ?տ? ?????ϴ?.
+[2019.09.19-14.48.56:358][930]CompilerResultsLog:    D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.gen.cpp(183) : error C2065: 'Z_Construct_UClass_UPaperSpriteComponent_NoRegister': ???????? ???? ?ĺ????Դϴ?.
+[2019.09.19-14.48.56:358][930]CompilerResultsLog:   [2/6] Game.init.gen.cpp
+[2019.09.19-14.48.56:359][930]CompilerResultsLog:   [3/6] Pioneer.cpp
+[2019.09.19-14.48.56:359][930]LogMainFrame: MainFrame: Module compiling took 12.441 seconds
+[2019.09.19-14.48.56:359][930]Warning: HotReload failed, recompile failed
+[2019.09.19-14.48.58:741][936]LogSlate: Took 0.000553 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/NotoNaskhArabicUI-Regular.ttf' (144K)
+[2019.09.19-14.48.58:745][936]LogSlate: Took 0.002655 seconds to synchronously load lazily loaded font '../../../Engine/Content/SlateDebug/Fonts/LastResort.ttf' (5269K)
+[2019.09.19-14.49.37:598][678]LogSlate: Window 'Message Log' being destroyed
+[2019.09.19-14.49.37:602][678]LogSlate: Window 'Message Log' being destroyed
+[2019.09.19-14.49.38:392][768]LogEditorViewport: Clicking on Actor (LMB): BP_Sky_Sphere_C (BP_Sky_Sphere)
+[2019.09.19-14.49.38:679][799]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.19-14.49.38:708][799]LogUObjectHash: Compacting FUObjectHashTables data took   0.76ms
+[2019.09.19-14.49.38:818][799]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_DefaultEDD73AD04F5D0F72616C2FAB56BEB73F.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default.umap'
+[2019.09.19-14.49.38:835][799]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/StarterContent/Maps/Minimal_Default_BuiltData" FILE="D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset" SILENT=true
+[2019.09.19-14.49.38:879][799]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default_BuiltData41A5CD2B466ECF601F1C9C9DA7667E9F.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset'
+[2019.09.19-14.49.39:872][913]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.19-14.49.39:882][913]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.19-14.49.39:882][913]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.19-14.49.39:882][913]PIE: New page: PIE session: Minimal_Default (Sep 20, 2019, 8:49:39 AM)
+[2019.09.19-14.49.39:882][913]LogPlayLevel: Creating play world package: /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default
+[2019.09.19-14.49.39:885][913]LogPlayLevel: PIE: StaticDuplicateObject took: (0.003053s)
+[2019.09.19-14.49.39:886][913]LogAIModule: Creating AISystem for world Minimal_Default
+[2019.09.19-14.49.39:887][913]LogPlayLevel: PIE: World Init took: (0.001114s)
+[2019.09.19-14.49.39:887][913]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/StarterContent/Maps/Minimal_Default.Minimal_Default to /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default.Minimal_Default (0.004304s)
+[2019.09.19-14.49.39:909][913]LogUObjectHash: Compacting FUObjectHashTables data took   1.86ms
+[2019.09.19-14.49.40:423][913]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.19-14.49.40:501][913]LogInit: FAudioDevice initialized.
+[2019.09.19-14.49.40:516][913]LogLoad: Game class is 'GameModeBase'
+[2019.09.19-14.49.40:517][913]LogWorld: Bringing World /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default.Minimal_Default up for play (max tick rate 0) at 2019.09.19-23.49.40
+[2019.09.19-14.49.40:517][913]LogWorld: Bringing up level for play took: 0.000775
+[2019.09.19-14.49.40:517][913]LogOnline: OSS: Creating online subsystem instance for: :Context_3
+[2019.09.19-14.49.40:520][913]PIE: Play in editor start time for /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default 1.441
+[2019.09.19-14.49.40:520][913]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.19-14.49.43:331][243]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.19-14.49.43:331][243]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.19-14.49.43:331][243]LogWorld: BeginTearingDown for /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default
+[2019.09.19-14.49.43:331][243]LogWorld: UWorld::CleanupWorld for Minimal_Default, bSessionEnded=true, bCleanupResources=true
+[2019.09.19-14.49.43:343][243]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.19-14.49.43:343][243]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.19-14.49.43:371][243]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.19-14.49.43:374][243]LogUObjectHash: Compacting FUObjectHashTables data took   1.73ms
+[2019.09.19-14.49.43:454][245]LogPlayLevel: Display: Destroying online subsystem :Context_3
+[2019.09.19-14.49.44:132][326]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.19-14.49.44:202][332]LogUObjectHash: Compacting FUObjectHashTables data took   0.61ms
+[2019.09.19-14.49.44:243][332]LogSlate: Window 'Game - Unreal Editor' being destroyed
+[2019.09.19-14.49.44:251][332]LogWindowsTextInputMethodSystem: Display: IME system now activated using TSF (Microsoft 입력기).
+[2019.09.19-14.49.44:352][333]Cmd: QUIT_EDITOR
+[2019.09.19-14.49.44:448][333]LogExit: Preparing to exit.
+[2019.09.19-14.49.45:360][333]LogWorld: UWorld::CleanupWorld for World_0, bSessionEnded=true, bCleanupResources=true
+[2019.09.19-14.49.45:394][333]LogWorld: UWorld::CleanupWorld for None, bSessionEnded=true, bCleanupResources=true
+[2019.09.19-14.49.45:394][333]LogExit: Editor shut down
+[2019.09.19-14.49.45:394][333]LogExit: Transaction tracking system shut down
+[2019.09.19-14.49.45:399][333]LogDemo: Cleaned up 0 splitscreen connections with owner deletion
+[2019.09.19-14.49.45:815][333]LogExit: Object subsystem successfully closed.
+[2019.09.19-14.49.45:845][333]LogShaderCompilers: Display: Shaders left to compile 0
+[2019.09.19-14.49.45:898][333]LogModuleManager: Shutting down and abandoning module Game (679)
+[2019.09.19-14.49.45:898][333]LogModuleManager: Shutting down and abandoning module MovieSceneCapture (676)
+[2019.09.19-14.49.45:898][333]LogModuleManager: Shutting down and abandoning module Voice (674)
+[2019.09.19-14.49.45:899][333]LogModuleManager: Shutting down and abandoning module ExternalImagePicker (672)
+[2019.09.19-14.49.45:899][333]LogModuleManager: Shutting down and abandoning module HierarchicalLODOutliner (670)
+[2019.09.19-14.49.45:899][333]LogModuleManager: Shutting down and abandoning module SceneOutliner (668)
+[2019.09.19-14.49.45:899][333]LogModuleManager: Shutting down and abandoning module AddContentDialog (666)
+[2019.09.19-14.49.45:901][333]LogModuleManager: Shutting down and abandoning module WidgetCarousel (665)
+[2019.09.19-14.49.45:901][333]LogModuleManager: Shutting down and abandoning module EditorWidgets (662)
+[2019.09.19-14.49.45:901][333]LogModuleManager: Shutting down and abandoning module CollectionManager (660)
+[2019.09.19-14.49.45:903][333]LogModuleManager: Shutting down and abandoning module StatsViewer (658)
+[2019.09.19-14.49.45:904][333]LogModuleManager: Shutting down and abandoning module VirtualTexturingEditor (656)
+[2019.09.19-14.49.45:904][333]LogModuleManager: Shutting down and abandoning module FoliageEdit (654)
+[2019.09.19-14.49.45:905][333]LogModuleManager: Shutting down and abandoning module LandscapeEditor (652)
+[2019.09.19-14.49.45:909][333]LogModuleManager: Shutting down and abandoning module MeshPaintMode (650)
+[2019.09.19-14.49.45:909][333]LogModuleManager: Shutting down and abandoning module SceneDepthPickerMode (648)
+[2019.09.19-14.49.45:909][333]LogModuleManager: Shutting down and abandoning module ActorPickerMode (646)
+[2019.09.19-14.49.45:909][333]LogModuleManager: Shutting down and abandoning module GeometryMode (644)
+[2019.09.19-14.49.45:909][333]LogModuleManager: Shutting down and abandoning module TextureAlignMode (642)
+[2019.09.19-14.49.45:910][333]LogModuleManager: Shutting down and abandoning module BspMode (640)
+[2019.09.19-14.49.45:910][333]LogModuleManager: Shutting down and abandoning module PIEPreviewDeviceProfileSelector (638)
+[2019.09.19-14.49.45:911][333]LogModuleManager: Shutting down and abandoning module SequenceRecorderSections (636)
+[2019.09.19-14.49.45:911][333]LogModuleManager: Shutting down and abandoning module AutomationWorker (634)
+[2019.09.19-14.49.45:912][333]LogModuleManager: Shutting down and abandoning module OculusMR (632)
+[2019.09.19-14.49.45:912][333]LogModuleManager: Shutting down and abandoning module AudioCaptureEditor (630)
+[2019.09.19-14.49.45:912][333]LogModuleManager: Shutting down and abandoning module MatineeToLevelSequence (628)
+[2019.09.19-14.49.45:913][333]LogModuleManager: Shutting down and abandoning module LevelSequenceEditor (626)
+[2019.09.19-14.49.45:917][333]LogModuleManager: Shutting down and abandoning module PlacementMode (625)
+[2019.09.19-14.49.45:917][333]LogModuleManager: Shutting down and abandoning module MaterialEditor (624)
+[2019.09.19-14.49.45:919][333]LogModuleManager: Shutting down and abandoning module ActorSequenceEditor (620)
+[2019.09.19-14.49.45:921][333]LogModuleManager: Shutting down and abandoning module WmfMediaFactory (618)
+[2019.09.19-14.49.45:921][333]LogModuleManager: Shutting down and abandoning module WmfMediaEditor (616)
+[2019.09.19-14.49.45:921][333]LogModuleManager: Shutting down and abandoning module WebMMediaFactory (614)
+[2019.09.19-14.49.45:921][333]LogModuleManager: Shutting down and abandoning module WebMMediaEditor (612)
+[2019.09.19-14.49.45:921][333]LogModuleManager: Shutting down and abandoning module WebMMedia (610)
+[2019.09.19-14.49.45:922][333]LogModuleManager: Shutting down and abandoning module MediaPlayerEditor (608)
+[2019.09.19-14.49.45:923][333]LogModuleManager: Shutting down and abandoning module MediaCompositingEditor (606)
+[2019.09.19-14.49.45:925][333]LogModuleManager: Shutting down and abandoning module SequenceRecorder (605)
+[2019.09.19-14.49.45:925][333]LogModuleManager: Shutting down and abandoning module OpenExrWrapper (602)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module ImgMediaFactory (600)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module ImgMediaEditor (598)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module AvfMediaFactory (596)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module AvfMediaEditor (594)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module AndroidMediaFactory (592)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module AndroidMediaEditor (590)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module MagicLeapCameraPreviewFactory (588)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module MagicLeapMediaCodecFactory (586)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module MagicLeapMediaFactory (584)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module MagicLeapMediaEditor (582)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module CharacterAI (580)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module SmartSnapping (578)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module SessionServices (576)
+[2019.09.19-14.49.45:926][333]LogModuleManager: Shutting down and abandoning module MeshPaint (574)
+[2019.09.19-14.49.45:928][333]LogModuleManager: Shutting down and abandoning module ViewportSnapping (572)
+[2019.09.19-14.49.45:928][333]LogModuleManager: Shutting down and abandoning module ViewportInteraction (570)
+[2019.09.19-14.49.45:928][333]LogModuleManager: Shutting down and abandoning module ClothPainter (568)
+[2019.09.19-14.49.45:929][333]LogModuleManager: Shutting down and abandoning module SkeletalMeshEditor (567)
+[2019.09.19-14.49.45:932][333]LogModuleManager: Shutting down and abandoning module LogVisualizer (564)
+[2019.09.19-14.49.45:934][333]LogModuleManager: Shutting down and abandoning module IntroTutorials (562)
+[2019.09.19-14.49.45:934][333]LogModuleManager: Shutting down and abandoning module GameProjectGeneration (561)
+[2019.09.19-14.49.45:934][333]LogModuleManager: Shutting down and abandoning module LuminPlatformEditor (558)
+[2019.09.19-14.49.45:934][333]LogModuleManager: Shutting down and abandoning module IOSPlatformEditor (556)
+[2019.09.19-14.49.45:934][333]LogModuleManager: Shutting down and abandoning module HTML5PlatformEditor (554)
+[2019.09.19-14.49.45:934][333]LogModuleManager: Shutting down and abandoning module AndroidPlatformEditor (552)
+[2019.09.19-14.49.45:934][333]LogModuleManager: Shutting down and abandoning module AndroidDeviceDetection (551)
