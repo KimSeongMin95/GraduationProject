@@ -2,12 +2,11 @@
 
 #pragma once
 
-// 기본 생성 헤더
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Pioneer.generated.h"
+#include "Components/StaticMeshComponent.h"
+#include "Pioneer.generated.h" // 항상 마지막이어야 하는 헤더
 
-// 추가한 헤더
 
 
 UCLASS()
@@ -30,6 +29,14 @@ public:
 	// Called to bind functionality to input
 	// 바인딩한 키 입력을 매핑합니다.
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// 생성시 +1하는 고유값입니다.
+	static int ID;
+	
+	// 스태틱 메시입니다.
+	UPROPERTY(EditAnywhere)
+		class UStaticMeshComponent* TempStaticMesh;
+
 
 //public: // Variables
 //	// 캐릭터 공중에서 카메라의 위치를 조정합니다.

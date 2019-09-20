@@ -65,4 +65,26 @@ FORCEINLINE:
         메라의 모드를 원근 또는 직교로 할 것인지 설정 가능합니다. 
         원근 모드에 대해서는 세로 시야(FOV)를 설정할 수 있으며, 직교 모드에 대해서는 월드 유닛 단위로 폭을 설정할 수 있습니다. 
 
+[자료구조]
+    FString
+    TArray
+    TMap
+    TSet
+    TList
+    TQueue
 
+[Components 계층]
+    (주의점: 기본적으로 컴포넌트->SetupAttachment(RootComponent)를 해주어야 SetRelativeLocation가 정상적으로 작동합니다.)
+    루트: RootComponent
+    루트컴포넌트로 만들기: RootComponent = 컴포넌트;
+    컴포넌트에 붙이기: 컴포넌트->SetupAttachment(RootComponent)
+
+[인스턴싱]
+    Actor: 클래스* SpawnedActor1 = (클래스*) GetWorld()->SpawnActor(클래스::StaticClass(), NAME_None, &Location);
+        Actor 의 새 인스턴스를 생성하는 과정을 스폰 (spawn)이라 합니다. 
+        Actor 의 스폰은 UWorld::SpawnActor() 함수를 이용합니다. 
+        이 함수는 지정된 클래스의 새 인스턴스를 생성한 다음 새로 생성된 Actor 로의 포인터를 반환합니다. 
+        UWorld::SpawnActor() 는 클래스 계층구조 내 Actor 클래스를 상속하는 클래스 인스턴스를 생성할 때만 사용해야 합니다.
+
+[함수]
+    SetRelativeLocation: 

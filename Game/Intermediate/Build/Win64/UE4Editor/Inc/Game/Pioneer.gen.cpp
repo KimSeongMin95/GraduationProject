@@ -17,6 +17,7 @@ void EmptyLinkFunctionForGeneratedCodePioneer() {}
 	GAME_API UClass* Z_Construct_UClass_APioneer();
 	ENGINE_API UClass* Z_Construct_UClass_ACharacter();
 	UPackage* Z_Construct_UPackage__Script_Game();
+	ENGINE_API UClass* Z_Construct_UClass_UStaticMeshComponent_NoRegister();
 // End Cross Module References
 	void APioneer::StaticRegisterNativesAPioneer()
 	{
@@ -31,6 +32,11 @@ void EmptyLinkFunctionForGeneratedCodePioneer() {}
 #if WITH_METADATA
 		static const UE4CodeGen_Private::FMetaDataPairParam Class_MetaDataParams[];
 #endif
+#if WITH_METADATA
+		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_TempStaticMesh_MetaData[];
+#endif
+		static const UE4CodeGen_Private::FObjectPropertyParams NewProp_TempStaticMesh;
+		static const UE4CodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UE4CodeGen_Private::FClassParams ClassParams;
 	};
@@ -40,13 +46,24 @@ void EmptyLinkFunctionForGeneratedCodePioneer() {}
 	};
 #if WITH_METADATA
 	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_APioneer_Statics::Class_MetaDataParams[] = {
-		{ "Comment", "// ?\xdf\xb0??? ????\n" },
 		{ "HideCategories", "Navigation" },
 		{ "IncludePath", "Pioneer.h" },
 		{ "ModuleRelativePath", "Pioneer.h" },
-		{ "ToolTip", "?\xdf\xb0??? ????" },
 	};
 #endif
+#if WITH_METADATA
+	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_APioneer_Statics::NewProp_TempStaticMesh_MetaData[] = {
+		{ "Category", "Pioneer" },
+		{ "Comment", "// ????\xc6\xbd ?\xde\xbd??\xd4\xb4\xcf\xb4?.\n" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Pioneer.h" },
+		{ "ToolTip", "????\xc6\xbd ?\xde\xbd??\xd4\xb4\xcf\xb4?." },
+	};
+#endif
+	const UE4CodeGen_Private::FObjectPropertyParams Z_Construct_UClass_APioneer_Statics::NewProp_TempStaticMesh = { "TempStaticMesh", nullptr, (EPropertyFlags)0x0010000000080009, UE4CodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(APioneer, TempStaticMesh), Z_Construct_UClass_UStaticMeshComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_APioneer_Statics::NewProp_TempStaticMesh_MetaData, ARRAY_COUNT(Z_Construct_UClass_APioneer_Statics::NewProp_TempStaticMesh_MetaData)) };
+	const UE4CodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_APioneer_Statics::PropPointers[] = {
+		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_APioneer_Statics::NewProp_TempStaticMesh,
+	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_APioneer_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<APioneer>::IsAbstract,
 	};
@@ -56,11 +73,11 @@ void EmptyLinkFunctionForGeneratedCodePioneer() {}
 		&StaticCppClassTypeInfo,
 		DependentSingletons,
 		nullptr,
-		nullptr,
+		Z_Construct_UClass_APioneer_Statics::PropPointers,
 		nullptr,
 		ARRAY_COUNT(DependentSingletons),
 		0,
-		0,
+		ARRAY_COUNT(Z_Construct_UClass_APioneer_Statics::PropPointers),
 		0,
 		0x009000A0u,
 		METADATA_PARAMS(Z_Construct_UClass_APioneer_Statics::Class_MetaDataParams, ARRAY_COUNT(Z_Construct_UClass_APioneer_Statics::Class_MetaDataParams))
@@ -74,7 +91,7 @@ void EmptyLinkFunctionForGeneratedCodePioneer() {}
 		}
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(APioneer, 1017864397);
+	IMPLEMENT_CLASS(APioneer, 3604620460);
 	template<> GAME_API UClass* StaticClass<APioneer>()
 	{
 		return APioneer::StaticClass();

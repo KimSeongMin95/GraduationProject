@@ -80,12 +80,6 @@
     <Filter Include="Source\Game">
       <UniqueIdentifier>{67E97046-5DCC-4DB7-863D-94D52C8C3CD4}</UniqueIdentifier>
     </Filter>
-    <ClCompile Include="..\..\Source\Game\CameraDirector.cpp">
-      <Filter>Source\Game</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\Source\Game\CameraDirector.h">
-      <Filter>Source\Game</Filter>
-    </ClInclude>
     <None Include="..\..\Source\Game\Game.Build.cs">
       <Filter>Source\Game</Filter>
     </None>
@@ -107,5 +101,15 @@
     <ClInclude Include="..\..\Source\Game\Pioneer.h">
       <Filter>Source\Game</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Game\PioneerManager.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\Game\PioneerManager.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
