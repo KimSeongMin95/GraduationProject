@@ -13,30 +13,8 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #endif
 #define GAME_Pioneer_generated_h
 
-#define Game_Source_Game_Pioneer_h_16_RPC_WRAPPERS \
- \
-	DECLARE_FUNCTION(execOnSetPlayerController) \
-	{ \
-		P_GET_UBOOL(Z_Param_status); \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->OnSetPlayerController(Z_Param_status); \
-		P_NATIVE_END; \
-	}
-
-
-#define Game_Source_Game_Pioneer_h_16_RPC_WRAPPERS_NO_PURE_DECLS \
- \
-	DECLARE_FUNCTION(execOnSetPlayerController) \
-	{ \
-		P_GET_UBOOL(Z_Param_status); \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->OnSetPlayerController(Z_Param_status); \
-		P_NATIVE_END; \
-	}
-
-
+#define Game_Source_Game_Pioneer_h_16_RPC_WRAPPERS
+#define Game_Source_Game_Pioneer_h_16_RPC_WRAPPERS_NO_PURE_DECLS
 #define Game_Source_Game_Pioneer_h_16_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAPioneer(); \
