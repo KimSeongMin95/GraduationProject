@@ -1,2 +1,13 @@
 D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Definitions.Game.h
 d:\github\graduationproject\game\source\game\CameraDirector.h
+D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\CameraDirector.generated.h
+H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Kismet/GameplayStatics.h
+H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Kismet/KismetSystemLibrary.h
+H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Engine/CollisionProfile.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\CollisionProfile.generated.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\KismetSystemLibrary.generated.h
+H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Sound/DialogueTypes.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\DialogueTypes.generated.h
+h:\program files (x86)\ue_4.23\engine\source\runtime\engine\classes\kismet\GameplayStaticsTypes.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\GameplayStaticsTypes.generated.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\GameplayStatics.generated.h
