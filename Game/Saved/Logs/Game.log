@@ -733,3 +733,824 @@ LogConfig: Setting CVar [[r.setres:1280x720]]
 [2019.09.21-14.35.20:137][712]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_DefaultB383F8D44DF0E67782B313A285D4FC32.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default.umap'
 [2019.09.21-14.35.20:159][712]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/StarterContent/Maps/Minimal_Default_BuiltData" FILE="D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset" SILENT=true
 [2019.09.21-14.35.20:180][712]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default_BuiltData0996852846FFE068200AB8B05CF7DE6D.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset'
+[2019.09.21-14.39.42:376][ 16]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Floor)
+[2019.09.21-14.39.50:973][ 33]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-14.40.49:529][ 15]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.21-14.40.49:537][ 15]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-14.40.49:537][ 15]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.21-14.40.49:537][ 15]PIE: New page: PIE session: Minimal_Default (Sep 22, 2019, 8:40:49 AM)
+[2019.09.21-14.40.49:538][ 15]LogPlayLevel: Creating play world package: /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default
+[2019.09.21-14.40.49:542][ 15]LogPlayLevel: PIE: StaticDuplicateObject took: (0.004047s)
+[2019.09.21-14.40.49:543][ 15]LogAIModule: Creating AISystem for world Minimal_Default
+[2019.09.21-14.40.49:543][ 15]LogPlayLevel: PIE: World Init took: (0.001203s)
+[2019.09.21-14.40.49:543][ 15]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/StarterContent/Maps/Minimal_Default.Minimal_Default to /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default.Minimal_Default (0.005388s)
+[2019.09.21-14.40.49:566][ 15]LogUObjectHash: Compacting FUObjectHashTables data took   1.88ms
+[2019.09.21-14.40.50:096][ 15]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.21-14.40.50:175][ 15]LogInit: FAudioDevice initialized.
+[2019.09.21-14.40.50:184][ 15]LogLoad: Game class is 'GameModeBase'
+[2019.09.21-14.40.50:185][ 15]LogWorld: Bringing World /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default.Minimal_Default up for play (max tick rate 0) at 2019.09.21-23.40.50
+[2019.09.21-14.40.50:185][ 15]LogWorld: Bringing up level for play took: 0.000709
+[2019.09.21-14.40.50:185][ 15]LogOnline: OSS: Creating online subsystem instance for: :Context_5
+[2019.09.21-14.40.50:188][ 15]PIE: Play in editor start time for /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default 0.099
+[2019.09.21-14.40.50:188][ 15]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-14.40.53:649][422]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-14.40.53:650][422]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.21-14.40.53:650][422]LogWorld: BeginTearingDown for /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default
+[2019.09.21-14.40.53:650][422]LogWorld: UWorld::CleanupWorld for Minimal_Default, bSessionEnded=true, bCleanupResources=true
+[2019.09.21-14.40.53:663][422]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.21-14.40.53:663][422]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-14.40.53:692][422]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.21-14.40.53:695][422]LogUObjectHash: Compacting FUObjectHashTables data took   1.85ms
+[2019.09.21-14.40.53:760][424]LogPlayLevel: Display: Destroying online subsystem :Context_5
+[2019.09.21-14.47.04:780][ 79]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-14.47.27:524][638]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-14.47.28:285][727]LogEditor: Attempting to add actor of class 'Pioneer' to level at 1000.00,110.00,88.00
+[2019.09.21-14.47.29:202][832]LogEditor: Attempting to add actor of class 'Pioneer' to level at 850.00,620.00,88.00
+[2019.09.21-14.47.34:976][500]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-14.47.38:412][903]LogEditorViewport: Clicking on Actor (LMB): BP_Sky_Sphere_C (BP_Sky_Sphere2)
+[2019.09.21-14.47.42:769][399]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Floor)
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: invalid HTTP response code received. URL: https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream, HTTP code: 0, content length: -1, actual payload size: 0
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: request failed, libcurl error: 0 (No error)
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: libcurl info message cache 0 (Found bundle for host datarouter.ol.epicgames.com: 0x1b860013f70 [can pipeline])
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: libcurl info message cache 1 (Re-using existing connection! (#6) with host datarouter.ol.epicgames.com)
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: libcurl info message cache 2 (Connected to datarouter.ol.epicgames.com (52.87.139.142) port 443 (#6))
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: libcurl info message cache 3 (We are completely uploaded and fine)
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: libcurl info message cache 4 (TLSv1.2 (IN), TLS alert, Client hello (1):)
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: libcurl info message cache 5 (Connection died, retrying a fresh connect)
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: libcurl info message cache 6 (necessary data rewind wasn't possible)
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: libcurl info message cache 7 (Closing connection 6)
+[2019.09.21-14.47.45:708][699]LogHttp: Warning: 000001B851D6C680: libcurl info message cache 8 (TLSv1.2 (OUT), TLS alert, Client hello (1):)
+[2019.09.21-14.47.45:716][700]LogHttp: Warning: Retry exhausted on https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream
+[2019.09.21-14.47.48:453][ 23]LogEditorViewport: Clicking on Actor (LMB): BP_Sky_Sphere_C (BP_Sky_Sphere)
+[2019.09.21-14.47.52:103][451]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-14.47.56:147][927]LogEditorViewport: Clicking on Actor (LMB): BP_Sky_Sphere_C (BP_Sky_Sphere)
+[2019.09.21-14.47.56:520][967]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-14.47.56:551][967]LogUObjectHash: Compacting FUObjectHashTables data took   1.79ms
+[2019.09.21-14.47.56:668][967]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default102E409E41D11318E07C19BB596621AC.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default.umap'
+[2019.09.21-14.47.56:688][967]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/StarterContent/Maps/Minimal_Default_BuiltData" FILE="D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset" SILENT=true
+[2019.09.21-14.47.56:712][967]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default_BuiltData3B27132841775B79036472B17009FE6F.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset'
+[2019.09.21-14.48.02:837][673]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-14.48.02:918][680]LogRenderer: Reallocating scene render targets to support 1104x572 Format 10 NumSamples 1 (Frame:30212).
+[2019.09.21-14.48.16:142][221]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Floor)
+[2019.09.21-14.48.19:456][587]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-14.48.21:518][786]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Floor)
+[2019.09.21-14.48.22:378][882]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-14.48.22:410][882]LogUObjectHash: Compacting FUObjectHashTables data took   1.72ms
+[2019.09.21-14.48.22:524][882]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_DefaultC3088BB74BD0F151F9F6AABC4085A469.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default.umap'
+[2019.09.21-14.48.22:546][882]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/StarterContent/Maps/Minimal_Default_BuiltData" FILE="D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset" SILENT=true
+[2019.09.21-14.48.22:567][882]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default_BuiltData2C8D6D9342D250FEE86E27802BF61C5B.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset'
+[2019.09.21-15.01.19:694][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Attack_04.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.19:695][711]LogOutputDevice: Warning: 
+
+Script Stack (0 frames):
+
+[2019.09.21-15.01.20:840][711]LogStats: FPlatformStackWalk::StackWalkAndDump -  1.145 s
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: === Handled ensure: ===
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: 
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: Ensure condition failed: ExpectedWorkThisFrame <= 1.01f * TotalAmountOfWork - CompletedWork [File:D:/Build/++UE4/Sync/Engine/Source/Runtime/Core/Private/Misc/SlowTask.cpp] [Line: 100]
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: Work overflow in slow task. Please revise call-site to account for entire progress range.
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: Stack: 
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc75b56b36 UE4Editor-Core.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc7580bed5 UE4Editor-Core.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc65993605 UE4Editor-AssetTools.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc65992231 UE4Editor-AssetTools.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc64842bbc UE4Editor-ContentBrowser.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc6480cb29 UE4Editor-ContentBrowser.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc6482a416 UE4Editor-ContentBrowser.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc8f308508 UE4Editor-Slate.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc8f2e4568 UE4Editor-Slate.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc8f36b6f1 UE4Editor-Slate.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc8f3552e8 UE4Editor-Slate.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc8f346f19 UE4Editor-Slate.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc9fba25d4 UE4Editor-ApplicationCore.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc9fb92eda UE4Editor-ApplicationCore.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffccf1e73d2 ole32.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffccd147823 RPCRT4.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffccd1ab4a6 RPCRT4.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffccd1253d9 RPCRT4.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffcccba99af combase.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffcccb9e1a3 combase.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffcccb9df94 combase.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffcccbad246 combase.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffcccb4a3a5 combase.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffcccb43de2 combase.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffcccb76ee0 combase.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffcccb767c1 combase.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffcccb7e511 combase.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffccef8ca66 USER32.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffccef8c582 USER32.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffc9fba88e9 UE4Editor-ApplicationCore.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ff7185b6980 UE4Editor.exe!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ff7185ca91c UE4Editor.exe!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ff7185ca9fa UE4Editor.exe!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ff7185db92c UE4Editor.exe!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ff7185de60e UE4Editor.exe!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffcceeb7974 KERNEL32.DLL!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: [Callstack] 0x00007ffccf90a271 ntdll.dll!UnknownFunction []
+[2019.09.21-15.01.20:840][711]LogOutputDevice: Error: 
+[2019.09.21-15.01.20:843][711]LogStats:                SubmitErrorReport -  0.000 s
+[2019.09.21-15.01.22:304][711]LogStats:                    SendNewReport -  1.461 s
+[2019.09.21-15.01.22:304][711]LogStats:             FDebug::EnsureFailed -  2.609 s
+[2019.09.21-15.01.22:326][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Attack_05.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:336][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Attack_07.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:349][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Attack_09.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:365][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Attack_12.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:381][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Attack_15.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:399][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Attack_17.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:418][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Crouch_Pickup.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:441][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Damage_02.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:467][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Damage_Left_01.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:494][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Damage_Left_02.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:526][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Damage_Right_01.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:565][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Damage_Right_02.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:612][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Dead_04.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:673][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/Idle_Eqip_02.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:741][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPersonIdle.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:814][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPersonJump_End.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:892][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPersonJump_Loop.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.22:976][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPersonJump_Start.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:041][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPersonRun.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:098][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPersonWalk.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:154][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_AnimBP.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:204][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Attack1.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:257][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Attack2.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:323][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Attack3.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:384][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Attack4.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:445][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Attack5.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:499][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Attack7.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:563][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Attack8.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:623][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Dead.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:692][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_GetHit.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:753][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_GetHit_Left.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:812][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_GetHit_Right.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:870][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Idle.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:934][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_IdleRun_2D.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.23:995][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Jump.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:058][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Animations/ThirdPerson_Pickingup.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:123][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Materials/MaterialLayers/ML_GlossyBlack_Latex_UE4.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:185][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Materials/MaterialLayers/ML_Plastic_Shiny_Beige.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:257][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Materials/MaterialLayers/ML_Plastic_Shiny_Beige_LOGO.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:320][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Materials/MaterialLayers/ML_SoftMetal_UE4.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:392][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Materials/MaterialLayers/T_ML_Aluminum01.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:471][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Materials/MaterialLayers/T_ML_Aluminum01_N.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:559][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Materials/MaterialLayers/T_ML_Rubber_Blue_01_D.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:639][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Materials/MaterialLayers/T_ML_Rubber_Blue_01_N.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:709][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Materials/M_UE4Man_Body.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:778][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Materials/M_UE4Man_ChestLogo.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:845][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_Attack1_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:913][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_Attack2_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.24:985][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_Attack3_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:057][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_Attack4_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:127][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_Attack5_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:199][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_Attack7_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:279][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_Attack8_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:358][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_Dead_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:436][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_GetHit_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:516][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_GetHit_Left_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:595][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_GetHit_Right_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:697][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_Idle_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:784][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/Gladiator_Pickingup_Copy.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:867][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/SK_Mannequin.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.25:943][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/SK_Mannequin_PhysicsAsset.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.26:020][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Mesh/UE4_Mannequin_Skeleton.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.26:101][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Textures/UE4Man_Logo_N.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.26:176][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Textures/UE4_LOGO_CARD.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.26:255][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Textures/UE4_Mannequin_MAT_MASKA.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.01.26:341][711]LogAssetTools: Warning: Failed to import 'D:\Unreal Projects\Bellz\Content\Mannequin/Character/Textures/UE4_Mannequin__normals.uasset'. Unknown extension 'uasset'.
+[2019.09.21-15.03.01:294][124]LogActorFactory: Actor Factory created Wall_500x500
+[2019.09.21-15.03.02:895][288]LogActorFactory: Actor Factory created Wall_500x500
+[2019.09.21-15.03.04:476][458]LogActorFactory: Actor Factory created Wall_500x500
+[2019.09.21-15.03.05:991][626]Cmd: DELETE
+[2019.09.21-15.03.05:991][626]Cmd: ACTOR DELETE
+[2019.09.21-15.03.05:992][626]LogEditorActor: Deleted Actor: StaticMeshActor
+[2019.09.21-15.03.06:015][626]LogUObjectHash: Compacting FUObjectHashTables data took   1.79ms
+[2019.09.21-15.03.06:016][626]LogEditorActor: Deleted 1 Actors (0.025 secs)
+[2019.09.21-15.03.08:678][854]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-15.03.56:109][472]LogUObjectHash: Compacting FUObjectHashTables data took   0.84ms
+[2019.09.21-15.03.56:261][472]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default_Auto16D4BC4064B13A18BB44B0286B460ED31.tmp' to 'D:/Github/GraduationProject/Game/Saved/Autosaves/Game/StarterContent/Maps/Minimal_Default_Auto1.umap'
+[2019.09.21-15.03.56:265][472]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/StarterContent/Maps/Minimal_Default' took 0.179
+[2019.09.21-15.03.56:265][472]LogFileHelpers: Editor autosave (incl. sublevels) for all levels took 0.179
+[2019.09.21-15.15.45:099][ 37]MapCheck: New page: Map Check
+[2019.09.21-15.15.45:111][ 37]Cmd: MAP REBUILD ALLVISIBLE
+[2019.09.21-15.15.45:112][ 37]LogEditorServer: Rebuildmap Clear paths rebuilt
+[2019.09.21-15.15.45:119][ 37]LogWorld: UWorld::CleanupWorld for Minimal_Default, bSessionEnded=true, bCleanupResources=false
+[2019.09.21-15.15.45:150][ 37]LogUObjectHash: Compacting FUObjectHashTables data took   2.65ms
+[2019.09.21-15.15.45:176][ 37]LogMaterial: Display: Missing cached shader map for material DebugViewMode MaterialTexCoordScale, compiling. 
+[2019.09.21-15.15.45:185][ 37]LogShaderCompilers: Display: Worker (1/5): shaders left to compile 2
+[2019.09.21-15.15.45:185][ 37]LogShaderCompilers: Display: Worker (2/5): shaders left to compile 1
+[2019.09.21-15.15.45:185][ 37]LogMaterial: Display: Missing cached shader map for material DebugViewMode MaterialTexCoordScale, compiling. 
+[2019.09.21-15.15.45:992][ 37]LogShaderCompilers: Display: Worker (3/5): shaders left to compile 2
+[2019.09.21-15.15.45:992][ 37]LogShaderCompilers: Display: Worker (4/5): shaders left to compile 1
+[2019.09.21-15.15.45:992][ 37]TextureStreamingBuild: Display: Compiling optional shaders took 0.821 seconds.
+[2019.09.21-15.15.45:998][ 37]LogLevel: Display: Export Material TexCoord Scales took 0.006 seconds.
+[2019.09.21-15.15.46:014][ 37]TextureStreamingBuild: Display: Build Texture Streaming took 0.016 seconds.
+[2019.09.21-15.15.46:037][ 37]LogUObjectHash: Compacting FUObjectHashTables data took   0.61ms
+[2019.09.21-15.15.46:038][ 37]LightingResults: New page: Lighting Build - Sep 22, 2019, 9:15:46 AM
+[2019.09.21-15.15.46:045][ 37]LogSwarmInterface: [OpenConnection] Registering TCP channel ...
+[2019.09.21-15.15.46:050][ 37]LogSwarmInterface: [OpenConnection] Connecting to agent ...
+[2019.09.21-15.15.46:050][ 37]LogSwarmInterface: [TryOpenConnection] Testing the Agent
+[2019.09.21-15.15.46:053][ 37]LogSwarmInterface: [TryOpenConnection] Opening Connection to Agent
+[2019.09.21-15.15.46:053][ 37]LogSwarmInterface: [TryOpenConnection] Local Process ID is 17336
+[2019.09.21-15.15.50:594][ 37]LogStaticLightingSystem: Warning: No importance volume found, so the scene bounding box was used.  You can optimize your scene's quality and lighting build times by adding importance volumes.
+[2019.09.21-15.15.50:594][ 37]LogStaticLightingSystem: Running Lightmass w/ ImmediateImport mode ENABLED
+[2019.09.21-15.15.50:594][ 37]LogStaticLightingSystem: Running Lightmass w/ ImmediateProcess mode ENABLED
+[2019.09.21-15.15.50:594][ 37]LogStaticLightingSystem: Running Lightmass w/ Sorting mode ENABLED
+[2019.09.21-15.15.50:594][ 37]LogStaticLightingSystem: Running Lightmass w/ Mapping paddings ENABLED
+[2019.09.21-15.15.50:594][ 37]LogStaticLightingSystem: Running Lightmass w/ Mapping debug paddings DISABLED
+[2019.09.21-15.15.50:853][ 37]LogUObjectHash: Compacting FUObjectHashTables data took   2.07ms
+[2019.09.21-15.15.52:329][ 37]Job is a success!
+[2019.09.21-15.15.52:457][ 37]LogVolumetricLightmapImport: Imported Volumetric Lightmap in 0.076s
+[2019.09.21-15.15.52:457][ 37]LogVolumetricLightmapImport:      Indirection Texture 16x16x16 = 0.0Mb
+[2019.09.21-15.15.52:457][ 37]LogVolumetricLightmapImport:      BrickData 90x5x5 = 0.1Mb
+[2019.09.21-15.15.52:457][ 37]LogVolumetricLightmapImport:      Bricks at Level
+[2019.09.21-15.15.52:457][ 37]LogVolumetricLightmapImport:          0: 5.6% covering 100.0% of volume
+[2019.09.21-15.15.52:457][ 37]LogVolumetricLightmapImport:          1: 5.6% covering 1.6% of volume
+[2019.09.21-15.15.52:457][ 37]LogVolumetricLightmapImport:          2: 88.9% covering 0.4% of volume
+[2019.09.21-15.15.52:514][ 37]LogTexture: Display: Building textures: SkyOcclusion1_1 (AutoDXT, 256X128)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: HQ_Lightmap1_1 (AutoDXT, 256X256)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: LQ_Lightmap_1_1 (DXT1, 256X256)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: HQ_Lightmap1_2 (AutoDXT, 64X64)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: SkyOcclusion1_2 (AutoDXT, 64X32)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: LQ_Lightmap_1_2 (DXT1, 64X64)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: SkyOcclusion1_3 (AutoDXT, 64X32)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: HQ_Lightmap1_3 (AutoDXT, 64X64)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: LQ_Lightmap_1_3 (DXT1, 64X64)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: ShadowMapTexture2D_4 (G8, 32X32)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: ShadowMapTexture2D_5 (G8, 32X32)
+[2019.09.21-15.15.52:515][ 37]LogTexture: Display: Building textures: ShadowMapTexture2D_3 (G8, 128X128)
+[2019.09.21-15.15.52:515][ 37]LogStaticLightingSystem: Minimal_Default_BuiltData storing lightmap data for 3 meshes in 3 LightmapResourceClusters (1.0 Meshes per cluster).
+[2019.09.21-15.15.52:542][ 37]Lightmass on DESKTOP-Q83AC7I: 1.06 sec total, 298 ms importing, 28 ms setup, 101 ms photons, 530 ms processing, 0 ms extra exporting [3/3 mappings]. Threads: 3.70 sec total, 428 ms processing.
+[2019.09.21-15.15.52:542][ 37]LogUObjectHash: Compacting FUObjectHashTables data took   1.63ms
+[2019.09.21-15.15.52:545][ 37]LogStaticLightingSystem: Illumination: 6.50 sec (20 ms encoding lightmaps, 12 ms encoding shadowmaps)
+[2019.09.21-15.15.52:545][ 37]LogStaticLightingSystem: Lightmap texture memory:  0.2 MB (0.2 MB streaming, 0.0 MB non-streaming), 6 textures
+[2019.09.21-15.15.52:545][ 37]LogStaticLightingSystem: Shadowmap texture memory: 0.0 MB (0.0 MB streaming, 0.0 MB non-streaming), 3 textures
+[2019.09.21-15.15.52:609][ 37]DumpUnbuiltLightIteractions
+[2019.09.21-15.15.52:609][ 37]Lights with unbuilt interactions: 0
+[2019.09.21-15.15.52:609][ 37]
+[2019.09.21-15.15.52:609][ 37]Primitives with unbuilt interactions: 0
+[2019.09.21-15.15.52:779][ 37]Cmd: MAP CHECK DONTDISPLAYDIALOG
+[2019.09.21-15.15.52:779][ 37]MapCheck: New page: Minimal_Default - Sep 22, 2019, 9:15:52 AM
+[2019.09.21-15.15.52:782][ 37]MapCheck: Map check complete: 0 Error(s), 0 Warning(s), took 3.139ms to complete.
+[2019.09.21-15.15.52:784][ 37]LogEditorBuildUtils: Build time 0:07
+[2019.09.21-15.15.52:812][ 38]Cmd: MAP CHECK NOTIFYRESULTS
+[2019.09.21-15.15.52:813][ 38]MapCheck: New page: Minimal_Default - Sep 22, 2019, 9:15:52 AM
+[2019.09.21-15.15.52:813][ 38]MapCheck: Map check complete: 0 Error(s), 0 Warning(s), took 0.284ms to complete.
+[2019.09.21-15.16.10:279][ 90]LogUObjectHash: Compacting FUObjectHashTables data took   2.02ms
+[2019.09.21-15.16.10:416][ 90]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default_Auto214DC4AA741A81C0330972187B176512B.tmp' to 'D:/Github/GraduationProject/Game/Saved/Autosaves/Game/StarterContent/Maps/Minimal_Default_Auto2.umap'
+[2019.09.21-15.16.10:419][ 90]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/StarterContent/Maps/Minimal_Default' took 0.189
+[2019.09.21-15.16.10:419][ 90]LogFileHelpers: Editor autosave (incl. sublevels) for all levels took 0.189
+[2019.09.21-15.16.35:273][165]LogEditorViewport: Clicking on Actor (LMB): BP_Sky_Sphere_C (BP_Sky_Sphere)
+[2019.09.21-15.16.36:541][270]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-15.16.39:021][527]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-15.16.39:983][638]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-15.16.48:240][501]LogSlate: Window 'Editor Preferences' being destroyed
+[2019.09.21-15.16.48:246][501]LogSlate: Window 'Editor Preferences' being destroyed
+[2019.09.21-15.16.48:809][550]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-15.16.50:209][715]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-15.16.51:281][715]LogSlate: Only BGRA pngs, bmps or icos are supported in by External Image Picker
+[2019.09.21-15.17.51:629][464]LogSlate: Window 'Project Settings' being destroyed
+[2019.09.21-15.17.51:638][464]LogSlate: Window 'Project Settings' being destroyed
+[2019.09.21-15.24.56:725][815]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-15.24.56:948][815]Candidate modules for hot reload:
+[2019.09.21-15.24.56:948][815]  Game
+[2019.09.21-15.24.56:948][815]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,9572 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.21-15.24.56:955][815]Warning: Starting HotReload took  0.0s.
+[2019.09.21-15.25.14:808][891]CompilerResultsLog: New page: Compilation - Sep 22, 2019, 9:25:14 AM
+[2019.09.21-15.25.14:808][891]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.21-15.25.14:808][891]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.21-15.25.14:808][891]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.21-15.25.14:808][891]CompilerResultsLog: Reflection code generated for GameEditor in 9.5116617 seconds
+[2019.09.21-15.25.14:808][891]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.21-15.25.14:808][891]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.21-15.25.14:808][891]CompilerResultsLog:   [1/6] Pioneer.gen.cpp
+[2019.09.21-15.25.14:808][891]CompilerResultsLog:    D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.gen.cpp(23) : error C4430: ???? ?????ڰ? ?????ϴ?. int?? ?????մϴ?. ????: C++?????? ?⺻ int?? ???????? ?ʽ??ϴ?.
+[2019.09.21-15.25.14:808][891]CompilerResultsLog:    D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.gen.cpp(23) : error C2146: ???? ????: ';'??(??) 'UClass' ?ĺ??? ?տ? ?????ϴ?.
+[2019.09.21-15.25.14:808][891]CompilerResultsLog:    D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.gen.cpp(244) : error C2065: 'Z_Construct_UClass_UPaperSpriteComponent_NoRegister': ???????? ???? ?ĺ????Դϴ?.
+[2019.09.21-15.25.14:808][891]CompilerResultsLog:   [2/6] Game.init.gen.cpp
+[2019.09.21-15.25.14:808][891]CompilerResultsLog:   [3/6] Pioneer.cpp
+[2019.09.21-15.25.14:808][891]LogMainFrame: MainFrame: Module compiling took 17.865 seconds
+[2019.09.21-15.25.14:808][891]Warning: HotReload failed, recompile failed
+[2019.09.21-15.26.10:808][ 57]LogUObjectHash: Compacting FUObjectHashTables data took   2.03ms
+[2019.09.21-15.26.10:808][ 57]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/StarterContent/Maps/Minimal_Default' took 0.029
+[2019.09.21-15.30.24:325][814]Candidate modules for hot reload:
+[2019.09.21-15.30.24:325][814]  Game
+[2019.09.21-15.30.24:325][814]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,6846 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.21-15.30.24:331][814]Warning: Starting HotReload took  0.0s.
+[2019.09.21-15.30.37:215][109]CompilerResultsLog: New page: Compilation - Sep 22, 2019, 9:30:37 AM
+[2019.09.21-15.30.37:215][109]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.21-15.30.37:215][109]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.21-15.30.37:215][109]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.21-15.30.37:215][109]CompilerResultsLog: Reflection code generated for GameEditor in 9.6702361 seconds
+[2019.09.21-15.30.37:215][109]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.21-15.30.37:215][109]CompilerResultsLog: Building 5 actions with 8 processes...
+[2019.09.21-15.30.37:215][109]CompilerResultsLog:   [1/5] Pioneer.gen.cpp
+[2019.09.21-15.30.37:215][109]CompilerResultsLog:    D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.gen.cpp(23) : error C4430: ???? ?????ڰ? ?????ϴ?. int?? ?????մϴ?. ????: C++?????? ?⺻ int?? ???????? ?ʽ??ϴ?.
+[2019.09.21-15.30.37:215][109]CompilerResultsLog:    D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.gen.cpp(23) : error C2146: ???? ????: ';'??(??) 'UClass' ?ĺ??? ?տ? ?????ϴ?.
+[2019.09.21-15.30.37:215][109]CompilerResultsLog:    D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.gen.cpp(244) : error C2065: 'Z_Construct_UClass_UPaperSpriteComponent_NoRegister': ???????? ???? ?ĺ????Դϴ?.
+[2019.09.21-15.30.37:215][109]CompilerResultsLog:   [2/5] Pioneer.cpp
+[2019.09.21-15.30.37:215][109]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(12) : error C2027: ???ǵ??? ???? ???? 'UCapsuleComponent'??(??) ?????߽??ϴ?.
+[2019.09.21-15.30.37:215][109]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/Character.h(23): note: 'UCapsuleComponent' ?????? ?????Ͻʽÿ?.
+[2019.09.21-15.30.37:215][109]LogMainFrame: MainFrame: Module compiling took 12.896 seconds
+[2019.09.21-15.30.37:215][109]Warning: HotReload failed, recompile failed
+[2019.09.21-15.30.39:960][120]LogSlate: Took 0.001103 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/NotoNaskhArabicUI-Regular.ttf' (144K)
+[2019.09.21-15.30.39:962][120]LogSlate: Took 0.001781 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/DroidSansFallback.ttf' (3848K)
+[2019.09.21-15.30.39:962][120]LogSlate: Last resort fallback font was requested. Font: '../../../Engine/Content/Slate/Fonts/DroidSansFallback.ttf', Character: 'ϴ (U+03f4)'
+[2019.09.21-15.30.39:967][120]LogSlate: Took 0.003112 seconds to synchronously load lazily loaded font '../../../Engine/Content/SlateDebug/Fonts/LastResort.ttf' (5269K)
+[2019.09.21-15.31.05:876][137]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-15.31.05:883][137]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-15.32.10:250][576]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-15.32.10:368][576]Candidate modules for hot reload:
+[2019.09.21-15.32.10:368][576]  Game
+[2019.09.21-15.32.10:368][576]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,8183 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.21-15.32.10:374][576]Warning: Starting HotReload took  0.0s.
+[2019.09.21-15.32.23:235][707]CompilerResultsLog: New page: Compilation - Sep 22, 2019, 9:32:23 AM
+[2019.09.21-15.32.23:235][707]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.21-15.32.23:235][707]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.21-15.32.23:235][707]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.21-15.32.23:235][707]CompilerResultsLog: Reflection code generated for GameEditor in 9.5977221 seconds
+[2019.09.21-15.32.23:235][707]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.21-15.32.23:235][707]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.21-15.32.23:235][707]CompilerResultsLog:   [1/6] Pioneer.cpp
+[2019.09.21-15.32.23:235][707]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(12) : error C2027: ???ǵ??? ???? ???? 'UCapsuleComponent'??(??) ?????߽??ϴ?.
+[2019.09.21-15.32.23:236][707]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/Character.h(23): note: 'UCapsuleComponent' ?????? ?????Ͻʽÿ?.
+[2019.09.21-15.32.23:236][707]CompilerResultsLog:   [2/6] Game.init.gen.cpp
+[2019.09.21-15.32.23:236][707]CompilerResultsLog:   [3/6] Pioneer.gen.cpp
+[2019.09.21-15.32.23:236][707]LogMainFrame: MainFrame: Module compiling took 12.872 seconds
+[2019.09.21-15.32.23:236][707]Warning: HotReload failed, recompile failed
+[2019.09.21-15.32.37:641][749]Candidate modules for hot reload:
+[2019.09.21-15.32.37:641][749]  Game
+[2019.09.21-15.32.37:641][749]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,7090 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.21-15.32.37:647][749]Warning: Starting HotReload took  0.0s.
+[2019.09.21-15.32.52:562][243]CompilerResultsLog: New page: Compilation - Sep 22, 2019, 9:32:52 AM
+[2019.09.21-15.32.52:562][243]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.21-15.32.52:562][243]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.21-15.32.52:562][243]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.21-15.32.52:563][243]CompilerResultsLog: Reflection code generated for GameEditor in 11.0719346 seconds
+[2019.09.21-15.32.52:563][243]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.21-15.32.52:563][243]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.21-15.32.52:563][243]CompilerResultsLog:   [1/6] Pioneer.cpp
+[2019.09.21-15.32.52:563][243]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(12) : error C2027: ???ǵ??? ???? ???? 'UCapsuleComponent'??(??) ?????߽??ϴ?.
+[2019.09.21-15.32.52:563][243]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/Character.h(23): note: 'UCapsuleComponent' ?????? ?????Ͻʽÿ?.
+[2019.09.21-15.32.52:563][243]CompilerResultsLog:   [2/6] Game.init.gen.cpp
+[2019.09.21-15.32.52:563][243]CompilerResultsLog:   [3/6] Pioneer.gen.cpp
+[2019.09.21-15.32.52:563][243]LogMainFrame: MainFrame: Module compiling took 14.927 seconds
+[2019.09.21-15.32.52:563][243]Warning: HotReload failed, recompile failed
+[2019.09.21-15.32.57:362][796]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-15.32.57:368][796]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-15.32.58:248][900]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-15.33.01:324][253]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-15.33.01:330][253]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-15.35.51:415][637]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-15.35.51:492][644]Candidate modules for hot reload:
+[2019.09.21-15.35.51:492][644]  Game
+[2019.09.21-15.35.51:492][644]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,4952 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.21-15.35.51:496][644]Warning: Starting HotReload took  0.0s.
+[2019.09.21-15.36.05:999][711]CompilerResultsLog: New page: Compilation - Sep 22, 2019, 9:36:05 AM
+[2019.09.21-15.36.05:999][711]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.21-15.36.05:999][711]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.21-15.36.05:999][711]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.21-15.36.05:999][711]CompilerResultsLog: Reflection code generated for GameEditor in 9.368798 seconds
+[2019.09.21-15.36.05:999][711]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.21-15.36.05:999][711]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.21-15.36.05:999][711]CompilerResultsLog:   [1/4] Pioneer.cpp
+[2019.09.21-15.36.05:999][711]CompilerResultsLog:   [2/4] UE4Editor-Game-4952.lib
+[2019.09.21-15.36.05:999][711]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-4952.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-4952.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-15.36.05:999][711]CompilerResultsLog:   [3/4] UE4Editor-Game-4952.dll
+[2019.09.21-15.36.05:999][711]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-4952.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-4952.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-15.36.05:999][711]CompilerResultsLog:   [4/4] GameEditor.target
+[2019.09.21-15.36.05:999][711]CompilerResultsLog: Total time in Parallel executor: 3.04 seconds
+[2019.09.21-15.36.05:999][711]CompilerResultsLog: Total execution time: 14.00 seconds
+[2019.09.21-15.36.05:999][711]LogMainFrame: MainFrame: Module compiling took 14.512 seconds
+[2019.09.21-15.36.06:021][711]LogUObjectHash: Compacting FUObjectHashTables data took   0.75ms
+[2019.09.21-15.36.06:068][711]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.21-15.36.06:152][711]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0008 seconds. Added 3 classes and 2 folders.
+[2019.09.21-15.36.06:154][711]Display: HotReload successful (0 functions remapped  0 scriptstructs remapped)
+[2019.09.21-15.36.06:210][711]LogUObjectHash: Compacting FUObjectHashTables data took   1.57ms
+[2019.09.21-15.36.06:227][711]LogContentBrowser: Native class hierarchy populated in 0.0101 seconds. Added 2867 classes and 684 folders.
+[2019.09.21-15.36.06:227][711]Display: HotReload took 14.8s.
+[2019.09.21-15.36.09:839][845]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-15.36.09:880][850]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.21-15.36.09:891][850]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-15.36.09:891][850]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.21-15.36.09:891][850]PIE: New page: PIE session: Minimal_Default (Sep 22, 2019, 9:36:09 AM)
+[2019.09.21-15.36.09:891][850]LogPlayLevel: Creating play world package: /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default
+[2019.09.21-15.36.09:896][850]LogPlayLevel: PIE: StaticDuplicateObject took: (0.004740s)
+[2019.09.21-15.36.09:897][850]LogAIModule: Creating AISystem for world Minimal_Default
+[2019.09.21-15.36.09:898][850]LogPlayLevel: PIE: World Init took: (0.001439s)
+[2019.09.21-15.36.09:898][850]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/StarterContent/Maps/Minimal_Default.Minimal_Default to /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default.Minimal_Default (0.006364s)
+[2019.09.21-15.36.09:922][850]LogUObjectHash: Compacting FUObjectHashTables data took   1.44ms
+[2019.09.21-15.36.10:467][850]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.21-15.36.10:556][850]LogInit: FAudioDevice initialized.
+[2019.09.21-15.36.10:568][850]LogLoad: Game class is 'GameModeBase'
+[2019.09.21-15.36.10:569][850]LogWorld: Bringing World /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default.Minimal_Default up for play (max tick rate 0) at 2019.09.22-00.36.10
+[2019.09.21-15.36.10:576][850]LogWorld: Bringing up level for play took: 0.007377
+[2019.09.21-15.36.10:577][850]LogOnline: OSS: Creating online subsystem instance for: :Context_6
+[2019.09.21-15.36.10:579][850]PIE: Play in editor start time for /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default 0.489
+[2019.09.21-15.36.10:579][850]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-15.36.13:211][160]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-15.36.13:211][160]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.21-15.36.13:211][160]LogWorld: BeginTearingDown for /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default
+[2019.09.21-15.36.13:212][160]LogWorld: UWorld::CleanupWorld for Minimal_Default, bSessionEnded=true, bCleanupResources=true
+[2019.09.21-15.36.13:220][160]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.21-15.36.13:220][160]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-15.36.13:248][160]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.21-15.36.13:251][160]LogUObjectHash: Compacting FUObjectHashTables data took   1.41ms
+[2019.09.21-15.36.13:316][162]LogPlayLevel: Display: Destroying online subsystem :Context_6
+[2019.09.21-15.36.39:766][520]LogUObjectHash: Compacting FUObjectHashTables data took   0.68ms
+[2019.09.21-15.36.39:766][520]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/StarterContent/Maps/Minimal_Default' took 0.024
+[2019.09.21-15.38.54:376][999]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-15.38.54:436][  4]Candidate modules for hot reload:
+[2019.09.21-15.38.54:436][  4]  Game
+[2019.09.21-15.38.54:436][  4]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,2502 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.21-15.38.54:443][  4]Warning: Starting HotReload took  0.0s.
+[2019.09.21-15.39.08:448][196]CompilerResultsLog: New page: Compilation - Sep 22, 2019, 9:39:08 AM
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.21-15.39.08:449][196]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Reflection code generated for GameEditor in 9.3492115 seconds
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.21-15.39.08:449][196]CompilerResultsLog:   [1/6] Game.init.gen.cpp
+[2019.09.21-15.39.08:449][196]CompilerResultsLog:   [2/6] Pioneer.cpp
+[2019.09.21-15.39.08:449][196]CompilerResultsLog:   [3/6] Pioneer.gen.cpp
+[2019.09.21-15.39.08:449][196]CompilerResultsLog:   [4/6] UE4Editor-Game-2502.lib
+[2019.09.21-15.39.08:449][196]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2502.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2502.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-15.39.08:449][196]CompilerResultsLog:   [5/6] UE4Editor-Game-2502.dll
+[2019.09.21-15.39.08:449][196]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2502.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2502.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Error:   Pioneer.cpp.obj : error LNK2019: "public: void __cdecl APioneer::OnSetPlayerController(bool)" (?OnSetPlayerController@APioneer@@QEAAX_N@Z) ?ܺ? ??ȣ(???? ??ġ: "public: static void __cdecl APioneer::execOnSetPlayerController(class UObject *,struct FFrame &,void * const)" (?execOnSetPlayerController@APioneer@@SAXPEAVUObject@@AEAUFFrame@@QEAX@Z) ?Լ?)???? Ȯ?????? ???߽??ϴ?.
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Error:   Pioneer.gen.cpp.obj : error LNK2001: "public: void __cdecl APioneer::OnSetPlayerController(bool)" (?OnSetPlayerController@APioneer@@QEAAX_N@Z) ?ܺ? ??ȣ?? Ȯ???? ?? ?????ϴ?.
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Error:   Pioneer.cpp.obj : error LNK2019: "protected: void __cdecl APioneer::MoveForward(float)" (?MoveForward@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ(???? ??ġ: "public: static void __cdecl APioneer::execMoveForward(class UObject *,struct FFrame &,void * const)" (?execMoveForward@APioneer@@SAXPEAVUObject@@AEAUFFrame@@QEAX@Z) ?Լ?)???? Ȯ?????? ???߽??ϴ?.
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Error:   Pioneer.gen.cpp.obj : error LNK2001: "protected: void __cdecl APioneer::MoveForward(float)" (?MoveForward@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ?? Ȯ???? ?? ?????ϴ?.
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Error:   Pioneer.cpp.obj : error LNK2019: "protected: void __cdecl APioneer::MoveRight(float)" (?MoveRight@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ(???? ??ġ: "public: static void __cdecl APioneer::execMoveRight(class UObject *,struct FFrame &,void * const)" (?execMoveRight@APioneer@@SAXPEAVUObject@@AEAUFFrame@@QEAX@Z) ?Լ?)???? Ȯ?????? ???߽??ϴ?.
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Error:   Pioneer.gen.cpp.obj : error LNK2001: "protected: void __cdecl APioneer::MoveRight(float)" (?MoveRight@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ?? Ȯ???? ?? ?????ϴ?.
+[2019.09.21-15.39.08:449][196]CompilerResultsLog: Error:   D:\Github\GraduationProject\Game\Binaries\Win64\UE4Editor-Game-2502.dll : fatal error LNK1120: 3???? Ȯ???? ?? ???? ?ܺ? ?????Դϴ?.
+[2019.09.21-15.39.08:449][196]LogMainFrame: MainFrame: Module compiling took 14.017 seconds
+[2019.09.21-15.39.08:449][196]Warning: HotReload failed, recompile failed
+[2019.09.21-15.39.17:438][962]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-15.39.17:444][962]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-15.39.31:756][ 40]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-15.39.31:829][ 46]Candidate modules for hot reload:
+[2019.09.21-15.39.31:829][ 46]  Game
+[2019.09.21-15.39.31:829][ 46]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,4782 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.21-15.39.31:836][ 46]Warning: Starting HotReload took  0.0s.
+[2019.09.21-15.39.46:430][138]CompilerResultsLog: New page: Compilation - Sep 22, 2019, 9:39:46 AM
+[2019.09.21-15.39.46:430][138]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.21-15.39.46:430][138]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.21-15.39.46:430][138]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.21-15.39.46:430][138]CompilerResultsLog: Reflection code generated for GameEditor in 9.7724046 seconds
+[2019.09.21-15.39.46:430][138]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.21-15.39.46:430][138]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.21-15.39.46:430][138]CompilerResultsLog:   [1/6] Game.init.gen.cpp
+[2019.09.21-15.39.46:430][138]CompilerResultsLog:   [2/6] Pioneer.cpp
+[2019.09.21-15.39.46:430][138]CompilerResultsLog:   [3/6] Pioneer.gen.cpp
+[2019.09.21-15.39.46:430][138]CompilerResultsLog:   [4/6] UE4Editor-Game-4782.lib
+[2019.09.21-15.39.46:430][138]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-4782.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-4782.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-15.39.46:430][138]CompilerResultsLog:   [5/6] UE4Editor-Game-4782.dll
+[2019.09.21-15.39.46:430][138]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-4782.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-4782.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-15.39.46:430][138]CompilerResultsLog:   [6/6] GameEditor.target
+[2019.09.21-15.39.46:430][138]CompilerResultsLog: Total time in Parallel executor: 2.54 seconds
+[2019.09.21-15.39.46:430][138]CompilerResultsLog: Total execution time: 14.13 seconds
+[2019.09.21-15.39.46:430][138]LogMainFrame: MainFrame: Module compiling took 14.606 seconds
+[2019.09.21-15.39.46:471][138]LogUObjectHash: Compacting FUObjectHashTables data took   0.69ms
+[2019.09.21-15.39.46:493][138]LogClass: Could not find existing class Pioneer in package /Script/Game for HotReload, assuming new class
+[2019.09.21-15.39.46:499][138]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.21-15.39.46:578][138]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0005 seconds. Added 3 classes and 2 folders.
+[2019.09.21-15.39.46:581][138]Display: HotReload successful (0 functions remapped  0 scriptstructs remapped)
+[2019.09.21-15.39.46:639][138]LogUObjectHash: Compacting FUObjectHashTables data took   1.68ms
+[2019.09.21-15.39.46:654][138]LogContentBrowser: Native class hierarchy populated in 0.0107 seconds. Added 2867 classes and 684 folders.
+[2019.09.21-15.39.46:655][138]Display: HotReload took 14.8s.
+[2019.09.21-15.44.46:054][ 35]LogHttp: Warning: 000001B83D187B00: invalid HTTP response code received. URL: https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream, HTTP code: 0, content length: -1, actual payload size: 0
+[2019.09.21-15.44.46:055][ 35]LogHttp: Warning: 000001B83D187B00: request failed, libcurl error: 0 (No error)
+[2019.09.21-15.44.46:055][ 35]LogHttp: Warning: 000001B83D187B00: libcurl info message cache 0 (Found bundle for host datarouter.ol.epicgames.com: 0x1b860013f70 [can pipeline])
+[2019.09.21-15.44.46:055][ 35]LogHttp: Warning: 000001B83D187B00: libcurl info message cache 1 (Re-using existing connection! (#33) with host datarouter.ol.epicgames.com)
+[2019.09.21-15.44.46:055][ 35]LogHttp: Warning: 000001B83D187B00: libcurl info message cache 2 (Connected to datarouter.ol.epicgames.com (34.195.131.10) port 443 (#33))
+[2019.09.21-15.44.46:055][ 35]LogHttp: Warning: 000001B83D187B00: libcurl info message cache 3 (We are completely uploaded and fine)
+[2019.09.21-15.44.46:055][ 35]LogHttp: Warning: 000001B83D187B00: libcurl info message cache 4 (TLSv1.2 (IN), TLS alert, Client hello (1):)
+[2019.09.21-15.44.46:055][ 35]LogHttp: Warning: 000001B83D187B00: libcurl info message cache 5 (Connection died, retrying a fresh connect)
+[2019.09.21-15.44.46:055][ 35]LogHttp: Warning: 000001B83D187B00: libcurl info message cache 6 (necessary data rewind wasn't possible)
+[2019.09.21-15.44.46:055][ 35]LogHttp: Warning: 000001B83D187B00: libcurl info message cache 7 (Closing connection 33)
+[2019.09.21-15.44.46:055][ 35]LogHttp: Warning: 000001B83D187B00: libcurl info message cache 8 (TLSv1.2 (OUT), TLS alert, Client hello (1):)
+[2019.09.21-15.44.46:382][ 36]LogHttp: Warning: Retry exhausted on https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream
+[2019.09.21-15.46.40:365][376]LogUObjectHash: Compacting FUObjectHashTables data took   0.82ms
+[2019.09.21-15.46.40:365][376]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/StarterContent/Maps/Minimal_Default' took 0.026
+[2019.09.21-15.55.45:928][ 11]LogHttp: Warning: 000001B83D185440: invalid HTTP response code received. URL: https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream, HTTP code: 0, content length: -1, actual payload size: 0
+[2019.09.21-15.55.45:929][ 11]LogHttp: Warning: 000001B83D185440: request failed, libcurl error: 0 (No error)
+[2019.09.21-15.55.45:929][ 11]LogHttp: Warning: 000001B83D185440: libcurl info message cache 0 (Found bundle for host datarouter.ol.epicgames.com: 0x1b860013f70 [can pipeline])
+[2019.09.21-15.55.45:929][ 11]LogHttp: Warning: 000001B83D185440: libcurl info message cache 1 (Re-using existing connection! (#37) with host datarouter.ol.epicgames.com)
+[2019.09.21-15.55.45:929][ 11]LogHttp: Warning: 000001B83D185440: libcurl info message cache 2 (Connected to datarouter.ol.epicgames.com (54.86.3.71) port 443 (#37))
+[2019.09.21-15.55.45:929][ 11]LogHttp: Warning: 000001B83D185440: libcurl info message cache 3 (We are completely uploaded and fine)
+[2019.09.21-15.55.45:929][ 11]LogHttp: Warning: 000001B83D185440: libcurl info message cache 4 (TLSv1.2 (IN), TLS alert, Client hello (1):)
+[2019.09.21-15.55.45:929][ 11]LogHttp: Warning: 000001B83D185440: libcurl info message cache 5 (Connection died, retrying a fresh connect)
+[2019.09.21-15.55.45:929][ 11]LogHttp: Warning: 000001B83D185440: libcurl info message cache 6 (necessary data rewind wasn't possible)
+[2019.09.21-15.55.45:929][ 11]LogHttp: Warning: 000001B83D185440: libcurl info message cache 7 (Closing connection 37)
+[2019.09.21-15.55.45:929][ 11]LogHttp: Warning: 000001B83D185440: libcurl info message cache 8 (TLSv1.2 (OUT), TLS alert, Client hello (1):)
+[2019.09.21-15.55.46:262][ 12]LogHttp: Warning: Retry exhausted on https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream
+[2019.09.21-15.56.40:732][174]LogUObjectHash: Compacting FUObjectHashTables data took   0.85ms
+[2019.09.21-15.56.40:732][174]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/StarterContent/Maps/Minimal_Default' took 0.025
+[2019.09.21-16.02.55:484][350]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-16.02.55:583][350]Candidate modules for hot reload:
+[2019.09.21-16.02.55:583][350]  Game
+[2019.09.21-16.02.55:584][350]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,419 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.21-16.02.55:590][350]Warning: Starting HotReload took  0.0s.
+[2019.09.21-16.03.11:071][659]CompilerResultsLog: New page: Compilation - Sep 22, 2019, 10:03:11 AM
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Reflection code generated for GameEditor in 10.099662 seconds
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:   [1/6] Game.init.gen.cpp
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:   [2/6] Pioneer.gen.cpp
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:   [3/6] Pioneer.cpp
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(33): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(40): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:   [4/6] UE4Editor-Game-0419.lib
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-0419.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-0419.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:   [5/6] UE4Editor-Game-0419.dll
+[2019.09.21-16.03.11:072][659]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-0419.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-0419.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Error:   Pioneer.cpp.obj : error LNK2019: "public: void __cdecl APioneer::OnSetPlayerController(bool)" (?OnSetPlayerController@APioneer@@QEAAX_N@Z) ?ܺ? ??ȣ(???? ??ġ: "public: __cdecl APioneer::APioneer(void)" (??0APioneer@@QEAA@XZ) ?Լ?)???? Ȯ?????? ???߽??ϴ?.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Error:   Pioneer.gen.cpp.obj : error LNK2001: "public: void __cdecl APioneer::OnSetPlayerController(bool)" (?OnSetPlayerController@APioneer@@QEAAX_N@Z) ?ܺ? ??ȣ?? Ȯ???? ?? ?????ϴ?.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Error:   Pioneer.cpp.obj : error LNK2019: "protected: void __cdecl APioneer::MoveForward(float)" (?MoveForward@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ(???? ??ġ: "public: static void __cdecl APioneer::execMoveForward(class UObject *,struct FFrame &,void * const)" (?execMoveForward@APioneer@@SAXPEAVUObject@@AEAUFFrame@@QEAX@Z) ?Լ?)???? Ȯ?????? ???߽??ϴ?.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Error:   Pioneer.gen.cpp.obj : error LNK2001: "protected: void __cdecl APioneer::MoveForward(float)" (?MoveForward@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ?? Ȯ???? ?? ?????ϴ?.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Error:   Pioneer.cpp.obj : error LNK2019: "protected: void __cdecl APioneer::MoveRight(float)" (?MoveRight@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ(???? ??ġ: "public: static void __cdecl APioneer::execMoveRight(class UObject *,struct FFrame &,void * const)" (?execMoveRight@APioneer@@SAXPEAVUObject@@AEAUFFrame@@QEAX@Z) ?Լ?)???? Ȯ?????? ???߽??ϴ?.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Error:   Pioneer.gen.cpp.obj : error LNK2001: "protected: void __cdecl APioneer::MoveRight(float)" (?MoveRight@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ?? Ȯ???? ?? ?????ϴ?.
+[2019.09.21-16.03.11:072][659]CompilerResultsLog: Error:   D:\Github\GraduationProject\Game\Binaries\Win64\UE4Editor-Game-0419.dll : fatal error LNK1120: 3???? Ȯ???? ?? ???? ?ܺ? ?????Դϴ?.
+[2019.09.21-16.03.11:072][659]LogMainFrame: MainFrame: Module compiling took 15.493 seconds
+[2019.09.21-16.03.11:072][659]Warning: HotReload failed, recompile failed
+[2019.09.21-16.03.36:218][450]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-16.03.36:224][450]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-16.03.42:958][522]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-16.03.43:039][522]Candidate modules for hot reload:
+[2019.09.21-16.03.43:039][522]  Game
+[2019.09.21-16.03.43:039][522]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,7927 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.21-16.03.43:045][522]Warning: Starting HotReload took  0.0s.
+[2019.09.21-16.03.56:900][621]CompilerResultsLog: New page: Compilation - Sep 22, 2019, 10:03:56 AM
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.21-16.03.56:901][621]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Reflection code generated for GameEditor in 9.1850807 seconds
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.21-16.03.56:901][621]CompilerResultsLog:   [1/4] Pioneer.cpp
+[2019.09.21-16.03.56:901][621]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(33): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(40): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog:   [2/4] UE4Editor-Game-7927.lib
+[2019.09.21-16.03.56:901][621]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7927.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7927.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog:   [3/4] UE4Editor-Game-7927.dll
+[2019.09.21-16.03.56:901][621]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7927.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7927.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Error:   Pioneer.cpp.obj : error LNK2019: "public: void __cdecl APioneer::OnSetPlayerController(bool)" (?OnSetPlayerController@APioneer@@QEAAX_N@Z) ?ܺ? ??ȣ(???? ??ġ: "public: __cdecl APioneer::APioneer(void)" (??0APioneer@@QEAA@XZ) ?Լ?)???? Ȯ?????? ???߽??ϴ?.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Error:   Pioneer.gen.cpp.obj : error LNK2001: "public: void __cdecl APioneer::OnSetPlayerController(bool)" (?OnSetPlayerController@APioneer@@QEAAX_N@Z) ?ܺ? ??ȣ?? Ȯ???? ?? ?????ϴ?.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Error:   Pioneer.cpp.obj : error LNK2019: "protected: void __cdecl APioneer::MoveForward(float)" (?MoveForward@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ(???? ??ġ: "public: static void __cdecl APioneer::execMoveForward(class UObject *,struct FFrame &,void * const)" (?execMoveForward@APioneer@@SAXPEAVUObject@@AEAUFFrame@@QEAX@Z) ?Լ?)???? Ȯ?????? ???߽??ϴ?.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Error:   Pioneer.gen.cpp.obj : error LNK2001: "protected: void __cdecl APioneer::MoveForward(float)" (?MoveForward@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ?? Ȯ???? ?? ?????ϴ?.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Error:   Pioneer.cpp.obj : error LNK2019: "protected: void __cdecl APioneer::MoveRight(float)" (?MoveRight@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ(???? ??ġ: "public: static void __cdecl APioneer::execMoveRight(class UObject *,struct FFrame &,void * const)" (?execMoveRight@APioneer@@SAXPEAVUObject@@AEAUFFrame@@QEAX@Z) ?Լ?)???? Ȯ?????? ???߽??ϴ?.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Error:   Pioneer.gen.cpp.obj : error LNK2001: "protected: void __cdecl APioneer::MoveRight(float)" (?MoveRight@APioneer@@IEAAXM@Z) ?ܺ? ??ȣ?? Ȯ???? ?? ?????ϴ?.
+[2019.09.21-16.03.56:901][621]CompilerResultsLog: Error:   D:\Github\GraduationProject\Game\Binaries\Win64\UE4Editor-Game-7927.dll : fatal error LNK1120: 3???? Ȯ???? ?? ???? ?ܺ? ?????Դϴ?.
+[2019.09.21-16.03.56:901][621]LogMainFrame: MainFrame: Module compiling took 13.865 seconds
+[2019.09.21-16.03.56:901][621]Warning: HotReload failed, recompile failed
+[2019.09.21-16.04.15:351][497]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-16.04.15:357][497]LogSlate: Window 'Message Log' being destroyed
+[2019.09.21-16.05.18:269][ 33]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-16.05.19:338][137]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-16.05.20:228][137]LogSlate: Only BGRA pngs, bmps or icos are supported in by External Image Picker
+[2019.09.21-16.06.36:759][202]LogSlate: Window 'Project Settings' being destroyed
+[2019.09.21-16.06.36:764][202]LogSlate: Window 'Project Settings' being destroyed
+[2019.09.21-16.07.02:075][652]LogUObjectHash: Compacting FUObjectHashTables data took   0.79ms
+[2019.09.21-16.07.02:075][652]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/StarterContent/Maps/Minimal_Default' took 0.027
+[2019.09.21-16.08.45:978][964]LogHttp: Warning: 000001B867F63600: invalid HTTP response code received. URL: https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream, HTTP code: 0, content length: -1, actual payload size: 0
+[2019.09.21-16.08.45:978][964]LogHttp: Warning: 000001B867F63600: request failed, libcurl error: 0 (No error)
+[2019.09.21-16.08.45:978][964]LogHttp: Warning: 000001B867F63600: libcurl info message cache 0 (Found bundle for host datarouter.ol.epicgames.com: 0x1b860013f70 [can pipeline])
+[2019.09.21-16.08.45:978][964]LogHttp: Warning: 000001B867F63600: libcurl info message cache 1 (Re-using existing connection! (#43) with host datarouter.ol.epicgames.com)
+[2019.09.21-16.08.45:978][964]LogHttp: Warning: 000001B867F63600: libcurl info message cache 2 (Connected to datarouter.ol.epicgames.com (52.4.51.163) port 443 (#43))
+[2019.09.21-16.08.45:978][964]LogHttp: Warning: 000001B867F63600: libcurl info message cache 3 (We are completely uploaded and fine)
+[2019.09.21-16.08.45:979][964]LogHttp: Warning: 000001B867F63600: libcurl info message cache 4 (TLSv1.2 (IN), TLS alert, Client hello (1):)
+[2019.09.21-16.08.45:979][964]LogHttp: Warning: 000001B867F63600: libcurl info message cache 5 (Connection died, retrying a fresh connect)
+[2019.09.21-16.08.45:979][964]LogHttp: Warning: 000001B867F63600: libcurl info message cache 6 (necessary data rewind wasn't possible)
+[2019.09.21-16.08.45:979][964]LogHttp: Warning: 000001B867F63600: libcurl info message cache 7 (Closing connection 43)
+[2019.09.21-16.08.45:979][964]LogHttp: Warning: 000001B867F63600: libcurl info message cache 8 (TLSv1.2 (OUT), TLS alert, Client hello (1):)
+[2019.09.21-16.08.45:979][964]LogHttp: Warning: Retry exhausted on https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: invalid HTTP response code received. URL: https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream, HTTP code: 0, content length: -1, actual payload size: 0
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: request failed, libcurl error: 0 (No error)
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: libcurl info message cache 0 (Found bundle for host datarouter.ol.epicgames.com: 0x1b860013f70 [can pipeline])
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: libcurl info message cache 1 (Re-using existing connection! (#45) with host datarouter.ol.epicgames.com)
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: libcurl info message cache 2 (Connected to datarouter.ol.epicgames.com (54.88.250.173) port 443 (#45))
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: libcurl info message cache 3 (We are completely uploaded and fine)
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: libcurl info message cache 4 (TLSv1.2 (IN), TLS alert, Client hello (1):)
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: libcurl info message cache 5 (Connection died, retrying a fresh connect)
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: libcurl info message cache 6 (necessary data rewind wasn't possible)
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: libcurl info message cache 7 (Closing connection 45)
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: 000001B867F63600: libcurl info message cache 8 (TLSv1.2 (OUT), TLS alert, Client hello (1):)
+[2019.09.21-16.14.45:976][ 42]LogHttp: Warning: Retry exhausted on https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream
+[2019.09.21-16.17.02:535][449]LogUObjectHash: Compacting FUObjectHashTables data took   0.78ms
+[2019.09.21-16.17.02:535][449]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/StarterContent/Maps/Minimal_Default' took 0.031
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: invalid HTTP response code received. URL: https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream, HTTP code: 0, content length: -1, actual payload size: 0
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: request failed, libcurl error: 0 (No error)
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: libcurl info message cache 0 (Found bundle for host datarouter.ol.epicgames.com: 0x1b860013f70 [can pipeline])
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: libcurl info message cache 1 (Re-using existing connection! (#49) with host datarouter.ol.epicgames.com)
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: libcurl info message cache 2 (Connected to datarouter.ol.epicgames.com (34.236.55.8) port 443 (#49))
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: libcurl info message cache 3 (We are completely uploaded and fine)
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: libcurl info message cache 4 (TLSv1.2 (IN), TLS alert, Client hello (1):)
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: libcurl info message cache 5 (Connection died, retrying a fresh connect)
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: libcurl info message cache 6 (necessary data rewind wasn't possible)
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: libcurl info message cache 7 (Closing connection 49)
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: 000001B867F62FC0: libcurl info message cache 8 (TLSv1.2 (OUT), TLS alert, Client hello (1):)
+[2019.09.21-16.25.45:962][ 18]LogHttp: Warning: Retry exhausted on https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BAAF59888-4B36-0C9E-AE8C-E2A72C0C5501%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.23.0-8386587%2B%2B%2BUE4%2BRelease-4.23&UserID=11e51322467625113c522389c8a0a9a0%7C29ac304ff05144fa9fad19b61281ea9f%7C1e95b85e-2cfe-478e-bd34-2d599447ce92&AppEnvironment=datacollector-binary&UploadType=eteventstream
+[2019.09.21-16.27.03:122][248]LogUObjectHash: Compacting FUObjectHashTables data took   0.79ms
+[2019.09.21-16.27.03:122][248]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/StarterContent/Maps/Minimal_Default' took 0.024
+[2019.09.21-16.29.32:288][787]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-16.29.32:355][793]Candidate modules for hot reload:
+[2019.09.21-16.29.32:355][793]  Game
+[2019.09.21-16.29.32:355][793]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,8828 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.21-16.29.32:363][793]Warning: Starting HotReload took  0.0s.
+[2019.09.21-16.29.48:898][734]CompilerResultsLog: New page: Compilation - Sep 22, 2019, 10:29:48 AM
+[2019.09.21-16.29.48:898][734]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.21-16.29.48:898][734]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.21-16.29.48:898][734]CompilerResultsLog: Reflection code generated for GameEditor in 10.5871464 seconds
+[2019.09.21-16.29.48:898][734]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.21-16.29.48:898][734]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   [1/6] Game.init.gen.cpp
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   [2/6] Pioneer.gen.cpp
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   [3/6] Pioneer.cpp
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(33): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(40): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   [4/6] UE4Editor-Game-8828.lib
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-8828.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-8828.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   [5/6] UE4Editor-Game-8828.dll
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-8828.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-8828.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.21-16.29.48:898][734]CompilerResultsLog:   [6/6] GameEditor.target
+[2019.09.21-16.29.48:898][734]CompilerResultsLog: Total time in Parallel executor: 3.91 seconds
+[2019.09.21-16.29.48:898][734]CompilerResultsLog: Total execution time: 16.32 seconds
+[2019.09.21-16.29.48:898][734]LogMainFrame: MainFrame: Module compiling took 16.546 seconds
+[2019.09.21-16.29.48:922][734]LogUObjectHash: Compacting FUObjectHashTables data took   0.73ms
+[2019.09.21-16.29.48:954][734]LogClass: Could not find existing class Pioneer in package /Script/Game for HotReload, assuming new class
+[2019.09.21-16.29.48:954][734]LogClass: Function EvasionRoll is new.
+[2019.09.21-16.29.48:954][734]LogClass: Function MoveForward is new.
+[2019.09.21-16.29.48:954][734]LogClass: Function MoveRight is new.
+[2019.09.21-16.29.48:954][734]LogClass: Function OnSetPlayerController is new.
+[2019.09.21-16.29.48:954][734]LogClass: Function StopEvasionRoll is new.
+[2019.09.21-16.29.48:965][734]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.21-16.29.49:070][734]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0007 seconds. Added 3 classes and 2 folders.
+[2019.09.21-16.29.49:072][734]Display: HotReload successful (0 functions remapped  0 scriptstructs remapped)
+[2019.09.21-16.29.49:127][734]LogUObjectHash: Compacting FUObjectHashTables data took   2.47ms
+[2019.09.21-16.29.49:147][734]LogContentBrowser: Native class hierarchy populated in 0.0126 seconds. Added 2867 classes and 684 folders.
+[2019.09.21-16.29.49:147][734]Display: HotReload took 16.8s.
+[2019.09.21-16.29.51:567][ 23]LogEditorViewport: Clicking on Actor (LMB): BP_Sky_Sphere_C (BP_Sky_Sphere)
+[2019.09.21-16.29.57:213][664]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-16.30.16:288][854]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.21-16.30.16:299][854]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-16.30.16:300][854]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.21-16.30.16:300][854]PIE: New page: PIE session: Minimal_Default (Sep 22, 2019, 10:30:16 AM)
+[2019.09.21-16.30.16:300][854]LogPlayLevel: Creating play world package: /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default
+[2019.09.21-16.30.16:306][854]LogPlayLevel: PIE: StaticDuplicateObject took: (0.005990s)
+[2019.09.21-16.30.16:307][854]LogAIModule: Creating AISystem for world Minimal_Default
+[2019.09.21-16.30.16:307][854]LogPlayLevel: PIE: World Init took: (0.001459s)
+[2019.09.21-16.30.16:308][854]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/StarterContent/Maps/Minimal_Default.Minimal_Default to /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default.Minimal_Default (0.007643s)
+[2019.09.21-16.30.16:338][854]LogUObjectHash: Compacting FUObjectHashTables data took   1.52ms
+[2019.09.21-16.30.16:877][854]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.21-16.30.16:956][854]LogInit: FAudioDevice initialized.
+[2019.09.21-16.30.16:969][854]LogLoad: Game class is 'GameModeBase'
+[2019.09.21-16.30.16:971][854]LogWorld: Bringing World /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default.Minimal_Default up for play (max tick rate 0) at 2019.09.22-01.30.16
+[2019.09.21-16.30.16:971][854]LogWorld: Bringing up level for play took: 0.001004
+[2019.09.21-16.30.16:972][854]LogOnline: OSS: Creating online subsystem instance for: :Context_7
+[2019.09.21-16.30.16:974][854]PIE: Play in editor start time for /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default 0.885
+[2019.09.21-16.30.16:975][854]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-16.30.30:669][491]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-16.30.30:669][491]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.21-16.30.30:670][491]LogWorld: BeginTearingDown for /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default
+[2019.09.21-16.30.30:670][491]LogWorld: UWorld::CleanupWorld for Minimal_Default, bSessionEnded=true, bCleanupResources=true
+[2019.09.21-16.30.30:682][491]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.21-16.30.30:683][491]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-16.30.30:710][491]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.21-16.30.30:713][491]LogUObjectHash: Compacting FUObjectHashTables data took   1.49ms
+[2019.09.21-16.30.30:784][493]LogPlayLevel: Display: Destroying online subsystem :Context_7
+[2019.09.21-16.30.33:681][840]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-16.30.48:843][601]LogActorFactory: Actor Factory created Cube
+[2019.09.21-16.30.51:564][924]LogActorFactory: Actor Factory created Cube
+[2019.09.21-16.30.53:248][124]LogActorFactory: Actor Factory created Cube
+[2019.09.21-16.30.54:260][241]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-16.31.05:084][524]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Cube)
+[2019.09.21-16.31.06:016][631]Cmd: DELETE
+[2019.09.21-16.31.06:016][631]Cmd: ACTOR DELETE
+[2019.09.21-16.31.06:018][631]LogEditorActor: Deleted Actor: StaticMeshActor
+[2019.09.21-16.31.06:043][631]LogUObjectHash: Compacting FUObjectHashTables data took   1.68ms
+[2019.09.21-16.31.06:043][631]LogEditorActor: Deleted 1 Actors (0.027 secs)
+[2019.09.21-16.31.19:259][207]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-16.31.19:384][220]LogActorFactory: Actor Factory created Cube
+[2019.09.21-16.31.20:973][410]LogActorFactory: Actor Factory created Cube
+[2019.09.21-16.31.24:780][859]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.21-16.31.24:830][865]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.21-16.31.24:838][865]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-16.31.24:838][865]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.21-16.31.24:838][865]PIE: New page: PIE session: Minimal_Default (Sep 22, 2019, 10:31:24 AM)
+[2019.09.21-16.31.24:838][865]LogPlayLevel: Creating play world package: /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default
+[2019.09.21-16.31.24:843][865]LogPlayLevel: PIE: StaticDuplicateObject took: (0.004186s)
+[2019.09.21-16.31.24:843][865]LogAIModule: Creating AISystem for world Minimal_Default
+[2019.09.21-16.31.24:844][865]LogPlayLevel: PIE: World Init took: (0.001538s)
+[2019.09.21-16.31.24:844][865]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/StarterContent/Maps/Minimal_Default.Minimal_Default to /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default.Minimal_Default (0.005873s)
+[2019.09.21-16.31.24:869][865]LogUObjectHash: Compacting FUObjectHashTables data took   1.55ms
+[2019.09.21-16.31.25:400][865]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.21-16.31.25:479][865]LogInit: FAudioDevice initialized.
+[2019.09.21-16.31.25:492][865]LogLoad: Game class is 'GameModeBase'
+[2019.09.21-16.31.25:493][865]LogWorld: Bringing World /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default.Minimal_Default up for play (max tick rate 0) at 2019.09.22-01.31.25
+[2019.09.21-16.31.25:494][865]LogWorld: Bringing up level for play took: 0.001164
+[2019.09.21-16.31.25:494][865]LogOnline: OSS: Creating online subsystem instance for: :Context_8
+[2019.09.21-16.31.25:497][865]PIE: Play in editor start time for /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default 1.407
+[2019.09.21-16.31.25:497][865]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-16.31.27:905][149]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-16.31.27:905][149]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.21-16.31.27:905][149]LogWorld: BeginTearingDown for /Game/StarterContent/Maps/UEDPIE_0_Minimal_Default
+[2019.09.21-16.31.27:906][149]LogWorld: UWorld::CleanupWorld for Minimal_Default, bSessionEnded=true, bCleanupResources=true
+[2019.09.21-16.31.27:917][149]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.21-16.31.27:917][149]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel' has LevelScriptBlueprint '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default' with GeneratedClass '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default_C' with ClassGeneratedBy '/Game/StarterContent/Maps/Minimal_Default.Minimal_Default:PersistentLevel.Minimal_Default'
+[2019.09.21-16.31.27:944][149]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.21-16.31.27:947][149]LogUObjectHash: Compacting FUObjectHashTables data took   1.70ms
+[2019.09.21-16.31.28:022][151]LogPlayLevel: Display: Destroying online subsystem :Context_8
+[2019.09.21-16.31.32:086][627]LogEditorViewport: Clicking on Actor (LMB): BP_Sky_Sphere_C (BP_Sky_Sphere)
+[2019.09.21-16.31.32:344][654]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-16.31.32:373][654]LogUObjectHash: Compacting FUObjectHashTables data took   0.63ms
+[2019.09.21-16.31.32:488][654]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default58D4EA9F42C6DEA927445D9ACD1410F2.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default.umap'
+[2019.09.21-16.31.32:507][654]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/StarterContent/Maps/Minimal_Default_BuiltData" FILE="D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset" SILENT=true
+[2019.09.21-16.31.32:531][654]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default_BuiltData64C808274C03740BF7FCB2A9A0B85A2E.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset'
+[2019.09.21-16.31.37:684][832]LogEditorViewport: Clicking on Actor (LMB): BP_Sky_Sphere_C (BP_Sky_Sphere)
+[2019.09.21-16.31.37:955][862]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.21-16.31.37:988][862]LogUObjectHash: Compacting FUObjectHashTables data took   1.81ms
+[2019.09.21-16.31.38:111][862]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default7D8F1A43437B31522F70D0953D20E301.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default.umap'
+[2019.09.21-16.31.38:133][862]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/StarterContent/Maps/Minimal_Default_BuiltData" FILE="D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset" SILENT=true
+[2019.09.21-16.31.38:156][862]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Minimal_Default_BuiltData694278F94D12C2EA15950CA7F2CBA0D0.tmp' to 'D:/Github/GraduationProject/Game/Content/StarterContent/Maps/Minimal_Default_BuiltData.uasset'
+[2019.09.21-16.31.39:457][ 13]MapCheck: New page: Map Check
+[2019.09.21-16.31.39:469][ 13]Cmd: MAP REBUILD ALLVISIBLE
+[2019.09.21-16.31.39:469][ 13]LogEditorServer: Rebuildmap Clear paths rebuilt
+[2019.09.21-16.31.39:472][ 13]LogWorld: UWorld::CleanupWorld for Minimal_Default, bSessionEnded=true, bCleanupResources=false
+[2019.09.21-16.31.39:498][ 13]LogUObjectHash: Compacting FUObjectHashTables data took   1.76ms
+[2019.09.21-16.31.39:515][ 13]LogMaterial: Display: Missing cached shader map for material DebugViewMode MaterialTexCoordScale, compiling. 
+[2019.09.21-16.31.39:524][ 13]LogShaderCompilers: Display: Worker (1/5): shaders left to compile 2
+[2019.09.21-16.31.39:524][ 13]LogShaderCompilers: Display: Worker (2/5): shaders left to compile 1
+[2019.09.21-16.31.39:524][ 13]LogMaterial: Display: Missing cached shader map for material DebugViewMode MaterialTexCoordScale, compiling. 
+[2019.09.21-16.31.39:537][ 13]LogMaterial: Display: Missing cached shader map for material DebugViewMode MaterialTexCoordScale, compiling. 
+[2019.09.21-16.31.39:548][ 13]LogShaderCompilers: Display: Worker (3/5): shaders left to compile 4
+[2019.09.21-16.31.39:548][ 13]LogShaderCompilers: Display: Worker (4/5): shaders left to compile 3
+[2019.09.21-16.31.39:548][ 13]LogMaterial: Display: Missing cached shader map for material DebugViewMode MaterialTexCoordScale, compiling. 
+[2019.09.21-16.31.40:314][ 13]LogShaderCompilers: Display: Worker (2/5): shaders left to compile 4
+[2019.09.21-16.31.40:314][ 13]LogShaderCompilers: Display: Worker (4/5): shaders left to compile 3
+[2019.09.21-16.31.40:314][ 13]LogShaderCompilers: Display: Worker (1/5): shaders left to compile 2
+[2019.09.21-16.31.40:314][ 13]LogShaderCompilers: Display: Worker (3/5): shaders left to compile 1
+[2019.09.21-16.31.40:314][ 13]TextureStreamingBuild: Display: Compiling optional shaders took 0.804 seconds.
+[2019.09.21-16.31.40:320][ 13]LogLevel: Display: Export Material TexCoord Scales took 0.006 seconds.
+[2019.09.21-16.31.40:337][ 13]TextureStreamingBuild: Display: Build Texture Streaming took 0.016 seconds.
+[2019.09.21-16.31.40:359][ 13]LogUObjectHash: Compacting FUObjectHashTables data took   0.59ms
+[2019.09.21-16.31.40:360][ 13]LightingResults: New page: Lighting Build - Sep 22, 2019, 10:31:40 AM
+[2019.09.21-16.31.40:366][ 13]LogSwarmInterface: [OpenConnection] Registering TCP channel ...
+[2019.09.21-16.31.40:373][ 13]LogSwarmInterface: [OpenConnection] Connecting to agent ...
+[2019.09.21-16.31.40:373][ 13]LogSwarmInterface: [TryOpenConnection] Testing the Agent
+[2019.09.21-16.31.40:374][ 13]LogSwarmInterface: [TryOpenConnection] Opening Connection to Agent
+[2019.09.21-16.31.40:374][ 13]LogSwarmInterface: [TryOpenConnection] Local Process ID is 17336
+[2019.09.21-16.31.44:889][ 13]LogStaticLightingSystem: Warning: No importance volume found, so the scene bounding box was used.  You can optimize your scene's quality and lighting build times by adding importance volumes.
+[2019.09.21-16.31.44:889][ 13]LogStaticLightingSystem: Running Lightmass w/ ImmediateImport mode ENABLED
+[2019.09.21-16.31.44:889][ 13]LogStaticLightingSystem: Running Lightmass w/ ImmediateProcess mode ENABLED
+[2019.09.21-16.31.44:889][ 13]LogStaticLightingSystem: Running Lightmass w/ Sorting mode ENABLED
+[2019.09.21-16.31.44:889][ 13]LogStaticLightingSystem: Running Lightmass w/ Mapping paddings ENABLED
+[2019.09.21-16.31.44:889][ 13]LogStaticLightingSystem: Running Lightmass w/ Mapping debug paddings DISABLED
+[2019.09.21-16.31.45:131][ 13]LogUObjectHash: Compacting FUObjectHashTables data took   1.58ms
+[2019.09.21-16.31.46:467][ 13]Job is a success!
+[2019.09.21-16.31.46:583][ 13]LogVolumetricLightmapImport: Imported Volumetric Lightmap in 0.068s
+[2019.09.21-16.31.46:583][ 13]LogVolumetricLightmapImport:      Indirection Texture 16x16x16 = 0.0Mb
+[2019.09.21-16.31.46:583][ 13]LogVolumetricLightmapImport:      BrickData 90x5x5 = 0.1Mb
+[2019.09.21-16.31.46:583][ 13]LogVolumetricLightmapImport:      Bricks at Level
+[2019.09.21-16.31.46:583][ 13]LogVolumetricLightmapImport:          0: 5.6% covering 100.0% of volume
+[2019.09.21-16.31.46:583][ 13]LogVolumetricLightmapImport:          1: 5.6% covering 1.6% of volume
+[2019.09.21-16.31.46:583][ 13]LogVolumetricLightmapImport:          2: 88.9% covering 0.4% of volume
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: HQ_Lightmap0_1 (AutoDXT, 256X256)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: SkyOcclusion0_1 (AutoDXT, 256X128)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: SkyOcclusion0_2 (AutoDXT, 64X32)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: LQ_Lightmap_0_1 (DXT1, 256X256)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: LQ_Lightmap_0_2 (DXT1, 64X64)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: HQ_Lightmap0_2 (AutoDXT, 64X64)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: SkyOcclusion0_3 (AutoDXT, 64X32)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: LQ_Lightmap_0_3 (DXT1, 64X64)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: HQ_Lightmap0_3 (AutoDXT, 64X64)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: ShadowMapTexture2D_7 (G8, 32X32)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: ShadowMapTexture2D_8 (G8, 32X32)
+[2019.09.21-16.31.46:651][ 13]LogTexture: Display: Building textures: ShadowMapTexture2D_6 (G8, 256X128)
+[2019.09.21-16.31.46:652][ 13]LogStaticLightingSystem: Minimal_Default_BuiltData storing lightmap data for 4 meshes in 3 LightmapResourceClusters (1.3 Meshes per cluster).
+[2019.09.21-16.31.46:678][ 13]Lightmass on DESKTOP-Q83AC7I: 924 ms total, 200 ms importing, 29 ms setup, 95 ms photons, 506 ms processing, 0 ms extra exporting [4/4 mappings]. Threads: 3.54 sec total, 638 ms processing.
+[2019.09.21-16.31.46:678][ 13]LogUObjectHash: Compacting FUObjectHashTables data took   1.62ms
+[2019.09.21-16.31.46:681][ 13]LogStaticLightingSystem: Illumination: 6.31 sec (25 ms encoding lightmaps, 18 ms encoding shadowmaps)
+[2019.09.21-16.31.46:681][ 13]LogStaticLightingSystem: Lightmap texture memory:  0.2 MB (0.2 MB streaming, 0.0 MB non-streaming), 6 textures
+[2019.09.21-16.31.46:681][ 13]LogStaticLightingSystem: Shadowmap texture memory: 0.0 MB (0.0 MB streaming, 0.0 MB non-streaming), 3 textures
+[2019.09.21-16.31.46:913][ 13]DumpUnbuiltLightIteractions
+[2019.09.21-16.31.46:913][ 13]Lights with unbuilt interactions: 0
+[2019.09.21-16.31.46:913][ 13]
+[2019.09.21-16.31.46:913][ 13]Primitives with unbuilt interactions: 0
+[2019.09.21-16.31.46:993][ 13]Cmd: MAP CHECK DONTDISPLAYDIALOG
+[2019.09.21-16.31.46:993][ 13]MapCheck: New page: Minimal_Default - Sep 22, 2019, 10:31:46 AM
+[2019.09.21-16.31.46:993][ 13]MapCheck: Map check complete: 0 Error(s), 0 Warning(s), took 0.329ms to complete.
+[2019.09.21-16.31.46:995][ 13]LogEditorBuildUtils: Build time 0:07
+[2019.09.21-16.31.47:022][ 14]Cmd: MAP CHECK NOTIFYRESULTS
+[2019.09.21-16.31.47:023][ 14]MapCheck: New page: Minimal_Default - Sep 22, 2019, 10:31:47 AM
+[2019.09.21-16.31.47:023][ 14]MapCheck: Map check complete: 0 Error(s), 0 Warning(s), took 0.349ms to complete.
