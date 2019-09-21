@@ -1,3 +1,4 @@
+[]
 UPROPERTY: 변수 앞에 사용돼 언리얼 엔진 에 보이도록 만들고 해당 변수의 속성을 정의하는 매크로입니다. 
             사용되는 위치나 방식, 또는 변경 가능 여부, 표시 여부와 함께 적절한 위치에 나열되도록 범주를 지정합니다.
 UFUNCTION: 함수 앞에서만 사용돼 함수의 속성을 정의하는 매크로입니다.
@@ -88,3 +89,9 @@ FORCEINLINE:
 
 [함수]
     SetRelativeLocation: 
+
+[Finder]
+    ConstructorHelpers::FObjectFinder
+    ConstructorHelpers::FClassFinder
+
+
