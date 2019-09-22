@@ -11,6 +11,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/Controller.h"
+#include "Components/StaticMeshComponent.h"
+#include "ConstructorHelpers.h"
 
 #include "Pioneer.generated.h" // 항상 마지막이어야 하는 헤더
 
@@ -34,6 +36,10 @@ public:
 	// Called to bind functionality to input
 	// 바인딩한 키 입력을 매핑합니다.
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; // APawn 인터페이스     
+
+	// 임시로 StaticMesh를 설정합니다.
+	UPROPERTY(EditAnywhere)
+		class UStaticMeshComponent* StaticMeshComponent;
 
 	// Camera boom positioning the camera behind the character
 	// 캐릭터 뒤편에서 카메라의 위치를 조정합니다.
@@ -90,5 +96,11 @@ protected:
 	// FollowCamera에 시선 상향 비율을 적용하기 위한 함수입니다.
 	void LookUpAtRate(float rate);
 
-
+public:
+	// 카메라 세팅을 설정합니다.
+	UPROPERTY(EditAnywhere) FVector CameraBoomLocation; // ArmSpring의 World 좌표입니다.
+	UPROPERTY(EditAnywhere) FRotator CameraBoomRotation; // ArmSpring의 World 회전입니다.
+	UPROPERTY(EditAnywhere) float TargetArmLength; // ArmSpring과 FollowCamera간의 거리입니다.
+	UPROPERTY(EditAnywhere) int CameraLagSpeed; // 부드러운 카메라 전환 속도입니다.
+	void SetCameraBoomSettings(); // Tick()에서 호출합니다.
 };

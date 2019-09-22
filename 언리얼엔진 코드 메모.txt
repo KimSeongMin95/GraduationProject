@@ -5,6 +5,17 @@ UFUNCTION: 함수 앞에서만 사용돼 함수의 속성을 정의하는 매크
             사용되는 위치나 방식, 또는 호출 가능 여부와 함께 적절한 위치에 나열되도록 범주를 지정한다.
 FORCEINLINE: 
 
+[게임모드]
+    GameModeBase
+        게임이 시작될 때 정의를 합니다.
+        UGameEngine::LoadMap()이 초기화 될 때 GameModeBase actor가 객체화됩니다.
+
+    GameMode
+        GameModeBase의 하위클래스로서 멀티플레이어 기반 게임에 사용합니다.
+
+[게임 스테이트]
+    
+
 [클래스]
     Actor
         터란 레벨에 배치할 수 있는 오브젝트를 말합니다. 

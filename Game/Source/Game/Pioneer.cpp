@@ -9,6 +9,9 @@ APioneer::APioneer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// 0번 플레이어 컨트롤 획득
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
+	//GetController();
 	
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
@@ -28,18 +31,34 @@ APioneer::APioneer()
 	GetCharacterMovement()->JumpZVelocity = 600.0f;
 	GetCharacterMovement()->AirControl = 0.2f;
 
-	// camera boom을 생성합니다. (충돌 시 플레이어 쪽으로 다가와 위치합니다.)
+	// 임시로 StaticMesh를 설정합니다.
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	StaticMeshComponent->SetupAttachment(RootComponent);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	if (staticMeshAsset.Succeeded())
+	{
+		StaticMeshComponent->SetStaticMesh(staticMeshAsset.Object);
+		StaticMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -96.0f));
+		StaticMeshComponent->SetWorldScale3D(FVector(1.0f));
+	}
+
+	// Cameraboom을 생성합니다. (충돌 시 플레이어 쪽으로 다가와 위치합니다.)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->AttachTo(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // 캐릭터 뒤에서 해당 간격으로 따라다니는 카메라
-	CameraBoom->bUsePawnControlRotation = true; // 컨트롤러 기반으로 카메라 암을 회전시킵니다.
-
+	CameraBoomLocation = FVector(-500.0f, 0.0f, 500.0f);
+	CameraBoomRotation = FRotator(-45.0f, 0.0f, 0.0f);
+	//CameraBoom->bUsePawnControlRotation = false; // 컨트롤러 기반으로 카메라 암을 회전시키지 않습니다.
+	//CameraBoom->TargetArmLength = TargetArmLength; // 캐릭터 뒤에서 해당 간격으로 따라다니는 카메라
+	TargetArmLength = 500.0f;
+	CameraBoom->bEnableCameraLag = true; // 이동시 부드러운 카메라 전환을 위해 설정합니다.
+	//CameraBoom->CameraLagSpeed = 5.0f;
+	CameraLagSpeed = 3.0f;
+	
 	// 따라다니는 카메라를 생성합니다.
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	// boom의 맨 뒤쪽에 해당 카메라를 붙이고, 컨트롤러의 방향에 맞게 boom을 적용합니다.
-	FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); 
-	FollowCamera->bUsePawnControlRotation = false; // 카메라는 암에 의해 회전하지 안습니다.
-	
+	FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // boom의 맨 뒤쪽에 해당 카메라를 붙이고, 컨트롤러의 방향에 맞게 boom을 적용합니다.
+	FollowCamera->bUsePawnControlRotation = false; // 카메라는 암에 의해 회전하지 않습니다.
+
 	// 테스트할 몇 가지 사항이 필요할 수 있어서, 입력은 기본적으로 활성화해야 합니다.
 	OnSetPlayerController(true);
 }
@@ -58,6 +77,7 @@ void APioneer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	SetCameraBoomSettings();
 }
 
 // Called to bind functionality to input
@@ -81,43 +101,7 @@ void APioneer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	// 게임플레이 키 바인딩을 설정합니다. : 종료
 }
 
-void APioneer::EvasionRoll()
-{
-	if (IsControlable)
-	{
-		bPressedJump = true;
-		JumpKeyHoldTime = 0.0f;
-	}
-}
-
-void APioneer::StopEvasionRoll()
-{
-	if (IsControlable)
-	{
-		bPressedJump = false;
-		JumpKeyHoldTime = 0.0f;
-	}
-}
-
-// 기본 캐릭터 클래스는 AddControllerYawInput 함수를 갖습니다.
-void APioneer::TurnAtRate(float rate)
-{
-	if (IsControlable)
-	{
-		// 해당 비율 정보로 현재 프레임의 델타 값을 계산합니다.
-		AddControllerYawInput(rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-	}
-}
-
-void APioneer::LookUpAtRate(float rate)
-{
-	if (IsControlable)
-	{
-		// 해당 비율 정보로 현재 프레임의 델타 값을 계산합니다.
-		AddControllerPitchInput(rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-	}
-}
-
+// 입력 활성화 또는 비활성화합니다.
 void APioneer::OnSetPlayerController(bool status)
 {
 	IsControlable = status;
@@ -153,4 +137,60 @@ void APioneer::MoveRight(float value)
 		// 해당 방향으로 이동 값을 추가합니다.
 		AddMovementInput(Direction, value);
 	}
+}
+
+// 플레이어 회피 구르기
+void APioneer::EvasionRoll()
+{
+	if (IsControlable)
+	{
+		bPressedJump = true;
+		JumpKeyHoldTime = 0.0f;
+	}
+}
+
+// 플레이어 회피 구르기 멈춤
+void APioneer::StopEvasionRoll()
+{
+	if (IsControlable)
+	{
+		bPressedJump = false;
+		JumpKeyHoldTime = 0.0f;
+	}
+}
+
+// FollowCamera를 회전시키기 위한 함수입니다
+void APioneer::TurnAtRate(float rate)
+{
+	if (IsControlable)
+	{
+		// 기본 캐릭터 클래스는 AddControllerYawInput 함수를 갖습니다.
+		// 해당 비율 정보로 현재 프레임의 델타 값을 계산합니다.
+		AddControllerYawInput(rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	}
+}
+
+// FollowCamera에 시선 상향 비율을 적용하기 위한 함수입니다.
+void APioneer::LookUpAtRate(float rate)
+{
+	if (IsControlable)
+	{
+		// 해당 비율 정보로 현재 프레임의 델타 값을 계산합니다.
+		AddControllerPitchInput(rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	}
+}
+
+// Tick()에서 호출합니다.
+void APioneer::SetCameraBoomSettings()
+{
+	// 개척민 현재 위치를 찾습니다.
+	FVector rootComponentLocation = RootComponent->GetComponentLocation();
+	
+	// Pioneer의 현재 위치에서 position 만큼 더하고 rotation을 설정합니다.
+	CameraBoom->SetWorldLocationAndRotation(
+		FVector(rootComponentLocation.X + CameraBoomLocation.X, rootComponentLocation.Y + CameraBoomLocation.Y, rootComponentLocation.Z + CameraBoomLocation.Z),
+		CameraBoomRotation);
+
+	CameraBoom->TargetArmLength = TargetArmLength; // 캐릭터 뒤에서 해당 간격으로 따라다니는 카메라
+	CameraBoom->CameraLagSpeed = CameraLagSpeed;
 }
