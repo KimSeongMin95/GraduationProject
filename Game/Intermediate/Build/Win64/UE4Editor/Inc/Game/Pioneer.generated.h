@@ -13,99 +13,9 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #endif
 #define GAME_Pioneer_generated_h
 
-#define Game_Source_Game_Pioneer_h_22_RPC_WRAPPERS \
- \
-	DECLARE_FUNCTION(execStopEvasionRoll) \
-	{ \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->StopEvasionRoll(); \
-		P_NATIVE_END; \
-	} \
- \
-	DECLARE_FUNCTION(execEvasionRoll) \
-	{ \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->EvasionRoll(); \
-		P_NATIVE_END; \
-	} \
- \
-	DECLARE_FUNCTION(execMoveRight) \
-	{ \
-		P_GET_PROPERTY(UFloatProperty,Z_Param_value); \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->MoveRight(Z_Param_value); \
-		P_NATIVE_END; \
-	} \
- \
-	DECLARE_FUNCTION(execMoveForward) \
-	{ \
-		P_GET_PROPERTY(UFloatProperty,Z_Param_value); \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->MoveForward(Z_Param_value); \
-		P_NATIVE_END; \
-	} \
- \
-	DECLARE_FUNCTION(execOnSetPlayerController) \
-	{ \
-		P_GET_UBOOL(Z_Param_status); \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->OnSetPlayerController(Z_Param_status); \
-		P_NATIVE_END; \
-	}
-
-
-#define Game_Source_Game_Pioneer_h_22_RPC_WRAPPERS_NO_PURE_DECLS \
- \
-	DECLARE_FUNCTION(execStopEvasionRoll) \
-	{ \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->StopEvasionRoll(); \
-		P_NATIVE_END; \
-	} \
- \
-	DECLARE_FUNCTION(execEvasionRoll) \
-	{ \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->EvasionRoll(); \
-		P_NATIVE_END; \
-	} \
- \
-	DECLARE_FUNCTION(execMoveRight) \
-	{ \
-		P_GET_PROPERTY(UFloatProperty,Z_Param_value); \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->MoveRight(Z_Param_value); \
-		P_NATIVE_END; \
-	} \
- \
-	DECLARE_FUNCTION(execMoveForward) \
-	{ \
-		P_GET_PROPERTY(UFloatProperty,Z_Param_value); \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->MoveForward(Z_Param_value); \
-		P_NATIVE_END; \
-	} \
- \
-	DECLARE_FUNCTION(execOnSetPlayerController) \
-	{ \
-		P_GET_UBOOL(Z_Param_status); \
-		P_FINISH; \
-		P_NATIVE_BEGIN; \
-		P_THIS->OnSetPlayerController(Z_Param_status); \
-		P_NATIVE_END; \
-	}
-
-
-#define Game_Source_Game_Pioneer_h_22_INCLASS_NO_PURE_DECLS \
+#define Game_Source_Game_Pioneer_h_12_RPC_WRAPPERS
+#define Game_Source_Game_Pioneer_h_12_RPC_WRAPPERS_NO_PURE_DECLS
+#define Game_Source_Game_Pioneer_h_12_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAPioneer(); \
 	friend struct Z_Construct_UClass_APioneer_Statics; \
@@ -114,7 +24,7 @@ public: \
 	DECLARE_SERIALIZER(APioneer)
 
 
-#define Game_Source_Game_Pioneer_h_22_INCLASS \
+#define Game_Source_Game_Pioneer_h_12_INCLASS \
 private: \
 	static void StaticRegisterNativesAPioneer(); \
 	friend struct Z_Construct_UClass_APioneer_Statics; \
@@ -123,7 +33,7 @@ public: \
 	DECLARE_SERIALIZER(APioneer)
 
 
-#define Game_Source_Game_Pioneer_h_22_STANDARD_CONSTRUCTORS \
+#define Game_Source_Game_Pioneer_h_12_STANDARD_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API APioneer(const FObjectInitializer& ObjectInitializer); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(APioneer) \
@@ -136,7 +46,7 @@ private: \
 public:
 
 
-#define Game_Source_Game_Pioneer_h_22_ENHANCED_CONSTRUCTORS \
+#define Game_Source_Game_Pioneer_h_12_ENHANCED_CONSTRUCTORS \
 private: \
 	/** Private move- and copy-constructors, should never be used */ \
 	NO_API APioneer(APioneer&&); \
@@ -147,26 +57,32 @@ DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(APioneer); \
 	DEFINE_DEFAULT_CONSTRUCTOR_CALL(APioneer)
 
 
-#define Game_Source_Game_Pioneer_h_22_PRIVATE_PROPERTY_OFFSET
-#define Game_Source_Game_Pioneer_h_19_PROLOG
-#define Game_Source_Game_Pioneer_h_22_GENERATED_BODY_LEGACY \
+#define Game_Source_Game_Pioneer_h_12_PRIVATE_PROPERTY_OFFSET \
+	FORCEINLINE static uint32 __PPO__StaticMeshComponent() { return STRUCT_OFFSET(APioneer, StaticMeshComponent); } \
+	FORCEINLINE static uint32 __PPO__CameraBoom() { return STRUCT_OFFSET(APioneer, CameraBoom); } \
+	FORCEINLINE static uint32 __PPO__TopDownCameraComponent() { return STRUCT_OFFSET(APioneer, TopDownCameraComponent); } \
+	FORCEINLINE static uint32 __PPO__CursorToWorld() { return STRUCT_OFFSET(APioneer, CursorToWorld); }
+
+
+#define Game_Source_Game_Pioneer_h_9_PROLOG
+#define Game_Source_Game_Pioneer_h_12_GENERATED_BODY_LEGACY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	Game_Source_Game_Pioneer_h_22_PRIVATE_PROPERTY_OFFSET \
-	Game_Source_Game_Pioneer_h_22_RPC_WRAPPERS \
-	Game_Source_Game_Pioneer_h_22_INCLASS \
-	Game_Source_Game_Pioneer_h_22_STANDARD_CONSTRUCTORS \
+	Game_Source_Game_Pioneer_h_12_PRIVATE_PROPERTY_OFFSET \
+	Game_Source_Game_Pioneer_h_12_RPC_WRAPPERS \
+	Game_Source_Game_Pioneer_h_12_INCLASS \
+	Game_Source_Game_Pioneer_h_12_STANDARD_CONSTRUCTORS \
 public: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 
-#define Game_Source_Game_Pioneer_h_22_GENERATED_BODY \
+#define Game_Source_Game_Pioneer_h_12_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	Game_Source_Game_Pioneer_h_22_PRIVATE_PROPERTY_OFFSET \
-	Game_Source_Game_Pioneer_h_22_RPC_WRAPPERS_NO_PURE_DECLS \
-	Game_Source_Game_Pioneer_h_22_INCLASS_NO_PURE_DECLS \
-	Game_Source_Game_Pioneer_h_22_ENHANCED_CONSTRUCTORS \
+	Game_Source_Game_Pioneer_h_12_PRIVATE_PROPERTY_OFFSET \
+	Game_Source_Game_Pioneer_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
+	Game_Source_Game_Pioneer_h_12_INCLASS_NO_PURE_DECLS \
+	Game_Source_Game_Pioneer_h_12_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

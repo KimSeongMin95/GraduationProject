@@ -13,9 +13,9 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #endif
 #define GAME_GameGameModeBase_generated_h
 
-#define Game_Source_Game_GameGameModeBase_h_15_RPC_WRAPPERS
-#define Game_Source_Game_GameGameModeBase_h_15_RPC_WRAPPERS_NO_PURE_DECLS
-#define Game_Source_Game_GameGameModeBase_h_15_INCLASS_NO_PURE_DECLS \
+#define Game_Source_Game_GameGameModeBase_h_12_RPC_WRAPPERS
+#define Game_Source_Game_GameGameModeBase_h_12_RPC_WRAPPERS_NO_PURE_DECLS
+#define Game_Source_Game_GameGameModeBase_h_12_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAGameGameModeBase(); \
 	friend struct Z_Construct_UClass_AGameGameModeBase_Statics; \
@@ -24,7 +24,7 @@ public: \
 	DECLARE_SERIALIZER(AGameGameModeBase)
 
 
-#define Game_Source_Game_GameGameModeBase_h_15_INCLASS \
+#define Game_Source_Game_GameGameModeBase_h_12_INCLASS \
 private: \
 	static void StaticRegisterNativesAGameGameModeBase(); \
 	friend struct Z_Construct_UClass_AGameGameModeBase_Statics; \
@@ -33,9 +33,9 @@ public: \
 	DECLARE_SERIALIZER(AGameGameModeBase)
 
 
-#define Game_Source_Game_GameGameModeBase_h_15_STANDARD_CONSTRUCTORS \
+#define Game_Source_Game_GameGameModeBase_h_12_STANDARD_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
-	NO_API AGameGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
+	NO_API AGameGameModeBase(const FObjectInitializer& ObjectInitializer); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(AGameGameModeBase) \
 	DECLARE_VTABLE_PTR_HELPER_CTOR(NO_API, AGameGameModeBase); \
 DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(AGameGameModeBase); \
@@ -46,9 +46,7 @@ private: \
 public:
 
 
-#define Game_Source_Game_GameGameModeBase_h_15_ENHANCED_CONSTRUCTORS \
-	/** Standard constructor, called after all reflected properties have been initialized */ \
-	NO_API AGameGameModeBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()) : Super(ObjectInitializer) { }; \
+#define Game_Source_Game_GameGameModeBase_h_12_ENHANCED_CONSTRUCTORS \
 private: \
 	/** Private move- and copy-constructors, should never be used */ \
 	NO_API AGameGameModeBase(AGameGameModeBase&&); \
@@ -56,29 +54,29 @@ private: \
 public: \
 	DECLARE_VTABLE_PTR_HELPER_CTOR(NO_API, AGameGameModeBase); \
 DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(AGameGameModeBase); \
-	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(AGameGameModeBase)
+	DEFINE_DEFAULT_CONSTRUCTOR_CALL(AGameGameModeBase)
 
 
-#define Game_Source_Game_GameGameModeBase_h_15_PRIVATE_PROPERTY_OFFSET
-#define Game_Source_Game_GameGameModeBase_h_12_PROLOG
-#define Game_Source_Game_GameGameModeBase_h_15_GENERATED_BODY_LEGACY \
+#define Game_Source_Game_GameGameModeBase_h_12_PRIVATE_PROPERTY_OFFSET
+#define Game_Source_Game_GameGameModeBase_h_9_PROLOG
+#define Game_Source_Game_GameGameModeBase_h_12_GENERATED_BODY_LEGACY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	Game_Source_Game_GameGameModeBase_h_15_PRIVATE_PROPERTY_OFFSET \
-	Game_Source_Game_GameGameModeBase_h_15_RPC_WRAPPERS \
-	Game_Source_Game_GameGameModeBase_h_15_INCLASS \
-	Game_Source_Game_GameGameModeBase_h_15_STANDARD_CONSTRUCTORS \
+	Game_Source_Game_GameGameModeBase_h_12_PRIVATE_PROPERTY_OFFSET \
+	Game_Source_Game_GameGameModeBase_h_12_RPC_WRAPPERS \
+	Game_Source_Game_GameGameModeBase_h_12_INCLASS \
+	Game_Source_Game_GameGameModeBase_h_12_STANDARD_CONSTRUCTORS \
 public: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 
-#define Game_Source_Game_GameGameModeBase_h_15_GENERATED_BODY \
+#define Game_Source_Game_GameGameModeBase_h_12_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	Game_Source_Game_GameGameModeBase_h_15_PRIVATE_PROPERTY_OFFSET \
-	Game_Source_Game_GameGameModeBase_h_15_RPC_WRAPPERS_NO_PURE_DECLS \
-	Game_Source_Game_GameGameModeBase_h_15_INCLASS_NO_PURE_DECLS \
-	Game_Source_Game_GameGameModeBase_h_15_ENHANCED_CONSTRUCTORS \
+	Game_Source_Game_GameGameModeBase_h_12_PRIVATE_PROPERTY_OFFSET \
+	Game_Source_Game_GameGameModeBase_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
+	Game_Source_Game_GameGameModeBase_h_12_INCLASS_NO_PURE_DECLS \
+	Game_Source_Game_GameGameModeBase_h_12_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

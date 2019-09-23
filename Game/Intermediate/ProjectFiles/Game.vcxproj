@@ -463,7 +463,9 @@
     <NMakeOutput>..\..\Binaries\HTML5\Game-HTML5-Shipping.js</NMakeOutput>
   </PropertyGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Game\PioneerController.cpp" />
     <ClCompile Include="..\..\Source\Game\PioneerManager.cpp" />
+    <ClInclude Include="..\..\Source\Game\PioneerController.h" />
     <ClInclude Include="..\..\Source\Game\PioneerManager.h" />
     <None Include="..\..\Game.uproject" />
     <None Include="..\..\Source\Game.Target.cs" />
