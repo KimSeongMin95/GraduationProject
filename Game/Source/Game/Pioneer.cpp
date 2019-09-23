@@ -3,14 +3,14 @@
 #include "Pioneer.h"
 
 #include "Components/StaticMeshComponent.h"
-#include "UObject/ConstructorHelpers.h"
+#include "UObject/ConstructorHelpers.h" // ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
+//#include "HeadMountedDisplayFunctionLibrary.h" // VR
 #include "Materials/Material.h"
 #include "Engine/World.h"
 
@@ -115,6 +115,12 @@ void APioneer::Tick(float DeltaTime)
 
 	SetCameraBoomSettings();
 
+	SetCursorToWorld();
+}
+
+/** CursorToWorld의 월드좌표와 월드회전을 설정합니다.*/
+void APioneer::SetCursorToWorld()
+{
 	if (CursorToWorld != nullptr)
 	{
 		/*if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())

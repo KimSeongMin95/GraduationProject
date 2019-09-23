@@ -31,9 +31,3 @@ H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Eng
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\CharacterMovementComponent.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/SpringArmComponent.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\SpringArmComponent.generated.h
-H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\HeadMountedDisplay\Public\HeadMountedDisplayFunctionLibrary.h
-h:\program files (x86)\ue_4.23\engine\source\runtime\headmounteddisplay\public\HeadMountedDisplayTypes.h
-H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\HeadMountedDisplay\HeadMountedDisplayTypes.generated.h
-h:\program files (x86)\ue_4.23\engine\source\runtime\headmounteddisplay\public\IIdentifiableXRDevice.h
-H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\HeadMountedDisplay\IIdentifiableXRDevice.generated.h
-H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\HeadMountedDisplay\HeadMountedDisplayFunctionLibrary.generated.h

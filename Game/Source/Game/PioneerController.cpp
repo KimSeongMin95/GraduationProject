@@ -2,22 +2,22 @@
 
 
 #include "PioneerController.h"
-#include "Blueprint/AIBlueprintHelperLibrary.h"
-#include "Runtime/Engine/Classes/Components/DecalComponent.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h" // Navigation
+#include "Runtime/Engine/Classes/Components/DecalComponent.h" // MouseSelectionPoint
 #include "HeadMountedDisplayFunctionLibrary.h" // VR
 #include "Pioneer.h"
-#include "Engine/World.h"
 
 APioneerController::APioneerController()
 {
-	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Crosshairs;
+	// setting mouse
+	bShowMouseCursor = true; // 마우스를 보이게 합니다.
+	DefaultMouseCursor = EMouseCursor::Default; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
+	//DefaultMouseCursor = EMouseCursor::Crosshairs; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
 }
 
 void APioneerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-	//APlayerController::PlayerTick(DeltaTime);
 
 	// keep updating the destination every tick while desired
 	if (bMoveToMouseCursor)
@@ -30,7 +30,6 @@ void APioneerController::SetupInputComponent()
 {
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
-	//APlayerController::SetupInputComponent();
 
 	// support keyboard
 	InputComponent->BindAction("SetDestination", IE_Pressed, this, &APioneerController::OnSetDestinationPressed);
@@ -55,6 +54,7 @@ void APioneerController::SetupInputComponent()
 /** Navigate player to the current mouse cursor location. */
 void APioneerController::MoveToMouseCursor()
 {
+	// VR 사용시
 	/*if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
 	{
 		if (APioneer* MyPawn = Cast<APioneer>(GetPawn()))
@@ -66,6 +66,7 @@ void APioneerController::MoveToMouseCursor()
 		}
 	}
 	else*/
+	// 마우스 커서 사용시
 	{
 		
 		// Trace to see what is under the mouse cursor
@@ -87,6 +88,7 @@ void APioneerController::MoveToMouseCursor()
 /** Navigate player to the current touch location. */
 void APioneerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
+	// 받아온 터치한 위치를 ScreenSpaceLocation에 저장합니다.
 	FVector2D ScreenSpaceLocation(Location);
 
 	// Trace to see what is under the touch location
@@ -106,6 +108,7 @@ void APioneerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex
 /** Navigate player to the given world location. */
 void APioneerController::SetNewMoveDestination(const FVector DestLocation)
 {
+	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 가져옵니다.
 	APawn* const MyPawn = GetPawn();
 
 	if (MyPawn)
@@ -118,7 +121,7 @@ void APioneerController::SetNewMoveDestination(const FVector DestLocation)
 		if ((Distance > 120.0f))
 		{
 			// UAIBlueprintHelperLibrary의 함수를 사용하여 움직입니다.
-			//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
 		}
 	}
 }
@@ -137,32 +140,36 @@ void APioneerController::OnSetDestinationReleased()
 
 void APioneerController::MoveForward(float value)
 {
-	if ((GetPawn()->Controller != NULL) && (value != 0.0f))
-	{
-		// 전방 방향을 찾습니다.
-		const FRotator Rotation = GetPawn()->Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
+	APioneer* const MyPawn = (APioneer*)GetPawn();
 
-		// 전방 벡터를 구합니다.
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		
-		// 해당 방향으로 이동 값을 추가합니다.
-		GetPawn()->AddMovementInput(Direction, value);
+	if (MyPawn && (value != 0.0f))
+	{
+		//const FRotator Rotation = GetPawn()->Controller->GetControlRotation(); // 컨트롤러의 회전값을 가져옵니다.
+		const FRotator Rotation = MyPawn->CameraBoomRotation; // Pioneer의 카메라 회전값을 가져옵니다.
+		const FRotator YawRotation(0, Rotation.Yaw, 0); // 오른쪽 방향을 찾습니다.
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X); // 오른쪽 벡터를 구합니다.
+		MyPawn->AddMovementInput(Direction, value); // 해당 방향으로 이동 값을 추가합니다.
+
+		//// 방향을 고정합니다.
+		//MyPawn->AddMovementInput(FVector().ForwardVector, value);
 	}
 }
 
 void APioneerController::MoveRight(float value)
 {
-	if ((GetPawn()->Controller != NULL) && (value != 0.0f))
+	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
+	APioneer* const MyPawn = (APioneer*)GetPawn();
+
+	if (MyPawn && (value != 0.0f))
 	{
-		// 오른쪽 방향을 찾습니다.
-		const FRotator Rotation = GetPawn()->Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		//const FRotator Rotation = GetPawn()->Controller->GetControlRotation(); // 컨트롤러의 회전값을 가져옵니다.
+		const FRotator Rotation = MyPawn->CameraBoomRotation; // Pioneer의 카메라 회전값을 가져옵니다.
+		const FRotator YawRotation(0, Rotation.Yaw, 0); // 오른쪽 방향을 찾습니다.
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y); // 오른쪽 벡터를 구합니다.
+		MyPawn->AddMovementInput(Direction, value); // 해당 방향으로 이동 값을 추가합니다.
 
-		// 오른쪽 벡터를 구합니다.
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// 해당 방향으로 이동 값을 추가합니다.
-		GetPawn()->AddMovementInput(Direction, value);
+		//// 방향을 고정합니다.
+		//MyPawn->AddMovementInput(FVector().RightVector, value);
 	}
 }

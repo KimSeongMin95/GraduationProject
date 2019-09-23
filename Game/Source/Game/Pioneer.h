@@ -51,6 +51,8 @@ public:
 	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
 	/*** Return Components : End ***/
 
+	void SetCursorToWorld(); /** CursorToWorld의 월드좌표와 월드회전을 설정합니다.*/
+
 	//// 기본 선회율로 초당 회전 각도로 사용됩니다. 값에 따라 최종 선회율에 영향을 미칩니다.
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	//	float BaseTurnRate;

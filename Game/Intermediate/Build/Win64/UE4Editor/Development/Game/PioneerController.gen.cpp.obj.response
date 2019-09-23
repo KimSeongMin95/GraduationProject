@@ -501,6 +501,9 @@
 /I D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game
 /I D:\Github\GraduationProject\Game\Source
 /I D:\Github\GraduationProject\Game\Source\Game
+/I ..\Intermediate\Build\Win64\UE4Editor\Inc\AugmentedReality
+/I Runtime\AugmentedReality\Public
+/I Runtime\AugmentedReality
 /I ThirdParty\PhysX3\PxShared\include
 /I ThirdParty\PhysX3\PxShared\include\cudamanager
 /I ThirdParty\PhysX3\PxShared\include\filebuf
