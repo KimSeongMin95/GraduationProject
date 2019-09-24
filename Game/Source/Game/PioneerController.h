@@ -30,7 +30,6 @@ protected:
 	/*** Navigating player : Start ***/
 	void MoveToMouseCursor(); /** Navigate player to the current mouse cursor location. */
 	void MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location); /** Navigate player to the current touch location. */
-	void SetNewMoveDestination(const FVector DestLocation); /** Navigate player to the given world location. */
 	/*** Navigating player : End ***/
 
 	/*** Input handlers for SetDestination action. : Start ***/

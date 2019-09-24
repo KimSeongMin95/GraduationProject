@@ -3,29 +3,30 @@
   Creating makefile for GameEditor (no existing makefile)
   Parsing headers for GameEditor
     Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
-  Reflection code generated for GameEditor in 9.2908949 seconds
+  Reflection code generated for GameEditor in 8.979111 seconds
   Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
-  Building 15 actions with 8 processes...
-    [1/15] Default.rc2
-    [2/15] SharedPCH.Engine.cpp
-    [3/15] Game.init.gen.cpp
-    [4/15] PioneerController.gen.cpp
-    [5/15] PioneerManager.cpp
-    [6/15] GameGameModeBase.gen.cpp
-    [7/15] Pioneer.gen.cpp
-    [8/15] PioneerController.cpp
-    [9/15] Game.cpp
-    [10/15] Pioneer.cpp
-D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(63): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+  Building 16 actions with 8 processes...
+    [1/16] Default.rc2
+    [2/16] SharedPCH.Engine.cpp
+    [3/16] Game.init.gen.cpp
+    [4/16] PioneerManager.cpp
+    [5/16] GameGameModeBase.gen.cpp
+    [6/16] Pioneer.gen.cpp
+    [7/16] PioneerController.cpp
+    [8/16] Pioneer.cpp
+D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(59): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
     H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' 선언을 참조하십시오.
-D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(75): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(71): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
     H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' 선언을 참조하십시오.
-    [11/15] PioneerManager.gen.cpp
-    [12/15] GameGameModeBase.cpp
-    [13/15] UE4Editor-Game.lib
+    [9/16] Game.cpp
+    [10/16] PioneerController.gen.cpp
+    [11/16] PathFinding.cpp
+    [12/16] PioneerManager.gen.cpp
+    [13/16] GameGameModeBase.cpp
+    [14/16] UE4Editor-Game.lib
        D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game.lib 라이브러리 및 D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game.exp 개체를 생성하고 있습니다.
-    [14/15] UE4Editor-Game.dll
+    [15/16] UE4Editor-Game.dll
        D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game.suppressed.lib 라이브러리 및 D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game.suppressed.exp 개체를 생성하고 있습니다.
-    [15/15] GameEditor.target
-  Total time in Parallel executor: 37.01 seconds
-  Total execution time: 51.26 seconds
+    [16/16] GameEditor.target
+  Total time in Parallel executor: 36.99 seconds
+  Total execution time: 49.16 seconds

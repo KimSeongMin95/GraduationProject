@@ -1,3 +1,9 @@
 D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Definitions.Game.h
 d:\github\graduationproject\game\source\game\PioneerManager.h
 D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\PioneerManager.generated.h
+d:\github\graduationproject\game\source\game\Pioneer.h
+H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/Character.h
+H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/RootMotionSource.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\RootMotionSource.generated.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\Character.generated.h
+D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.generated.h

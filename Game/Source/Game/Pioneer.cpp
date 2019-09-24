@@ -18,10 +18,6 @@
 APioneer::APioneer()
 {
 	/*** 임시 코드 : 시작 ***/
-	// 0번 플레이어 컨트롤 획득
-	//AutoPossessPlayer = EAutoReceiveInput::Player0;
-	////GetController();
-
 	// 임시로 StaticMesh를 설정합니다.
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	StaticMeshComponent->SetupAttachment(RootComponent);

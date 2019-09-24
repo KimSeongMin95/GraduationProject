@@ -1,0 +1,1450 @@
+﻿Log file open, 09/25/19 00:01:39
+LogWindows: Failed to load 'aqProf.dll' (GetLastError=126)
+LogWindows: File 'aqProf.dll' does not exist
+LogWindows: Failed to load 'VtuneApi.dll' (GetLastError=126)
+LogWindows: File 'VtuneApi.dll' does not exist
+LogWindows: Failed to load 'VtuneApi32e.dll' (GetLastError=126)
+LogWindows: File 'VtuneApi32e.dll' does not exist
+LogConsoleResponse: Display: Failed to find resolution value strings in scalability ini. Falling back to default.
+LogInit: Display: Running engine for game: Game
+LogPlatformFile: Not using cached read wrapper
+LogTaskGraph: Started task graph with 5 named threads and 23 total threads with 3 sets of task threads.
+LogStats: Stats thread started at 0.093566
+LogD3D11RHI: Loaded GFSDK_Aftermath_Lib.x64.dll
+LogICUInternationalization: ICU TimeZone Detection - Raw Offset: +9:00, Platform Override: ''
+LogPluginManager: Mounting plugin Paper2D
+LogPluginManager: Mounting plugin AISupport
+LogPluginManager: Mounting plugin LightPropagationVolume
+LogPluginManager: Mounting plugin ActorLayerUtilities
+LogPluginManager: Mounting plugin AnimationSharing
+LogPluginManager: Mounting plugin CLionSourceCodeAccess
+LogPluginManager: Mounting plugin CodeLiteSourceCodeAccess
+LogPluginManager: Mounting plugin GitSourceControl
+LogPluginManager: Mounting plugin KDevelopSourceCodeAccess
+LogPluginManager: Mounting plugin NullSourceCodeAccess
+LogPluginManager: Mounting plugin PerforceSourceControl
+LogPluginManager: Mounting plugin SubversionSourceControl
+LogPluginManager: Mounting plugin UObjectPlugin
+LogPluginManager: Mounting plugin VisualStudioCodeSourceCodeAccess
+LogPluginManager: Mounting plugin VisualStudioSourceCodeAccess
+LogPluginManager: Mounting plugin XCodeSourceCodeAccess
+LogPluginManager: Mounting plugin AssetManagerEditor
+LogPluginManager: Mounting plugin CryptoKeys
+LogPluginManager: Mounting plugin CurveEditorTools
+LogPluginManager: Mounting plugin DataValidation
+LogPluginManager: Mounting plugin FacialAnimation
+LogPluginManager: Mounting plugin GameplayTagsEditor
+LogPluginManager: Mounting plugin MacGraphicsSwitching
+LogPluginManager: Mounting plugin MaterialAnalyzer
+LogPluginManager: Mounting plugin MobileLauncherProfileWizard
+LogPluginManager: Mounting plugin PluginBrowser
+LogPluginManager: Mounting plugin SpeedTreeImporter
+LogPluginManager: Mounting plugin DatasmithContent
+LogPluginManager: Mounting plugin VariantManagerContent
+LogPluginManager: Mounting plugin AlembicImporter
+LogPluginManager: Mounting plugin AutomationUtils
+LogPluginManager: Mounting plugin BackChannel
+LogPluginManager: Mounting plugin CharacterAI
+LogPluginManager: Mounting plugin GeometryCache
+LogPluginManager: Mounting plugin HTML5Networking
+LogPluginManager: Mounting plugin PlatformCrypto
+LogPluginManager: Mounting plugin ProxyLODPlugin
+LogPluginManager: Mounting plugin SkeletalReduction
+LogPluginManager: Mounting plugin MagicLeap
+LogPluginManager: Mounting plugin MagicLeapMedia
+LogPluginManager: Mounting plugin AndroidMedia
+LogPluginManager: Mounting plugin AvfMedia
+LogPluginManager: Mounting plugin ImgMedia
+LogPluginManager: Mounting plugin MediaCompositing
+LogPluginManager: Mounting plugin MediaPlayerEditor
+LogPluginManager: Mounting plugin WebMMedia
+LogPluginManager: Mounting plugin WmfMedia
+LogPluginManager: Mounting plugin TcpMessaging
+LogPluginManager: Mounting plugin UdpMessaging
+LogPluginManager: Mounting plugin ActorSequence
+LogPluginManager: Mounting plugin LevelSequenceEditor
+LogPluginManager: Mounting plugin MatineeToLevelSequence
+LogPluginManager: Mounting plugin NetcodeUnitTest
+LogPluginManager: Mounting plugin NUTUnrealEngine4
+LogPluginManager: Mounting plugin OnlineSubsystemGooglePlay
+LogPluginManager: Mounting plugin OnlineSubsystemIOS
+LogPluginManager: Mounting plugin OnlineSubsystem
+LogPluginManager: Mounting plugin OnlineSubsystemNull
+LogPluginManager: Mounting plugin OnlineSubsystemUtils
+LogPluginManager: Mounting plugin LauncherChunkInstaller
+LogPluginManager: Mounting plugin AndroidDeviceProfileSelector
+LogPluginManager: Mounting plugin AndroidMoviePlayer
+LogPluginManager: Mounting plugin AndroidPermission
+LogPluginManager: Mounting plugin AppleImageUtils
+LogPluginManager: Mounting plugin AppleMoviePlayer
+LogPluginManager: Mounting plugin ArchVisCharacter
+LogPluginManager: Mounting plugin AudioCapture
+LogPluginManager: Mounting plugin CableComponent
+LogPluginManager: Mounting plugin CustomMeshComponent
+LogPluginManager: Mounting plugin EditableMesh
+LogPluginManager: Mounting plugin ExampleDeviceProfileSelector
+LogPluginManager: Mounting plugin GoogleCloudMessaging
+LogPluginManager: Mounting plugin IOSDeviceProfileSelector
+LogPluginManager: Mounting plugin LinuxDeviceProfileSelector
+LogPluginManager: Mounting plugin LocationServicesBPLibrary
+LogPluginManager: Mounting plugin MobilePatchingUtils
+LogPluginManager: Mounting plugin OculusVR
+LogPluginManager: Mounting plugin PhysXVehicles
+LogPluginManager: Mounting plugin ProceduralMeshComponent
+LogPluginManager: Mounting plugin RuntimePhysXCooking
+LogPluginManager: Mounting plugin SignificanceManager
+LogPluginManager: Mounting plugin SteamVR
+LogPluginManager: Mounting plugin WebMMoviePlayer
+LogPluginManager: Mounting plugin WindowsMoviePlayer
+LogPluginManager: Mounting plugin ScreenshotTools
+LogInit: Using libcurl 7.55.1-DEV
+LogInit:  - built for x86_64-pc-win32
+LogInit:  - supports SSL with OpenSSL/1.1.1
+LogInit:  - supports HTTP deflate (compression) using libz 1.2.8
+LogInit:  - other features:
+LogInit:      CURL_VERSION_SSL
+LogInit:      CURL_VERSION_LIBZ
+LogInit:      CURL_VERSION_IPV6
+LogInit:      CURL_VERSION_ASYNCHDNS
+LogInit:      CURL_VERSION_LARGEFILE
+LogInit:      CURL_VERSION_IDN
+LogInit:  CurlRequestOptions (configurable via config and command line):
+LogInit:  - bVerifyPeer = true  - Libcurl will verify peer certificate
+LogInit:  - bUseHttpProxy = false  - Libcurl will NOT use HTTP proxy
+LogInit:  - bDontReuseConnections = false  - Libcurl will reuse connections
+LogInit:  - MaxHostConnections = 16  - Libcurl will limit the number of connections to a host
+LogInit:  - LocalHostAddr = Default
+LogInit:  - BufferSize = 65536
+LogOnline: OSS: Creating online subsystem instance for: NULL
+LogInit: WinSock: version 1.1 (2.2), MaxSocks=32767, MaxUdp=65467
+LogInit: Build: ++UE4+Release-4.23-CL-8386587
+LogInit: Engine Version: 4.23.0-8386587+++UE4+Release-4.23
+LogInit: Compatible Engine Version: 4.23.0-8386587+++UE4+Release-4.23
+LogInit: Net CL: 8386587
+LogInit: OS: Windows 10 (Release 1809) (), CPU: Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz, GPU: NVIDIA GeForce GTX 760
+LogInit: Compiled (64-bit): Aug 31 2019 02:04:44
+LogInit: Compiled with Visual C++: 19.16.27030.01
+LogInit: Build Configuration: Development
+LogInit: Branch Name: ++UE4+Release-4.23
+LogInit: Command Line: 
+LogInit: Base Directory: H:/Program Files (x86)/UE_4.23/Engine/Binaries/Win64/
+LogInit: Installed Engine Build: 1
+LogDevObjectVersion: Number of dev versions registered: 23
+LogDevObjectVersion:   Dev-Blueprints (B0D832E4-1F89-4F0D-ACCF-7EB736FD4AA2): 10
+LogDevObjectVersion:   Dev-Build (E1C64328-A22C-4D53-A36C-8E866417BD8C): 0
+LogDevObjectVersion:   Dev-Core (375EC13C-06E4-48FB-B500-84F0262A717E): 3
+LogDevObjectVersion:   Dev-Editor (E4B068ED-F494-42E9-A231-DA0B2E46BB41): 34
+LogDevObjectVersion:   Dev-Framework (CFFC743F-43B0-4480-9391-14DF171D2073): 35
+LogDevObjectVersion:   Dev-Mobile (B02B49B5-BB20-44E9-A304-32B752E40360): 2
+LogDevObjectVersion:   Dev-Networking (A4E4105C-59A1-49B5-A7C5-40C4547EDFEE): 0
+LogDevObjectVersion:   Dev-Online (39C831C9-5AE6-47DC-9A44-9C173E1C8E7C): 0
+LogDevObjectVersion:   Dev-Physics (78F01B33-EBEA-4F98-B9B4-84EACCB95AA2): 0
+LogDevObjectVersion:   Dev-Platform (6631380F-2D4D-43E0-8009-CF276956A95A): 0
+LogDevObjectVersion:   Dev-Rendering (12F88B9F-8875-4AFC-A67C-D90C383ABD29): 31
+LogDevObjectVersion:   Dev-Sequencer (7B5AE74C-D270-4C10-A958-57980B212A5A): 11
+LogDevObjectVersion:   Dev-VR (D7296918-1DD6-4BDD-9DE2-64A83CC13884): 2
+LogDevObjectVersion:   Dev-LoadTimes (C2A15278-BFE7-4AFE-6C17-90FF531DF755): 1
+LogDevObjectVersion:   Private-Geometry (6EACA3D4-40EC-4CC1-B786-8BED09428FC5): 3
+LogDevObjectVersion:   Dev-AnimPhys (29E575DD-E0A3-4627-9D10-D276232CDCEA): 17
+LogDevObjectVersion:   Dev-Anim (AF43A65D-7FD3-4947-9873-3E8ED9C1BB05): 2
+LogDevObjectVersion:   Dev-ReflectionCapture (6B266CEC-1EC7-4B8F-A30B-E4D90942FC07): 1
+LogDevObjectVersion:   Dev-Automation (0DF73D61-A23F-47EA-B727-89E90C41499A): 1
+LogDevObjectVersion:   FortniteMain (601D1886-AC64-4F84-AA16-D3DE0DEAC7D6): 27
+LogDevObjectVersion:   Dev-Enterprise (9DFFBCD6-494F-0158-E221-12823C92A888): 6
+LogDevObjectVersion:   Dev-Niagara (F2AED0AC-9AFE-416F-8664-AA7FFA26D6FC): 1
+LogDevObjectVersion:   Dev-Destruction (174F1F0B-B4C6-45A5-B13F-2EE8D0FB917D): 9
+LogInit: Presizing for max 16777216 objects, including 0 objects not considered by GC, pre-allocating 0 bytes for permanent pool.
+LogInit: Object subsystem initialized
+LogConfig: Setting CVar [[con.DebugEarlyDefault:1]]
+LogConfig: Setting CVar [[r.setres:1280x720]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[r.VSync:0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[r.RHICmdBypass:0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererSettings] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Engine.ini]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[r.GPUCrashDebugging:0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[r.DefaultFeature.AutoExposure.ExtendDefaultLuminanceRange:1]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererOverrideSettings] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Engine.ini]
+[2019.09.24-15.01.40:220][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.StreamingSettings] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Engine.ini]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.MinBulkDataSizeForAsyncLoading:131072]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.AsyncLoadingThreadEnabled:0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.EventDrivenLoaderEnabled:1]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.WarnIfTimeLimitExceeded:0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.TimeLimitExceededMultiplier:1.5]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.TimeLimitExceededMinTime:0.005]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.UseBackgroundLevelStreaming:1]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.PriorityAsyncLoadingExtraTime:15.0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.LevelStreamingActorsUpdateTimeLimit:5.0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.PriorityLevelStreamingActorsUpdateExtraTime:5.0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.LevelStreamingComponentsRegistrationGranularity:10]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.UnregisterComponentsTimeLimit:1.0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[s.LevelStreamingComponentsUnregistrationGranularity:5]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.GarbageCollectionSettings] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Engine.ini]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.MaxObjectsNotConsideredByGC:1]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.SizeOfPermanentObjectPool:0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.FlushStreamingOnGC:0]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.NumRetriesBeforeForcingGC:10]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.AllowParallelGC:1]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.TimeBetweenPurgingPendingKillObjects:61.1]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.MaxObjectsInEditor:16777216]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.IncrementalBeginDestroyEnabled:1]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.CreateGCClusters:1]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.MinGCClusterSize:5]]
+[2019.09.24-15.01.40:220][  0]LogConfig: Setting CVar [[gc.ActorClusteringEnabled:0]]
+[2019.09.24-15.01.40:221][  0]LogConfig: Setting CVar [[gc.BlueprintClusteringEnabled:0]]
+[2019.09.24-15.01.40:221][  0]LogConfig: Setting CVar [[gc.UseDisregardForGCOnDedicatedServers:0]]
+[2019.09.24-15.01.40:221][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.NetworkSettings] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Engine.ini]
+[2019.09.24-15.01.40:221][  0]LogConfig: Applying CVar settings from Section [/Script/UnrealEd.CookerSettings] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Engine.ini]
+[2019.09.24-15.01.40:234][  0]LogConfig: Applying CVar settings from Section [ViewDistanceQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.SkeletalMeshLODBias:0]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.ViewDistanceScale:1.0]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Applying CVar settings from Section [AntiAliasingQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.PostProcessAAQuality:4]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Applying CVar settings from Section [ShadowQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.LightFunctionQuality:1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.ShadowQuality:5]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Shadow.CSM.MaxCascades:10]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Shadow.MaxResolution:2048]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Shadow.MaxCSMResolution:2048]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Shadow.RadiusThreshold:0.01]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Shadow.DistanceScale:1.0]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Shadow.CSM.TransitionScale:1.0]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Shadow.PreShadowResolutionFactor:1.0]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.DistanceFieldShadowing:1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.DistanceFieldAO:1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.AOQuality:2]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.VolumetricFog:1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridPixelSize:8]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridSizeZ:128]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.VolumetricFog.HistoryMissSupersampleCount:4]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.LightMaxDrawDistanceScale:1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.CapsuleShadows:1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Applying CVar settings from Section [PostProcessQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.MotionBlurQuality:4]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMipLevelFactor:0.4]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMaxQuality:100]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.AmbientOcclusionLevels:-1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.AmbientOcclusionRadiusScale:1.0]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.DepthOfFieldQuality:2]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.RenderTargetPoolMin:400]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.LensFlareQuality:2]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.SceneColorFringeQuality:1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.EyeAdaptationQuality:2]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.BloomQuality:5]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.FastBlurThreshold:100]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Upscale.Quality:3]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Tonemapper.GrainQuantization:1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.LightShaftQuality:1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Filter.SizeScale:1]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.Tonemapper.Quality:5]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.DOF.Gather.AccumulatorQuality:1        ; higher gathering accumulator quality]]
+[2019.09.24-15.01.40:234][  0]LogConfig: Setting CVar [[r.DOF.Gather.PostfilterMethod:1          ; Median3x3 postfilering method]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.Gather.EnableBokehSettings:0       ; no bokeh simulation when gathering]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.Gather.RingCount:4                 ; medium number of samples when gathering]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.Scatter.ForegroundCompositing:1    ; additive foreground scattering]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.Scatter.BackgroundCompositing:2    ; additive background scattering]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.Scatter.EnableBokehSettings:1      ; bokeh simulation when scattering]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.Scatter.MaxSpriteRatio:0.1         ; only a maximum of 10% of scattered bokeh]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.Recombine.Quality:1                ; cheap slight out of focus]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.Recombine.EnableBokehSettings:0    ; no bokeh simulation on slight out of focus]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.TemporalAAQuality:1                ; more stable temporal accumulation]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxForegroundRadius:0.025]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxBackgroundRadius:0.025]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Applying CVar settings from Section [TextureQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.Streaming.MipBias:0]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.Streaming.AmortizeCPUToGPUCopy:0]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.Streaming.MaxNumTexturesToStreamPerFrame:0]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.Streaming.Boost:1]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.MaxAnisotropy:8]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.Streaming.LimitPoolSizeToVRAM:0]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.Streaming.PoolSize:1000]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.Streaming.MaxEffectiveScreenSize:0]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Applying CVar settings from Section [EffectsQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.TranslucencyLightingVolumeDim:64]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.RefractionQuality:2]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.SSR.Quality:3]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.SceneColorFormat:4]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.DetailMode:2]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.TranslucencyVolumeBlur:1]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.MaterialQualityLevel:1 ; High quality]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.SSS.Scale:1]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.SSS.SampleSet:2]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.SSS.Quality:1]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.SSS.HalfRes:1]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.EmitterSpawnRateScale:1.0]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[r.ParticleLightQuality:2]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Applying CVar settings from Section [FoliageQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[foliage.DensityScale:1.0]]
+[2019.09.24-15.01.40:235][  0]LogConfig: Setting CVar [[grass.DensityScale:1.0]]
+[2019.09.24-15.01.40:235][  0]LogInit: Selected Device Profile: [Windows]
+[2019.09.24-15.01.40:235][  0]LogInit: Applying CVar settings loaded from the selected device profile: [Windows]
+[2019.09.24-15.01.40:239][  0]LogHAL: Display: Platform has ~ 16 GB [17114546176 / 17179869184 / 16], which maps to Larger [LargestMinGB=32, LargerMinGB=12, DefaultMinGB=8, SmallerMinGB=6, SmallestMinGB=0)
+[2019.09.24-15.01.40:239][  0]LogInit: Going up to parent DeviceProfile []
+[2019.09.24-15.01.40:239][  0]LogConfig: Applying CVar settings from Section [ViewDistanceQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.SkeletalMeshLODBias:0]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.ViewDistanceScale:1.0]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Applying CVar settings from Section [AntiAliasingQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.PostProcessAAQuality:4]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Applying CVar settings from Section [ShadowQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.LightFunctionQuality:1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.ShadowQuality:5]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Shadow.CSM.MaxCascades:10]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Shadow.MaxResolution:2048]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Shadow.MaxCSMResolution:2048]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Shadow.RadiusThreshold:0.01]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Shadow.DistanceScale:1.0]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Shadow.CSM.TransitionScale:1.0]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Shadow.PreShadowResolutionFactor:1.0]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DistanceFieldShadowing:1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DistanceFieldAO:1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.AOQuality:2]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.VolumetricFog:1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridPixelSize:8]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.VolumetricFog.GridSizeZ:128]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.VolumetricFog.HistoryMissSupersampleCount:4]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.LightMaxDrawDistanceScale:1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.CapsuleShadows:1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Applying CVar settings from Section [PostProcessQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.MotionBlurQuality:4]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMipLevelFactor:0.4]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.AmbientOcclusionMaxQuality:100]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.AmbientOcclusionLevels:-1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.AmbientOcclusionRadiusScale:1.0]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DepthOfFieldQuality:2]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.RenderTargetPoolMin:400]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.LensFlareQuality:2]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.SceneColorFringeQuality:1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.EyeAdaptationQuality:2]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.BloomQuality:5]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.FastBlurThreshold:100]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Upscale.Quality:3]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Tonemapper.GrainQuantization:1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.LightShaftQuality:1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Filter.SizeScale:1]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.Tonemapper.Quality:5]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Gather.AccumulatorQuality:1        ; higher gathering accumulator quality]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Gather.PostfilterMethod:1          ; Median3x3 postfilering method]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Gather.EnableBokehSettings:0       ; no bokeh simulation when gathering]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Gather.RingCount:4                 ; medium number of samples when gathering]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Scatter.ForegroundCompositing:1    ; additive foreground scattering]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Scatter.BackgroundCompositing:2    ; additive background scattering]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Scatter.EnableBokehSettings:1      ; bokeh simulation when scattering]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Scatter.MaxSpriteRatio:0.1         ; only a maximum of 10% of scattered bokeh]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Recombine.Quality:1                ; cheap slight out of focus]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Recombine.EnableBokehSettings:0    ; no bokeh simulation on slight out of focus]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.TemporalAAQuality:1                ; more stable temporal accumulation]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxForegroundRadius:0.025]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Setting CVar [[r.DOF.Kernel.MaxBackgroundRadius:0.025]]
+[2019.09.24-15.01.40:239][  0]LogConfig: Applying CVar settings from Section [TextureQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.Streaming.MipBias:0]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.Streaming.AmortizeCPUToGPUCopy:0]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.Streaming.MaxNumTexturesToStreamPerFrame:0]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.Streaming.Boost:1]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.MaxAnisotropy:8]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.Streaming.LimitPoolSizeToVRAM:0]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.Streaming.PoolSize:1000]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.Streaming.MaxEffectiveScreenSize:0]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Applying CVar settings from Section [EffectsQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.TranslucencyLightingVolumeDim:64]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.RefractionQuality:2]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.SSR.Quality:3]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.SceneColorFormat:4]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.DetailMode:2]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.TranslucencyVolumeBlur:1]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.MaterialQualityLevel:1 ; High quality]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.SSS.Scale:1]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.SSS.SampleSet:2]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.SSS.Quality:1]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.SSS.HalfRes:1]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.EmitterSpawnRateScale:1.0]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[r.ParticleLightQuality:2]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Applying CVar settings from Section [FoliageQuality@3] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Scalability.ini]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[foliage.DensityScale:1.0]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[grass.DensityScale:1.0]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Applying CVar settings from Section [Startup] File [../../../Engine/Config/ConsoleVariables.ini]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[net.UseAdaptiveNetUpdateFrequency:0]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Setting CVar [[p.chaos.AllowCreatePhysxBodies:1]]
+[2019.09.24-15.01.40:240][  0]LogConfig: Applying CVar settings from Section [ConsoleVariables] File [D:/Github/GraduationProject/Game/Saved/Config/Windows/Engine.ini]
+[2019.09.24-15.01.40:240][  0]LogInit: Computer: DESKTOP-Q83AC7I
+[2019.09.24-15.01.40:240][  0]LogInit: User: blood
+[2019.09.24-15.01.40:240][  0]LogInit: CPU Page size=4096, Cores=4
+[2019.09.24-15.01.40:240][  0]LogInit: High frequency timer resolution =10.000000 MHz
+[2019.09.24-15.01.40:240][  0]LogMemory: Memory total: Physical=15.9GB (16GB approx)
+[2019.09.24-15.01.40:240][  0]LogMemory: Platform Memory Stats for Windows
+[2019.09.24-15.01.40:240][  0]LogMemory: Process Physical Memory: 103.09 MB used, 103.09 MB peak
+[2019.09.24-15.01.40:240][  0]LogMemory: Process Virtual Memory: 100.79 MB used, 100.79 MB peak
+[2019.09.24-15.01.40:240][  0]LogMemory: Physical Memory: 5693.89 MB used,  10627.81 MB free, 16321.70 MB total
+[2019.09.24-15.01.40:241][  0]LogMemory: Virtual Memory: 4683.30 MB used,  134213048.00 MB free, 134217728.00 MB total
+[2019.09.24-15.01.40:258][  0]LogWindows: WindowsPlatformFeatures enabled
+[2019.09.24-15.01.40:317][  0]LogInit: Overriding language with editor language configuration option (en).
+[2019.09.24-15.01.40:317][  0]LogInit: Overriding locale with editor locale configuration option (en).
+[2019.09.24-15.01.40:539][  0]LogInit: Setting process to per monitor DPI aware
+[2019.09.24-15.01.40:648][  0]LogSlate: New Slate User Created.  User Index 0, Is Virtual User: 0
+[2019.09.24-15.01.40:648][  0]LogSlate: Slate User Registered.  User Index 0, Is Virtual User: 0
+[2019.09.24-15.01.41:031][  0]LogHMD: Failed to initialize OpenVR with code 110
+[2019.09.24-15.01.41:031][  0]LogD3D11RHI: D3D11 adapters:
+[2019.09.24-15.01.41:174][  0]LogD3D11RHI:    0. 'NVIDIA GeForce GTX 760' (Feature Level 11_0)
+[2019.09.24-15.01.41:174][  0]LogD3D11RHI:       1944/0/8160 MB DedicatedVideo/DedicatedSystem/SharedSystem, Outputs:2, VendorId:0x10de
+[2019.09.24-15.01.41:179][  0]LogD3D11RHI:    1. 'Microsoft Basic Render Driver' (Feature Level 11_0)
+[2019.09.24-15.01.41:179][  0]LogD3D11RHI:       0/0/8160 MB DedicatedVideo/DedicatedSystem/SharedSystem, Outputs:0, VendorId:0x1414
+[2019.09.24-15.01.41:179][  0]LogD3D11RHI: Chosen D3D11 Adapter: 0
+[2019.09.24-15.01.41:188][  0]LogD3D11RHI: Creating new Direct3DDevice
+[2019.09.24-15.01.41:188][  0]LogD3D11RHI:     GPU DeviceId: 0x1187 (for the marketing name, search the web for "GPU Device Id")
+[2019.09.24-15.01.41:188][  0]LogWindows: EnumDisplayDevices:
+[2019.09.24-15.01.41:189][  0]LogWindows:    0. 'NVIDIA GeForce GTX 760' (P:1 D:1)
+[2019.09.24-15.01.41:191][  0]LogWindows:    1. 'NVIDIA GeForce GTX 760' (P:0 D:1)
+[2019.09.24-15.01.41:194][  0]LogWindows:    2. 'NVIDIA GeForce GTX 760' (P:0 D:0)
+[2019.09.24-15.01.41:196][  0]LogWindows:    3. 'NVIDIA GeForce GTX 760' (P:0 D:0)
+[2019.09.24-15.01.41:198][  0]LogWindows: DebugString: FoundDriverCount:4 
+[2019.09.24-15.01.41:198][  0]LogD3D11RHI:     Adapter Name: NVIDIA GeForce GTX 760
+[2019.09.24-15.01.41:198][  0]LogD3D11RHI:   Driver Version: 416.94 (internal:25.21.14.1694, unified:416.94)
+[2019.09.24-15.01.41:198][  0]LogD3D11RHI:      Driver Date: 11-12-2018
+[2019.09.24-15.01.41:198][  0]LogRHI: Texture pool is 1361 MB (70% of 1944 MB)
+[2019.09.24-15.01.41:277][  0]LogD3D11RHI: Async texture creation enabled
+[2019.09.24-15.01.41:301][  0]LogD3D11RHI: GPU Timing Frequency: 1000.000000 (Debug: 2 2)
+[2019.09.24-15.01.42:034][  0]LogTemp: Display: Module 'AllDesktopTargetPlatform' loaded TargetPlatform 'AllDesktop'
+[2019.09.24-15.01.42:048][  0]LogTemp: Display: Module 'MacClientTargetPlatform' loaded TargetPlatform 'MacClient'
+[2019.09.24-15.01.42:063][  0]LogTemp: Display: Module 'MacNoEditorTargetPlatform' loaded TargetPlatform 'MacNoEditor'
+[2019.09.24-15.01.42:076][  0]LogTemp: Display: Module 'MacServerTargetPlatform' loaded TargetPlatform 'MacServer'
+[2019.09.24-15.01.42:090][  0]LogTemp: Display: Module 'MacTargetPlatform' loaded TargetPlatform 'Mac'
+[2019.09.24-15.01.42:103][  0]LogTemp: Display: Module 'WindowsClientTargetPlatform' loaded TargetPlatform 'WindowsClient'
+[2019.09.24-15.01.42:115][  0]LogTemp: Display: Module 'WindowsNoEditorTargetPlatform' loaded TargetPlatform 'WindowsNoEditor'
+[2019.09.24-15.01.42:128][  0]LogTemp: Display: Module 'WindowsServerTargetPlatform' loaded TargetPlatform 'WindowsServer'
+[2019.09.24-15.01.42:134][  0]LogTemp: Display: Module 'WindowsTargetPlatform' loaded TargetPlatform 'Windows'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_ASTC'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_ATC'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_DXT'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_ETC1'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_ETC1a'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_ETC2'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_PVRTC'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'AndroidClient'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_ASTCClient'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_ATCClient'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_DXTClient'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_ETC1Client'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_ETC1aClient'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_ETC2Client'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_PVRTCClient'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_Multi'
+[2019.09.24-15.01.42:169][  0]LogTemp: Display: Module 'AndroidTargetPlatform' loaded TargetPlatform 'Android_MultiClient'
+[2019.09.24-15.01.42:174][  0]LogTemp: Display: Module 'HTML5TargetPlatform' loaded TargetPlatform 'HTML5'
+[2019.09.24-15.01.42:202][  0]LogTemp: Display: Module 'IOSTargetPlatform' loaded TargetPlatform 'IOSClient'
+[2019.09.24-15.01.42:202][  0]LogTemp: Display: Module 'IOSTargetPlatform' loaded TargetPlatform 'IOS'
+[2019.09.24-15.01.42:220][  0]LogTemp: Display: Module 'TVOSTargetPlatform' loaded TargetPlatform 'TVOSClient'
+[2019.09.24-15.01.42:220][  0]LogTemp: Display: Module 'TVOSTargetPlatform' loaded TargetPlatform 'TVOS'
+[2019.09.24-15.01.42:231][  0]LogTemp: Display: Module 'LinuxClientTargetPlatform' loaded TargetPlatform 'LinuxClient'
+[2019.09.24-15.01.42:241][  0]LogTemp: Display: Module 'LinuxNoEditorTargetPlatform' loaded TargetPlatform 'LinuxNoEditor'
+[2019.09.24-15.01.42:252][  0]LogTemp: Display: Module 'LinuxServerTargetPlatform' loaded TargetPlatform 'LinuxServer'
+[2019.09.24-15.01.42:264][  0]LogTemp: Display: Module 'LinuxTargetPlatform' loaded TargetPlatform 'Linux'
+[2019.09.24-15.01.42:293][  0]LogTemp: Display: Module 'LuminTargetPlatform' loaded TargetPlatform 'Lumin'
+[2019.09.24-15.01.42:293][  0]LogTemp: Display: Module 'LuminTargetPlatform' loaded TargetPlatform 'LuminClient'
+[2019.09.24-15.01.42:293][  0]LogTargetPlatformManager: Display: Building Assets For Windows
+[2019.09.24-15.01.42:330][  0]LogAudioDebug: Display: Lib vorbis DLL was dynamically loaded.
+[2019.09.24-15.01.42:452][  0]LogShaderCompilers: Guid format shader working directory is 13 characters bigger than the processId version (D:/Github/GraduationProject/Game/Intermediate/Shaders/WorkingDirectory/28012/).
+[2019.09.24-15.01.42:452][  0]LogShaderCompilers: Cleaned the shader compiler working directory 'C:/Users/blood/AppData/Local/Temp/UnrealShaderWorkingDir/99E8B0D24CFB4128A939C6827844F93D/'.
+[2019.09.24-15.01.42:455][  0]LogXGEController: Cannot use XGE Controller as Incredibuild is not installed on this machine.
+[2019.09.24-15.01.42:455][  0]LogShaderCompilers: Cannot use XGE Shader Compiler as Incredibuild is not installed on this machine.
+[2019.09.24-15.01.42:455][  0]LogShaderCompilers: Display: Using Local Shader Compiler.
+[2019.09.24-15.01.43:187][  0]LogDerivedDataCache: Display: Max Cache Size: 512 MB
+[2019.09.24-15.01.43:252][  0]LogDerivedDataCache: Loaded boot cache 0.06s 73MB C:/Users/blood/AppData/Local/UnrealEngine/4.23/DerivedDataCache/Boot.ddc.
+[2019.09.24-15.01.43:252][  0]LogDerivedDataCache: Display: Loaded Boot cache: C:/Users/blood/AppData/Local/UnrealEngine/4.23/DerivedDataCache/Boot.ddc
+[2019.09.24-15.01.43:252][  0]LogDerivedDataCache: FDerivedDataBackendGraph:  Pak pak cache file D:/Github/GraduationProject/Game/DerivedDataCache/DDC.ddp not found, will not use a pak cache.
+[2019.09.24-15.01.43:252][  0]LogDerivedDataCache: Unable to find inner node Pak for hierarchical cache Hierarchy.
+[2019.09.24-15.01.43:252][  0]LogDerivedDataCache: FDerivedDataBackendGraph:  CompressedPak pak cache file D:/Github/GraduationProject/Game/DerivedDataCache/Compressed.ddp not found, will not use a pak cache.
+[2019.09.24-15.01.43:252][  0]LogDerivedDataCache: Unable to find inner node CompressedPak for hierarchical cache Hierarchy.
+[2019.09.24-15.01.43:264][  0]LogDerivedDataCache: Display: Pak cache opened for reading ../../../Engine/DerivedDataCache/Compressed.ddp.
+[2019.09.24-15.01.43:264][  0]LogDerivedDataCache: FDerivedDataBackendGraph:  EnterprisePak pak cache file ../../../Enterprise/DerivedDataCache/Compressed.ddp not found, will not use a pak cache.
+[2019.09.24-15.01.43:264][  0]LogDerivedDataCache: Unable to find inner node EnterprisePak for hierarchical cache Hierarchy.
+[2019.09.24-15.01.43:266][  0]LogDerivedDataCache: Using Local data cache path C:/Users/blood/AppData/Local/UnrealEngine/Common/DerivedDataCache: Writable
+[2019.09.24-15.01.43:266][  0]LogDerivedDataCache: Shared data cache path not found in *engine.ini, will not use an Shared cache.
+[2019.09.24-15.01.43:267][  0]LogDerivedDataCache: Unable to find inner node Shared for hierarchical cache Hierarchy.
+[2019.09.24-15.01.43:291][  0]LogMaterial: Verifying Global Shaders for PCD3D_SM5
+[2019.09.24-15.01.43:294][  0]LogSlate: Using FreeType 2.6.0
+[2019.09.24-15.01.43:295][  0]LogSlate: SlateFontServices - WITH_FREETYPE: 1, WITH_HARFBUZZ: 1
+[2019.09.24-15.01.43:404][  0]LogAssetRegistry: FAssetRegistry took 0.0033 seconds to start up
+[2019.09.24-15.01.43:702][  0]LogInit: Selected Device Profile: [Windows]
+[2019.09.24-15.01.43:888][  0]LogMeshReduction: Using QuadricMeshReduction for automatic static mesh reduction
+[2019.09.24-15.01.43:888][  0]LogMeshReduction: Using SimplygonMeshReduction for automatic skeletal mesh reduction
+[2019.09.24-15.01.43:888][  0]LogMeshReduction: Using ProxyLODMeshReduction for automatic mesh merging
+[2019.09.24-15.01.43:888][  0]LogMeshReduction: No distributed automatic mesh merging module available
+[2019.09.24-15.01.43:888][  0]LogMeshMerging: No distributed automatic mesh merging module available
+[2019.09.24-15.01.43:900][  0]LogNetVersion: Game 1.0.0, NetCL: 8386587, EngineNetVer: 11, GameNetVer: 0 (Checksum: 932843807)
+[2019.09.24-15.01.44:357][  0]LogPackageLocalizationCache: Processed 12 localized package path(s) for 1 prioritized culture(s) in 0.051404 seconds
+[2019.09.24-15.01.44:364][  0]LogUObjectArray: 43444 objects as part of root set at end of initial load.
+[2019.09.24-15.01.44:365][  0]LogUObjectAllocator: 7548648 out of 0 bytes used by permanent object pool.
+[2019.09.24-15.01.44:365][  0]LogUObjectArray: CloseDisregardForGC: 0/0 objects in disregard for GC pool
+[2019.09.24-15.01.45:872][  0]LogTcpMessaging: Initializing TcpMessaging bridge
+[2019.09.24-15.01.45:877][  0]LogUdpMessaging: Initializing bridge on interface 0.0.0.0:0 to multicast group 230.0.0.1:6666.
+[2019.09.24-15.01.46:006][  0]SourceControl: Source control is disabled
+[2019.09.24-15.01.46:006][  0]SourceControl: Source control is disabled
+[2019.09.24-15.01.46:011][  0]SourceControl: Source control is disabled
+[2019.09.24-15.01.46:016][  0]SourceControl: Source control is disabled
+[2019.09.24-15.01.46:223][  0]LogAndroidPermission: UAndroidPermissionCallbackProxy::GetInstance
+[2019.09.24-15.01.47:265][  0]LogOcInput: OculusInput pre-init called
+[2019.09.24-15.01.47:276][  0]LogWindows: Failed to load 'OVRPlugin.dll' (GetLastError=126)
+[2019.09.24-15.01.47:276][  0]LogWindows: File 'OVRPlugin.dll' does not exist
+[2019.09.24-15.01.47:372][  0]LogEngine: Initializing Engine...
+[2019.09.24-15.01.47:374][  0]LogHMD: Failed to initialize OpenVR with code 110
+[2019.09.24-15.01.47:375][  0]LogStats: UGameplayTagsManager::InitializeManager -  0.000 s
+[2019.09.24-15.01.47:607][  0]LogInit: Initializing FReadOnlyCVARCache
+[2019.09.24-15.01.47:624][  0]LogAIModule: Creating AISystem for world Untitled
+[2019.09.24-15.01.48:174][  0]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.01.48:304][  0]LogInit: FAudioDevice initialized.
+[2019.09.24-15.01.48:304][  0]LogNetVersion: Set ProjectVersion to 1.0.0.0. Version Checksum will be recalculated on next use.
+[2019.09.24-15.01.48:400][  0]LogDerivedDataCache: Saved boot cache 0.10s 73MB C:/Users/blood/AppData/Local/UnrealEngine/4.23/DerivedDataCache/Boot.ddc.
+[2019.09.24-15.01.48:400][  0]LogInit: Texture streaming: Enabled
+[2019.09.24-15.01.48:440][  0]LogEngineSessionManager: EngineSessionManager initialized
+[2019.09.24-15.01.48:507][  0]LogInit: Transaction tracking system initialized
+[2019.09.24-15.01.48:565][  0]BlueprintLog: New page: Editor Load
+[2019.09.24-15.01.48:722][  0]LocalizationService: Localization service is disabled
+[2019.09.24-15.01.49:050][  0]LogFileCache: Scanning file cache for directory 'D:/Github/GraduationProject/Game/Content/' took 0.01s
+[2019.09.24-15.01.49:050][  0]LogCook: Display: Max memory allowance for cook 16384mb min free memory 0mb
+[2019.09.24-15.01.49:050][  0]LogCook: Display: Mobile HDR setting 1
+[2019.09.24-15.01.49:393][  0]SourceControl: Source control is disabled
+[2019.09.24-15.01.49:393][  0]Cmd: MAP LOAD FILE="D:/Github/GraduationProject/Game/Content/Map/Basic.umap" TEMPLATE=0 SHOWPROGRESS=1 FEATURELEVEL=3
+[2019.09.24-15.01.49:393][  0]LightingResults: New page: Lighting Build
+[2019.09.24-15.01.49:397][  0]LogWorld: UWorld::CleanupWorld for Untitled, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.01.49:397][  0]MapCheck: New page: Map Check
+[2019.09.24-15.01.49:397][  0]LightingResults: New page: Lighting Build
+[2019.09.24-15.01.49:425][  0]LogUObjectHash: Compacting FUObjectHashTables data took   4.81ms
+[2019.09.24-15.01.49:569][  0]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.01.49:575][  0]LogEditorServer: Finished looking for orphan Actors (0.000 secs)
+[2019.09.24-15.01.49:611][  0]LogUObjectHash: Compacting FUObjectHashTables data took   2.71ms
+[2019.09.24-15.01.49:611][  0]Cmd: MAP CHECKDEP NOCLEARLOG
+[2019.09.24-15.01.49:612][  0]MapCheck: Map check complete: 0 Error(s), 0 Warning(s), took 0.093ms to complete.
+[2019.09.24-15.01.49:612][  0]LogFileHelpers: Loading map 'Basic' took 0.219
+[2019.09.24-15.01.49:760][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.01.49:769][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.01.49:777][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.01.49:784][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.01.49:794][  0]LogCollectionManager: Loaded 0 collections in 0.002355 seconds
+[2019.09.24-15.01.49:800][  0]LogFileCache: Scanning file cache for directory 'D:/Github/GraduationProject/Game/Saved/Collections/' took 0.00s
+[2019.09.24-15.01.49:800][  0]LogFileCache: Scanning file cache for directory 'D:/Github/GraduationProject/Game/Content/Developers/blood/Collections/' took 0.00s
+[2019.09.24-15.01.49:800][  0]LogFileCache: Scanning file cache for directory 'D:/Github/GraduationProject/Game/Content/Collections/' took 0.00s
+[2019.09.24-15.01.49:800][  0]LogCollectionManager: Rebuilt the GUID cache for 0 collections in 0.000001 seconds
+[2019.09.24-15.01.49:809][  0]LogContentBrowser: Native class hierarchy populated in 0.0087 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.01.49:817][  0]LogContentBrowser: Native class hierarchy updated for 'WidgetCarousel' in 0.0004 seconds. Added 0 classes and 0 folders.
+[2019.09.24-15.01.49:930][  0]LogContentBrowser: Native class hierarchy updated for 'AddContentDialog' in 0.0004 seconds. Added 0 classes and 0 folders.
+[2019.09.24-15.01.49:984][  0]LogSlate: Took 0.000387 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Regular.ttf' (155K)
+[2019.09.24-15.01.49:988][  0]LogSlate: Took 0.000306 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Bold.ttf' (160K)
+[2019.09.24-15.01.49:989][  0]LogSlate: Took 0.000318 seconds to synchronously load lazily loaded font '../../../Engine/Content/Editor/Slate/Fonts/FontAwesome.ttf' (139K)
+[2019.09.24-15.01.50:063][  0]LogRenderer: Reallocating scene render targets to support 980x572 Format 10 NumSamples 1 (Frame:1).
+[2019.09.24-15.01.50:184][  0]LogSlate: Took 0.000498 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Light.ttf' (167K)
+[2019.09.24-15.01.50:265][  0]LogContentBrowser: Native class hierarchy updated for 'HierarchicalLODOutliner' in 0.0005 seconds. Added 0 classes and 0 folders.
+[2019.09.24-15.01.50:265][  0]LogLoad: (Engine Initialization) Total time: 13.82 seconds
+[2019.09.24-15.01.50:265][  0]LogLoad: (Engine Initialization) Total Blueprint compile time: 0.00 seconds
+[2019.09.24-15.01.50:381][  0]LogContentStreaming: Texture pool size now 1000 MB
+[2019.09.24-15.01.50:434][  1]LogAssetRegistry: Asset discovery search completed in 7.0314 seconds
+[2019.09.24-15.01.50:438][  1]LogCollectionManager: Rebuilt the object cache for 0 collections in 0.000004 seconds (found 0 objects)
+[2019.09.24-15.01.50:438][  1]LogCollectionManager: Fixed up redirectors for 0 collections in 0.000050 seconds (updated 0 objects)
+[2019.09.24-15.02.15:124][ 75]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.02.16:453][234]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.02.16:457][234]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.02.18:306][454]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.02.26:328][412]LogSlate: Took 0.000461 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Light.ttf' (167K)
+[2019.09.24-15.02.26:340][412]LogAssetEditorManager: Opening Asset editor for Class /Script/Game.PioneerController
+[2019.09.24-15.03.48:125][999]Candidate modules for hot reload:
+[2019.09.24-15.03.48:125][999]  Game
+[2019.09.24-15.03.48:125][999]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,1863 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.03.48:134][999]Warning: Starting HotReload took  1.0s.
+[2019.09.24-15.04.01:488][162]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:04:01 AM
+[2019.09.24-15.04.01:488][162]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.04.01:488][162]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.04.01:488][162]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.04.01:488][162]CompilerResultsLog: Reflection code generated for GameEditor in 9.7713109 seconds
+[2019.09.24-15.04.01:488][162]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.04.01:488][162]CompilerResultsLog: Building 5 actions with 8 processes...
+[2019.09.24-15.04.01:488][162]CompilerResultsLog:   [1/5] PathFinding.cpp
+[2019.09.24-15.04.01:488][162]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game\PathFinding.cpp(33) : error C2360: 'MyPawn' ?ʱ?ȭ?? 'case' ???̺??? ???? ?????Ǿ????ϴ?.
+[2019.09.24-15.04.01:488][162]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\PathFinding.cpp(15): note: 'MyPawn' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.04.01:488][162]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game\PathFinding.cpp(37) : error C2361: 'MyPawn' ?ʱ?ȭ?? 'default' ???̺??? ???? ?????Ǿ????ϴ?.
+[2019.09.24-15.04.01:488][162]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\PathFinding.cpp(15): note: 'MyPawn' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.04.01:488][162]CompilerResultsLog:   [2/5] PioneerController.cpp
+[2019.09.24-15.04.01:488][162]LogMainFrame: MainFrame: Module compiling took 13.368 seconds
+[2019.09.24-15.04.01:488][162]Warning: HotReload failed, recompile failed
+[2019.09.24-15.04.03:523][167]LogSlate: Took 0.002203 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/DroidSansFallback.ttf' (3848K)
+[2019.09.24-15.04.03:523][167]LogSlate: Last resort fallback font was requested. Font: '../../../Engine/Content/Slate/Fonts/DroidSansFallback.ttf', Character: 'ȭ (U+022d)'
+[2019.09.24-15.04.03:527][167]LogSlate: Took 0.002718 seconds to synchronously load lazily loaded font '../../../Engine/Content/SlateDebug/Fonts/LastResort.ttf' (5269K)
+[2019.09.24-15.04.31:869][191]Candidate modules for hot reload:
+[2019.09.24-15.04.31:869][191]  Game
+[2019.09.24-15.04.31:869][191]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,1336 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.04.31:874][191]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.04.33:117][297]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:04:33 AM
+[2019.09.24-15.04.33:117][297]CompilerResultsLog: ERROR: A conflicting instance of UnrealBuildTool is already running.
+[2019.09.24-15.04.33:117][297]LogMainFrame: MainFrame: Module compiling took 1.252 seconds
+[2019.09.24-15.04.33:117][297]Warning: HotReload failed, recompile failed
+[2019.09.24-15.04.39:584][ 69]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.04.39:595][ 69]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.04.52:568][485]Candidate modules for hot reload:
+[2019.09.24-15.04.52:568][485]  Game
+[2019.09.24-15.04.52:568][485]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,9873 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.04.52:575][485]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.05.07:324][613]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:05:07 AM
+[2019.09.24-15.05.07:324][613]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.05.07:325][613]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.05.07:325][613]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.05.07:325][613]CompilerResultsLog: Reflection code generated for GameEditor in 9.859427 seconds
+[2019.09.24-15.05.07:325][613]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.05.07:325][613]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.24-15.05.07:325][613]CompilerResultsLog:   [1/4] PathFinding.cpp
+[2019.09.24-15.05.07:325][613]CompilerResultsLog:   [2/4] UE4Editor-Game-9873.lib
+[2019.09.24-15.05.07:325][613]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-9873.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-9873.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.05.07:325][613]CompilerResultsLog:   [3/4] UE4Editor-Game-9873.dll
+[2019.09.24-15.05.07:325][613]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-9873.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-9873.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.05.07:325][613]CompilerResultsLog:   [4/4] GameEditor.target
+[2019.09.24-15.05.07:325][613]CompilerResultsLog: Total time in Parallel executor: 2.74 seconds
+[2019.09.24-15.05.07:325][613]CompilerResultsLog: Total execution time: 14.30 seconds
+[2019.09.24-15.05.07:325][613]LogMainFrame: MainFrame: Module compiling took 14.762 seconds
+[2019.09.24-15.05.07:349][613]LogUObjectHash: Compacting FUObjectHashTables data took   0.73ms
+[2019.09.24-15.05.07:380][613]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0006 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.05.07:383][613]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.05.07:444][613]LogUObjectHash: Compacting FUObjectHashTables data took   1.42ms
+[2019.09.24-15.05.07:457][613]LogContentBrowser: Native class hierarchy populated in 0.0086 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.05.07:457][613]Display: HotReload took 14.9s.
+[2019.09.24-15.05.09:980][697]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.24-15.05.09:992][697]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.05.09:992][697]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.24-15.05.09:992][697]PIE: New page: PIE session: Basic (Sep 25, 2019, 9:05:09 AM)
+[2019.09.24-15.05.09:993][697]LogOnline: OSS: Creating online subsystem instance for: NULL
+[2019.09.24-15.05.09:995][697]LogPlayLevel: Creating play world package: /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.05.09:997][697]LogPlayLevel: PIE: StaticDuplicateObject took: (0.002666s)
+[2019.09.24-15.05.09:998][697]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.05.09:999][697]LogPlayLevel: PIE: World Init took: (0.001015s)
+[2019.09.24-15.05.09:999][697]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/Map/Basic.Basic to /Game/Map/UEDPIE_0_Basic.Basic (0.003885s)
+[2019.09.24-15.05.10:021][697]LogUObjectHash: Compacting FUObjectHashTables data took   1.86ms
+[2019.09.24-15.05.10:570][697]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.05.10:651][697]LogInit: FAudioDevice initialized.
+[2019.09.24-15.05.10:665][697]LogLoad: Game class is 'GameGameModeBase'
+[2019.09.24-15.05.10:667][697]LogWorld: Bringing World /Game/Map/UEDPIE_0_Basic.Basic up for play (max tick rate 0) at 2019.09.25-00.05.10
+[2019.09.24-15.05.10:667][697]LogWorld: Bringing up level for play took: 0.000645
+[2019.09.24-15.05.10:667][697]LogOnline: OSS: Creating online subsystem instance for: :Context_2
+[2019.09.24-15.05.10:729][697]LogContentBrowser: Native class hierarchy updated for 'MovieSceneCapture' in 0.0005 seconds. Added 20 classes and 0 folders.
+[2019.09.24-15.05.10:730][697]PIE: Play in editor start time for /Game/Map/UEDPIE_0_Basic -0.074
+[2019.09.24-15.05.10:730][697]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.05.13:637][ 38]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.05.13:722][ 48]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.05.13:722][ 48]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.05.13:722][ 48]LogWorld: BeginTearingDown for /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.05.13:723][ 48]LogWorld: UWorld::CleanupWorld for Basic, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.05.13:733][ 48]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.24-15.05.13:734][ 48]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.05.13:761][ 48]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.05.13:764][ 48]LogUObjectHash: Compacting FUObjectHashTables data took   2.20ms
+[2019.09.24-15.05.13:822][ 54]LogPlayLevel: Display: Destroying online subsystem :Context_2
+[2019.09.24-15.05.57:584][257]Candidate modules for hot reload:
+[2019.09.24-15.05.57:584][257]  Game
+[2019.09.24-15.05.57:584][257]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,56 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.05.57:591][257]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.06.00:408][553]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:06:00 AM
+[2019.09.24-15.06.00:408][553]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.06.00:408][553]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.06.00:408][553]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.06.00:408][553]LogMainFrame: MainFrame: Module compiling took 2.829 seconds
+[2019.09.24-15.06.00:408][553]Warning: HotReload failed, recompile failed
+[2019.09.24-15.06.05:411][797]Candidate modules for hot reload:
+[2019.09.24-15.06.05:411][797]  Game
+[2019.09.24-15.06.05:411][797]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,3668 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.06.05:420][797]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.06.17:958][885]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:06:17 AM
+[2019.09.24-15.06.17:958][885]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.06.17:958][885]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.06.17:958][885]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.06.17:958][885]CompilerResultsLog: Reflection code generated for GameEditor in 9.5572771 seconds
+[2019.09.24-15.06.17:958][885]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.06.17:958][885]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.24-15.06.17:958][885]CompilerResultsLog:   [1/4] PathFinding.cpp
+[2019.09.24-15.06.17:959][885]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game\PathFinding.cpp(33) : error C2360: 'MyPawn' ?ʱ?ȭ?? 'case' ???̺??? ???? ?????Ǿ????ϴ?.
+[2019.09.24-15.06.17:959][885]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\PathFinding.cpp(15): note: 'MyPawn' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.06.17:959][885]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game\PathFinding.cpp(37) : error C2361: 'MyPawn' ?ʱ?ȭ?? 'default' ???̺??? ???? ?????Ǿ????ϴ?.
+[2019.09.24-15.06.17:959][885]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\PathFinding.cpp(15): note: 'MyPawn' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.06.17:959][885]LogMainFrame: MainFrame: Module compiling took 12.553 seconds
+[2019.09.24-15.06.17:959][885]Warning: HotReload failed, recompile failed
+[2019.09.24-15.07.22:102][262]Candidate modules for hot reload:
+[2019.09.24-15.07.22:102][262]  Game
+[2019.09.24-15.07.22:102][262]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,6923 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.07.22:109][262]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.07.36:200][403]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:07:36 AM
+[2019.09.24-15.07.36:200][403]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.07.36:200][403]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.07.36:200][403]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.07.36:200][403]CompilerResultsLog: Reflection code generated for GameEditor in 9.3344344 seconds
+[2019.09.24-15.07.36:200][403]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.07.36:200][403]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.24-15.07.36:200][403]CompilerResultsLog:   [1/4] PathFinding.cpp
+[2019.09.24-15.07.36:200][403]CompilerResultsLog:   [2/4] UE4Editor-Game-6923.lib
+[2019.09.24-15.07.36:200][403]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-6923.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-6923.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.07.36:200][403]CompilerResultsLog:   [3/4] UE4Editor-Game-6923.dll
+[2019.09.24-15.07.36:200][403]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-6923.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-6923.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.07.36:200][403]CompilerResultsLog:   [4/4] GameEditor.target
+[2019.09.24-15.07.36:200][403]CompilerResultsLog: Total time in Parallel executor: 2.58 seconds
+[2019.09.24-15.07.36:200][403]CompilerResultsLog: Total execution time: 13.59 seconds
+[2019.09.24-15.07.36:200][403]LogMainFrame: MainFrame: Module compiling took 14.102 seconds
+[2019.09.24-15.07.36:222][403]LogUObjectHash: Compacting FUObjectHashTables data took   0.75ms
+[2019.09.24-15.07.36:236][403]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.24-15.07.36:313][403]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0005 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.07.36:315][403]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.07.36:373][403]LogUObjectHash: Compacting FUObjectHashTables data took   1.49ms
+[2019.09.24-15.07.36:387][403]LogContentBrowser: Native class hierarchy populated in 0.0085 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.07.36:387][403]Display: HotReload took 14.3s.
+[2019.09.24-15.10.07:201][854]Candidate modules for hot reload:
+[2019.09.24-15.10.07:201][854]  Game
+[2019.09.24-15.10.07:201][854]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,6689 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.10.07:207][854]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.10.20:060][274]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:10:20 AM
+[2019.09.24-15.10.20:060][274]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.10.20:060][274]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.10.20:060][274]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.10.20:060][274]CompilerResultsLog: Reflection code generated for GameEditor in 9.8878108 seconds
+[2019.09.24-15.10.20:060][274]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.10.20:060][274]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.24-15.10.20:060][274]CompilerResultsLog:   [1/4] PathFinding.cpp
+[2019.09.24-15.10.20:060][274]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\PathFinding.cpp(10): fatal error C1075: '{': ??ġ?ϴ? ??ū?? ã?? ?? ?????ϴ?.
+[2019.09.24-15.10.20:060][274]LogMainFrame: MainFrame: Module compiling took 12.864 seconds
+[2019.09.24-15.10.20:060][274]Warning: HotReload failed, recompile failed
+[2019.09.24-15.10.30:559][296]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.10.30:568][296]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.10.54:429][422]Candidate modules for hot reload:
+[2019.09.24-15.10.54:430][422]  Game
+[2019.09.24-15.10.54:430][422]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,1564 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.10.54:435][422]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.11.07:079][534]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:11:07 AM
+[2019.09.24-15.11.07:079][534]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.11.07:079][534]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.11.07:079][534]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.11.07:079][534]CompilerResultsLog: Reflection code generated for GameEditor in 9.6715854 seconds
+[2019.09.24-15.11.07:079][534]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.11.07:080][534]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.24-15.11.07:080][534]CompilerResultsLog:   [1/4] PathFinding.cpp
+[2019.09.24-15.11.07:080][534]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\PathFinding.cpp(10): fatal error C1075: '{': ??ġ?ϴ? ??ū?? ã?? ?? ?????ϴ?.
+[2019.09.24-15.11.07:080][534]LogMainFrame: MainFrame: Module compiling took 12.655 seconds
+[2019.09.24-15.11.07:080][534]Warning: HotReload failed, recompile failed
+[2019.09.24-15.11.22:611][779]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.11.22:616][779]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.11.29:796][897]Candidate modules for hot reload:
+[2019.09.24-15.11.29:796][897]  Game
+[2019.09.24-15.11.29:796][897]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,9620 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.11.29:803][897]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.11.44:356][150]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:11:44 AM
+[2019.09.24-15.11.44:356][150]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.11.44:356][150]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.11.44:356][150]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.11.44:356][150]CompilerResultsLog: Reflection code generated for GameEditor in 9.6261658 seconds
+[2019.09.24-15.11.44:356][150]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.11.44:356][150]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.24-15.11.44:356][150]CompilerResultsLog:   [1/4] PathFinding.cpp
+[2019.09.24-15.11.44:356][150]CompilerResultsLog:   [2/4] UE4Editor-Game-9620.lib
+[2019.09.24-15.11.44:356][150]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-9620.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-9620.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.11.44:356][150]CompilerResultsLog:   [3/4] UE4Editor-Game-9620.dll
+[2019.09.24-15.11.44:356][150]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-9620.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-9620.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.11.44:356][150]CompilerResultsLog:   [4/4] GameEditor.target
+[2019.09.24-15.11.44:356][150]CompilerResultsLog: Total time in Parallel executor: 2.79 seconds
+[2019.09.24-15.11.44:356][150]CompilerResultsLog: Total execution time: 14.03 seconds
+[2019.09.24-15.11.44:356][150]LogMainFrame: MainFrame: Module compiling took 14.565 seconds
+[2019.09.24-15.11.44:387][150]LogUObjectHash: Compacting FUObjectHashTables data took   2.08ms
+[2019.09.24-15.11.44:418][150]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0006 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.11.44:421][150]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.11.44:479][150]LogUObjectHash: Compacting FUObjectHashTables data took   1.28ms
+[2019.09.24-15.11.44:497][150]LogContentBrowser: Native class hierarchy populated in 0.0100 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.11.44:497][150]Display: HotReload took 14.7s.
+[2019.09.24-15.12.29:582][330]Candidate modules for hot reload:
+[2019.09.24-15.12.29:582][330]  Game
+[2019.09.24-15.12.29:582][330]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,8703 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.12.29:587][330]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.12.44:115][779]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:12:44 AM
+[2019.09.24-15.12.44:115][779]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.12.44:115][779]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.12.44:115][779]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.12.44:115][779]CompilerResultsLog: Reflection code generated for GameEditor in 9.8357964 seconds
+[2019.09.24-15.12.44:115][779]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.12.44:115][779]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.24-15.12.44:115][779]CompilerResultsLog:   [1/4] PathFinding.cpp
+[2019.09.24-15.12.44:115][779]CompilerResultsLog:   [2/4] UE4Editor-Game-8703.lib
+[2019.09.24-15.12.44:115][779]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-8703.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-8703.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.12.44:115][779]CompilerResultsLog:   [3/4] UE4Editor-Game-8703.dll
+[2019.09.24-15.12.44:115][779]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-8703.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-8703.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.12.44:115][779]CompilerResultsLog:   [4/4] GameEditor.target
+[2019.09.24-15.12.44:115][779]CompilerResultsLog: Total time in Parallel executor: 2.58 seconds
+[2019.09.24-15.12.44:115][779]CompilerResultsLog: Total execution time: 14.20 seconds
+[2019.09.24-15.12.44:115][779]LogMainFrame: MainFrame: Module compiling took 14.539 seconds
+[2019.09.24-15.12.44:142][779]LogUObjectHash: Compacting FUObjectHashTables data took   0.80ms
+[2019.09.24-15.12.44:197][779]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0006 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.12.44:200][779]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.12.44:268][779]LogUObjectHash: Compacting FUObjectHashTables data took   1.29ms
+[2019.09.24-15.12.44:282][779]LogContentBrowser: Native class hierarchy populated in 0.0091 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.12.44:282][779]Display: HotReload took 14.7s.
+[2019.09.24-15.12.46:132][787]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.24-15.12.46:144][787]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.12.46:144][787]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.24-15.12.46:144][787]PIE: New page: PIE session: Basic (Sep 25, 2019, 9:12:46 AM)
+[2019.09.24-15.12.46:144][787]LogPlayLevel: Creating play world package: /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.12.46:147][787]LogPlayLevel: PIE: StaticDuplicateObject took: (0.003498s)
+[2019.09.24-15.12.46:149][787]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.12.46:149][787]LogPlayLevel: PIE: World Init took: (0.001366s)
+[2019.09.24-15.12.46:149][787]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/Map/Basic.Basic to /Game/Map/UEDPIE_0_Basic.Basic (0.005005s)
+[2019.09.24-15.12.46:179][787]LogUObjectHash: Compacting FUObjectHashTables data took   2.44ms
+[2019.09.24-15.12.46:743][787]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.12.46:826][787]LogInit: FAudioDevice initialized.
+[2019.09.24-15.12.46:836][787]LogLoad: Game class is 'GameGameModeBase'
+[2019.09.24-15.12.46:837][787]LogWorld: Bringing World /Game/Map/UEDPIE_0_Basic.Basic up for play (max tick rate 0) at 2019.09.25-00.12.46
+[2019.09.24-15.12.46:838][787]LogWorld: Bringing up level for play took: 0.000493
+[2019.09.24-15.12.46:838][787]LogOnline: OSS: Creating online subsystem instance for: :Context_3
+[2019.09.24-15.12.46:841][787]PIE: Play in editor start time for /Game/Map/UEDPIE_0_Basic 0.037
+[2019.09.24-15.12.46:841][787]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.13.00:130][377]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.13.00:130][377]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.13.00:130][377]LogWorld: BeginTearingDown for /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.13.00:130][377]LogWorld: UWorld::CleanupWorld for Basic, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.13.00:140][377]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.24-15.13.00:140][377]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.13.00:169][377]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.13.00:171][377]LogUObjectHash: Compacting FUObjectHashTables data took   1.60ms
+[2019.09.24-15.13.00:237][383]LogPlayLevel: Display: Destroying online subsystem :Context_3
+[2019.09.24-15.18.52:662][525]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.18.52:755][525]Candidate modules for hot reload:
+[2019.09.24-15.18.52:756][525]  Game
+[2019.09.24-15.18.52:756][525]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,6294 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.18.52:763][525]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.19.15:397][655]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:19:15 AM
+[2019.09.24-15.19.15:397][655]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.19.15:397][655]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.19.15:397][655]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.19.15:397][655]CompilerResultsLog: Reflection code generated for GameEditor in 9.1972682 seconds
+[2019.09.24-15.19.15:397][655]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.19.15:397][655]CompilerResultsLog: Building 7 actions with 8 processes...
+[2019.09.24-15.19.15:397][655]CompilerResultsLog:   [1/7] PathFinding.cpp
+[2019.09.24-15.19.15:397][655]CompilerResultsLog:   [2/7] PioneerController.gen.cpp
+[2019.09.24-15.19.15:397][655]CompilerResultsLog:   [3/7] PioneerController.cpp
+[2019.09.24-15.19.15:397][655]CompilerResultsLog:   [4/7] GameGameModeBase.cpp
+[2019.09.24-15.19.15:397][655]CompilerResultsLog:   [5/7] UE4Editor-Game-6294.lib
+[2019.09.24-15.19.15:397][655]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-6294.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-6294.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.19.15:397][655]CompilerResultsLog:   [6/7] UE4Editor-Game-6294.dll
+[2019.09.24-15.19.15:397][655]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-6294.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-6294.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.19.15:397][655]CompilerResultsLog:   [7/7] GameEditor.target
+[2019.09.24-15.19.15:397][655]CompilerResultsLog: Total time in Parallel executor: 11.48 seconds
+[2019.09.24-15.19.15:397][655]CompilerResultsLog: Total execution time: 22.32 seconds
+[2019.09.24-15.19.15:397][655]LogMainFrame: MainFrame: Module compiling took 22.647 seconds
+[2019.09.24-15.19.15:421][655]LogUObjectHash: Compacting FUObjectHashTables data took   0.95ms
+[2019.09.24-15.19.15:436][655]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.24-15.19.15:513][655]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0006 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.19.15:515][655]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.19.15:568][655]LogUObjectHash: Compacting FUObjectHashTables data took   1.68ms
+[2019.09.24-15.19.15:581][655]LogContentBrowser: Native class hierarchy populated in 0.0083 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.19.15:581][655]Display: HotReload took 22.8s.
+[2019.09.24-15.24.25:352][581]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Cube3)
+[2019.09.24-15.27.30:602][120]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.36.44:505][ 55]Candidate modules for hot reload:
+[2019.09.24-15.36.44:505][ 55]  Game
+[2019.09.24-15.36.44:505][ 55]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,1602 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.36.44:512][ 55]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.36.57:385][281]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:36:57 AM
+[2019.09.24-15.36.57:386][281]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.36.57:386][281]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.36.57:386][281]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.36.57:386][281]CompilerResultsLog: Error: D:/Github/GraduationProject/Game/Source/Game/PioneerController.h(18)  : Error: Unrecognized type 'PathFindAlgorithm' - type must be a UCLASS, USTRUCT or UENUM
+[2019.09.24-15.36.57:386][281]LogMainFrame: MainFrame: Module compiling took 12.884 seconds
+[2019.09.24-15.36.57:386][281]Warning: HotReload failed, recompile failed
+[2019.09.24-15.37.11:195][773]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.37.11:201][773]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.38.15:183][484]Candidate modules for hot reload:
+[2019.09.24-15.38.15:183][484]  Game
+[2019.09.24-15.38.15:183][484]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,7234 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.38.15:191][484]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.38.38:715][247]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:38:38 AM
+[2019.09.24-15.38.38:715][247]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.38.38:715][247]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.38.38:715][247]CompilerResultsLog: Reflection code generated for GameEditor in 10.5923807 seconds
+[2019.09.24-15.38.38:715][247]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.38.38:715][247]CompilerResultsLog: Building 7 actions with 8 processes...
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:   [1/7] PioneerController.gen.cpp
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game/PioneerController.h(17) : error C3646: 'PFA': ?? ?? ???? ?????? ???????Դϴ?.
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game/PioneerController.h(17) : error C4430: ???? ?????ڰ? ?????ϴ?. int?? ?????մϴ?. ????: C++?????? ?⺻ int?? ???????? ?ʽ??ϴ?.
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:   [2/7] PioneerController.cpp
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:    d:\github\graduationproject\game\source\game\PioneerController.h(17) : error C3646: 'PFA': ?? ?? ???? ?????? ???????Դϴ?.
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:    d:\github\graduationproject\game\source\game\PioneerController.h(17) : error C4430: ???? ?????ڰ? ?????ϴ?. int?? ?????մϴ?. ????: C++?????? ?⺻ int?? ???????? ?ʽ??ϴ?.
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game\PioneerController.cpp(18) : error C2065: 'PFA': ???????? ???? ?ĺ????Դϴ?.
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game\PioneerController.cpp(86) : error C2065: 'PFA': ???????? ???? ?ĺ????Դϴ?.
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:    D:\Github\GraduationProject\Game\Source\Game\PioneerController.cpp(107) : error C2065: 'PFA': ???????? ???? ?ĺ????Դϴ?.
+[2019.09.24-15.38.38:715][247]CompilerResultsLog:   [3/7] PathFinding.cpp
+[2019.09.24-15.38.38:716][247]CompilerResultsLog:   [4/7] GameGameModeBase.cpp
+[2019.09.24-15.38.38:716][247]CompilerResultsLog:    d:\github\graduationproject\game\source\game\PioneerController.h(17) : error C3646: 'PFA': ?? ?? ???? ?????? ???????Դϴ?.
+[2019.09.24-15.38.38:716][247]CompilerResultsLog:    d:\github\graduationproject\game\source\game\PioneerController.h(17) : error C4430: ???? ?????ڰ? ?????ϴ?. int?? ?????մϴ?. ????: C++?????? ?⺻ int?? ???????? ?ʽ??ϴ?.
+[2019.09.24-15.38.38:716][247]LogMainFrame: MainFrame: Module compiling took 23.539 seconds
+[2019.09.24-15.38.38:716][247]Warning: HotReload failed, recompile failed
+[2019.09.24-15.38.41:432][566]LogSlate: Took 0.002124 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/NotoNaskhArabicUI-Regular.ttf' (144K)
+[2019.09.24-15.38.50:183][605]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.38.50:187][605]LogSlate: Window 'Message Log' being destroyed
+[2019.09.24-15.39.05:693][745]Candidate modules for hot reload:
+[2019.09.24-15.39.05:693][745]  Game
+[2019.09.24-15.39.05:694][745]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,3197 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.39.05:701][745]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.39.31:533][428]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:39:31 AM
+[2019.09.24-15.39.31:533][428]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.39.31:533][428]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.39.31:533][428]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.39.31:533][428]CompilerResultsLog: Reflection code generated for GameEditor in 10.3987596 seconds
+[2019.09.24-15.39.31:533][428]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.39.31:533][428]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.24-15.39.31:533][428]CompilerResultsLog:   [1/6] PioneerController.gen.cpp
+[2019.09.24-15.39.31:533][428]CompilerResultsLog:   [2/6] PioneerController.cpp
+[2019.09.24-15.39.31:533][428]CompilerResultsLog:   [3/6] GameGameModeBase.cpp
+[2019.09.24-15.39.31:533][428]CompilerResultsLog:   [4/6] UE4Editor-Game-3197.lib
+[2019.09.24-15.39.31:533][428]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-3197.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-3197.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.39.31:533][428]CompilerResultsLog:   [5/6] UE4Editor-Game-3197.dll
+[2019.09.24-15.39.31:533][428]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-3197.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-3197.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.39.31:533][428]CompilerResultsLog:   [6/6] GameEditor.target
+[2019.09.24-15.39.31:533][428]CompilerResultsLog: Total time in Parallel executor: 13.00 seconds
+[2019.09.24-15.39.31:533][428]CompilerResultsLog: Total execution time: 25.30 seconds
+[2019.09.24-15.39.31:533][428]LogMainFrame: MainFrame: Module compiling took 25.844 seconds
+[2019.09.24-15.39.31:557][428]LogUObjectHash: Compacting FUObjectHashTables data took   1.84ms
+[2019.09.24-15.39.31:588][428]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0006 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.39.31:591][428]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.39.31:649][428]LogUObjectHash: Compacting FUObjectHashTables data took   1.96ms
+[2019.09.24-15.39.31:664][428]LogContentBrowser: Native class hierarchy populated in 0.0090 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.39.31:664][428]Display: HotReload took 26.0s.
+[2019.09.24-15.39.33:868][434]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.24-15.39.33:884][434]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.39.33:884][434]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.24-15.39.33:884][434]PIE: New page: PIE session: Basic (Sep 25, 2019, 9:39:33 AM)
+[2019.09.24-15.39.33:884][434]LogPlayLevel: Creating play world package: /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.39.33:888][434]LogPlayLevel: PIE: StaticDuplicateObject took: (0.003875s)
+[2019.09.24-15.39.33:890][434]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.39.33:890][434]LogPlayLevel: PIE: World Init took: (0.001836s)
+[2019.09.24-15.39.33:890][434]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/Map/Basic.Basic to /Game/Map/UEDPIE_0_Basic.Basic (0.005843s)
+[2019.09.24-15.39.33:914][434]LogUObjectHash: Compacting FUObjectHashTables data took   1.43ms
+[2019.09.24-15.39.34:479][434]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.39.34:565][434]LogInit: FAudioDevice initialized.
+[2019.09.24-15.39.34:574][434]LogLoad: Game class is 'GameGameModeBase'
+[2019.09.24-15.39.34:575][434]LogWorld: Bringing World /Game/Map/UEDPIE_0_Basic.Basic up for play (max tick rate 0) at 2019.09.25-00.39.34
+[2019.09.24-15.39.34:575][434]LogWorld: Bringing up level for play took: 0.000515
+[2019.09.24-15.39.34:575][434]LogOnline: OSS: Creating online subsystem instance for: :Context_4
+[2019.09.24-15.39.34:578][434]PIE: Play in editor start time for /Game/Map/UEDPIE_0_Basic -0.226
+[2019.09.24-15.39.34:578][434]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.39.36:667][680]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.39.36:734][688]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.39.36:734][688]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.39.36:734][688]LogWorld: BeginTearingDown for /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.39.36:735][688]LogWorld: UWorld::CleanupWorld for Basic, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.39.36:740][688]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.24-15.39.36:740][688]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.39.36:769][688]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.39.36:772][688]LogUObjectHash: Compacting FUObjectHashTables data took   1.57ms
+[2019.09.24-15.39.36:836][695]LogPlayLevel: Display: Destroying online subsystem :Context_4
+[2019.09.24-15.39.40:649][136]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.39.40:705][143]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.24-15.39.40:717][143]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.39.40:717][143]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.24-15.39.40:717][143]PIE: New page: PIE session: Basic (Sep 25, 2019, 9:39:40 AM)
+[2019.09.24-15.39.40:717][143]LogPlayLevel: Creating play world package: /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.39.40:720][143]LogPlayLevel: PIE: StaticDuplicateObject took: (0.002721s)
+[2019.09.24-15.39.40:721][143]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.39.40:721][143]LogPlayLevel: PIE: World Init took: (0.001332s)
+[2019.09.24-15.39.40:721][143]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/Map/Basic.Basic to /Game/Map/UEDPIE_0_Basic.Basic (0.004220s)
+[2019.09.24-15.39.40:748][143]LogUObjectHash: Compacting FUObjectHashTables data took   1.36ms
+[2019.09.24-15.39.41:323][143]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.39.41:404][143]LogInit: FAudioDevice initialized.
+[2019.09.24-15.39.41:414][143]LogLoad: Game class is 'GameGameModeBase'
+[2019.09.24-15.39.41:415][143]LogWorld: Bringing World /Game/Map/UEDPIE_0_Basic.Basic up for play (max tick rate 0) at 2019.09.25-00.39.41
+[2019.09.24-15.39.41:415][143]LogWorld: Bringing up level for play took: 0.000488
+[2019.09.24-15.39.41:415][143]LogOnline: OSS: Creating online subsystem instance for: :Context_5
+[2019.09.24-15.39.41:418][143]PIE: Play in editor start time for /Game/Map/UEDPIE_0_Basic 0.614
+[2019.09.24-15.39.41:418][143]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.39.57:525][ 69]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.39.57:576][ 75]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.39.57:576][ 75]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.39.57:576][ 75]LogWorld: BeginTearingDown for /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.39.57:576][ 75]LogWorld: UWorld::CleanupWorld for Basic, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.39.57:589][ 75]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.24-15.39.57:589][ 75]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.39.57:617][ 75]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.39.57:619][ 75]LogUObjectHash: Compacting FUObjectHashTables data took   1.49ms
+[2019.09.24-15.39.57:682][ 82]LogPlayLevel: Display: Destroying online subsystem :Context_5
+[2019.09.24-15.40.49:050][360]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.40.49:161][371]LogEditor: Attempting to add actor of class 'Pioneer' to level at -1250.00,-1350.00,146.00
+[2019.09.24-15.40.49:541][400]LogEditor: Attempting to add actor of class 'Pioneer' to level at -410.00,-690.00,146.00
+[2019.09.24-15.40.50:865][536]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.40.50:998][550]LogEditor: Attempting to add actor of class 'Pioneer' to level at -1230.00,-640.00,146.00
+[2019.09.24-15.40.51:491][598]LogEditor: Attempting to add actor of class 'Pioneer' to level at -300.00,530.00,146.00
+[2019.09.24-15.40.52:520][706]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.40.52:578][713]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.24-15.40.52:586][713]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.40.52:586][713]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.24-15.40.52:587][713]PIE: New page: PIE session: Basic (Sep 25, 2019, 9:40:52 AM)
+[2019.09.24-15.40.52:587][713]LogPlayLevel: Creating play world package: /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.40.52:590][713]LogPlayLevel: PIE: StaticDuplicateObject took: (0.003502s)
+[2019.09.24-15.40.52:591][713]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.40.52:591][713]LogPlayLevel: PIE: World Init took: (0.000883s)
+[2019.09.24-15.40.52:591][713]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/Map/Basic.Basic to /Game/Map/UEDPIE_0_Basic.Basic (0.004494s)
+[2019.09.24-15.40.52:616][713]LogUObjectHash: Compacting FUObjectHashTables data took   1.63ms
+[2019.09.24-15.40.53:161][713]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.40.53:246][713]LogInit: FAudioDevice initialized.
+[2019.09.24-15.40.53:258][713]LogLoad: Game class is 'GameGameModeBase'
+[2019.09.24-15.40.53:260][713]LogWorld: Bringing World /Game/Map/UEDPIE_0_Basic.Basic up for play (max tick rate 0) at 2019.09.25-00.40.53
+[2019.09.24-15.40.53:263][713]LogWorld: Bringing up level for play took: 0.004161
+[2019.09.24-15.40.53:263][713]LogOnline: OSS: Creating online subsystem instance for: :Context_6
+[2019.09.24-15.40.53:266][713]PIE: Play in editor start time for /Game/Map/UEDPIE_0_Basic 0.462
+[2019.09.24-15.40.53:266][713]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.41.06:549][297]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.41.08:774][535]LogSlate: Took 0.002037 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Italic.ttf' (157K)
+[2019.09.24-15.41.46:799][965]LogSlate: FSceneViewport::OnFocusLost() reason 2
+[2019.09.24-15.42.08:328][511]LogSlate: FSceneViewport::OnFocusLost() reason 2
+[2019.09.24-15.42.24:453][434]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.42.35:388][703]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.42.35:389][703]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.42.35:389][703]LogWorld: BeginTearingDown for /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.42.35:389][703]LogWorld: UWorld::CleanupWorld for Basic, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.42.35:409][703]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.24-15.42.35:409][703]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.42.35:435][703]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.42.35:438][703]LogUObjectHash: Compacting FUObjectHashTables data took   1.71ms
+[2019.09.24-15.42.35:495][707]LogPlayLevel: Display: Destroying online subsystem :Context_6
+[2019.09.24-15.43.43:851][994]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.24-15.43.44:339][ 51]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.24-15.43.44:802][102]LogSlate: FSceneViewport::OnFocusLost() reason 5
+[2019.09.24-15.44.39:994][767]Candidate modules for hot reload:
+[2019.09.24-15.44.39:994][767]  Game
+[2019.09.24-15.44.39:994][767]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,2804 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.44.40:001][767]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.44.49:447][762]LogRenderer: Reallocating scene render targets to support 980x576 Format 10 NumSamples 1 (Frame:26819).
+[2019.09.24-15.44.49:524][764]LogRenderer: Reallocating scene render targets to support 980x580 Format 10 NumSamples 1 (Frame:26822).
+[2019.09.24-15.44.49:604][765]LogRenderer: Reallocating scene render targets to support 980x588 Format 10 NumSamples 1 (Frame:26824).
+[2019.09.24-15.44.49:668][766]LogRenderer: Reallocating scene render targets to support 980x604 Format 10 NumSamples 1 (Frame:26826).
+[2019.09.24-15.44.49:760][768]LogRenderer: Reallocating scene render targets to support 980x608 Format 10 NumSamples 1 (Frame:26830).
+[2019.09.24-15.44.49:910][780]LogRenderer: Reallocating scene render targets to support 980x616 Format 10 NumSamples 1 (Frame:26843).
+[2019.09.24-15.45.07:449][510]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:45:07 AM
+[2019.09.24-15.45.07:449][510]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.45.07:449][510]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.45.07:449][510]CompilerResultsLog: Reflection code generated for GameEditor in 10.7095453 seconds
+[2019.09.24-15.45.07:449][510]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.45.07:449][510]CompilerResultsLog: Building 6 actions with 8 processes...
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   [1/6] GameGameModeBase.gen.cpp
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   [2/6] Pioneer.cpp
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(63): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(75): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   [3/6] GameGameModeBase.cpp
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   [4/6] UE4Editor-Game-2804.lib
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2804.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2804.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   [5/6] UE4Editor-Game-2804.dll
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2804.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2804.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.45.07:449][510]CompilerResultsLog:   [6/6] GameEditor.target
+[2019.09.24-15.45.07:449][510]CompilerResultsLog: Total time in Parallel executor: 14.36 seconds
+[2019.09.24-15.45.07:449][510]CompilerResultsLog: Total execution time: 26.97 seconds
+[2019.09.24-15.45.07:449][510]LogMainFrame: MainFrame: Module compiling took 27.460 seconds
+[2019.09.24-15.45.07:477][510]LogUObjectHash: Compacting FUObjectHashTables data took   1.59ms
+[2019.09.24-15.45.07:512][510]LogHotReload: Re-instancing GameGameModeBase after hot-reload.
+[2019.09.24-15.45.07:616][510]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.24-15.45.07:722][510]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0007 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.45.07:725][510]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.45.07:785][510]LogUObjectHash: Compacting FUObjectHashTables data took   1.54ms
+[2019.09.24-15.45.07:802][510]LogContentBrowser: Native class hierarchy populated in 0.0105 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.45.07:802][510]Display: HotReload took 27.8s.
+[2019.09.24-15.45.08:808][513]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Cube3)
+[2019.09.24-15.45.09:352][558]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.45.09:411][565]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.24-15.45.09:423][565]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.45.09:423][565]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.24-15.45.09:423][565]PIE: New page: PIE session: Basic (Sep 25, 2019, 9:45:09 AM)
+[2019.09.24-15.45.09:423][565]LogPlayLevel: Creating play world package: /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.45.09:427][565]LogPlayLevel: PIE: StaticDuplicateObject took: (0.003291s)
+[2019.09.24-15.45.09:427][565]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.45.09:428][565]LogPlayLevel: PIE: World Init took: (0.000946s)
+[2019.09.24-15.45.09:428][565]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/Map/Basic.Basic to /Game/Map/UEDPIE_0_Basic.Basic (0.004403s)
+[2019.09.24-15.45.09:448][565]LogUObjectHash: Compacting FUObjectHashTables data took   1.35ms
+[2019.09.24-15.45.10:006][565]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.45.10:093][565]LogInit: FAudioDevice initialized.
+[2019.09.24-15.45.10:100][565]LogLoad: Game class is 'GameGameModeBase'
+[2019.09.24-15.45.10:102][565]LogWorld: Bringing World /Game/Map/UEDPIE_0_Basic.Basic up for play (max tick rate 0) at 2019.09.25-00.45.10
+[2019.09.24-15.45.10:103][565]LogWorld: Bringing up level for play took: 0.001311
+[2019.09.24-15.45.10:103][565]LogOnline: OSS: Creating online subsystem instance for: :Context_9
+[2019.09.24-15.45.10:106][565]PIE: Play in editor start time for /Game/Map/UEDPIE_0_Basic 1.301
+[2019.09.24-15.45.10:106][565]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.45.17:498][442]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.45.30:307][963]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.45.33:139][283]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.45.33:189][289]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.45.33:190][289]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.45.33:190][289]LogWorld: BeginTearingDown for /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.45.33:190][289]LogWorld: UWorld::CleanupWorld for Basic, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.45.33:198][289]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.24-15.45.33:198][289]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.45.33:226][289]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.45.33:236][289]LogUObjectHash: Compacting FUObjectHashTables data took   1.76ms
+[2019.09.24-15.45.33:293][295]LogPlayLevel: Display: Destroying online subsystem :Context_9
+[2019.09.24-15.45.56:400][601]Candidate modules for hot reload:
+[2019.09.24-15.45.56:400][601]  Game
+[2019.09.24-15.45.56:400][601]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,5369 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.45.56:410][601]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.46.20:944][807]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:46:20 AM
+[2019.09.24-15.46.20:944][807]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.46.20:944][807]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.46.20:944][807]CompilerResultsLog: Reflection code generated for GameEditor in 9.4180615 seconds
+[2019.09.24-15.46.20:944][807]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.46.20:944][807]CompilerResultsLog: Building 5 actions with 8 processes...
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:   [1/5] Pioneer.cpp
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(63): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(75): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:   [2/5] GameGameModeBase.cpp
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:   [3/5] UE4Editor-Game-5369.lib
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-5369.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-5369.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:   [4/5] UE4Editor-Game-5369.dll
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-5369.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-5369.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.46.20:944][807]CompilerResultsLog:   [5/5] GameEditor.target
+[2019.09.24-15.46.20:944][807]CompilerResultsLog: Total time in Parallel executor: 13.01 seconds
+[2019.09.24-15.46.20:944][807]CompilerResultsLog: Total execution time: 24.27 seconds
+[2019.09.24-15.46.20:944][807]LogMainFrame: MainFrame: Module compiling took 24.550 seconds
+[2019.09.24-15.46.20:968][807]LogUObjectHash: Compacting FUObjectHashTables data took   1.49ms
+[2019.09.24-15.46.20:995][807]LogHotReload: Re-instancing GameGameModeBase after hot-reload.
+[2019.09.24-15.46.21:086][807]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.24-15.46.21:175][807]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0007 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.46.21:178][807]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.46.21:232][807]LogUObjectHash: Compacting FUObjectHashTables data took   1.54ms
+[2019.09.24-15.46.21:246][807]LogContentBrowser: Native class hierarchy populated in 0.0095 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.46.21:246][807]Display: HotReload took 24.9s.
+[2019.09.24-15.46.22:278][811]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Cube3)
+[2019.09.24-15.46.22:720][855]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.46.22:768][861]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.24-15.46.22:779][861]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.46.22:779][861]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.24-15.46.22:779][861]PIE: New page: PIE session: Basic (Sep 25, 2019, 9:46:22 AM)
+[2019.09.24-15.46.22:779][861]LogPlayLevel: Creating play world package: /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.46.22:782][861]LogPlayLevel: PIE: StaticDuplicateObject took: (0.002959s)
+[2019.09.24-15.46.22:783][861]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.46.22:783][861]LogPlayLevel: PIE: World Init took: (0.000867s)
+[2019.09.24-15.46.22:783][861]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/Map/Basic.Basic to /Game/Map/UEDPIE_0_Basic.Basic (0.003914s)
+[2019.09.24-15.46.22:807][861]LogUObjectHash: Compacting FUObjectHashTables data took   1.32ms
+[2019.09.24-15.46.23:371][861]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.46.23:450][861]LogInit: FAudioDevice initialized.
+[2019.09.24-15.46.23:464][861]LogLoad: Game class is 'GameGameModeBase'
+[2019.09.24-15.46.23:466][861]LogWorld: Bringing World /Game/Map/UEDPIE_0_Basic.Basic up for play (max tick rate 0) at 2019.09.25-00.46.23
+[2019.09.24-15.46.23:466][861]LogWorld: Bringing up level for play took: 0.001406
+[2019.09.24-15.46.23:467][861]LogOnline: OSS: Creating online subsystem instance for: :Context_10
+[2019.09.24-15.46.23:469][861]PIE: Play in editor start time for /Game/Map/UEDPIE_0_Basic 0.666
+[2019.09.24-15.46.23:470][861]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.46.30:269][673]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.46.30:328][680]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.46.30:328][680]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.46.30:328][680]LogWorld: BeginTearingDown for /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.46.30:328][680]LogWorld: UWorld::CleanupWorld for Basic, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.46.30:337][680]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.24-15.46.30:338][680]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.46.30:367][680]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.46.30:369][680]LogUObjectHash: Compacting FUObjectHashTables data took   1.54ms
+[2019.09.24-15.46.30:433][687]LogPlayLevel: Display: Destroying online subsystem :Context_10
+[2019.09.24-15.48.04:479][133]Candidate modules for hot reload:
+[2019.09.24-15.48.04:479][133]  Game
+[2019.09.24-15.48.04:480][133]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,7028 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.48.04:485][133]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.48.28:183][412]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:48:28 AM
+[2019.09.24-15.48.28:183][412]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.48.28:183][412]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.48.28:183][412]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.48.28:184][412]CompilerResultsLog: Reflection code generated for GameEditor in 9.3672509 seconds
+[2019.09.24-15.48.28:184][412]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.48.28:184][412]CompilerResultsLog: Building 8 actions with 8 processes...
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   [1/8] Game.init.gen.cpp
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   [2/8] Pioneer.gen.cpp
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   [3/8] PioneerController.cpp
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   [4/8] Pioneer.cpp
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(64): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(76): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   [5/8] GameGameModeBase.cpp
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   [6/8] UE4Editor-Game-7028.lib
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7028.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7028.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   [7/8] UE4Editor-Game-7028.dll
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7028.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7028.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.48.28:184][412]CompilerResultsLog:   [8/8] GameEditor.target
+[2019.09.24-15.48.28:184][412]CompilerResultsLog: Total time in Parallel executor: 12.27 seconds
+[2019.09.24-15.48.28:184][412]CompilerResultsLog: Total execution time: 23.47 seconds
+[2019.09.24-15.48.28:184][412]LogMainFrame: MainFrame: Module compiling took 23.709 seconds
+[2019.09.24-15.48.28:209][412]LogUObjectHash: Compacting FUObjectHashTables data took   2.03ms
+[2019.09.24-15.48.28:267][412]LogClass: Could not find existing class Pioneer in package /Script/Game for HotReload, assuming new class
+[2019.09.24-15.48.28:272][412]LogHotReload: Re-instancing GameGameModeBase after hot-reload.
+[2019.09.24-15.48.28:361][412]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.24-15.48.28:456][412]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0006 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.48.28:460][412]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.48.28:517][412]LogUObjectHash: Compacting FUObjectHashTables data took   1.70ms
+[2019.09.24-15.48.28:533][412]LogContentBrowser: Native class hierarchy populated in 0.0111 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.48.28:533][412]Display: HotReload took 24.1s.
+[2019.09.24-15.48.31:180][554]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.48.31:255][563]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.24-15.48.31:267][563]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.48.31:267][563]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.24-15.48.31:267][563]PIE: New page: PIE session: Basic (Sep 25, 2019, 9:48:31 AM)
+[2019.09.24-15.48.31:267][563]LogPlayLevel: Creating play world package: /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.48.31:270][563]LogPlayLevel: PIE: StaticDuplicateObject took: (0.003084s)
+[2019.09.24-15.48.31:271][563]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.48.31:271][563]LogPlayLevel: PIE: World Init took: (0.000952s)
+[2019.09.24-15.48.31:271][563]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/Map/Basic.Basic to /Game/Map/UEDPIE_0_Basic.Basic (0.004127s)
+[2019.09.24-15.48.31:294][563]LogUObjectHash: Compacting FUObjectHashTables data took   1.40ms
+[2019.09.24-15.48.31:832][563]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.48.31:910][563]LogInit: FAudioDevice initialized.
+[2019.09.24-15.48.31:922][563]LogLoad: Game class is 'GameGameModeBase'
+[2019.09.24-15.48.31:924][563]LogWorld: Bringing World /Game/Map/UEDPIE_0_Basic.Basic up for play (max tick rate 0) at 2019.09.25-00.48.31
+[2019.09.24-15.48.31:924][563]LogWorld: Bringing up level for play took: 0.001356
+[2019.09.24-15.48.31:925][563]LogOnline: OSS: Creating online subsystem instance for: :Context_11
+[2019.09.24-15.48.31:928][563]PIE: Play in editor start time for /Game/Map/UEDPIE_0_Basic 1.124
+[2019.09.24-15.48.31:928][563]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.48.35:733][ 15]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.49.02:727][209]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.50.19:807][271]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.50.19:866][278]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.50.19:867][278]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.50.19:867][278]LogWorld: BeginTearingDown for /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.50.19:868][278]LogWorld: UWorld::CleanupWorld for Basic, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.50.19:879][278]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.24-15.50.19:880][278]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.50.19:911][278]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.50.19:915][278]LogUObjectHash: Compacting FUObjectHashTables data took   2.69ms
+[2019.09.24-15.50.19:979][283]LogPlayLevel: Display: Destroying online subsystem :Context_11
+[2019.09.24-15.50.30:954][815]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Cube3)
+[2019.09.24-15.50.32:118][944]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.50.32:211][953]Candidate modules for hot reload:
+[2019.09.24-15.50.32:211][953]  Game
+[2019.09.24-15.50.32:211][953]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,2537 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.50.32:219][953]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.50.48:252][200]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:50:48 AM
+[2019.09.24-15.50.48:253][200]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.50.48:253][200]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.50.48:253][200]CompilerResultsLog: Reflection code generated for GameEditor in 10.0434393 seconds
+[2019.09.24-15.50.48:253][200]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.50.48:253][200]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:   [1/4] Pioneer.cpp
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(64): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(76): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:   [2/4] UE4Editor-Game-2537.lib
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2537.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2537.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:   [3/4] UE4Editor-Game-2537.dll
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2537.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2537.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.50.48:253][200]CompilerResultsLog:   [4/4] GameEditor.target
+[2019.09.24-15.50.48:253][200]CompilerResultsLog: Total time in Parallel executor: 3.56 seconds
+[2019.09.24-15.50.48:253][200]CompilerResultsLog: Total execution time: 15.51 seconds
+[2019.09.24-15.50.48:253][200]LogMainFrame: MainFrame: Module compiling took 16.047 seconds
+[2019.09.24-15.50.48:278][200]LogUObjectHash: Compacting FUObjectHashTables data took   1.69ms
+[2019.09.24-15.50.48:310][200]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.24-15.50.48:395][200]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0006 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.50.48:398][200]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.50.48:456][200]LogUObjectHash: Compacting FUObjectHashTables data took   1.62ms
+[2019.09.24-15.50.48:471][200]LogContentBrowser: Native class hierarchy populated in 0.0105 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.50.48:471][200]Display: HotReload took 16.3s.
+[2019.09.24-15.50.50:255][205]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.24-15.50.50:268][205]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.50.50:268][205]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.24-15.50.50:269][205]PIE: New page: PIE session: Basic (Sep 25, 2019, 9:50:50 AM)
+[2019.09.24-15.50.50:269][205]LogPlayLevel: Creating play world package: /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.50.50:272][205]LogPlayLevel: PIE: StaticDuplicateObject took: (0.003309s)
+[2019.09.24-15.50.50:273][205]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.50.50:273][205]LogPlayLevel: PIE: World Init took: (0.000844s)
+[2019.09.24-15.50.50:273][205]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/Map/Basic.Basic to /Game/Map/UEDPIE_0_Basic.Basic (0.004257s)
+[2019.09.24-15.50.50:297][205]LogUObjectHash: Compacting FUObjectHashTables data took   2.07ms
+[2019.09.24-15.50.50:866][205]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.50.50:959][205]LogInit: FAudioDevice initialized.
+[2019.09.24-15.50.50:971][205]LogLoad: Game class is 'GameGameModeBase'
+[2019.09.24-15.50.50:973][205]LogWorld: Bringing World /Game/Map/UEDPIE_0_Basic.Basic up for play (max tick rate 0) at 2019.09.25-00.50.50
+[2019.09.24-15.50.50:973][205]LogWorld: Bringing up level for play took: 0.001112
+[2019.09.24-15.50.50:973][205]LogOnline: OSS: Creating online subsystem instance for: :Context_12
+[2019.09.24-15.50.50:976][205]PIE: Play in editor start time for /Game/Map/UEDPIE_0_Basic 0.172
+[2019.09.24-15.50.50:976][205]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.50.55:998][803]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.51.01:568][430]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.51.09:830][379]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.51.09:880][385]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.51.09:881][385]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.51.09:881][385]LogWorld: BeginTearingDown for /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.51.09:881][385]LogWorld: UWorld::CleanupWorld for Basic, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.51.09:893][385]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.24-15.51.09:893][385]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.51.09:921][385]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.51.09:923][385]LogUObjectHash: Compacting FUObjectHashTables data took   1.39ms
+[2019.09.24-15.51.09:984][389]LogPlayLevel: Display: Destroying online subsystem :Context_12
+[2019.09.24-15.51.49:337][573]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Cube3)
+[2019.09.24-15.51.49:987][628]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.51.50:057][634]Candidate modules for hot reload:
+[2019.09.24-15.51.50:057][634]  Game
+[2019.09.24-15.51.50:057][634]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,2268 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.51.50:064][634]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.52.06:308][494]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:52:06 AM
+[2019.09.24-15.52.06:308][494]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.52.06:308][494]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.52.06:308][494]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.52.06:308][494]CompilerResultsLog: Reflection code generated for GameEditor in 10.6013678 seconds
+[2019.09.24-15.52.06:309][494]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.52.06:309][494]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.24-15.52.06:309][494]CompilerResultsLog:   [1/4] Pioneer.cpp
+[2019.09.24-15.52.06:309][494]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(64): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.52.06:309][494]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.52.06:309][494]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(76): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.52.06:309][494]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.52.06:309][494]CompilerResultsLog:   [2/4] UE4Editor-Game-2268.lib
+[2019.09.24-15.52.06:309][494]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2268.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2268.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.52.06:309][494]CompilerResultsLog:   [3/4] UE4Editor-Game-2268.dll
+[2019.09.24-15.52.06:309][494]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2268.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-2268.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.52.06:309][494]CompilerResultsLog:   [4/4] GameEditor.target
+[2019.09.24-15.52.06:309][494]CompilerResultsLog: Total time in Parallel executor: 3.63 seconds
+[2019.09.24-15.52.06:309][494]CompilerResultsLog: Total execution time: 16.04 seconds
+[2019.09.24-15.52.06:309][494]LogMainFrame: MainFrame: Module compiling took 16.257 seconds
+[2019.09.24-15.52.06:334][494]LogUObjectHash: Compacting FUObjectHashTables data took   1.64ms
+[2019.09.24-15.52.06:364][494]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.24-15.52.06:445][494]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0005 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.52.06:447][494]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.52.06:504][494]LogUObjectHash: Compacting FUObjectHashTables data took   1.68ms
+[2019.09.24-15.52.06:519][494]LogContentBrowser: Native class hierarchy populated in 0.0095 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.52.06:519][494]Display: HotReload took 16.5s.
+[2019.09.24-15.52.07:946][660]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.52.08:013][668]LogTemp: Repeating last play command: Selected Viewport
+[2019.09.24-15.52.08:023][668]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.52.08:024][668]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2019.09.24-15.52.08:024][668]PIE: New page: PIE session: Basic (Sep 25, 2019, 9:52:08 AM)
+[2019.09.24-15.52.08:024][668]LogPlayLevel: Creating play world package: /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.52.08:027][668]LogPlayLevel: PIE: StaticDuplicateObject took: (0.003343s)
+[2019.09.24-15.52.08:028][668]LogAIModule: Creating AISystem for world Basic
+[2019.09.24-15.52.08:028][668]LogPlayLevel: PIE: World Init took: (0.001098s)
+[2019.09.24-15.52.08:028][668]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/Map/Basic.Basic to /Game/Map/UEDPIE_0_Basic.Basic (0.004567s)
+[2019.09.24-15.52.08:050][668]LogUObjectHash: Compacting FUObjectHashTables data took   1.44ms
+[2019.09.24-15.52.08:608][668]LogInit: XAudio2 using 'PHL 243S7(2- NVIDIA High Definition Audio)' : 2 channels at 48 kHz using 16 bits per sample (channel mask 0x3)
+[2019.09.24-15.52.08:689][668]LogInit: FAudioDevice initialized.
+[2019.09.24-15.52.08:697][668]LogLoad: Game class is 'GameGameModeBase'
+[2019.09.24-15.52.08:698][668]LogWorld: Bringing World /Game/Map/UEDPIE_0_Basic.Basic up for play (max tick rate 0) at 2019.09.25-00.52.08
+[2019.09.24-15.52.08:699][668]LogWorld: Bringing up level for play took: 0.001055
+[2019.09.24-15.52.08:699][668]LogOnline: OSS: Creating online subsystem instance for: :Context_13
+[2019.09.24-15.52.08:702][668]PIE: Play in editor start time for /Game/Map/UEDPIE_0_Basic -0.102
+[2019.09.24-15.52.08:702][668]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.52.13:078][189]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.52.19:440][913]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.52.29:583][ 90]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.52.29:584][ 90]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.52.29:584][ 90]LogWorld: BeginTearingDown for /Game/Map/UEDPIE_0_Basic
+[2019.09.24-15.52.29:584][ 90]LogWorld: UWorld::CleanupWorld for Basic, bSessionEnded=true, bCleanupResources=true
+[2019.09.24-15.52.29:592][ 90]LogPlayLevel: Display: Shutting down PIE online subsystems
+[2019.09.24-15.52.29:593][ 90]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/Map/Basic.Basic:PersistentLevel' has LevelScriptBlueprint '/Game/Map/Basic.Basic:PersistentLevel.Basic' with GeneratedClass '/Game/Map/Basic.Basic_C' with ClassGeneratedBy '/Game/Map/Basic.Basic:PersistentLevel.Basic'
+[2019.09.24-15.52.29:618][ 90]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2019.09.24-15.52.29:620][ 90]LogUObjectHash: Compacting FUObjectHashTables data took   1.46ms
+[2019.09.24-15.52.29:687][ 96]LogPlayLevel: Display: Destroying online subsystem :Context_13
+[2019.09.24-15.52.37:379][309]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.55.18:429][225]LogUObjectHash: Compacting FUObjectHashTables data took   1.72ms
+[2019.09.24-15.55.18:429][225]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Map/Basic" FILE="D:/Github/GraduationProject/Game/Saved/Autosaves/Game/Map/Basic_Auto1.umap" SILENT=true AUTOSAVING=true KEEPDIRTY=false
+[2019.09.24-15.55.18:581][225]LogSavePackage: Moving 'D:/Github/GraduationProject/Game/Saved/Basic_Auto10E50CDF5445DA86542405AA5C09E8446.tmp' to 'D:/Github/GraduationProject/Game/Saved/Autosaves/Game/Map/Basic_Auto1.umap'
+[2019.09.24-15.55.18:585][225]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/Map/Basic' took 0.183
+[2019.09.24-15.55.18:585][225]LogFileHelpers: Editor autosave (incl. sublevels) for all levels took 0.183
+[2019.09.24-15.56.12:766][387]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.58.19:370][887]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Cube3)
+[2019.09.24-15.58.20:952][ 66]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-15.58.48:517][414]Cmd: DELETE
+[2019.09.24-15.58.48:517][414]Cmd: ACTOR DELETE
+[2019.09.24-15.58.48:529][414]LogEditorActor: Deleted Actor: Pioneer
+[2019.09.24-15.58.48:562][414]LogUObjectHash: Compacting FUObjectHashTables data took   2.38ms
+[2019.09.24-15.58.48:563][414]LogEditorActor: Deleted 1 Actors (0.039 secs)
+[2019.09.24-15.58.49:160][473]Cmd: DELETE
+[2019.09.24-15.58.49:160][473]Cmd: ACTOR DELETE
+[2019.09.24-15.58.49:161][473]LogEditorActor: Deleted Actor: Pioneer
+[2019.09.24-15.58.49:193][473]LogUObjectHash: Compacting FUObjectHashTables data took   0.69ms
+[2019.09.24-15.58.49:193][473]LogEditorActor: Deleted 1 Actors (0.033 secs)
+[2019.09.24-15.59.06:574][635]Candidate modules for hot reload:
+[2019.09.24-15.59.06:574][635]  Game
+[2019.09.24-15.59.06:574][635]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,3134 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-15.59.06:581][635]Warning: Starting HotReload took  0.0s.
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 9:59:30 AM
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog: Reflection code generated for GameEditor in 9.3581155 seconds
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog: Building 9 actions with 8 processes...
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   [1/9] Game.init.gen.cpp
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   [2/9] PioneerController.gen.cpp
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   [3/9] Pioneer.gen.cpp
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   [4/9] PioneerController.cpp
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   [5/9] Pioneer.cpp
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(59): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   D:\Github\GraduationProject\Game\Source\Game\Pioneer.cpp(71): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' ?????? ?????Ͻʽÿ?.
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   [6/9] GameGameModeBase.cpp
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   [7/9] UE4Editor-Game-3134.lib
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-3134.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-3134.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   [8/9] UE4Editor-Game-3134.dll
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-3134.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-3134.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog:   [9/9] GameEditor.target
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog: Total time in Parallel executor: 12.06 seconds
+[2019.09.24-15.59.30:113][  0]CompilerResultsLog: Total execution time: 23.18 seconds
+[2019.09.24-15.59.30:113][  0]LogMainFrame: MainFrame: Module compiling took 23.544 seconds
+[2019.09.24-15.59.30:139][  0]LogUObjectHash: Compacting FUObjectHashTables data took   1.91ms
+[2019.09.24-15.59.30:165][  0]LogClass: Could not find existing class Pioneer in package /Script/Game for HotReload, assuming new class
+[2019.09.24-15.59.30:168][  0]LogHotReload: Re-instancing GameGameModeBase after hot-reload.
+[2019.09.24-15.59.30:260][  0]LogHotReload: Re-instancing Pioneer after hot-reload.
+[2019.09.24-15.59.30:346][  0]LogContentBrowser: Native class hierarchy updated for 'Game' in 0.0006 seconds. Added 4 classes and 2 folders.
+[2019.09.24-15.59.30:349][  0]Display: HotReload successful (2 functions remapped  0 scriptstructs remapped)
+[2019.09.24-15.59.30:407][  0]LogUObjectHash: Compacting FUObjectHashTables data took   1.40ms
+[2019.09.24-15.59.30:420][  0]LogContentBrowser: Native class hierarchy populated in 0.0087 seconds. Added 2868 classes and 684 folders.
+[2019.09.24-15.59.30:420][  0]Display: HotReload took 23.9s.
+[2019.09.24-16.02.24:545][521]LogEditorViewport: Clicking on Actor (LMB): StaticMeshActor (Cube3)
+[2019.09.24-16.02.25:466][589]LogSlate: FSceneViewport::OnFocusLost() reason 0
+[2019.09.24-16.02.25:532][595]Candidate modules for hot reload:
+[2019.09.24-16.02.25:532][595]  Game
+[2019.09.24-16.02.25:533][595]Launching UnrealBuildTool... [H:/Program Files (x86)/UE_4.23/Engine/Binaries/DotNET/UnrealBuildTool.exe  -ModuleWithSuffix=Game,7332 Win64 Development -TargetType=Editor -Project="D:/Github/GraduationProject/Game/Game.uproject" "D:/Github/GraduationProject/Game/Game.uproject"  -IgnoreJunk]
+[2019.09.24-16.02.25:540][595]Warning: Starting HotReload took  0.0s.
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog: New page: Compilation - Sep 25, 2019, 10:02:40 AM
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog: Using 'git status' to determine working set for adaptive non-unity build (D:\Github\GraduationProject).
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog: Parsing headers for GameEditor
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog:   Running UnrealHeaderTool "D:\Github\GraduationProject\Game\Game.uproject" "D:\Github\GraduationProject\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog: Reflection code generated for GameEditor in 9.9664433 seconds
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog: Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog: Building 4 actions with 8 processes...
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog:   [1/4] PioneerManager.cpp
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog:   [2/4] UE4Editor-Game-7332.lib
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7332.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7332.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog:   [3/4] UE4Editor-Game-7332.dll
+[2019.09.24-16.02.40:970][ 40]CompilerResultsLog:      D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7332.suppressed.lib ???̺귯?? ?? D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-7332.suppressed.exp ??ü?? ?????ϰ? ?ֽ??ϴ?.
+[2019.09.24-16.02.40:971][ 40]CompilerResultsLog:   [4/4] GameEditor.target
+[2019.09.24-16.02.40:971][ 40]CompilerResultsLog: Total time in Parallel executor: 3.20 seconds
+[2019.09.24-16.02.40:971][ 40]CompilerResultsLog: Total execution time: 15.09 seconds
+[2019.09.24-16.02.40:971][ 40]LogMainFrame: MainFrame: Module compiling took 15.443 seconds
+[2019.09.24-16.02.40:999][ 40]LogUObjectHash: Compacting FUObjectHashTables data took   2.39ms
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: === Critical error: ===
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: 
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: Fatal error!
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: 
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: Unhandled Exception: EXCEPTION_ACCESS_VIOLATION reading address 0x000001b0
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: 
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: [Callstack] 0x00007ffa240dc42b UE4Editor-Engine.dll!UnknownFunction []
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: [Callstack] 0x00007ffa240de2d7 UE4Editor-Engine.dll!UnknownFunction []
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: [Callstack] 0x00007ff9ffdc63dd UE4Editor-Game-7332.dll!APioneerManager::APioneerManager() [d:\github\graduationproject\game\source\game\pioneermanager.cpp:13]
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: [Callstack] 0x00007ffa0b3c4061 UE4Editor-HotReload.dll!UnknownFunction []
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: [Callstack] 0x00007ffa0b3b541a UE4Editor-HotReload.dll!UnknownFunction []
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: [Callstack] 0x00007ffa0b3bc48d UE4Editor-HotReload.dll!UnknownFunction []
+[2019.09.24-16.02.44:038][ 40]LogWindows: Error: [Callstack] 0x00007ffa0b3c67d9 UE4Editor-HotReload.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa0b3c6b64 UE4Editor-HotReload.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa0b3bf3d6 UE4Editor-HotReload.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa2ee4ac6b UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa2f151aa7 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa2f132221 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa2f064e95 UE4Editor-CoreUObject.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa2da183f7 UE4Editor-Core.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa2da30ceb UE4Editor-Core.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa2da2fe83 UE4Editor-Core.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa0b3bd5c3 UE4Editor-HotReload.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa0b3bb267 UE4Editor-HotReload.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa0b3bbc86 UE4Editor-HotReload.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa0b3cc48f UE4Editor-HotReload.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa2d7c382d UE4Editor-Core.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ff66d9ca93e UE4Editor.exe!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ff66d9da91c UE4Editor.exe!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ff66d9da9fa UE4Editor.exe!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ff66d9eb92c UE4Editor.exe!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ff66d9ee60e UE4Editor.exe!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa71617974 KERNEL32.DLL!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: [Callstack] 0x00007ffa73baa271 ntdll.dll!UnknownFunction []
+[2019.09.24-16.02.44:039][ 40]LogWindows: Error: 
+[2019.09.24-16.02.44:060][ 40]LogExit: Executing StaticShutdownAfterError
+[2019.09.24-16.02.44:070][ 40]LogWindows: FPlatformMisc::RequestExit(1)
+[2019.09.24-16.02.44:082][ 40]Log file closed, 09/25/19 01:02:44

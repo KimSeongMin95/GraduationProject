@@ -43,6 +43,7 @@ AGameGameModeBase::AGameGameModeBase()
 	DefaultPawnClass = APioneer::StaticClass();
 }
 
+// 임시 함수
 void AGameGameModeBase::StartPlay()
 {
 	Super::StartPlay();

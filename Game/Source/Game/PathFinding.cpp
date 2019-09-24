@@ -5,12 +5,17 @@
 #include "GameFramework/Controller.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h" // Navigation
 #include "Math/Vector.h"
+#include "Navigation/PathFollowingComponent.h"
 
+bool PathFinding::MoveInterrupt = false;
+
+/** PioneerController에서 길찾기 알고리즘을 선택해서 실행합니다. */
 void PathFinding::SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Controller, const FVector DestLocation)
 {
 	switch (PFA_)
 	{
-	case PFA_NaveMesh:
+	case PathFindAlgorithm::PFA_NaveMesh:
+	{
 		// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 가져옵니다.
 		APawn* const MyPawn = Controller->GetPawn();
 
@@ -30,5 +35,15 @@ void PathFinding::SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Con
 
 		break;
 	}
+	case PathFindAlgorithm::PFA_AStar:
+	{
 
+		break;
+	}	
+	default: 
+	{
+
+		break;
+	}	
+	}
 }
