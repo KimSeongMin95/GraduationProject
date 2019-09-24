@@ -1,8 +1,6 @@
 D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Definitions.Game.h
 d:\github\graduationproject\game\source\game\PioneerController.h
 D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\PioneerController.generated.h
-H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\AIModule\Classes\Blueprint/AIBlueprintHelperLibrary.h
-H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AIModule\AIBlueprintHelperLibrary.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime/Engine/Classes/Components/DecalComponent.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\DecalComponent.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\HeadMountedDisplay\Public\HeadMountedDisplayFunctionLibrary.h
@@ -17,3 +15,4 @@ H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramewor
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\RootMotionSource.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\Character.generated.h
 D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.generated.h
+d:\github\graduationproject\game\source\game\PathFinding.h

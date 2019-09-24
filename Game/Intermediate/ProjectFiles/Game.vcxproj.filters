@@ -109,12 +109,18 @@
     <ClInclude Include="..\..\Source\Game\PioneerController.h">
       <Filter>Source\Game</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Game\PathFinding.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Game\PioneerManager.cpp">
       <Filter>Source\Game</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Game\PioneerController.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Game\PathFinding.cpp">
       <Filter>Source\Game</Filter>
     </ClCompile>
   </ItemGroup>

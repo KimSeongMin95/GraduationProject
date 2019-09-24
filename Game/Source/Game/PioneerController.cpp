@@ -2,10 +2,10 @@
 
 
 #include "PioneerController.h"
-#include "Blueprint/AIBlueprintHelperLibrary.h" // Navigation
 #include "Runtime/Engine/Classes/Components/DecalComponent.h" // MouseSelectionPoint
 #include "HeadMountedDisplayFunctionLibrary.h" // VR
 #include "Pioneer.h"
+#include "PathFinding.h"
 
 APioneerController::APioneerController()
 {
@@ -80,7 +80,8 @@ void APioneerController::MoveToMouseCursor()
 		{
 			// We hit something, move there
 			// Hit.ImpactPoint는 Ray와 충돌한 물체의 표면 지점을 반환합니다.
-			SetNewMoveDestination(HitResult.ImpactPoint);
+			//SetNewMoveDestination(HitResult.ImpactPoint);
+			PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, HitResult.ImpactPoint);
 		}
 	}
 }
@@ -101,30 +102,31 @@ void APioneerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex
 	{
 		// We hit something, move there
 		// Hit.ImpactPoint는 Ray와 충돌한 물체의 표면 지점을 반환합니다.
-		SetNewMoveDestination(HitResult.ImpactPoint);
+		//SetNewMoveDestination(HitResult.ImpactPoint);
+		PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, HitResult.ImpactPoint);
 	}
 }
 
-/** Navigate player to the given world location. */
-void APioneerController::SetNewMoveDestination(const FVector DestLocation)
-{
-	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 가져옵니다.
-	APawn* const MyPawn = GetPawn();
-
-	if (MyPawn)
-	{
-		// 현재 Pawn의 위치와 목적지 간의 거리를 구합니다.
-		float const Distance = FVector::Dist(DestLocation, MyPawn->GetActorLocation());
-
-		// We need to issue move command only if far enough in order for walk animation to play correctly
-		// 걷기 애니메이션이 정확하게 플레이될 수 있도록 어느 정도 거리가 있어야 움직일 수 있게 합니다.
-		if ((Distance > 120.0f))
-		{
-			// UAIBlueprintHelperLibrary의 함수를 사용하여 움직입니다.
-			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
-		}
-	}
-}
+///** Navigate player to the given world location. */
+//void APioneerController::SetNewMoveDestination(const FVector DestLocation)
+//{
+//	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 가져옵니다.
+//	APawn* const MyPawn = GetPawn();
+//
+//	if (MyPawn)
+//	{
+//		// 현재 Pawn의 위치와 목적지 간의 거리를 구합니다.
+//		float const Distance = FVector::Dist(DestLocation, MyPawn->GetActorLocation());
+//
+//		// We need to issue move command only if far enough in order for walk animation to play correctly
+//		// 걷기 애니메이션이 정확하게 플레이될 수 있도록 어느 정도 거리가 있어야 움직일 수 있게 합니다.
+//		if ((Distance > 120.0f))
+//		{
+//			// UAIBlueprintHelperLibrary의 함수를 사용하여 움직입니다.
+//			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
+//		}
+//	}
+//}
 
 void APioneerController::OnSetDestinationPressed()
 {
