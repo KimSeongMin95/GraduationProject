@@ -39,11 +39,11 @@ void PathFinding::SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Con
 	{
 
 		break;
-	}	
-	default: 
+	}
+	default:
 	{
 
 		break;
-	}	
+	}
 	}
 }

@@ -1,9 +1,9 @@
-D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Definitions.Game.h
+D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Definitions.Game.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\CoreUObject\Public\UObject/GeneratedCppIncludes.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\CoreUObject\Public\UObject/MetaData.h
-D:\Github\GraduationProject\Game\Source\Game/GameGameModeBase.h
+D:\Unreal Projects\Game\Source\Game/GameGameModeBase.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/GameModeBase.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Engine/ServerStatReplicator.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\ServerStatReplicator.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\GameModeBase.generated.h
-d:\github\graduationproject\game\intermediate\build\win64\ue4editor\inc\game\GameGameModeBase.generated.h
+d:\unreal projects\game\intermediate\build\win64\ue4editor\inc\game\GameGameModeBase.generated.h

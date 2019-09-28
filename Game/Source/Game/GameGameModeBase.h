@@ -10,10 +10,14 @@ UCLASS()
 class GAME_API AGameGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	AGameGameModeBase();
 
 	virtual void StartPlay() override;
 
+	virtual void Tick(float DeltaTime) override;
 };

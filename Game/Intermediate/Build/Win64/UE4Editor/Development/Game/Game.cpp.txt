@@ -1,2 +1,2 @@
-D:\Github\GraduationProject\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Definitions.Game.h
-d:\github\graduationproject\game\source\game\Game.h
+D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Definitions.Game.h
+d:\unreal projects\game\source\game\Game.h

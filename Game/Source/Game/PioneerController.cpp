@@ -68,7 +68,7 @@ void APioneerController::MoveToMouseCursor()
 	else*/
 	// 마우스 커서 사용시
 	{
-		
+
 		// Trace to see what is under the mouse cursor
 		// 마우스 커서 아래에 무엇이 존재하는지 추적합니다.
 		FHitResult HitResult;
@@ -95,7 +95,7 @@ void APioneerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex
 	// 터치한 위치 아래에 무엇이 존재하는지 추적합니다.
 	FHitResult HitResult;
 	GetHitResultAtScreenPosition(ScreenSpaceLocation, CurrentClickTraceChannel, true, HitResult);
-	
+
 	// Indicates if this hit was a result of blocking collision
 	if (HitResult.bBlockingHit)
 	{

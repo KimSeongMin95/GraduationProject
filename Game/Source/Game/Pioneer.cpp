@@ -29,7 +29,7 @@ APioneer::APioneer()
 		StaticMeshComponent->SetWorldScale3D(FVector(1.0f));
 	}
 	/*** 임시 코드 : 종료 ***/
-	
+
 	/*** 카메라 설정을 PIE때 변경합니다. : 시작 ***/
 	CameraBoomLocation = FVector(-500.0f, 0.0f, 500.0f); // ArmSpring의 World 좌표입니다.
 	CameraBoomRotation = FRotator(-60.f, 0.f, 0.f); // ArmSpring의 World 회전입니다.
@@ -65,7 +65,7 @@ APioneer::APioneer()
 	//CameraBoom->bDoCollisionTest = false; // Arm과 카메라 사이의 선분이 어떤 물체와 충돌했을 때 뚫지 않도록 카메라를 당기지 않습니다.
 	CameraBoom->bEnableCameraLag = true; // 이동시 부드러운 카메라 전환을 위해 설정합니다.
 	CameraBoom->CameraLagSpeed = 3.0f; // 카메라 이동속도입니다.
-	
+
 	// 따라다니는 카메라를 생성합니다.
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->AttachTo(CameraBoom, USpringArmComponent::SocketName); // boom의 맨 뒤쪽에 해당 카메라를 붙이고, 컨트롤러의 방향에 맞게 boom을 적용합니다.
@@ -251,7 +251,7 @@ void APioneer::SetCameraBoomSettings()
 {
 	// 개척민 현재 위치를 찾습니다.
 	FVector rootComponentLocation = RootComponent->GetComponentLocation();
-	
+
 	// Pioneer의 현재 위치에서 position 만큼 더하고 rotation을 설정합니다.
 	CameraBoom->SetWorldLocationAndRotation(
 		FVector(rootComponentLocation.X + CameraBoomLocation.X, rootComponentLocation.Y + CameraBoomLocation.Y, rootComponentLocation.Z + CameraBoomLocation.Z),

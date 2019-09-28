@@ -8,7 +8,7 @@
 // Sets default values
 APioneerManager::APioneerManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
@@ -41,6 +41,12 @@ void APioneerManager::SpawnPioneers(int num)
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = Instigator;
+		/* SpawnParams.Instigator = Instigator;
+		언리얼 엔진의 게임 프레임웍의 모든 액터에는 가해자(Instigator)라는 변수가 설정되어 있습니다.
+		이는 나에게 데미지를 가한 액터의 정보를 보관 용도로 사용되는데,
+		반드시 데미지를 가한 액터만 보관하지는 않습니다.
+		예를 들어서 자신을 스폰한 액터라던지, 탐지할 적 등 주요 대상을 저장하는데 유용하게 사용할 수 있습니다.
+		*/
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 		///** Fall back to default settings. */
 		//Undefined								UMETA(DisplayName = "Default"),

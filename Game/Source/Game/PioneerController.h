@@ -10,14 +10,14 @@ UCLASS()
 class GAME_API APioneerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 public:
 	APioneerController();
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	/** true면 마우스 커서로 navigating 합니다. */
-	uint32 bMoveToMouseCursor : 1; 
+	uint32 bMoveToMouseCursor : 1;
 
 	/*** PlayerController interface : Start ***/
 	virtual void PlayerTick(float DeltaTime) override;
@@ -35,7 +35,7 @@ protected:
 	/*** Input handlers for SetDestination action. : Start ***/
 	void OnSetDestinationPressed();
 	void OnSetDestinationReleased();
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void MoveForward(float value); /** 플레이어를 앞뒤로 이동시키는 함수입니다. */
 
