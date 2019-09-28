@@ -2,6 +2,11 @@
 
 #pragma once
 
+#include "Runtime/Engine/Classes/Components/DecalComponent.h" // MouseSelectionPoint
+#include "HeadMountedDisplayFunctionLibrary.h" // VR
+#include "Pioneer.h"
+#include "PathFinding.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "PioneerController.generated.h"

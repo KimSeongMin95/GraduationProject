@@ -2,6 +2,11 @@
 
 #pragma once
 
+#include "GameFramework/Controller.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h" // Navigation
+#include "Math/Vector.h"
+#include "Navigation/PathFollowingComponent.h"
+
 #include "CoreMinimal.h"
 
 enum PathFindAlgorithm

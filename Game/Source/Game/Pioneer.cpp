@@ -2,18 +2,6 @@
 
 #include "Pioneer.h"
 
-#include "Components/StaticMeshComponent.h"
-#include "UObject/ConstructorHelpers.h" // ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
-#include "Camera/CameraComponent.h"
-#include "Components/DecalComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PlayerController.h"
-#include "GameFramework/SpringArmComponent.h"
-//#include "HeadMountedDisplayFunctionLibrary.h" // VR
-#include "Materials/Material.h"
-#include "Engine/World.h"
-
 // Sets default values
 APioneer::APioneer()
 {

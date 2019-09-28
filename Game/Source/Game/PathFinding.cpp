@@ -1,11 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PathFinding.h"
-#include "GameFramework/Controller.h"
-#include "Blueprint/AIBlueprintHelperLibrary.h" // Navigation
-#include "Math/Vector.h"
-#include "Navigation/PathFollowingComponent.h"
 
 bool PathFinding::MoveInterrupt = false;
 

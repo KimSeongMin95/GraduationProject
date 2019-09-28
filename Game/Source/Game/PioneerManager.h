@@ -2,6 +2,12 @@
 
 #pragma once
 
+#include "Engine/World.h"
+#include "Components/SceneComponent.h"
+#include "Pioneer.h"
+#include "PioneerController.h"
+#include "EngineUtils.h" // TActorIterator<>
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PioneerManager.generated.h"
@@ -23,8 +29,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
 	UPROPERTY(EditAnywhere)
 		class USceneComponent* SceneComp;
 
-	void SpawnPioneers(int num);
+	TMap<int, APioneer*> TmapPioneers; /** APioneer 객체를 관리할 TMap입니다. TMap을 선언할 때 Value 값으로 클래스가 들어간다면 해당 클래스의 헤더가 필요합니다. */
+	void SpawnPioneer(int ID); /** APioneer 객체를 생성합니다. */
+	APioneer* GetPioneerByID(int ID);
+
+	float timer;
+	int idx;
 };

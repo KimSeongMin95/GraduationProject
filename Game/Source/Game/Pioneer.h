@@ -2,6 +2,18 @@
 
 #pragma once
 
+#include "Components/StaticMeshComponent.h"
+#include "UObject/ConstructorHelpers.h" // ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
+#include "Camera/CameraComponent.h"
+#include "Components/DecalComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/SpringArmComponent.h"
+//#include "HeadMountedDisplayFunctionLibrary.h" // VR
+#include "Materials/Material.h"
+#include "Engine/World.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Pioneer.generated.h" // 항상 마지막이어야 하는 헤더

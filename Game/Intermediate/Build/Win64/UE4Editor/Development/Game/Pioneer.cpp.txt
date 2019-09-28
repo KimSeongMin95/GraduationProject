@@ -1,10 +1,5 @@
 D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Definitions.Game.h
 d:\unreal projects\game\source\game\Pioneer.h
-H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/Character.h
-H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/RootMotionSource.h
-H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\RootMotionSource.generated.h
-H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\Character.generated.h
-D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Camera/CameraComponent.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\CameraComponent.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/DecalComponent.h
@@ -14,6 +9,8 @@ H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/S
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\ShapeComponent.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\CapsuleComponent.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/CharacterMovementComponent.h
+H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/RootMotionSource.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\RootMotionSource.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\AI/Navigation/NavigationAvoidanceTypes.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\NavigationAvoidanceTypes.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Public\AI/RVOAvoidanceInterface.h
@@ -31,3 +28,6 @@ H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Eng
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\CharacterMovementComponent.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/SpringArmComponent.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\SpringArmComponent.generated.h
+H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\GameFramework/Character.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\Character.generated.h
+D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\Pioneer.generated.h

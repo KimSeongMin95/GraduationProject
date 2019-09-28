@@ -13,9 +13,9 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #endif
 #define GAME_PioneerManager_generated_h
 
-#define Game_Source_Game_PioneerManager_h_12_RPC_WRAPPERS
-#define Game_Source_Game_PioneerManager_h_12_RPC_WRAPPERS_NO_PURE_DECLS
-#define Game_Source_Game_PioneerManager_h_12_INCLASS_NO_PURE_DECLS \
+#define Game_Source_Game_PioneerManager_h_18_RPC_WRAPPERS
+#define Game_Source_Game_PioneerManager_h_18_RPC_WRAPPERS_NO_PURE_DECLS
+#define Game_Source_Game_PioneerManager_h_18_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAPioneerManager(); \
 	friend struct Z_Construct_UClass_APioneerManager_Statics; \
@@ -24,7 +24,7 @@ public: \
 	DECLARE_SERIALIZER(APioneerManager)
 
 
-#define Game_Source_Game_PioneerManager_h_12_INCLASS \
+#define Game_Source_Game_PioneerManager_h_18_INCLASS \
 private: \
 	static void StaticRegisterNativesAPioneerManager(); \
 	friend struct Z_Construct_UClass_APioneerManager_Statics; \
@@ -33,7 +33,7 @@ public: \
 	DECLARE_SERIALIZER(APioneerManager)
 
 
-#define Game_Source_Game_PioneerManager_h_12_STANDARD_CONSTRUCTORS \
+#define Game_Source_Game_PioneerManager_h_18_STANDARD_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API APioneerManager(const FObjectInitializer& ObjectInitializer); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(APioneerManager) \
@@ -46,7 +46,7 @@ private: \
 public:
 
 
-#define Game_Source_Game_PioneerManager_h_12_ENHANCED_CONSTRUCTORS \
+#define Game_Source_Game_PioneerManager_h_18_ENHANCED_CONSTRUCTORS \
 private: \
 	/** Private move- and copy-constructors, should never be used */ \
 	NO_API APioneerManager(APioneerManager&&); \
@@ -57,26 +57,26 @@ DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(APioneerManager); \
 	DEFINE_DEFAULT_CONSTRUCTOR_CALL(APioneerManager)
 
 
-#define Game_Source_Game_PioneerManager_h_12_PRIVATE_PROPERTY_OFFSET
-#define Game_Source_Game_PioneerManager_h_9_PROLOG
-#define Game_Source_Game_PioneerManager_h_12_GENERATED_BODY_LEGACY \
+#define Game_Source_Game_PioneerManager_h_18_PRIVATE_PROPERTY_OFFSET
+#define Game_Source_Game_PioneerManager_h_15_PROLOG
+#define Game_Source_Game_PioneerManager_h_18_GENERATED_BODY_LEGACY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	Game_Source_Game_PioneerManager_h_12_PRIVATE_PROPERTY_OFFSET \
-	Game_Source_Game_PioneerManager_h_12_RPC_WRAPPERS \
-	Game_Source_Game_PioneerManager_h_12_INCLASS \
-	Game_Source_Game_PioneerManager_h_12_STANDARD_CONSTRUCTORS \
+	Game_Source_Game_PioneerManager_h_18_PRIVATE_PROPERTY_OFFSET \
+	Game_Source_Game_PioneerManager_h_18_RPC_WRAPPERS \
+	Game_Source_Game_PioneerManager_h_18_INCLASS \
+	Game_Source_Game_PioneerManager_h_18_STANDARD_CONSTRUCTORS \
 public: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 
-#define Game_Source_Game_PioneerManager_h_12_GENERATED_BODY \
+#define Game_Source_Game_PioneerManager_h_18_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	Game_Source_Game_PioneerManager_h_12_PRIVATE_PROPERTY_OFFSET \
-	Game_Source_Game_PioneerManager_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
-	Game_Source_Game_PioneerManager_h_12_INCLASS_NO_PURE_DECLS \
-	Game_Source_Game_PioneerManager_h_12_ENHANCED_CONSTRUCTORS \
+	Game_Source_Game_PioneerManager_h_18_PRIVATE_PROPERTY_OFFSET \
+	Game_Source_Game_PioneerManager_h_18_RPC_WRAPPERS_NO_PURE_DECLS \
+	Game_Source_Game_PioneerManager_h_18_INCLASS_NO_PURE_DECLS \
+	Game_Source_Game_PioneerManager_h_18_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

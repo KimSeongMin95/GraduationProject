@@ -1,0 +1,23 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-Game-6810.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\GameEditor\Development\Engine\SharedPCH.Engine.h.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Game.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\MyGameModeBase.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\PathFinding.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Pioneer.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\PioneerController.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\PioneerManager.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Game.init.gen.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\MyGameModeBase.gen.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Pioneer.gen.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\PioneerController.gen.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\PioneerManager.gen.cpp.obj"
+"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Default.rc2.res"
+/OUT:"D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-6810.lib"
+/INCLUDE:IMPLEMENT_MODULE_Game

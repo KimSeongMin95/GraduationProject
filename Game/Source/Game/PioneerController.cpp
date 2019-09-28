@@ -1,11 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PioneerController.h"
-#include "Runtime/Engine/Classes/Components/DecalComponent.h" // MouseSelectionPoint
-#include "HeadMountedDisplayFunctionLibrary.h" // VR
-#include "Pioneer.h"
-#include "PathFinding.h"
 
 APioneerController::APioneerController()
 {

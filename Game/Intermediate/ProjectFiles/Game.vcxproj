@@ -463,9 +463,11 @@
     <NMakeOutput>..\..\Binaries\HTML5\Game-HTML5-Shipping.js</NMakeOutput>
   </PropertyGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Game\MyGameModeBase.cpp" />
     <ClCompile Include="..\..\Source\Game\PathFinding.cpp" />
     <ClCompile Include="..\..\Source\Game\PioneerController.cpp" />
     <ClCompile Include="..\..\Source\Game\PioneerManager.cpp" />
+    <ClInclude Include="..\..\Source\Game\MyGameModeBase.h" />
     <ClInclude Include="..\..\Source\Game\PathFinding.h" />
     <ClInclude Include="..\..\Source\Game\PioneerController.h" />
     <ClInclude Include="..\..\Source\Game\PioneerManager.h" />
@@ -488,8 +490,6 @@
     <None Include="..\..\Source\Game\Game.Build.cs" />
     <ClCompile Include="..\..\Source\Game\Game.cpp" />
     <ClInclude Include="..\..\Source\Game\Game.h" />
-    <ClCompile Include="..\..\Source\Game\GameGameModeBase.cpp" />
-    <ClInclude Include="..\..\Source\Game\GameGameModeBase.h" />
     <ClCompile Include="..\..\Source\Game\Pioneer.cpp" />
     <ClInclude Include="..\..\Source\Game\Pioneer.h" />
   </ItemGroup>
