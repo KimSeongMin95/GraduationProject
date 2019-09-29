@@ -37,31 +37,32 @@ AMyGameModeBase::AMyGameModeBase()
 
 	DefaultPawnClass = APioneer::StaticClass();
 
-	// Default로 비활성화되어있는 Tick()을 활성화 합니다.
-	PrimaryActorTick.SetTickFunctionEnable(true);
-	PrimaryActorTick.bStartWithTickEnabled = true;
+	//// Default로 비활성화되어있는 Tick()을 활성화 합니다.
+	//PrimaryActorTick.SetTickFunctionEnable(true);
+	//PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
-// Called when the game starts or when spawned
+/** Called when the game starts or when spawned. inherited in Actor, triggered before StartPlay()*/
 void AMyGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
-// 임시 함수
+/** inherited in GameModeBase, BeginPlay()이후 실행됩니다. */
 void AMyGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
-	// 임시
+	/*** temp code : Start ***/
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Hello World, this is FPSGameMode!"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("B477004 KimSeongMin's 3D RTS Game"));
 	}
-	// PioneerManager 객체를 생성합니다.
+	/*** temp code : End ***/
+
+	// APioneerManager 객체를 생성합니다.
 	SpawnPioneerManager();
-	
 }
 
 // Called every frame
@@ -77,7 +78,7 @@ void AMyGameModeBase::SpawnPioneerManager()
 	UWorld* World = GetWorld();
 	if (!World)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Failed: UWorld* World = GetWorld();"))
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* World = GetWorld();"))
 		return;
 	}
 
@@ -88,7 +89,6 @@ void AMyGameModeBase::SpawnPioneerManager()
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
-
 
 	PioneerManager = World->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 }

@@ -9,6 +9,7 @@
 
 #include "CoreMinimal.h"
 
+UENUM()
 enum PathFindAlgorithm
 {
 	/*

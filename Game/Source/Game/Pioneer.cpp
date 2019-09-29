@@ -5,7 +5,7 @@
 // Sets default values
 APioneer::APioneer()
 {
-	/*** 임시 코드 : 시작 ***/
+	/*** Temp code : Start ***/
 	// 임시로 StaticMesh를 설정합니다.
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	StaticMeshComponent->SetupAttachment(RootComponent);
@@ -16,14 +16,14 @@ APioneer::APioneer()
 		StaticMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -96.0f));
 		StaticMeshComponent->SetWorldScale3D(FVector(1.0f));
 	}
-	/*** 임시 코드 : 종료 ***/
+	/*** Temp code : End ***/
 
-	/*** 카메라 설정을 PIE때 변경합니다. : 시작 ***/
+	/*** 카메라 설정을 PIE때 변경합니다. : Start ***/
 	CameraBoomLocation = FVector(-500.0f, 0.0f, 500.0f); // ArmSpring의 World 좌표입니다.
 	CameraBoomRotation = FRotator(-60.f, 0.f, 0.f); // ArmSpring의 World 회전입니다.
 	TargetArmLength = 500.0f; // ArmSpring과 CameraComponent간의 거리입니다.
 	CameraLagSpeed = 3.0f; // 부드러운 카메라 전환 속도입니다.
-	/*** 카메라 설정을 PIE때 변경합니다. : 종료 ***/
+	/*** 카메라 설정을 PIE때 변경합니다. : End ***/
 
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);

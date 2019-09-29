@@ -63,6 +63,10 @@ H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AIM
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AIModule\PathFollowingComponent.generated.h
 D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\PioneerController.generated.h
 d:\unreal projects\game\source\game\PioneerManager.h
+d:\unreal projects\game\source\game\WorldViewCameraActor.h
+H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Camera/CameraActor.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\CameraActor.generated.h
+D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\WorldViewCameraActor.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Public\EngineUtils.h
 D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\PioneerManager.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Public\Engine.h
@@ -267,8 +271,6 @@ H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Engine/PostP
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\PostProcessVolume.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Engine/TriggerVolume.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\TriggerVolume.generated.h
-H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Camera/CameraActor.h
-H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\CameraActor.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Engine/SubsurfaceProfile.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\SubsurfaceProfile.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Engine/DebugCameraController.h

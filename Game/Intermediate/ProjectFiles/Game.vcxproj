@@ -467,10 +467,12 @@
     <ClCompile Include="..\..\Source\Game\PathFinding.cpp" />
     <ClCompile Include="..\..\Source\Game\PioneerController.cpp" />
     <ClCompile Include="..\..\Source\Game\PioneerManager.cpp" />
+    <ClCompile Include="..\..\Source\Game\WorldViewCameraActor.cpp" />
     <ClInclude Include="..\..\Source\Game\MyGameModeBase.h" />
     <ClInclude Include="..\..\Source\Game\PathFinding.h" />
     <ClInclude Include="..\..\Source\Game\PioneerController.h" />
     <ClInclude Include="..\..\Source\Game\PioneerManager.h" />
+    <ClInclude Include="..\..\Source\Game\WorldViewCameraActor.h" />
     <None Include="..\..\Game.uproject" />
     <None Include="..\..\Source\Game.Target.cs" />
     <None Include="..\..\Source\GameEditor.Target.cs" />

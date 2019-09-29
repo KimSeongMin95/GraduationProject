@@ -109,6 +109,9 @@
     <ClInclude Include="..\..\Source\Game\MyGameModeBase.h">
       <Filter>Source\Game</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Game\WorldViewCameraActor.h">
+      <Filter>Source\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Game\PioneerManager.cpp">
@@ -121,6 +124,9 @@
       <Filter>Source\Game</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Game\MyGameModeBase.cpp">
+      <Filter>Source\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Game\WorldViewCameraActor.cpp">
       <Filter>Source\Game</Filter>
     </ClCompile>
   </ItemGroup>

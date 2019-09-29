@@ -6,10 +6,6 @@
 #include "HeadMountedDisplayFunctionLibrary.h" // VR
 #include "Pioneer.h"
 #include "PathFinding.h"
-#include "PioneerManager.h"
-#include "EngineUtils.h" // TActorIterator<>
-#include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
-#include "WorldViewCameraActor.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
@@ -45,9 +41,6 @@ protected:
 	void OnSetDestinationPressed();
 	void OnSetDestinationReleased();
 
-	void SwitchingPawn(); /** Pawn을 변경하는 함수입니다. */
-	void TempRight();
-
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void MoveForward(float value); /** 플레이어를 앞뒤로 이동시키는 함수입니다. */
 
@@ -55,9 +48,4 @@ protected:
 		void MoveRight(float value); /** 플레이어를 좌우로 이동시키는 함수입니다. */
 	/*** Input handlers for SetDestination action. : End ***/
 
-	void SwitchingCamera();
-	void PossessPioneer();
-
-	int num;
-	int tempNum;
 };

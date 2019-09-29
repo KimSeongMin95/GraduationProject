@@ -64,5 +64,9 @@ H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\AIModule\Classes\AIResource
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AIModule\AIResourceInterface.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AIModule\PathFollowingComponent.generated.h
 d:\unreal projects\game\intermediate\build\win64\ue4editor\inc\game\PioneerController.generated.h
+d:\unreal projects\game\source\game\WorldViewCameraActor.h
+H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Camera/CameraActor.h
+H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\CameraActor.generated.h
+d:\unreal projects\game\intermediate\build\win64\ue4editor\inc\game\WorldViewCameraActor.generated.h
 H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Public\EngineUtils.h
 d:\unreal projects\game\intermediate\build\win64\ue4editor\inc\game\PioneerManager.generated.h

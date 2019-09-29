@@ -114,9 +114,9 @@ void EmptyLinkFunctionForGeneratedCodePioneer() {}
 #if WITH_METADATA
 	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_APioneer_Statics::NewProp_CameraBoomLocation_MetaData[] = {
 		{ "Category", "Pioneer" },
-		{ "Comment", "/*** \xc4\xab?\xde\xb6? ?????? PIE?? ?????\xd5\xb4\xcf\xb4?. : ???? ***/" },
+		{ "Comment", "/*** \xc4\xab?\xde\xb6? ?????? PIE?? ?????\xd5\xb4\xcf\xb4?. : Start ***/" },
 		{ "ModuleRelativePath", "Pioneer.h" },
-		{ "ToolTip", "\xc4\xab?\xde\xb6? ?????? PIE?? ?????\xd5\xb4\xcf\xb4?. : ???? **" },
+		{ "ToolTip", "\xc4\xab?\xde\xb6? ?????? PIE?? ?????\xd5\xb4\xcf\xb4?. : Start **" },
 	};
 #endif
 	const UE4CodeGen_Private::FStructPropertyParams Z_Construct_UClass_APioneer_Statics::NewProp_CameraBoomLocation = { "CameraBoomLocation", nullptr, (EPropertyFlags)0x0010000000000001, UE4CodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(APioneer, CameraBoomLocation), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(Z_Construct_UClass_APioneer_Statics::NewProp_CameraBoomLocation_MetaData, ARRAY_COUNT(Z_Construct_UClass_APioneer_Statics::NewProp_CameraBoomLocation_MetaData)) };
@@ -200,7 +200,7 @@ void EmptyLinkFunctionForGeneratedCodePioneer() {}
 		}
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(APioneer, 2526170486);
+	IMPLEMENT_CLASS(APioneer, 465167872);
 	template<> GAME_API UClass* StaticClass<APioneer>()
 	{
 		return APioneer::StaticClass();

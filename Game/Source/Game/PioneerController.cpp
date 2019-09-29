@@ -8,9 +8,6 @@ APioneerController::APioneerController()
 	bShowMouseCursor = true; // 마우스를 보이게 합니다.
 	DefaultMouseCursor = EMouseCursor::Default; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
 	//DefaultMouseCursor = EMouseCursor::Crosshairs; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
-
-	num = 1;
-	tempNum = 1;
 }
 
 void APioneerController::PlayerTick(float DeltaTime)
@@ -32,10 +29,7 @@ void APioneerController::SetupInputComponent()
 	// support keyboard
 	InputComponent->BindAction("SetDestination", IE_Pressed, this, &APioneerController::OnSetDestinationPressed);
 	InputComponent->BindAction("SetDestination", IE_Released, this, &APioneerController::OnSetDestinationReleased);
-	InputComponent->BindAction("Tab", IE_Pressed, this, &APioneerController::SwitchingPawn);
-	InputComponent->BindAction("Temp", IE_Pressed, this, &APioneerController::TempRight);
 
-	
 	//// support touch devices 
 	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &APioneerController::MoveToTouchLocation);
 	//InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &APioneerController::MoveToTouchLocation);
@@ -122,7 +116,7 @@ void APioneerController::OnSetDestinationReleased()
 void APioneerController::MoveForward(float value)
 {
 	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
-	APioneer* const MyPawn = (APioneer*)GetPawn();
+	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
 
 	if (MyPawn && (value != 0.0f))
 	{
@@ -140,7 +134,7 @@ void APioneerController::MoveForward(float value)
 void APioneerController::MoveRight(float value)
 {
 	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
-	APioneer* const MyPawn = (APioneer*)GetPawn();
+	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
 
 	if (MyPawn && (value != 0.0f))
 	{
@@ -153,121 +147,4 @@ void APioneerController::MoveRight(float value)
 		//// 방향을 고정합니다.
 		//MyPawn->AddMovementInput(FVector().RightVector, value);
 	}
-}
-
-void APioneerController::SwitchingPawn()
-{
-	AWorldViewCameraActor* worldViewCameraActor = nullptr;
-
-	for (TActorIterator<AWorldViewCameraActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		worldViewCameraActor = *ActorItr;
-	}
-
-	for (TActorIterator<APioneerManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-		APioneerManager* pioneerManager = *ActorItr;
-
-		num++;
-		if (num == 3)
-		{
-			num = 1;
-		}
-
-		//enum EViewTargetBlendFunction
-		//{
-		//	/** Camera does a simple linear interpolation. */
-		//	VTBlend_Linear,
-		//	/** Camera has a slight ease in and ease out, but amount of ease cannot be tweaked. */
-		//	VTBlend_Cubic,
-		//	/** Camera immediately accelerates, but smoothly decelerates into the target.  Ease amount controlled by BlendExp. */
-		//	VTBlend_EaseIn,
-		//	/** Camera smoothly accelerates, but does not decelerate into the target.  Ease amount controlled by BlendExp. */
-		//	VTBlend_EaseOut,
-		//	/** Camera smoothly accelerates and decelerates.  Ease amount controlled by BlendExp. */
-		//	VTBlend_EaseInOut,
-		//	VTBlend_MAX,
-		//};
-		switch (tempNum)
-		{
-		case 1:
-			SetViewTargetWithBlend(worldViewCameraActor, 1.0f, EViewTargetBlendFunction::VTBlend_Linear, 10.0f, true);
-			break;
-		case 2:
-			SetViewTargetWithBlend(worldViewCameraActor, 1.0f, EViewTargetBlendFunction::VTBlend_Cubic, 10.0f, true);
-			break;
-		case 3:
-			SetViewTargetWithBlend(worldViewCameraActor, 1.0f, EViewTargetBlendFunction::VTBlend_EaseIn, 10.0f, true);
-			break;
-		case 4:
-			SetViewTargetWithBlend(worldViewCameraActor, 1.0f, EViewTargetBlendFunction::VTBlend_EaseOut, 10.0f, true);
-			break;
-		case 5:
-			SetViewTargetWithBlend(worldViewCameraActor, 1.0f, EViewTargetBlendFunction::VTBlend_EaseInOut, 10.0f, true);
-			break;
-		case 6:
-			SetViewTargetWithBlend(worldViewCameraActor, 1.0f, EViewTargetBlendFunction::VTBlend_MAX, 10.0f, true);
-			break;
-		}
-
-		FTimerHandle Timer;
-		GetWorldTimerManager().SetTimer(Timer, this, &APioneerController::SwitchingCamera, 1.0f, false);
-		FTimerHandle Timer2;
-		GetWorldTimerManager().SetTimer(Timer2, this, &APioneerController::PossessPioneer, 2.0f, false);
-		
-	}
-}
-
-void APioneerController::SwitchingCamera()
-{
-	for (TActorIterator<APioneerManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-		APioneerManager* pioneerManager = *ActorItr;
-
-		switch (tempNum)
-		{
-		case 1:
-			SetViewTargetWithBlend(pioneerManager->TmapPioneers[num], 1.0f, EViewTargetBlendFunction::VTBlend_Linear, 10.0f, true);
-			break;
-		case 2:
-			SetViewTargetWithBlend(pioneerManager->TmapPioneers[num], 1.0f, EViewTargetBlendFunction::VTBlend_Cubic, 10.0f, true);
-			break;
-		case 3:
-			SetViewTargetWithBlend(pioneerManager->TmapPioneers[num], 1.0f, EViewTargetBlendFunction::VTBlend_EaseIn, 10.0f, true);
-			break;
-		case 4:
-			SetViewTargetWithBlend(pioneerManager->TmapPioneers[num], 1.0f, EViewTargetBlendFunction::VTBlend_EaseOut, 10.0f, true);
-			break;
-		case 5:
-			SetViewTargetWithBlend(pioneerManager->TmapPioneers[num], 1.0f, EViewTargetBlendFunction::VTBlend_EaseInOut, 10.0f, true);
-			break;
-		case 6:
-			SetViewTargetWithBlend(pioneerManager->TmapPioneers[num], 1.0f, EViewTargetBlendFunction::VTBlend_MAX, 10.0f, true);
-			break;
-		}
-	}
-}
-
-void APioneerController::PossessPioneer()
-{
-	for (TActorIterator<APioneerManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		APioneerManager* pioneerManager = *ActorItr;
-
-		if (GetPawn())
-			UnPossess();
-
-		if (pioneerManager->TmapPioneers.Contains(num))
-			Possess(pioneerManager->TmapPioneers[num]);
-	}
-}
-
-void APioneerController::TempRight()
-{
-	tempNum++;
-	if (tempNum == 7)
-		tempNum = 1;
-
 }

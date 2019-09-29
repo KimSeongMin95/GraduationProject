@@ -106,11 +106,11 @@ protected:
 	//void LookUpAtRate(float rate);
 
 public:
-	/*** 카메라 설정을 PIE때 변경합니다. : 시작 ***/
+	/*** 카메라 설정을 PIE때 변경합니다. : Start ***/
 	UPROPERTY(EditAnywhere) FVector CameraBoomLocation; // ArmSpring의 World 좌표입니다.
 	UPROPERTY(EditAnywhere) FRotator CameraBoomRotation; // ArmSpring의 World 회전입니다.
 	UPROPERTY(EditAnywhere) float TargetArmLength; // ArmSpring과 FollowCamera간의 거리입니다.
 	UPROPERTY(EditAnywhere) int CameraLagSpeed; // 부드러운 카메라 전환 속도입니다.
 	void SetCameraBoomSettings(); // Tick()에서 호출합니다.
-	/*** 카메라 설정을 PIE때 변경합니다. : 종료 ***/
+	/*** 카메라 설정을 PIE때 변경합니다. : End ***/
 };

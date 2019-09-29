@@ -29,8 +29,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	class UClass* DefPlayerCtrl;
-	class UClass* DefPioneer;
 	class APioneerManager* PioneerManager;
 	void SpawnPioneerManager(); /** APioneerManager 객체를 생성합니다. */
 };

@@ -1,31 +1,6 @@
-﻿  Cleaning GameEditor and UnrealHeaderTool binaries...
-  Creating makefile for GameEditor (no existing makefile)
-  Parsing headers for GameEditor
+﻿  Parsing headers for GameEditor
     Running UnrealHeaderTool "D:\Unreal Projects\Game\Game.uproject" "D:\Unreal Projects\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
-  Reflection code generated for GameEditor in 10.246601 seconds
-  Using Visual Studio 2017 14.16.27023 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023) and Windows 10.0.16299.0 SDK (C:\Program Files (x86)\Windows Kits\10).
-  Building 16 actions with 8 processes...
-    [1/16] Default.rc2
-    [2/16] SharedPCH.Engine.cpp
-    [3/16] Game.init.gen.cpp
-    [4/16] PioneerManager.cpp
-    [5/16] MyGameModeBase.gen.cpp
-    [6/16] Pioneer.gen.cpp
-    [7/16] Pioneer.cpp
-D:\Unreal Projects\Game\Source\Game\Pioneer.cpp(59): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
-    H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' 선언을 참조하십시오.
-D:\Unreal Projects\Game\Source\Game\Pioneer.cpp(71): warning C4996: 'USceneComponent::AttachTo': This function is deprecated, please use AttachToComponent instead. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile.
-    H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Components/SceneComponent.h(658): note: 'USceneComponent::AttachTo' 선언을 참조하십시오.
-    [8/16] PioneerController.cpp
-    [9/16] PathFinding.cpp
-    [10/16] PioneerController.gen.cpp
-    [11/16] Game.cpp
-    [12/16] PioneerManager.gen.cpp
-    [13/16] MyGameModeBase.cpp
-    [14/16] UE4Editor-Game-0001.lib
-       D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-0001.lib 라이브러리 및 D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-0001.exp 개체를 생성하고 있습니다.
-    [15/16] UE4Editor-Game-0001.dll
-       D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-0001.suppressed.lib 라이브러리 및 D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\UE4Editor-Game-0001.suppressed.exp 개체를 생성하고 있습니다.
-    [16/16] GameEditor.target
-  Total time in Parallel executor: 42.91 seconds
-  Total execution time: 59.44 seconds
+  Reflection code generated for GameEditor in 8.9319859 seconds
+  Deleted hot-reload file: D:\Unreal Projects\Game\Binaries\Win64\UE4Editor-Game-0001.dll
+UnrealBuildTool : error : Unable to delete hot-reload file: D:\Unreal Projects\Game\Binaries\Win64\UE4Editor-Game-0002.dll
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.MakeFile.Targets(44,5): error MSB3075: ""H:\Program Files (x86)\UE_4.23\Engine\Build\BatchFiles\Build.bat" GameEditor Win64 Development -Project="D:\Unreal Projects\Game\Game.uproject" -WaitMutex -FromMsBuild" 명령이 종료되었습니다(코드: 5). 이 명령을 실행할 권한이 있는지 확인하세요.
