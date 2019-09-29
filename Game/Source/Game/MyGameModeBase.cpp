@@ -61,20 +61,6 @@ void AMyGameModeBase::StartPlay()
 	}
 	// PioneerManager 객체를 생성합니다.
 	SpawnPioneerManager();
-
-
-
-
-	// 다운캐스팅은 dynamic_cast함수를 사용해야 합니다.
-	//PioneerManager->TmapPioneers.Emplace(0, dynamic_cast<APioneer*>(DefPioneer));
-	//APioneerController* tempCtrl = dynamic_cast<APioneerController*>(DefPlayerCtrl);
-	//UE_LOG(LogTemp, Log, TEXT("SibalSibalSibalSibalSibal"))
-	//tempCtrl->UnPossess();
-	/*if (PioneerManager->TmapPioneers.Contains(1))
-		tempCtrl->Possess(PioneerManager->TmapPioneers[1]);
-	else
-		UE_LOG(LogTemp, Log, TEXT("12g15761591298fg912g9f1928f"))*/
-
 	
 }
 

@@ -21,8 +21,6 @@ void APioneerManager::BeginPlay()
 	SpawnPioneer(1);
 	SpawnPioneer(2);
 
-	timer = 0.0f;
-	idx = 1;
 }
 
 // Called every frame
@@ -30,25 +28,7 @@ void APioneerManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	timer += DeltaTime;
-
-	if (timer >= 3.0f)
-	{
-		timer = 0.0f;
-
-		if (idx == 1)
-			idx = 2;
-		else
-			idx = 1;
-
-		for (TActorIterator<APioneerController> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-		{
-			// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
-			APioneerController* temp = *ActorItr;
-			temp->UnPossess();
-			temp->Possess(TmapPioneers[idx]);
-		}
-	}
+	
 }
 
 void APioneerManager::SpawnPioneer(int ID)
