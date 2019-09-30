@@ -2,8 +2,10 @@
 
 #pragma once
 
+
+
 #include "Components/StaticMeshComponent.h"
-#include "UObject/ConstructorHelpers.h" // ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
+#include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -13,6 +15,8 @@
 //#include "HeadMountedDisplayFunctionLibrary.h" // VR
 #include "Materials/Material.h"
 #include "Engine/World.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Engine/SkeletalMesh.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -41,8 +45,8 @@ public:
 
 private:
 	/*** Components : Start ***/
-	UPROPERTY(EditAnywhere)
-		class UStaticMeshComponent* StaticMeshComponent; /** 임시로 StaticMesh를 설정합니다. */
+	//UPROPERTY(EditAnywhere)
+	//	class UStaticMeshComponent* StaticMeshComponent; /** 임시로 StaticMesh를 설정합니다. */
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class USpringArmComponent* CameraBoom; /** 캐릭터 뒤편에서 카메라의 위치를 조정합니다. */
@@ -52,6 +56,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UDecalComponent* CursorToWorld; /** A decal that projects to the cursor location. */
+
+public:
+	// ??? CDO constructor에서 생성시키는 녀석은 Blueprint에서 수정할 수 없어야 한다???
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh)
+		class USkeletalMeshComponent* SkeletalMeshComp;
 	/*** Components : End ***/
 
 public:

@@ -23,6 +23,8 @@ AMyGameModeBase::AMyGameModeBase()
 	*/
 	/***** 필수! 꼭 읽어주세요. : End *****/
 
+	HUDClass = AMyHUD::StaticClass();
+
 	// use our custom PlayerController class
 	PlayerControllerClass = APioneerController::StaticClass();
 

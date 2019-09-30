@@ -1,6 +1,0 @@
-﻿  Parsing headers for GameEditor
-    Running UnrealHeaderTool "D:\Unreal Projects\Game\Game.uproject" "D:\Unreal Projects\Game\Intermediate\Build\Win64\GameEditor\Development\GameEditor.uhtmanifest" -LogCmds="loginit warning, logexit warning, logdatabase error" -Unattended -WarningsAsErrors -installed
-  Reflection code generated for GameEditor in 8.9319859 seconds
-  Deleted hot-reload file: D:\Unreal Projects\Game\Binaries\Win64\UE4Editor-Game-0001.dll
-UnrealBuildTool : error : Unable to delete hot-reload file: D:\Unreal Projects\Game\Binaries\Win64\UE4Editor-Game-0002.dll
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.MakeFile.Targets(44,5): error MSB3075: ""H:\Program Files (x86)\UE_4.23\Engine\Build\BatchFiles\Build.bat" GameEditor Win64 Development -Project="D:\Unreal Projects\Game\Game.uproject" -WaitMutex -FromMsBuild" 명령이 종료되었습니다(코드: 5). 이 명령을 실행할 권한이 있는지 확인하세요.

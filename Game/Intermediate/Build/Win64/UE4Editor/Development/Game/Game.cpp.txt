@@ -1,2 +1,0 @@
-D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Definitions.Game.h
-d:\unreal projects\game\source\game\Game.h

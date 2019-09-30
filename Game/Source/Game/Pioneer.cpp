@@ -6,16 +6,27 @@
 APioneer::APioneer()
 {
 	/*** Temp code : Start ***/
-	// 임시로 StaticMesh를 설정합니다.
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	StaticMeshComponent->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
-	if (staticMeshAsset.Succeeded())
-	{
-		StaticMeshComponent->SetStaticMesh(staticMeshAsset.Object);
-		StaticMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -96.0f));
-		StaticMeshComponent->SetWorldScale3D(FVector(1.0f));
-	}
+	//// 임시로 StaticMesh를 설정합니다.
+	//StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	//StaticMeshComponent->SetupAttachment(RootComponent);
+	//static ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
+	//if (staticMeshAsset.Succeeded())
+	//{
+	//	StaticMeshComponent->SetStaticMesh(staticMeshAsset.Object);
+	//	StaticMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -96.0f));
+	//	StaticMeshComponent->SetWorldScale3D(FVector(0.3f));
+	//}
+
+	// 임시로 SkeletalMesh를 설정합니다.
+	SkeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComp"));
+	SkeletalMeshComp->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
+	SkeletalMeshComp->SetupAttachment(RootComponent);
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
+	SkeletalMeshComp->SetSkeletalMesh(skeletalMeshAsset.Object);
+	SkeletalMeshComp->bCastDynamicShadow = true; // 주석 필요
+	SkeletalMeshComp->CastShadow = true; // 주석 필요
+	SkeletalMeshComp->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
+	SkeletalMeshComp->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
 	/*** Temp code : End ***/
 
 	/*** 카메라 설정을 PIE때 변경합니다. : Start ***/
@@ -44,7 +55,7 @@ APioneer::APioneer()
 
 	// Cameraboom을 생성합니다. (충돌 시 플레이어 쪽으로 다가와 위치합니다.)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->AttachTo(RootComponent);
+	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->bAbsoluteRotation = true; // 캐릭터가 회전할 때 Arm을 회전시키지 않습니다. 월드 좌표계의 회전을 따르도록 합니다.
 	CameraBoom->TargetArmLength = 500.0f; // 해당 간격으로 카메라가 Arm을 따라다닙니다.
 	CameraBoom->RelativeLocation = FVector(-500.0f, 0.0f, 500.0f);
@@ -56,7 +67,7 @@ APioneer::APioneer()
 
 	// 따라다니는 카메라를 생성합니다.
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-	TopDownCameraComponent->AttachTo(CameraBoom, USpringArmComponent::SocketName); // boom의 맨 뒤쪽에 해당 카메라를 붙이고, 컨트롤러의 방향에 맞게 boom을 적용합니다.
+	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // boom의 맨 뒤쪽에 해당 카메라를 붙이고, 컨트롤러의 방향에 맞게 boom을 적용합니다.
 	TopDownCameraComponent->bUsePawnControlRotation = false; // 카메라는 Arm에 상대적으로 회전하지 않습니다.
 
 	// Create a decal in the world to show the cursor's location
@@ -90,6 +101,8 @@ void APioneer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	////Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
+	//FP_Gun->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 }
 
 // Called every frame

@@ -1,3 +1,0 @@
-D:\Unreal Projects\Game\Source\Game\Game.Build.cs
-D:\Unreal Projects\Game\Source\Game.Target.cs
-D:\Unreal Projects\Game\Source\GameEditor.Target.cs

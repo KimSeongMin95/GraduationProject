@@ -6,8 +6,8 @@ APioneerController::APioneerController()
 {
 	// setting mouse
 	bShowMouseCursor = true; // 마우스를 보이게 합니다.
-	DefaultMouseCursor = EMouseCursor::Default; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
-	//DefaultMouseCursor = EMouseCursor::Crosshairs; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
+	//DefaultMouseCursor = EMouseCursor::Default; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
+	DefaultMouseCursor = EMouseCursor::Crosshairs; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
 }
 
 void APioneerController::PlayerTick(float DeltaTime)

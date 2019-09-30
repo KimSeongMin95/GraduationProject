@@ -5,6 +5,8 @@
 #include "PioneerController.h"
 #include "Pioneer.h"
 #include "PioneerManager.h"
+#include "MyHUD.h"
+
 #include "UObject/ConstructorHelpers.h"
 #include "Engine.h"
 

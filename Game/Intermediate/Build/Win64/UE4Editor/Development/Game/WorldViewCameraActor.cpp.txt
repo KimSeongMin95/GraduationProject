@@ -1,5 +1,0 @@
-D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Development\Game\Definitions.Game.h
-d:\unreal projects\game\source\game\WorldViewCameraActor.h
-H:\Program Files (x86)\UE_4.23\Engine\Source\Runtime\Engine\Classes\Camera/CameraActor.h
-H:\Program Files (x86)\UE_4.23\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\CameraActor.generated.h
-D:\Unreal Projects\Game\Intermediate\Build\Win64\UE4Editor\Inc\Game\WorldViewCameraActor.generated.h

@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include "Runtime/Engine/Classes/Components/DecalComponent.h" // MouseSelectionPoint
-#include "HeadMountedDisplayFunctionLibrary.h" // VR
 #include "Pioneer.h"
 #include "PathFinding.h"
+
+#include "Runtime/Engine/Classes/Components/DecalComponent.h" // MouseSelectionPoint
+#include "HeadMountedDisplayFunctionLibrary.h" // VR
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
@@ -25,7 +26,10 @@ protected:
 	uint32 bMoveToMouseCursor : 1;
 
 	/*** PlayerController interface : Start ***/
-	virtual void PlayerTick(float DeltaTime) override;
+	/** 일반 Tick() 함수는 어디서나 작동하는 반면에, PlayerTick() 함수는 Player Controller에 PlayerInput 객체가 있는 경우에만 호출된다.
+	따라서 로컬로 제어되는 Player Controller에서만 플레이어 틱이 호출된다.
+	이 말인 즉슨, 만약 멀티플레이 게임이라면 자기 자신의 플레이어 컨트롤러에서만 플레이어 틱이 호출된다는 것이다.*/
+	virtual void PlayerTick(float DeltaTime) override; 
 	virtual void SetupInputComponent() override;
 	/*** PlayerController interface : End ***/
 
