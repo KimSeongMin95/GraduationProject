@@ -1,6 +1,5 @@
 # Custom Ignore
 .vs/
-Build/
 Binaries/
 Intermediate/
 Saved/
