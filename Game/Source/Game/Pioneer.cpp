@@ -5,7 +5,7 @@
 // Sets default values
 APioneer::APioneer()
 {
-	/*** Temp code : Start ***/
+	
 	//// 임시로 StaticMesh를 설정합니다.
 	//StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	//StaticMeshComponent->SetupAttachment(RootComponent);
@@ -17,17 +17,42 @@ APioneer::APioneer()
 	//	StaticMeshComponent->SetWorldScale3D(FVector(0.3f));
 	//}
 
-	// 임시로 SkeletalMesh를 설정합니다.
+	/*** Animation code : Start ***/
 	SkeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComp"));
-	SkeletalMeshComp->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
 	SkeletalMeshComp->SetupAttachment(RootComponent);
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
-	SkeletalMeshComp->SetSkeletalMesh(skeletalMeshAsset.Object);
-	SkeletalMeshComp->bCastDynamicShadow = true; // 주석 필요
-	SkeletalMeshComp->CastShadow = true; // 주석 필요
-	SkeletalMeshComp->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
-	SkeletalMeshComp->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
-	/*** Temp code : End ***/
+	if (skeletalMeshAsset.Succeeded())
+	{
+		SkeletalMeshComp->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
+		SkeletalMeshComp->SetSkeletalMesh(skeletalMeshAsset.Object);
+		SkeletalMeshComp->bCastDynamicShadow = true; // 주석 필요
+		SkeletalMeshComp->CastShadow = true; // 주석 필요
+		SkeletalMeshComp->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
+		SkeletalMeshComp->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
+	}
+
+
+
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Mannequin/Animations/ThirdPersonIdle.ThirdPersonIdle'"));
+	if (animSequence.Succeeded())
+	{
+		AnimSequence = animSequence.Object;
+		//AnimSequence->SetSkeleton();
+
+		//// Find character animation instance and set it
+		//static ConstructorHelpers::FClassFinder<URTSBR_Character_AnimInstance> animationBlueprintClass(TEXT("/Game/Blueprints/Characters/Animations/BP_RTSBR_CharacterAnimation"));
+		//if (animationBlueprintClass.Class)
+		//{
+		//	GetMesh()->SetAnimInstanceClass(animationBlueprintClass.Class);
+		//}
+
+		//UAnimMontage* AnimMontage;
+		
+	}
+	/*** Animation code : End ***/
+
+	// 충돌 캡슐의 크기를 설정합니다.
+	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
 	/*** 카메라 설정을 PIE때 변경합니다. : Start ***/
 	CameraBoomLocation = FVector(-500.0f, 0.0f, 500.0f); // ArmSpring의 World 좌표입니다.
@@ -35,9 +60,6 @@ APioneer::APioneer()
 	TargetArmLength = 500.0f; // ArmSpring과 CameraComponent간의 거리입니다.
 	CameraLagSpeed = 3.0f; // 부드러운 카메라 전환 속도입니다.
 	/*** 카메라 설정을 PIE때 변경합니다. : End ***/
-
-	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
 	// Don't rotate character to camera direction
 	// 컨트롤러가 회전할 떄 각 축을 회전시키지 않습니다. 카메라에만 영향을 줍니다.
@@ -100,6 +122,8 @@ APioneer::APioneer()
 void APioneer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetMesh()->PlayAnimation(AnimSequence, true);
 
 	////Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	//FP_Gun->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));

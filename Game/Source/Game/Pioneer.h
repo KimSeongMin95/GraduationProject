@@ -17,6 +17,11 @@
 #include "Engine/World.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
+#include "Animation/Skeleton.h"
+#include "Animation/AnimSequence.h"
+
+//#include "Animation/AnimMontage.h" // 임시
+//#include "Animation/AnimInstance.h" // 임시
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -57,10 +62,16 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UDecalComponent* CursorToWorld; /** A decal that projects to the cursor location. */
 
-public:
+public: // Animation 용도
 	// ??? CDO constructor에서 생성시키는 녀석은 Blueprint에서 수정할 수 없어야 한다???
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh)
 		class USkeletalMeshComponent* SkeletalMeshComp;
+
+	UPROPERTY(EditAnywhere)
+		class USkeleton* Skeleton;
+
+	UPROPERTY(EditAnywhere)
+		class UAnimSequence* AnimSequence;
 	/*** Components : End ***/
 
 public:
