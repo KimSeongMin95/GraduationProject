@@ -3,6 +3,7 @@
 #pragma once
 
 
+#include "PioneerAnimInstance.h"
 
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.

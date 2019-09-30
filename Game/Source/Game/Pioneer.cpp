@@ -31,20 +31,32 @@ APioneer::APioneer()
 		SkeletalMeshComp->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
 	}
 
+	
+	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Mannequin/Character/Mesh/UE4_Mannequin_Skeleton.UE4_Mannequin_Skeleton'"));
+	if (skeleton.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("skeleton.Succeeded()"))
 
+		Skeleton = skeleton.Object;
+	}
 
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Mannequin/Animations/ThirdPersonIdle.ThirdPersonIdle'"));
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Mannequin/Animations/ThirdPersonRun.ThirdPersonRun'"));
 	if (animSequence.Succeeded())
 	{
-		AnimSequence = animSequence.Object;
-		//AnimSequence->SetSkeleton();
+		UE_LOG(LogTemp, Warning, TEXT("animSequence.Succeeded()"))
 
-		//// Find character animation instance and set it
-		//static ConstructorHelpers::FClassFinder<URTSBR_Character_AnimInstance> animationBlueprintClass(TEXT("/Game/Blueprints/Characters/Animations/BP_RTSBR_CharacterAnimation"));
-		//if (animationBlueprintClass.Class)
-		//{
-		//	GetMesh()->SetAnimInstanceClass(animationBlueprintClass.Class);
-		//}
+		AnimSequence = animSequence.Object;
+
+		AnimSequence->SetSkeleton(Skeleton);
+
+		// Find character animation instance and set it
+		static ConstructorHelpers::FClassFinder<UPioneerAnimInstance> pioneerAnimInstance(TEXT("Class'/Script/Game.PioneerAnimInstance'"));
+		if (pioneerAnimInstance.Succeeded())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("pioneerAnimInstance.Succeeded()"))
+
+			GetMesh()->SetAnimInstanceClass(pioneerAnimInstance.Class);
+		}
 
 		//UAnimMontage* AnimMontage;
 		
@@ -55,7 +67,7 @@ APioneer::APioneer()
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
 	/*** 카메라 설정을 PIE때 변경합니다. : Start ***/
-	CameraBoomLocation = FVector(-500.0f, 0.0f, 500.0f); // ArmSpring의 World 좌표입니다.
+	CameraBoomLocation = FVector(-200.0f, 0.0f, 200.0f); // ArmSpring의 World 좌표입니다.
 	CameraBoomRotation = FRotator(-60.f, 0.f, 0.f); // ArmSpring의 World 회전입니다.
 	TargetArmLength = 500.0f; // ArmSpring과 CameraComponent간의 거리입니다.
 	CameraLagSpeed = 3.0f; // 부드러운 카메라 전환 속도입니다.
@@ -123,7 +135,7 @@ void APioneer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetMesh()->PlayAnimation(AnimSequence, true);
+	SkeletalMeshComp->PlayAnimation(AnimSequence, true);
 
 	////Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	//FP_Gun->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
@@ -137,6 +149,8 @@ void APioneer::Tick(float DeltaTime)
 	SetCameraBoomSettings();
 
 	SetCursorToWorld();
+
+	//SkeletalMeshComp->PlayAnimation(AnimSequence, true);
 }
 
 /** CursorToWorld의 월드좌표와 월드회전을 설정합니다.*/
