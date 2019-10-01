@@ -53,7 +53,7 @@ void APioneerManager::Tick(float DeltaTime)
 	tmp += DeltaTime;
 	static int tmpID = 1;
 
-	if (tmp > 5.0f)
+	if (tmp > 15.0f)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SwitchPawn()"))
 		tmp = 0.0f;

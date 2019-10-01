@@ -3,6 +3,9 @@
 #pragma once
 
 
+// 심각도	코드	설명	프로젝트	파일	줄	비표시 오류(Suppression) 상태
+// 오류: Circular dependency detected for filename D : \Unreal Projects\Game\Source\Game\Pioneer.h!Game	D : \Unreal Projects\Game\Intermediate\ProjectFiles\LogCompile	1
+
 #include "PioneerAnimInstance.h"
 
 #include "Components/StaticMeshComponent.h"
@@ -21,12 +24,41 @@
 #include "Animation/Skeleton.h"
 #include "Animation/AnimSequence.h"
 
+#include "PhysicsEngine/PhysicsAsset.h"
 //#include "Animation/AnimMontage.h" // 임시
 //#include "Animation/AnimInstance.h" // 임시
+#include "Engine/DataTable.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Pioneer.generated.h" // 항상 마지막이어야 하는 헤더
+
+
+
+USTRUCT(BlueprintType)
+struct FPlayerAttackMontage : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	/** Melee Fist Attack Montage **/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UAnimMontage* Montage;
+
+	/** amount of start sections within our montage **/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int32 AnimSectionCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		FString Description;
+};
+
+UENUM(BlueprintType)
+enum class EAttackType : uint8 {
+	MELEE_FIST			UMETA(DisplayName = "Melee - Fist"),
+	MELEE_KICK			UMETA(DisplayName = "Melee - Kick")
+};
+
+
 
 UCLASS()
 class GAME_API APioneer : public ACharacter
@@ -51,9 +83,6 @@ public:
 
 private:
 	/*** Components : Start ***/
-	//UPROPERTY(EditAnywhere)
-	//	class UStaticMeshComponent* StaticMeshComponent; /** 임시로 StaticMesh를 설정합니다. */
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class USpringArmComponent* CameraBoom; /** 캐릭터 뒤편에서 카메라의 위치를 조정합니다. */
 
@@ -64,15 +93,82 @@ private:
 		class UDecalComponent* CursorToWorld; /** A decal that projects to the cursor location. */
 
 public: // Animation 용도
-	// ??? CDO constructor에서 생성시키는 녀석은 Blueprint에서 수정할 수 없어야 한다???
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh)
-		class USkeletalMeshComponent* SkeletalMeshComp;
-
 	UPROPERTY(EditAnywhere)
 		class USkeleton* Skeleton;
 
 	UPROPERTY(EditAnywhere)
 		class UAnimSequence* AnimSequence;
+
+	UPROPERTY(EditAnywhere)
+		class UPhysicsAsset* PhysicsAsset;
+
+	/** melee attack data table **/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
+		class UDataTable* PlayerAttackDataTable;
+
+	void PunchAttack();
+	void KickAttack();
+
+	void AttackInput(EAttackType AttackType);
+
+	/**
+	* Initiates player attack
+	*/
+	void AttackStart();
+
+	/**
+	* Stops player attack
+	*/
+	void AttackEnd();
+
+	/** boolean that tells us if we need to branch our animation blue print paths **/
+	UFUNCTION(BlueprintCallable, Category = Animation)
+		bool IsAnimationBlended();
+
+	UFUNCTION(BlueprintCallable, Category = Animation)
+		bool IsArmed();
+
+	/** controls if the keyboard responds to user input **/
+	UFUNCTION(BlueprintCallable, Category = Animation)
+		void SetIsKeyboardEnabled(bool Enabled);
+
+	UFUNCTION()
+		void TriggerCountdownToIdle();
+
+	UFUNCTION()
+		void ArmPlayer();
+
+	UFUNCTION()
+		void CrouchStart();
+
+	UFUNCTION()
+		void CrouchEnd();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Trace)
+		int32 MaxCountdownToIdle;
+
+	// APawn interface
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// End of APawn interface
+
+	FPlayerAttackMontage* AttackMontage;
+
+	bool bIsAnimationBlended;
+
+	bool bIsKeyboardEnabled;
+
+	bool bIsAttackLight;
+	bool bIsAttackStrong;
+
+	bool bIsArmed;
+	FTimerHandle ArmedToIdleTimerHandle;
+
+	int32 CountdownToIdle;
+
+	int32 CurrentCombo;
+
+
+
 	/*** Components : End ***/
 
 public:

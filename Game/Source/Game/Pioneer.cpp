@@ -5,63 +5,89 @@
 // Sets default values
 APioneer::APioneer()
 {
-	
-	//// 임시로 StaticMesh를 설정합니다.
-	//StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	//StaticMeshComponent->SetupAttachment(RootComponent);
-	//static ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube'"));
-	//if (staticMeshAsset.Succeeded())
-	//{
-	//	StaticMeshComponent->SetStaticMesh(staticMeshAsset.Object);
-	//	StaticMeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -96.0f));
-	//	StaticMeshComponent->SetWorldScale3D(FVector(0.3f));
-	//}
-
 	/*** Animation code : Start ***/
-	SkeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComp"));
-	SkeletalMeshComp->SetupAttachment(RootComponent);
+	// 1. USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (skeletalMeshAsset.Succeeded())
 	{
-		SkeletalMeshComp->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
-		SkeletalMeshComp->SetSkeletalMesh(skeletalMeshAsset.Object);
-		SkeletalMeshComp->bCastDynamicShadow = true; // 주석 필요
-		SkeletalMeshComp->CastShadow = true; // 주석 필요
-		SkeletalMeshComp->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
-		SkeletalMeshComp->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
+		// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
+		GetMesh()->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
+		GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
+		GetMesh()->bCastDynamicShadow = true; // ???
+		GetMesh()->CastShadow = true; // ???
+		GetMesh()->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
+		GetMesh()->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
 	}
-
-	
+	// 2. Skeleton을 가져옵니다.
 	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Mannequin/Character/Mesh/UE4_Mannequin_Skeleton.UE4_Mannequin_Skeleton'"));
 	if (skeleton.Succeeded())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("skeleton.Succeeded()"))
-
 		Skeleton = skeleton.Object;
 	}
-
+	// 3. AnimSequence를 가져와서 Skeleton에 적용합니다.
 	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Mannequin/Animations/ThirdPersonRun.ThirdPersonRun'"));
 	if (animSequence.Succeeded())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("animSequence.Succeeded()"))
-
 		AnimSequence = animSequence.Object;
 
 		AnimSequence->SetSkeleton(Skeleton);
-
-		// Find character animation instance and set it
-		static ConstructorHelpers::FClassFinder<UPioneerAnimInstance> pioneerAnimInstance(TEXT("Class'/Script/Game.PioneerAnimInstance'"));
-		if (pioneerAnimInstance.Succeeded())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("pioneerAnimInstance.Succeeded()"))
-
-			GetMesh()->SetAnimInstanceClass(pioneerAnimInstance.Class);
-		}
-
-		//UAnimMontage* AnimMontage;
-		
 	}
+	// 4. AnimInstance는 실행중인 애니메이션 / 몽타주와 상호 작용하며 관리하는 클래스인 것 같습니다.
+	static ConstructorHelpers::FClassFinder<UPioneerAnimInstance> pioneerAnimInstance(TEXT("Class'/Script/Game.PioneerAnimInstance'"));
+	if (pioneerAnimInstance.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("pioneerAnimInstance.Succeeded()"))
+
+		GetMesh()->SetAnimInstanceClass(pioneerAnimInstance.Class);
+	}
+	static ConstructorHelpers::FObjectFinder<UPhysicsAsset> physicsAsset(TEXT("PhysicsAsset'/Game/Mannequin/Character/Mesh/SK_Mannequin_PhysicsAsset.SK_Mannequin_PhysicsAsset'"));
+	if (physicsAsset.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("physicsAsset.Succeeded()"))
+
+
+	}
+
+	// 5. UAnimMontage* AnimMontage;
+		//PlayAnimMontage()
+
+		//GetMesh()->GetAnimInstance()->Montage_Play();
+
+		//// takes in a blend speed ( 1.0f ) as well as the montage
+		//AnimInstance->Montage_Stop(1.0f, AttackMontage->Montage);
+
+		//// takes in the montage you want to pause
+		//AnimInstance->Montage_Pause(AttackMontage->Montage);
+
+		//// takes in the montage you want to resume playback for
+		//AnimInstance->Montage_Resume(AttackMontage->Montage);
+
+		//// kicks off the playback at a steady rate of 1 and starts playback at 0 frames
+		//AnimInstance->Montage_Play(AttackMontage->Montage, 1.0f, EMontagePlayReturnType::Duration, 0.0f, true);
+	
+	// load player attack montage data table
+	static ConstructorHelpers::FObjectFinder<UDataTable> PlayerAttackMontageDataObject(TEXT("DataTable'/Game/TUTORIAL_RESOURCES/DataTables/PlayerAttackMontageDataTable.PlayerAttackMontageDataTable'"));
+	if (PlayerAttackMontageDataObject.Succeeded())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PlayerAttackMontageDataObject.Succeeded()"));
+	
+		PlayerAttackDataTable = PlayerAttackMontageDataObject.Object;
+	}
+		
+	// set animation blending on by default
+	bIsAnimationBlended = true;
+
+	MaxCountdownToIdle = 30;
 	/*** Animation code : End ***/
+
+
+	/*** 메시에 총 붙이기?? : Start ***/
+	//// attach collision components to sockets based on transformations definitions
+	//const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
+	//LeftFistCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_l_collision");
+	//RightFistCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_r_collision");
+	/*** 메시에 총 붙이기?? : End ***/
+
 
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
@@ -135,7 +161,8 @@ void APioneer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SkeletalMeshComp->PlayAnimation(AnimSequence, true);
+	//// SkeletalMeshComp로 AnimSequence에 해당하는 애니메이션을 재생합니다. 2번째 인자는 루프여부 입니다.
+	//GetMesh()->PlayAnimation(AnimSequence, true);
 
 	////Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	//FP_Gun->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
@@ -149,8 +176,6 @@ void APioneer::Tick(float DeltaTime)
 	SetCameraBoomSettings();
 
 	SetCursorToWorld();
-
-	//SkeletalMeshComp->PlayAnimation(AnimSequence, true);
 }
 
 /** CursorToWorld의 월드좌표와 월드회전을 설정합니다.*/
@@ -183,6 +208,22 @@ void APioneer::SetCursorToWorld()
 			CursorToWorld->SetWorldRotation(CursorR);
 		}
 	}
+}
+
+void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+{
+	// Set up game play key bindings
+	check(PlayerInputComponent);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	PlayerInputComponent->BindAction("ArmPlayer", IE_Pressed, this, &APioneer::ArmPlayer);
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APioneer::CrouchStart);
+	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &APioneer::CrouchEnd);
+
+	// attack functionality
+	PlayerInputComponent->BindAction("Punch", IE_Pressed, this, &APioneer::PunchAttack);
+	PlayerInputComponent->BindAction("Kick", IE_Pressed, this, &APioneer::KickAttack);
 }
 
 //// Called to bind functionality to input
@@ -299,3 +340,143 @@ void APioneer::SetCameraBoomSettings()
 	CameraBoom->TargetArmLength = TargetArmLength; // 캐릭터 뒤에서 해당 간격으로 따라다니는 카메라
 	CameraBoom->CameraLagSpeed = CameraLagSpeed;
 }
+
+/*** Animation code : Start ***/
+bool APioneer::IsAnimationBlended()
+{
+	return bIsAnimationBlended;
+}
+
+bool APioneer::IsArmed()
+{
+	return bIsArmed;
+}
+
+void APioneer::SetIsKeyboardEnabled(bool Enabled)
+{
+	bIsKeyboardEnabled = Enabled;
+}
+
+void APioneer::PunchAttack()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PunchAttack()"));
+	AttackInput(EAttackType::MELEE_FIST);
+}
+
+void APioneer::KickAttack()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("KickAttack"));
+	AttackInput(EAttackType::MELEE_KICK);
+}
+
+void APioneer::AttackInput(EAttackType AttackType)
+{
+	if (PlayerAttackDataTable)
+	{
+		static const FString ContextString(TEXT("Player Attack Montage Context"));
+
+		FName RowKey;
+
+		// attach collision components to sockets based on transformations definitions
+		const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
+
+		switch (AttackType)
+		{
+		case EAttackType::MELEE_FIST:
+			RowKey = FName(TEXT("Punch"));
+
+			//LeftMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_l_collision");
+			//RightMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_r_collision");
+
+			bIsKeyboardEnabled = true;
+
+			bIsAnimationBlended = true;
+			break;
+		case EAttackType::MELEE_KICK:
+			RowKey = FName(TEXT("Kick"));
+
+			//LeftMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "foot_l_collision");
+			//RightMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "foot_r_collision");
+
+			bIsKeyboardEnabled = false;
+
+			bIsAnimationBlended = false;
+			break;
+		default:
+
+			bIsAnimationBlended = true;
+			break;
+		}
+
+		AttackMontage = PlayerAttackDataTable->FindRow<FPlayerAttackMontage>(RowKey, ContextString, true);
+	}
+}
+
+void APioneer::AttackStart()
+{
+	//Log(ELogLevel::INFO, __FUNCTION__);
+
+	/*LeftMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Enabled);
+	LeftMeleeCollisionBox->SetNotifyRigidBodyCollision(true);
+
+	RightMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Enabled);
+	RightMeleeCollisionBox->SetNotifyRigidBodyCollision(true);*/
+}
+
+void APioneer::AttackEnd()
+{
+	//Log(ELogLevel::INFO, __FUNCTION__);
+
+	/*LeftMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Disabled);
+	LeftMeleeCollisionBox->SetNotifyRigidBodyCollision(false);
+
+	RightMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Disabled);
+	RightMeleeCollisionBox->SetNotifyRigidBodyCollision(false);*/
+
+	bool bIsActive = GetWorld()->GetTimerManager().IsTimerActive(ArmedToIdleTimerHandle);
+	if (bIsActive)
+	{
+		// reset the timer
+		GetWorld()->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
+	}
+
+	CountdownToIdle = MaxCountdownToIdle;
+
+	// start timer from scratch
+	GetWorld()->GetTimerManager().SetTimer(ArmedToIdleTimerHandle, this, &APioneer::TriggerCountdownToIdle, 1.f, true);
+}
+void APioneer::TriggerCountdownToIdle()
+{
+	// count down to zero
+	if (--CountdownToIdle <= 0) {
+		bIsArmed = false;
+		CountdownToIdle = MaxCountdownToIdle;
+		GetWorld()->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
+	}
+}
+void APioneer::ArmPlayer()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("ArmPlayer()"));
+
+	// flip / flop
+	bIsArmed = !bIsArmed;
+
+	if (!bIsArmed)
+	{
+		CountdownToIdle = MaxCountdownToIdle;
+		GetWorld()->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
+	}
+}
+
+void APioneer::CrouchStart()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("CrouchStart()"));
+	Crouch();
+}
+
+void APioneer::CrouchEnd()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("CrouchEnd()"));
+	UnCrouch();
+}
+/*** Animation code : End ***/
