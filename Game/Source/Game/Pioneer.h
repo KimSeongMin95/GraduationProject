@@ -6,8 +6,7 @@
 // 심각도	코드	설명	프로젝트	파일	줄	비표시 오류(Suppression) 상태
 // 오류: Circular dependency detected for filename D : \Unreal Projects\Game\Source\Game\Pioneer.h!Game	D : \Unreal Projects\Game\Intermediate\ProjectFiles\LogCompile	1
 
-#include "PioneerAnimInstance.h"
-
+/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
 #include "Camera/CameraComponent.h"
@@ -23,17 +22,23 @@
 #include "Engine/SkeletalMesh.h"
 #include "Animation/Skeleton.h"
 #include "Animation/AnimSequence.h"
+/*** 언리얼엔진 헤더 선언 : End ***/
 
+/*** 임시 : Start ***/
 #include "PhysicsEngine/PhysicsAsset.h"
 //#include "Animation/AnimMontage.h" // 임시
 //#include "Animation/AnimInstance.h" // 임시
 #include "Engine/DataTable.h"
+#include "Engine.h"
+/*** 임시 : End ***/
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Pioneer.generated.h" // 항상 마지막이어야 하는 헤더
 
-
+/*** 직접 정의한 클래스 전방 선언 : Start ***/
+class APioneerAnimInstance;
+/*** 직접 정의한 클래스 전방 선언 : End ***/
 
 USTRUCT(BlueprintType)
 struct FPlayerAttackMontage : public FTableRowBase

@@ -2,17 +2,21 @@
 
 #pragma once
 
-#include "PioneerController.h"
-#include "Pioneer.h"
-#include "PioneerManager.h"
-#include "MyHUD.h"
-
+/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "UObject/ConstructorHelpers.h"
 #include "Engine.h"
+/*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "MyGameModeBase.generated.h"
+
+/*** 직접 정의한 클래스 전방 선언 : Start ***/
+class APioneerController;
+class APioneer;
+class APioneerManager;
+class AMyHUD;
+/*** 직접 정의한 클래스 전방 선언 : End ***/
 
 UCLASS()
 class GAME_API AMyGameModeBase : public AGameModeBase

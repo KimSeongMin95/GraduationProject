@@ -2,18 +2,22 @@
 
 #pragma once
 
-#include "Pioneer.h"
-#include "PioneerController.h"
-#include "WorldViewCameraActor.h"
-
+/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Engine/World.h"
 #include "Components/SceneComponent.h"
 #include "EngineUtils.h" // TActorIterator<>
 #include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
+/*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PioneerManager.generated.h"
+
+/*** 직접 정의한 클래스 전방 선언 : Start ***/
+class APioneer;
+class APioneerController;
+class AWorldViewCameraActor;
+/*** 직접 정의한 클래스 전방 선언 : End ***/
 
 UCLASS()
 class GAME_API APioneerManager : public AActor

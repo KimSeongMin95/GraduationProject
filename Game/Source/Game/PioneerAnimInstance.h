@@ -2,13 +2,18 @@
 
 #pragma once
 
-#include "Pioneer.h"
+/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "GameFramework/PawnMovementComponent.h"
 #include "Engine.h"
+/*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "PioneerAnimInstance.generated.h"
+
+/*** 직접 정의한 클래스 전방 선언 : Start ***/
+class APioneer;
+/*** 직접 정의한 클래스 전방 선언 : End ***/
 
 UCLASS()
 class GAME_API UPioneerAnimInstance : public UAnimInstance

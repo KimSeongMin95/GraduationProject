@@ -2,6 +2,12 @@
 
 #include "PioneerManager.h"
 
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Pioneer.h"
+#include "PioneerController.h"
+#include "WorldViewCameraActor.h"
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
 // Sets default values
 APioneerManager::APioneerManager()
 {

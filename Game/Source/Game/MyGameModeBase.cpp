@@ -2,6 +2,13 @@
 
 #include "MyGameModeBase.h"
 
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "PioneerController.h"
+#include "Pioneer.h"
+#include "PioneerManager.h"
+#include "MyHUD.h"
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
 AMyGameModeBase::AMyGameModeBase()
 {
 	/***** 필수! 꼭 읽어주세요. : Start *****/

@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "MyHUD.h"
+
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+
+/*** 직접 정의한 헤더 전방 선언 : End ***/
 
 AMyHUD::AMyHUD()
 {

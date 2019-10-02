@@ -2,6 +2,11 @@
 
 #include "Pioneer.h"
 
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "PioneerAnimInstance.h"
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
+
 // Sets default values
 APioneer::APioneer()
 {
@@ -69,7 +74,7 @@ APioneer::APioneer()
 	static ConstructorHelpers::FObjectFinder<UDataTable> PlayerAttackMontageDataObject(TEXT("DataTable'/Game/TUTORIAL_RESOURCES/DataTables/PlayerAttackMontageDataTable.PlayerAttackMontageDataTable'"));
 	if (PlayerAttackMontageDataObject.Succeeded())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PlayerAttackMontageDataObject.Succeeded()"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PlayerAttackMontageDataObject.Succeeded()"));
 	
 		PlayerAttackDataTable = PlayerAttackMontageDataObject.Object;
 	}

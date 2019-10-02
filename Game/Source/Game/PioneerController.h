@@ -2,15 +2,19 @@
 
 #pragma once
 
-#include "Pioneer.h"
-#include "PathFinding.h"
-
+/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Runtime/Engine/Classes/Components/DecalComponent.h" // MouseSelectionPoint
 #include "HeadMountedDisplayFunctionLibrary.h" // VR
+/*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "PioneerController.generated.h"
+
+/*** 직접 정의한 클래스 전방 선언 : Start ***/
+class APioneer;
+class APathFinding;
+/*** 직접 정의한 클래스 전방 선언 : End ***/
 
 UCLASS()
 class GAME_API APioneerController : public APlayerController

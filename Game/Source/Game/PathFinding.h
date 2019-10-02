@@ -2,12 +2,18 @@
 
 #pragma once
 
+/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "GameFramework/Controller.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h" // Navigation
 #include "Math/Vector.h"
 #include "Navigation/PathFollowingComponent.h"
+/*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
+
+/*** 직접 정의한 클래스 전방 선언 : Start ***/
+
+/*** 직접 정의한 클래스 전방 선언 : End ***/
 
 UENUM()
 enum PathFindAlgorithm

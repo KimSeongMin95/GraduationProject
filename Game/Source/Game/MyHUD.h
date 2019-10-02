@@ -2,11 +2,17 @@
 
 #pragma once
 
+/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
+/*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "MyHUD.generated.h"
+
+/*** 직접 정의한 클래스 전방 선언 : Start ***/
+
+/*** 직접 정의한 클래스 전방 선언 : End ***/
 
 UCLASS()
 class GAME_API AMyHUD : public AHUD
