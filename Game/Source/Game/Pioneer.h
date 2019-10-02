@@ -3,7 +3,7 @@
 #pragma once
 
 
-// 심각도	코드	설명	프로젝트	파일	줄	비표시 오류(Suppression) 상태
+// 심각도	코드	설명	프로젝트	파일	줄	비표시 오류(Suppression) 상태 
 // 오류: Circular dependency detected for filename D : \Unreal Projects\Game\Source\Game\Pioneer.h!Game	D : \Unreal Projects\Game\Intermediate\ProjectFiles\LogCompile	1
 
 /*** 언리얼엔진 헤더 선언 : Start ***/
