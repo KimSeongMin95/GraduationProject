@@ -19,7 +19,7 @@ APioneerManager::APioneerManager()
 
 	WorldViewCam = nullptr;
 	PioneerCtrl = nullptr;
-	SwitchTime = 1.0f;
+	SwitchTime = 1.5f;
 }
 
 // Called when the game starts or when spawned
@@ -30,19 +30,26 @@ void APioneerManager::BeginPlay()
 	SpawnPioneer(1);
 	SpawnPioneer(2);
 
-	// World에서 AWorldViewCameraActor를 찾습니다.
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+		return;
+	}
+
+	// UWorld에서 AWorldViewCameraActor를 찾습니다.
 	if (WorldViewCam == nullptr)
 	{
-		for (TActorIterator<AWorldViewCameraActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		for (TActorIterator<AWorldViewCameraActor> ActorItr(world); ActorItr; ++ActorItr)
 		{
 			WorldViewCam = *ActorItr;
 		}
 	}
 
-	// World에서 APioneerController를 찾습니다.
+	// UWorld에서 APioneerController를 찾습니다.
 	if (PioneerCtrl == nullptr)
 	{
-		for (TActorIterator<APioneerController> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
 		{
 			PioneerCtrl = *ActorItr;
 		}
@@ -81,10 +88,10 @@ void APioneerManager::SpawnPioneer(int ID)
 		return;
 	}
 
-	UWorld* World = GetWorld();
+	UWorld* const World = GetWorld();
 	if (!World)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* World = GetWorld();"))
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
 		return;
 	}
 
@@ -185,7 +192,7 @@ void APioneerManager::PossessPioneer(int ID)
 	if (!TmapPioneers.Contains(ID))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("!TmapPioneers.Contains(ID)"))
-		return;
+			return;
 	}
 	// PioneerCtrl가 존재하는지 확인합니다.
 	if (!PioneerCtrl)

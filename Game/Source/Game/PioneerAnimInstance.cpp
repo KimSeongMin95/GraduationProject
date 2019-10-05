@@ -29,7 +29,8 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 	// double check our pointers make sure nothing is empty
 	if (!Owner)
 	{
-		return;
+		UE_LOG(LogTemp, Warning, TEXT("Failed: Owner = TryGetPawnOwner()"))
+			return;
 	}
 
 	if (Owner->IsA(APioneer::StaticClass()))
@@ -47,9 +48,6 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 			bIsArmed = pioneer->IsArmed();
 			bIsMoving = Speed > 0 ? true : false;
 
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, "IsInAir: " + FString(IsInAir ? "true" : "false"));
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, "IsAnimationBlended: " + FString(IsAnimationBlended ? "true" : "false"));
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, "Speed: " + FString::SanitizeFloat(Speed));
 		}
 	}
 }

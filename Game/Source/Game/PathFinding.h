@@ -11,10 +11,6 @@
 
 #include "CoreMinimal.h"
 
-/*** 직접 정의한 클래스 전방 선언 : Start ***/
-
-/*** 직접 정의한 클래스 전방 선언 : End ***/
-
 UENUM()
 enum PathFindAlgorithm
 {

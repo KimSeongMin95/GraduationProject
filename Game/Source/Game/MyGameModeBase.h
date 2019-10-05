@@ -11,13 +11,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "MyGameModeBase.generated.h"
 
-/*** 직접 정의한 클래스 전방 선언 : Start ***/
-class APioneerController;
-class APioneer;
-class APioneerManager;
-class AMyHUD;
-/*** 직접 정의한 클래스 전방 선언 : End ***/
-
 UCLASS()
 class GAME_API AMyGameModeBase : public AGameModeBase
 {

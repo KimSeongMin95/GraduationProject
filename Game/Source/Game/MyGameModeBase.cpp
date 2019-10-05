@@ -84,10 +84,10 @@ void AMyGameModeBase::Tick(float DeltaTime)
 /** APioneerManager 객체를 생성합니다. */
 void AMyGameModeBase::SpawnPioneerManager()
 {
-	UWorld* World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* World = GetWorld();"))
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const world = GetWorld();"))
 		return;
 	}
 
@@ -99,5 +99,5 @@ void AMyGameModeBase::SpawnPioneerManager()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	PioneerManager = World->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 }

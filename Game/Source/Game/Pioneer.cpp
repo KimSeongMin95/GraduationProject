@@ -41,16 +41,12 @@ APioneer::APioneer()
 	static ConstructorHelpers::FClassFinder<UPioneerAnimInstance> pioneerAnimInstance(TEXT("Class'/Script/Game.PioneerAnimInstance'"));
 	if (pioneerAnimInstance.Succeeded())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("pioneerAnimInstance.Succeeded()"))
-
 		GetMesh()->SetAnimInstanceClass(pioneerAnimInstance.Class);
 	}
 	static ConstructorHelpers::FObjectFinder<UPhysicsAsset> physicsAsset(TEXT("PhysicsAsset'/Game/Mannequin/Character/Mesh/SK_Mannequin_PhysicsAsset.SK_Mannequin_PhysicsAsset'"));
 	if (physicsAsset.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("physicsAsset.Succeeded()"))
-
-
 	}
 
 	// 5. UAnimMontage* AnimMontage;
@@ -74,8 +70,6 @@ APioneer::APioneer()
 	static ConstructorHelpers::FObjectFinder<UDataTable> PlayerAttackMontageDataObject(TEXT("DataTable'/Game/TUTORIAL_RESOURCES/DataTables/PlayerAttackMontageDataTable.PlayerAttackMontageDataTable'"));
 	if (PlayerAttackMontageDataObject.Succeeded())
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PlayerAttackMontageDataObject.Succeeded()"));
-	
 		PlayerAttackDataTable = PlayerAttackMontageDataObject.Object;
 	}
 		
@@ -231,33 +225,6 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("Kick", IE_Pressed, this, &APioneer::KickAttack);
 }
 
-//// Called to bind functionality to input
-//void APioneer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-//{
-//	Super::SetupPlayerInputComponent(PlayerInputComponent);
-//
-//	// 게임플레이 키 바인딩을 설정합니다. : 시작
-//	check(InputComponent);
-//	InputComponent->BindAction("EvasionRoll", IE_Pressed, this, &APioneer::EvasionRoll);
-//	InputComponent->BindAction("EvasionRoll", IE_Released, this, &APioneer::StopEvasionRoll);
-//	InputComponent->BindAxis("MoveForward", this, &APioneer::MoveForward);
-//	InputComponent->BindAxis("MoveRight", this, &APioneer::MoveRight);
-//	// 회전 바인딩에는 서로 다른 장치를 개별적으로 다루기 위해서 두 가지 버전이 존재합니다.
-//	// "Turn"은 마우스처럼 완벽한 델타 값을 제공하는 장치를 다룹니다.
-//	// "TurnRate"는 아날로그 조이스틱처럼 변경 값 비율로 다룰 수 있는 장치에 사용됩니다.
-//	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-//	InputComponent->BindAxis("TurnRate", this, &APioneer::TurnAtRate);
-//	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-//	InputComponent->BindAxis("LookUpRate", this, &APioneer::LookUpAtRate);
-//	// 게임플레이 키 바인딩을 설정합니다. : 종료
-//}
-//
-//// 입력 활성화 또는 비활성화합니다.
-//void APioneer::OnSetPlayerController(bool status)
-//{
-//	IsControlable = status;
-//}
-//
 //void APioneer::MoveForward(float value)
 //{
 //	if ((Controller != NULL) && (value != 0.0f) && IsControlable)
@@ -287,47 +254,6 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 //
 //		// 해당 방향으로 이동 값을 추가합니다.
 //		AddMovementInput(Direction, value);
-//	}
-//}
-//
-//// 플레이어 회피 구르기
-//void APioneer::EvasionRoll()
-//{
-//	if (IsControlable)
-//	{
-//		bPressedJump = true;
-//		JumpKeyHoldTime = 0.0f;
-//	}
-//}
-//
-//// 플레이어 회피 구르기 멈춤
-//void APioneer::StopEvasionRoll()
-//{
-//	if (IsControlable)
-//	{
-//		bPressedJump = false;
-//		JumpKeyHoldTime = 0.0f;
-//	}
-//}
-//
-//// FollowCamera를 회전시키기 위한 함수입니다
-//void APioneer::TurnAtRate(float rate)
-//{
-//	if (IsControlable)
-//	{
-//		// 기본 캐릭터 클래스는 AddControllerYawInput 함수를 갖습니다.
-//		// 해당 비율 정보로 현재 프레임의 델타 값을 계산합니다.
-//		AddControllerYawInput(rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-//	}
-//}
-//
-//// FollowCamera에 시선 상향 비율을 적용하기 위한 함수입니다.
-//void APioneer::LookUpAtRate(float rate)
-//{
-//	if (IsControlable)
-//	{
-//		// 해당 비율 정보로 현재 프레임의 델타 값을 계산합니다.
-//		AddControllerPitchInput(rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 //	}
 //}
 
@@ -438,17 +364,24 @@ void APioneer::AttackEnd()
 	RightMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Disabled);
 	RightMeleeCollisionBox->SetNotifyRigidBodyCollision(false);*/
 
-	bool bIsActive = GetWorld()->GetTimerManager().IsTimerActive(ArmedToIdleTimerHandle);
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+		return;
+	}
+
+	bool bIsActive = world->GetTimerManager().IsTimerActive(ArmedToIdleTimerHandle);
 	if (bIsActive)
 	{
 		// reset the timer
-		GetWorld()->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
+		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
 	}
 
 	CountdownToIdle = MaxCountdownToIdle;
 
 	// start timer from scratch
-	GetWorld()->GetTimerManager().SetTimer(ArmedToIdleTimerHandle, this, &APioneer::TriggerCountdownToIdle, 1.f, true);
+	world->GetTimerManager().SetTimer(ArmedToIdleTimerHandle, this, &APioneer::TriggerCountdownToIdle, 1.f, true);
 }
 void APioneer::TriggerCountdownToIdle()
 {
@@ -456,7 +389,14 @@ void APioneer::TriggerCountdownToIdle()
 	if (--CountdownToIdle <= 0) {
 		bIsArmed = false;
 		CountdownToIdle = MaxCountdownToIdle;
-		GetWorld()->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
+
+		UWorld* const world = GetWorld();
+		if (!world)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+			return;
+		}
+		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
 	}
 }
 void APioneer::ArmPlayer()
@@ -469,7 +409,14 @@ void APioneer::ArmPlayer()
 	if (!bIsArmed)
 	{
 		CountdownToIdle = MaxCountdownToIdle;
-		GetWorld()->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
+
+		UWorld* const world = GetWorld();
+		if (!world)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+			return;
+		}
+		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
 	}
 }
 

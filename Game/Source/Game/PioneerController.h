@@ -11,11 +11,6 @@
 #include "GameFramework/PlayerController.h"
 #include "PioneerController.generated.h"
 
-/*** 직접 정의한 클래스 전방 선언 : Start ***/
-class APioneer;
-class APathFinding;
-/*** 직접 정의한 클래스 전방 선언 : End ***/
-
 UCLASS()
 class GAME_API APioneerController : public APlayerController
 {
