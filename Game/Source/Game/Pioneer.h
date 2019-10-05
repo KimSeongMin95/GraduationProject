@@ -26,12 +26,14 @@
 //#include "Animation/AnimInstance.h" // 임시
 #include "Engine/DataTable.h"
 #include "Engine.h"
+#include "Animation/AnimBlueprint.h"
 /*** 임시 : End ***/
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Pioneer.generated.h" // 항상 마지막이어야 하는 헤더
 
+/** 이렇게 FTableRowBase를 상속받는 UDataTable을 선언해주어야 콘텐츠 브라우저에서 DataTable을 생성할 때 RowType으로 가져올 수 있습니다. */
 USTRUCT(BlueprintType)
 struct FPlayerAttackMontage : public FTableRowBase
 {

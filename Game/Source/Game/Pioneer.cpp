@@ -38,11 +38,23 @@ APioneer::APioneer()
 		AnimSequence->SetSkeleton(Skeleton);
 	}
 	// 4. AnimInstance는 실행중인 애니메이션 / 몽타주와 상호 작용하며 관리하는 클래스인 것 같습니다.
-	static ConstructorHelpers::FClassFinder<UPioneerAnimInstance> pioneerAnimInstance(TEXT("Class'/Script/Game.PioneerAnimInstance'"));
+	/*static ConstructorHelpers::FClassFinder<UPioneerAnimInstance> pioneerAnimInstance(TEXT("Class'/Script/Game.PioneerAnimInstance'"));
 	if (pioneerAnimInstance.Succeeded())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("pioneerAnimInstance.Succeeded()"))
 		GetMesh()->SetAnimInstanceClass(pioneerAnimInstance.Class);
+	}*/
+	// AnimInstance와 AnimationBlueprint는 AnimClass로써 같은 역할을 합니다.
+	// 일단 블루프린트를 사용하겠습니다. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
+	FString animBP_Reference = "UClass'/Game/TUTORIAL_RESOURCES/Animations/BP_PioneerAnimation.BP_PioneerAnimation_C'";
+	UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
+	if (!animBP)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("!animBP"))
 	}
+	else
+		GetMesh()->SetAnimInstanceClass(animBP);
+
 	static ConstructorHelpers::FObjectFinder<UPhysicsAsset> physicsAsset(TEXT("PhysicsAsset'/Game/Mannequin/Character/Mesh/SK_Mannequin_PhysicsAsset.SK_Mannequin_PhysicsAsset'"));
 	if (physicsAsset.Succeeded())
 	{
@@ -67,16 +79,18 @@ APioneer::APioneer()
 		//AnimInstance->Montage_Play(AttackMontage->Montage, 1.0f, EMontagePlayReturnType::Duration, 0.0f, true);
 	
 	// load player attack montage data table
-	static ConstructorHelpers::FObjectFinder<UDataTable> PlayerAttackMontageDataObject(TEXT("DataTable'/Game/TUTORIAL_RESOURCES/DataTables/PlayerAttackMontageDataTable.PlayerAttackMontageDataTable'"));
+	/*static ConstructorHelpers::FObjectFinder<UDataTable> PlayerAttackMontageDataObject(TEXT("DataTable'/Game/TUTORIAL_RESOURCES/DataTables/PlayerAttackMontageDataTable.PlayerAttackMontageDataTable'"));
 	if (PlayerAttackMontageDataObject.Succeeded())
 	{
 		PlayerAttackDataTable = PlayerAttackMontageDataObject.Object;
-	}
+	}*/
 		
 	// set animation blending on by default
 	bIsAnimationBlended = true;
 
 	MaxCountdownToIdle = 30;
+
+	
 	/*** Animation code : End ***/
 
 
