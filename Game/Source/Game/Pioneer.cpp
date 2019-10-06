@@ -12,7 +12,7 @@ APioneer::APioneer()
 {
 	/*** Animation code : Start ***/
 	// 1. USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (skeletalMeshAsset.Succeeded())
 	{
 		// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
@@ -24,20 +24,20 @@ APioneer::APioneer()
 		GetMesh()->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
 	}
 	// 2. Skeleton을 가져옵니다.
-	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Mannequin/Character/Mesh/UE4_Mannequin_Skeleton.UE4_Mannequin_Skeleton'"));
+	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Character/Mesh/UE4_Mannequin_Skeleton.UE4_Mannequin_Skeleton'"));
 	if (skeleton.Succeeded())
 	{
 		Skeleton = skeleton.Object;
 	}
-	// 3. AnimSequence를 가져와서 Skeleton에 적용합니다.
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Mannequin/Animations/ThirdPersonRun.ThirdPersonRun'"));
-	if (animSequence.Succeeded())
-	{
-		AnimSequence = animSequence.Object;
+	//// 3. AnimSequence를 가져와서 Skeleton에 적용합니다.
+	//static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Mannequin/Animations/ThirdPersonRun.ThirdPersonRun'"));
+	//if (animSequence.Succeeded())
+	//{
+	//	AnimSequence = animSequence.Object;
 
-		AnimSequence->SetSkeleton(Skeleton);
-	}
-	// 4. AnimInstance는 실행중인 애니메이션 / 몽타주와 상호 작용하며 관리하는 클래스인 것 같습니다.
+	//	AnimSequence->SetSkeleton(Skeleton);
+	//}
+	//// 4. AnimInstance는 실행중인 애니메이션 / 몽타주와 상호 작용하며 관리하는 클래스인 것 같습니다.
 	/*static ConstructorHelpers::FClassFinder<UPioneerAnimInstance> pioneerAnimInstance(TEXT("Class'/Script/Game.PioneerAnimInstance'"));
 	if (pioneerAnimInstance.Succeeded())
 	{
@@ -46,7 +46,7 @@ APioneer::APioneer()
 	}*/
 	// AnimInstance와 AnimationBlueprint는 AnimClass로써 같은 역할을 합니다.
 	// 일단 블루프린트를 사용하겠습니다. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
-	FString animBP_Reference = "UClass'/Game/TUTORIAL_RESOURCES/Animations/BP_PioneerAnimation.BP_PioneerAnimation_C'";
+	FString animBP_Reference = "UClass'/Game/Animations/BP_PioneerAnimation.BP_PioneerAnimation_C'";
 	UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
 	if (!animBP)
 	{
@@ -55,9 +55,10 @@ APioneer::APioneer()
 	else
 		GetMesh()->SetAnimInstanceClass(animBP);
 
-	static ConstructorHelpers::FObjectFinder<UPhysicsAsset> physicsAsset(TEXT("PhysicsAsset'/Game/Mannequin/Character/Mesh/SK_Mannequin_PhysicsAsset.SK_Mannequin_PhysicsAsset'"));
+	static ConstructorHelpers::FObjectFinder<UPhysicsAsset> physicsAsset(TEXT("PhysicsAsset'/Game/Character/Mesh/SK_Mannequin_PhysicsAsset.SK_Mannequin_PhysicsAsset'"));
 	if (physicsAsset.Succeeded())
 	{
+		// 아직 아무것도 안합니다.
 		UE_LOG(LogTemp, Warning, TEXT("physicsAsset.Succeeded()"))
 	}
 
@@ -79,7 +80,7 @@ APioneer::APioneer()
 		//AnimInstance->Montage_Play(AttackMontage->Montage, 1.0f, EMontagePlayReturnType::Duration, 0.0f, true);
 	
 	// load player attack montage data table
-	static ConstructorHelpers::FObjectFinder<UDataTable> PlayerAttackMontageDataObject(TEXT("DataTable'/Game/TUTORIAL_RESOURCES/DataTables/PlayerAttackMontageDataTable.PlayerAttackMontageDataTable'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> PlayerAttackMontageDataObject(TEXT("DataTable'/Game/DataTables/PlayerAttackMontageDataTable.PlayerAttackMontageDataTable'"));
 	if (PlayerAttackMontageDataObject.Succeeded())
 	{
 		PlayerAttackDataTable = PlayerAttackMontageDataObject.Object;
@@ -88,7 +89,11 @@ APioneer::APioneer()
 	// set animation blending on by default
 	bIsAnimationBlended = true;
 
-	MaxCountdownToIdle = 30;
+	//MaxCountdownToIdle = 30;
+
+	bHasPistol = false;
+	bHasRifle = false;
+	bHasLauncher = false;
 	/*** Animation code : End ***/
 
 
@@ -147,7 +152,7 @@ APioneer::APioneer()
 	// 데칼은 메시의 표면에 렌더링될 머터리얼입니다.
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/TopDownCPP/Blueprints/M_Cursor_Decal.M_Cursor_Decal'"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/BluePrints/M_Cursor_Decal.M_Cursor_Decal'"));
 	if (DecalMaterialAsset.Succeeded())
 	{
 		CursorToWorld->SetDecalMaterial(DecalMaterialAsset.Object);
@@ -225,14 +230,14 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 {
 	// Set up game play key bindings
 	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("CW", IE_Pressed, this, &APioneer::ChangeWeapon);
 
-	PlayerInputComponent->BindAction("ArmPlayer", IE_Pressed, this, &APioneer::ArmPlayer);
+
+	//PlayerInputComponent->BindAction("ArmPlayer", IE_Pressed, this, &APioneer::ArmPlayer);
 
 	// attack functionality
-	PlayerInputComponent->BindAction("Punch", IE_Pressed, this, &APioneer::PunchAttack);
-	PlayerInputComponent->BindAction("Kick", IE_Pressed, this, &APioneer::KickAttack);
+	//PlayerInputComponent->BindAction("Punch", IE_Pressed, this, &APioneer::PunchAttack);
+	//PlayerInputComponent->BindAction("Kick", IE_Pressed, this, &APioneer::KickAttack);
 }
 
 //void APioneer::MoveForward(float value)
@@ -288,164 +293,200 @@ bool APioneer::IsAnimationBlended()
 	return bIsAnimationBlended;
 }
 
-bool APioneer::IsArmed()
+bool APioneer::HasPistol()
 {
-	return bIsArmed;
+	return bHasPistol;
 }
+bool APioneer::HasRifle()
+{
+	return bHasRifle;
+}
+bool APioneer::HasLauncher()
+{
+	return bHasLauncher;
+}
+
+// 임시로 만든 무기 변경 함수
+void APioneer::ChangeWeapon()
+{
+	UE_LOG(LogTemp, Warning, TEXT("CW"));
+
+	if (bHasPistol)
+	{
+		bHasRifle = true;
+		bHasPistol = false;
+	}
+	else if (bHasRifle)
+	{
+		bHasLauncher = true;
+		bHasRifle = false;
+	}
+	else if (bHasLauncher)
+	{
+		bHasLauncher = false;
+	}
+	else
+		bHasPistol = true;
+}
+
+//bool APioneer::IsArmed()
+//{
+//	return bIsArmed;
+//}
 
 void APioneer::SetIsKeyboardEnabled(bool Enabled)
 {
 	bIsKeyboardEnabled = Enabled;
 }
 
-void APioneer::PunchAttack()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PunchAttack"));
-	AttackInput(EAttackType::MELEE_FIST);
-}
+//void APioneer::PunchAttack()
+//{
+//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PunchAttack"));
+//	AttackInput(EAttackType::MELEE_FIST);
+//}
+//
+//void APioneer::KickAttack()
+//{
+//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("KickAttack"));
+//	AttackInput(EAttackType::MELEE_KICK);
+//}
+//
+//void APioneer::AttackInput(EAttackType AttackType)
+//{
+//	if (PlayerAttackDataTable)
+//	{
+//		static const FString ContextString(TEXT("Player Attack Montage Context"));
+//
+//		FName RowKey;
+//
+//		// attach collision components to sockets based on transformations definitions
+//		const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
+//
+//		switch (AttackType)
+//		{
+//		case EAttackType::MELEE_FIST:
+//			RowKey = FName(TEXT("Punch"));
+//
+//			//LeftMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_l_collision");
+//			//RightMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_r_collision");
+//
+//			bIsKeyboardEnabled = true;
+//
+//			bIsAnimationBlended = true;
+//			break;
+//		case EAttackType::MELEE_KICK:
+//			RowKey = FName(TEXT("Kick"));
+//
+//			//LeftMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "foot_l_collision");
+//			//RightMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "foot_r_collision");
+//
+//			bIsKeyboardEnabled = false;
+//
+//			bIsAnimationBlended = false;
+//			break;
+//		default:
+//
+//			bIsAnimationBlended = true;
+//			break;
+//		}
+//
+//		AttackMontage = PlayerAttackDataTable->FindRow<FPlayerAttackMontage>(RowKey, ContextString, true);
+//
+//		if (AttackMontage)
+//		{
+//			// pick the correct montage section based on our attack type
+//			int MontageSectionIndex;
+//			MontageSectionIndex = 1;
+//
+//			// create a montage section
+//			FString MontageSection = "start_" + FString::FromInt(MontageSectionIndex);
+//
+//			PlayAnimMontage(AttackMontage->Montage, 1.f, FName(*MontageSection));
+//
+//			if (!bIsArmed)
+//			{
+//				bIsArmed = true;
+//			}
+//		}
+//	}
+//	else
+//		UE_LOG(LogTemp, Warning, TEXT("Failed: PlayerAttackDataTable"))
+//}
 
-void APioneer::KickAttack()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("KickAttack"));
-	AttackInput(EAttackType::MELEE_KICK);
-}
-
-void APioneer::AttackInput(EAttackType AttackType)
-{
-	if (PlayerAttackDataTable)
-	{
-		static const FString ContextString(TEXT("Player Attack Montage Context"));
-
-		FName RowKey;
-
-		// attach collision components to sockets based on transformations definitions
-		const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
-
-		switch (AttackType)
-		{
-		case EAttackType::MELEE_FIST:
-			RowKey = FName(TEXT("Punch"));
-
-			//LeftMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_l_collision");
-			//RightMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_r_collision");
-
-			bIsKeyboardEnabled = true;
-
-			bIsAnimationBlended = true;
-			break;
-		case EAttackType::MELEE_KICK:
-			RowKey = FName(TEXT("Kick"));
-
-			//LeftMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "foot_l_collision");
-			//RightMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "foot_r_collision");
-
-			bIsKeyboardEnabled = false;
-
-			bIsAnimationBlended = false;
-			break;
-		default:
-
-			bIsAnimationBlended = true;
-			break;
-		}
-
-		AttackMontage = PlayerAttackDataTable->FindRow<FPlayerAttackMontage>(RowKey, ContextString, true);
-
-		if (AttackMontage)
-		{
-			// pick the correct montage section based on our attack type
-			int MontageSectionIndex;
-			MontageSectionIndex = 1;
-
-			// create a montage section
-			FString MontageSection = "start_" + FString::FromInt(MontageSectionIndex);
-
-			PlayAnimMontage(AttackMontage->Montage, 1.f, FName(*MontageSection));
-
-			if (!bIsArmed)
-			{
-				bIsArmed = true;
-			}
-		}
-	}
-	else
-		UE_LOG(LogTemp, Warning, TEXT("Failed: PlayerAttackDataTable"))
-}
-
-void APioneer::AttackStart()
-{
-	//Log(ELogLevel::INFO, __FUNCTION__);
-
-	/*LeftMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Enabled);
-	LeftMeleeCollisionBox->SetNotifyRigidBodyCollision(true);
-
-	RightMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Enabled);
-	RightMeleeCollisionBox->SetNotifyRigidBodyCollision(true);*/
-}
-
-void APioneer::AttackEnd()
-{
-	//Log(ELogLevel::INFO, __FUNCTION__);
-
-	/*LeftMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Disabled);
-	LeftMeleeCollisionBox->SetNotifyRigidBodyCollision(false);
-
-	RightMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Disabled);
-	RightMeleeCollisionBox->SetNotifyRigidBodyCollision(false);*/
-
-	UWorld* const world = GetWorld();
-	if (!world)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
-		return;
-	}
-
-	bool bIsActive = world->GetTimerManager().IsTimerActive(ArmedToIdleTimerHandle);
-	if (bIsActive)
-	{
-		// reset the timer
-		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
-	}
-
-	CountdownToIdle = MaxCountdownToIdle;
-
-	// start timer from scratch
-	world->GetTimerManager().SetTimer(ArmedToIdleTimerHandle, this, &APioneer::TriggerCountdownToIdle, 1.f, true);
-}
-void APioneer::TriggerCountdownToIdle()
-{
-	// count down to zero
-	if (--CountdownToIdle <= 0) {
-		bIsArmed = false;
-		CountdownToIdle = MaxCountdownToIdle;
-
-		UWorld* const world = GetWorld();
-		if (!world)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
-			return;
-		}
-		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
-	}
-}
-void APioneer::ArmPlayer()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("ArmPlayer()"));
-
-	// flip / flop
-	bIsArmed = !bIsArmed;
-
-	if (!bIsArmed)
-	{
-		CountdownToIdle = MaxCountdownToIdle;
-
-		UWorld* const world = GetWorld();
-		if (!world)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
-			return;
-		}
-		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
-	}
-}
+//void APioneer::AttackStart()
+//{
+//	//Log(ELogLevel::INFO, __FUNCTION__);
+//
+//	/*LeftMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Enabled);
+//	LeftMeleeCollisionBox->SetNotifyRigidBodyCollision(true);
+//
+//	RightMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Enabled);
+//	RightMeleeCollisionBox->SetNotifyRigidBodyCollision(true);*/
+//}
+//
+//void APioneer::AttackEnd()
+//{
+//	//Log(ELogLevel::INFO, __FUNCTION__);
+//
+//	/*LeftMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Disabled);
+//	LeftMeleeCollisionBox->SetNotifyRigidBodyCollision(false);
+//
+//	RightMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Disabled);
+//	RightMeleeCollisionBox->SetNotifyRigidBodyCollision(false);*/
+//
+//	UWorld* const world = GetWorld();
+//	if (!world)
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+//		return;
+//	}
+//
+//	bool bIsActive = world->GetTimerManager().IsTimerActive(ArmedToIdleTimerHandle);
+//	if (bIsActive)
+//	{
+//		// reset the timer
+//		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
+//	}
+//
+//	CountdownToIdle = MaxCountdownToIdle;
+//
+//	// start timer from scratch
+//	world->GetTimerManager().SetTimer(ArmedToIdleTimerHandle, this, &APioneer::TriggerCountdownToIdle, 1.f, true);
+//}
+//void APioneer::TriggerCountdownToIdle()
+//{
+//	// count down to zero
+//	if (--CountdownToIdle <= 0) {
+//		bIsArmed = false;
+//		CountdownToIdle = MaxCountdownToIdle;
+//
+//		UWorld* const world = GetWorld();
+//		if (!world)
+//		{
+//			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+//			return;
+//		}
+//		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
+//	}
+//}
+//void APioneer::ArmPlayer()
+//{
+//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("ArmPlayer()"));
+//
+//	// flip / flop
+//	bIsArmed = !bIsArmed;
+//
+//	if (!bIsArmed)
+//	{
+//		CountdownToIdle = MaxCountdownToIdle;
+//
+//		UWorld* const world = GetWorld();
+//		if (!world)
+//		{
+//			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+//			return;
+//		}
+//		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
+//	}
+//}
 /*** Animation code : End ***/

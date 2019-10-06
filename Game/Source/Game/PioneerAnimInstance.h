@@ -23,11 +23,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		float Speed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bIsArmed;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		bool bIsArmed;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bIsMoving;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		float Direction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		bool bHasPistol;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		bool bHasRifle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		bool bHasLauncher;
 
 public:
 	UPioneerAnimInstance();

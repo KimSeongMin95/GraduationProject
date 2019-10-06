@@ -51,12 +51,19 @@ struct FPlayerAttackMontage : public FTableRowBase
 		FString Description;
 };
 
-UENUM(BlueprintType)
-enum class EAttackType : uint8 {
-	MELEE_FIST			UMETA(DisplayName = "Melee - Fist"),
-	MELEE_KICK			UMETA(DisplayName = "Melee - Kick")
-};
+//UENUM(BlueprintType)
+//enum class EAttackType : uint8 {
+//	MELEE_FIST			UMETA(DisplayName = "Melee - Fist"),
+//	MELEE_KICK			UMETA(DisplayName = "Melee - Kick")
+//};
 
+UENUM(BlueprintType)
+enum class EWeaponType : uint8
+{
+	Pistol		UMETA(DisplayName = "Pistol"),
+	Rifle		UMETA(DisplayName = "Rifle"),
+	Launcher	UMETA(DisplayName = "Launcher")
+};
 
 
 UCLASS()
@@ -105,37 +112,49 @@ public: // Animation 용도
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
 		class UDataTable* PlayerAttackDataTable;
 
-	void PunchAttack();
-	void KickAttack();
+	//void PunchAttack();
+	//void KickAttack();
 
-	void AttackInput(EAttackType AttackType);
+	//void AttackInput(EAttackType AttackType);
 
-	/**
-	* Initiates player attack
-	*/
-	void AttackStart();
+	///**
+	//* Initiates player attack
+	//*/
+	//void AttackStart();
 
-	/**
-	* Stops player attack
-	*/
-	void AttackEnd();
+	///**
+	//* Stops player attack
+	//*/
+	//void AttackEnd();
 
 	/** boolean that tells us if we need to branch our animation blue print paths **/
 	UFUNCTION(BlueprintCallable, Category = Animation)
 		bool IsAnimationBlended();
 
+	/*UFUNCTION(BlueprintCallable, Category = Animation)
+		bool IsArmed();*/
+
 	UFUNCTION(BlueprintCallable, Category = Animation)
-		bool IsArmed();
+		bool HasPistol();
+
+	UFUNCTION(BlueprintCallable, Category = Animation)
+		bool HasRifle();
+
+	UFUNCTION(BlueprintCallable, Category = Animation)
+		bool HasLauncher();
+
+	UFUNCTION()
+		void ChangeWeapon();
 
 	/** controls if the keyboard responds to user input **/
 	UFUNCTION(BlueprintCallable, Category = Animation)
 		void SetIsKeyboardEnabled(bool Enabled);
 
-	UFUNCTION()
+	/*UFUNCTION()
 		void TriggerCountdownToIdle();
 
 	UFUNCTION()
-		void ArmPlayer();
+		void ArmPlayer();*/
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Trace)
 		int32 MaxCountdownToIdle;
@@ -144,22 +163,19 @@ public: // Animation 용도
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
-	FPlayerAttackMontage* AttackMontage;
+	//FPlayerAttackMontage* AttackMontage;
 
 	bool bIsAnimationBlended;
 
 	bool bIsKeyboardEnabled;
 
-	bool bIsAttackLight;
-	bool bIsAttackStrong;
+	//FTimerHandle ArmedToIdleTimerHandle;
 
-	bool bIsArmed;
-	FTimerHandle ArmedToIdleTimerHandle;
+	//int32 CountdownToIdle;
 
-	int32 CountdownToIdle;
-
-	int32 CurrentCombo;
-
+	bool bHasPistol;
+	bool bHasRifle;
+	bool bHasLauncher;
 
 
 	/*** Components : End ***/

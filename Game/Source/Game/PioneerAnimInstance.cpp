@@ -41,9 +41,16 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		if (pioneer)
 		{
 			bIsAnimationBlended = pioneer->IsAnimationBlended();
-			bIsArmed = pioneer->IsArmed();
+			//bIsArmed = pioneer->IsArmed();
 			Speed = pioneer->GetVelocity().Size();
 			bIsMoving = Speed > 0 ? true : false;
+
+			bHasPistol = pioneer->HasPistol();
+			bHasRifle = pioneer->HasRifle();
+			bHasLauncher = pioneer->HasLauncher();
+			Direction = CalculateDirection(pioneer->GetVelocity(), pioneer->GetActorRotation());
 		}
 	}
+
+	
 }
