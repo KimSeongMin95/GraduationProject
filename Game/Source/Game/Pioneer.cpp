@@ -79,18 +79,16 @@ APioneer::APioneer()
 		//AnimInstance->Montage_Play(AttackMontage->Montage, 1.0f, EMontagePlayReturnType::Duration, 0.0f, true);
 	
 	// load player attack montage data table
-	/*static ConstructorHelpers::FObjectFinder<UDataTable> PlayerAttackMontageDataObject(TEXT("DataTable'/Game/TUTORIAL_RESOURCES/DataTables/PlayerAttackMontageDataTable.PlayerAttackMontageDataTable'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> PlayerAttackMontageDataObject(TEXT("DataTable'/Game/TUTORIAL_RESOURCES/DataTables/PlayerAttackMontageDataTable.PlayerAttackMontageDataTable'"));
 	if (PlayerAttackMontageDataObject.Succeeded())
 	{
 		PlayerAttackDataTable = PlayerAttackMontageDataObject.Object;
-	}*/
+	}
 		
 	// set animation blending on by default
 	bIsAnimationBlended = true;
 
 	MaxCountdownToIdle = 30;
-
-	
 	/*** Animation code : End ***/
 
 
@@ -231,8 +229,6 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("ArmPlayer", IE_Pressed, this, &APioneer::ArmPlayer);
-	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APioneer::CrouchStart);
-	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &APioneer::CrouchEnd);
 
 	// attack functionality
 	PlayerInputComponent->BindAction("Punch", IE_Pressed, this, &APioneer::PunchAttack);
@@ -304,7 +300,7 @@ void APioneer::SetIsKeyboardEnabled(bool Enabled)
 
 void APioneer::PunchAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PunchAttack()"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PunchAttack"));
 	AttackInput(EAttackType::MELEE_FIST);
 }
 
@@ -354,7 +350,26 @@ void APioneer::AttackInput(EAttackType AttackType)
 		}
 
 		AttackMontage = PlayerAttackDataTable->FindRow<FPlayerAttackMontage>(RowKey, ContextString, true);
+
+		if (AttackMontage)
+		{
+			// pick the correct montage section based on our attack type
+			int MontageSectionIndex;
+			MontageSectionIndex = 1;
+
+			// create a montage section
+			FString MontageSection = "start_" + FString::FromInt(MontageSectionIndex);
+
+			PlayAnimMontage(AttackMontage->Montage, 1.f, FName(*MontageSection));
+
+			if (!bIsArmed)
+			{
+				bIsArmed = true;
+			}
+		}
 	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("Failed: PlayerAttackDataTable"))
 }
 
 void APioneer::AttackStart()
@@ -432,17 +447,5 @@ void APioneer::ArmPlayer()
 		}
 		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
 	}
-}
-
-void APioneer::CrouchStart()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("CrouchStart()"));
-	Crouch();
-}
-
-void APioneer::CrouchEnd()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("CrouchEnd()"));
-	UnCrouch();
 }
 /*** Animation code : End ***/

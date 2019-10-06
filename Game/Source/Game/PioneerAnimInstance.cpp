@@ -9,7 +9,6 @@
 
 UPioneerAnimInstance::UPioneerAnimInstance()
 {
-	bIsInAir = false;
 	bIsAnimationBlended = true;
 	Speed = 0.f;
 }
@@ -33,6 +32,7 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 			return;
 	}
 
+	// Owner가 APioneer::StaticClass()인지 확인합니다.
 	if (Owner->IsA(APioneer::StaticClass()))
 	{
 		APioneer* pioneer = Cast<APioneer>(Owner);
@@ -40,14 +40,10 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		// again check pointers
 		if (pioneer)
 		{
-			bIsInAir = pioneer->GetMovementComponent()->IsFalling();
 			bIsAnimationBlended = pioneer->IsAnimationBlended();
-			Speed = pioneer->GetVelocity().Size();
-
-			bIsCrouching = pioneer->GetMovementComponent()->IsCrouching();
 			bIsArmed = pioneer->IsArmed();
+			Speed = pioneer->GetVelocity().Size();
 			bIsMoving = Speed > 0 ? true : false;
-
 		}
 	}
 }

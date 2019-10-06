@@ -18,16 +18,10 @@ class GAME_API UPioneerAnimInstance : public UAnimInstance
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bIsInAir;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bIsAnimationBlended;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		float Speed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bIsCrouching;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bIsArmed;

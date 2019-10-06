@@ -137,12 +137,6 @@ public: // Animation ¿ëµµ
 	UFUNCTION()
 		void ArmPlayer();
 
-	UFUNCTION()
-		void CrouchStart();
-
-	UFUNCTION()
-		void CrouchEnd();
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Trace)
 		int32 MaxCountdownToIdle;
 
