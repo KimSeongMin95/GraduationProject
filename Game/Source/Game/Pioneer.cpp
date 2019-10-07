@@ -122,7 +122,8 @@ APioneer::APioneer()
 	bUseControllerRotationRoll = false;
 
 	// 캐릭터 이동 관련 설정을 합니다.
-	GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향에 캐릭터 메시가 따라 회전합니다.
+	//GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향에 캐릭터 메시가 따라 회전합니다.
+	GetCharacterMovement()->bOrientRotationToMovement = false; // 이동 방향에 캐릭터 메시가 따라 회전하지 않습니다.
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // 캐릭터를 이동시키기 전에 이동 방향과 현재 캐릭터의 방향이 다르면 캐릭터를 이동 방향으로 초당 640도의 회전 속도로 회전시킨다음 이동시킵니다.
 	GetCharacterMovement()->bConstrainToPlane = true; // 캐릭터의 이동을 평면으로 제한합니다.
 	GetCharacterMovement()->bSnapToPlaneAtStart = true; // 작할 때 캐릭터의 위치가 평면을 벗어난 상태라면 가까운 평면으로 붙여서 시작되도록 합니다. 여기서 평면이란 내비게이션 메시를 의미합니다.
@@ -189,9 +190,14 @@ void APioneer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetCameraBoomSettings();
+	SetCharacterRotationToCursor();
 
 	SetCursorToWorld();
+
+
+
+	// 회전시 떨림을 방지하기 위해 카메라 위치 조정은 가장 마지막에 실행합니다.
+	SetCameraBoomSettings();
 }
 
 /** CursorToWorld의 월드좌표와 월드회전을 설정합니다.*/
@@ -490,3 +496,27 @@ void APioneer::SetIsKeyboardEnabled(bool Enabled)
 //	}
 //}
 /*** Animation code : End ***/
+
+void APioneer::SetCharacterRotationToCursor()
+{
+	// 현재 CursorToWorld 위치
+	FVector cursorLocation = CursorToWorld->GetComponentLocation();
+
+	// 현재 rootComponent 위치
+	FVector rootCompLocation = RootComponent->GetComponentLocation();
+
+	// 방향을 구합니다.
+	FVector direction = FVector(
+		cursorLocation.X - rootCompLocation.X,
+		cursorLocation.Y - rootCompLocation.Y,
+		cursorLocation.Z - rootCompLocation.Z);
+
+	// 벡터를 정규화합니다.
+	direction.Normalize();
+
+	// RootComponenet인 캡슐컴포넌트의 Rotation을 direction으로 바꿉니다.
+	RootComponent->SetRelativeRotation(FRotator(
+		RootComponent->GetComponentRotation().Pitch, 
+		direction.Rotation().Yaw,
+		RootComponent->GetComponentRotation().Roll));
+}

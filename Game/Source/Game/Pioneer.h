@@ -193,6 +193,8 @@ public: // Animation ¿ëµµ
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent);
 #endif
+
+	void SetCharacterRotationToCursor();
 	/***  Base Character : End ***/
 
 
