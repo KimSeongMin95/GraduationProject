@@ -28,8 +28,8 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 	// double check our pointers make sure nothing is empty
 	if (!Owner)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: Owner = TryGetPawnOwner()"))
-			return;
+		UE_LOG(LogTemp, Warning, TEXT("Failed: Owner = TryGetPawnOwner()"));
+		return;
 	}
 
 	// Owner가 APioneer::StaticClass()인지 확인합니다.
@@ -54,3 +54,32 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 
 	
 }
+
+/*** Base Character : Start ***/
+void APioneer::CalculateHealth(float delta)
+{
+	Health += delta;
+	CalculateDead();
+}
+
+void APioneer::CalculateDead()
+{
+	if (Health <= 0)
+		isDead = true;
+	else
+		isDead = false;
+}
+
+#if WITH_EDITOR
+void APioneer::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent)
+{
+	isDead = false;
+	Health = 100;
+
+	CalculateDead();
+}
+#endif
+
+
+
+/*** Base Character : End ***/

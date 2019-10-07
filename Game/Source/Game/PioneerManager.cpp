@@ -33,7 +33,7 @@ void APioneerManager::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
 		return;
 	}
 
@@ -68,7 +68,7 @@ void APioneerManager::Tick(float DeltaTime)
 
 	if (tmp > 15.0f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SwitchPawn()"))
+		UE_LOG(LogTemp, Warning, TEXT("SwitchPawn()"));
 		tmp = 0.0f;
 		SwitchPawn(tmpID, SwitchTime);
 
@@ -84,14 +84,14 @@ void APioneerManager::SpawnPioneer(int ID)
 {
 	if (TmapPioneers.Contains(ID))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TmapPioneers.Contains(ID)"))
+		UE_LOG(LogTemp, Warning, TEXT("TmapPioneers.Contains(ID)"));
 		return;
 	}
 
 	UWorld* const World = GetWorld();
 	if (!World)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
 		return;
 	}
 
@@ -127,7 +127,7 @@ APioneer* APioneerManager::GetPioneerByID(int ID)
 	// ID에 해당하는 key가 존재하는지 확인합니다.
 	if (!TmapPioneers.Contains(ID))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("!TmapPioneers.Contains(ID)"))
+		UE_LOG(LogTemp, Warning, TEXT("!TmapPioneers.Contains(ID)"));
 		return nullptr;
 	}
 
@@ -156,7 +156,7 @@ void APioneerManager::SwitchPawn(int ID, float BlendTime, EViewTargetBlendFuncti
 	if (PioneerCtrl && WorldViewCam)
 		PioneerCtrl->SetViewTargetWithBlend(WorldViewCam, BlendTime, blendFunc, BlendExp, bLockOutgoing);
 	else
-		UE_LOG(LogTemp, Warning, TEXT("!(PioneerCtrl && WorldViewCam)"))
+		UE_LOG(LogTemp, Warning, TEXT("!(PioneerCtrl && WorldViewCam)"));
 
 	FTimerHandle timer1;
 	FTimerDelegate timerDel1;
@@ -177,7 +177,7 @@ void APioneerManager::SwitchViewTarget(int ID, float BlendTime, EViewTargetBlend
 	// ID에 해당하는 key가 존재하는지 확인합니다.
 	if (!TmapPioneers.Contains(ID))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("!TmapPioneers.Contains(ID)"))
+		UE_LOG(LogTemp, Warning, TEXT("!TmapPioneers.Contains(ID)"));
 			return;
 	}
 
@@ -191,13 +191,13 @@ void APioneerManager::PossessPioneer(int ID)
 	// ID에 해당하는 key가 존재하는지 확인합니다.
 	if (!TmapPioneers.Contains(ID))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("!TmapPioneers.Contains(ID)"))
+		UE_LOG(LogTemp, Warning, TEXT("!TmapPioneers.Contains(ID)"));
 			return;
 	}
 	// PioneerCtrl가 존재하는지 확인합니다.
 	if (!PioneerCtrl)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("!PioneerCtrl"))
+		UE_LOG(LogTemp, Warning, TEXT("!PioneerCtrl"));
 			return;
 	}
 

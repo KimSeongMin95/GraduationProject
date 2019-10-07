@@ -178,6 +178,24 @@ public: // Animation ¿ëµµ
 	bool bHasLauncher;
 
 
+	/*** Base Character : Start ***/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Base Character")
+		float Health = 100;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Base Character")
+		bool isDead = false;
+
+	void CalculateDead();
+
+	UFUNCTION(BlueprintCallable, Category = "Base Character")
+		void CalculateHealth(float delta);
+
+#if WITH_EDITOR
+	void PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent);
+#endif
+	/***  Base Character : End ***/
+
+
 	/*** Components : End ***/
 
 public:

@@ -87,7 +87,7 @@ void AMyGameModeBase::SpawnPioneerManager()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const world = GetWorld();"))
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const world = GetWorld();"));
 		return;
 	}
 

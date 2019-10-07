@@ -41,7 +41,7 @@ APioneer::APioneer()
 	/*static ConstructorHelpers::FClassFinder<UPioneerAnimInstance> pioneerAnimInstance(TEXT("Class'/Script/Game.PioneerAnimInstance'"));
 	if (pioneerAnimInstance.Succeeded())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("pioneerAnimInstance.Succeeded()"))
+		UE_LOG(LogTemp, Warning, TEXT("pioneerAnimInstance.Succeeded()"));
 		GetMesh()->SetAnimInstanceClass(pioneerAnimInstance.Class);
 	}*/
 	// AnimInstance와 AnimationBlueprint는 AnimClass로써 같은 역할을 합니다.
@@ -50,7 +50,7 @@ APioneer::APioneer()
 	UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
 	if (!animBP)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("!animBP"))
+		UE_LOG(LogTemp, Warning, TEXT("!animBP"));
 	}
 	else
 		GetMesh()->SetAnimInstanceClass(animBP);
@@ -59,7 +59,7 @@ APioneer::APioneer()
 	if (physicsAsset.Succeeded())
 	{
 		// 아직 아무것도 안합니다.
-		UE_LOG(LogTemp, Warning, TEXT("physicsAsset.Succeeded()"))
+		UE_LOG(LogTemp, Warning, TEXT("physicsAsset.Succeeded()"));
 	}
 
 	// 5. UAnimMontage* AnimMontage;
@@ -410,7 +410,7 @@ void APioneer::SetIsKeyboardEnabled(bool Enabled)
 //		}
 //	}
 //	else
-//		UE_LOG(LogTemp, Warning, TEXT("Failed: PlayerAttackDataTable"))
+//		UE_LOG(LogTemp, Warning, TEXT("Failed: PlayerAttackDataTable"));
 //}
 
 //void APioneer::AttackStart()
@@ -437,7 +437,7 @@ void APioneer::SetIsKeyboardEnabled(bool Enabled)
 //	UWorld* const world = GetWorld();
 //	if (!world)
 //	{
-//		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+//		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
 //		return;
 //	}
 //
@@ -463,7 +463,7 @@ void APioneer::SetIsKeyboardEnabled(bool Enabled)
 //		UWorld* const world = GetWorld();
 //		if (!world)
 //		{
-//			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+//			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
 //			return;
 //		}
 //		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
@@ -483,7 +483,7 @@ void APioneer::SetIsKeyboardEnabled(bool Enabled)
 //		UWorld* const world = GetWorld();
 //		if (!world)
 //		{
-//			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"))
+//			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
 //			return;
 //		}
 //		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
