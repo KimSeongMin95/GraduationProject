@@ -41,6 +41,7 @@ public:
 
 	class AWorldViewCameraActor* WorldViewCam; /** 월드 전체를 바라보는 카메라입니다. */
 	class APioneerController* PioneerCtrl; /** Pioneer 전용 컨트롤러 입니다. */
+	class APioneerAIController* PioneerAICtrl; /** Pioneer 전용 AI 컨트롤러 입니다. */
 
 	UPROPERTY(EditAnywhere)
 		float SwitchTime; /** 다른 폰으로 변경하는 시간입니다. */
@@ -49,4 +50,8 @@ public:
 		void SwitchViewTarget(int ID, float BlendTime = 0, EViewTargetBlendFunction blendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = false); /** 다른 폰의 카메라로 변경하는 함수입니다. */
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
 		void PossessPioneer(int ID); /** 다른 폰을 Possess() 합니다. */
+
+	void SpawnPioneerAIController();
+
+	static int tmpID;
 };
