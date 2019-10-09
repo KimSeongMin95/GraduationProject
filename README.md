@@ -8,8 +8,8 @@ UnrealEngine 4.23 버전으로 PC 3D RTS 게임을 기획하고 개발중에 있
 <br>
 <br>
 [프로젝트 폴더 관리]<br>
-    .VS/: VisualStudio 실행하면 생성되는데 언리얼 코드가 전부 들어있으므로 제거하면 안됨. (제거X)<br>
-    Binaries/: C++ 코드가 컴파일된 결과물이 저장. C++ 코드를 컴파일 할 때마다 새로 생성. (제거O)<br>
+---.VS/: VisualStudio 실행하면 생성되는데 언리얼 코드가 전부 들어있으므로 제거하면 안됨. (제거X)<br>
+---Binaries/: C++ 코드가 컴파일된 결과물이 저장. C++ 코드를 컴파일 할 때마다 새로 생성. (제거O)<br>
         Binaries/Win64/에서 Game, Game.exp, Game.lib, Game.pdb, Game.target 는 에디터에서 Launch하면 새로 생성되고 나머지는 에디터에서 컴파일하면 생성됨.<br>
     Build/: ???<br>
     Config/: 프로젝트의 설정값들 보관 (제거X)<br>
