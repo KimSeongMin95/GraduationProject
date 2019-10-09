@@ -14,3 +14,12 @@ Binaries/: C++ 코드가 컴파일된 결과물이 저장. C++ 코드를 컴파�
 Binaries/Win64/에서 Game, Game.exp, Game.lib, Game.pdb, Game.target 는 에디터에서 Launch하면 새로 생성되고 나머지는 에디터에서 컴파일하면 생성됨.  
 Source/: C++ 코드가 저장되는 폴더 (제거X)  
 VS/: VisualStudio 실행하면 생성되는데 언리얼 코드가 전부 들어있으므로 제거하면 안됨. (제거X)  
+
+```c
+#include<stdio.h>
+int main(void)
+{
+printf("Hello Interface!\n");
+return 0;
+}
+```
