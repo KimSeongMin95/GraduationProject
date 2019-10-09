@@ -55,12 +55,8 @@ void APioneer::BeginPlay()
 void APioneer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	SetCharacterRotationToCursor();
-
+	
 	SetCursorToWorld();
-
-
 
 	// 회전시 떨림을 방지하기 위해 카메라 위치 조정은 가장 마지막에 실행합니다.
 	SetCameraBoomSettings();
@@ -229,7 +225,9 @@ void APioneer::InitAIController()
 	PioneerAIController = World->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
 
 	if (!GetController())
+	{
 		PioneerAIController->Possess(this);
+	}
 }
 /*** Initialize Function : End ***/
 
@@ -293,7 +291,8 @@ void APioneer::SetCameraBoomSettings()
 
 void APioneer::SetCursorToWorld()
 {
-	if (CursorToWorld != nullptr)
+	// CursorToWorld가 초기화되어 있고 PioneerController를 사용중이면
+	if ((CursorToWorld != nullptr) && (GetController() != PioneerAIController))
 	{
 		/*if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
 		{
@@ -318,23 +317,27 @@ void APioneer::SetCursorToWorld()
 			FRotator CursorR = CursorFV.Rotation();
 			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
 			CursorToWorld->SetWorldRotation(CursorR);
+
+			// 커서 위치를 바라봅니다.
+			LookAtTheLocation(CursorToWorld->GetComponentLocation());
+
+			CursorToWorld->SetVisibility(true);
 		}
 	}
+	else
+		CursorToWorld->SetVisibility(false);
 }
 
-void APioneer::SetCharacterRotationToCursor()
+void APioneer::LookAtTheLocation(FVector Location)
 {
-	// 현재 CursorToWorld 위치
-	FVector cursorLocation = CursorToWorld->GetComponentLocation();
-
 	// 현재 rootComponent 위치
 	FVector rootCompLocation = RootComponent->GetComponentLocation();
 
 	// 방향을 구합니다.
 	FVector direction = FVector(
-		cursorLocation.X - rootCompLocation.X,
-		cursorLocation.Y - rootCompLocation.Y,
-		cursorLocation.Z - rootCompLocation.Z);
+		Location.X - rootCompLocation.X,
+		Location.Y - rootCompLocation.Y,
+		Location.Z - rootCompLocation.Z);
 
 	// 벡터를 정규화합니다.
 	direction.Normalize();
@@ -346,7 +349,17 @@ void APioneer::SetCharacterRotationToCursor()
 		RootComponent->GetComponentRotation().Roll));
 }
 
+void APioneer::PossessAIController()
+{
+	// 안전하게 하기 위해 현재 폰이 컨트롤러를 가지고 있으면 빙의를 해제합니다.
+	if (GetController())
+	{
+		GetController()->UnPossess();
+	}
 
+	// 그뒤 AI 컨트롤러를 빙의합니다.
+	PioneerAIController->Possess(this);
+}
 
 
 

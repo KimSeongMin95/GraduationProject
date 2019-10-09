@@ -16,21 +16,20 @@ class GAME_API APioneerController : public APlayerController
 {
 	GENERATED_BODY()
 
+/*** Basic Function : Start ***/
 public:
 	APioneerController();
 
 protected:
-	/** True if the controlled character should navigate to the mouse cursor. */
-	/** true면 마우스 커서로 navigating 합니다. */
-	uint32 bMoveToMouseCursor : 1;
-
-	/*** PlayerController interface : Start ***/
 	/** 일반 Tick() 함수는 어디서나 작동하는 반면에, PlayerTick() 함수는 Player Controller에 PlayerInput 객체가 있는 경우에만 호출된다.
 	따라서 로컬로 제어되는 Player Controller에서만 플레이어 틱이 호출된다.
 	이 말인 즉슨, 만약 멀티플레이 게임이라면 자기 자신의 플레이어 컨트롤러에서만 플레이어 틱이 호출된다는 것이다.*/
 	virtual void PlayerTick(float DeltaTime) override; 
 	virtual void SetupInputComponent() override;
-	/*** PlayerController interface : End ***/
+/*** Basic Function : End ***/
+
+public:
+	uint32 bMoveToMouseCursor : 1; /** true면 마우스 커서로 navigating 합니다. */
 
 	///** Resets HMD orientation in VR. */
 	//void OnResetVR(); 
@@ -51,4 +50,9 @@ protected:
 		void MoveRight(float value); /** 플레이어를 좌우로 이동시키는 함수입니다. */
 	/*** Input handlers for SetDestination action. : End ***/
 
+/*** Overrided Function : Start ***/
+public:
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
+/*** Overrided Function : End ***/
 };

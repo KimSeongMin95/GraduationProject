@@ -18,6 +18,7 @@ class GAME_API APioneerManager : public AActor
 {
 	GENERATED_BODY()
 
+/*** Basic Function : Start ***/
 public:
 	// Sets default values for this actor's properties
 	APioneerManager();
@@ -29,6 +30,7 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+/*** Basic Function : End ***/
 
 public:
 	UPROPERTY(EditAnywhere)

@@ -15,6 +15,7 @@ class GAME_API APioneerAIController : public AAIController
 {
 	GENERATED_BODY()
 
+/*** Basic Function : Start ***/
 public:
 	APioneerAIController();
 
@@ -22,5 +23,11 @@ public:
 	//virtual void OnPossess(class APawn* InPawn) override;
 
 	virtual void Tick(float DeltaTime) override;
+/*** Basic Function : End ***/
 
+public:
+	//void InitMoveRandomDestination();
+	UFUNCTION()
+		void MoveRandomDestination();
+	float time;
 };

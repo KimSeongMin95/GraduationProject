@@ -5,6 +5,7 @@
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Pioneer.h"
 #include "PathFinding.h"
+#include "PioneerAIController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 APioneerController::APioneerController()
@@ -152,4 +153,25 @@ void APioneerController::MoveRight(float value)
 		//// 방향을 고정합니다.
 		//MyPawn->AddMovementInput(FVector().RightVector, value);
 	}
+}
+
+void APioneerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+}
+
+void APioneerController::OnUnPossess()
+{
+	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
+	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
+	
+	Super::OnUnPossess();
+
+	SetPawn(nullptr);
+
+	// AIController()에게 빙의하도록 합니다.
+	if (MyPawn)
+		MyPawn->PossessAIController();
+	
 }

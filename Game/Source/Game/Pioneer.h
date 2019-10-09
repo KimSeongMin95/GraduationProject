@@ -163,12 +163,14 @@ public:
 
 	void SetCursorToWorld(); /** CursorToWorld의 월드좌표와 월드회전을 설정합니다. */
 
-	void SetCharacterRotationToCursor(); /** 캐릭터의 방향을 커서 방향으로 회전합니다. */
+	void LookAtTheLocation(FVector Location); /** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
 /*** Cursor : End ***/
 
 /*** APioneerAIController : Start ***/
 public:
 	UPROPERTY(EditAnywhere)
 		class APioneerAIController* PioneerAIController;
+
+	void PossessAIController();
 /*** APioneerAIController : End ***/
 };
