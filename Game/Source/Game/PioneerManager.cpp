@@ -9,8 +9,6 @@
 #include "PioneerAIController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
-int APioneerManager::tmpID = 1;
-
 // Sets default values
 APioneerManager::APioneerManager()
 {
@@ -22,7 +20,7 @@ APioneerManager::APioneerManager()
 
 	WorldViewCam = nullptr;
 	PioneerCtrl = nullptr;
-	PioneerAICtrl = nullptr;
+
 	SwitchTime = 1.5f;
 }
 
@@ -58,8 +56,6 @@ void APioneerManager::BeginPlay()
 			PioneerCtrl = *ActorItr;
 		}
 	}
-
-	SpawnPioneerAIController();
 }
 
 // Called every frame
@@ -70,6 +66,7 @@ void APioneerManager::Tick(float DeltaTime)
 	/*** SwitchPawn() temp code : Start ***/
 	static float tmp = 0;
 	tmp += DeltaTime;
+	static int tmpID = 1;
 
 	if (tmp > 5.0f)
 	{
@@ -210,42 +207,8 @@ void APioneerManager::PossessPioneer(int ID)
 	if (PioneerCtrl->GetPawn())
 	{
 		PioneerCtrl->UnPossess();
-		UE_LOG(LogTemp, Warning, TEXT("PioneerCtrl->UnPossess()"));
-
-
-		if (tmpID == 1)
-		{
-			PioneerAICtrl->Possess(TmapPioneers[2]);
-			PioneerAICtrl->SetPawn(TmapPioneers[2]);
-			UE_LOG(LogTemp, Warning, TEXT("PioneerAICtrl->Possess(TmapPioneers[2]);"));
-		}
-		else if (tmpID == 2)
-		{
-			PioneerAICtrl->Possess(TmapPioneers[1]);
-			PioneerAICtrl->SetPawn(TmapPioneers[1]);
-			UE_LOG(LogTemp, Warning, TEXT("PioneerAICtrl->Possess(TmapPioneers[1]);"));
-		}
-		
 	}
 
 	// 이제부터 PioneerCtrl가 TmapPioneers[ID]를 조종합니다.
 	PioneerCtrl->Possess(TmapPioneers[ID]);
-}
-
-void APioneerManager::SpawnPioneerAIController()
-{
-	UWorld* const World = GetWorld();
-	if (!World)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-		return;
-	}
-
-	FTransform myTrans = GetTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
-
-	PioneerAICtrl = World->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
 }

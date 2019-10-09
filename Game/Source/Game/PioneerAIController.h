@@ -14,13 +14,13 @@ UCLASS()
 class GAME_API APioneerAIController : public AAIController
 {
 	GENERATED_BODY()
+
 public:
 	APioneerAIController();
 
-protected:
-	virtual void BeginPlay() override; /** inherited in Actor, triggered before StartPlay()*/
+	//// Possess는 더이상 override 안되기 때문에 OnPossess로 대체
+	//virtual void OnPossess(class APawn* InPawn) override;
 
-public:
-	UFUNCTION()
-		void MovePatrol();
+	virtual void Tick(float DeltaTime) override;
+
 };

@@ -41,45 +41,14 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		if (pioneer)
 		{
 			bIsAnimationBlended = pioneer->IsAnimationBlended();
-			//bIsArmed = pioneer->IsArmed();
 			Speed = pioneer->GetVelocity().Size();
 			bIsMoving = Speed > 0 ? true : false;
 
 			bHasPistol = pioneer->HasPistol();
 			bHasRifle = pioneer->HasRifle();
 			bHasLauncher = pioneer->HasLauncher();
+
 			Direction = CalculateDirection(pioneer->GetVelocity(), pioneer->GetActorRotation());
 		}
 	}
-
-	
 }
-
-/*** Base Character : Start ***/
-void APioneer::CalculateHealth(float delta)
-{
-	Health += delta;
-	CalculateDead();
-}
-
-void APioneer::CalculateDead()
-{
-	if (Health <= 0)
-		isDead = true;
-	else
-		isDead = false;
-}
-
-#if WITH_EDITOR
-void APioneer::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent)
-{
-	isDead = false;
-	Health = 100;
-
-	CalculateDead();
-}
-#endif
-
-
-
-/*** Base Character : End ***/

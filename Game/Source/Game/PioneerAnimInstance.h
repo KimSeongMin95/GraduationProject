@@ -23,9 +23,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		float Speed;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bIsArmed;*/
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bIsMoving;
 
