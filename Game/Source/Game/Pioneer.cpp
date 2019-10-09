@@ -20,6 +20,8 @@ APioneer::APioneer()
 
 	InitCursor();
 
+	InitAIController();
+
 	// Set this character to call Tick() every frame. You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -41,14 +43,14 @@ void APioneer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	// Init()이 끝나고 AIController에 빙의합니다.
+	if (!GetController())
+	{
+		PioneerAIController->Possess(this);
+	}
 
 	////Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	//FP_Gun->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-
-	
-	InitAIController();
-
 }
 
 // Called every frame
@@ -151,7 +153,7 @@ void APioneer::InitSkeletalAnimation()
 void APioneer::InitCamera()
 {
 	/*** 카메라 설정을 PIE때 변경합니다. : Start ***/
-	CameraBoomLocation = FVector(-200.0f, 0.0f, 200.0f); // ArmSpring의 World 좌표입니다.
+	CameraBoomLocation = FVector(-500.0f, 0.0f, 500.0f); // ArmSpring의 World 좌표입니다.
 	CameraBoomRotation = FRotator(-60.f, 0.f, 0.f); // ArmSpring의 World 회전입니다.
 	TargetArmLength = 500.0f; // ArmSpring과 CameraComponent간의 거리입니다.
 	CameraLagSpeed = 3.0f; // 부드러운 카메라 전환 속도입니다.
@@ -223,11 +225,6 @@ void APioneer::InitAIController()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
 	PioneerAIController = World->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
-
-	if (!GetController())
-	{
-		PioneerAIController->Possess(this);
-	}
 }
 /*** Initialize Function : End ***/
 

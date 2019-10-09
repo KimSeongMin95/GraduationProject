@@ -29,9 +29,6 @@ void APioneerManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SpawnPioneer(1);
-	SpawnPioneer(2);
-
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
@@ -56,6 +53,22 @@ void APioneerManager::BeginPlay()
 			PioneerCtrl = *ActorItr;
 		}
 	}
+
+	//// GameModeBase에서 생성된 Pioneer객체를 빙의한 PioneerCtrl로 부터 Pioneer객체를 저장합니다.
+	//TmapPioneers.Emplace(0, dynamic_cast<APioneer>(PioneerCtrl->GetPawn()));
+	SpawnPioneer(0, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	PioneerCtrl->Possess(TmapPioneers[0]);
+
+	SpawnPioneer(1, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	SpawnPioneer(2, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	SpawnPioneer(3, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	SpawnPioneer(4, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	SpawnPioneer(5, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	SpawnPioneer(6, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	SpawnPioneer(7, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	SpawnPioneer(8, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	SpawnPioneer(9, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	SpawnPioneer(10, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
 }
 
 // Called every frame
@@ -66,23 +79,18 @@ void APioneerManager::Tick(float DeltaTime)
 	/*** SwitchPawn() temp code : Start ***/
 	static float tmp = 0;
 	tmp += DeltaTime;
-	static int tmpID = 1;
 
 	if (tmp > 5.0f)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SwitchPawn()"));
 		tmp = 0.0f;
-		SwitchPawn(tmpID, SwitchTime);
-
-		tmpID++;
-		if (tmpID >= 3)
-			tmpID = 1;
+		SwitchPawn(static_cast<int>(FMath::RandRange(0.0f, 10.0f)), SwitchTime);
 	}
 	/*** SwitchPawn() temp code : End ***/
 }
 
 /** APioneer 객체를 생성합니다. */
-void APioneerManager::SpawnPioneer(int ID)
+void APioneerManager::SpawnPioneer(int ID, FVector Location)
 {
 	if (TmapPioneers.Contains(ID))
 	{
@@ -98,6 +106,7 @@ void APioneerManager::SpawnPioneer(int ID)
 	}
 
 	FTransform myTrans = GetTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
+	myTrans.SetLocation(Location);
 
 	FActorSpawnParameters SpawnParams;
 	//SpawnParams.Name = TEXT("Name"); // Name을 설정합니다. World Outliner에 표기되는 Label과는 다릅니다.

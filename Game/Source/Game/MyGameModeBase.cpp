@@ -44,7 +44,7 @@ AMyGameModeBase::AMyGameModeBase()
 	//}
 	///*** 블루프린트를 이용한 방법 : End ***/
 
-	DefaultPawnClass = APioneer::StaticClass();
+	DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
 
 	//// Default로 비활성화되어있는 Tick()을 활성화 합니다.
 	//PrimaryActorTick.SetTickFunctionEnable(true);

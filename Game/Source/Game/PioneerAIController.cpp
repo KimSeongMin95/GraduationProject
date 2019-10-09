@@ -46,13 +46,12 @@ void APioneerAIController::MoveRandomDestination()
 	{
 		APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
 
-		FVector dest = FVector(FMath::RandRange(0.0f, 1000.0f), FMath::RandRange(0.0f, 1000.0f), -98.0f);
+		FVector dest = FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), MyPawn->GetActorLocation().Z);
 		FAIMoveRequest FAI;
 		FAI.SetGoalLocation(dest);
+		MoveTo(FAI);
 
 		MyPawn->LookAtTheLocation(dest);
-
-		MoveTo(FAI);
 		//PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, FVector(FMath::RandRange(0.0f, 1000.0f), FMath::RandRange(0.0f, 1000.0f), -98.0f));
 	}
 }

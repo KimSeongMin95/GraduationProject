@@ -1,0 +1,330 @@
+[Delegate]
+    - 참고: https://docs.unrealengine.com/ko/Programming/UnrealArchitecture/Delegates/index.html
+    - 참고: https://m.blog.naver.com/PostView.nhn?blogId=destiny9720&logNo=220945441201&proxyReferer=https%3A%2F%2Fwww.google.com%2F
+
+    - 종류
+        Delegate: C++ 오브젝트 상의 멤버 함수를 가리키고 실행시키는 데이터 유형입니다.
+        DynamicDelegate: serialize 가능하면서 리플렉션도 지원하는 델리게이트입니다.
+        MulticastDelegate: 여러 함수에 바인딩시켜 동시에 실행시킬수 있는 델리게이트 입니다.
+
+    - 기본 선언
+        [함수 시그너처: <RetVal>은 ReturnValue인듯]     [선언 매크로]
+        void Function()                               DECLARE_DELEGATE( DelegateName )
+        void Function( <Param1> )                     DECLARE_DELEGATE_OneParam( DelegateName, Param1Type )
+        void Function( <Param1>, <Param2> )           DECLARE_DELEGATE_TwoParams( DelegateName, Param1Type, Param2Type )
+        void Function( <Param1>, <Param2>, ... )      DECLARE_DELEGATE_<Num>Params( DelegateName, Param1Type, Param2Type, ... )
+        <RetVal> Function()                           DECLARE_DELEGATE_RetVal( RetValType, DelegateName )
+        <RetVal> Function( <Param1> )                 DECLARE_DELEGATE_RetVal_OneParam( RetValType, DelegateName, Param1Type )
+        <RetVal> Function( <Param1>, <Param2> )       DECLARE_DELEGATE_RetVal_TwoParams( RetValType, DelegateName, Param1Type, Param2Type )
+        <RetVal> Function( <Param1>, <Param2>, ... )  DECLARE_DELEGATE_RetVal_<Num>Params( RetValType, DelegateName, Param1Type, Param2Type, ... )
+
+    - 바인딩
+        Bind(): 기존 델리게이트 오브젝트에 바인딩합니다.
+        BindStatic(): raw C++ 포인터 글로벌 함수 델리게이트를 바인딩합니다.
+        BindRaw(): 날(raw) C++ 포인터 델리게이트에 바인딩합니다. 날 포인터는 어떠한 종류의 레퍼런스도 사용하지 않아, 만약 오브젝트가 델리게이트 치하에서 삭제된 경우 호출하기가 안전하지 않을 수도 있습니다. Execute() 호출시에는 조심하세요!
+        BindSP(): 공유 포인터-기반 멤버 함수 델리게이트에 바인딩합니다. 공유 포인터 델리게이트는 오브젝트로의 약한 레퍼런스를 유지합니다. ExecuteIfBound() 로 호출할 수 있습니다.
+        BindUObject(): UObject 기반 멤버 함수 델리게이트를 바인딩합니다. UObject 델리게이트는 오브젝트로의 약한 레퍼런스를 유지합니다. ExecuteIfBound() 로 호출할 수 있습니다.
+        UnBind(): 이 델리게이트 바인딩을 해제합니다.
+
+        전역 C++ 함수: BindStatic API를 사용해 등록
+        전역 C++ 람다 함수: BindLambda API를 사용해 등록
+        C++클래스 멤버 함수: BindRaw  API를 사용해 등록
+        공유포인터 클래스의 멤버 함수 (쓰레드 미지원): BindSP API를 사용해 등록 
+        공유포인터 클래스의 멤버 함수 (쓰레드 지원): BindThreadSafeSP API를 사용해 등록
+        UFUNCTION 멤버 함수: BindUFunction API를 사용해 등록
+        언리얼 오브젝트의 멤버함수: BindUObject API를 사용해 등록
+
+    - 실행
+        Execute(): 실행
+        ExcuteIfBound(): 안전한 실행을 위해 Bound()를 확인후 실행
+        IsBound(): 델리게이트가 실행해도 안전한 지를 확인
+
+    - DYNAMIC 선언: 기본 선언에 DYNAMIC 추가
+        DECLARE_DYNAMIC_DELEGATE[_RetVal, etc.]( DelegateName )
+        DECLARE_DYNAMIC_MULTICAST_DELEGATE[_RetVal, etc.]( DelegateName )
+
+    - DYNAMIC 바인딩
+        BindDynamic( UserObject, FuncName ): 다이내믹 델리게이트에서 BindDynamic() 호출을 위한 헬퍼 매크로입니다. 함수 이름 문자열을 자동 생성합니다.
+        AddDynamic( UserObject, FuncName ): 다이내믹 멀티-캐스트 델리게이트에서 AddDynamic() 호출을 위한 헬퍼 매크로입니다. 함수 이름 문자열을 자동 생성합니다.
+        RemoveDynamic( UserObject, FuncName ): 다이내믹 멀티-캐스트 델리게이트에서 RemoveDynamic() 호출을 위한 헬퍼 매크로입니다. 함수 이름 문자열을 자동 생성합니다.
+
+    - DYNAMIC 실행
+        기본과 같음
+
+    - MULTICAST 선언: 기본 선언에 MULTICAST 추가
+        DECLARE_MULTICAST_DELEGATE[_RetVal, etc.]( DelegateName )
+        DECLARE_DYNAMIC_MULTICAST_DELEGATE[RetVal, etc.]( DelegateName )
+
+    - MULTICAST 바인딩
+        Add(): 이 멀티캐스트 델리게이트의 실행 목록에 함수 델리게이트를 추가합니다.
+        AddStatic(): raw C++ 포인터 글로벌 함수 델리게이트를 추가합니다.
+        AddRaw(): raw C++ 포인터 델리게이트를 추가합니다. raw 포인터는 어떠한 레퍼런스도 사용하지 않기에, 오브젝트가 자신의 델리게이트 하에서 삭제된 경우 호출시 안전하지 않을 수 있습니다. Execute() 호출시 주의하세요!
+        AddSP(): 공유 포인터 기반 (빠르지만 스레드 안전성은 떨어지는) 멤버 함수 델리게이트를 추가합니다. 공유 포인터 델리게이트는 자신의 오브젝트에 대한 약 레퍼런스를 유지합니다.
+        AddUObject(): UObject 기반 멤버 함수 델리게이트를 추가합니다. UObject 델리게이트는 자신의 오브젝트에 대한 약 레퍼런스를 유지합니다.
+        Remove(): 이 멀티캐스트 델리게이트의 실행 목록에서 함수를 제거합니다 (퍼포먼스는 O(N) 입니다). 참고로 델리게이트 순서는 유지되지 않을 수 있습니다!
+        RemoveAll(): 지정된 UserObject 에 바인딩된 이 멀티캐스트 델리게이트의 실행 목록에서 모든 함수를 제거합니다. 참고로 델리게이트 순서는 유지되지 않을 수 있습니다!
+
+    - MULTICAST 실행
+        Broadcast(): 이 델리게이트를 만료되었을 수도 있는 것을 제외하고, 바인딩된 모든 오브젝트에 뿌립니다
+
+[Event]
+    - 참고: https://docs.unrealengine.com/ko/Programming/UnrealArchitecture/Delegates/Events/index.html
+    - 선언
+        DECLARE_EVENT( OwningType, EventName ): 이벤트를 생성합니다.
+        DECLARE_EVENT_OneParam( OwningType, EventName, Param1Type ): 파라미터가 하나인 이벤트를 생성합니다.
+        DECLARE_EVENT_TwoParams( OwningType, EventName, Param1Type, Param2Type ): 파라미터가 둘인 이벤트를 생성합니다.
+        DECLARE_EVENT_<Num>Params( OwningType, EventName, Param1Type, Param2Type, ... ): 파라미터가 N 개인 이벤트를 생성합니다.
+
+    - 바인딩: MULTICAST 바인딩과 같은 방식
+    
+    - 실행
+        Broadcast() ; 이 이벤트를 만료되었을 수 있는 모든 바인딩 오브젝트에 브로드캐스트(전파)합니다.
+        
+[비동기 애셋 로딩]
+    - 참고: https://docs.unrealengine.com/ko/Programming/Assets/AsyncLoading/index.html
+    - 비동기로딩 방식을 위해 FStreamableManager
+
+[Naming Conventions]
+    Unreal의 일반적인 클래스들의 최상위 클래스는 UObject class이다.
+    Prefix 이름 규칙, Unreal의 모든것은 Pascal Case 사용(첫자는 대문자)
+    U : UObject 상속받은 class
+        ex) UTexture
+    A : AActor 상속받은 class
+        ex) AGameMode
+    T : Template
+        ex) TArray, TMap
+    I : Interface class
+        ex) ITransaction
+    E : Enum 
+        ex) ESelectionMode
+    b : Boolean
+        ex) bEnabled
+    F : 그 이외의 모든 class, struct들
+        ex) FName, FVector
+
+    예외) 나만의 규칙: 지역변수 선언시 camel Case 사용
+
+[매크로]
+    (헤더: ObjectMacros.h)
+    UCLASS
+        -
+    UINTERFACE
+        - MinimalAPI
+        - Blueprintable
+        - NotBlueprintable
+        - ConversionRoot
+    UPROPERTY
+        설명: 변수 앞에 사용돼 언리얼 엔진 에 보이도록 만들고 해당 변수의 속성을 정의하는 매크로입니다. 
+            사용되는 위치나 방식, 또는 변경 가능 여부, 표시 여부와 함께 적절한 위치에 나열되도록 범주를 지정합니다.
+        - EditAnywhere: 에디터 상에서 속성을 편집할 수 있습니다.
+        - VisibleAnywhere: 에디터 상에서 속성을 볼 순 있으나 편집은 할 수 없습니다.
+        - BlueprintReadOnly: 블루프린트로 읽을 수는 있으나 수정하지는 못합니다.
+        - BlueprintCallable: 블루프린트 코드에서 호출될 수 있도록 노출시킵니다.
+        - Category: 카테고리화하여 에디터-디테일에서 표시
+    UFUNCTION
+        설명: 함수 앞에서만 사용돼 함수의 속성을 정의하는 매크로입니다. 
+            사용되는 위치나 방식, 또는 호출 가능 여부와 함께 적절한 위치에 나열되도록 범주를 지정한다.
+        - BlueprintPure: 자동적으로 BlueprintCallable를 내포하고 있고, 부작용 없이 기능을 수행합니다.
+        - BlueprintCallable: 블루프린트 코드에서 호출될 수 있도록 노출시킵니다.
+        - Server: 이 함수는 replicated, 서버에서 실행됩니다.
+        - Client: 이 함수는 replicated, 클라이언트에서 실행됩니다.
+        - Category: 카테고리화하여 에디터-디테일에서 표시
+
+[매크로]
+    FORCEINLINE
+
+[게임모드]
+    GameModeBase
+        게임이 시작될 때 정의를 합니다.
+        UGameEngine::LoadMap()이 초기화 될 때 GameModeBase actor가 객체화됩니다.
+
+    GameMode
+        GameModeBase의 하위클래스로서 멀티플레이어 기반 게임에 사용합니다.
+
+[게임 스테이트]
+    
+
+[클래스]
+    Actor
+        터란 레벨에 배치할 수 있는 오브젝트를 말합니다. 
+        액터는 이동, 회전, 스케일과 같은 3D 트랜스폼을 지원하는 범용 클래스입니다. 
+        액터는 게임플레이 코드(C++ 또는 블루프린트)를 통해 생성(스폰) 및 소멸 가능합니다. 
+        C++ 에서 AActor 는 모든 액터의 베이스 클래스입니다.
+        AActor 클래스 인스턴스를 새로 생성하는 것을 Spawn (스폰)이라 합니다. 
+        그 방법은 범용 함수 SpawnActor() 나, 그 특수 템플릿 버전을 사용하면 됩니다.
+        <UActorComponent>
+            베이스 컴포넌트입니다. 
+            액터의 일부로 포함 가능합니다. 
+            원한다면 Tick 시킬 수 있습니다. 
+            액터 컴포넌트는 특정 액터에 연관지어지나, 월드의 특정 지점에 존재하지는 않습니다. 
+            일반적으로 개념적 기능, 이를테면 AI 나 플레이어 입력 해석과 같은 것에 사용됩니다.
+        <USceneComponent>
+            씬 컴포넌트는 트랜스폼이 있는 액터 컴포넌트입니다. 
+            트랜스폼은 위치, 회전, 스케일로 정의되는 월드상의 포지션을 나타냅니다. 
+            씬 컴포넌트는 계층구조 형태로 서로에게 붙일 수 있습니다. 
+            액터의 위치, 회전, 스케일은 계층구조의 루트에 위치한 씬 컴포넌트에서 취할 수 있습니다.
+        <UPrimitiveComponent>
+            일정한 형태의 (메시 또는 파티클 시스템과 같은) 그래픽적 표현이 있는 씬 컴포넌트를 말합니다. 
+            여기에는 재미난 피직스 및 콜리전 세팅이 들어있습니다.
+        액터는 씬 컴포넌트 계층구조를 갖는 것을 지원합니다. 
+        각 액터 에는 어느 컴포넌트가 액터 의 루트 역할을 할 것인지 나타내는 RootComponent 프로퍼티도 있습니다. 
+        액터 자체는 트랜스폼 정보가 없기에 위치, 회전, 스케일이 없습니다. 
+        대신, 그 컴포넌트, 좀 더 구체적으로 루트 컴포넌트의 트랜스폼에 의존합니다. 
+        이 컴포넌트가 씬 컴포넌트 인 경우, 액터 에 대한 트랜스폼 정보를 제공해 줍니다. 
+        아닌 경우, 액터 에는 트랜스폼 정보가 없습니다. 
+        부착된 다른 컴포넌트에는, 부착된 그 컴포넌트를 기준으로 한 트랜스폼 정보가 있습니다.
+        <Destroy()>
+            액터는 Destroy() 를 호출하여 명시적으로 소멸시킬 수 있습니다.
+            그러면 레벨에서 제거되어 pending kill (킬 대기) 상태로 마킹, 잠시 후 다음 가비지 컬렉션 때 지워진다는 뜻입니다.
+    Pawn : public Actor
+        클래스는 플레이어나 AI 가 제어할 수 있는 모든 액터의 베이스 클래스입니다.
+        기본적으로 Controller 와 Pawn 에는 1:1 대응 관계가 있습니다. 
+        즉 각 컨트롤러는 어느 때고 단 하나의 폰만을 제어합니다. 
+        마찬가지로 게임플레이 도중 스폰된 폰이 자동적으로 컨트롤러에 빙의(possess)되지는 않습니다.
+    Character : : public Pawn
+        CharacterMovementComponent, CapsuleComponent,SkeletalMeshComponent 의 추가를 통해 
+        Pawn 클래스는 고도로 특화된 Character (캐릭터) 클래스로 확장됩니다. 
+        캐릭터는 월드에서 걷기, 달리기, 점프, 비행, 수영 등이 가능한 직립 플레이어를 표현하기 위해 디자인된 것입니다. 
+        이 클래스에는 기본적인 네트워킹이나 인풋 모델 구현도 추가되어 있습니다.
+        <SkeletalMeshComponent>
+            폰과 달리 캐릭터에는 스켈레톤을 사용하는 고급 애니메이션을 위한 SkeletalMeshComponent 가 딸려옵니다. 
+        <CapsuleComponent>
+            CapsuleComponent 는 운동 콜리전에 사용됩니다. CharacterMovementComponent 에 대한 복잡한 지오메트리 계산을 위해, 
+            Character 클래스의 콜리전 컴포넌트는 직립된 캡슐 모양이라는 가정을 합니다.
+        <CharacterMovementComponent>
+            CharacterMovementComponent 는 아바타가 걷기, 달리기, 점프, 낙하, 수영 등으로 이동할 때 리짓 바디 피직스를 사용하지 않도록 할 수 있습니다.
+            이것은 캐릭터에 국한된 것으로, 다른 클래스에서 구현할 수 없습니다.
+            CharacterMovementComponent 에 설정할 수 있는 프로퍼티에는 낙하와 걷기의 마찰력, 공기와 물과 땅을 가로지르는 
+            이동 속력, 부력, 중력 스케일, 캐릭터가 피직스 오브젝트에 행사할 수 있는 물리력 등에 대한 값이 포함됩니다. 
+            CharacterMovementComponent 는 애니메이션으로부터 오는 루트 모션 파라미터도 포함하며, 
+            피직스로 사용할 수 있도록 이미 월드 스페이스에서 트랜스폼 됩니다. 
+    Controller 
+        Pawn (폰) 또는 Character (캐릭터)처럼 폰에서 파생된 클래스를 빙의(possess)하여 그 동작을 제어할 수 있는, 눈에 보이지는 않는 액터입니다.
+        컨트롤러는 Possess 함수로 폰의 제어권을 획득하며, Unpossess 함수로 해제합니다.
+    CameraComponent
+        메라의 모드를 원근 또는 직교로 할 것인지 설정 가능합니다. 
+        원근 모드에 대해서는 세로 시야(FOV)를 설정할 수 있으며, 직교 모드에 대해서는 월드 유닛 단위로 폭을 설정할 수 있습니다. 
+    TSubClassOf = 해당 클래스나 자식 클래스만 한정하여 사용할 수 있다.
+    
+[자료구조]
+    FString
+    TArray
+    TMap
+    TSet
+    TList
+    TQueue
+
+[Components 계층]
+    (주의점: 기본적으로 컴포넌트->SetupAttachment(RootComponent)를 해주어야 SetRelativeLocation가 정상적으로 작동합니다.)
+    루트: RootComponent
+    루트컴포넌트로 만들기: RootComponent = 컴포넌트;
+    컴포넌트에 붙이기: 컴포넌트->SetupAttachment(RootComponent)
+
+[인스턴싱]
+    Actor: 클래스* SpawnedActor1 = (클래스*) GetWorld()->SpawnActor(클래스::StaticClass(), NAME_None, &Location);
+        Actor 의 새 인스턴스를 생성하는 과정을 스폰 (spawn)이라 합니다. 
+        Actor 의 스폰은 UWorld::SpawnActor() 함수를 이용합니다. 
+        이 함수는 지정된 클래스의 새 인스턴스를 생성한 다음 새로 생성된 Actor 로의 포인터를 반환합니다. 
+        UWorld::SpawnActor() 는 클래스 계층구조 내 Actor 클래스를 상속하는 클래스 인스턴스를 생성할 때만 사용해야 합니다.
+
+[함수]
+    SetRelativeLocation: 
+
+[Finder]
+    ConstructorHelpers::FObjectFinder
+    ConstructorHelpers::FClassFinder
+
+[Outer] 참고: https://minusi.tistory.com/entry/%EC%96%B8%EB%A6%AC%EC%96%BC-%EC%98%A4%EB%B8%8C%EC%A0%9D%ED%8A%B8Unreal-Object-Outer
+    객체의 "Outer"는 객체를 "소유"하는 객체입니다. 
+    예를 들어, 구성 요소는 액터 또는 상위 구성 요소가 소유하고 액터는 해당 레벨이 소유합니다. 
+    UObject에서 파생 된 클래스의 객체를 생성 할 때마다 생성된 객체를 Outer 제공합니다. 
+    (CreateDefaultSubobject는 암시적으로 현재 객체(=this)를 Outer Object로 제공합니다.)
+
+[Stirng]
+    FString > FName = FText
+
+[Animation] 참고: https://docs.unrealengine.com/ko/Engine/Animation/Overview/index.html
+    Tool
+    SkeletonAsset
+        Skeleton (스켈레톤) 이란 본의 위치와 회전값을 계층구조로 나타낸 것으로, 스켈레탈 메시의 변형(deform)에 사용됩니다. 
+        UE4 에서 스켈레톤은 스켈레탈 메시에서 추출하여 별도의 애셋으로 만들었습니다. 
+        즉 애니메이션은 스켈레탈 메시가 아니라 스켈레톤에 저장된다는 뜻입니다. 
+        같은 스켈레톤을 사용하면 한 애니메이션을 다수의 스켈레탈 메시에 공유할 수 있습니다.
+    Animation Sequence
+        스켈레탈 메시에 재생할 수 있는 단일 애니메이션 애셋입니다. 
+        여기에는 일정 시점에서 본의 위치, 회전, 스케일 값을 나타내는 키프레임이 들어갑니다. 
+        이러한 키프레임을 순서대로 재생도 하고 섞기도 하면서 스켈레탈 메시의 본에 부드러운 애니메이션을 줄 수 있습니다.
+    AnimNotify
+        니메이션 프로그래머는 Animation Notification (애니메이션 노티파이), 또는 AnimNotify (애님 노티파이), 
+        줄여서 그냥 Notify (노티파이)를 통해 애니메이션 시퀀스 도중의 특정 지점에 이벤트가 발생하도록 구성할 수 있습니다. 
+        노티파이는 걷기나 달리기 도중의 발소리같은 이펙트 추가 및 애니메이션 도중 파티클 시스템을 스폰시키는 데 주로 사용됩니다. 
+        하지만 커스텀 노티파이 유형으로 시스템을 확장시켜 어떤 유형의 게임 요구에도 맞출 수 있기에 다른 식으로도 얼마든지 사용할 수 있습니다.
+    Animation Blueprint
+        스켈레탈 메시 의 애니메이션을 제어하는 특수 블루프린트 입니다. 
+        그래프는 애니메이션 블루프린트 에디터 에서 편집하며, 여기서 애니메이션 블렌딩, 스켈레톤의 본 직접 제어, 
+        로직을 구성하여 각 프레임에 사용할 스켈레탈 메시의 최종 애니메이션을 최종 결정하게 됩니다.
+    Blend Space
+        애님 그래프 에서 샘플링할 수 있는 특수 애셋으로, 두 입력값에 따라 애니메이션을 블렌딩시켜 주는 것입니다. 
+        하나의 입력에 따라 두 애니메이션을 섞는 단순 블렌딩은 애니메이션 블루프린트 에서 쓸 수 있는 표준 블렌드 노드 를 사용하면 됩니다. 
+        블렌드 스페이스를 통해 (현재는 둘로 제한되어 있지만) 다수의 값에 따라 다수의 애니메이션을 블렌딩하는 복잡한 작업을 할 수 있습니다.
+        블렌드 스페이스의 목적은 특정 속성이나 조건에 따라 블렌딩을 할 때마다 별개의 노드를 하드코딩하여 만드는 노고를 덜기 위함입니다. 
+        입력, 애니메이션, 애니메이션 끼리의 블렌딩을 위해 입력을 어떻게 사용할 것인지 등을 애니메이터나 프로그래머가 지정할 수 있도록 하여, 
+        사실상 어떤 유형의 블렌딩도 범용 블렌드 스페이스를 사용해서 이뤄낼 수 있습니다.
+    Animation Montage
+        폭넓은 애니메이션 이펙트가 가능해지는 다목적 툴로써, 주로 코드를 통해서나 블루프린트 비주얼 스크립트 안에서 애니메이션 컨트롤을 노출시키는 데 관련되어 있습니다. 
+        애니메이션의 지능형 루프, 로직 기반 애니메이션 전환, 루트 모션 핸들링, 기타 여러가지 다양한 애니메이션 이펙트를 만드는 데도 사용 가능합니다.
+    SkeletalControl 
+        스켈레톤 에 있는 본을 직접 제어할 수 있습니다. 
+        애니메이션 블루프린트 안에서 사용되며, 개별 본 제어, IK 체인 생성 등의 작업에 쓰입니다.
+        내재된 스켈레톤에 대한 직접 제어할 수 있다는 것은, 절차적이고 동적으로 구동되는 애니메이션을 만들 수 있다는 것입니다. 
+        하나의 본에 대한 Transform(트랜스폼) 작업이 다른 본을 움직일 수도 있고, 캐릭터에 걷기 애니메이션을 재생할 때 땅에 발을 일치시킬 수도 있습니다. 
+        애니메이션 시퀀스 에 의해 적용된 본 트랜스폼을 조정하거나 완전 덮어쓰는 데 있어 어떠한 종류의 변경도 가능합니다.
+    State Machine
+        도식적인 방법으로 스켈레탈 메시의 애니메이션을 일련의 State (스테이트, 상태)로 나눠 볼 수 있습니다. 
+        그렇게 나뉜 상태는 한 상태에서 다른 상태로의 블렌딩 방식을 제어하는 Translation Rule (트랜지션 룰, 전환 규칙)에 의해 관장됩니다. 
+        하나의 툴로써, 복잡한 블루프린트 망을 만들 필요 없이 그래프 하나만 만들면 캐릭터가 가질 수 있는 여러 유형 애니메이션 간의 흐름을 쉽게 제어할 수 있다는 점에서, 
+        스켈레탈 메시 애니메이션의 디자인 프로세스를 크게 단순화시켜 줍니다.
+        애니메이션 그래프의 개념화 작업을 단순화시켜 주기도 합니다. 
+        어떤 상태가 필요할지, 캐릭터가 한 상태에서 다른 상태로 어떻게 흘러갈지 생각하는 것으로 애니메이션 디자인을 시작하면 됩니다. 
+        이는 캐릭터에 가능한 모든 애니메이션을 알아보기 쉬운 순서도 형식으로 나눠 본다고 생각해 보면 좋습니다. 
+        이 순서도를 통해 스켈레탈 메시의 상태 이동을 확인할 수 있는 것입니다.
+        예를 들어 캐릭터가 움직이지 않을 때는 "Idle" (빈둥) 상태로 있다가, 캐릭터의 속력이 일정 값 이상을 넘어가면 다른 "Movement" (이동) 상태로 블렌딩할 수 있습니다. 
+        그 상태는 낙하, 점프, 숙이기, 질주 등등 여러가지 있을 수 있구요. 애니메이터와 아티스트는 스테이트 머신을 사용해 애니메이션 망의 데이터 흐름을 빠르게 확인해 볼 수 있습니다.
+
+[Animation 분해도]
+    1. 3D 어플리케이션에서 생성
+        - 스키닝된 폴리곤 메시
+        - 애니메이션
+    2. FBX 파일 포맷
+    3. UE4로 임포트
+        - 스켈레탈 메시
+        - 스켈레톤
+        - 애니메이션 시퀸스
+
+[물리??]
+    GetMesh()->SetSimultaePhysics(true);
+    충돌체에 오버래핑된 액터 찾기
+        TArray<AActor*> overlappedActors
+        충돌체->GetOverlappingAcotrs(overlappedActors);
+
+[Math]
+    FMath::FRand()는 [0, 1] 값을 반환
+
+[Log Formatting]
+    일반 메시지: UE_LOG(LogTemp, Log, TEXT("Log Message"));
+    FString: UE_LOG(LogTemp, Log, TEXT("Character Name :: %s"), *MyCharacter->GetName());
+    bool: UE_LOG(LogTemp, Log, TEXT("Character is Die :: %s"), MyCharacter->IsDie ? TEXT("true") : TEXT("false"));
+    int: UE_LOG(LogTemp, Log, TEXT("Character HP :: %d"), MyCharacter->Hp);
+    float: UE_LOG(LogTemp, Log, TEXT("Character Stamina :: %f"), MyCharacter->Stamina);
+    FVector: UE_LOG(LogTemp, Log, TEXT("Character Location :: %s"), *MyCharacter->GetActorLocation().ToString());
+    FName: UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *MyCharacter->GetFName().ToString());
+    여러 자료형 한번에 로그로 출력하기: UE_LOG(LogTemp, Log, TEXT("CharacterName :: %s / HP :: %d / Stamina :: %f"), *MyCharacter->GetName(), MyCharacter->Hp, MyCharacter->Stamina);
+
+[Log Style]
+    Log: 파일과 에디터 로그에 출력된다.
+    Verbose: Log 파일에 출력된다.
+    VeryVerbose: Log파일에 출력되며 상세 내용을 포함한다.
+    Display: 콘솔과 파일에 출력된다.
+    Warning: 파일과 에디터 로그에 노란색으로 출력된다.
+    Error: 파일과 에디터 로그에 빨간색으로 출력된다.
+    Fatal: 파일과 에디터 로그에 빨간색으로 출력되며 프로그램을 종료한다.
