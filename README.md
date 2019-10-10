@@ -8,8 +8,8 @@
 <br>
 <br>
 [프로젝트 폴더 관리]<br>
---- .vs/: VisualStudio 실행하면 생성. 제거 후 디버깅에서 Development Editor로 변경해주고 Win64 해주면 문제 없음. (제거X)<br>
------- 그러나, .vs/Game/v15/에서 ipch/ 폴더는 삭제해도 상관 없음. (제거O)
+--- .vs/: VisualStudio 실행하면 생성. 제거 후 디버깅에서 Development Editor로 변경해주고 Win64 해주면 되지만 (제거X)<br>
+------ 그냥 .vs/Game/v15/에서 ipch/ 폴더만 삭제하는게 좋음. (제거O)
 --- Binaries/: C++ 코드가 컴파일된 결과물이 저장. C++ 코드를 컴파일 할 때마다 새로 생성. (제거O)<br>
 ------ Binaries/Win64/에서 Game, Game.exp, Game.lib, Game.pdb, Game.target 는 에디터에서 Launch하면 새로 생성되고 나머지는 에디터에서 컴파일하면 생성됨.<br>
 --- Build/: ???<br>
