@@ -1,5 +1,5 @@
 ﻿# GraduationProject  
-[개요]<br>
+[프로젝트 개요]<br>
 --- 홍익대 세종캠 게임소프트웨어 B477004 김성민 졸업 프로젝트 저장소입니다.<br>
 --- UnrealEngine 4.23 버전으로 PC 3D RTS 게임을 기획하고 개발중에 있습니다.<br>
 --- 지도: 강신진 교수님<br>
@@ -8,7 +8,8 @@
 <br>
 <br>
 [프로젝트 폴더 관리]<br>
---- .VS/: VisualStudio 실행하면 생성되는데 언리얼 코드가 전부 들어있으므로 제거하면 안됨. (제거X)<br>
+--- .vs/: VisualStudio 실행하면 생성. 제거 후 디버깅에서 Development Editor로 변경해주고 Win64 해주면 문제 없음. (제거X)<br>
+------ 그러나, .vs/Game/v15/에서 ipch/ 폴더는 삭제해도 상관 없음. (제거O)
 --- Binaries/: C++ 코드가 컴파일된 결과물이 저장. C++ 코드를 컴파일 할 때마다 새로 생성. (제거O)<br>
 ------ Binaries/Win64/에서 Game, Game.exp, Game.lib, Game.pdb, Game.target 는 에디터에서 Launch하면 새로 생성되고 나머지는 에디터에서 컴파일하면 생성됨.<br>
 --- Build/: ???<br>
