@@ -3,6 +3,10 @@
 
 #include "Pistol.h"
 
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Projectile.h"
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
 // Sets default values
 APistol::APistol()
 {
@@ -19,10 +23,10 @@ APistol::APistol()
 		PistolMesh->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
 	}
 
-	ArrowComp = CreateDefaultSubobject<UArrowComponent>("ProjectileSpawnPoint");
-	ArrowComp->AttachTo(PistolMesh);
-	ArrowComp->SetRelativeLocation(FVector(0.0f, 52.59f, 11.18f));
-	ArrowComp->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+	ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>("ProjectileSpawnPoint");
+	ProjectileSpawnPoint->SetupAttachment(PistolMesh);
+	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 52.59f, 11.18f));
+	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 
 }
 
@@ -30,11 +34,8 @@ APistol::APistol()
 void APistol::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	WriteToLogDelegate.BindUObject(this, &APistol::WriteLog);
-	WriteToLogDelegate.Execute(TEXT("delegate"));
 
-	
+	FireDelegate.BindUObject(this, &APistol::Fire);
 }
 
 // Called every frame
@@ -44,16 +45,20 @@ void APistol::Tick(float DeltaTime)
 
 }
 
-void APistol::WriteLog(FString string)
+void APistol::Fire()
 {
-	if (GEngine)
+	UWorld* const World = GetWorld();
+	if (!World)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, string);
-
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		return;
 	}
+
+	FTransform myTrans = ProjectileSpawnPoint->GetComponentTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	World->SpawnActor<AProjectile>(AProjectile::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 }
-//void APistol::PullTrigger_Implementation()
-//{
-//
-//
-//}

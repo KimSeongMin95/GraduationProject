@@ -14,7 +14,7 @@ AProjectile::AProjectile()
 	RootComponent = SphereComp;
 
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("LaserMesh");
-	StaticMeshComp->AttachTo(RootComponent);
+	StaticMeshComp->SetupAttachment(RootComponent);
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
 	if (sphereMeshAsset.Succeeded())
 	{

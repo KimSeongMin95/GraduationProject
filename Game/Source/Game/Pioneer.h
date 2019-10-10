@@ -120,10 +120,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Animation)
 		bool HasLauncher();
 
-	// 임시
-	UFUNCTION()
-		void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
-
 	/** controls if the keyboard responds to user input **/
 	UFUNCTION(BlueprintCallable, Category = Animation)
 		void SetIsKeyboardEnabled(bool Enabled);
@@ -173,4 +169,22 @@ public:
 
 	void PossessAIController();
 /*** APioneerAIController : End ***/
+
+
+/*** Weapon : Start ***/
+public:
+	// 임시
+	UFUNCTION()
+		void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
+
+	UPROPERTY(EditAnywhere)
+		class APistol* Pistol;
+
+	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
+	void SpawnPistol();
+
+	UFUNCTION()
+		void Fire();
+/*** Weapon : End ***/
 };
+

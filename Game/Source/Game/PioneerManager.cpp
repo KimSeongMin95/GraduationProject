@@ -64,11 +64,6 @@ void APioneerManager::BeginPlay()
 	SpawnPioneer(3, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
 	SpawnPioneer(4, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
 	SpawnPioneer(5, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
-	SpawnPioneer(6, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
-	SpawnPioneer(7, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
-	SpawnPioneer(8, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
-	SpawnPioneer(9, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
-	SpawnPioneer(10, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
 }
 
 // Called every frame
@@ -80,11 +75,11 @@ void APioneerManager::Tick(float DeltaTime)
 	static float tmp = 0;
 	tmp += DeltaTime;
 
-	if (tmp > 5.0f)
+	if (tmp > timer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SwitchPawn()"));
 		tmp = 0.0f;
-		SwitchPawn(static_cast<int>(FMath::RandRange(0.0f, 10.0f)), SwitchTime);
+		SwitchPawn(static_cast<int>(FMath::RandRange(0.0f, 5.0f)), SwitchTime);
 	}
 	/*** SwitchPawn() temp code : End ***/
 }

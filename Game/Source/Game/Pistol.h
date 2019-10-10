@@ -15,7 +15,7 @@
 #include "GameFramework/Actor.h"
 #include "Pistol.generated.h"
 
-DECLARE_DELEGATE_OneParam(FStringDelegate, FString);
+DECLARE_DELEGATE(FFireDelegate);
 
 UCLASS()
 class GAME_API APistol : public AActor
@@ -40,7 +40,7 @@ public:
 		class USkeletalMeshComponent* PistolMesh;
 
 	UPROPERTY(EditAnywhere)
-		class UArrowComponent* ArrowComp;
+		class UArrowComponent* ProjectileSpawnPoint;
 
 /*** 블루프린트의 Event : Start ***/
 public:
@@ -53,8 +53,9 @@ public:
 	/*UFUNCTION(BlueprintNaitveEvent)
 		void PullTrigger();*/
 
-	void WriteLog(FString);
-	FStringDelegate WriteToLogDelegate;
+	FFireDelegate FireDelegate;
+	UFUNCTION()
+		void Fire();
 
 /*** 블루프린트의 Event : End ***/
 };

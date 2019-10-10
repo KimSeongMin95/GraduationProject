@@ -51,4 +51,7 @@ public:
 		void SwitchViewTarget(int ID, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = false); /** 다른 폰의 카메라로 변경하는 함수입니다. */
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
 		void PossessPioneer(int ID); /** 다른 폰을 Possess() 합니다. */
+
+	UPROPERTY(EditAnywhere)
+		float timer = 10.0f;
 };

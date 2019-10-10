@@ -5,6 +5,7 @@
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "PioneerAnimInstance.h"
 #include "PioneerAIController.h"
+#include "Pistol.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -49,6 +50,11 @@ void APioneer::BeginPlay()
 		PioneerAIController->Possess(this);
 	}
 
+	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
+	SpawnPistol();
+
+	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
+
 	////Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	//FP_Gun->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 }
@@ -68,7 +74,9 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 {
 	// Set up game play key bindings
 	check(PlayerInputComponent);
+
 	PlayerInputComponent->BindAction("CW", IE_Pressed, this, &APioneer::ChangeWeapon);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APioneer::Fire);
 }
 
 /*** Initialize Function : Start ***/
@@ -241,27 +249,6 @@ bool APioneer::HasLauncher()
 {
 	return bHasLauncher;
 }
-void APioneer::ChangeWeapon()
-{
-	UE_LOG(LogTemp, Warning, TEXT("CW"));
-
-	if (bHasPistol)
-	{
-		bHasRifle = true;
-		bHasPistol = false;
-	}
-	else if (bHasRifle)
-	{
-		bHasLauncher = true;
-		bHasRifle = false;
-	}
-	else if (bHasLauncher)
-	{
-		bHasLauncher = false;
-	}
-	else
-		bHasPistol = true;
-}
 void APioneer::SetIsKeyboardEnabled(bool Enabled)
 {
 	bIsKeyboardEnabled = Enabled;
@@ -358,8 +345,50 @@ void APioneer::PossessAIController()
 	PioneerAIController->Possess(this);
 }
 
+void APioneer::ChangeWeapon()
+{
+	UE_LOG(LogTemp, Warning, TEXT("CW"));
 
+	if (bHasPistol)
+	{
+		bHasRifle = true;
+		bHasPistol = false;
+	}
+	else if (bHasRifle)
+	{
+		bHasLauncher = true;
+		bHasRifle = false;
+	}
+	else if (bHasLauncher)
+	{
+		bHasLauncher = false;
+	}
+	else
+		bHasPistol = true;
+}
 
+void APioneer::SpawnPistol()
+{
+	UWorld* const World = GetWorld();
+	if (!World)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+	FTransform myTrans = FTransform::Identity;
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
+}
+
+void APioneer::Fire()
+{
+	Pistol->FireDelegate.ExecuteIfBound();
+}
 //void APioneer::PunchAttack()
 //{
 //	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PunchAttack"));
