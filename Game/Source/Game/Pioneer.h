@@ -178,7 +178,7 @@ public:
 		void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
 
 	UPROPERTY(EditAnywhere)
-		class APistol* Pistol;
+		class AWeapon* Weapon;
 
 	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
 	void SpawnPistol();

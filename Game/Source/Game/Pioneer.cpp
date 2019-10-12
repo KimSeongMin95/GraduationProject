@@ -53,7 +53,7 @@ void APioneer::BeginPlay()
 	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
 	SpawnPistol();
 
-	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
+	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
 
 	////Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	//FP_Gun->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
@@ -382,12 +382,12 @@ void APioneer::SpawnPistol()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
+	Weapon = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
 }
 
 void APioneer::Fire()
 {
-	Pistol->FireDelegate.ExecuteIfBound();
+	Weapon->Fire();
 }
 //void APioneer::PunchAttack()
 //{

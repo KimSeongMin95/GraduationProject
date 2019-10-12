@@ -35,7 +35,7 @@ void APistol::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FireDelegate.BindUObject(this, &APistol::Fire);
+	//FireDelegate.BindUObject(this, &APistol::Fire);
 }
 
 // Called every frame
@@ -47,6 +47,8 @@ void APistol::Tick(float DeltaTime)
 
 void APistol::Fire()
 {
+	Super::Fire();
+
 	UWorld* const World = GetWorld();
 	if (!World)
 	{
