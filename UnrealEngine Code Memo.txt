@@ -343,3 +343,11 @@
     Game.sln: VisualStudio 솔루션. 제거해도 생성 가능 (제거X)
     Game: 언리얼엔진 (제거X)
     
+[C++ 클래스 폴더 생성]
+    1. Source/"프로젝트명"/ 폴더에서 원하는 이름의 폴더를 생성하고 옮기고 싶은 클래스의 cpp, h 파일을 옮긴다.
+    2. VisualStudio 각 소스 코드에서 옮긴 헤더들 위치를 찾을 수 없으므로 #include "옮긴클래스.h" --> "폴더명/옮긴클래스.h"로 일일히 다 변경해주어야 함.
+    3. 솔루션 다시 빌드 
+    4. "프로젝트명".uproject 파일을 마우스 우클릭하여 [Generate Visual Studio Project Files] 클릭
+    5. VisualStudio에서도 알아서 폴더명으로 새 필터가 생겨서 정리됨.
+    6. UE Editor실행하면 적용이 되어있음.
+
