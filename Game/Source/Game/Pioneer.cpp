@@ -9,11 +9,12 @@
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
-// Sets default values
-APioneer::APioneer()
+/*** Basic Function : Start ***/
+APioneer::APioneer() // Sets default values
 {
-	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
+	// Set this character to call Tick() every frame. You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	InitSkeletalAnimation();
 	
@@ -22,17 +23,6 @@ APioneer::APioneer()
 	InitCursor();
 
 	InitAIController();
-
-	// Set this character to call Tick() every frame. You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
-
-	/*** 메시에 총 붙이기?? : Start ***/
-	//// attach collision components to sockets based on transformations definitions
-	//const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
-	//LeftFistCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_l_collision");
-	//RightFistCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_r_collision");
-	/*** 메시에 총 붙이기?? : End ***/
 
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
@@ -45,18 +35,13 @@ void APioneer::BeginPlay()
 	Super::BeginPlay();
 
 	// Init()이 끝나고 AIController에 빙의합니다.
-	if (!GetController())
-	{
-		PioneerAIController->Possess(this);
-	}
+	PossessAIController();
 
 	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
 	SpawnPistol();
 
 	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
 
-	////Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	//FP_Gun->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 }
 
 // Called every frame
@@ -76,10 +61,11 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 	check(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("CW", IE_Pressed, this, &APioneer::ChangeWeapon);
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APioneer::Fire);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APioneer::FireWeapon);
 }
+/*** Basic Function : End ***/
 
-/*** Initialize Function : Start ***/
+/*** SkeletalAnimation : Start ***/
 void APioneer::InitSkeletalAnimation()
 {
 	// 1. USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
@@ -158,6 +144,30 @@ void APioneer::InitSkeletalAnimation()
 	//}
 }
 
+bool APioneer::HasPistol()
+{
+	return bHasPistol;
+}
+bool APioneer::HasRifle()
+{
+	return bHasRifle;
+}
+bool APioneer::HasLauncher()
+{
+	return bHasLauncher;
+}
+
+void APioneer::SetIsKeyboardEnabled(bool Enabled)
+{
+	bIsKeyboardEnabled = Enabled;
+}
+bool APioneer::IsAnimationBlended()
+{
+	return bIsAnimationBlended;
+}
+/*** SkeletalAnimation : End ***/
+
+/*** Camera : Start ***/
 void APioneer::InitCamera()
 {
 	/*** 카메라 설정을 PIE때 변경합니다. : Start ***/
@@ -200,6 +210,22 @@ void APioneer::InitCamera()
 	TopDownCameraComponent->bUsePawnControlRotation = false; // 카메라는 Arm에 상대적으로 회전하지 않습니다.
 }
 
+void APioneer::SetCameraBoomSettings()
+{
+	// 개척민 현재 위치를 찾습니다.
+	FVector rootComponentLocation = RootComponent->GetComponentLocation();
+
+	// Pioneer의 현재 위치에서 position 만큼 더하고 rotation을 설정합니다.
+	CameraBoom->SetWorldLocationAndRotation(
+		FVector(rootComponentLocation.X + CameraBoomLocation.X, rootComponentLocation.Y + CameraBoomLocation.Y, rootComponentLocation.Z + CameraBoomLocation.Z),
+		CameraBoomRotation);
+
+	CameraBoom->TargetArmLength = TargetArmLength; // 캐릭터 뒤에서 해당 간격으로 따라다니는 카메라
+	CameraBoom->CameraLagSpeed = CameraLagSpeed;
+}
+/*** Camera : End ***/
+
+/*** Cursor : Start ***/
 void APioneer::InitCursor()
 {
 	// Create a decal in the world to show the cursor's location
@@ -217,66 +243,10 @@ void APioneer::InitCursor()
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 }
 
-void APioneer::InitAIController()
-{
-	UWorld* const World = GetWorld();
-	if (!World)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-		return;
-	}
-
-	FTransform myTrans = GetTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
-
-	PioneerAIController = World->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
-}
-/*** Initialize Function : End ***/
-
-/*** SkeletalAnimation : Start ***/
-bool APioneer::HasPistol()
-{
-	return bHasPistol;
-}
-bool APioneer::HasRifle()
-{
-	return bHasRifle;
-}
-bool APioneer::HasLauncher()
-{
-	return bHasLauncher;
-}
-void APioneer::SetIsKeyboardEnabled(bool Enabled)
-{
-	bIsKeyboardEnabled = Enabled;
-}
-bool APioneer::IsAnimationBlended()
-{
-	return bIsAnimationBlended;
-}
-/*** SkeletalAnimation : End ***/
-
-void APioneer::SetCameraBoomSettings()
-{
-	// 개척민 현재 위치를 찾습니다.
-	FVector rootComponentLocation = RootComponent->GetComponentLocation();
-
-	// Pioneer의 현재 위치에서 position 만큼 더하고 rotation을 설정합니다.
-	CameraBoom->SetWorldLocationAndRotation(
-		FVector(rootComponentLocation.X + CameraBoomLocation.X, rootComponentLocation.Y + CameraBoomLocation.Y, rootComponentLocation.Z + CameraBoomLocation.Z),
-		CameraBoomRotation);
-
-	CameraBoom->TargetArmLength = TargetArmLength; // 캐릭터 뒤에서 해당 간격으로 따라다니는 카메라
-	CameraBoom->CameraLagSpeed = CameraLagSpeed;
-}
-
 void APioneer::SetCursorToWorld()
 {
 	// CursorToWorld가 초기화되어 있고 PioneerController를 사용중이면
-	if ((CursorToWorld != nullptr) && (GetController() != PioneerAIController))
+	if ((CursorToWorld != nullptr) && (GetController() != AIController))
 	{
 		/*if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
 		{
@@ -332,17 +302,57 @@ void APioneer::LookAtTheLocation(FVector Location)
 		direction.Rotation().Yaw,
 		RootComponent->GetComponentRotation().Roll));
 }
+/*** Cursor : End ***/
+
+/*** APioneerAIController : Start ***/
+void APioneer::InitAIController()
+{
+	UWorld* const World = GetWorld();
+	if (!World)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+	FTransform myTrans = GetTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	AIController = World->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
+}
 
 void APioneer::PossessAIController()
 {
-	// 안전하게 하기 위해 현재 폰이 컨트롤러를 가지고 있으면 빙의를 해제합니다.
-	if (GetController())
+	ABaseCharacter::PossessAIController();
+
+
+}
+/*** APioneerAIController : End ***/
+
+/*** Weapon : Start ***/
+void APioneer::SpawnPistol()
+{
+	UWorld* const World = GetWorld();
+	if (!World)
 	{
-		GetController()->UnPossess();
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		return;
 	}
 
-	// 그뒤 AI 컨트롤러를 빙의합니다.
-	PioneerAIController->Possess(this);
+	FTransform myTrans = FTransform::Identity;
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	Weapon = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
+}
+
+void APioneer::FireWeapon()
+{
+	Weapon->Fire();
 }
 
 void APioneer::ChangeWeapon()
@@ -366,29 +376,10 @@ void APioneer::ChangeWeapon()
 	else
 		bHasPistol = true;
 }
+/*** Weapon : End ***/
 
-void APioneer::SpawnPistol()
-{
-	UWorld* const World = GetWorld();
-	if (!World)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-		return;
-	}
 
-	FTransform myTrans = FTransform::Identity;
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	Weapon = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
-}
-
-void APioneer::Fire()
-{
-	Weapon->Fire();
-}
 //void APioneer::PunchAttack()
 //{
 //	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PunchAttack"));

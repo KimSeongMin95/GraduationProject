@@ -206,6 +206,10 @@
         원근 모드에 대해서는 세로 시야(FOV)를 설정할 수 있으며, 직교 모드에 대해서는 월드 유닛 단위로 폭을 설정할 수 있습니다. 
     TSubClassOf = 해당 클래스나 자식 클래스만 한정하여 사용할 수 있다.
     
+[Collision]
+    Simulation Generates Hit Events 옵션을 켜줘야 Event Hit을 실행할 수 있음.
+    Generate Overlap Events 옵션을 켜줘야 Event Overlap을 실행할 수 있음.
+
 [자료구조]
     FString
     TArray
@@ -306,6 +310,9 @@
     충돌체에 오버래핑된 액터 찾기
         TArray<AActor*> overlappedActors
         충돌체->GetOverlappingAcotrs(overlappedActors);
+
+[순수 가상함수 사용불가]
+    UObject를 상속 받는 클래스는 무조건 COD로 객체가 생성되기 때문에 순수 가상함수를 사용할 수 없다.
 
 [Math]
     FMath::FRand()는 [0, 1] 값을 반환

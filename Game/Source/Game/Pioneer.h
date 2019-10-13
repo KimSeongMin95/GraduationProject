@@ -3,34 +3,27 @@
 #pragma once
 
 /*** 언리얼엔진 헤더 선언 : Start ***/
-#include "Components/StaticMeshComponent.h"
-#include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
+#include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
-#include "Components/CapsuleComponent.h"
+#include "Materials/Material.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
-#include "GameFramework/SpringArmComponent.h"
-//#include "HeadMountedDisplayFunctionLibrary.h" // VR
-#include "Materials/Material.h"
-#include "Engine/World.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "Engine/SkeletalMesh.h"
-#include "Animation/Skeleton.h"
-#include "Animation/AnimSequence.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 /*** 임시 : Start ***/
-#include "PhysicsEngine/PhysicsAsset.h"
-//#include "Animation/AnimMontage.h" // 임시
-//#include "Animation/AnimInstance.h" // 임시
-#include "Engine/DataTable.h"
-#include "Engine.h"
-#include "Animation/AnimBlueprint.h"
+//#include "HeadMountedDisplayFunctionLibrary.h" // VR
+//#include "Animation/Skeleton.h"
+//#include "Animation/AnimSequence.h"
+//#include "PhysicsEngine/PhysicsAsset.h"
+//#include "Animation/AnimMontage.h"
+//#include "Animation/AnimInstance.h"
+//#include "Engine/DataTable.h"
 /*** 임시 : End ***/
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "BaseCharacter.h"
 #include "Pioneer.generated.h" // 항상 마지막이어야 하는 헤더
 
 ///** 이렇게 FTableRowBase를 상속받는 UDataTable을 선언해주어야 콘텐츠 브라우저에서 DataTable을 생성할 때 RowType으로 가져올 수 있습니다. */
@@ -60,7 +53,7 @@ enum class EWeaponType : uint8
 };
 
 UCLASS()
-class GAME_API APioneer : public ACharacter
+class GAME_API APioneer : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -82,14 +75,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; // APawn 인터페이스     
 /*** Basic Function : End ***/
 
-/*** Initialize Function : Start ***/
-private:
-	void InitSkeletalAnimation();
-	void InitCamera();
-	void InitCursor();
-	void InitAIController();
-/*** Initialize Function : End ***/
-
 /*** SkeletalAnimation : Start ***/
 public:
 	//UPROPERTY(EditAnywhere)
@@ -103,6 +88,8 @@ public:
 
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	//	class UDataTable* PlayerAttackDataTable;
+
+	void InitSkeletalAnimation();
 
 	bool bHasPistol;
 	bool bHasRifle;
@@ -147,6 +134,8 @@ public:
 
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return TopDownCameraComponent; }
 
+	void InitCamera();
+
 	void SetCameraBoomSettings(); /** Tick()에서 호출합니다. */
 /*** Camera : End ***/
 
@@ -157,6 +146,8 @@ public:
 
 	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
 
+	void InitCursor();
+
 	void SetCursorToWorld(); /** CursorToWorld의 월드좌표와 월드회전을 설정합니다. */
 
 	void LookAtTheLocation(FVector Location); /** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
@@ -164,19 +155,16 @@ public:
 
 /*** APioneerAIController : Start ***/
 public:
-	UPROPERTY(EditAnywhere)
-		class APioneerAIController* PioneerAIController;
+	//UPROPERTY(EditAnywhere)
+		//class APioneerAIController* PioneerAIController;
 
-	void PossessAIController();
+	virtual void InitAIController() override;
+
+	virtual void PossessAIController() override;
 /*** APioneerAIController : End ***/
-
 
 /*** Weapon : Start ***/
 public:
-	// 임시
-	UFUNCTION()
-		void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
-
 	UPROPERTY(EditAnywhere)
 		class AWeapon* Weapon;
 
@@ -184,7 +172,12 @@ public:
 	void SpawnPistol();
 
 	UFUNCTION()
-		void Fire();
+		void FireWeapon();
+
+	// 임시
+	UFUNCTION()
+		void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
+
 /*** Weapon : End ***/
 };
 
