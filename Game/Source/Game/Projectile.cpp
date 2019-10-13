@@ -19,8 +19,8 @@ AProjectile::AProjectile()
 	if (sphereMeshAsset.Succeeded())
 	{
 		StaticMeshComp->SetStaticMesh(sphereMeshAsset.Object);
-		StaticMeshComp->SetRelativeScale3D(FVector(1.24f, 0.13f, 0.13f));
-		StaticMeshComp->SetRelativeLocation(FVector(-29.99f, 0.0f, 0.0f));
+		StaticMeshComp->SetRelativeScale3D(FVector(0.8f, 0.08f, 0.08f));
+		StaticMeshComp->SetRelativeLocation(FVector(-30.0f, 0.0f, 0.0f));
 
 		static ConstructorHelpers::FObjectFinder<UMaterial> projectileMat(TEXT("Material'/Game/Materials/ProjectileMat.ProjectileMat'"));
 		if (projectileMat.Succeeded())

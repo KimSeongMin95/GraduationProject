@@ -30,4 +30,6 @@ public:
 public:
 	class APioneerManager* PioneerManager;
 	void SpawnPioneerManager(); /** APioneerManager 객체를 생성합니다. */
+
+	static const float CellSize;
 };

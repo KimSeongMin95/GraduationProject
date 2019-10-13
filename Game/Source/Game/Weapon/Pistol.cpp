@@ -10,24 +10,23 @@
 // Sets default values
 APistol::APistol()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	PistolMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Pistol");
-	RootComponent = PistolMesh;
-
+	// Pistol 메시 Asset을 가져와서 적용
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
 	if (skeletalMeshAsset.Succeeded())
 	{
-		PistolMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
-		PistolMesh->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
+		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
+		WeaponMesh->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
 	}
 
-	ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>("ProjectileSpawnPoint");
-	ProjectileSpawnPoint->SetupAttachment(PistolMesh);
+	// 발사될 Projectile의 Transform을 설정
 	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 52.59f, 11.18f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 
+	// 무기 스텟 설정
+	AttackPower = 6;
+	AttackSpeed = 3.0f;
+	AttackRange = 8.0f * AMyGameModeBase::CellSize;
+	LimitedLevel = 1;
 }
 
 // Called when the game starts or when spawned
@@ -47,7 +46,12 @@ void APistol::Tick(float DeltaTime)
 
 void APistol::Fire()
 {
-	Super::Fire();
+	//Super::Fire();
+
+	if (FireCoolTime < (1.0f / AttackSpeed))
+		return;
+	else
+		FireCoolTime = 0.0f;
 
 	UWorld* const World = GetWorld();
 	if (!World)

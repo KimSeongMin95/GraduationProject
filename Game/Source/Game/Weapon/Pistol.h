@@ -2,10 +2,8 @@
 
 #pragma once
 
-#include "Weapon.h"
-
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Weapon/Weapon.h"
 #include "Pistol.generated.h"
 
 UCLASS()

@@ -2,6 +2,10 @@
 
 #pragma once
 
+/*** 직접 정의한 헤더 선언 : Start ***/
+#include "MyGameModeBase.h"
+/*** 직접 정의한 헤더 선언 : End ***/
+
 /*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
@@ -30,17 +34,32 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
 public:
 	UPROPERTY(EditAnywhere)
-		class USkeletalMeshComponent* PistolMesh;
+		class USkeletalMeshComponent* WeaponMesh;
 
 	UPROPERTY(EditAnywhere)
 		class UArrowComponent* ProjectileSpawnPoint;
+
+/*** 무기 스텟 설정 : Start ***/
+public:
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		int AttackPower = 0; // 공격력
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		float AttackSpeed = 1.0f; // 공격속도
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		float AttackRange = 1.0f; // 사정거리
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		int LimitedLevel = 1; // 제한 전투력
+
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		float FireCoolTime = 0.0f;
+/*** 무기 스텟 설정 : End ***/
 
 public:
 	UFUNCTION()
