@@ -9,8 +9,6 @@ ABaseCharacter::ABaseCharacter() // Sets default values
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 }
 
 // Called when the game starts or when spawned

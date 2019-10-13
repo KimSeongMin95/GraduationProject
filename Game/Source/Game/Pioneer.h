@@ -7,9 +7,6 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Materials/Material.h"
-
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PlayerController.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 /*** 임시 : Start ***/
@@ -114,7 +111,7 @@ public:
 	/** boolean that tells us if we need to branch our animation blue print paths **/
 	UFUNCTION(BlueprintCallable, Category = Animation)
 		bool IsAnimationBlended();
-/*** SkeletalAnimation : Start ***/
+/*** SkeletalAnimation : End ***/
 
 /*** Camera : Start ***/
 public:
@@ -155,9 +152,6 @@ public:
 
 /*** APioneerAIController : Start ***/
 public:
-	//UPROPERTY(EditAnywhere)
-		//class APioneerAIController* PioneerAIController;
-
 	virtual void InitAIController() override;
 
 	virtual void PossessAIController() override;

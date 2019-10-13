@@ -3,6 +3,10 @@
 
 #include "Projectile.h"
 
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Enemy.h"
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
 // Sets default values
 AProjectile::AProjectile()
 {
@@ -10,8 +14,10 @@ AProjectile::AProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 
 
-	SphereComp = CreateDefaultSubobject<USphereComponent>("Collision");
+	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	SphereComp->SetSphereRadius(10.0f);
+	SphereComp->SetCollisionProfileName(TEXT("Sphere"));
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 	RootComponent = SphereComp;
 
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("LaserMesh");
@@ -39,7 +45,7 @@ AProjectile::AProjectile()
 	// 참고: https://docs.unrealengine.com/ko/Engine/Physics/Collision/Reference/index.html
 	// 다른 액터와 오버랩 되면 이벤트를 발생시킬 것을 참으로
 	SphereComp->SetGenerateOverlapEvents(true);
-
+	
 	// Collision 카테고리에서 Collision Presets을 커스텀으로 적용
 	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // 쿼리 전용 - 이 바디는 공간 쿼리(레이캐스트, 스윕, 오버랩)에만 사용됩니다. 시뮬레이션(리짓 바디, 컨스트레인트)에는 사용할 수 없습니다. 이 세팅은 물리 시뮬레이션이 필요치 않은 오브젝트와 캐릭터 동작에 좋습니다. 물리 시뮬레이션 트리 내 데이터를 감소시키는 것으로 퍼포먼스를 약간 개선시킬 수 있습니다.
 	SphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); // 월드 다이내믹 - 애니메이션 또는 코드(키네마틱)의 영향 하에 움직이는 액터 유형에 쓰입니다. 리프트나 문이 WorldDynamic 액터의 좋은 예입니다.
@@ -60,6 +66,7 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 }
 
 // Called every frame
@@ -69,3 +76,16 @@ void AProjectile::Tick(float DeltaTime)
 
 }
 
+void AProjectile::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
+	{
+		
+		if (OtherActor->IsA(AEnemy::StaticClass()))
+		{
+			// 임시: Overlapped OtherActor가 Enemy면 소멸.
+			OtherActor->Destroy();
+		}
+	}
+}

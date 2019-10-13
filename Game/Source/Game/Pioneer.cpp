@@ -12,9 +12,8 @@
 /*** Basic Function : Start ***/
 APioneer::APioneer() // Sets default values
 {
-	// Set this character to call Tick() every frame. You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
+	// 충돌 캡슐의 크기를 설정합니다.
+	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
 	InitSkeletalAnimation();
 	
@@ -69,7 +68,7 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 void APioneer::InitSkeletalAnimation()
 {
 	// 1. USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Character/Pioneer/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (skeletalMeshAsset.Succeeded())
 	{
 		// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
@@ -78,7 +77,7 @@ void APioneer::InitSkeletalAnimation()
 		GetMesh()->bCastDynamicShadow = true; // ???
 		GetMesh()->CastShadow = true; // ???
 		GetMesh()->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
-		GetMesh()->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
+		GetMesh()->RelativeLocation = FVector(0.0f, 0.0f, -90.0f); // Capsule과 위치를 조정합니다.
 	}
 	//// 2. Skeleton을 가져옵니다.
 	//static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Character/Mesh/UE4_Mannequin_Skeleton.UE4_Mannequin_Skeleton'"));
@@ -321,6 +320,8 @@ void APioneer::InitAIController()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
 	AIController = World->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
+
+	// Controller는 Attach가 안됨.
 }
 
 void APioneer::PossessAIController()
