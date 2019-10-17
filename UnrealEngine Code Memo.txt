@@ -311,6 +311,18 @@
         TArray<AActor*> overlappedActors
         충돌체->GetOverlappingAcotrs(overlappedActors);
 
+[Shape Component]
+    Arrow Component
+        에디터상 방향 표시
+    Box Component
+        간단한 충돌
+    Capsule Component
+        간단한 충돌
+    Sphere Component
+        간단한 충돌
+    Spline Component
+        파티클 시스템에서 사용
+
 [순수 가상함수 사용불가]
     UObject를 상속 받는 클래스는 무조건 COD로 객체가 생성되기 때문에 순수 가상함수를 사용할 수 없다.
 

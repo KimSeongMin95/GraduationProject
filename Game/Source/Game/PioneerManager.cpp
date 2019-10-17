@@ -7,6 +7,8 @@
 #include "Pioneer.h"
 #include "PioneerController.h"
 #include "PioneerAIController.h"
+
+#include "Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values
@@ -64,6 +66,20 @@ void APioneerManager::BeginPlay()
 	SpawnPioneer(3, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
 	SpawnPioneer(4, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
 	SpawnPioneer(5, FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+
+
+	// 임시
+	FTransform myTrans = GetTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
+	myTrans.SetLocation(FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	world->SpawnActor<AEnemy>(AEnemy::StaticClass(), myTrans, SpawnParams);
+	myTrans.SetLocation(FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	world->SpawnActor<AEnemy>(AEnemy::StaticClass(), myTrans, SpawnParams);
+	myTrans.SetLocation(FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	world->SpawnActor<AEnemy>(AEnemy::StaticClass(), myTrans, SpawnParams);
 }
 
 // Called every frame

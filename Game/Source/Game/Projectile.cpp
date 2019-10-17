@@ -3,45 +3,27 @@
 
 #include "Projectile.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Enemy.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
 // Sets default values
 AProjectile::AProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-
+	/*** USphereComponent : Start ***/
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	SphereComp->SetSphereRadius(10.0f);
+	SphereComp->SetSphereRadius(16.0f);
 	SphereComp->SetCollisionProfileName(TEXT("Sphere"));
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 	RootComponent = SphereComp;
+	/*** USphereComponent : End ***/
 
-	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("LaserMesh");
-	StaticMeshComp->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
-	if (sphereMeshAsset.Succeeded())
-	{
-		StaticMeshComp->SetStaticMesh(sphereMeshAsset.Object);
-		StaticMeshComp->SetRelativeScale3D(FVector(0.8f, 0.08f, 0.08f));
-		StaticMeshComp->SetRelativeLocation(FVector(-30.0f, 0.0f, 0.0f));
-
-		static ConstructorHelpers::FObjectFinder<UMaterial> projectileMat(TEXT("Material'/Game/Materials/ProjectileMat.ProjectileMat'"));
-		if (projectileMat.Succeeded())
-		{
-			StaticMeshComp->SetMaterial(0, projectileMat.Object);
-		}
-	}
-
+	/*** ProjectileMovement : Start ***/
 	ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComp");
 	ProjectileMovementComp->InitialSpeed = 1200.0f;
 	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
+	/*** ProjectileMovement : End ***/
 
-
-	/*** Collision Setting : Start ***/
+	/*** Collision : Start ***/
 	// 참고: https://docs.unrealengine.com/ko/Engine/Physics/Collision/Reference/index.html
 	// 다른 액터와 오버랩 되면 이벤트를 발생시킬 것을 참으로
 	SphereComp->SetGenerateOverlapEvents(true);
@@ -58,7 +40,7 @@ AProjectile::AProjectile()
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block);
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Overlap);
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Block);
-	/*** Collision Setting : End ***/
+	/*** Collision : End ***/
 }
 
 // Called when the game starts or when spawned
@@ -66,7 +48,7 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
+	
 }
 
 // Called every frame
@@ -78,14 +60,5 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
-	{
-		
-		if (OtherActor->IsA(AEnemy::StaticClass()))
-		{
-			// 임시: Overlapped OtherActor가 Enemy면 소멸.
-			OtherActor->Destroy();
-		}
-	}
+	
 }

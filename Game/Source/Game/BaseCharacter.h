@@ -11,8 +11,6 @@
 #include "Engine/World.h"
 #include "Engine/SkeletalMesh.h"
 #include "Animation/AnimBlueprint.h"
-
-#include "AIController.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
@@ -44,7 +42,7 @@ public:
 /*** AIController : Start ***/
 public:
 	UPROPERTY(EditAnywhere)
-		class AAIController* AIController = nullptr;
+		class ABaseAIController* AIController = nullptr;
 
 	virtual void InitAIController(); /** AIController를 생성합니다. */
 
