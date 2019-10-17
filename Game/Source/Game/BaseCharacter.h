@@ -55,10 +55,10 @@ public:
 /*** 영상 따라하기 : Start ***/
 public:
 	UPROPERTY(EditAnywhere, Category = "Base Character")
-		float Health = 100.0f;
+		float Health;
 
 	UPROPERTY(EditAnywhere, Category = "Base Character")
-		bool bDead = false;
+		bool bDead;
 
 	// Calcaulat death function (helper)
 	virtual void CalculateDead();

@@ -28,7 +28,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	class APioneerManager* PioneerManager;
+	class APioneerManager* PioneerManager = nullptr;
 	void SpawnPioneerManager(); /** APioneerManager 객체를 생성합니다. */
 
 	static const float CellSize;

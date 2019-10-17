@@ -8,6 +8,12 @@ AWeapon::AWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	AttackPower = 0;
+	AttackSpeed = 1.0f;
+	AttackRange = 1.0f;
+	LimitedLevel = 1;
+	FireCoolTime = 0.0f;
+
 	// Empty WeaponMesh 생성후 RootComponent에 부착.
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
 	RootComponent = WeaponMesh;

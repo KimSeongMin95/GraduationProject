@@ -41,24 +41,24 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-		class USkeletalMeshComponent* WeaponMesh;
+		class USkeletalMeshComponent* WeaponMesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		class UArrowComponent* ProjectileSpawnPoint;
+		class UArrowComponent* ProjectileSpawnPoint = nullptr;
 
 /*** 무기 스텟 설정 : Start ***/
 public:
 	UPROPERTY(EditAnywhere, Category = "StateMent")
-		int AttackPower = 0; // 공격력
+		int AttackPower; // 공격력
 	UPROPERTY(EditAnywhere, Category = "StateMent")
-		float AttackSpeed = 1.0f; // 공격속도
+		float AttackSpeed; // 공격속도
 	UPROPERTY(EditAnywhere, Category = "StateMent")
-		float AttackRange = 1.0f; // 사정거리
+		float AttackRange; // 사정거리
 	UPROPERTY(EditAnywhere, Category = "StateMent")
-		int LimitedLevel = 1; // 제한 전투력
+		int LimitedLevel; // 제한 전투력
 
 	UPROPERTY(EditAnywhere, Category = "StateMent")
-		float FireCoolTime = 0.0f;
+		float FireCoolTime;
 /*** 무기 스텟 설정 : End ***/
 
 public:

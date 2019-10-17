@@ -8,6 +8,7 @@
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
 #include "Materials/Material.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
@@ -35,15 +36,20 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-		class USphereComponent* SphereComp;
+		class USphereComponent* SphereComp = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		class UStaticMeshComponent* StaticMeshComp;
+		class UStaticMeshComponent* StaticMeshComp = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		class UProjectileMovementComponent* ProjectileMovementComp;
-
+		class UProjectileMovementComponent* ProjectileMovementComp = nullptr;
 
 	UFUNCTION()
 		virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UPROPERTY(EditAnywhere)
+		float DestoryTimer;
+
+	UFUNCTION()
+		void DestroyThis(); /** SetTimer에 의하여 투사체를 소멸합니다. */
 };

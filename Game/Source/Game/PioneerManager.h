@@ -34,15 +34,15 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-		class USceneComponent* SceneComp;
+		class USceneComponent* SceneComp = nullptr;
 
 	UPROPERTY(EditAnywhere)
 		TMap<int, class APioneer*> TmapPioneers; /** APioneer 객체를 관리할 TMap입니다. TMap을 선언할 때 Value 값으로 클래스가 들어간다면 해당 클래스의 헤더를 선언해야 합니다. */
 	void SpawnPioneer(int ID, FVector Location); /** APioneer 객체를 생성합니다. */
 	class APioneer* GetPioneerByID(int ID);
 
-	class AWorldViewCameraActor* WorldViewCam; /** 월드 전체를 바라보는 카메라입니다. */
-	class APioneerController* PioneerCtrl; /** Pioneer 전용 컨트롤러 입니다. */
+	class AWorldViewCameraActor* WorldViewCam = nullptr; /** 월드 전체를 바라보는 카메라입니다. */
+	class APioneerController* PioneerCtrl = nullptr; /** Pioneer 전용 컨트롤러 입니다. */
 
 	UPROPERTY(EditAnywhere)
 		float SwitchTime; /** 다른 폰으로 변경하는 시간입니다. */

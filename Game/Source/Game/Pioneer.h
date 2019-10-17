@@ -122,12 +122,12 @@ public:
 	UPROPERTY(EditAnywhere) int CameraLagSpeed; /** 부드러운 카메라 전환 속도입니다. */
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-		class USpringArmComponent* CameraBoom; /** 캐릭터 뒤편에서 카메라의 위치를 조정합니다. */
+		class USpringArmComponent* CameraBoom = nullptr; /** 캐릭터 뒤편에서 카메라의 위치를 조정합니다. */
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-		class UCameraComponent* TopDownCameraComponent; /** 따라다니는 카메라입니다. */
+		class UCameraComponent* TopDownCameraComponent = nullptr; /** 따라다니는 카메라입니다. */
 
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return TopDownCameraComponent; }
 
@@ -139,7 +139,7 @@ public:
 /*** Cursor : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		class UDecalComponent* CursorToWorld; /** A decal that projects to the cursor location. */
+		class UDecalComponent* CursorToWorld = nullptr; /** A decal that projects to the cursor location. */
 
 	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
 
@@ -160,7 +160,7 @@ public:
 /*** Weapon : Start ***/
 public:
 	UPROPERTY(EditAnywhere)
-		class AWeapon* Weapon;
+		class AWeapon* Weapon = nullptr;
 
 	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
 	// 주의!!!! Weapon을 가져오면 Owner를 this로 설정해주어야 발사할 때 충돌감지를 벗어날 수 있습니다.
