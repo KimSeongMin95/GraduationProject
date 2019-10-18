@@ -42,6 +42,8 @@ AProjectile::AProjectile()
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Overlap);
 	/*** Collision : End ***/
 
+	Damage = 0.0f;
+
 	// SetTimer로 10초 뒤 투사체를 제거하라고 설정합니다.
 	DestoryTimer = 10.0f;
 }
@@ -71,4 +73,9 @@ void AProjectile::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, clas
 void AProjectile::DestroyThis()
 {
 	Destroy();
+}
+
+void AProjectile::SetDamage(float Damage)
+{
+	this->Damage = Damage;
 }

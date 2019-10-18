@@ -3,8 +3,8 @@
 #include "MyGameModeBase.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "PioneerController.h"
-#include "Pioneer.h"
+#include "Controller/PioneerController.h"
+#include "Character/Pioneer.h"
 #include "PioneerManager.h"
 #include "MyHUD.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/

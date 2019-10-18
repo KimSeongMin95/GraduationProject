@@ -4,8 +4,8 @@
 #include "ProjectilePistol.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Enemy.h"
-#include "Pioneer.h"
+#include "Character/Enemy.h"
+#include "Character/Pioneer.h"
 #include "Weapon/Pistol.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
@@ -94,13 +94,10 @@ void AProjectilePistol::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
-
-
 		if (OtherActor->IsA(AEnemy::StaticClass()))
 		{
-			// 임시: Overlapped OtherActor가 Enemy면 소멸.
-			OtherActor->Destroy();
-			
+			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
+			enemy->Calculatehealth(-Damage);
 		}
 	}
 

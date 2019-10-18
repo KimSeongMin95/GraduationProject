@@ -49,7 +49,7 @@ public:
 /*** 무기 스텟 설정 : Start ***/
 public:
 	UPROPERTY(EditAnywhere, Category = "StateMent")
-		int AttackPower; // 공격력
+		float AttackPower; // 공격력
 	UPROPERTY(EditAnywhere, Category = "StateMent")
 		float AttackSpeed; // 공격속도
 	UPROPERTY(EditAnywhere, Category = "StateMent")

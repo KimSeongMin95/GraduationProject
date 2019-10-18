@@ -4,7 +4,7 @@
 #include "Pistol.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "ProjectilePistol.h"
+#include "Projectile/ProjectilePistol.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values
@@ -23,7 +23,7 @@ APistol::APistol()
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 
 	// 무기 스텟 설정
-	AttackPower = 6;
+	AttackPower = 6.0f;
 	AttackSpeed = 3.0f;
 	AttackRange = 8.0f * AMyGameModeBase::CellSize;
 	LimitedLevel = 1;
@@ -66,5 +66,11 @@ void APistol::Fire()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	World->SpawnActor<AProjectilePistol>(AProjectilePistol::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+	AProjectile* projectile = World->SpawnActor<AProjectilePistol>(AProjectilePistol::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+	if (projectile != nullptr)
+	{
+		projectile->SetDamage(AttackPower);
+	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("Pistol.cpp: projectile == nullptr"));
 }

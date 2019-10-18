@@ -52,4 +52,7 @@ public:
 
 	UFUNCTION()
 		void DestroyThis(); /** SetTimer에 의하여 투사체를 소멸합니다. */
+
+	void SetDamage(float Damage);
+	float Damage;
 };

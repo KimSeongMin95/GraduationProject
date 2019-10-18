@@ -3,12 +3,12 @@
 #include "PioneerManager.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "WorldViewCameraActor.h"
-#include "Pioneer.h"
-#include "PioneerController.h"
-#include "PioneerAIController.h"
+#include "Etc/WorldViewCameraActor.h"
+#include "Character/Pioneer.h"
+#include "Controller/PioneerController.h"
+#include "Controller/PioneerAIController.h"
 
-#include "Enemy.h"
+#include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values

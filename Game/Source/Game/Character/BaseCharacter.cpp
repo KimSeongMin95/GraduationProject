@@ -4,7 +4,7 @@
 #include "BaseCharacter.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "BaseAIController.h"
+#include "Controller/BaseAIController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 /*** Basic Function : Start ***/
