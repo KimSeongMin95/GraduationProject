@@ -164,7 +164,7 @@ public:
 
 	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
 	// 주의!!!! Weapon을 가져오면 Owner를 this로 설정해주어야 발사할 때 충돌감지를 벗어날 수 있습니다.
-	void SpawnPistol();
+	void SpawnWeapon();
 
 	UFUNCTION()
 		void FireWeapon();

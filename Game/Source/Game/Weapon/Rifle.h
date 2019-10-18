@@ -10,5 +10,23 @@ UCLASS()
 class GAME_API ARifle : public AWeapon
 {
 	GENERATED_BODY()
-	
+
+/*** Basic Function : Start ***/
+public:
+	// Sets default values for this actor's properties
+	ARifle();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+/*** Basic Function : End ***/
+
+public:
+	// 오버라이드 하면 UFUNCTION()를 다시 선언할 필요가 없음.
+	virtual void Fire() final;
+
 };

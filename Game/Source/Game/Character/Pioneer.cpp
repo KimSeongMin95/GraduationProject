@@ -6,6 +6,8 @@
 #include "PioneerAnimInstance.h"
 #include "Controller/PioneerAIController.h"
 #include "Weapon/Pistol.h"
+#include "Weapon/Rifle.h"
+#include "Weapon/Launcher.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -37,10 +39,9 @@ void APioneer::BeginPlay()
 	PossessAIController();
 
 	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
-	SpawnPistol();
+	SpawnWeapon();
 
-	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
-
+	
 }
 
 // Called every frame
@@ -333,7 +334,7 @@ void APioneer::PossessAIController()
 /*** APioneerAIController : End ***/
 
 /*** Weapon : Start ***/
-void APioneer::SpawnPistol()
+void APioneer::SpawnWeapon()
 {
 	UWorld* const World = GetWorld();
 	if (!World)
@@ -348,12 +349,17 @@ void APioneer::SpawnPistol()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	Weapon = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
+	Weapon = World->SpawnActor<ALauncher>(ALauncher::StaticClass(), myTrans, SpawnParams);
+
+	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LauncherSocket"));
+
+	bHasLauncher = true;
 }
 
 void APioneer::FireWeapon()
 {
-	Weapon->Fire();
+	if (Weapon)
+		Weapon->Fire();
 }
 
 void APioneer::ChangeWeapon()
