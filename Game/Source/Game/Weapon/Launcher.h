@@ -28,4 +28,5 @@ public:
 public:
 	// 오버라이드 하면 UFUNCTION()를 다시 선언할 필요가 없음.
 	virtual void Fire() final;
+
 };

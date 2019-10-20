@@ -24,6 +24,7 @@ APioneerManager::APioneerManager()
 	PioneerCtrl = nullptr;
 
 	SwitchTime = 1.5f;
+	timer = 30.0f;
 }
 
 // Called when the game starts or when spawned

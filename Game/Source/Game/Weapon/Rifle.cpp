@@ -10,12 +10,27 @@
 // Sets default values
 ARifle::ARifle()
 {
-	// Pistol 메시 Asset을 가져와서 적용
+	// Weapon SkeletalMesh Asset을 가져와서 적용
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/SciFiWeapLight/Weapons/White_AssaultRifle.White_AssaultRifle'"));
 	if (skeletalMeshAsset.Succeeded())
 	{
 		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
 		WeaponMesh->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
+	}
+
+	// SkeletalMesh가 사용하는 Skeleton Asset을 가져와서 적용
+	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/SciFiWeapLight/Weapons/White_AssaultRifle_Skeleton.White_AssaultRifle_Skeleton'"));
+	if (skeleton.Succeeded())
+	{
+		Skeleton = skeleton.Object;
+	}
+
+	// 총 쏘는 애니메이션을 가져와서 적용
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/SciFiWeapLight/Weapons/Anims/Fire_Rifle_W.Fire_Rifle_W'"));
+	if (animSequence.Succeeded())
+	{
+		AnimSequence = animSequence.Object;
+		AnimSequence->SetSkeleton(Skeleton);
 	}
 
 	// 발사될 Projectile의 Transform을 설정
@@ -49,6 +64,9 @@ void ARifle::Fire()
 		return;
 	else
 		FireCoolTime = 0.0f;
+
+	// Fire 애니메이션 실행
+	WeaponMesh->PlayAnimation(AnimSequence, false);
 
 	UWorld* const World = GetWorld();
 	if (!World)

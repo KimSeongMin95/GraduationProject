@@ -53,5 +53,5 @@ public:
 		void PossessPioneer(int ID); /** 다른 폰을 Possess() 합니다. */
 
 	UPROPERTY(EditAnywhere)
-		float timer = 10.0f;
+		float timer;
 };

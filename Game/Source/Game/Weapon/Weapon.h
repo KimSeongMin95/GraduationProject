@@ -9,6 +9,8 @@
 /*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
+#include "Animation/Skeleton.h"
+#include "Animation/AnimSequence.h"
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
 #include "Components/ArrowComponent.h"
 #include "Engine.h"
@@ -62,6 +64,12 @@ public:
 /*** 무기 스텟 설정 : End ***/
 
 public:
+	UPROPERTY(EditAnywhere)
+		class USkeleton* Skeleton;
+
+	UPROPERTY(EditAnywhere)
+		class UAnimSequence* AnimSequence;
+
 	UFUNCTION()
 		virtual void Fire();
 

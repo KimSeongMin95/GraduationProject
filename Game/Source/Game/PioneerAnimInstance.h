@@ -16,6 +16,15 @@ class GAME_API UPioneerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
+/*** AnimInstance Basic Function : Start ***/
+public:
+	UPioneerAnimInstance();
+
+	virtual void NativeInitializeAnimation() override;
+
+	virtual void NativeUpdateAnimation(float DeltaTimeX) override;
+/*** AnimInstance Basic Function : End ***/
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bIsAnimationBlended;
@@ -38,12 +47,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bHasLauncher;
 
-public:
-	UPioneerAnimInstance();
-
-	virtual void NativeInitializeAnimation() override;
-
-	virtual void NativeUpdateAnimation(float DeltaTimeX) override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		bool bFired;
 
 private:
 	APawn* Owner;

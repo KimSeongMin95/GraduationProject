@@ -40,8 +40,6 @@ void APioneer::BeginPlay()
 
 	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
 	SpawnWeapon();
-
-	
 }
 
 // Called every frame
@@ -349,39 +347,68 @@ void APioneer::SpawnWeapon()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	Weapon = World->SpawnActor<ALauncher>(ALauncher::StaticClass(), myTrans, SpawnParams);
-
-	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LauncherSocket"));
-
-	bHasLauncher = true;
+	// 임시로 전부다 만들어 놓습니다.
+	Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
+	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
+	Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	Rifle = World->SpawnActor<ARifle>(ARifle::StaticClass(), myTrans, SpawnParams);
+	Rifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
+	Rifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	Launcher = World->SpawnActor<ALauncher>(ALauncher::StaticClass(), myTrans, SpawnParams);
+	Launcher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LauncherSocket"));
+	Launcher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 }
 
 void APioneer::FireWeapon()
 {
 	if (Weapon)
+	{
 		Weapon->Fire();
+		
+		// Pistol은 Fire 애니메이션이 없어서 제외합니다.
+		if (!Weapon->IsA(APistol::StaticClass()))
+		{
+			// 사용중인 BP_PioneerAnimation을 가져와서 bFired 변수를 조정합니다.
+			UPioneerAnimInstance* PAnimInst = dynamic_cast<UPioneerAnimInstance*>(GetMesh()->GetAnimInstance());
+			if (PAnimInst)
+				PAnimInst->bFired = true;
+		}
+	}
 }
 
+// 임시
 void APioneer::ChangeWeapon()
 {
 	UE_LOG(LogTemp, Warning, TEXT("CW"));
 
 	if (bHasPistol)
 	{
+		Weapon->SetActorHiddenInGame(true);
 		bHasRifle = true;
 		bHasPistol = false;
+		Weapon = Rifle;
+		Weapon->SetActorHiddenInGame(false);
 	}
 	else if (bHasRifle)
 	{
+		Weapon->SetActorHiddenInGame(true);
 		bHasLauncher = true;
 		bHasRifle = false;
+		Weapon = Launcher;
+		Weapon->SetActorHiddenInGame(false);
 	}
 	else if (bHasLauncher)
 	{
+		Weapon->SetActorHiddenInGame(true);
 		bHasLauncher = false;
+		Weapon = nullptr;
 	}
 	else
+	{
 		bHasPistol = true;
+		Weapon = Pistol;
+		Weapon->SetActorHiddenInGame(false);
+	}
 }
 /*** Weapon : End ***/
 
