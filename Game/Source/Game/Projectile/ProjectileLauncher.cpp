@@ -93,7 +93,7 @@ void AProjectileLauncher::OnOverlapBegin(class UPrimitiveComponent* OverlappedCo
 		if (OtherActor->IsA(AEnemy::StaticClass()))
 		{
 			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			enemy->Calculatehealth(-Damage);
+			enemy->Calculatehealth(-TotalDamage);
 		}
 	}
 

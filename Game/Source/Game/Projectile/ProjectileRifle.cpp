@@ -93,7 +93,7 @@ void AProjectileRifle::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp,
 		if (OtherActor->IsA(AEnemy::StaticClass()))
 		{
 			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			enemy->Calculatehealth(-Damage);
+			enemy->Calculatehealth(-TotalDamage);
 		}
 	}
 
