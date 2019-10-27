@@ -182,9 +182,9 @@ void APioneer::InitCamera()
 	bUseControllerRotationRoll = false;
 
 	// 캐릭터 이동 관련 설정을 합니다.
-	//GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향에 캐릭터 메시가 따라 회전합니다.
-	GetCharacterMovement()->bOrientRotationToMovement = false; // 이동 방향에 캐릭터 메시가 따라 회전하지 않습니다.
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // 캐릭터를 이동시키기 전에 이동 방향과 현재 캐릭터의 방향이 다르면 캐릭터를 이동 방향으로 초당 640도의 회전 속도로 회전시킨다음 이동시킵니다.
+	GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향에 캐릭터 메시가 따라 회전합니다.
+	//GetCharacterMovement()->bOrientRotationToMovement = false; // 이동 방향에 캐릭터 메시가 따라 회전하지 않습니다.
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f); // 캐릭터를 이동시키기 전에 이동 방향과 현재 캐릭터의 방향이 다르면 캐릭터를 이동 방향으로 초당 360도의 회전 속도로 회전시킨다음 이동시킵니다.
 	GetCharacterMovement()->bConstrainToPlane = true; // 캐릭터의 이동을 평면으로 제한합니다.
 	GetCharacterMovement()->bSnapToPlaneAtStart = true; // 시작할 때 캐릭터의 위치가 평면을 벗어난 상태라면 가까운 평면으로 붙여서 시작되도록 합니다. 여기서 평면이란 내비게이션 메시를 의미합니다.
 	//GetCharacterMovement()->JumpZVelocity = 600.0f;
@@ -270,8 +270,11 @@ void APioneer::SetCursorToWorld()
 			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
 			CursorToWorld->SetWorldRotation(CursorR);
 
-			// 커서 위치를 바라봅니다.
-			LookAtTheLocation(CursorToWorld->GetComponentLocation());
+			// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
+			if (Weapon)
+			{ 
+				LookAtTheLocation(CursorToWorld->GetComponentLocation());
+			}
 
 			CursorToWorld->SetVisibility(true);
 		}
