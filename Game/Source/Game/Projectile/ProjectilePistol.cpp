@@ -16,23 +16,27 @@ AProjectilePistol::AProjectilePistol()
 	PrimaryActorTick.bCanEverTick = true;
 
 	/*** USphereComponent : Start ***/
-	SphereComp->SetSphereRadius(16.0f);
+	SphereComp->SetSphereRadius(32.0f);
 	/*** USphereComponent : End ***/
 
 	/*** Mesh : Start ***/
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("LaserMesh");
 	StaticMeshComp->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMeshAsset(TEXT("StaticMesh'/Game/SciFiWeapLight/Weapons/White_Pistol_Ammo.White_Pistol_Ammo'"));
 	if (sphereMeshAsset.Succeeded())
 	{
 		StaticMeshComp->SetStaticMesh(sphereMeshAsset.Object);
-		StaticMeshComp->SetRelativeScale3D(FVector(0.8f, 0.08f, 0.08f));
-		StaticMeshComp->SetRelativeLocation(FVector(-30.0f, 0.0f, 0.0f));
+		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		StaticMeshComp->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+		StaticMeshComp->SetRelativeScale3D(FVector(20.0f, 20.0f, 20.0f));
+		
 
-		static ConstructorHelpers::FObjectFinder<UMaterial> projectileMat(TEXT("Material'/Game/Materials/ProjectileMat.ProjectileMat'"));
-		if (projectileMat.Succeeded())
+		// UMaterialInstance를 직접 생성하여 Parent로 Material을 가져오는 방법도 있으나 지금은 만들어진 것을 가져오겠습니다.
+		static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> projectileMatInst(TEXT("MaterialInstanceConstant'/Game/Materials/MatInstProjectilePistol.MatInstProjectilePistol'"));
+		if (projectileMatInst.Succeeded())
 		{
-			StaticMeshComp->SetMaterial(0, projectileMat.Object);
+			//StaticMeshComp->CreateDynamicMaterialInstance(0);
+			StaticMeshComp->SetMaterial(0, projectileMatInst.Object);
 		}
 	}
 

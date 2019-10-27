@@ -3,6 +3,8 @@
 
 #include "ProjectileAssaultRifle.h"
 
+#include "Materials/MaterialInstanceConstant.h"
+
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Enemy.h"
 #include "Character/Pioneer.h"
@@ -28,7 +30,14 @@ AProjectileAssaultRifle::AProjectileAssaultRifle()
 		
 		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		StaticMeshComp->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
-		StaticMeshComp->SetRelativeScale3D(FVector(8.0f, 8.0f, 8.0f));
+		StaticMeshComp->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+
+		// UMaterialInstance를 직접 생성하여 Parent로 Material을 가져오는 방법도 있으나 지금은 만들어진 것을 가져오겠습니다.
+		static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> projectileMatInst(TEXT("MaterialInstanceConstant'/Game/Materials/MatInstProjectileAssaultRifle.MatInstProjectileAssaultRifle'"));
+		if (projectileMatInst.Succeeded())
+		{
+			StaticMeshComp->SetMaterial(0, projectileMatInst.Object);
+		}
 	}
 
 	// StaticMesh는 충돌하지 않도록 설정합니다.
@@ -37,7 +46,7 @@ AProjectileAssaultRifle::AProjectileAssaultRifle()
 	/*** Mesh : End ***/
 
 	/*** ProjectileMovement : Start ***/
-	ProjectileMovementComp->InitialSpeed = 1200.0f;
+	ProjectileMovementComp->InitialSpeed = 1800.0f;
 	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
 	/*** ProjectileMovement : End ***/
 
