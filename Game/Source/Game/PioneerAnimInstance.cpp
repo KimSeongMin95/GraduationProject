@@ -44,9 +44,9 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 			Speed = pioneer->GetVelocity().Size();
 			bIsMoving = Speed > 0 ? true : false;
 
-			bHasPistol = pioneer->HasPistol();
-			bHasRifle = pioneer->HasRifle();
-			bHasLauncher = pioneer->HasLauncher();
+			bHasPistolType = pioneer->HasPistolType();
+			bHasRifleType = pioneer->HasRifleType();
+			bHasLauncherType = pioneer->HasLauncherType();
 
 			Direction = CalculateDirection(pioneer->GetVelocity(), pioneer->GetActorRotation());
 		}

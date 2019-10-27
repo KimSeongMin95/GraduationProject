@@ -6,8 +6,11 @@
 #include "PioneerAnimInstance.h"
 #include "Controller/PioneerAIController.h"
 #include "Weapon/Pistol.h"
-#include "Weapon/Rifle.h"
-#include "Weapon/Launcher.h"
+#include "Weapon/AssaultRifle.h"
+#include "Weapon/SniperRifle.h"
+#include "Weapon/Shotgun.h"
+#include "Weapon/RocketLauncher.h"
+#include "Weapon/GrenadeLauncher.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -107,9 +110,9 @@ void APioneer::InitSkeletalAnimation()
 	else
 		GetMesh()->SetAnimInstanceClass(animBP);
 
-	bHasPistol = false;
-	bHasRifle = false;
-	bHasLauncher = false;
+	bHasPistolType = false;
+	bHasRifleType = false;
+	bHasLauncherType = false;
 
 	//// 5.1 AnimInstance를 사용하지 않고 간단하게 애니메이션을 재생하려면 AnimSequence를 가져와서 Skeleton에 적용합니다.
 	//static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Mannequin/Animations/ThirdPersonRun.ThirdPersonRun'"));
@@ -142,17 +145,17 @@ void APioneer::InitSkeletalAnimation()
 	//}
 }
 
-bool APioneer::HasPistol()
+bool APioneer::HasPistolType()
 {
-	return bHasPistol;
+	return bHasPistolType;
 }
-bool APioneer::HasRifle()
+bool APioneer::HasRifleType()
 {
-	return bHasRifle;
+	return bHasRifleType;
 }
-bool APioneer::HasLauncher()
+bool APioneer::HasLauncherType()
 {
-	return bHasLauncher;
+	return bHasLauncherType;
 }
 
 void APioneer::SetIsKeyboardEnabled(bool Enabled)
@@ -354,12 +357,21 @@ void APioneer::SpawnWeapon()
 	Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
 	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
 	Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	Rifle = World->SpawnActor<ARifle>(ARifle::StaticClass(), myTrans, SpawnParams);
-	Rifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RifleSocket"));
-	Rifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	Launcher = World->SpawnActor<ALauncher>(ALauncher::StaticClass(), myTrans, SpawnParams);
-	Launcher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("LauncherSocket"));
-	Launcher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	AssaultRifle = World->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
+	AssaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket"));
+	AssaultRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	SniperRifle = World->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), myTrans, SpawnParams);
+	SniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket"));
+	SniperRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	Shotgun = World->SpawnActor<AShotgun>(AShotgun::StaticClass(), myTrans, SpawnParams);
+	Shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ShotgunSocket"));
+	Shotgun->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	RocketLauncher = World->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
+	RocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket"));
+	RocketLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	GrenadeLauncher = World->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
+	GrenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket"));
+	GrenadeLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 }
 
 void APioneer::FireWeapon()
@@ -382,36 +394,58 @@ void APioneer::FireWeapon()
 // 임시
 void APioneer::ChangeWeapon()
 {
-	UE_LOG(LogTemp, Warning, TEXT("CW"));
+	tempIdx++;
 
-	if (bHasPistol)
+	switch (tempIdx)
 	{
-		Weapon->SetActorHiddenInGame(true);
-		bHasRifle = true;
-		bHasPistol = false;
-		Weapon = Rifle;
-		Weapon->SetActorHiddenInGame(false);
-	}
-	else if (bHasRifle)
-	{
-		Weapon->SetActorHiddenInGame(true);
-		bHasLauncher = true;
-		bHasRifle = false;
-		Weapon = Launcher;
-		Weapon->SetActorHiddenInGame(false);
-	}
-	else if (bHasLauncher)
-	{
-		Weapon->SetActorHiddenInGame(true);
-		bHasLauncher = false;
-		Weapon = nullptr;
-	}
-	else
-	{
-		bHasPistol = true;
+	case 1:
+		bHasPistolType = true;
+
 		Weapon = Pistol;
 		Weapon->SetActorHiddenInGame(false);
+		break;
+
+	case 2:
+		bHasPistolType = false;
+		bHasRifleType = true;
+
+		Weapon->SetActorHiddenInGame(true);
+		Weapon = AssaultRifle;
+		Weapon->SetActorHiddenInGame(false);
+		break;
+	case 3:
+		Weapon->SetActorHiddenInGame(true);
+		Weapon = SniperRifle;
+		Weapon->SetActorHiddenInGame(false);
+		break;
+	case 4:
+		bHasRifleType = false;
+		bHasLauncherType = true;
+
+		Weapon->SetActorHiddenInGame(true);
+		Weapon = Shotgun;
+		Weapon->SetActorHiddenInGame(false);
+		break;
+	case 5:
+		Weapon->SetActorHiddenInGame(true);
+		Weapon = RocketLauncher;
+		Weapon->SetActorHiddenInGame(false);
+		break;
+	case 6:
+		Weapon->SetActorHiddenInGame(true);
+		Weapon = GrenadeLauncher;
+		Weapon->SetActorHiddenInGame(false);
+		break;
+	case 7:
+		bHasLauncherType = false;
+
+		Weapon->SetActorHiddenInGame(true);
+		Weapon = nullptr;
+		break;
 	}
+
+	if (tempIdx >= 7)
+		tempIdx = 0;
 }
 /*** Weapon : End ***/
 

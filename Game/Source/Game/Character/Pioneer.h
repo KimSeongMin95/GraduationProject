@@ -88,21 +88,19 @@ public:
 
 	void InitSkeletalAnimation();
 
-	bool bHasPistol;
-	bool bHasRifle;
-	bool bHasLauncher;
-
 	bool bIsKeyboardEnabled;
 	bool bIsAnimationBlended;
 
-	UFUNCTION(BlueprintCallable, Category = Animation)
-		bool HasPistol();
+	bool bHasPistolType;
+	bool bHasRifleType;
+	bool bHasLauncherType;
 
 	UFUNCTION(BlueprintCallable, Category = Animation)
-		bool HasRifle();
-
+		bool HasPistolType();
 	UFUNCTION(BlueprintCallable, Category = Animation)
-		bool HasLauncher();
+		bool HasRifleType();
+	UFUNCTION(BlueprintCallable, Category = Animation)
+		bool HasLauncherType();
 
 	/** controls if the keyboard responds to user input **/
 	UFUNCTION(BlueprintCallable, Category = Animation)
@@ -159,13 +157,17 @@ public:
 
 /*** Weapon : Start ***/
 public:
+	int tempIdx = 0;
+	
 	UPROPERTY(EditAnywhere)
 		class AWeapon* Weapon = nullptr;
 
 	class APistol* Pistol = nullptr;
-	class ARifle* Rifle = nullptr;
-	class ALauncher* Launcher = nullptr;
-
+	class AAssaultRifle* AssaultRifle = nullptr;
+	class ASniperRifle* SniperRifle = nullptr;
+	class AShotgun* Shotgun = nullptr;
+	class ARocketLauncher* RocketLauncher = nullptr;
+	class AGrenadeLauncher* GrenadeLauncher = nullptr;
 
 	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
 	// 주의!!!! Weapon을 가져오면 Owner를 this로 설정해주어야 발사할 때 충돌감지를 벗어날 수 있습니다.

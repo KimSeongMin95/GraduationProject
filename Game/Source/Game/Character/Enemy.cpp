@@ -33,6 +33,8 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bDead)
+		Destroy();
 }
 /*** Basic Function : End ***/
 

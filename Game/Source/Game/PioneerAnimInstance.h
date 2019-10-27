@@ -39,13 +39,13 @@ public:
 		float Direction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bHasPistol;
+		bool bHasPistolType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bHasRifle;
+		bool bHasRifleType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bHasLauncher;
+		bool bHasLauncherType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bFired;
