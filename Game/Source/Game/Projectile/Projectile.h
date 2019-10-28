@@ -9,6 +9,9 @@
 #include "Materials/Material.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
+#include "ParticleHelper.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
@@ -44,14 +47,18 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UProjectileMovementComponent* ProjectileMovementComp = nullptr;
 
+	UPROPERTY(EditAnywhere)
+		class UParticleSystemComponent* TrailParticleSystem; /** 탄환을 따라다니는 파티클시스템 */
+	UPROPERTY(EditAnywhere)
+		class UParticleSystemComponent* ImpactParticleSystem; /** 충돌시 터지는 파티클시스템 */
+
 	UFUNCTION()
 		virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	UPROPERTY(EditAnywhere)
-		float DestoryTimer;
+	void SetDestoryTimer(float Time); /** SetTimer를 사용해서 소멸을 예약합니다. */
 
 	UFUNCTION()
-		void DestroyThis(); /** SetTimer에 의하여 투사체를 소멸합니다. */
+		void _Destroy(); /** SetDestoryTimer에 의하여 투사체를 소멸합니다. */
 
 	void SetDamage(float Damage);
 	float TotalDamage;

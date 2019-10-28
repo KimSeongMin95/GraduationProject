@@ -17,7 +17,7 @@ AProjectileAssaultRifle::AProjectileAssaultRifle()
 	PrimaryActorTick.bCanEverTick = true;
 
 	/*** USphereComponent : Start ***/
-	SphereComp->SetSphereRadius(32.0f);
+	SphereComp->SetSphereRadius(24.0f);
 	/*** USphereComponent : End ***/
 
 	/*** Mesh : Start ***/
@@ -30,7 +30,7 @@ AProjectileAssaultRifle::AProjectileAssaultRifle()
 		
 		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		StaticMeshComp->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
-		StaticMeshComp->SetRelativeScale3D(FVector(6.0f, 6.0f, 6.0f));
+		StaticMeshComp->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
 
 		// UMaterialInstance를 직접 생성하여 Parent로 Material을 가져오는 방법도 있으나 지금은 만들어진 것을 가져오겠습니다.
 		static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> projectileMatInst(TEXT("MaterialInstanceConstant'/Game/Materials/MatInstProjectileAssaultRifle.MatInstProjectileAssaultRifle'"));
@@ -50,7 +50,20 @@ AProjectileAssaultRifle::AProjectileAssaultRifle()
 	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
 	/*** ProjectileMovement : End ***/
 
-	DestoryTimer = 15.0f;
+	/*** ParticleSystem : Start ***/
+	TrailParticleSystem->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> trailParticleSystem(TEXT("ParticleSystem'/Game/SciFiWeapLight/FX/Particles/P_SniperRifle_Tracer_Light.P_SniperRifle_Tracer_Light'"));
+	if (trailParticleSystem.Succeeded())
+	{
+		TrailParticleSystem->SetTemplate(trailParticleSystem.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> impactParticleSystem(TEXT("ParticleSystem'/Game/SciFiWeapLight/FX/Particles/P_Impact_Wood_Medium_Light.P_Impact_Wood_Medium_Light'"));
+	if (impactParticleSystem.Succeeded())
+	{
+		ImpactParticleSystem->SetTemplate(impactParticleSystem.Object);
+	}
+	/*** ParticleSystem : End ***/
 }
 
 // Called when the game starts or when spawned
@@ -105,5 +118,16 @@ void AProjectileAssaultRifle::OnOverlapBegin(class UPrimitiveComponent* Overlapp
 		}
 	}
 
-	Destroy();
+	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
+	SphereComp->DestroyComponent();
+	StaticMeshComp->DestroyComponent();
+	ProjectileMovementComp->DestroyComponent();
+	TrailParticleSystem->DestroyComponent();
+
+	// ImpactParticleSystem을 실행합니다.
+	if (ImpactParticleSystem && ImpactParticleSystem->Template)
+		ImpactParticleSystem->ToggleActive();
+
+	// 3초뒤 소멸합니다.
+	SetDestoryTimer(1.0f);
 }

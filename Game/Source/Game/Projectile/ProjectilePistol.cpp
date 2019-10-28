@@ -16,7 +16,7 @@ AProjectilePistol::AProjectilePistol()
 	PrimaryActorTick.bCanEverTick = true;
 
 	/*** USphereComponent : Start ***/
-	SphereComp->SetSphereRadius(32.0f);
+	SphereComp->SetSphereRadius(24.0f);
 	/*** USphereComponent : End ***/
 
 	/*** Mesh : Start ***/
@@ -50,7 +50,19 @@ AProjectilePistol::AProjectilePistol()
 	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
 	/*** ProjectileMovement : End ***/
 
-	DestoryTimer = 15.0f;
+	/*** ParticleSystem : Start ***/
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> trailParticleSystem(TEXT("ParticleSystem'/Game/SciFiWeapLight/FX/Particles/P_Pistol_Tracer_Light.P_Pistol_Tracer_Light'"));
+	if (trailParticleSystem.Succeeded())
+	{
+		TrailParticleSystem->SetTemplate(trailParticleSystem.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> impactParticleSystem(TEXT("ParticleSystem'/Game/SciFiWeapLight/FX/Particles/P_Impact_Stone_Small_Light.P_Impact_Stone_Small_Light'"));
+	if (impactParticleSystem.Succeeded())
+	{
+		ImpactParticleSystem->SetTemplate(impactParticleSystem.Object);
+	}
+	/*** ParticleSystem : End ***/
 }
 
 // Called when the game starts or when spawned
@@ -105,5 +117,16 @@ void AProjectilePistol::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp
 		}
 	}
 
-	Destroy();
+	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
+	SphereComp->DestroyComponent();
+	StaticMeshComp->DestroyComponent();
+	ProjectileMovementComp->DestroyComponent();
+	TrailParticleSystem->DestroyComponent();
+
+	// ImpactParticleSystem을 실행합니다.
+	if (ImpactParticleSystem && ImpactParticleSystem->Template)
+		ImpactParticleSystem->ToggleActive();
+
+	// 3초뒤 소멸합니다.
+	SetDestoryTimer(1.0f);
 }

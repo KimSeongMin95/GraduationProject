@@ -23,6 +23,20 @@ AProjectile::AProjectile()
 	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
 	/*** ProjectileMovement : End ***/
 
+	/*** ParticleSystem : Start ***/
+	// 바로 실행되며 탄환을 따라다닙니다.
+	TrailParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("TrailParticleSystem"));
+	TrailParticleSystem->SetupAttachment(RootComponent);
+	TrailParticleSystem->bAutoActivate = true;
+	TrailParticleSystem->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
+	// 충돌시 실행되며 그 자리에서 나타납니다.
+	ImpactParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ImpactParticleSystem"));
+	ImpactParticleSystem->SetupAttachment(RootComponent);
+	ImpactParticleSystem->bAutoActivate = false;
+	ImpactParticleSystem->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+	/*** ParticleSystem : End ***/
+
 	/*** Collision : Start ***/
 	// 참고: https://docs.unrealengine.com/ko/Engine/Physics/Collision/Reference/index.html
 	// 다른 액터와 오버랩 되면 이벤트를 발생시킬 것을 참으로
@@ -43,19 +57,15 @@ AProjectile::AProjectile()
 	/*** Collision : End ***/
 
 	TotalDamage = 0.0f;
-
-	// SetTimer로 10초 뒤 투사체를 제거하라고 설정합니다.
-	DestoryTimer = 10.0f;
 }
 
 // Called when the game starts or when spawned
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
 
-	FTimerHandle timer;
-	GetWorldTimerManager().SetTimer(timer, this, &AProjectile::DestroyThis, DestoryTimer, false);
+	// 생성자에서 SetTimer를 실행하면 안됨. 무조건 BeginPlay()에 두어야 함.
+	SetDestoryTimer(10.0f); // 10초 뒤 투사체를 소멸합니다.
 }
 
 // Called every frame
@@ -67,10 +77,16 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("%s"), *OtherActor->GetName());
+
 }
 
-void AProjectile::DestroyThis()
+void AProjectile::SetDestoryTimer(float Time)
+{
+	FTimerHandle timer;
+	GetWorldTimerManager().SetTimer(timer, this, &AProjectile::_Destroy, Time, false);
+}
+
+void AProjectile::_Destroy()
 {
 	Destroy();
 }

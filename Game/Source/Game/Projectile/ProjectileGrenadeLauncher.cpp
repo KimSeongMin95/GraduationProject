@@ -28,7 +28,7 @@ AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
 
 		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		StaticMeshComp->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
-		StaticMeshComp->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+		StaticMeshComp->SetRelativeScale3D(FVector(4.0f, 4.0f, 2.0f));
 	
 		// UMaterialInstance를 직접 생성하여 Parent로 Material을 가져오는 방법도 있으나 지금은 만들어진 것을 가져오겠습니다.
 		static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> projectileMatInst(TEXT("MaterialInstanceConstant'/Game/Materials/MatInstProjectileGrenadeLauncher.MatInstProjectileGrenadeLauncher'"));
@@ -44,11 +44,38 @@ AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
 	/*** Mesh : End ***/
 
 	/*** ProjectileMovement : Start ***/
-	ProjectileMovementComp->InitialSpeed = 1200.0f;
-	ProjectileMovementComp->ProjectileGravityScale = 0.5f;
+	ProjectileMovementComp->InitialSpeed = 600.0f;
+	ProjectileMovementComp->ProjectileGravityScale = 0.8f;
 	/*** ProjectileMovement : End ***/
 
-	DestoryTimer = 15.0f;
+	/*** ParticleSystem : Start ***/
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> trailParticleSystem(TEXT("ParticleSystem'/Game/SciFiWeapLight/FX/Particles/P_Grenade_Trail_Light.P_Grenade_Trail_Light'"));
+	if (trailParticleSystem.Succeeded())
+	{
+		TrailParticleSystem->SetTemplate(trailParticleSystem.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> impactParticleSystem(TEXT("ParticleSystem'/Game/SciFiWeapLight/FX/Particles/P_Grenade_Explosion_Light.P_Grenade_Explosion_Light'"));
+	if (impactParticleSystem.Succeeded())
+	{
+		ImpactParticleSystem->SetTemplate(impactParticleSystem.Object);
+	}
+	/*** ParticleSystem : End ***/
+
+	/*** Collision : Start ***/
+	// Collision 카테고리에서 Collision Presets을 커스텀으로 적용
+	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // 쿼리 전용 - 이 바디는 공간 쿼리(레이캐스트, 스윕, 오버랩)에만 사용됩니다. 시뮬레이션(리짓 바디, 컨스트레인트)에는 사용할 수 없습니다. 이 세팅은 물리 시뮬레이션이 필요치 않은 오브젝트와 캐릭터 동작에 좋습니다. 물리 시뮬레이션 트리 내 데이터를 감소시키는 것으로 퍼포먼스를 약간 개선시킬 수 있습니다.
+	SphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); // 월드 다이내믹 - 애니메이션 또는 코드(키네마틱)의 영향 하에 움직이는 액터 유형에 쓰입니다. 리프트나 문이 WorldDynamic 액터의 좋은 예입니다.
+	SphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 모든 CollisionResponses에 대해서 Ignore를 일괄 적용.
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Overlap);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Overlap);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Overlap);
+	/*** Collision : End ***/
 }
 
 // Called when the game starts or when spawned
@@ -103,5 +130,15 @@ void AProjectileGrenadeLauncher::OnOverlapBegin(class UPrimitiveComponent* Overl
 		}
 	}
 
-	Destroy();
+	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
+	SphereComp->DestroyComponent();
+	StaticMeshComp->DestroyComponent();
+	ProjectileMovementComp->DestroyComponent();
+
+	// ImpactParticleSystem을 실행합니다.
+	if (ImpactParticleSystem && ImpactParticleSystem->Template)
+		ImpactParticleSystem->ToggleActive();
+
+	// 3초뒤 소멸합니다.
+	SetDestoryTimer(3.0f);
 }

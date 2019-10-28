@@ -48,7 +48,19 @@ AProjectileShotgun::AProjectileShotgun()
 	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
 	/*** ProjectileMovement : End ***/
 
-	DestoryTimer = 15.0f;
+	/*** ParticleSystem : Start ***/
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> trailParticleSystem(TEXT("ParticleSystem'/Game/SciFiWeapLight/FX/Particles/P_Shotgun_Tracer_Light.P_Shotgun_Tracer_Light'"));
+	if (trailParticleSystem.Succeeded())
+	{
+		TrailParticleSystem->SetTemplate(trailParticleSystem.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> impactParticleSystem(TEXT("ParticleSystem'/Game/SciFiWeapLight/FX/Particles/P_Impact_Wood_Medium_Light.P_Impact_Wood_Medium_Light'"));
+	if (impactParticleSystem.Succeeded())
+	{
+		ImpactParticleSystem->SetTemplate(impactParticleSystem.Object);
+	}
+	/*** ParticleSystem : End ***/
 }
 
 // Called when the game starts or when spawned
@@ -103,5 +115,16 @@ void AProjectileShotgun::OnOverlapBegin(class UPrimitiveComponent* OverlappedCom
 		}
 	}
 
-	Destroy();
+	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
+	SphereComp->DestroyComponent();
+	StaticMeshComp->DestroyComponent();
+	ProjectileMovementComp->DestroyComponent();
+	TrailParticleSystem->DestroyComponent();
+
+	// ImpactParticleSystem을 실행합니다.
+	if (ImpactParticleSystem && ImpactParticleSystem->Template)
+		ImpactParticleSystem->ToggleActive();
+
+	// 3초뒤 소멸합니다.
+	SetDestoryTimer(1.0f);
 }

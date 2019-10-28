@@ -15,7 +15,7 @@ AProjectileSniperRifle::AProjectileSniperRifle()
 	PrimaryActorTick.bCanEverTick = true;
 
 	/*** USphereComponent : Start ***/
-	SphereComp->SetSphereRadius(16.0f);
+	SphereComp->SetSphereRadius(24.0f);
 	/*** USphereComponent : End ***/
 
 	/*** Mesh : Start ***/
@@ -48,7 +48,21 @@ AProjectileSniperRifle::AProjectileSniperRifle()
 	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
 	/*** ProjectileMovement : End ***/
 
-	DestoryTimer = 15.0f;
+	/*** ParticleSystem : Start ***/
+	TrailParticleSystem->SetRelativeLocation(FVector(-28.0f, 0.0f, 0.0f));
+	TrailParticleSystem->SetRelativeScale3D(FVector(0.8f, 1.2f, 1.2f));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> trailParticleSystem(TEXT("ParticleSystem'/Game/SciFiWeapLight/FX/Particles/P_AssaultRifle_Tracer_Light.P_AssaultRifle_Tracer_Light'"));
+	if (trailParticleSystem.Succeeded())
+	{
+		TrailParticleSystem->SetTemplate(trailParticleSystem.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> impactParticleSystem(TEXT("ParticleSystem'/Game/SciFiWeapLight/FX/Particles/P_Impact_Metal_Large_Light.P_Impact_Metal_Large_Light'"));
+	if (impactParticleSystem.Succeeded())
+	{
+		ImpactParticleSystem->SetTemplate(impactParticleSystem.Object);
+	}
+	/*** ParticleSystem : End ***/
 
 	hitCount = 0;
 }
@@ -103,10 +117,23 @@ void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* Overlappe
 			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
 			enemy->Calculatehealth(-TotalDamage);
 
+			// ImpactParticleSystem을 실행합니다.
+			if (ImpactParticleSystem && ImpactParticleSystem->Template)
+				ImpactParticleSystem->ToggleActive();
+
 			hitCount++;
 		}
 	}
 
 	if (hitCount >= 3)
-		Destroy();
+	{
+		// 기존 컴퍼넌트들을 모두 소멸시킵니다.
+		SphereComp->DestroyComponent();
+		StaticMeshComp->DestroyComponent();
+		ProjectileMovementComp->DestroyComponent();
+		TrailParticleSystem->DestroyComponent();
+
+		// 3초뒤 소멸합니다.
+		SetDestoryTimer(1.0f);
+	}
 }
