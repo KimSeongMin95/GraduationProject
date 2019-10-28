@@ -59,12 +59,12 @@ void APistol::Tick(float DeltaTime)
 
 }
 
-void APistol::Fire()
+bool APistol::Fire()
 {
 	//Super::Fire();
 
 	if (FireCoolTime < (1.0f / AttackSpeed))
-		return;
+		return false;
 	else
 		FireCoolTime = 0.0f;
 
@@ -75,7 +75,7 @@ void APistol::Fire()
 	if (!World)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-		return;
+		return false;
 	}
 
 	FTransform myTrans = ProjectileSpawnPoint->GetComponentTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
@@ -91,4 +91,6 @@ void APistol::Fire()
 	}
 	else
 		UE_LOG(LogTemp, Warning, TEXT("Pistol.cpp: projectile == nullptr"));
+
+	return true;
 }

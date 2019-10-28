@@ -61,8 +61,6 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 	// Set up game play key bindings
 	check(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("CW", IE_Pressed, this, &APioneer::ChangeWeapon);
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APioneer::FireWeapon);
 }
 /*** Basic Function : End ***/
 
@@ -224,6 +222,16 @@ void APioneer::SetCameraBoomSettings()
 	CameraBoom->TargetArmLength = TargetArmLength; // 캐릭터 뒤에서 해당 간격으로 따라다니는 카메라
 	CameraBoom->CameraLagSpeed = CameraLagSpeed;
 }
+
+void APioneer::ZoomInOrZoomOut(float Value)
+{
+	TargetArmLength += Value * 128.0f;
+
+	if (TargetArmLength < 0.0f)
+		TargetArmLength = 0.0f;
+	else if (TargetArmLength > 1500.0f)
+		TargetArmLength = 1500.0f;
+}
 /*** Camera : End ***/
 
 /*** Cursor : Start ***/
@@ -378,15 +386,17 @@ void APioneer::FireWeapon()
 {
 	if (Weapon)
 	{
-		Weapon->Fire();
-		
-		// Pistol은 Fire 애니메이션이 없어서 제외합니다.
-		if (!Weapon->IsA(APistol::StaticClass()))
+		// 쿨타임이 돌아와서 발사가 되었다면 UPioneerAnimInstance에 알려줍니다.
+		if (Weapon->Fire())
 		{
-			// 사용중인 BP_PioneerAnimation을 가져와서 bFired 변수를 조정합니다.
-			UPioneerAnimInstance* PAnimInst = dynamic_cast<UPioneerAnimInstance*>(GetMesh()->GetAnimInstance());
-			if (PAnimInst)
-				PAnimInst->bFired = true;
+			// Pistol은 Fire 애니메이션이 없어서 제외합니다.
+			if (!Weapon->IsA(APistol::StaticClass()))
+			{
+				// 사용중인 BP_PioneerAnimation을 가져와서 bFired 변수를 조정합니다.
+				UPioneerAnimInstance* PAnimInst = dynamic_cast<UPioneerAnimInstance*>(GetMesh()->GetAnimInstance());
+				if (PAnimInst)
+					PAnimInst->bFired = true;
+			}
 		}
 	}
 }

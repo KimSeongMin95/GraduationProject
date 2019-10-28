@@ -38,8 +38,8 @@ void AWeapon::Tick(float DeltaTime)
 	FireCoolTime += DeltaTime;
 }
 
-void AWeapon::Fire()
+bool AWeapon::Fire()
 {
 
-
+	return false;
 }

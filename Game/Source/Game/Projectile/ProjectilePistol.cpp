@@ -27,8 +27,8 @@ AProjectilePistol::AProjectilePistol()
 	{
 		StaticMeshComp->SetStaticMesh(sphereMeshAsset.Object);
 		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-		StaticMeshComp->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-		StaticMeshComp->SetRelativeScale3D(FVector(20.0f, 20.0f, 20.0f));
+		StaticMeshComp->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+		StaticMeshComp->SetRelativeScale3D(FVector(12.0f, 12.0f, 12.0f));
 		
 
 		// UMaterialInstance를 직접 생성하여 Parent로 Material을 가져오는 방법도 있으나 지금은 만들어진 것을 가져오겠습니다.
@@ -46,7 +46,7 @@ AProjectilePistol::AProjectilePistol()
 	/*** Mesh : End ***/
 
 	/*** ProjectileMovement : Start ***/
-	ProjectileMovementComp->InitialSpeed = 1800.0f;
+	ProjectileMovementComp->InitialSpeed = 1600.0f;
 	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
 	/*** ProjectileMovement : End ***/
 

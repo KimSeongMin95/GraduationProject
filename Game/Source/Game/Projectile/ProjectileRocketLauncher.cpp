@@ -15,7 +15,7 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 	PrimaryActorTick.bCanEverTick = true;
 
 	/*** USphereComponent : Start ***/
-	SphereComp->SetSphereRadius(16.0f);
+	SphereComp->SetSphereRadius(32.0f);
 	/*** USphereComponent : End ***/
 
 	/*** Mesh : Start ***/
@@ -29,6 +29,13 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		StaticMeshComp->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
 		StaticMeshComp->SetRelativeScale3D(FVector(2.0f, 2.0f, 2.0f));
+
+		// UMaterialInstance를 직접 생성하여 Parent로 Material을 가져오는 방법도 있으나 지금은 만들어진 것을 가져오겠습니다.
+		static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> projectileMatInst(TEXT("MaterialInstanceConstant'/Game/Materials/MatInstProjectileRocketLauncher.MatInstProjectileRocketLauncher'"));
+		if (projectileMatInst.Succeeded())
+		{
+			StaticMeshComp->SetMaterial(0, projectileMatInst.Object);
+		}
 	}
 
 	// StaticMesh는 충돌하지 않도록 설정합니다.
@@ -37,8 +44,8 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 	/*** Mesh : End ***/
 
 	/*** ProjectileMovement : Start ***/
-	ProjectileMovementComp->InitialSpeed = 800.0f;
-	ProjectileMovementComp->ProjectileGravityScale = 0.0f;
+	ProjectileMovementComp->InitialSpeed = 1600.0f;
+	ProjectileMovementComp->ProjectileGravityScale = 0.05f;
 	/*** ProjectileMovement : End ***/
 
 	DestoryTimer = 15.0f;

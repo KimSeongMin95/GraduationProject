@@ -42,9 +42,16 @@ void APioneerController::SetupInputComponent()
 
 	//// support VR
 	//InputComponent->BindAction("ResetVR", IE_Pressed, this, &APioneerController::OnResetVR);
-
+	
 	InputComponent->BindAxis("MoveForward", this, &APioneerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &APioneerController::MoveRight);
+
+	InputComponent->BindAxis("ZoomInOut", this, &APioneerController::ZoomInOrZoomOut);
+
+	InputComponent->BindAction("Fire", IE_Pressed, this, &APioneerController::FireWeapon);
+
+	// 임시
+	InputComponent->BindAction("CW", IE_Pressed, this, &APioneerController::ChangeWeapon);
 }
 
 //void APioneerController::OnResetVR()
@@ -119,39 +126,72 @@ void APioneerController::OnSetDestinationReleased()
 }
 
 
-void APioneerController::MoveForward(float value)
+void APioneerController::MoveForward(float Value)
 {
 	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
 	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
 
-	if (MyPawn && (value != 0.0f))
+	if (MyPawn && (Value != 0.0f))
 	{
 		//const FRotator Rotation = GetPawn()->Controller->GetControlRotation(); // 컨트롤러의 회전값을 가져옵니다.
 		const FRotator Rotation = MyPawn->CameraBoomRotation; // Pioneer의 카메라 회전값을 가져옵니다.
 		const FRotator YawRotation(0, Rotation.Yaw, 0); // 오른쪽 방향을 찾습니다.
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X); // 오른쪽 벡터를 구합니다.
-		MyPawn->AddMovementInput(Direction, value); // 해당 방향으로 이동 값을 추가합니다.
+		MyPawn->AddMovementInput(Direction, Value); // 해당 방향으로 이동 값을 추가합니다.
 
 		//// 방향을 고정합니다.
 		//MyPawn->AddMovementInput(FVector().ForwardVector, value);
 	}
 }
 
-void APioneerController::MoveRight(float value)
+void APioneerController::MoveRight(float Value)
 {
 	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
 	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
 
-	if (MyPawn && (value != 0.0f))
+	if (MyPawn && (Value != 0.0f))
 	{
 		//const FRotator Rotation = GetPawn()->Controller->GetControlRotation(); // 컨트롤러의 회전값을 가져옵니다.
 		const FRotator Rotation = MyPawn->CameraBoomRotation; // Pioneer의 카메라 회전값을 가져옵니다.
 		const FRotator YawRotation(0, Rotation.Yaw, 0); // 오른쪽 방향을 찾습니다.
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y); // 오른쪽 벡터를 구합니다.
-		MyPawn->AddMovementInput(Direction, value); // 해당 방향으로 이동 값을 추가합니다.
+		MyPawn->AddMovementInput(Direction, Value); // 해당 방향으로 이동 값을 추가합니다.
 
 		//// 방향을 고정합니다.
 		//MyPawn->AddMovementInput(FVector().RightVector, value);
+	}
+}
+
+void APioneerController::ZoomInOrZoomOut(float Value)
+{
+	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
+	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
+
+	if (MyPawn && (Value != 0.0f))
+	{
+		MyPawn->ZoomInOrZoomOut(Value);
+	}
+}
+
+void APioneerController::FireWeapon()
+{
+	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
+	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
+
+	if (MyPawn)
+	{
+		MyPawn->FireWeapon();
+	}
+}
+
+void APioneerController::ChangeWeapon()
+{
+	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
+	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
+
+	if (MyPawn)
+	{
+		MyPawn->ChangeWeapon();
 	}
 }
 

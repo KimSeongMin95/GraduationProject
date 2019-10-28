@@ -42,6 +42,8 @@ AShotgun::AShotgun()
 	AttackSpeed = 1.0f;
 	AttackRange = 10.0f * AMyGameModeBase::CellSize;
 	LimitedLevel = 10;
+
+	BulletNumber = 10;
 }
 
 // Called when the game starts or when spawned
@@ -58,10 +60,10 @@ void AShotgun::Tick(float DeltaTime)
 
 }
 
-void AShotgun::Fire()
+bool AShotgun::Fire()
 {
 	if (FireCoolTime < (1.0f / AttackSpeed))
-		return;
+		return false;
 	else
 		FireCoolTime = 0.0f;
 
@@ -72,7 +74,7 @@ void AShotgun::Fire()
 	if (!World)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-		return;
+		return false;
 	}
 
 	FTransform myTrans = ProjectileSpawnPoint->GetComponentTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
@@ -81,11 +83,23 @@ void AShotgun::Fire()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	AProjectile* projectile = World->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
-	if (projectile != nullptr)
+	for (int i = 0; i < BulletNumber; i++)
 	{
-		projectile->SetDamage(AttackPower);
+		// 총알이 산탄되도록 각도를 조정합니다.
+		myTrans = ProjectileSpawnPoint->GetComponentTransform();
+		FRotator rotation = myTrans.GetRotation().Rotator(); // GetRotation()으로 얻은 FQuat의 Rotator()로 FRotator를 획득.
+		rotation.Pitch += FMath::RandRange(-10.0f, 10.0f);
+		rotation.Yaw += FMath::RandRange(-10.0f, 10.0f);
+		myTrans.SetRotation(FQuat(rotation));
+
+		AProjectile* projectile = World->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+		if (projectile != nullptr)
+		{
+			projectile->SetDamage(AttackPower);
+		}
+		else
+			UE_LOG(LogTemp, Warning, TEXT("Pistol.cpp: projectile == nullptr"));
 	}
-	else
-		UE_LOG(LogTemp, Warning, TEXT("Pistol.cpp: projectile == nullptr"));
+
+	return true;
 }

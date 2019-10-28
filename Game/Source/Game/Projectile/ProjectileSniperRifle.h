@@ -25,5 +25,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : Start ***/
 
+public:
 	virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+
+	int hitCount; /** 관통하는 적들의 수를 셉니다. */
 };

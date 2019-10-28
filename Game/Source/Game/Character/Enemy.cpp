@@ -15,14 +15,14 @@ AEnemy::AEnemy() // Sets default values
 	GetCapsuleComponent()->InitCapsuleSize(50.0f, 70.0f);
 
 	InitSkeletalAnimation();
-
-	InitAIController();
 }
 
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitAIController();
 
 	// Init()이 끝나고 AIController에 빙의합니다.
 	PossessAIController();

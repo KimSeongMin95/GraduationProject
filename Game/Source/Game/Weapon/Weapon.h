@@ -61,6 +61,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "StateMent")
 		float FireCoolTime;
+
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		float BulletNumber;
 /*** 무기 스텟 설정 : End ***/
 
 public:
@@ -71,7 +74,7 @@ public:
 		class UAnimSequence* AnimSequence;
 
 	UFUNCTION()
-		virtual void Fire();
+		virtual bool Fire();
 
 /*** 블루프린트의 Event : Start ***/
 public:

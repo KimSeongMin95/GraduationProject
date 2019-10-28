@@ -132,6 +132,8 @@ public:
 	void InitCamera();
 
 	void SetCameraBoomSettings(); /** Tick()에서 호출합니다. */
+
+	void ZoomInOrZoomOut(float Value);
 /*** Camera : End ***/
 
 /*** Cursor : Start ***/
@@ -173,12 +175,10 @@ public:
 	// 주의!!!! Weapon을 가져오면 Owner를 this로 설정해주어야 발사할 때 충돌감지를 벗어날 수 있습니다.
 	void SpawnWeapon();
 
-	UFUNCTION()
-		void FireWeapon();
+	void FireWeapon();
 
 	// 임시
-	UFUNCTION()
-		void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
+	void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
 
 /*** Weapon : End ***/
 };

@@ -44,10 +44,20 @@ public:
 	void OnSetDestinationReleased();
 
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
-		void MoveForward(float value); /** 플레이어를 앞뒤로 이동시키는 함수입니다. */
+		void MoveForward(float Value); /** 플레이어를 앞뒤로 이동시키는 함수입니다. */
 
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
-		void MoveRight(float value); /** 플레이어를 좌우로 이동시키는 함수입니다. */
+		void MoveRight(float Value); /** 플레이어를 좌우로 이동시키는 함수입니다. */
+
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void ZoomInOrZoomOut(float Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void FireWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void ChangeWeapon();
+
 	/*** Input handlers for SetDestination action. : End ***/
 
 /*** Overrided Function : Start ***/
