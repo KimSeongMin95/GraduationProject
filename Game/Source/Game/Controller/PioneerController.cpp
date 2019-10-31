@@ -136,7 +136,7 @@ void APioneerController::MoveForward(float Value)
 		//const FRotator Rotation = GetPawn()->Controller->GetControlRotation(); // 컨트롤러의 회전값을 가져옵니다.
 		const FRotator Rotation = MyPawn->CameraBoomRotation; // Pioneer의 카메라 회전값을 가져옵니다.
 		const FRotator YawRotation(0, Rotation.Yaw, 0); // 오른쪽 방향을 찾습니다.
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X); // 오른쪽 벡터를 구합니다.
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		MyPawn->AddMovementInput(Direction, Value); // 해당 방향으로 이동 값을 추가합니다.
 
 		//// 방향을 고정합니다.
@@ -154,7 +154,7 @@ void APioneerController::MoveRight(float Value)
 		//const FRotator Rotation = GetPawn()->Controller->GetControlRotation(); // 컨트롤러의 회전값을 가져옵니다.
 		const FRotator Rotation = MyPawn->CameraBoomRotation; // Pioneer의 카메라 회전값을 가져옵니다.
 		const FRotator YawRotation(0, Rotation.Yaw, 0); // 오른쪽 방향을 찾습니다.
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y); // 오른쪽 벡터를 구합니다.
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		MyPawn->AddMovementInput(Direction, Value); // 해당 방향으로 이동 값을 추가합니다.
 
 		//// 방향을 고정합니다.

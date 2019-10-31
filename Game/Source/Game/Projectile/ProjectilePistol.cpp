@@ -127,6 +127,6 @@ void AProjectilePistol::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp
 	if (ImpactParticleSystem && ImpactParticleSystem->Template)
 		ImpactParticleSystem->ToggleActive();
 
-	// 3초뒤 소멸합니다.
+	// 1초뒤 소멸합니다.
 	SetDestoryTimer(1.0f);
 }

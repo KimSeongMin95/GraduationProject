@@ -27,7 +27,7 @@ void APioneerAIController::MoveRandomDestination()
 		FAIMoveRequest FAI;
 		FAI.SetGoalLocation(dest);
 		MoveTo(FAI);
-
+		
 		MyPawn->LookAtTheLocation(dest);
 
 		//PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, FVector(FMath::RandRange(0.0f, 1000.0f), FMath::RandRange(0.0f, 1000.0f), -98.0f));

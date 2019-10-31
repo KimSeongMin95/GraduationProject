@@ -133,7 +133,7 @@ void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* Overlappe
 		ProjectileMovementComp->DestroyComponent();
 		TrailParticleSystem->DestroyComponent();
 
-		// 3초뒤 소멸합니다.
-		SetDestoryTimer(1.0f);
+		// 2초뒤 소멸합니다.
+		SetDestoryTimer(2.0f);
 	}
 }

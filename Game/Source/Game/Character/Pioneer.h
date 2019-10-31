@@ -146,8 +146,6 @@ public:
 	void InitCursor();
 
 	void SetCursorToWorld(); /** CursorToWorld의 월드좌표와 월드회전을 설정합니다. */
-
-	void LookAtTheLocation(FVector Location); /** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
 /*** Cursor : End ***/
 
 /*** APioneerAIController : Start ***/
@@ -179,7 +177,15 @@ public:
 
 	// 임시
 	void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
-
 /*** Weapon : End ***/
+
+/*** Rotate : Start ***/
+	bool bRotateTargetRotation;
+	FRotator TargetRotation;
+
+	void LookAtTheLocation(FVector Location); /** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
+	
+	void RotateTargetRotation(float DeltaTime);
+/*** Rotate : End ***/
 };
 

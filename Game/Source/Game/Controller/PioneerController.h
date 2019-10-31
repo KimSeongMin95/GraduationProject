@@ -57,7 +57,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void ChangeWeapon();
-
 	/*** Input handlers for SetDestination action. : End ***/
 
 /*** Overrided Function : Start ***/
