@@ -72,6 +72,11 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; // APawn 인터페이스     
 /*** Basic Function : End ***/
 
+/*** CharacterMovement : Start ***/
+public:
+	virtual void RotateTargetRotation(float DeltaTime) override;
+/*** CharacterMovement : End ***/
+
 /*** SkeletalAnimation : Start ***/
 public:
 	//UPROPERTY(EditAnywhere)
@@ -179,13 +184,6 @@ public:
 	void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
 /*** Weapon : End ***/
 
-/*** Rotate : Start ***/
-	bool bRotateTargetRotation;
-	FRotator TargetRotation;
 
-	void LookAtTheLocation(FVector Location); /** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
-	
-	void RotateTargetRotation(float DeltaTime);
-/*** Rotate : End ***/
 };
 

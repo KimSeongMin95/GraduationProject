@@ -49,26 +49,38 @@ public:
 	virtual void PossessAIController(); /** AIController에 Possess 합니다. */
 /*** AIController : End ***/
 
-
-
-
-/*** 영상 따라하기 : Start ***/
+/*** CharacterMovement : Start ***/
 public:
-	UPROPERTY(EditAnywhere, Category = "Base Character")
+	void InitCharacterMovement();
+
+	UPROPERTY(EditAnywhere, Category = "Character Movement")
+		bool bRotateTargetRotation;
+
+	UPROPERTY(EditAnywhere, Category = "Character Movement")
+		FRotator TargetRotation;
+
+	void LookAtTheLocation(FVector Location); /** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
+
+	virtual void RotateTargetRotation(float DeltaTime);
+/*** CharacterMovement : End ***/
+
+/*** State : Start ***/
+public:
+	UPROPERTY(EditAnywhere, Category = "State")
 		float Health;
 
-	UPROPERTY(EditAnywhere, Category = "Base Character")
+	UPROPERTY(EditAnywhere, Category = "State")
 		bool bDead;
 
 	// Calcaulat death function (helper)
 	virtual void CalculateDead();
 
-	UFUNCTION(Category = "Base Character")
+	UFUNCTION(Category = "State")
 		virtual void Calculatehealth(float Delta);
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
-/*** 영상 따라하기 : Start ***/
+/*** State : End ***/
 
 };

@@ -17,12 +17,6 @@ void ABaseAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Timer += DeltaTime;
-	if (Timer >= CoolTime)
-	{
-		MoveRandomDestination();
-		Timer = 0.0f;
-	}
 }
 
 //void APioneerAIController::InitMoveRandomDestination()
@@ -36,15 +30,5 @@ void ABaseAIController::Tick(float DeltaTime)
 
 void ABaseAIController::MoveRandomDestination()
 {
-	if (GetPawn())
-	{
-		APawn* MyPawn = GetPawn();
 
-		FVector dest = FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), MyPawn->GetActorLocation().Z);
-		FAIMoveRequest FAI;
-		FAI.SetGoalLocation(dest);
-		MoveTo(FAI);
-
-		//PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, FVector(FMath::RandRange(0.0f, 1000.0f), FMath::RandRange(0.0f, 1000.0f), -98.0f));
-	}
 }

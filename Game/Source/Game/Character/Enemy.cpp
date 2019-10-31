@@ -33,10 +33,23 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	RotateTargetRotation(DeltaTime);
+
 	if (bDead)
 		Destroy();
 }
 /*** Basic Function : End ***/
+
+/*** CharacterMovement : Start ***/
+void AEnemy::RotateTargetRotation(float DeltaTime)
+{
+	// 회전을 할 필요가 없으면 실행하지 않습니다.
+	if (!bRotateTargetRotation)
+		return;
+
+	Super::RotateTargetRotation(DeltaTime);
+}
+/*** CharacterMovement : End ***/
 
 /*** SkeletalAnimation : Start ***/
 void AEnemy::InitSkeletalAnimation()

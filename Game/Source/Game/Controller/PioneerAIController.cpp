@@ -15,6 +15,13 @@ APioneerAIController::APioneerAIController()
 void APioneerAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	Timer += DeltaTime;
+	if (Timer >= CoolTime)
+	{
+		MoveRandomDestination();
+		Timer = 0.0f;
+	}
 }
 
 void APioneerAIController::MoveRandomDestination()
@@ -24,12 +31,13 @@ void APioneerAIController::MoveRandomDestination()
 		APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
 
 		FVector dest = FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), MyPawn->GetActorLocation().Z);
-		FAIMoveRequest FAI;
-		FAI.SetGoalLocation(dest);
-		MoveTo(FAI);
-		
-		MyPawn->LookAtTheLocation(dest);
+		PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, dest);
 
-		//PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, FVector(FMath::RandRange(0.0f, 1000.0f), FMath::RandRange(0.0f, 1000.0f), -98.0f));
+		/*FAIMoveRequest FAI;
+		FAI.SetGoalLocation(dest);
+		MoveTo(FAI);*/
+		
+		// 목표 지점을 바라보도록 합니다.
+		//MyPawn->LookAtTheLocation(dest);
 	}
 }

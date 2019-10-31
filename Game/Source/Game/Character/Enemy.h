@@ -25,7 +25,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
+/*** CharacterMovement : Start ***/
+public:
+	virtual void RotateTargetRotation(float DeltaTime) override;
+/*** CharacterMovement : End ***/
+
 /*** SkeletalAnimation : Start ***/
+public:
 	void InitSkeletalAnimation();
 /*** SkeletalAnimation : End ***/
 
