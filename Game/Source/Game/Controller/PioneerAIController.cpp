@@ -38,6 +38,6 @@ void APioneerAIController::MoveRandomDestination()
 		MoveTo(FAI);*/
 		
 		// 목표 지점을 바라보도록 합니다.
-		//MyPawn->LookAtTheLocation(dest);
+		MyPawn->LookAtTheLocation(dest);
 	}
 }

@@ -76,11 +76,11 @@ void APioneerManager::BeginPlay()
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	world->SpawnActor<AEnemy>(AEnemy::StaticClass(), myTrans, SpawnParams);
-	myTrans.SetLocation(FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
-	world->SpawnActor<AEnemy>(AEnemy::StaticClass(), myTrans, SpawnParams);
-	myTrans.SetLocation(FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
-	world->SpawnActor<AEnemy>(AEnemy::StaticClass(), myTrans, SpawnParams);
+	for (int i = 0; i < 100; i++)
+	{
+		world->SpawnActor<AEnemy>(AEnemy::StaticClass(), myTrans, SpawnParams);
+		myTrans.SetLocation(FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), 0.0f));
+	}
 }
 
 // Called every frame

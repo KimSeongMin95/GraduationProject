@@ -82,12 +82,6 @@ bool AGrenadeLauncher::Fire()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
 	AProjectile* projectile = World->SpawnActor<AProjectileGrenadeLauncher>(AProjectileGrenadeLauncher::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
-	if (projectile != nullptr)
-	{
-		projectile->SetDamage(AttackPower);
-	}
-	else
-		UE_LOG(LogTemp, Warning, TEXT("Pistol.cpp: projectile == nullptr"));
 
 	return true;
 }

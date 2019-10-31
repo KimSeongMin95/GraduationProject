@@ -38,7 +38,7 @@ ARocketLauncher::ARocketLauncher()
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 
 	// 무기 스텟 설정
-	AttackPower = 50.0f;
+	AttackPower = 750.0f;
 	AttackSpeed = 1.0f;
 	AttackRange = 10.0f * AMyGameModeBase::CellSize;
 	LimitedLevel = 10;
@@ -82,12 +82,6 @@ bool ARocketLauncher::Fire()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
 	AProjectile* projectile = World->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
-	if (projectile != nullptr)
-	{
-		projectile->SetDamage(AttackPower);
-	}
-	else
-		UE_LOG(LogTemp, Warning, TEXT("Pistol.cpp: projectile == nullptr"));
 
 	return true;
 }

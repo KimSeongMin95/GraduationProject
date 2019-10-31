@@ -3,6 +3,10 @@
 
 #include "Projectile.h"
 
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Weapon/Weapon.h"
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
 // Sets default values
 AProjectile::AProjectile()
 {
@@ -41,7 +45,7 @@ AProjectile::AProjectile()
 	// 참고: https://docs.unrealengine.com/ko/Engine/Physics/Collision/Reference/index.html
 	// 다른 액터와 오버랩 되면 이벤트를 발생시킬 것을 참으로
 	SphereComp->SetGenerateOverlapEvents(true);
-	
+
 	// Collision 카테고리에서 Collision Presets을 커스텀으로 적용
 	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // 쿼리 전용 - 이 바디는 공간 쿼리(레이캐스트, 스윕, 오버랩)에만 사용됩니다. 시뮬레이션(리짓 바디, 컨스트레인트)에는 사용할 수 없습니다. 이 세팅은 물리 시뮬레이션이 필요치 않은 오브젝트와 캐릭터 동작에 좋습니다. 물리 시뮬레이션 트리 내 데이터를 감소시키는 것으로 퍼포먼스를 약간 개선시킬 수 있습니다.
 	SphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); // 월드 다이내믹 - 애니메이션 또는 코드(키네마틱)의 영향 하에 움직이는 액터 유형에 쓰입니다. 리프트나 문이 WorldDynamic 액터의 좋은 예입니다.
@@ -56,6 +60,15 @@ AProjectile::AProjectile()
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Overlap);
 	/*** Collision : End ***/
 
+	/* 실행순서
+	Owner가 Spawn()
+		생성자
+		BeginPlay()
+		OnOverlapBegin()
+		OnOverlapBegin()
+	Owner 코드로 다시 되돌아감
+		Tick
+	*/
 	TotalDamage = 0.0f;
 }
 
@@ -63,6 +76,12 @@ AProjectile::AProjectile()
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 위의 실행순서에 의해 SetDamage()가 나중에 실행되므로 미리 값을 가져와서 적용.
+	if (GetOwner())
+	{
+		TotalDamage = static_cast<AWeapon*>(GetOwner())->AttackPower;
+	}
 
 	// 생성자에서 SetTimer를 실행하면 안됨. 무조건 BeginPlay()에 두어야 함.
 	SetDestoryTimer(10.0f); // 10초 뒤 투사체를 소멸합니다.

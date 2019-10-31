@@ -93,12 +93,6 @@ bool AShotgun::Fire()
 		myTrans.SetRotation(FQuat(rotation));
 
 		AProjectile* projectile = World->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
-		if (projectile != nullptr)
-		{
-			projectile->SetDamage(AttackPower);
-		}
-		else
-			UE_LOG(LogTemp, Warning, TEXT("Pistol.cpp: projectile == nullptr"));
 	}
 
 	return true;
