@@ -32,12 +32,10 @@ public:
 		class USphereComponent* SplashSphereComp = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		class UStaticMeshComponent* SplashStaticMeshComp = nullptr;
+		class UStaticMeshComponent* SplashStaticMeshComp = nullptr; /** 임시로 범위를 시작적으로 보여주는 용도*/
 
 	UFUNCTION()
 		virtual void SplashOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	void DestroySplashSphereComp();
 
 	bool bPassed1Frame;
 	int countFrame;
