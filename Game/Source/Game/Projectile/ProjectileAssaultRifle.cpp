@@ -24,7 +24,7 @@ AProjectileAssaultRifle::AProjectileAssaultRifle()
 	if (sphereMeshAsset.Succeeded())
 	{
 		StaticMeshComp->SetStaticMesh(sphereMeshAsset.Object);
-		
+
 		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		StaticMeshComp->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
 		StaticMeshComp->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));

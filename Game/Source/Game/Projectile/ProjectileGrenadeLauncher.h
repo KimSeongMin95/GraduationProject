@@ -14,7 +14,7 @@ UCLASS()
 class GAME_API AProjectileGrenadeLauncher : public AProjectile
 {
 	GENERATED_BODY()
-	
+
 /*** Basic Function : Start ***/
 public:
 	// Sets default values for this actor's properties

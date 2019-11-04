@@ -39,7 +39,7 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 
 	// StaticMesh는 충돌하지 않도록 설정합니다.
 	StaticMeshComp->SetGenerateOverlapEvents(false);
-	StaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+	StaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	/*** Mesh : End ***/
 
 	/*** ProjectileMovement : Start ***/
@@ -81,7 +81,7 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Overlap);
 	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Overlap);
 	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Overlap);*/
-	
+
 	//SplashStaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Splash StaticMesh"));
 	//static ConstructorHelpers::FObjectFinder<UStaticMesh>SphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
 	//if (SphereMeshAsset.Succeeded())

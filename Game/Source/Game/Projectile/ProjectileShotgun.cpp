@@ -28,7 +28,7 @@ AProjectileShotgun::AProjectileShotgun()
 		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		StaticMeshComp->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
 		StaticMeshComp->SetRelativeScale3D(FVector(2.5f, 2.5f, 2.0f));
-	
+
 		// UMaterialInstance를 직접 생성하여 Parent로 Material을 가져오는 방법도 있으나 지금은 만들어진 것을 가져오겠습니다.
 		static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> projectileMatInst(TEXT("MaterialInstanceConstant'/Game/Materials/MatInstProjectileShotgun.MatInstProjectileShotgun'"));
 		if (projectileMatInst.Succeeded())
@@ -125,7 +125,7 @@ void AProjectileShotgun::OnOverlapBegin(class UPrimitiveComponent* OverlappedCom
 	}
 
 	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
-	if(SphereComp)
+	if (SphereComp)
 		SphereComp->DestroyComponent();
 	if (StaticMeshComp)
 		StaticMeshComp->DestroyComponent();

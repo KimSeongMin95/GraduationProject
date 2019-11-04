@@ -10,7 +10,7 @@ UCLASS()
 class GAME_API AProjectileSniperRifle : public AProjectile
 {
 	GENERATED_BODY()
-	
+
 /*** Basic Function : Start ***/
 public:
 	// Sets default values for this actor's properties
