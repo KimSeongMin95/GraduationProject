@@ -25,5 +25,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : Start ***/
 
+private:
+	virtual void SetHierarchy() override; /** Parent<->Child 관계를 성립합니다. */
+
 	virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 };

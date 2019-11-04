@@ -20,7 +20,6 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 
 	/*** Mesh : Start ***/
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("Rocket");
-	StaticMeshComp->SetupAttachment(RootComponent);
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMeshAsset(TEXT("StaticMesh'/Game/SciFiWeapLight/Weapons/White_RocketLauncher_Ammo.White_RocketLauncher_Ammo'"));
 	if (sphereMeshAsset.Succeeded())
 	{
@@ -40,7 +39,7 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 
 	// StaticMesh는 충돌하지 않도록 설정합니다.
 	StaticMeshComp->SetGenerateOverlapEvents(false);
-	StaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 쿼리 전용 - 이 바디는 공간 쿼리(레이캐스트, 스윕, 오버랩)에만 사용됩니다. 시뮬레이션(리짓 바디, 컨스트레인트)에는 사용할 수 없습니다. 이 세팅은 물리 시뮬레이션이 필요치 않은 오브젝트와 캐릭터 동작에 좋습니다. 물리 시뮬레이션 트리 내 데이터를 감소시키는 것으로 퍼포먼스를 약간 개선시킬 수 있습니다.
+	StaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 	/*** Mesh : End ***/
 
 	/*** ProjectileMovement : Start ***/
@@ -67,7 +66,6 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 	SplashSphereComp->SetSphereRadius(0.001f); // 충돌을 발생시키지 않게 처음엔 아주 작게 만듦.
 	SplashSphereComp->SetCollisionProfileName(TEXT("Sphere"));
 	SplashSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectileRocketLauncher::SplashOnOverlapBegin);
-	SplashSphereComp->SetupAttachment(RootComponent);
 
 	SplashSphereComp->SetGenerateOverlapEvents(true);
 
@@ -75,31 +73,33 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 	SplashSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); // 쿼리 전용 - 이 바디는 공간 쿼리(레이캐스트, 스윕, 오버랩)에만 사용됩니다. 시뮬레이션(리짓 바디, 컨스트레인트)에는 사용할 수 없습니다. 이 세팅은 물리 시뮬레이션이 필요치 않은 오브젝트와 캐릭터 동작에 좋습니다. 물리 시뮬레이션 트리 내 데이터를 감소시키는 것으로 퍼포먼스를 약간 개선시킬 수 있습니다.
 	SplashSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); // 월드 다이내믹 - 애니메이션 또는 코드(키네마틱)의 영향 하에 움직이는 액터 유형에 쓰입니다. 리프트나 문이 WorldDynamic 액터의 좋은 예입니다.
 	SplashSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap); // 모든 CollisionResponses에 대해서 ECR_Overlap를 일괄 적용.
-	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
+	/*SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
 	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
 	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Overlap);
 	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Overlap);
-	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Overlap);
+	SplashSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Overlap);*/
 	
 	//SplashStaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Splash StaticMesh"));
-	//SplashStaticMeshComp->SetupAttachment(SplashSphereComp);
-
 	//static ConstructorHelpers::FObjectFinder<UStaticMesh>SphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
 	//if (SphereMeshAsset.Succeeded())
-	//	SplashStaticMeshComp->SetStaticMesh(SphereMeshAsset.Object);
-	////SplashStaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, -256.0f));
-	//SplashStaticMeshComp->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
-	//SplashStaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	//static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> MatInst(TEXT("MaterialInstanceConstant'/Game/StarterBundle/ModularScifiHallways/Materials/MI_GlassLight_B.MI_GlassLight_B'"));
-	//if (MatInst.Succeeded())
 	//{
-	//	SplashStaticMeshComp->SetMaterial(0, MatInst.Object);
+	//	SplashStaticMeshComp->SetStaticMesh(SphereMeshAsset.Object);
+	//	//SplashStaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, -256.0f));
+	//	SplashStaticMeshComp->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+	//	SplashStaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	//	static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> MatInst(TEXT("MaterialInstanceConstant'/Game/StarterBundle/ModularScifiHallways/Materials/MI_GlassLight_B.MI_GlassLight_B'"));
+	//	if (MatInst.Succeeded())
+	//	{
+	//		SplashStaticMeshComp->SetMaterial(0, MatInst.Object);
+	//	}
 	//}
 	/*** Splash : End ***/
+
+	SetHierarchy();
 }
 
 // Called when the game starts or when spawned
@@ -116,6 +116,17 @@ void AProjectileRocketLauncher::Tick(float DeltaTime)
 
 	if (bPassed1Frame)
 		countFrame++;
+}
+
+void AProjectileRocketLauncher::SetHierarchy()
+{
+	RootComponent = SphereComp;
+	StaticMeshComp->SetupAttachment(RootComponent);
+	TrailParticleSystem->SetupAttachment(RootComponent);
+	ImpactParticleSystem->SetupAttachment(RootComponent);
+
+	SplashSphereComp->SetupAttachment(RootComponent);
+	//SplashStaticMeshComp->SetupAttachment(SplashSphereComp);
 }
 
 void AProjectileRocketLauncher::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -151,7 +162,8 @@ void AProjectileRocketLauncher::OnOverlapBegin(class UPrimitiveComponent* Overla
 		if (OtherActor->IsA(AEnemy::StaticClass()))
 		{
 			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			enemy->Calculatehealth(-TotalDamage);
+			if (enemy)
+				enemy->Calculatehealth(-TotalDamage);
 		}
 	}
 
@@ -216,9 +228,9 @@ void AProjectileRocketLauncher::SplashOnOverlapBegin(class UPrimitiveComponent* 
 	{
 		if (OtherActor->IsA(AEnemy::StaticClass()))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("SplashOnOverlapBegin count: %d"), countFrame);
 			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			enemy->Calculatehealth(-TotalDamage);
+			if (enemy)
+				enemy->Calculatehealth(-TotalDamage);
 		}
 	}
 }

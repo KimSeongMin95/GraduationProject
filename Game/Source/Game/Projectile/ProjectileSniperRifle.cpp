@@ -20,7 +20,6 @@ AProjectileSniperRifle::AProjectileSniperRifle()
 
 	/*** Mesh : Start ***/
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("Ammo");
-	StaticMeshComp->SetupAttachment(RootComponent);
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMeshAsset(TEXT("StaticMesh'/Game/SciFiWeapLight/Weapons/White_SniperRifle_Ammo.White_SniperRifle_Ammo'"));
 	if (sphereMeshAsset.Succeeded())
 	{
@@ -65,6 +64,8 @@ AProjectileSniperRifle::AProjectileSniperRifle()
 	/*** ParticleSystem : End ***/
 
 	hitCount = 0;
+
+	SetHierarchy();
 }
 
 // Called when the game starts or when spawned
@@ -80,6 +81,14 @@ void AProjectileSniperRifle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AProjectileSniperRifle::SetHierarchy()
+{
+	RootComponent = SphereComp;
+	StaticMeshComp->SetupAttachment(RootComponent);
+	TrailParticleSystem->SetupAttachment(RootComponent);
+	ImpactParticleSystem->SetupAttachment(RootComponent);
 }
 
 void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -115,7 +124,8 @@ void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* Overlappe
 		if (OtherActor->IsA(AEnemy::StaticClass()))
 		{
 			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			enemy->Calculatehealth(-TotalDamage);
+			if (enemy)
+				enemy->Calculatehealth(-TotalDamage);
 
 			// ImpactParticleSystem을 실행합니다.
 			if (ImpactParticleSystem && ImpactParticleSystem->Template)
@@ -128,10 +138,14 @@ void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* Overlappe
 	if (hitCount >= 3)
 	{
 		// 기존 컴퍼넌트들을 모두 소멸시킵니다.
-		SphereComp->DestroyComponent();
-		StaticMeshComp->DestroyComponent();
-		ProjectileMovementComp->DestroyComponent();
-		TrailParticleSystem->DestroyComponent();
+		if (SphereComp)
+			SphereComp->DestroyComponent();
+		if (StaticMeshComp)
+			StaticMeshComp->DestroyComponent();
+		if (ProjectileMovementComp)
+			ProjectileMovementComp->DestroyComponent();
+		if (TrailParticleSystem)
+			TrailParticleSystem->DestroyComponent();
 
 		// 2초뒤 소멸합니다.
 		SetDestoryTimer(2.0f);

@@ -52,6 +52,8 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UParticleSystemComponent* ImpactParticleSystem; /** 충돌시 터지는 파티클시스템 */
 
+	virtual void SetHierarchy();
+
 	UFUNCTION()
 		virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

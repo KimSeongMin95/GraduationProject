@@ -20,7 +20,6 @@ AProjectileShotgun::AProjectileShotgun()
 
 	/*** Mesh : Start ***/
 	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("Ammo");
-	StaticMeshComp->SetupAttachment(RootComponent);
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMeshAsset(TEXT("StaticMesh'/Game/SciFiWeapLight/Weapons/White_Shotgun_Ammo.White_Shotgun_Ammo'"));
 	if (sphereMeshAsset.Succeeded())
 	{
@@ -61,6 +60,8 @@ AProjectileShotgun::AProjectileShotgun()
 		ImpactParticleSystem->SetTemplate(impactParticleSystem.Object);
 	}
 	/*** ParticleSystem : End ***/
+
+	SetHierarchy();
 }
 
 // Called when the game starts or when spawned
@@ -68,7 +69,6 @@ void AProjectileShotgun::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 }
 
 // Called every frame
@@ -76,6 +76,14 @@ void AProjectileShotgun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AProjectileShotgun::SetHierarchy()
+{
+	RootComponent = SphereComp;
+	StaticMeshComp->SetupAttachment(RootComponent);
+	TrailParticleSystem->SetupAttachment(RootComponent);
+	ImpactParticleSystem->SetupAttachment(RootComponent);
 }
 
 void AProjectileShotgun::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -111,15 +119,20 @@ void AProjectileShotgun::OnOverlapBegin(class UPrimitiveComponent* OverlappedCom
 		if (OtherActor->IsA(AEnemy::StaticClass()))
 		{
 			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			enemy->Calculatehealth(-TotalDamage);
+			if (enemy)
+				enemy->Calculatehealth(-TotalDamage);
 		}
 	}
 
 	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
-	SphereComp->DestroyComponent();
-	StaticMeshComp->DestroyComponent();
-	ProjectileMovementComp->DestroyComponent();
-	TrailParticleSystem->DestroyComponent();
+	if(SphereComp)
+		SphereComp->DestroyComponent();
+	if (StaticMeshComp)
+		StaticMeshComp->DestroyComponent();
+	if (ProjectileMovementComp)
+		ProjectileMovementComp->DestroyComponent();
+	if (TrailParticleSystem)
+		TrailParticleSystem->DestroyComponent();
 
 	// ImpactParticleSystem을 실행합니다.
 	if (ImpactParticleSystem && ImpactParticleSystem->Template)

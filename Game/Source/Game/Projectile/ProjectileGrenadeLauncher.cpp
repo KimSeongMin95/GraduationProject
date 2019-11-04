@@ -19,8 +19,7 @@ AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
 	/*** USphereComponent : End ***/
 
 	/*** Mesh : Start ***/
-	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("Ammo");
-	StaticMeshComp->SetupAttachment(RootComponent);
+	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComp");
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMeshAsset(TEXT("StaticMesh'/Game/SciFiWeapLight/Weapons/White_GrenadeLauncher_Ammo.White_GrenadeLauncher_Ammo'"));
 	if (sphereMeshAsset.Succeeded())
 	{
@@ -37,15 +36,17 @@ AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
 			StaticMeshComp->SetMaterial(0, projectileMatInst.Object);
 		}
 	}
-
 	// StaticMesh는 충돌하지 않도록 설정합니다.
 	StaticMeshComp->SetGenerateOverlapEvents(false);
-	StaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 쿼리 전용 - 이 바디는 공간 쿼리(레이캐스트, 스윕, 오버랩)에만 사용됩니다. 시뮬레이션(리짓 바디, 컨스트레인트)에는 사용할 수 없습니다. 이 세팅은 물리 시뮬레이션이 필요치 않은 오브젝트와 캐릭터 동작에 좋습니다. 물리 시뮬레이션 트리 내 데이터를 감소시키는 것으로 퍼포먼스를 약간 개선시킬 수 있습니다.
+	StaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	/*** Mesh : End ***/
 
 	/*** ProjectileMovement : Start ***/
-	ProjectileMovementComp->InitialSpeed = 600.0f;
+	ProjectileMovementComp->InitialSpeed = 800.0f;
 	ProjectileMovementComp->ProjectileGravityScale = 0.8f;
+	ProjectileMovementComp->bShouldBounce = true; // 바닥에서 튕기도록 설정.
+	ProjectileMovementComp->MaxSpeed = 800.0f; // 최대 속도.
+	ProjectileMovementComp->Friction = 1.0f; // 마찰.
 	/*** ProjectileMovement : End ***/
 
 	/*** ParticleSystem : Start ***/
@@ -62,20 +63,53 @@ AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
 	}
 	/*** ParticleSystem : End ***/
 
-	/*** Collision : Start ***/
+	/*** Splash : Start ***/
+	SplashSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("Splash Collision"));
+	SplashSphereComp->SetSphereRadius(0.001f); // 충돌을 발생시키지 않게 처음엔 아주 작게 만듦.
+	SplashSphereComp->SetCollisionProfileName(TEXT("Sphere"));
+	SplashSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectileGrenadeLauncher::SplashOnOverlapBegin);
+
+	SplashSphereComp->SetGenerateOverlapEvents(true);
+
 	// Collision 카테고리에서 Collision Presets을 커스텀으로 적용
-	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // 쿼리 전용 - 이 바디는 공간 쿼리(레이캐스트, 스윕, 오버랩)에만 사용됩니다. 시뮬레이션(리짓 바디, 컨스트레인트)에는 사용할 수 없습니다. 이 세팅은 물리 시뮬레이션이 필요치 않은 오브젝트와 캐릭터 동작에 좋습니다. 물리 시뮬레이션 트리 내 데이터를 감소시키는 것으로 퍼포먼스를 약간 개선시킬 수 있습니다.
-	SphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); // 월드 다이내믹 - 애니메이션 또는 코드(키네마틱)의 영향 하에 움직이는 액터 유형에 쓰입니다. 리프트나 문이 WorldDynamic 액터의 좋은 예입니다.
-	SphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 모든 CollisionResponses에 대해서 Ignore를 일괄 적용.
-	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
-	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
-	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
-	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Overlap);
-	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Overlap);
-	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Overlap);
-	/*** Collision : End ***/
+	SplashSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SplashSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); // 월드 다이내믹 - 애니메이션 또는 코드(키네마틱)의 영향 하에 움직이는 액터 유형에 쓰입니다. 리프트나 문이 WorldDynamic 액터의 좋은 예입니다.
+	SplashSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap); // 모든 CollisionResponses에 대해서 ECR_Overlap를 일괄 적용.
+
+	/*SplashStaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Splash StaticMesh"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>SphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
+	if (SphereMeshAsset.Succeeded())
+	{
+		SplashStaticMeshComp->SetStaticMesh(SphereMeshAsset.Object);
+		SplashStaticMeshComp->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+		SplashStaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> MatInst(TEXT("MaterialInstanceConstant'/Game/StarterBundle/ModularScifiHallways/Materials/MI_GlassLight_B.MI_GlassLight_B'"));
+		if (MatInst.Succeeded())
+		{
+			SplashStaticMeshComp->SetMaterial(0, MatInst.Object);
+		}
+	}*/
+	/*** Splash : End ***/
+
+	/*** Physics : Start ***/
+	PhysicsBoxComp = CreateDefaultSubobject<UBoxComponent>("PhysicsBoxComp");
+	PhysicsBoxComp->SetBoxExtent(FVector(10.0f, 5.0f, 5.0f), false);
+
+	PhysicsBoxComp->SetGenerateOverlapEvents(false);
+
+	PhysicsBoxComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	PhysicsBoxComp->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+	PhysicsBoxComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	PhysicsBoxComp->SetSimulatePhysics(true);
+	//PhysicsBoxComp->SetLinearDamping(0.5f);
+	//PhysicsBoxComp->SetAngularDamping(2.0f);
+	//PhysicsBoxComp->SetMassOverrideInKg(NAME_None, 1.0f, true);
+	/*** Physics : End ***/
+
+	SetHierarchy();
+
+	bDoSuicide = true;
 }
 
 // Called when the game starts or when spawned
@@ -83,7 +117,7 @@ void AProjectileGrenadeLauncher::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
+	SetSuicideTimer(3.0f);
 }
 
 // Called every frame
@@ -91,6 +125,59 @@ void AProjectileGrenadeLauncher::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bPassed1Frame)
+		countFrame++;
+}
+
+void AProjectileGrenadeLauncher::Suicide()
+{
+	if (!bDoSuicide)
+		return;
+
+	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
+	if (PhysicsBoxComp)
+		PhysicsBoxComp->DestroyComponent();
+	if (SphereComp)
+		SphereComp->DestroyComponent();
+	if (StaticMeshComp)
+		StaticMeshComp->DestroyComponent();
+	if (ProjectileMovementComp)
+		ProjectileMovementComp->DestroyComponent();
+
+	// ImpactParticleSystem을 실행합니다.
+	if (ImpactParticleSystem && ImpactParticleSystem->Template)
+	{
+		ImpactParticleSystem->SetWorldRotation(FRotator::ZeroRotator);
+		ImpactParticleSystem->ToggleActive();
+	}
+
+	// 3초뒤 소멸합니다.
+	SetDestoryTimer(3.0f);
+
+	bPassed1Frame = true;
+	countFrame = 0;
+
+	// 스플래시용 충돌구체가 OverlapEvent를 발생하도록 크기를 조정.
+	SplashSphereComp->SetSphereRadius(256.0f);
+}
+
+void AProjectileGrenadeLauncher::SetSuicideTimer(float Time)
+{
+	UE_LOG(LogTemp, Warning, TEXT("SetSuicideTimer"));
+	FTimerHandle timer;
+	GetWorldTimerManager().SetTimer(timer, this, &AProjectileGrenadeLauncher::Suicide, Time, false);
+}
+
+void AProjectileGrenadeLauncher::SetHierarchy()
+{
+	RootComponent = PhysicsBoxComp;
+	SphereComp->SetupAttachment(RootComponent);
+	StaticMeshComp->SetupAttachment(RootComponent);
+	TrailParticleSystem->SetupAttachment(RootComponent);
+	ImpactParticleSystem->SetupAttachment(RootComponent);
+
+	SplashSphereComp->SetupAttachment(RootComponent);
+	//SplashStaticMeshComp->SetupAttachment(SplashSphereComp);
 }
 
 void AProjectileGrenadeLauncher::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -126,19 +213,58 @@ void AProjectileGrenadeLauncher::OnOverlapBegin(class UPrimitiveComponent* Overl
 		if (OtherActor->IsA(AEnemy::StaticClass()))
 		{
 			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			enemy->Calculatehealth(-TotalDamage);
+			if (enemy)
+				enemy->Calculatehealth(-TotalDamage);
 		}
 	}
 
-	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
-	SphereComp->DestroyComponent();
-	StaticMeshComp->DestroyComponent();
-	ProjectileMovementComp->DestroyComponent();
+	// 소멸합니다.
+	Suicide();
+	bDoSuicide = false;
+}
 
-	// ImpactParticleSystem을 실행합니다.
-	if (ImpactParticleSystem && ImpactParticleSystem->Template)
-		ImpactParticleSystem->ToggleActive();
+void AProjectileGrenadeLauncher::SplashOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// 2프레임 동안만 실행하고 소멸합니다.
+	if (countFrame >= 2)
+	{
+		bPassed1Frame = false;
+		if (SplashSphereComp)
+			SplashSphereComp->DestroyComponent();
+		return;
+	}
 
-	// 3초뒤 소멸합니다.
-	SetDestoryTimer(3.0f);
+	// Collsition의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	{
+		return;
+	}
+
+	// owner가 없으면 충돌나기 때문에 체크합니다.
+	if (this->GetOwner() && this->GetOwner()->GetOwner())
+	{
+		// 충돌한 액터가 투사체의 소유자(Weapon) 또는 소유자의 소유자(Pioneer)면 무시합니다.
+		if (OtherActor == this->GetOwner() || OtherActor == this->GetOwner()->GetOwner())
+		{
+			return;
+		}
+	}
+
+	// 투사체 끼리는 무시합니다.
+	if (OtherActor->IsA(AProjectile::StaticClass()))
+	{
+		return;
+	}
+
+
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
+	{
+		if (OtherActor->IsA(AEnemy::StaticClass()))
+		{
+			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
+			if (enemy)
+				enemy->Calculatehealth(-TotalDamage);
+		}
+	}
 }
