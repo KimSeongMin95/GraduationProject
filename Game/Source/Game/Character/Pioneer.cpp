@@ -223,12 +223,12 @@ void APioneer::SetCameraBoomSettings()
 
 void APioneer::ZoomInOrZoomOut(float Value)
 {
-	TargetArmLength += Value * 128.0f;
+	TargetArmLength += Value * 1280.0f;
 
 	if (TargetArmLength < 0.0f)
 		TargetArmLength = 0.0f;
-	else if (TargetArmLength > 1500.0f)
-		TargetArmLength = 1500.0f;
+	/*else if (TargetArmLength > 1500.0f)
+		TargetArmLength = 1500.0f;*/
 }
 /*** Camera : End ***/
 
