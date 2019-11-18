@@ -72,6 +72,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; // APawn 인터페이스     
 /*** Basic Function : End ***/
 
+	int SocketID;
+
 /*** CharacterMovement : Start ***/
 public:
 	virtual void RotateTargetRotation(float DeltaTime) override;

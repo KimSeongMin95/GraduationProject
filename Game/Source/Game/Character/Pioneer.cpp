@@ -17,6 +17,8 @@
 /*** Basic Function : Start ***/
 APioneer::APioneer() // Sets default values
 {
+	SocketID = -1; // -1은 AI를 뜻합니다.
+
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
