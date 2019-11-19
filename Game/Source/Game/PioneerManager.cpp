@@ -111,6 +111,11 @@ APioneer* APioneerManager::GetPioneerBySocketID(int SocketID)
 /** 다른 폰으로 변경하는 함수입니다. */
 void APioneerManager::SwitchPawn(float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
 {
+	if (PioneerCtrl->GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerManager::SwitchPawn PioneerCtrl->GetPawn()"));
+		return;
+	}
 	//enum EViewTargetBlendFunction
 	//{
 	//	/** Camera does a simple linear interpolation. */

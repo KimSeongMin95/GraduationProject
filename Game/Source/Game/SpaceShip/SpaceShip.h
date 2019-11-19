@@ -104,6 +104,15 @@ public:
 
 	UFUNCTION()
 		void _Landing(FVector TargetPosition);
+
+	FTimerHandle TimerHandleTakeOff;
+
+	UFUNCTION()
+		void TakeOff(FVector TargetPosition);
+
+	UFUNCTION()
+		void _TakeOff(FVector TargetPosition);
+
 /*** Animation : End ***/
 
 /*** Camera : Start ***/
@@ -128,4 +137,13 @@ public:
 		class UParticleSystemComponent* EngineParticleSystem2 = nullptr;
 	void InitParticleSystem();
 /*** ParticleSystem : End ***/
+
+/*** Rotation : Start ***/
+public:
+	bool bRotateTargetRotation;
+
+	FRotator TargetRotation;
+
+	virtual void RotateTargetRotation(float DeltaTime);
+/*** Rotation : End ***/
 };
