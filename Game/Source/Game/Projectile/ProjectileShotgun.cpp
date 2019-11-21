@@ -6,6 +6,7 @@
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Enemy.h"
 #include "Character/Pioneer.h"
+#include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values
@@ -112,6 +113,14 @@ void AProjectileShotgun::OnOverlapBegin(class UPrimitiveComponent* OverlappedCom
 		return;
 	}
 
+	// 배치 대기중인 건물은 무시합니다.
+	if (OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		if (dynamic_cast<ABuilding*>(OtherActor)->bIsConstructing == false)
+		{
+			return;
+		}
+	}
 
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))

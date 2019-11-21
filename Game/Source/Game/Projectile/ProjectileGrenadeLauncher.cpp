@@ -6,6 +6,7 @@
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Enemy.h"
 #include "Character/Pioneer.h"
+#include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values
@@ -206,6 +207,14 @@ void AProjectileGrenadeLauncher::OnOverlapBegin(class UPrimitiveComponent* Overl
 		return;
 	}
 
+	// 배치 대기중인 건물은 무시합니다.
+	if (OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		if (dynamic_cast<ABuilding*>(OtherActor)->bIsConstructing == false)
+		{
+			return;
+		}
+	}
 
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
@@ -215,12 +224,12 @@ void AProjectileGrenadeLauncher::OnOverlapBegin(class UPrimitiveComponent* Overl
 			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
 			if (enemy)
 				enemy->Calculatehealth(-TotalDamage);
+
+			// 소멸합니다.
+			Suicide();
+			bDoSuicide = false;
 		}
 	}
-
-	// 소멸합니다.
-	Suicide();
-	bDoSuicide = false;
 }
 
 void AProjectileGrenadeLauncher::SplashOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -255,7 +264,6 @@ void AProjectileGrenadeLauncher::SplashOnOverlapBegin(class UPrimitiveComponent*
 	{
 		return;
 	}
-
 
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))

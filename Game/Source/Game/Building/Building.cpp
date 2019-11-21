@@ -140,7 +140,17 @@ void ABuilding::OnOverlapBegin_BuildingSMC(class UPrimitiveComponent* Overlapped
 		return;
 	}
 
-	if (bIsConstructing)
+	if (!bIsConstructing)
+	{
+		// 투사체도 무시합니다.
+		if (OtherActor->IsA(AProjectile::StaticClass()))
+		{
+			return;
+		}
+
+		OverapedActors.Add(OtherActor);
+	}
+	else
 	{
 		// 투사체
 		if (OtherActor->IsA(AProjectile::StaticClass()))
@@ -149,10 +159,6 @@ void ABuilding::OnOverlapBegin_BuildingSMC(class UPrimitiveComponent* Overlapped
 
 			HP -= projectile->TotalDamage;
 		}
-	}
-	else
-	{
-		OverapedActors.Add(OtherActor);
 	}
 }
 
@@ -166,6 +172,12 @@ void ABuilding::OnOverlapEnd_BuildingSMC(class UPrimitiveComponent* OverlappedCo
 
 	// Collision의 기본인 ATriggerVolume은 무시합니다.
 	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	{
+		return;
+	}
+
+	// 투사체도 무시합니다.
+	if (OtherActor->IsA(AProjectile::StaticClass()))
 	{
 		return;
 	}
@@ -201,7 +213,7 @@ void ABuilding::InitBuildingSMC()
 		BuildingSMC->OnComponentEndOverlap.AddDynamic(this, &ABuilding::OnOverlapEnd_BuildingSMC);
 
 		BuildingSMC->SetGenerateOverlapEvents(true);
-		BuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		BuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		BuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 		BuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 	}
