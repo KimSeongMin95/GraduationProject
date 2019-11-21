@@ -11,6 +11,7 @@
 #include "Weapon/Shotgun.h"
 #include "Weapon/RocketLauncher.h"
 #include "Weapon/GrenadeLauncher.h"
+#include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -30,6 +31,10 @@ APioneer::APioneer() // Sets default values
 
 	InitAIController();
 
+	/*** Building : Start ***/
+	bConstructingMode = false;
+
+	/*** Building : End ***/
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
 	//BaseLookUpRate = 45.0f;
@@ -53,6 +58,8 @@ void APioneer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	SetCursorToWorld();
+
+	OnConstructingMode();
 
 	RotateTargetRotation(DeltaTime);
 
@@ -272,6 +279,27 @@ void APioneer::SetCursorToWorld()
 			}
 		}
 		else if (APlayerController* PC = Cast<APlayerController>(GetController()))*/
+
+		//// 이 코드는 채널이 ECC_Visibility인 모든 액터?와 비교하고 가장 상단 위치를 가져옴.
+		//if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		//{
+		//	FHitResult TraceHitResult;
+		//	PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
+		//	FVector CursorFV = TraceHitResult.ImpactNormal;
+		//	FRotator CursorR = CursorFV.Rotation();
+		//	CursorToWorld->SetWorldLocation(TraceHitResult.Location);
+		//	CursorToWorld->SetWorldRotation(CursorR);
+
+		//	// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
+		//	if (Weapon)
+		//	{ 
+		//		LookAtTheLocation(CursorToWorld->GetComponentLocation());
+		//	}
+
+		//	CursorToWorld->SetVisibility(true);
+		//}
+
+		// 이 코드는 오로지 LandScape위의 마우스 커서 Transform 정보를 얻음.
 		if (APlayerController* PC = Cast<APlayerController>(GetController()))
 		{
 			FHitResult TraceHitResult;
@@ -283,7 +311,7 @@ void APioneer::SetCursorToWorld()
 
 			// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
 			if (Weapon)
-			{ 
+			{
 				LookAtTheLocation(CursorToWorld->GetComponentLocation());
 			}
 
@@ -440,7 +468,95 @@ void APioneer::ChangeWeapon()
 	if (tempIdx >= 7)
 		tempIdx = 0;
 }
+void APioneer::Disarming()
+{
+	if (!Weapon)
+		return;
+
+	// 무기 내려놓기
+	bHasPistolType = false;
+	bHasRifleType = false;
+	bHasLauncherType = false;
+	Weapon->SetActorHiddenInGame(true);
+	Weapon = nullptr;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	tempIdx = 0;
+}
 /*** Weapon : End ***/
+
+/*** Building : Start ***/
+void APioneer::SpawnBuilding()
+{
+	if (Building)
+		return;
+
+	UWorld* const World = GetWorld();
+	if (!World)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+	FTransform myTrans = FTransform::Identity;
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	// 임시로 전부다 만들어 놓습니다.
+	Building = World->SpawnActor<ABuilding>(ABuilding::StaticClass(), myTrans, SpawnParams);
+}
+
+void APioneer::OnConstructingMode()
+{
+	if (!bConstructingMode || !CursorToWorld || !Building)
+		return;
+
+	if (GetController() == AIController)
+		return;
+
+	/*if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		FHitResult TraceHitResult;
+		PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
+		FVector CursorFV = TraceHitResult.ImpactNormal;
+		FRotator CursorR = CursorFV.Rotation();
+		Building->SetActorLocation(CursorFV);
+		
+	}*/
+
+	Building->SetActorLocation(CursorToWorld->GetComponentLocation());
+}
+
+void APioneer::ChangeBuilding()
+{
+	if (!bConstructingMode)
+		return;
+
+
+}
+
+void APioneer::RotatingBuilding(float Value)
+{
+	if (!Building)
+		return;
+
+	Building->Rotating(Value);
+}
+
+void APioneer::PlaceBuilding()
+{
+	if (!bConstructingMode || !Building)
+		return;
+
+	bool success = Building->Constructing();
+	if (success)
+	{
+		Building = nullptr;
+		bConstructingMode = false;
+	}
+}
+/*** Building : End ***/
 
 
 

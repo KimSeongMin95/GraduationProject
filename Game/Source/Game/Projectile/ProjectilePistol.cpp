@@ -119,7 +119,8 @@ void AProjectilePistol::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp
 	// 배치 대기중인 건물은 무시합니다.
 	if (OtherActor->IsA(ABuilding::StaticClass()))
 	{
-		if (dynamic_cast<ABuilding*>(OtherActor)->bIsConstructing == false)
+		if (dynamic_cast<ABuilding*>(OtherActor)->bIsConstructing == false 
+			&& dynamic_cast<ABuilding*>(OtherActor)->bCompleted == false)
 		{
 			return;
 		}

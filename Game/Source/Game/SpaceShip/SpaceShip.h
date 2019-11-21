@@ -52,8 +52,10 @@ public:
 
 /*** SpawnPioneer : Start ***/
 public:
-	int PioneerNum; /** Spawn할 Pioneer 개수 */
-	int countPioneerNum; /** PioneerNum를 카운트 */
+	UPROPERTY(EditAnywhere)
+		int PioneerNum; /** Spawn할 Pioneer 개수 */
+	UPROPERTY(VisibleAnywhere)
+		int countPioneerNum; /** PioneerNum를 카운트 */
 
 	UPROPERTY(EditAnywhere)
 		class UArrowComponent* PioneerSpawnPoint = nullptr;
@@ -83,8 +85,10 @@ public:
 /*** Animation : Start ***/
 public:
 	bool bPlayAnimation;
-	float Speed;
-	float LandingZ;
+	UPROPERTY(VisibleAnywhere)
+		float Speed;
+	UPROPERTY(VisibleAnywhere)
+		float LandingZ;
 
 	UPROPERTY(VisibleAnywhere)
 		class USkeletalMeshComponent* SkeletalMeshComp = nullptr;

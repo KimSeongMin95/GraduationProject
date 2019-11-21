@@ -40,13 +40,16 @@ void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!bIsConstructing && OverapedActors.Num() > 0)
+	if (!bCompleted)
 	{
-		SetUnConstructableMaterial();
-	}
-	else
-	{
-		SetConstructableMaterial();
+		if (!bIsConstructing && OverapedActors.Num() > 0)
+		{
+			SetUnConstructableMaterial();
+		}
+		else
+		{
+			SetConstructableMaterial();
+		}
 	}
 }
 
@@ -58,7 +61,7 @@ void ABuilding::InitStatement()
 	CompleteHP = 100.0f;
 
 	Size = FVector2D(1.0f, 1.0f);
-	ConstructionTime = 1.0f;
+	ConstructionTime = 3.0f;
 
 	NeedMineral = 0.0f;
 	NeedOrganicMatter = 0.0f;
@@ -200,6 +203,8 @@ void ABuilding::OnOverlapEnd_BuildingSMC(class UPrimitiveComponent* OverlappedCo
 void ABuilding::InitBuildingSMC()
 {
 	bIsConstructing = false;
+	bCompleted = false;
+
 	BuildingSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BuildingStaticMeshComponent"));
 	BuildingSMC->SetupAttachment(RootComponent);
 
@@ -281,15 +286,19 @@ void ABuilding::Rotating(float Value)
 /*** Rotation : End ***/
 
 /*** Constructing And Destorying : Start ***/
-void ABuilding::Constructing()
+bool ABuilding::Constructing()
 {
-	bIsConstructing = true;
-	SetBuildingSMCMaterials();
+	if (OverapedActors.Num() > 0)
+		return false;
 
+	bIsConstructing = true;
+	
 	if (BuildingSMC)
 	{
 		BuildingSMC->SetGenerateOverlapEvents(false);
 		BuildingSMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		BuildingSMC->SetHiddenInGame(true);
 	}
 
 	if (ConstructBuildingSMC)
@@ -301,10 +310,42 @@ void ABuilding::Constructing()
 	
 		ConstructBuildingSMC->SetHiddenInGame(false);
 	}
+
+	FTimerHandle timer;
+	GetWorldTimerManager().SetTimer(timer, this, &ABuilding::CompleteConstructing, ConstructionTime, false);
+
+	return true;
 }
 void ABuilding::Destorying()
 {
 	Destroy();
+}
+void ABuilding::CompleteConstructing()
+{
+	bIsConstructing = false;
+	bCompleted = true;
+
+	if (BuildingSMC)
+	{
+		BuildingSMC->SetGenerateOverlapEvents(true);
+		BuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		BuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+		BuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+
+		BuildingSMC->SetHiddenInGame(false);
+
+		
+	}
+
+	if (ConstructBuildingSMC)
+	{
+		ConstructBuildingSMC->SetGenerateOverlapEvents(false);
+		ConstructBuildingSMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		ConstructBuildingSMC->SetHiddenInGame(true);
+	}
+
+	SetBuildingSMCMaterials();
 }
 /*** Constructing And Destorying : End ***/
 

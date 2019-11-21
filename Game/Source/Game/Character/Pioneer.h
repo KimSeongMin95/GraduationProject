@@ -184,8 +184,23 @@ public:
 
 	// 임시
 	void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
+	void Disarming();
 /*** Weapon : End ***/
 
+/*** Building : Start ***/
+public:
+	class ABuilding* Building = nullptr;
+	void SpawnBuilding();
 
+	bool bConstructingMode;
+
+	void OnConstructingMode();
+
+	// 임시
+	void ChangeBuilding();
+
+	void RotatingBuilding(float Value);
+	void PlaceBuilding();
+/*** Building : End ***/
 };
 

@@ -25,6 +25,7 @@ void APioneerController::PlayerTick(float DeltaTime)
 	{
 		MoveToMouseCursor();
 	}
+
 }
 
 void APioneerController::SetupInputComponent()
@@ -52,6 +53,11 @@ void APioneerController::SetupInputComponent()
 
 	// 임시
 	InputComponent->BindAction("CW", IE_Pressed, this, &APioneerController::ChangeWeapon);
+		
+
+	InputComponent->BindAxis("RotatingBuilding", this, &APioneerController::RotatingBuilding);
+	InputComponent->BindAction("PlaceBuilding", IE_Pressed, this, &APioneerController::PlaceBuilding);
+	InputComponent->BindAction("ConstructingMode", IE_Pressed, this, &APioneerController::ConstructingMode);
 }
 
 //void APioneerController::OnResetVR()
@@ -192,6 +198,42 @@ void APioneerController::ChangeWeapon()
 	if (MyPawn)
 	{
 		MyPawn->ChangeWeapon();
+	}
+}
+
+void APioneerController::RotatingBuilding(float Value)
+{
+	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
+	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
+
+	if (MyPawn)
+	{
+		MyPawn->RotatingBuilding(Value);
+	}
+}
+
+void APioneerController::PlaceBuilding()
+{
+	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
+	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
+
+	if (MyPawn)
+	{
+		MyPawn->PlaceBuilding();
+	}
+}
+
+void APioneerController::ConstructingMode()
+{
+	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
+	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
+
+	if (MyPawn)
+	{
+		MyPawn->bConstructingMode = 1 - MyPawn->bConstructingMode;
+		if (MyPawn->bConstructingMode)
+			MyPawn->SpawnBuilding();
+		MyPawn->Disarming();
 	}
 }
 

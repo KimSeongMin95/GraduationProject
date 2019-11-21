@@ -89,11 +89,13 @@ public:
 /*** BuildingStaticMeshComponent : Start ***/
 public:
 	bool bIsConstructing;
+	bool bCompleted;
 
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* BuildingSMC = nullptr;
 
-	TArray<class UMaterialInterface*> BuildingSMCMaterials; /** 기존 머터리얼들을 저장 */
+	UPROPERTY(VisibleAnywhere)
+		TArray<class UMaterialInterface*> BuildingSMCMaterials; /** 기존 머터리얼들을 저장 */
 	void SetBuildingSMCMaterials();
 
 	TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
@@ -120,12 +122,15 @@ public:
 
 /*** Rotation : Start ***/
 public:
+	//void Locating(FVector position);
 	void Rotating(float Value);
 /*** Rotation : End ***/
 
 /*** Constructing And Destorying : Start ***/
 public:
-	void Constructing();
+	bool Constructing();
 	void Destorying();
+	UFUNCTION()
+		void CompleteConstructing();
 /*** Constructing And Destorying: End ***/
 };

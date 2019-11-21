@@ -45,7 +45,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void MoveForward(float Value); /** 플레이어를 앞뒤로 이동시키는 함수입니다. */
-
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void MoveRight(float Value); /** 플레이어를 좌우로 이동시키는 함수입니다. */
 
@@ -54,9 +53,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void FireWeapon();
-
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void ChangeWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void RotatingBuilding(float Value);
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void PlaceBuilding();
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void ConstructingMode();
 	/*** Input handlers for SetDestination action. : End ***/
 
 /*** Overrided Function : Start ***/

@@ -121,9 +121,18 @@ void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* Overlappe
 	// 배치 대기중인 건물은 무시합니다.
 	if (OtherActor->IsA(ABuilding::StaticClass()))
 	{
-		if (dynamic_cast<ABuilding*>(OtherActor)->bIsConstructing == false)
+		if (dynamic_cast<ABuilding*>(OtherActor)->bIsConstructing == false
+			&& dynamic_cast<ABuilding*>(OtherActor)->bCompleted == false)
 		{
 			return;
+		}
+		else // 건물에 닿으면 바로 소멸시킵니다.
+		{
+			// ImpactParticleSystem을 실행합니다.
+			if (ImpactParticleSystem && ImpactParticleSystem->Template)
+				ImpactParticleSystem->ToggleActive();
+
+			hitCount = 3;
 		}
 	}
 
