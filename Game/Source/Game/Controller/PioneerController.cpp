@@ -82,19 +82,22 @@ void APioneerController::MoveToMouseCursor()
 	else*/
 	// 마우스 커서 사용시
 	{
-
-		// Trace to see what is under the mouse cursor
-		// 마우스 커서 아래에 무엇이 존재하는지 추적합니다.
-		FHitResult HitResult;
-		GetHitResultUnderCursor(ECC_Visibility, false, HitResult); // 내부에서 APlayerController::GetHitResultAtScreenPosition(...)을 사용합니다.
-		// ECollisionChannel:: indicating different type of objects for rigid-body collision purposes.
-
-		// Indicates if this hit was a result of blocking collision
-		if (HitResult.bBlockingHit)
+		if (APioneer* MyPawn = Cast<APioneer>(GetPawn()))
 		{
-			// We hit something, move there
-			// Hit.ImpactPoint는 Ray와 충돌한 물체의 표면 지점을 반환합니다.
-			PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, HitResult.ImpactPoint);
+			//// Trace to see what is under the mouse cursor
+			//// 마우스 커서 아래에 무엇이 존재하는지 추적합니다.
+			//FHitResult HitResult;
+			//GetHitResultUnderCursor(ECC_Visibility, false, HitResult); // 내부에서 APlayerController::GetHitResultAtScreenPosition(...)을 사용합니다.
+			//// ECollisionChannel:: indicating different type of objects for rigid-body collision purposes.
+
+			//// Indicates if this hit was a result of blocking collision
+			//if (HitResult.bBlockingHit)
+			//{
+			//	// We hit something, move there
+			//	// Hit.ImpactPoint는 Ray와 충돌한 물체의 표면 지점을 반환합니다.
+			//	PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, HitResult.ImpactPoint);
+			//}
+			PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, MyPawn->CursorToWorld->GetComponentLocation());
 		}
 	}
 }

@@ -12,6 +12,8 @@
 #include "Weapon/RocketLauncher.h"
 #include "Weapon/GrenadeLauncher.h"
 #include "Building/Building.h"
+
+#include "Landscape.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -277,10 +279,9 @@ void APioneer::SetCursorToWorld()
 				FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
 				CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
 			}
-		}
-		else if (APlayerController* PC = Cast<APlayerController>(GetController()))*/
-
-		//// 이 코드는 채널이 ECC_Visibility인 모든 액터?와 비교하고 가장 상단 위치를 가져옴.
+		}*/
+		//// 이 코드는 Collision채널이 ECC_Visibility인 가장 상단의 액터 정보를 가져옴.
+		//else if (APlayerController* PC = Cast<APlayerController>(GetController()))
 		//if (APlayerController* PC = Cast<APlayerController>(GetController()))
 		//{
 		//	FHitResult TraceHitResult;
@@ -299,23 +300,48 @@ void APioneer::SetCursorToWorld()
 		//	CursorToWorld->SetVisibility(true);
 		//}
 
-		// 이 코드는 오로지 LandScape위의 마우스 커서 Transform 정보를 얻음.
-		if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
+		if (UWorld* World = GetWorld())
 		{
-			FHitResult TraceHitResult;
-			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
-			FVector CursorFV = TraceHitResult.ImpactNormal;
-			FRotator CursorR = CursorFV.Rotation();
-			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
-			CursorToWorld->SetWorldRotation(CursorR);
-
-			// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
-			if (Weapon)
+			// 현재 Player의 뷰포트의 마우스포지션을 가져옵니다.
+			APlayerController* PC = Cast<APlayerController>(GetController());
+			ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PC->Player);
+			FVector2D MousePosition;
+			if (LocalPlayer && LocalPlayer->ViewportClient)
 			{
-				LookAtTheLocation(CursorToWorld->GetComponentLocation());
+				LocalPlayer->ViewportClient->GetMousePosition(MousePosition);
 			}
 
-			CursorToWorld->SetVisibility(true);
+			FVector WorldOrigin; // 시작 위치
+			FVector WorldDirection; // 방향
+			float HitResultTraceDistance = 100000.f; // WorldDirection과 곱하여 끝 위치를 설정
+			UGameplayStatics::DeprojectScreenToWorld(PC, MousePosition, WorldOrigin, WorldDirection);
+			FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
+			//FCollisionQueryParams& CollisionQueryParams()
+
+			TArray<FHitResult> hitResults; // 결과를 저장
+			World->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
+
+			for (auto& hit : hitResults)
+			{
+				//if (hit.Actor->GetClass() == ALandscape::StaticClass())
+				//if (Cast<ALandscape>(hit.Actor))
+				if (hit.Actor->IsA(ALandscape::StaticClass())) // hit한 Actor가 ALandscape면
+				{
+					FVector CursorFV = hit.ImpactNormal;
+					FRotator CursorR = CursorFV.Rotation();
+					CursorToWorld->SetWorldLocation(hit.Location);
+					CursorToWorld->SetWorldRotation(CursorR);
+
+					// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
+					if (Weapon)
+					{ 
+						LookAtTheLocation(CursorToWorld->GetComponentLocation());
+					}
+
+					CursorToWorld->SetVisibility(true);
+				}
+			}
 		}
 	}
 	else

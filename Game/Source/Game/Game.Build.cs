@@ -12,11 +12,14 @@ public class Game : ModuleRules
         /* 기존 모듈에 새로 추가했습니다.
          * VR: "HeadMountedDisplay" 
          * Navigation: "NavigationSystem", "AIModule"
-         * 
+         * Landscape: "Landscape" 
          */
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "NavigationSystem", "AIModule" });
 
-        PrivateDependencyModuleNames.AddRange(new string[] {  });
+        /* ALandscape::GetPrivateStaticClass() 오류가 발생하여 PrivateDependencyModuleNames에 "Landscape"를 추가.
+         * 
+         */
+        PrivateDependencyModuleNames.AddRange(new string[] { "Landscape" });
 
 
 

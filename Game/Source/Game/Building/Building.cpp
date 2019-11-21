@@ -105,10 +105,20 @@ void ABuilding::InitConstructBuildingSMC()
 	ConstructBuildingSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ConstructBuildingStaticMeshComponent"));
 	ConstructBuildingSMC->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> constructBuildingSMC(TEXT("StaticMesh'/Game/Buildings/InorganicMine/Temp_InorganicMine.Temp_InorganicMine'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> constructBuildingSMC(TEXT("StaticMesh'/Game/Buildings/Gate/SM_Door_L.SM_Door_L'"));
 	if (constructBuildingSMC.Succeeded())
 	{
 		ConstructBuildingSMC->SetStaticMesh(constructBuildingSMC.Object);
+
+		// StaticMesh의 원본 사이즈 측정
+		FVector minBounds, maxBounds;
+		ConstructBuildingSMC->GetLocalBounds(minBounds, maxBounds);
+
+		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
+		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
+		ConstructBuildingSMC->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.5f));
+		ConstructBuildingSMC->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+		ConstructBuildingSMC->SetRelativeLocation(FVector(-(maxBounds.X + minBounds.X) / 2.0f, -(maxBounds.Y + minBounds.Y) / 2.0f, -minBounds.Z));
 
 		ConstructBuildingSMC->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_ConstructBuildingSMC);
 		ConstructBuildingSMC->SetGenerateOverlapEvents(false);
@@ -208,10 +218,21 @@ void ABuilding::InitBuildingSMC()
 	BuildingSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BuildingStaticMeshComponent"));
 	BuildingSMC->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> buildingSMC(TEXT("StaticMesh'/Game/Buildings/Walls/SM_Intersection_Wall.SM_Intersection_Wall'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> buildingSMC(TEXT("StaticMesh'/Game/Buildings/Gate/SM_Door_L.SM_Door_L'"));
 	if (buildingSMC.Succeeded())
 	{
 		BuildingSMC->SetStaticMesh(buildingSMC.Object);
+		
+		// StaticMesh의 원본 사이즈 측정
+		FVector minBounds, maxBounds;
+		BuildingSMC->GetLocalBounds(minBounds, maxBounds);
+
+		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
+		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
+		BuildingSMC->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
+		BuildingSMC->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+		BuildingSMC->SetRelativeLocation(FVector(-(maxBounds.X + minBounds.X) / 2.0f, -(maxBounds.Y + minBounds.Y) / 2.0f, -minBounds.Z));
+
 		BuildingSMCMaterials = BuildingSMC->GetMaterials();
 
 		BuildingSMC->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_BuildingSMC);
@@ -221,6 +242,9 @@ void ABuilding::InitBuildingSMC()
 		BuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		BuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 		BuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+		// (기본적으로 true로 되어 있음) NavMesh에 업데이트 되도록 CanEverAffectNavigation을 true로 변경.
+		//BuildingSMC->SetCanEverAffectNavigation(true);
 	}
 }
 /*** BuildingStaticMeshComponent : End ***/
