@@ -16,6 +16,13 @@
 #include "Building/Wall.h"
 #include "Building/Floor.h"
 #include "Building/Stairs.h"
+#include "Building/Turret.h"
+#include "Building/Gate.h"
+#include "Building/OrganicMine.h"
+#include "Building/InorganicMine.h"
+#include "Building/NuclearFusionPowerPlant.h"
+#include "Building/ResearchInstitute.h"
+#include "Building/WeaponFactory.h"
 
 #include "Landscape.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
@@ -543,6 +550,27 @@ void APioneer::SpawnBuilding()
 	case 2:
 		Building = World->SpawnActor<AStairs>(AStairs::StaticClass(), myTrans, SpawnParams);
 		break;
+	case 3:
+		Building = World->SpawnActor<ATurret>(ATurret::StaticClass(), myTrans, SpawnParams);
+		break;
+	case 4:
+		Building = World->SpawnActor<AGate>(AGate::StaticClass(), myTrans, SpawnParams);
+		break;
+	case 5:
+		Building = World->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
+		break;
+	case 6:
+		Building = World->SpawnActor<AInorganicMine>(AInorganicMine::StaticClass(), myTrans, SpawnParams);
+		break;
+	case 7:
+		Building = World->SpawnActor<ANuclearFusionPowerPlant>(ANuclearFusionPowerPlant::StaticClass(), myTrans, SpawnParams);
+		break;
+	case 8:
+		Building = World->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
+		break;
+	case 9:
+		Building = World->SpawnActor<AWeaponFactory>(AWeaponFactory::StaticClass(), myTrans, SpawnParams);
+		break;
 	}
 }
 
@@ -594,7 +622,7 @@ void APioneer::ChangeBuilding()
 		return;
 
 	tempBuildingIdx++;
-	if (tempBuildingIdx >= 3)
+	if (tempBuildingIdx >= 10)
 		tempBuildingIdx = 0;
 
 	SpawnBuilding();

@@ -12,9 +12,9 @@ AStairs::AStairs()
 {
 	InitStatement();
 
-	InitConstructBuildingSMC();
+	InitConstructBuilding();
 
-	InitBuildingSMC();
+	InitBuilding();
 }
 
 void AStairs::BeginPlay()
@@ -55,7 +55,7 @@ void AStairs::InitStatement()
 /*** Statements : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
-void AStairs::InitConstructBuildingSMC()
+void AStairs::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Stairs/SM_Stairs_A.SM_Stairs_A'"),
@@ -67,7 +67,7 @@ void AStairs::InitConstructBuildingSMC()
 /*** ConstructBuildingStaticMeshComponent : End ***/
 
 /*** BuildingStaticMeshComponent : Start ***/
-void AStairs::InitBuildingSMC()
+void AStairs::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Stairs/SM_Stairs_A.SM_Stairs_A'"),

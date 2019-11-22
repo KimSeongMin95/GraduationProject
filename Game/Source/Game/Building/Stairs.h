@@ -11,7 +11,7 @@ class GAME_API AStairs : public ABuilding
 {
 	GENERATED_BODY()
 
-		/*** Basic Function : Start ***/
+/*** Basic Function : Start ***/
 public:
 	// Sets default values for this actor's properties
 	AStairs();
@@ -23,30 +23,30 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	/*** Basic Function : End ***/
+/*** Basic Function : End ***/
 
-	/*** Statements : Start ***/
+/*** Statements : Start ***/
 public:
 	virtual void InitStatement();
-	/*** Statements : End ***/
+/*** Statements : End ***/
 
-	/*** ConstructBuildingStaticMeshComponent : Start ***/
+/*** ConstructBuildingStaticMeshComponent : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* ConstructBuildingSMC_1;
+		class UStaticMeshComponent* ConstructBuildingSMC_1 = nullptr;
 	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* ConstructBuildingSMC_2;
+		class UStaticMeshComponent* ConstructBuildingSMC_2 = nullptr;
 
-	virtual void InitConstructBuildingSMC();
-	/*** ConstructBuildingStaticMeshComponent : End ***/
+	virtual void InitConstructBuilding();
+/*** ConstructBuildingStaticMeshComponent : End ***/
 
-	/*** BuildingStaticMeshComponent : Start ***/
+/*** BuildingStaticMeshComponent : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* BuildingSMC_1;
+		class UStaticMeshComponent* BuildingSMC_1 = nullptr;
 	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* BuildingSMC_2;
+		class UStaticMeshComponent* BuildingSMC_2 = nullptr;
 
-	virtual void InitBuildingSMC();
-	/*** BuildingStaticMeshComponent : End ***/
+	virtual void InitBuilding();
+/*** BuildingStaticMeshComponent : End ***/
 };

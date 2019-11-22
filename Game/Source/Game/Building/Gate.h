@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Building/Building.h"
-#include "Wall.generated.h"
+#include "Gate.generated.h"
 
 UCLASS()
-class GAME_API AWall : public ABuilding
+class GAME_API AGate : public ABuilding
 {
 	GENERATED_BODY()
 
 /*** Basic Function : Start ***/
 public:
 	// Sets default values for this actor's properties
-	AWall();
+	AGate();
 
 protected:
 	// Called when the game starts or when spawned

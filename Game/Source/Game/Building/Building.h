@@ -5,6 +5,7 @@
 /*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
 #include "Materials/Material.h"
 #include "Materials/MaterialInterface.h"
@@ -90,13 +91,20 @@ public:
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 public:
+	/*** StaticMesh : Start ***/
 	UPROPERTY(VisibleAnywhere)
 		TArray<class UStaticMeshComponent*> ConstructBuildingSMCs;
+	/*** StaticMesh : End ***/
+
+	/*** SkeltalMesh : Start ***/
+	UPROPERTY(VisibleAnywhere)
+		TArray<class UStaticMeshComponent*> ConstructBuildingSkMCs;
+	/*** SkeltalMesh : End ***/
 
 	UFUNCTION()
-		virtual void OnOverlapBegin_ConstructBuildingSMCs(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		virtual void OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	virtual void InitConstructBuildingSMCs();
+	virtual void InitConstructBuilding();
 	void AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind = TEXT("NULL"), FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 /*** ConstructBuildingStaticMeshComponent : End ***/
 
@@ -105,23 +113,32 @@ public:
 	bool bIsConstructing;
 	bool bCompleted;
 
+	/*** StaticMesh : Start ***/
 	UPROPERTY(VisibleAnywhere)
 		TArray<class UStaticMeshComponent*> BuildingSMCs;
-
 	// TArray는 1차원만 사용가능하므로 구조체를 이용하여 2차원으로 사용합니다.
 	UPROPERTY(VisibleAnywhere)
 		TArray<FTArrayOfUMaterialInterface> BuildingSMCsMaterials; /** 기존 머터리얼들을 저장 */
+	/*** StaticMesh : End ***/
+	
+	/*** SkeltalMesh : Start ***/
+	UPROPERTY(VisibleAnywhere)
+		TArray<class USkeletalMeshComponent*> BuildingSkMCs;
+	// TArray는 1차원만 사용가능하므로 구조체를 이용하여 2차원으로 사용합니다.
+	UPROPERTY(VisibleAnywhere)
+		TArray<FTArrayOfUMaterialInterface> BuildingSkMCsMaterials; /** 기존 머터리얼들을 저장 */
+	/*** SkeltalMesh : End ***/
 
 	TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
 	UFUNCTION()
-		virtual void OnOverlapBegin_BuildingSMCs(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		virtual void OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
-		virtual void OnOverlapEnd_BuildingSMCs(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+		virtual void OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	virtual void InitBuildingSMCs();
+	virtual void InitBuilding();
 	void AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind = TEXT("NULL"), FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
-
-	void SetBuildingSMCsMaterials();
+	void AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, UStaticMeshComponent** SubStaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind = TEXT("NULL"), FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	void SetBuildingMaterials();
 /*** BuildingStaticMeshComponent : End ***/
 
 /*** Material : Start ***/

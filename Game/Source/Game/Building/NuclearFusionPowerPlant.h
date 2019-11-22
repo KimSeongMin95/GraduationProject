@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Building/Building.h"
-#include "Wall.generated.h"
+#include "NuclearFusionPowerPlant.generated.h"
 
 UCLASS()
-class GAME_API AWall : public ABuilding
+class GAME_API ANuclearFusionPowerPlant : public ABuilding
 {
 	GENERATED_BODY()
 
 /*** Basic Function : Start ***/
 public:
 	// Sets default values for this actor's properties
-	AWall();
+	ANuclearFusionPowerPlant();
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,8 +34,6 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* ConstructBuildingSMC_1 = nullptr;
-	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* ConstructBuildingSMC_2 = nullptr;
 
 	virtual void InitConstructBuilding();
 /*** ConstructBuildingStaticMeshComponent : End ***/
@@ -44,8 +42,6 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* BuildingSMC_1 = nullptr;
-	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* BuildingSMC_2 = nullptr;
 
 	virtual void InitBuilding();
 /*** BuildingStaticMeshComponent : End ***/

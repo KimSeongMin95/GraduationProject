@@ -12,9 +12,9 @@ AFloor::AFloor()
 {
 	InitStatement();
 
-	InitConstructBuildingSMC();
+	InitConstructBuilding();
 
-	InitBuildingSMC();
+	InitBuilding();
 }
 
 void AFloor::BeginPlay()
@@ -55,7 +55,7 @@ void AFloor::InitStatement()
 /*** Statements : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
-void AFloor::InitConstructBuildingSMC()
+void AFloor::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Floors/SM_Intersection_Floor.SM_Intersection_Floor'"),
@@ -64,7 +64,7 @@ void AFloor::InitConstructBuildingSMC()
 /*** ConstructBuildingStaticMeshComponent : End ***/
 
 /*** BuildingStaticMeshComponent : Start ***/
-void AFloor::InitBuildingSMC()
+void AFloor::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Floors/SM_Intersection_Floor.SM_Intersection_Floor'"),
