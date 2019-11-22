@@ -59,7 +59,10 @@ void AStairs::InitConstructBuildingSMC()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Stairs/SM_Stairs_A.SM_Stairs_A'"),
-		FVector(2.2f, 0.9198f, 1.1f), FRotator(0.0f, 0.0f, 0.0f));
+		FVector(2.2f, 0.9198f, 1.1f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	AddConstructBuildingSMC(&ConstructBuildingSMC_2, TEXT("ConstructBuildingSMC_2"),
+		TEXT("StaticMesh'/Game/Buildings/Stairs/SM_Stairs_A.SM_Stairs_A'"),
+		FVector(2.2f, 0.9198f, 1.1f), FRotator(0.0f, 0.0f, 0.0f), FVector(155.00f, 0.0f, 166.4f * 0.5f));
 }
 /*** ConstructBuildingStaticMeshComponent : End ***/
 
@@ -68,6 +71,9 @@ void AStairs::InitBuildingSMC()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Stairs/SM_Stairs_A.SM_Stairs_A'"),
-		FVector(2.2f, 0.9198f, 2.2f), FRotator(0.0f, 0.0f, 0.0f));
+		FVector(2.2f, 0.9198f, 2.2f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	AddBuildingSMC(&BuildingSMC_2, TEXT("BuildingSMC_2"),
+		TEXT("StaticMesh'/Game/Buildings/Stairs/SM_Stairs_A.SM_Stairs_A'"),
+		FVector(2.2f, 0.9198f, 2.2f), FRotator(0.0f, 0.0f, 0.0f), FVector(155.00f, 0.0f, 166.4f));
 }
 /*** BuildingStaticMeshComponent : End ***/

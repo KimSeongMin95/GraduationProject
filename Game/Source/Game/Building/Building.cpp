@@ -130,6 +130,9 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 		// StaticMesh의 원본 사이즈 측정
 		FVector minBounds, maxBounds;
 		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
+		/*UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);*/
+		
 
 		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
 		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
@@ -140,6 +143,8 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 		center.Y = -1.0f * ((maxBounds.Y * Scale.Y + minBounds.Y * Scale.Y) / 2.0f);
 		center.Z = -1.0f * (minBounds.Z * Scale.Z);
 		(*StaticMeshComp)->SetRelativeLocation(center + Location);
+
+		//UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
 	}
 
 	ConstructBuildingSMCs.Add(*StaticMeshComp);
@@ -149,6 +154,8 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 /*** BuildingStaticMeshComponent : Start ***/
 void ABuilding::OnOverlapBegin_BuildingSMCs(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
 	{
@@ -157,6 +164,11 @@ void ABuilding::OnOverlapBegin_BuildingSMCs(class UPrimitiveComponent* Overlappe
 
 	// Collision의 기본인 ATriggerVolume은 무시합니다.
 	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	{
+		return;
+	}
+
+	if (OtherActor->GetFName() == this->GetFName())
 	{
 		return;
 	}
@@ -250,8 +262,8 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 		// StaticMesh의 원본 사이즈 측정
 		FVector minBounds, maxBounds;
 		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
-		//UE_LOG(LogTemp, Warning, TEXT("b minBounds: %f, %f, %f"), minBounds.X, minBounds.Y, minBounds.Z);
-		//UE_LOG(LogTemp, Warning, TEXT("b maxBounds: %f, %f, %f"), maxBounds.X, maxBounds.Y, maxBounds.Z);
+		UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
 
 		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
 		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
@@ -263,23 +275,28 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 		center.Z = -1.0f * (minBounds.Z * Scale.Z);
 		(*StaticMeshComp)->SetRelativeLocation(center + Location);
 
-		//BuildingSMCsMaterials.Add((*StaticMeshComp)->GetMaterials());
+		// 원본 머터리얼 저장
+		FTArrayOfUMaterialInterface TArrayOfUMaterialInterface;
+		TArrayOfUMaterialInterface.Object = (*StaticMeshComp)->GetMaterials();
+		BuildingSMCsMaterials.Add(TArrayOfUMaterialInterface);
+
+		UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
 	}
 
 	BuildingSMCs.Add(*StaticMeshComp);
 
 }
 
-//void ABuilding::SetBuildingSMCsMaterials()
-//{
-//	for (int i = 0; i < BuildingSMCs.Num(); i++)
-//	{
-//		for (int mat = 0; mat < BuildingSMCsMaterials[i].Num(); mat++)
-//		{
-//			BuildingSMCs[i]->SetMaterial(mat, BuildingSMCsMaterials[i][mat]);
-//		}
-//	}
-//}
+void ABuilding::SetBuildingSMCsMaterials()
+{
+	for (int i = 0; i < BuildingSMCs.Num(); i++)
+	{
+		for (int mat = 0; mat < BuildingSMCsMaterials[i].Object.Num(); mat++)
+		{
+			BuildingSMCs[i]->SetMaterial(mat, BuildingSMCsMaterials[i].Object[mat]);
+		}
+	}
+}
 /*** BuildingStaticMeshComponent : End ***/
 
 /*** Material : Start ***/
@@ -415,6 +432,6 @@ void ABuilding::CompleteConstructing()
 		}
 	}
 
-	//SetBuildingSMCsMaterials();
+	SetBuildingSMCsMaterials();
 }
 /*** Constructing And Destorying : End ***/

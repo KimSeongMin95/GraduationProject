@@ -34,6 +34,8 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* ConstructBuildingSMC_1;
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* ConstructBuildingSMC_2;
 
 	virtual void InitConstructBuildingSMC();
 	/*** ConstructBuildingStaticMeshComponent : End ***/
@@ -42,6 +44,8 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere)
 		class UStaticMeshComponent* BuildingSMC_1;
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* BuildingSMC_2;
 
 	virtual void InitBuildingSMC();
 	/*** BuildingStaticMeshComponent : End ***/
