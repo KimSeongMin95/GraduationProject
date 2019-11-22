@@ -15,13 +15,18 @@
 #include "GameFramework/Actor.h"
 #include "Building.generated.h"
 
+//struct TArrayOfUMaterialInterface
+//{
+//	TArray<class UMaterialInterface*> Object;
+//};
+
 UCLASS()
 class GAME_API ABuilding : public AActor
 {
 	GENERATED_BODY()
-	
-/*** Basic Function : Start ***/
-public:	
+
+		/*** Basic Function : Start ***/
+public:
 	// Sets default values for this actor's properties
 	ABuilding();
 
@@ -29,20 +34,20 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
+	/*** Basic Function : End ***/
 
-/*** RootComponent : Start ***/
+	/*** RootComponent : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere)
 		class USphereComponent* SphereComponent = nullptr;
 
 	void InitRootComponent();
-/*** RootComponent : End ***/
+	/*** RootComponent : End ***/
 
-/*** Statements : Start ***/
+	/*** Statements : Start ***/
 public:
 	UPROPERTY(EditAnywhere)
 		float HP; /** 초기 생명력 */
@@ -75,39 +80,41 @@ public:
 		float ProductionElectricPower; /** 생산 전력 (MW) */
 
 	virtual void InitStatement();
-/*** Statements : End ***/
+	/*** Statements : End ***/
 
-/*** ConstructBuildingStaticMeshComponent : Start ***/
+	/*** ConstructBuildingStaticMeshComponent : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* ConstructBuildingSMC = nullptr;
+		TArray<class UStaticMeshComponent*> ConstructBuildingSMCs;
 
 	UFUNCTION()
-		virtual void OnOverlapBegin_ConstructBuildingSMC(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		virtual void OnOverlapBegin_ConstructBuildingSMCs(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	virtual void InitConstructBuildingSMC();
-/*** ConstructBuildingStaticMeshComponent : End ***/
+	virtual void InitConstructBuildingSMCs();
+	void AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind = TEXT("NULL"), FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	/*** ConstructBuildingStaticMeshComponent : End ***/
 
-/*** BuildingStaticMeshComponent : Start ***/
+	/*** BuildingStaticMeshComponent : Start ***/
 public:
 	bool bIsConstructing;
 	bool bCompleted;
 
 	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* BuildingSMC = nullptr;
+		TArray<class UStaticMeshComponent*> BuildingSMCs;
 
-	UPROPERTY(VisibleAnywhere)
-		TArray<class UMaterialInterface*> BuildingSMCMaterials; /** 기존 머터리얼들을 저장 */
+	//UPROPERTY(VisibleAnywhere)
+		//TArray<TArray<class UMaterialInterface*>> BuildingSMCsMaterials; /** 기존 머터리얼들을 저장 */
 
 	TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
 	UFUNCTION()
-		virtual void OnOverlapBegin_BuildingSMC(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		virtual void OnOverlapBegin_BuildingSMCs(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
-		virtual void OnOverlapEnd_BuildingSMC(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+		virtual void OnOverlapEnd_BuildingSMCs(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	virtual void InitBuildingSMC();
+	virtual void InitBuildingSMCs();
+	void AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind = TEXT("NULL"), FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
-	void SetBuildingSMCMaterials();
+	//void SetBuildingSMCsMaterials();
 /*** BuildingStaticMeshComponent : End ***/
 
 /*** Material : Start ***/
@@ -121,19 +128,19 @@ public:
 	void SetUnConstructableMaterial();
 
 	void InitMaterial();
-/*** Material : End ***/
+	/*** Material : End ***/
 
-/*** Rotation : Start ***/
+	/*** Rotation : Start ***/
 public:
 	//void Locating(FVector position);
 	void Rotating(float Value);
-/*** Rotation : End ***/
+	/*** Rotation : End ***/
 
-/*** Constructing And Destorying : Start ***/
+	/*** Constructing And Destorying : Start ***/
 public:
 	bool Constructing();
 	void Destroying();
 	UFUNCTION()
 		void CompleteConstructing();
-/*** Constructing And Destorying: End ***/
+	/*** Constructing And Destorying: End ***/
 };

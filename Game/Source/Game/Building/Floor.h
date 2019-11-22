@@ -11,7 +11,7 @@ class GAME_API AFloor : public ABuilding
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
+		/*** Basic Function : Start ***/
 public:
 	// Sets default values for this actor's properties
 	AFloor();
@@ -23,20 +23,26 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
+	/*** Basic Function : End ***/
 
-/*** Statements : Start ***/
+	/*** Statements : Start ***/
 public:
 	virtual void InitStatement();
-/*** Statements : End ***/
+	/*** Statements : End ***/
 
-/*** ConstructBuildingStaticMeshComponent : Start ***/
+	/*** ConstructBuildingStaticMeshComponent : Start ***/
 public:
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* ConstructBuildingSMC_1;
+
 	virtual void InitConstructBuildingSMC();
-/*** ConstructBuildingStaticMeshComponent : End ***/
+	/*** ConstructBuildingStaticMeshComponent : End ***/
 
-/*** BuildingStaticMeshComponent : Start ***/
+	/*** BuildingStaticMeshComponent : Start ***/
 public:
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* BuildingSMC_1;
+
 	virtual void InitBuildingSMC();
-/*** BuildingStaticMeshComponent : End ***/
+	/*** BuildingStaticMeshComponent : End ***/
 };

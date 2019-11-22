@@ -9,16 +9,16 @@
 // Sets default values
 ABuilding::ABuilding()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	InitRootComponent();
 
 	InitStatement();
 
-	InitConstructBuildingSMC();
+	InitConstructBuildingSMCs();
 
-	InitBuildingSMC();
+	InitBuildingSMCs();
 
 	InitMaterial();
 }
@@ -27,7 +27,7 @@ ABuilding::ABuilding()
 void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -82,7 +82,7 @@ void ABuilding::InitStatement()
 /*** Statements : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
-void ABuilding::OnOverlapBegin_ConstructBuildingSMC(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ABuilding::OnOverlapBegin_ConstructBuildingSMCs(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
@@ -105,21 +105,49 @@ void ABuilding::OnOverlapBegin_ConstructBuildingSMC(class UPrimitiveComponent* O
 	}
 }
 
-void ABuilding::InitConstructBuildingSMC()
+void ABuilding::InitConstructBuildingSMCs()
 {
-	ConstructBuildingSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ConstructBuildingStaticMeshComponent"));
-	ConstructBuildingSMC->SetupAttachment(RootComponent);
 
-	ConstructBuildingSMC->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_ConstructBuildingSMC);
-	ConstructBuildingSMC->SetGenerateOverlapEvents(false);
-	ConstructBuildingSMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
 
-	ConstructBuildingSMC->SetHiddenInGame(true);
+void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale, FRotator Rotation, FVector Location)
+{
+	(*StaticMeshComp) = CreateDefaultSubobject<UStaticMeshComponent>(CompName);
+	(*StaticMeshComp)->SetupAttachment(RootComponent);
+
+	(*StaticMeshComp)->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_ConstructBuildingSMCs);
+	(*StaticMeshComp)->SetGenerateOverlapEvents(false);
+	(*StaticMeshComp)->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	(*StaticMeshComp)->SetHiddenInGame(true);
+
+	// static 키워드를 제거하여 인스턴스마다 애셋(리소스)를 매 번 새로 로드합니다. (주의: static이 붙으면 다 같은 모델이 됩니다.)
+	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMesh(ObjectToFind);
+	if (staticMesh.Succeeded())
+	{
+		(*StaticMeshComp)->SetStaticMesh(staticMesh.Object);
+
+		// StaticMesh의 원본 사이즈 측정
+		FVector minBounds, maxBounds;
+		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
+
+		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
+		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
+		(*StaticMeshComp)->SetRelativeScale3D(Scale);
+		(*StaticMeshComp)->SetRelativeRotation(Rotation);
+		FVector center;
+		center.X = -1.0f * ((maxBounds.X * Scale.X + minBounds.X * Scale.X) / 2.0f);
+		center.Y = -1.0f * ((maxBounds.Y * Scale.Y + minBounds.Y * Scale.Y) / 2.0f);
+		center.Z = -1.0f * (minBounds.Z * Scale.Z);
+		(*StaticMeshComp)->SetRelativeLocation(center + Location);
+	}
+
+	ConstructBuildingSMCs.Add(*StaticMeshComp);
 }
 /*** ConstructBuildingStaticMeshComponent : End ***/
 
 /*** BuildingStaticMeshComponent : Start ***/
-void ABuilding::OnOverlapBegin_BuildingSMC(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ABuilding::OnOverlapBegin_BuildingSMCs(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
@@ -155,7 +183,7 @@ void ABuilding::OnOverlapBegin_BuildingSMC(class UPrimitiveComponent* Overlapped
 	}
 }
 
-void ABuilding::OnOverlapEnd_BuildingSMC(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void ABuilding::OnOverlapEnd_BuildingSMCs(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
@@ -190,34 +218,68 @@ void ABuilding::OnOverlapEnd_BuildingSMC(class UPrimitiveComponent* OverlappedCo
 	}
 }
 
-void ABuilding::InitBuildingSMC()
+void ABuilding::InitBuildingSMCs()
 {
 	bIsConstructing = false;
 	bCompleted = false;
+}
 
-	BuildingSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BuildingStaticMeshComponent"));
-	BuildingSMC->SetupAttachment(RootComponent);
+void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale, FRotator Rotation, FVector Location)
+{
+	(*StaticMeshComp) = CreateDefaultSubobject<UStaticMeshComponent>(CompName);
+	(*StaticMeshComp)->SetupAttachment(RootComponent);
+	(*StaticMeshComp)->SetVisibility(true);
 
-	BuildingSMC->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_BuildingSMC);
-	BuildingSMC->OnComponentEndOverlap.AddDynamic(this, &ABuilding::OnOverlapEnd_BuildingSMC);
+	(*StaticMeshComp)->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_BuildingSMCs);
+	(*StaticMeshComp)->OnComponentEndOverlap.AddDynamic(this, &ABuilding::OnOverlapEnd_BuildingSMCs);
 
-	BuildingSMC->SetGenerateOverlapEvents(true);
-	BuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	BuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	BuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	(*StaticMeshComp)->SetGenerateOverlapEvents(true);
+	(*StaticMeshComp)->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	(*StaticMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	(*StaticMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
 	// (기본적으로 true로 되어 있음) NavMesh에 업데이트 되도록 CanEverAffectNavigation을 true로 변경.
-	//BuildingSMC->SetCanEverAffectNavigation(true);
+	//StaticMeshComp->SetCanEverAffectNavigation(true);
+
+	// static 키워드를 제거하여 인스턴스마다 애셋(리소스)를 매 번 새로 로드합니다. (주의: static이 붙으면 다 같은 모델이 됩니다.)
+	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshComp(ObjectToFind);
+	if (staticMeshComp.Succeeded())
+	{
+		(*StaticMeshComp)->SetStaticMesh(staticMeshComp.Object);
+
+		// StaticMesh의 원본 사이즈 측정
+		FVector minBounds, maxBounds;
+		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
+		//UE_LOG(LogTemp, Warning, TEXT("b minBounds: %f, %f, %f"), minBounds.X, minBounds.Y, minBounds.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("b maxBounds: %f, %f, %f"), maxBounds.X, maxBounds.Y, maxBounds.Z);
+
+		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
+		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
+		(*StaticMeshComp)->SetRelativeScale3D(Scale);
+		(*StaticMeshComp)->SetRelativeRotation(Rotation);
+		FVector center;
+		center.X = -1.0f * ((maxBounds.X * Scale.X + minBounds.X * Scale.X) / 2.0f);
+		center.Y = -1.0f * ((maxBounds.Y * Scale.Y + minBounds.Y * Scale.Y) / 2.0f);
+		center.Z = -1.0f * (minBounds.Z * Scale.Z);
+		(*StaticMeshComp)->SetRelativeLocation(center + Location);
+
+		//BuildingSMCsMaterials.Add((*StaticMeshComp)->GetMaterials());
+	}
+
+	BuildingSMCs.Add(*StaticMeshComp);
+
 }
 
-void ABuilding::SetBuildingSMCMaterials()
-{
-	int num = BuildingSMCMaterials.Num();
-	for (int i = 0; i < num; i++)
-	{
-		BuildingSMC->SetMaterial(i, BuildingSMCMaterials[i]);
-	}
-}
+//void ABuilding::SetBuildingSMCsMaterials()
+//{
+//	for (int i = 0; i < BuildingSMCs.Num(); i++)
+//	{
+//		for (int mat = 0; mat < BuildingSMCsMaterials[i].Num(); mat++)
+//		{
+//			BuildingSMCs[i]->SetMaterial(mat, BuildingSMCsMaterials[i][mat]);
+//		}
+//	}
+//}
 /*** BuildingStaticMeshComponent : End ***/
 
 /*** Material : Start ***/
@@ -228,10 +290,12 @@ void ABuilding::SetConstructableMaterial()
 		UE_LOG(LogTemp, Warning, TEXT("ABuilding::SetConstructableMaterial(): !ConstructableMaterial"));
 		return;
 	}
-
-	for (int i = 0; i < BuildingSMC->GetNumMaterials(); i++)
+	for (auto& BuildingSMC : BuildingSMCs)
 	{
-		BuildingSMC->SetMaterial(i, ConstructableMaterial);
+		for (int mat = 0; mat < BuildingSMC->GetNumMaterials(); mat++)
+		{
+			BuildingSMC->SetMaterial(mat, ConstructableMaterial);
+		}
 	}
 }
 
@@ -242,10 +306,12 @@ void ABuilding::SetUnConstructableMaterial()
 		UE_LOG(LogTemp, Warning, TEXT("ABuilding::SetUnConstructableMaterial(): !UnConstructableMaterial"));
 		return;
 	}
-
-	for (int i = 0; i < BuildingSMC->GetNumMaterials(); i++)
+	for (auto& BuildingSMC : BuildingSMCs)
 	{
-		BuildingSMC->SetMaterial(i, UnConstructableMaterial);
+		for (int mat = 0; mat < BuildingSMC->GetNumMaterials(); mat++)
+		{
+			BuildingSMC->SetMaterial(mat, UnConstructableMaterial);
+		}
 	}
 }
 
@@ -287,23 +353,29 @@ bool ABuilding::Constructing()
 		return false;
 
 	bIsConstructing = true;
-	
-	if (BuildingSMC)
-	{
-		BuildingSMC->SetGenerateOverlapEvents(false);
-		BuildingSMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		BuildingSMC->SetHiddenInGame(true);
+	for (auto& BuildingSMC : BuildingSMCs)
+	{
+		if (BuildingSMC)
+		{
+			BuildingSMC->SetGenerateOverlapEvents(false);
+			BuildingSMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+			BuildingSMC->SetHiddenInGame(true);
+		}
 	}
 
-	if (ConstructBuildingSMC)
+	for (auto& ConstructBuildingSMC : ConstructBuildingSMCs)
 	{
-		ConstructBuildingSMC->SetGenerateOverlapEvents(true);
-		ConstructBuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		ConstructBuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
-		ConstructBuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	
-		ConstructBuildingSMC->SetHiddenInGame(false);
+		if (ConstructBuildingSMC)
+		{
+			ConstructBuildingSMC->SetGenerateOverlapEvents(true);
+			ConstructBuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			ConstructBuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+			ConstructBuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+
+			ConstructBuildingSMC->SetHiddenInGame(false);
+		}
 	}
 
 	FTimerHandle timer;
@@ -320,26 +392,29 @@ void ABuilding::CompleteConstructing()
 	bIsConstructing = false;
 	bCompleted = true;
 
-	if (BuildingSMC)
+	for (auto& BuildingSMC : BuildingSMCs)
 	{
-		BuildingSMC->SetGenerateOverlapEvents(true);
-		BuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		BuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
-		BuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+		if (BuildingSMC)
+		{
+			BuildingSMC->SetGenerateOverlapEvents(true);
+			BuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			BuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+			BuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 
-		BuildingSMC->SetHiddenInGame(false);
+			BuildingSMC->SetHiddenInGame(false);
+		}
+	}
+	for (auto& ConstructBuildingSMC : ConstructBuildingSMCs)
+	{
+		if (ConstructBuildingSMC)
+		{
+			ConstructBuildingSMC->SetGenerateOverlapEvents(false);
+			ConstructBuildingSMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		
+			ConstructBuildingSMC->SetHiddenInGame(true);
+		}
 	}
 
-	if (ConstructBuildingSMC)
-	{
-		ConstructBuildingSMC->SetGenerateOverlapEvents(false);
-		ConstructBuildingSMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-		ConstructBuildingSMC->SetHiddenInGame(true);
-	}
-
-	SetBuildingSMCMaterials();
+	//SetBuildingSMCsMaterials();
 }
 /*** Constructing And Destorying : End ***/
