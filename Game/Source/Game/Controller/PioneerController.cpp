@@ -200,7 +200,10 @@ void APioneerController::ChangeWeapon()
 
 	if (MyPawn)
 	{
-		MyPawn->ChangeWeapon();
+		if (MyPawn->bConstructingMode == false)
+			MyPawn->ChangeWeapon();
+		else
+			MyPawn->ChangeBuilding();
 	}
 }
 
@@ -236,6 +239,8 @@ void APioneerController::ConstructingMode()
 		MyPawn->bConstructingMode = 1 - MyPawn->bConstructingMode;
 		if (MyPawn->bConstructingMode)
 			MyPawn->SpawnBuilding();
+		else
+			MyPawn->DestroyBuilding();
 		MyPawn->Disarming();
 	}
 }

@@ -164,8 +164,6 @@ public:
 
 /*** Weapon : Start ***/
 public:
-	int tempIdx = 0;
-	
 	UPROPERTY(EditAnywhere)
 		class AWeapon* Weapon = nullptr;
 
@@ -183,6 +181,7 @@ public:
 	void FireWeapon();
 
 	// 임시
+	int tempIdx = 0;
 	void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
 	void Disarming();
 /*** Weapon : End ***/
@@ -197,10 +196,12 @@ public:
 	void OnConstructingMode();
 
 	// 임시
+	int tempBuildingIdx = 0;
 	void ChangeBuilding();
 
 	void RotatingBuilding(float Value);
 	void PlaceBuilding();
+	void DestroyBuilding();
 /*** Building : End ***/
 };
 

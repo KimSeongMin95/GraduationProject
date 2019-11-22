@@ -38,6 +38,8 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere)
 		class USphereComponent* SphereComponent = nullptr;
+
+	void InitRootComponent();
 /*** RootComponent : End ***/
 
 /*** Statements : Start ***/
@@ -72,7 +74,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		float ProductionElectricPower; /** 생산 전력 (MW) */
 
-	void InitStatement();
+	virtual void InitStatement();
 /*** Statements : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
@@ -83,7 +85,7 @@ public:
 	UFUNCTION()
 		virtual void OnOverlapBegin_ConstructBuildingSMC(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	void InitConstructBuildingSMC();
+	virtual void InitConstructBuildingSMC();
 /*** ConstructBuildingStaticMeshComponent : End ***/
 
 /*** BuildingStaticMeshComponent : Start ***/
@@ -96,7 +98,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		TArray<class UMaterialInterface*> BuildingSMCMaterials; /** 기존 머터리얼들을 저장 */
-	void SetBuildingSMCMaterials();
 
 	TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
 	UFUNCTION()
@@ -104,7 +105,9 @@ public:
 	UFUNCTION()
 		virtual void OnOverlapEnd_BuildingSMC(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	void InitBuildingSMC();
+	virtual void InitBuildingSMC();
+
+	void SetBuildingSMCMaterials();
 /*** BuildingStaticMeshComponent : End ***/
 
 /*** Material : Start ***/
@@ -129,7 +132,7 @@ public:
 /*** Constructing And Destorying : Start ***/
 public:
 	bool Constructing();
-	void Destorying();
+	void Destroying();
 	UFUNCTION()
 		void CompleteConstructing();
 /*** Constructing And Destorying: End ***/
