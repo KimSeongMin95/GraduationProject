@@ -16,12 +16,12 @@ void AEnemyAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Timer += DeltaTime;
+	/*Timer += DeltaTime;
 	if (Timer >= CoolTime)
 	{
 		MoveRandomDestination();
 		Timer = 0.0f;
-	}
+	}*/
 }
 
 void AEnemyAIController::MoveRandomDestination()

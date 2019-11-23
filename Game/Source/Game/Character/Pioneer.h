@@ -41,12 +41,28 @@
 //		FString Description;
 //};
 
+//UENUM(BlueprintType)
+//enum class EWeaponType : uint8
+//{
+//	Pistol		UMETA(DisplayName = "Pistol"),
+//	Rifle		UMETA(DisplayName = "Rifle"),
+//	Launcher	UMETA(DisplayName = "Launcher")
+//};
+
 UENUM(BlueprintType)
-enum class EWeaponType : uint8
+enum class EPioneerFSM : uint8
 {
-	Pistol		UMETA(DisplayName = "Pistol"),
-	Rifle		UMETA(DisplayName = "Rifle"),
-	Launcher	UMETA(DisplayName = "Launcher")
+	Idle,
+	Move,
+	Stop,
+	Hold,
+	Patrol,
+	Tracing,
+	Attack,
+	Squad,
+	Work,
+	Build,
+	Repair
 };
 
 UCLASS()
@@ -73,6 +89,12 @@ public:
 /*** Basic Function : End ***/
 
 	int SocketID;
+
+/*** Stat : Start ***/
+	EPioneerFSM State;
+
+	virtual void InitStat();
+/*** Stat : End ***/
 
 /*** CharacterMovement : Start ***/
 public:

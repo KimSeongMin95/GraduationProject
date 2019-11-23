@@ -28,7 +28,7 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 	// double check our pointers make sure nothing is empty
 	if (!Owner)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: Owner = TryGetPawnOwner()"));
+		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::NativeUpdateAnimation Failed: Owner = TryGetPawnOwner()"));
 		return;
 	}
 

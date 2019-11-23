@@ -6,6 +6,16 @@
 #include "BaseCharacter.h"
 #include "Enemy.generated.h"
 
+UENUM(BlueprintType)
+enum class EEnemyFSM : uint8
+{
+	Idle,
+	Move,
+	Stop,
+	Tracing,
+	Attack
+};
+
 UCLASS()
 class GAME_API AEnemy : public ABaseCharacter
 {
@@ -24,6 +34,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
+
+/*** Stat : Start ***/
+	EEnemyFSM State;
+
+	virtual void InitStat();
+/*** Stat : End ***/
 
 /*** CharacterMovement : Start ***/
 public:

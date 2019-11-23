@@ -39,6 +39,39 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 /*** Basic Function : End ***/
 
+/*** Stat : Start ***/
+public:
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float Health;
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		bool bDead;
+
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float AttackPower;
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float MoveSpeed;
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float AttackSpeed;
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float AttackRange;
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float DetectRange;
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float SightRange;
+
+	virtual void InitStat();
+
+	// Calcaulat death function (helper)
+	virtual void CalculateDead();
+
+	UFUNCTION(Category = "Stat")
+		virtual void Calculatehealth(float Delta);
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+/*** Stat : End ***/
+
 /*** AIController : Start ***/
 public:
 	UPROPERTY(EditAnywhere)
@@ -63,24 +96,4 @@ public:
 
 	virtual void RotateTargetRotation(float DeltaTime);
 /*** CharacterMovement : End ***/
-
-/*** State : Start ***/
-public:
-	UPROPERTY(EditAnywhere, Category = "State")
-		float Health;
-
-	UPROPERTY(EditAnywhere, Category = "State")
-		bool bDead;
-
-	// Calcaulat death function (helper)
-	virtual void CalculateDead();
-
-	UFUNCTION(Category = "State")
-		virtual void Calculatehealth(float Delta);
-
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-#endif
-/*** State : End ***/
-
 };

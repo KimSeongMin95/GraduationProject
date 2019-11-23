@@ -40,6 +40,23 @@ void AEnemy::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
+/*** Stat : Start ***/
+void AEnemy::InitStat()
+{
+	State = EEnemyFSM::Idle;
+
+	Health = 100.0f;
+	bDead = false;
+
+	AttackPower = 0.0f;
+	MoveSpeed = 4.0f;
+	AttackSpeed = 1.0f;
+	AttackRange = 4.0f;
+	DetectRange = 8.0f;
+	SightRange = 10.0f;
+}
+/*** Stat : End ***/
+
 /*** CharacterMovement : Start ***/
 void AEnemy::RotateTargetRotation(float DeltaTime)
 {
@@ -55,7 +72,7 @@ void AEnemy::RotateTargetRotation(float DeltaTime)
 void AEnemy::InitSkeletalAnimation()
 {
 	// USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Characters/Enemy/Mesh/CHA_Final.CHA_Final'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Characters/Enemy/Prop2/Mesh/Prop2.Prop2'"));
 	if (skeletalMeshAsset.Succeeded())
 	{
 		// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
@@ -63,25 +80,31 @@ void AEnemy::InitSkeletalAnimation()
 		GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
 		GetMesh()->bCastDynamicShadow = true; // ???
 		GetMesh()->CastShadow = true; // ???
-		GetMesh()->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
-		GetMesh()->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
+
+		GetMesh()->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
+		GetMesh()->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+		GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -68.0f));
 	}
 
-	//// 일단 블루프린트를 사용하겠습니다. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
-	//FString animBP_Reference = "UClass'/Game/Animations/BP_PioneerAnimation.BP_PioneerAnimation_C'";
-	//UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
-	//if (!animBP)
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("!animBP"));
-	//}
-	//else
-	//	GetMesh()->SetAnimInstanceClass(animBP);
+	// 각 Enemy의 BP_Animation을 가져오기. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
+	FString animBP_Reference = "AnimBlueprint'/Game/Characters/Enemy/Prop2/Animations/BP_Prop2Animation.BP_Prop2Animation_C'";
+	UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
+	if (!animBP)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("!animBP"));
+	}
+	else
+		GetMesh()->SetAnimInstanceClass(animBP);
 }
 /*** SkeletalAnimation : End ***/
 
 /*** AEnemyAIController : Start ***/
 void AEnemy::InitAIController()
 {
+	// 이미 AIController를 가지고 있으면 생성하지 않음.
+	if (AIController)
+		return;
+
 	UWorld* const World = GetWorld();
 	if (!World)
 	{

@@ -13,11 +13,10 @@ ABaseCharacter::ABaseCharacter() // Sets default values
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	InitStat();
+
 	bRotateTargetRotation = false;
 	TargetRotation = FRotator::ZeroRotator;
-
-	Health = 100.0f;
-	bDead = false;
 
 	InitCharacterMovement();
 }
@@ -43,6 +42,47 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 /*** Basic Function : End ***/
+
+/*** State : Start ***/
+void ABaseCharacter::InitStat()
+{
+	Health = 100.0f;
+	bDead = false;
+
+	AttackPower = 0.0f;
+	MoveSpeed = 4.0f;
+	AttackSpeed = 1.0f;
+	AttackRange = 4.0f;
+	DetectRange = 8.0f;
+	SightRange = 10.0f;
+}
+
+void ABaseCharacter::Calculatehealth(float Delta)
+{
+	Health += Delta;
+	CalculateDead();
+}
+
+void ABaseCharacter::CalculateDead()
+{
+	if (Health <= 0.0f)
+		bDead = true;
+	else
+		bDead = false;
+}
+
+#if WITH_EDITOR
+void ABaseCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	bDead = false;
+	Health = 100;
+
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	CalculateDead();
+}
+#endif
+/*** State : End ***/
 
 /*** AIController : Start ***/
 void ABaseCharacter::InitAIController()
@@ -164,30 +204,3 @@ void ABaseCharacter::RotateTargetRotation(float DeltaTime)
 }
 /*** CharacterMovement : End ***/
 
-/*** State : Start ***/
-void ABaseCharacter::Calculatehealth(float Delta)
-{
-	Health += Delta;
-	CalculateDead();
-}
-
-void ABaseCharacter::CalculateDead()
-{
-	if (Health <= 0.0f)
-		bDead = true;
-	else
-		bDead = false;
-}
-
-#if WITH_EDITOR
-void ABaseCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	bDead = false;
-	Health = 100;
-
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	CalculateDead();
-}
-#endif
-/*** State : End ***/

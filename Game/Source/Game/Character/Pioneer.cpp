@@ -3,7 +3,7 @@
 #include "Pioneer.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "PioneerAnimInstance.h"
+#include "AnimInstance/PioneerAnimInstance.h"
 #include "Controller/PioneerAIController.h"
 
 #include "Weapon/Pistol.h"
@@ -88,6 +88,23 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 }
 /*** Basic Function : End ***/
 
+/*** Stat : Start ***/
+void APioneer::InitStat()
+{
+	State = EPioneerFSM::Idle;
+
+	Health = 100.0f;
+	bDead = false;
+
+	AttackPower = 0.0f;
+	MoveSpeed = 4.0f;
+	AttackSpeed = 1.0f;
+	AttackRange = 4.0f;
+	DetectRange = 8.0f;
+	SightRange = 10.0f;
+}
+/*** Stat : End ***/
+
 /*** CharacterMovement : Start ***/
 void APioneer::RotateTargetRotation(float DeltaTime)
 {
@@ -111,8 +128,10 @@ void APioneer::InitSkeletalAnimation()
 		GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
 		GetMesh()->bCastDynamicShadow = true; // ???
 		GetMesh()->CastShadow = true; // ???
-		GetMesh()->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
-		GetMesh()->RelativeLocation = FVector(0.0f, 0.0f, -90.0f); // Capsule과 위치를 조정합니다.
+
+		GetMesh()->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
+		GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+		GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 	}
 	//// 2. Skeleton을 가져옵니다.
 	//static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Character/Mesh/UE4_Mannequin_Skeleton.UE4_Mannequin_Skeleton'"));
@@ -363,6 +382,10 @@ void APioneer::SetCursorToWorld()
 /*** APioneerAIController : Start ***/
 void APioneer::InitAIController()
 {
+	// 이미 AIController를 가지고 있으면 생성하지 않음.
+	if (AIController)
+		return;
+
 	UWorld* const World = GetWorld();
 	if (!World)
 	{
