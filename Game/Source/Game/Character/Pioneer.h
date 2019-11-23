@@ -99,6 +99,7 @@ public:
 /*** CharacterMovement : Start ***/
 public:
 	virtual void RotateTargetRotation(float DeltaTime) override;
+	void StopMovement();
 /*** CharacterMovement : End ***/
 
 /*** SkeletalAnimation : Start ***/

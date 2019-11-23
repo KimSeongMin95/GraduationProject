@@ -95,5 +95,11 @@ public:
 	void LookAtTheLocation(FVector Location); /** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
 
 	virtual void RotateTargetRotation(float DeltaTime);
+
+	UPROPERTY(EditAnywhere, Category = "Character Movement")
+		class AActor* TargetActor = nullptr;
+	void TracingTargetActor();
+
+	FVector TartgetPosition;
 /*** CharacterMovement : End ***/
 };

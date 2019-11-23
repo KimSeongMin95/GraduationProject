@@ -126,6 +126,7 @@ void ABaseCharacter::InitCharacterMovement()
 	GetCharacterMovement()->bSnapToPlaneAtStart = true; // 시작할 때 캐릭터의 위치가 평면을 벗어난 상태라면 가까운 평면으로 붙여서 시작되도록 합니다. 여기서 평면이란 내비게이션 메시를 의미합니다.
 	//GetCharacterMovement()->JumpZVelocity = 600.0f;
 	//GetCharacterMovement()->AirControl = 0.2f;
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f; // 움직일 때 걷는 속도
 	GetCharacterMovement()->MaxStepHeight = 45.0f; // 움직일 때 45.0f 높이는 올라갈 수 있도록 합니다. ex) 계단
 }
 
@@ -201,6 +202,15 @@ void ABaseCharacter::RotateTargetRotation(float DeltaTime)
 
 	// 변경된 각도로 다시 설정합니다.
 	RootComponent->SetWorldRotation(CurrentRotation);
+}
+
+void ABaseCharacter::TracingTargetActor()
+{
+	if (!TargetActor || !GetController())
+		return;
+
+	FVector destination = TargetActor->GetActorLocation();
+	PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), destination);
 }
 /*** CharacterMovement : End ***/
 

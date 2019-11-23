@@ -96,6 +96,12 @@ void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* Overlappe
 {
 	AProjectile::OnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	{
+		return;
+	}
+
 	// Collision의 기본인 ATriggerVolume은 무시합니다.
 	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
 	{
@@ -136,21 +142,23 @@ void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* Overlappe
 		}
 	}
 
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
+	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
-		if (OtherActor->IsA(AEnemy::StaticClass()))
+		AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
+		if (enemy)
 		{
-			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			if (enemy)
-				enemy->Calculatehealth(-TotalDamage);
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->DetactRangeSphereComp == OtherComp)
+				return;
 
-			// ImpactParticleSystem을 실행합니다.
-			if (ImpactParticleSystem && ImpactParticleSystem->Template)
-				ImpactParticleSystem->ToggleActive();
-
-			hitCount++;
+			enemy->Calculatehealth(-TotalDamage);
 		}
+
+		// ImpactParticleSystem을 실행합니다.
+		if (ImpactParticleSystem && ImpactParticleSystem->Template)
+			ImpactParticleSystem->ToggleActive();
+
+		hitCount++;
 	}
 
 	if (hitCount >= 3)

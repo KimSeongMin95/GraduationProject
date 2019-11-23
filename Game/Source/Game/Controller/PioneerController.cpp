@@ -137,11 +137,15 @@ void APioneerController::OnSetDestinationReleased()
 
 void APioneerController::MoveForward(float Value)
 {
+	
 	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
 	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
 
 	if (MyPawn && (Value != 0.0f))
 	{
+		// Navigation으로 이동하던 중이었으면 멈춥니다. 
+		StopMovement();
+
 		//const FRotator Rotation = GetPawn()->Controller->GetControlRotation(); // 컨트롤러의 회전값을 가져옵니다.
 		const FRotator Rotation = MyPawn->CameraBoomRotation; // Pioneer의 카메라 회전값을 가져옵니다.
 		const FRotator YawRotation(0, Rotation.Yaw, 0); // 오른쪽 방향을 찾습니다.
@@ -160,6 +164,9 @@ void APioneerController::MoveRight(float Value)
 
 	if (MyPawn && (Value != 0.0f))
 	{
+		// Navigation으로 이동하던 중이었으면 멈춥니다. 
+		StopMovement();
+
 		//const FRotator Rotation = GetPawn()->Controller->GetControlRotation(); // 컨트롤러의 회전값을 가져옵니다.
 		const FRotator Rotation = MyPawn->CameraBoomRotation; // Pioneer의 카메라 회전값을 가져옵니다.
 		const FRotator YawRotation(0, Rotation.Yaw, 0); // 오른쪽 방향을 찾습니다.

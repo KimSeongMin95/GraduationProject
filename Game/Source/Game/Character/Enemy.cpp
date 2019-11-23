@@ -5,6 +5,9 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Controller/EnemyAIController.h"
+
+#include "Character/Pioneer.h"
+#include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -12,9 +15,13 @@
 AEnemy::AEnemy() // Sets default values
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(50.0f, 70.0f);
+	GetCapsuleComponent()->InitCapsuleSize(140.0f, 80.0f);
+
+	GetCharacterMovement()->MaxWalkSpeed = 500.0f; // 움직일 때 걷는 속도
 
 	InitSkeletalAnimation();
+
+	InitFSM();
 }
 
 // Called when the game starts or when spawned
@@ -35,6 +42,8 @@ void AEnemy::Tick(float DeltaTime)
 
 	RotateTargetRotation(DeltaTime);
 
+	RunFSM(DeltaTime);
+
 	if (bDead)
 		Destroy();
 }
@@ -43,8 +52,6 @@ void AEnemy::Tick(float DeltaTime)
 /*** Stat : Start ***/
 void AEnemy::InitStat()
 {
-	State = EEnemyFSM::Idle;
-
 	Health = 100.0f;
 	bDead = false;
 
@@ -83,7 +90,7 @@ void AEnemy::InitSkeletalAnimation()
 
 		GetMesh()->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
 		GetMesh()->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-		GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -68.0f));
+		GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -142.0f));
 	}
 
 	// 각 Enemy의 BP_Animation을 가져오기. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
@@ -128,3 +135,144 @@ void AEnemy::PossessAIController()
 
 }
 /*** AEnemyAIController : End ***/
+
+/*** FSM : Start ***/
+void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	{
+		return;
+	}
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	{
+		return;
+	}
+
+	// 자기 자신과 충돌하면 무시합니다.
+	if (OtherActor->GetFName() == this->GetFName())
+	{
+		return;
+	}
+
+	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		OverapedActors.Add(OtherActor);
+	}
+}
+
+void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	{
+		return;
+	}
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	{
+		return;
+	}
+
+	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		OverapedActors.Remove(OtherActor);
+	}
+}
+
+void AEnemy::InitFSM()
+{
+	State = EEnemyFSM::Idle;
+
+	DetactRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetactRangeSphereComp"));
+	DetactRangeSphereComp->SetupAttachment(RootComponent);
+	DetactRangeSphereComp->SetSphereRadius(512.0f);
+
+	DetactRangeSphereComp->SetGenerateOverlapEvents(true);
+	DetactRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	DetactRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	DetactRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+	DetactRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
+	DetactRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
+}
+
+void AEnemy::RunFSM(float DeltaTime)
+{
+	if (State != EEnemyFSM::Attack)
+	{
+		TargetActor = nullptr;
+
+		for (auto& actor : OverapedActors)
+		{
+			if (actor->IsA(APioneer::StaticClass()))
+			{
+				State = EEnemyFSM::Tracing;
+				TargetActor = actor;
+				break;
+			}
+		}
+		for (auto& actor : OverapedActors)
+		{
+			if (actor->IsA(ABuilding::StaticClass()))
+			{
+				State = EEnemyFSM::Tracing;
+				TargetActor = actor;
+				break;
+			}
+		}
+
+		if (State == EEnemyFSM::Tracing && TargetActor == nullptr)
+		{
+			State = EEnemyFSM::Idle;
+			GetController()->StopMovement();
+		}
+	}
+
+	switch (State)
+	{
+	case EEnemyFSM::Idle:
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Idle"));
+		break; 
+	}
+	case EEnemyFSM::Move:
+	{	
+		float dist = FVector::Distance(this->GetActorLocation(), TartgetPosition);
+		if (dist < 128.0f)
+			State = EEnemyFSM::Idle;
+		UE_LOG(LogTemp, Warning, TEXT("Move"));
+		break; 
+	}
+	case EEnemyFSM::Stop:
+	{	
+		UE_LOG(LogTemp, Warning, TEXT("Stop"));
+		break; 
+	}
+	case EEnemyFSM::Tracing:
+	{	
+		TracingTargetActor();
+		if (TargetActor)
+		{
+			float dist = FVector::Distance(this->GetActorLocation(), TargetActor->GetActorLocation());
+			if (dist < 256.0f)
+				State = EEnemyFSM::Attack;
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Tracing"));
+		break; 
+	}
+	case EEnemyFSM::Attack:
+	{	
+		// 공격 애니메이션이 끝나면 
+		//State = EEnemyFSM::Idle;
+		UE_LOG(LogTemp, Warning, TEXT("Attack"));
+		break; 
+	}
+	}
+}
+/*** FSM : End ***/

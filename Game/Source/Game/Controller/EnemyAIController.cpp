@@ -31,6 +31,7 @@ void AEnemyAIController::MoveRandomDestination()
 		AEnemy* MyPawn = dynamic_cast<AEnemy*>(GetPawn());
 
 		FVector dest = FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), MyPawn->GetActorLocation().Z);
+		MyPawn->TartgetPosition = dest;
 		PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, dest);
 
 		/*FAIMoveRequest FAI;

@@ -47,9 +47,56 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		// again check pointers
 		if (enemy)
 		{
+			bIdle = false;
+			bMove = false;
+			bStop = false;
+			bTracing = false;
+			bAttack = false;
+
+			switch (enemy->State)
+			{
+			case EEnemyFSM::Idle:
+				bIdle = true;
+				break;
+			case EEnemyFSM::Move:
+				bMove = true;
+				break;
+			case EEnemyFSM::Stop:
+				bStop = true;
+				break;
+			case EEnemyFSM::Tracing:
+				bTracing = true;
+				break;
+			case EEnemyFSM::Attack:
+				bAttack = true;
+				break;
+			}
+
 			Speed = enemy->GetVelocity().Size();
 			bIsMoving = Speed > 0 ? true : false;
 			Direction = CalculateDirection(enemy->GetVelocity(), enemy->GetActorRotation());
+		}
+	}
+}
+
+void UEnemyAnimInstance::AttackEnd()
+{
+	// double check our pointers make sure nothing is empty
+	if (!Owner)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::NativeUpdateAnimation Failed: Owner = TryGetPawnOwner()"));
+		return;
+	}
+
+	// Owner가 APioneer::StaticClass()인지 확인합니다.
+	if (Owner->IsA(AEnemy::StaticClass()))
+	{
+		AEnemy* enemy = Cast<AEnemy>(Owner);
+
+		// again check pointers
+		if (enemy)
+		{
+			enemy->State = EEnemyFSM::Idle;
 		}
 	}
 }

@@ -45,6 +45,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		float Direction;
 
+	UFUNCTION(BlueprintCallable)
+		void AttackEnd();
 private:
 	APawn* Owner;
 };

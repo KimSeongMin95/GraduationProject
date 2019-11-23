@@ -114,6 +114,10 @@ void APioneer::RotateTargetRotation(float DeltaTime)
 
 	Super::RotateTargetRotation(DeltaTime);
 }
+void APioneer::StopMovement()
+{
+	GetController()->StopMovement();
+}
 /*** CharacterMovement : End ***/
 
 /*** SkeletalAnimation : Start ***/
@@ -235,8 +239,10 @@ void APioneer::InitCamera()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->bAbsoluteRotation = true; // 캐릭터가 회전할 때 Arm을 회전시키지 않습니다. 월드 좌표계의 회전을 따르도록 합니다.
 	CameraBoom->TargetArmLength = 500.0f; // 해당 간격으로 카메라가 Arm을 따라다닙니다.
-	CameraBoom->RelativeLocation = FVector(-500.0f, 0.0f, 500.0f);
-	CameraBoom->RelativeRotation = FRotator(-60.f, 0.f, 0.f);
+	CameraBoom->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
+	CameraBoom->SetRelativeRotation(FRotator(-60.0f, 0.0f, 0.0f));
+	CameraBoom->SetRelativeLocation(FVector(-500.0f, 0.0f, 500.0f));
+
 	//CameraBoom->bUsePawnControlRotation = false; // 컨트롤러 기반으로 카메라 암을 회전시키지 않습니다.
 	CameraBoom->bDoCollisionTest = false; // Arm과 카메라 사이의 선분이 어떤 물체와 충돌했을 때 뚫지 않도록 카메라를 당기지 않습니다.
 	CameraBoom->bEnableCameraLag = true; // 이동시 부드러운 카메라 전환을 위해 설정합니다.

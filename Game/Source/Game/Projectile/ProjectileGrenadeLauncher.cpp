@@ -185,6 +185,12 @@ void AProjectileGrenadeLauncher::OnOverlapBegin(class UPrimitiveComponent* Overl
 {
 	AProjectile::OnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	{
+		return;
+	}
+
 	// Collision의 기본인 ATriggerVolume은 무시합니다.
 	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
 	{
@@ -217,24 +223,34 @@ void AProjectileGrenadeLauncher::OnOverlapBegin(class UPrimitiveComponent* Overl
 		}
 	}
 
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
-	{
-		if (OtherActor->IsA(AEnemy::StaticClass()))
-		{
-			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			if (enemy)
-				enemy->Calculatehealth(-TotalDamage);
 
-			// 소멸합니다.
-			Suicide();
-			bDoSuicide = false;
+	if (OtherActor->IsA(AEnemy::StaticClass()))
+	{
+		AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
+		if (enemy)
+		{
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->DetactRangeSphereComp == OtherComp)
+				return;
+
+			enemy->Calculatehealth(-TotalDamage);
 		}
+
+		// 소멸합니다.
+		Suicide();
+		bDoSuicide = false;
 	}
+	
 }
 
 void AProjectileGrenadeLauncher::SplashOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	{
+		return;
+	}
+
 	// 2프레임 동안만 실행하고 소멸합니다.
 	if (countFrame >= 2)
 	{
@@ -266,14 +282,17 @@ void AProjectileGrenadeLauncher::SplashOnOverlapBegin(class UPrimitiveComponent*
 		return;
 	}
 
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
+	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
-		if (OtherActor->IsA(AEnemy::StaticClass()))
+		AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
+		if (enemy)
 		{
-			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			if (enemy)
-				enemy->Calculatehealth(-TotalDamage);
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->DetactRangeSphereComp == OtherComp)
+				return;
+
+			enemy->Calculatehealth(-TotalDamage);
 		}
 	}
+	
 }
