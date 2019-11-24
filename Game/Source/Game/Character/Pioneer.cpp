@@ -36,6 +36,10 @@ APioneer::APioneer() // Sets default values
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
+	InitStat();
+
+	InitHelthPointBar();
+
 	InitSkeletalAnimation();
 	
 	InitCamera();
@@ -57,6 +61,7 @@ APioneer::APioneer() // Sets default values
 void APioneer::BeginPlay()
 {
 	Super::BeginPlay();
+
 
 	// Init()이 끝나고 AIController에 빙의합니다.
 	PossessAIController();
@@ -93,7 +98,8 @@ void APioneer::InitStat()
 {
 	State = EPioneerFSM::Idle;
 
-	Health = 100.0f;
+	HealthPoint = 100.0f;
+	MaxHealthPoint = 100.0f;
 	bDead = false;
 
 	AttackPower = 0.0f;
@@ -104,6 +110,17 @@ void APioneer::InitStat()
 	SightRange = 10.0f;
 }
 /*** Stat : End ***/
+
+/*** HelthPointBar : Start ***/
+void APioneer::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+	HelthPointBar->SetDrawSize(FVector2D(80, 20));
+}
+/*** HelthPointBar : End ***/
 
 /*** CharacterMovement : Start ***/
 void APioneer::RotateTargetRotation(float DeltaTime)

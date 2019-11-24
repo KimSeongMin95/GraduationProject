@@ -5,6 +5,9 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Controller/BaseAIController.h"
+
+#include "Character/Pioneer.h"
+#include "Controller/PioneerController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 /*** Basic Function : Start ***/
@@ -14,6 +17,8 @@ ABaseCharacter::ABaseCharacter() // Sets default values
 	PrimaryActorTick.bCanEverTick = true;
 
 	InitStat();
+
+	InitHelthPointBar();
 
 	bRotateTargetRotation = false;
 	TargetRotation = FRotator::ZeroRotator;
@@ -26,6 +31,7 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	BeginPlayHelthPointBar();
 }
 
 // Called every frame
@@ -33,6 +39,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	TickHelthPointBar();
 }
 
 // Called to bind functionality to input
@@ -46,7 +53,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 /*** State : Start ***/
 void ABaseCharacter::InitStat()
 {
-	Health = 100.0f;
+	HealthPoint = 100.0f;
+	MaxHealthPoint = 100.0f;
 	bDead = false;
 
 	AttackPower = 0.0f;
@@ -59,30 +67,116 @@ void ABaseCharacter::InitStat()
 
 void ABaseCharacter::Calculatehealth(float Delta)
 {
-	Health += Delta;
+	HealthPoint += Delta;
 	CalculateDead();
 }
 
 void ABaseCharacter::CalculateDead()
 {
-	if (Health <= 0.0f)
+	if (HealthPoint <= 0.0f)
 		bDead = true;
 	else
 		bDead = false;
 }
 
-#if WITH_EDITOR
-void ABaseCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	bDead = false;
-	Health = 100;
-
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	CalculateDead();
-}
-#endif
+//#if WITH_EDITOR
+//void ABaseCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+//{
+//	bDead = false;
+//	HealthPoint = 100;
+//
+//	Super::PostEditChangeProperty(PropertyChangedEvent);
+//
+//	CalculateDead();
+//}
+//#endif
 /*** State : End ***/
+
+/*** HelthPointBar : Start ***/
+void ABaseCharacter::InitHelthPointBar()
+{
+	HelthPointBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelthPointBar"));
+	//HelthPointBar = NewObject<UWidgetComponent>(this, UWidgetComponent::StaticClass());
+	HelthPointBar->SetupAttachment(RootComponent);
+
+	HelthPointBar->SetOnlyOwnerSee(false);
+	//HelthPointBar->SetIsReplicated(false);
+
+	HelthPointBar->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
+	//HelthPointBar->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+	HelthPointBar->SetWorldRotation(FRotator(45.0f, 180.0f, 0.0f)); // 항상 플레이어에게 보이도록 회전 값을 World로 해야 함.
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 30));
+
+	// Screen은 뷰포트에서 UI처럼 띄워주는 것이고 World는 게임 내에서 UI처럼 띄워주는 것
+	HelthPointBar->SetWidgetSpace(EWidgetSpace::World);
+}
+void ABaseCharacter::BeginPlayHelthPointBar()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar() Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+	/*** 주의: Blueprint 애셋은 뒤에 _C를 붙여줘서 클래스를 가져와줘야 함. ***/
+	FString HelthPointBarBP_Reference = "WidgetBlueprint'/Game/Characters/HelthPointBar.HelthPointBar_C'";
+	UClass* HelthPointBarBP = LoadObject<UClass>(this, *HelthPointBarBP_Reference);
+
+	// 가져온 WidgetBlueprint를 UWidgetComponent에 바로 적용하지말고 따로 UUserWidget에 저장하여 설정을 한 뒤
+	// UWidgetComponent->SetWidget(저장한 UUserWidget);으로 UWidgetComponent에 적용해야 함.
+	//HelthPointBar->SetWidgetClass(HelthPointBarBP);
+	HelthPointBarUserWidget = CreateWidget(world, HelthPointBarBP); // wolrd가 꼭 필요.
+
+	if (HelthPointBarUserWidget)
+	{
+		UWidgetTree* WidgetTree = HelthPointBarUserWidget->WidgetTree;
+		if (WidgetTree)
+		{
+			//// 이 방법은 안됨.
+			// ProgreeBar = Cast<UProgressBar>(HelthPointBarUserWidget->GetWidgetFromName(FName(TEXT("ProgressBar_153"))));
+
+			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
+			if (ProgressBar == nullptr)
+				UE_LOG(LogTemp, Warning, TEXT("ProgressBar == nullptr"));
+		}
+		else
+			UE_LOG(LogTemp, Warning, TEXT("WidgetTree == nullptr"));
+	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("HelthPointBarUserWidget == nullptr"));
+
+	HelthPointBar->SetWidget(HelthPointBarUserWidget);
+}
+void ABaseCharacter::TickHelthPointBar()
+{
+	if (ProgressBar)
+		ProgressBar->SetPercent(HealthPoint / MaxHealthPoint);
+	if (HelthPointBar)
+	{
+		HelthPointBar->SetWorldRotation(FRotator(45.0f, 180.0f, 0.0f));
+	}
+
+	// 사용하지 않음.
+	/*APlayerController* abc = UGameplayStatics::GetPlayerController(this, 0);
+	if (abc)
+	{
+		APioneerController* PioneerController = Cast<APioneerController>(abc);
+		if (PioneerController)
+		{
+			APioneer* Pioneer = Cast< APioneer>(PioneerController->GetPawn());
+			if (Pioneer)
+			{
+				FVector location = Pioneer->TopDownCameraComponent->GetComponentLocation();
+				FVector direction = location - this->GetActorLocation();
+				direction.Normalize();
+				HelthPointBar->SetRelativeRotation(FRotator(0.0f, direction.Rotation().Yaw, 0.0f));
+			}
+		}
+	}*/
+}
+/*** HelthPointBar : End ***/
 
 /*** AIController : Start ***/
 void ABaseCharacter::InitAIController()
@@ -202,6 +296,8 @@ void ABaseCharacter::RotateTargetRotation(float DeltaTime)
 
 	// 변경된 각도로 다시 설정합니다.
 	RootComponent->SetWorldRotation(CurrentRotation);
+
+	TickHelthPointBar();
 }
 
 void ABaseCharacter::TracingTargetActor()
@@ -213,4 +309,3 @@ void ABaseCharacter::TracingTargetActor()
 	PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), destination);
 }
 /*** CharacterMovement : End ***/
-

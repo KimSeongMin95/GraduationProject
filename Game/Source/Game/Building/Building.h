@@ -57,9 +57,9 @@ public:
 /*** Statements : Start ***/
 public:
 	UPROPERTY(EditAnywhere)
-		float HP; /** 초기 생명력 */
+		float HealthPoint; /** 초기 생명력 */
 	UPROPERTY(EditAnywhere)
-		float CompleteHP; /** 완성된 생명력 */
+		float MaxHealthPoint; /** 완성된 생명력 */
 
 	UPROPERTY(EditAnywhere)
 		FVector2D Size; /** 크기 (NxN) */

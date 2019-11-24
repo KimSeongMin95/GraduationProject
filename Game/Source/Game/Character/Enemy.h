@@ -40,6 +40,11 @@ public:
 	virtual void InitStat();
 /*** Stat : End ***/
 
+/*** HelthPointBar : Start ***/
+public:
+	virtual void InitHelthPointBar();
+/*** HelthPointBar : End ***/
+
 /*** CharacterMovement : Start ***/
 public:
 	virtual void RotateTargetRotation(float DeltaTime) override;
@@ -72,4 +77,8 @@ public:
 	void InitFSM();
 	void RunFSM(float DeltaTime);
 /*** FSM : End ***/
+
+/*** Damage : Start ***/
+	void DamageToTargetActor();
+/*** Damage : End ***/
 };

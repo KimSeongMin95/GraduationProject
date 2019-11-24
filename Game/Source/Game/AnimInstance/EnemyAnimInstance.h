@@ -47,6 +47,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd();
+	UFUNCTION(BlueprintCallable)
+		void DamageToTargetActor();
 private:
 	APawn* Owner;
 };

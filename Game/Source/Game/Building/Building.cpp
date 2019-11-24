@@ -4,6 +4,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Projectile/Projectile.h"
+#include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values
@@ -62,8 +63,8 @@ void ABuilding::InitRootComponent()
 void ABuilding::InitStatement()
 {
 	// Default Settings
-	HP = 10.0f;
-	CompleteHP = 100.0f;
+	HealthPoint = 10.0f;
+	MaxHealthPoint = 100.0f;
 
 	Size = FVector2D(1.0f, 1.0f);
 	ConstructionTime = 2.0f;
@@ -101,7 +102,7 @@ void ABuilding::OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* Over
 	{
 		AProjectile* projectile = dynamic_cast<AProjectile*>(OtherActor);
 
-		HP -= projectile->TotalDamage;
+		HealthPoint -= projectile->TotalDamage;
 	}
 }
 
@@ -130,8 +131,8 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 		// StaticMesh의 원본 사이즈 측정
 		FVector minBounds, maxBounds;
 		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
-		/*UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
-		UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);*/
+		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
 		
 
 		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
@@ -181,6 +182,16 @@ void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedCom
 			return;
 		}
 
+		if (OtherActor->IsA(AEnemy::StaticClass()))
+		{
+			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
+			if (enemy)
+			{
+				// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+				if (enemy->DetactRangeSphereComp == OtherComp)
+					return;
+			}
+		}
 		OverapedActors.Add(OtherActor);
 	}
 	else
@@ -190,7 +201,7 @@ void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedCom
 		{
 			AProjectile* projectile = dynamic_cast<AProjectile*>(OtherActor);
 
-			HP -= projectile->TotalDamage;
+			HealthPoint -= projectile->TotalDamage;
 		}
 	}
 }
@@ -262,8 +273,8 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 		// StaticMesh의 원본 사이즈 측정
 		FVector minBounds, maxBounds;
 		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
-		UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
-		UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
 
 		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
 		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
@@ -280,7 +291,7 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 		TArrayOfUMaterialInterface.Object = (*StaticMeshComp)->GetMaterials();
 		BuildingSMCsMaterials.Add(TArrayOfUMaterialInterface);
 
-		UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
 	}
 
 	BuildingSMCs.Add(*StaticMeshComp);

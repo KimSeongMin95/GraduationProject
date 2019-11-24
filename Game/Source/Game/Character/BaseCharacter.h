@@ -11,6 +11,13 @@
 #include "Engine/World.h"
 #include "Engine/SkeletalMesh.h"
 #include "Animation/AnimBlueprint.h"
+
+#include "Components/WidgetComponent.h"
+#include "Components/ProgressBar.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+#include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
+
+//#include "Editor/EditorEngine.h" // 어따 쓰지...
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
@@ -39,10 +46,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 /*** Basic Function : End ***/
 
+	bool bInitialized = false;
+
 /*** Stat : Start ***/
 public:
 	UPROPERTY(EditAnywhere, Category = "Stat")
-		float Health;
+		float HealthPoint; // 현재 생명력
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float MaxHealthPoint; // 최대 생명력
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		bool bDead;
 
@@ -67,10 +78,24 @@ public:
 	UFUNCTION(Category = "Stat")
 		virtual void Calculatehealth(float Delta);
 
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-#endif
+//#if WITH_EDITOR
+//	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+//#endif
 /*** Stat : End ***/
+
+/*** HelthPointBar : Start ***/
+public:
+	UPROPERTY(VisibleAnywhere)
+		class UWidgetComponent* HelthPointBar = nullptr;
+	UPROPERTY(EditAnywhere)
+		class UUserWidget* HelthPointBarUserWidget = nullptr;
+	UPROPERTY(EditAnywhere)
+		class UProgressBar* ProgressBar = nullptr;
+
+	virtual void InitHelthPointBar();
+	void BeginPlayHelthPointBar();
+	void TickHelthPointBar();
+/*** HelthPointBar : End ***/
 
 /*** AIController : Start ***/
 public:

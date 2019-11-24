@@ -4,6 +4,7 @@
 #include "EnemyAnimInstance.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Character/Pioneer.h"
 #include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
@@ -84,7 +85,7 @@ void UEnemyAnimInstance::AttackEnd()
 	// double check our pointers make sure nothing is empty
 	if (!Owner)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::NativeUpdateAnimation Failed: Owner = TryGetPawnOwner()"));
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::AttackEnd Failed: Owner = TryGetPawnOwner()"));
 		return;
 	}
 
@@ -97,6 +98,28 @@ void UEnemyAnimInstance::AttackEnd()
 		if (enemy)
 		{
 			enemy->State = EEnemyFSM::Idle;
+		}
+	}
+}
+
+void UEnemyAnimInstance::DamageToTargetActor()
+{
+	// double check our pointers make sure nothing is empty
+	if (!Owner)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::DamageToTargetActor Failed: Owner = TryGetPawnOwner()"));
+		return;
+	}
+
+	// Owner가 APioneer::StaticClass()인지 확인합니다.
+	if (Owner->IsA(AEnemy::StaticClass()))
+	{
+		AEnemy* enemy = Cast<AEnemy>(Owner);
+
+		// again check pointers
+		if (enemy)
+		{
+			enemy->DamageToTargetActor();
 		}
 	}
 }

@@ -13,13 +13,16 @@ public class Game : ModuleRules
          * VR: "HeadMountedDisplay" 
          * Navigation: "NavigationSystem", "AIModule"
          * Landscape: "Landscape" 
+         * UMG, Slate, SlateCore: UMG 추가를 위해 (Widget Blueprint)
          */
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "NavigationSystem", "AIModule" });
+        PublicDependencyModuleNames.AddRange(new string[] {
+            "Core", "CoreUObject", "Engine", "InputCore",
+            "HeadMountedDisplay", "NavigationSystem", "AIModule", "UMG" });
 
         /* ALandscape::GetPrivateStaticClass() 오류가 발생하여 PrivateDependencyModuleNames에 "Landscape"를 추가.
          * 
          */
-        PrivateDependencyModuleNames.AddRange(new string[] { "Landscape" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Landscape", "Slate", "SlateCore" });
 
 
 

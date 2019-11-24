@@ -19,6 +19,10 @@ AEnemy::AEnemy() // Sets default values
 
 	GetCharacterMovement()->MaxWalkSpeed = 500.0f; // 움직일 때 걷는 속도
 
+	InitStat();
+
+	InitHelthPointBar();
+
 	InitSkeletalAnimation();
 
 	InitFSM();
@@ -52,10 +56,11 @@ void AEnemy::Tick(float DeltaTime)
 /*** Stat : Start ***/
 void AEnemy::InitStat()
 {
-	Health = 100.0f;
+	HealthPoint = 100.0f;
+	MaxHealthPoint = 100.0f;
 	bDead = false;
 
-	AttackPower = 0.0f;
+	AttackPower = 30.0f;
 	MoveSpeed = 4.0f;
 	AttackSpeed = 1.0f;
 	AttackRange = 4.0f;
@@ -63,6 +68,17 @@ void AEnemy::InitStat()
 	SightRange = 10.0f;
 }
 /*** Stat : End ***/
+
+/*** HelthPointBar : Start ***/
+void AEnemy::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 140.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 25));
+}
+/*** HelthPointBar : End ***/
 
 /*** CharacterMovement : Start ***/
 void AEnemy::RotateTargetRotation(float DeltaTime)
@@ -191,7 +207,7 @@ void AEnemy::InitFSM()
 
 	DetactRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetactRangeSphereComp"));
 	DetactRangeSphereComp->SetupAttachment(RootComponent);
-	DetactRangeSphereComp->SetSphereRadius(512.0f);
+	DetactRangeSphereComp->SetSphereRadius(1024.0f);
 
 	DetactRangeSphereComp->SetGenerateOverlapEvents(true);
 	DetactRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -238,7 +254,7 @@ void AEnemy::RunFSM(float DeltaTime)
 	{
 	case EEnemyFSM::Idle:
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Idle"));
+		//UE_LOG(LogTemp, Warning, TEXT("Idle"));
 		break; 
 	}
 	case EEnemyFSM::Move:
@@ -246,12 +262,12 @@ void AEnemy::RunFSM(float DeltaTime)
 		float dist = FVector::Distance(this->GetActorLocation(), TartgetPosition);
 		if (dist < 128.0f)
 			State = EEnemyFSM::Idle;
-		UE_LOG(LogTemp, Warning, TEXT("Move"));
+		//UE_LOG(LogTemp, Warning, TEXT("Move"));
 		break; 
 	}
 	case EEnemyFSM::Stop:
 	{	
-		UE_LOG(LogTemp, Warning, TEXT("Stop"));
+		//UE_LOG(LogTemp, Warning, TEXT("Stop"));
 		break; 
 	}
 	case EEnemyFSM::Tracing:
@@ -263,16 +279,29 @@ void AEnemy::RunFSM(float DeltaTime)
 			if (dist < 256.0f)
 				State = EEnemyFSM::Attack;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("Tracing"));
+		//UE_LOG(LogTemp, Warning, TEXT("Tracing"));
 		break; 
 	}
 	case EEnemyFSM::Attack:
 	{	
-		// 공격 애니메이션이 끝나면 
-		//State = EEnemyFSM::Idle;
-		UE_LOG(LogTemp, Warning, TEXT("Attack"));
+		// 공격 애니메이션이 끝난 후 AnimationBlueprint에서 EventGraph로 Atteck을 Idle로 바꿔줌
+		//UE_LOG(LogTemp, Warning, TEXT("Attack"));
 		break; 
 	}
 	}
 }
 /*** FSM : End ***/
+
+/*** Damage : Start ***/
+void AEnemy::DamageToTargetActor()
+{
+	if (!TargetActor)
+		return;
+
+	if (TargetActor->IsA(APioneer::StaticClass()))
+	{
+		APioneer* pioneer = dynamic_cast<APioneer*>(TargetActor);
+		pioneer->Calculatehealth(-AttackPower);
+	}
+}
+/*** Damage : End ***/

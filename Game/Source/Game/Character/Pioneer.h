@@ -96,6 +96,11 @@ public:
 	virtual void InitStat();
 /*** Stat : End ***/
 
+/*** HelthPointBar : Start ***/
+public:
+	virtual void InitHelthPointBar();
+/*** HelthPointBar : End ***/
+
 /*** CharacterMovement : Start ***/
 public:
 	virtual void RotateTargetRotation(float DeltaTime) override;
