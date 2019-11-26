@@ -226,14 +226,14 @@ void AEnemy::RunFSM(float DeltaTime)
 
 		for (auto& actor : OverapedActors)
 		{
-			if (actor->IsA(APioneer::StaticClass()))
+			if (actor->IsA(APioneer::StaticClass()) && !Cast<APioneer>(actor)->bDead)
 			{
 				State = EEnemyFSM::Tracing;
 				TargetActor = actor;
 				break;
 			}
 		}
-		for (auto& actor : OverapedActors)
+		/*for (auto& actor : OverapedActors)
 		{
 			if (actor->IsA(ABuilding::StaticClass()))
 			{
@@ -241,7 +241,7 @@ void AEnemy::RunFSM(float DeltaTime)
 				TargetActor = actor;
 				break;
 			}
-		}
+		}*/
 
 		if (State == EEnemyFSM::Tracing && TargetActor == nullptr)
 		{
@@ -302,6 +302,9 @@ void AEnemy::DamageToTargetActor()
 	{
 		APioneer* pioneer = dynamic_cast<APioneer*>(TargetActor);
 		pioneer->Calculatehealth(-AttackPower);
+
+		if (pioneer->bDead)
+			TargetActor = nullptr;
 	}
 }
 /*** Damage : End ***/

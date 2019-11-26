@@ -72,11 +72,11 @@ public:
 
 	virtual void InitStat();
 
-	// Calcaulat death function (helper)
-	virtual void CalculateDead();
-
 	UFUNCTION(Category = "Stat")
 		virtual void Calculatehealth(float Delta);
+
+	// Calcaulate death function (helper)
+	virtual void CalculateDead();
 
 //#if WITH_EDITOR
 //	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

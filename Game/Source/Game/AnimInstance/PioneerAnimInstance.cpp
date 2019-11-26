@@ -3,6 +3,8 @@
 #include "PioneerAnimInstance.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "PioneerManager.h"
+#include "Controller/PioneerController.h"
 #include "Character/Pioneer.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
@@ -40,6 +42,10 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		// again check pointers
 		if (pioneer)
 		{
+			bDead = pioneer->bDead;
+			if (pioneer->bDead) // 죽으면 실행하지 않음.
+				return;
+
 			bIsAnimationBlended = pioneer->IsAnimationBlended();
 			Speed = pioneer->GetVelocity().Size();
 			bIsMoving = Speed > 0 ? true : false;
@@ -50,5 +56,63 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 
 			Direction = CalculateDirection(pioneer->GetVelocity(), pioneer->GetActorRotation());
 		}
+	}
+}
+
+void UPioneerAnimInstance::DestroyPioneer()
+{
+	if (APioneer* pioneer = Cast<APioneer>(Owner))
+	{
+		APioneerManager* PioneerManager = nullptr;
+
+		UWorld* const world = GetWorld();
+		if (!world)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::DestroyPioneer() Failed: UWorld* const World = GetWorld();"));
+			return;
+		}
+
+		// UWorld에서 AWorldViewCameraActor를 찾습니다.
+		for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
+		{
+			PioneerManager = *ActorItr;
+		}
+
+
+		if (pioneer->GetMesh())
+			pioneer->GetMesh()->DestroyComponent();
+		if (pioneer->GetCharacterMovement())
+			pioneer->GetCharacterMovement()->DestroyComponent();
+
+		// 플레이어가 조종하는 pioneer면
+		if (pioneer->GetController()->IsA(APioneerController::StaticClass()))
+		{
+			if (PioneerManager)
+			{
+				PioneerManager->SwitchPawn(1.5f);
+			}
+		}
+		else
+		{
+			if (PioneerManager)
+			{
+				pioneer->Destroy();
+			}
+		}
+
+		/*if (pioneer->GetOwner() && pioneer->GetOwner()->IsA(APioneerManager::StaticClass()))
+		{
+			if (APioneerManager* PioneerManager = Cast<APioneerManager>(pioneer->GetOwner()))
+			{
+				PioneerManager->SwitchPawn(2.0f);
+			}
+		}
+		else if (pioneer->GetOuter() && pioneer->GetOuter()->IsA(APioneerManager::StaticClass()))
+		{
+			if (APioneerManager* PioneerManager = Cast<APioneerManager>(pioneer->GetOuter()))
+			{
+				PioneerManager->SwitchPawn(2.0f);
+			}
+		}*/
 	}
 }

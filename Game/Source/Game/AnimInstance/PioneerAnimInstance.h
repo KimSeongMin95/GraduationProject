@@ -3,8 +3,9 @@
 #pragma once
 
 /*** 언리얼엔진 헤더 선언 : Start ***/
-#include "GameFramework/PawnMovementComponent.h"
 #include "Engine.h"
+#include "EngineUtils.h" // TActorIterator<>
+#include "GameFramework/PawnMovementComponent.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
@@ -49,6 +50,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bFired;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		bool bDead;
+
+	UFUNCTION(BlueprintCallable)
+		void DestroyPioneer();
 
 private:
 	APawn* Owner;

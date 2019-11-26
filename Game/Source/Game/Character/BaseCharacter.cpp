@@ -74,7 +74,13 @@ void ABaseCharacter::Calculatehealth(float Delta)
 void ABaseCharacter::CalculateDead()
 {
 	if (HealthPoint <= 0.0f)
+	{
 		bDead = true;
+		if (GetController())
+			GetController()->StopMovement();
+		if (HelthPointBar)
+			HelthPointBar->DestroyComponent();
+	}
 	else
 		bDead = false;
 }
@@ -98,13 +104,14 @@ void ABaseCharacter::InitHelthPointBar()
 	HelthPointBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelthPointBar"));
 	//HelthPointBar = NewObject<UWidgetComponent>(this, UWidgetComponent::StaticClass());
 	HelthPointBar->SetupAttachment(RootComponent);
+	HelthPointBar->bAbsoluteRotation = true; // 절대적인 회전값을 적용합니다.
 
 	HelthPointBar->SetOnlyOwnerSee(false);
 	//HelthPointBar->SetIsReplicated(false);
 
 	HelthPointBar->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 	//HelthPointBar->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-	HelthPointBar->SetWorldRotation(FRotator(45.0f, 180.0f, 0.0f)); // 항상 플레이어에게 보이도록 회전 값을 World로 해야 함.
+	HelthPointBar->SetRelativeRotation(FRotator(45.0f, 180.0f, 0.0f)); // 항상 플레이어에게 보이도록 회전 값을 World로 해야 함.
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	HelthPointBar->SetDrawSize(FVector2D(100, 30));
 
@@ -153,10 +160,10 @@ void ABaseCharacter::TickHelthPointBar()
 {
 	if (ProgressBar)
 		ProgressBar->SetPercent(HealthPoint / MaxHealthPoint);
-	if (HelthPointBar)
+	/*if (HelthPointBar)
 	{
 		HelthPointBar->SetWorldRotation(FRotator(45.0f, 180.0f, 0.0f));
-	}
+	}*/
 
 	// 사용하지 않음.
 	/*APlayerController* abc = UGameplayStatics::GetPlayerController(this, 0);

@@ -5,6 +5,7 @@
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "AnimInstance/PioneerAnimInstance.h"
 #include "Controller/PioneerAIController.h"
+#include "PioneerManager.h"
 
 #include "Weapon/Pistol.h"
 #include "Weapon/AssaultRifle.h"
@@ -75,6 +76,10 @@ void APioneer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	// 죽으면 함수를 실행하지 않음.
+	if (bDead)
+		return;
+
 	SetCursorToWorld();
 
 	OnConstructingMode();
@@ -94,6 +99,40 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 /*** Basic Function : End ***/
 
 /*** Stat : Start ***/
+void APioneer::CalculateDead()
+{
+	Super::CalculateDead();
+
+	if (!bDead)
+	{
+		return;
+	}
+
+	APioneerManager* PioneerManager = nullptr;
+
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::DestroyPioneer() Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+	// UWorld에서 AWorldViewCameraActor를 찾습니다.
+	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		PioneerManager = *ActorItr;
+	}
+
+	PioneerManager->Pioneers.Remove(this);
+
+	if (CursorToWorld)
+		CursorToWorld->DestroyComponent();
+	if (Weapon)
+		Weapon->Destroy();
+	if (Building)
+		Building->Destroy();
+}
+
 void APioneer::InitStat()
 {
 	State = EPioneerFSM::Idle;
@@ -133,7 +172,8 @@ void APioneer::RotateTargetRotation(float DeltaTime)
 }
 void APioneer::StopMovement()
 {
-	GetController()->StopMovement();
+	if (GetController())
+		GetController()->StopMovement();
 }
 /*** CharacterMovement : End ***/
 
@@ -268,7 +308,7 @@ void APioneer::InitCamera()
 	// 따라다니는 카메라를 생성합니다.
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // boom의 맨 뒤쪽에 해당 카메라를 붙이고, 컨트롤러의 방향에 맞게 boom을 적용합니다.
-	TopDownCameraComponent->bUsePawnControlRotation = false; // 카메라는 Arm에 상대적으로 회전하지 않습니다.
+	TopDownCameraComponent->bUsePawnControlRotation = false;
 }
 
 void APioneer::SetCameraBoomSettings()

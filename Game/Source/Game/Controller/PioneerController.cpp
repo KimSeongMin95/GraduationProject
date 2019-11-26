@@ -25,7 +25,6 @@ void APioneerController::PlayerTick(float DeltaTime)
 	{
 		MoveToMouseCursor();
 	}
-
 }
 
 void APioneerController::SetupInputComponent()
@@ -84,6 +83,10 @@ void APioneerController::MoveToMouseCursor()
 	{
 		if (APioneer* MyPawn = Cast<APioneer>(GetPawn()))
 		{
+			// 죽으면 함수를 실행하지 않음.
+			if (MyPawn->bDead)
+				return;
+
 			//// Trace to see what is under the mouse cursor
 			//// 마우스 커서 아래에 무엇이 존재하는지 추적합니다.
 			//FHitResult HitResult;
@@ -143,6 +146,10 @@ void APioneerController::MoveForward(float Value)
 
 	if (MyPawn && (Value != 0.0f))
 	{
+		// 죽으면 함수를 실행하지 않음.
+		if (MyPawn->bDead)
+			return;
+
 		// Navigation으로 이동하던 중이었으면 멈춥니다. 
 		StopMovement();
 
@@ -164,6 +171,10 @@ void APioneerController::MoveRight(float Value)
 
 	if (MyPawn && (Value != 0.0f))
 	{
+		// 죽으면 함수를 실행하지 않음.
+		if (MyPawn->bDead)
+			return;
+
 		// Navigation으로 이동하던 중이었으면 멈춥니다. 
 		StopMovement();
 
@@ -185,6 +196,10 @@ void APioneerController::ZoomInOrZoomOut(float Value)
 
 	if (MyPawn && (Value != 0.0f))
 	{
+		// 죽으면 함수를 실행하지 않음.
+		if (MyPawn->bDead)
+			return;
+
 		MyPawn->ZoomInOrZoomOut(Value);
 	}
 }
@@ -196,6 +211,10 @@ void APioneerController::FireWeapon()
 
 	if (MyPawn)
 	{
+		// 죽으면 함수를 실행하지 않음.
+		if (MyPawn->bDead)
+			return;
+
 		MyPawn->FireWeapon();
 	}
 }
@@ -207,6 +226,10 @@ void APioneerController::ChangeWeapon()
 
 	if (MyPawn)
 	{
+		// 죽으면 함수를 실행하지 않음.
+		if (MyPawn->bDead)
+			return;
+
 		if (MyPawn->bConstructingMode == false)
 			MyPawn->ChangeWeapon();
 		else
@@ -221,6 +244,10 @@ void APioneerController::RotatingBuilding(float Value)
 
 	if (MyPawn)
 	{
+		// 죽으면 함수를 실행하지 않음.
+		if (MyPawn->bDead)
+			return;
+
 		MyPawn->RotatingBuilding(Value);
 	}
 }
@@ -232,6 +259,10 @@ void APioneerController::PlaceBuilding()
 
 	if (MyPawn)
 	{
+		// 죽으면 함수를 실행하지 않음.
+		if (MyPawn->bDead)
+			return;
+
 		MyPawn->PlaceBuilding();
 	}
 }
@@ -243,6 +274,10 @@ void APioneerController::ConstructingMode()
 
 	if (MyPawn)
 	{
+		// 죽으면 함수를 실행하지 않음.
+		if (MyPawn->bDead)
+			return;
+
 		MyPawn->bConstructingMode = 1 - MyPawn->bConstructingMode;
 		if (MyPawn->bConstructingMode)
 			MyPawn->SpawnBuilding();

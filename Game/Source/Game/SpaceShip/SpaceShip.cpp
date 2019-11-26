@@ -318,7 +318,7 @@ void ASpaceShip::InitCamera()
 
 void ASpaceShip::InitParticleSystem()
 {
-	ParticalScale = 0.01f;
+	ParticalScale = 0.015f;
 
 	EngineParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem"));
 	EngineParticleSystem->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Engine_L"));

@@ -18,8 +18,6 @@ APioneerManager::APioneerManager()
 	SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	RootComponent = SceneComp;
 
-	WorldViewCam = nullptr;
-	PioneerCtrl = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -34,14 +32,23 @@ void APioneerManager::BeginPlay()
 		return;
 	}
 
-	// UWorld에서 AWorldViewCameraActor를 찾습니다.
-	if (WorldViewCam == nullptr)
+
+	for (TActorIterator<AWorldViewCameraActor> ActorItr(world); ActorItr; ++ActorItr)
 	{
-		for (TActorIterator<AWorldViewCameraActor> ActorItr(world); ActorItr; ++ActorItr)
+		if ((*ActorItr)->GetName() == "WorldViewCamera")
 		{
-			WorldViewCam = *ActorItr;
+			WorldViewCamera = *ActorItr;
+		}
+		if ((*ActorItr)->GetName() == "WorldViewCamFirst")
+		{
+			WorldViewCamFirst = *ActorItr;
+		}
+		if ((*ActorItr)->GetName() == "WorldViewCamSecond")
+		{
+			WorldViewCamSecond = *ActorItr;
 		}
 	}
+	
 
 	// UWorld에서 APioneerController를 찾습니다.
 	if (PioneerCtrl == nullptr)
@@ -111,11 +118,6 @@ APioneer* APioneerManager::GetPioneerBySocketID(int SocketID)
 /** 다른 폰으로 변경하는 함수입니다. */
 void APioneerManager::SwitchPawn(float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
 {
-	if (PioneerCtrl->GetPawn())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerManager::SwitchPawn PioneerCtrl->GetPawn()"));
-		return;
-	}
 	//enum EViewTargetBlendFunction
 	//{
 	//	/** Camera does a simple linear interpolation. */
@@ -131,46 +133,83 @@ void APioneerManager::SwitchPawn(float BlendTime, EViewTargetBlendFunction blend
 	//	VTBlend_MAX,
 	//};
 	
-	// 먼저 WorldViewCam로 카메라를 변경합니다.
-	if (PioneerCtrl && WorldViewCam)
-		PioneerCtrl->SetViewTargetWithBlend(WorldViewCam, BlendTime, blendFunc, BlendExp, bLockOutgoing);
-	else
-		UE_LOG(LogTemp, Warning, TEXT("!(PioneerCtrl && WorldViewCam)"));
+	//// 먼저 WorldViewCam로 카메라를 변경합니다.
+	//if (PioneerCtrl && WorldViewCam)
+	//	PioneerCtrl->SetViewTargetWithBlend(WorldViewCam, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+	//else
+	//	UE_LOG(LogTemp, Warning, TEXT("!(PioneerCtrl && WorldViewCam)"));
+
+	// 먼저 First 카메라를 옮겨주기
+	if (PioneerCtrl)
+	{
+		if (PioneerCtrl->GetPawn())
+		{
+			FVector location = PioneerCtrl->GetPawn()->GetActorLocation();
+			location.Z = 5000.0f;
+			WorldViewCamFirst->SetActorLocation(location);
+			SwitchViewTarget(WorldViewCamFirst, BlendTime);
+		}
+	}
 
 	// AI인 Pioneer를 찾습니다.
 	APioneer* Pawn = nullptr;
 	for (auto& pioneer : Pioneers)
 	{
-		if (pioneer->SocketID == -1)
+		if (pioneer->SocketID == -1 && pioneer->bDead == false)
 		{
 			Pawn = pioneer;
 			break;
 		}
 	}
 
-	FTimerHandle timer1;
-	FTimerDelegate timerDel1;
-	// 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
-	timerDel1.BindUFunction(this, FName("SwitchViewTarget"), Pawn, BlendTime, blendFunc, BlendExp, bLockOutgoing);
-	GetWorldTimerManager().SetTimer(timer1, timerDel1, BlendTime, false);
+	float OneFrameGap = 0.033f;
 
-	FTimerHandle timer2;
-	FTimerDelegate timerDel2;
-	// 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
-	timerDel2.BindUFunction(this, FName("PossessPioneer"), Pawn);
-	GetWorldTimerManager().SetTimer(timer2, timerDel2, BlendTime * 2.0f, false);
+	// 그다음 Second 카메라를 옮겨주기
+	if (Pawn)
+	{
+		FVector location = Pawn->GetActorLocation();
+		location.Z = 5000.0f;
+		WorldViewCamSecond->SetActorLocation(location);
+
+		FTimerHandle timer;
+		FTimerDelegate timerDel;
+		// 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
+		timerDel.BindUFunction(this, FName("SwitchViewTarget"), WorldViewCamSecond, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+		GetWorldTimerManager().SetTimer(timer, timerDel, BlendTime + OneFrameGap, false);
+
+		FTimerHandle timer1;
+		FTimerDelegate timerDel1;
+		// 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
+		timerDel1.BindUFunction(this, FName("SwitchViewTarget"), Pawn, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+		GetWorldTimerManager().SetTimer(timer1, timerDel1, BlendTime * 2.0f + OneFrameGap, false);
+
+		FTimerHandle timer2;
+		FTimerDelegate timerDel2;
+		// 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
+		timerDel2.BindUFunction(this, FName("PossessPioneer"), Pawn, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+		GetWorldTimerManager().SetTimer(timer2, timerDel2, BlendTime * 3.0f + OneFrameGap, false);
+	}
+	else
+	{
+		FTimerHandle timer;
+		FTimerDelegate timerDel;
+		// 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
+		timerDel.BindUFunction(this, FName("SwitchViewTarget"), WorldViewCamera, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+		GetWorldTimerManager().SetTimer(timer, timerDel, BlendTime + OneFrameGap, false);
+	}
 }
 
 /** 다른 폰의 카메라로 변경하는 함수입니다. */
-void APioneerManager::SwitchViewTarget(APioneer* Pioneer, float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
+void APioneerManager::SwitchViewTarget(AActor* Actor, float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
 {
-	if (!Pioneer)
+	if (!Actor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("!Pioneer"));
+		UE_LOG(LogTemp, Warning, TEXT("APioneerManager::SwitchViewTarget: !Actor"));
 		return;
 	}
 
-	PioneerCtrl->SetViewTargetWithBlend(Pioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+	UE_LOG(LogTemp, Warning, TEXT("SwitchViewTarget: %s, BlendTime: %f"), *Actor->GetName(), BlendTime);
+	PioneerCtrl->SetViewTargetWithBlend(Actor, BlendTime, blendFunc, BlendExp, bLockOutgoing);
 	
 }
 
@@ -181,7 +220,7 @@ void APioneerManager::PossessPioneer(APioneer* Pioneer)
 	{
 		for (auto& pioneer : Pioneers)
 		{
-			if (pioneer->SocketID == -1)
+			if (pioneer->SocketID == -1 && pioneer->bDead == false)
 			{
 				Pioneer = pioneer;
 				break;
@@ -190,6 +229,8 @@ void APioneerManager::PossessPioneer(APioneer* Pioneer)
 
 		UE_LOG(LogTemp, Warning, TEXT("APioneerManager::PossessPioneer => !Pioneer"));
 	}
+
+
 
 	// PioneerCtrl가 존재하는지 확인합니다.
 	if (!PioneerCtrl)
@@ -201,7 +242,13 @@ void APioneerManager::PossessPioneer(APioneer* Pioneer)
 	// PioneerCtrl가 Pawn을 소유하고 있으면 먼저 해제합니다.
 	if (PioneerCtrl->GetPawn())
 	{
+		APioneer* ToDestroy = Cast<APioneer>(PioneerCtrl->GetPawn());
+
 		PioneerCtrl->UnPossess();
+
+		if (ToDestroy->bDead)
+			ToDestroy->Destroy();
+
 	}
 
 	// 이제부터 PioneerCtrl가 TmapPioneers[ID]를 조종합니다.
