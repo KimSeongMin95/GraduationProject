@@ -7,6 +7,11 @@
 #include "Components/SceneComponent.h"
 #include "EngineUtils.h" // TActorIterator<>
 #include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
+
+#include "Components/WidgetComponent.h"
+#include "Components/ProgressBar.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+#include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
@@ -55,11 +60,29 @@ public:
 	UPROPERTY(EditAnywhere)
 		float SwitchTime; /** 다른 폰으로 변경하는 시간입니다. */
 	
-	void SwitchPawn(float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = false); /** 다른 폰으로 변경하는 함수입니다. */
+	void SwitchPawn(float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰으로 변경하는 함수입니다. */
 	
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
-		void SwitchViewTarget(AActor* Actor, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = false); /** 다른 폰의 카메라로 변경하는 함수입니다. */
+		void SwitchViewTarget(AActor* Actor, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰의 카메라로 변경하는 함수입니다. */
 	
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
 		void PossessPioneer(APioneer* Pioneer); /** 다른 폰을 Possess() 합니다. */
+
+	FTimerHandle timer;
+	FTimerHandle timer1;
+	FTimerHandle timer2;
+	FTimerHandle timer3;
+	AActor* TargetViewActor = nullptr;
+
+
+/*** UI : Start ***/
+public:
+	UPROPERTY(VisibleAnywhere)
+		class UWidgetComponent* UIWidgetComponent = nullptr;
+	UPROPERTY(EditAnywhere)
+		class UUserWidget* UIUserWidget = nullptr;
+
+	void InitUI();
+	void BeginPlayUI();
+/*** UI : End ***/
 };

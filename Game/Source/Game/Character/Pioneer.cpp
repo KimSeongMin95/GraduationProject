@@ -289,7 +289,7 @@ void APioneer::InitCamera()
 	/*** 카메라 설정을 PIE때 변경합니다. : Start ***/
 	CameraBoomLocation = FVector(-300.0f, 0.0f, 300.0f); // ArmSpring의 World 좌표입니다.
 	CameraBoomRotation = FRotator(-60.f, 0.f, 0.f); // ArmSpring의 World 회전입니다.
-	TargetArmLength = 500.0f; // ArmSpring과 CameraComponent간의 거리입니다.
+	TargetArmLength = 1500.0f; // ArmSpring과 CameraComponent간의 거리입니다.
 	CameraLagSpeed = 3.0f; // 부드러운 카메라 전환 속도입니다.
 	/*** 카메라 설정을 PIE때 변경합니다. : End ***/
 
@@ -297,7 +297,7 @@ void APioneer::InitCamera()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->bAbsoluteRotation = true; // 캐릭터가 회전할 때 Arm을 회전시키지 않습니다. 월드 좌표계의 회전을 따르도록 합니다.
-	CameraBoom->TargetArmLength = 500.0f; // 해당 간격으로 카메라가 Arm을 따라다닙니다.
+	CameraBoom->TargetArmLength = 1500.0f; // 해당 간격으로 카메라가 Arm을 따라다닙니다.
 	CameraBoom->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 	CameraBoom->SetRelativeRotation(FRotator(-60.0f, 0.0f, 0.0f));
 	CameraBoom->SetRelativeLocation(FVector(-300.0f, 0.0f, 300.0f));
