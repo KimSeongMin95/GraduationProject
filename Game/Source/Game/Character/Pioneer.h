@@ -233,5 +233,12 @@ public:
 	void PlaceBuilding();
 	void DestroyBuilding();
 /*** Building : End ***/
+
+/*** Equipments : Start ***/
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* HelmetMesh = nullptr;
+
+	void InitEquipments();
+/*** Equipments : End ***/
 };
 

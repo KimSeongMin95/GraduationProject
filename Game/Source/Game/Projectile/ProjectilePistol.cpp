@@ -116,6 +116,12 @@ void AProjectilePistol::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp
 		}
 	}
 
+	// 개척자 끼리는 무시합니다.
+	if (OtherActor->IsA(APioneer::StaticClass()))
+	{
+		return;
+	}
+
 	// 투사체 끼리는 무시합니다.
 	if (OtherActor->IsA(AProjectile::StaticClass()))
 	{

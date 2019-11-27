@@ -49,6 +49,8 @@ APioneer::APioneer() // Sets default values
 
 	InitAIController();
 
+	InitEquipments();
+
 	/*** Building : Start ***/
 	bConstructingMode = false;
 	/*** Building : End ***/
@@ -285,7 +287,7 @@ bool APioneer::IsAnimationBlended()
 void APioneer::InitCamera()
 {
 	/*** 카메라 설정을 PIE때 변경합니다. : Start ***/
-	CameraBoomLocation = FVector(-500.0f, 0.0f, 500.0f); // ArmSpring의 World 좌표입니다.
+	CameraBoomLocation = FVector(-300.0f, 0.0f, 300.0f); // ArmSpring의 World 좌표입니다.
 	CameraBoomRotation = FRotator(-60.f, 0.f, 0.f); // ArmSpring의 World 회전입니다.
 	TargetArmLength = 500.0f; // ArmSpring과 CameraComponent간의 거리입니다.
 	CameraLagSpeed = 3.0f; // 부드러운 카메라 전환 속도입니다.
@@ -298,7 +300,7 @@ void APioneer::InitCamera()
 	CameraBoom->TargetArmLength = 500.0f; // 해당 간격으로 카메라가 Arm을 따라다닙니다.
 	CameraBoom->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 	CameraBoom->SetRelativeRotation(FRotator(-60.0f, 0.0f, 0.0f));
-	CameraBoom->SetRelativeLocation(FVector(-500.0f, 0.0f, 500.0f));
+	CameraBoom->SetRelativeLocation(FVector(-300.0f, 0.0f, 300.0f));
 
 	//CameraBoom->bUsePawnControlRotation = false; // 컨트롤러 기반으로 카메라 암을 회전시키지 않습니다.
 	CameraBoom->bDoCollisionTest = false; // Arm과 카메라 사이의 선분이 어떤 물체와 충돌했을 때 뚫지 않도록 카메라를 당기지 않습니다.
@@ -327,7 +329,7 @@ void APioneer::SetCameraBoomSettings()
 
 void APioneer::ZoomInOrZoomOut(float Value)
 {
-	TargetArmLength += Value * 1280.0f;
+	TargetArmLength += Value * 64.0f;
 
 	if (TargetArmLength < 0.0f)
 		TargetArmLength = 0.0f;
@@ -744,7 +746,19 @@ void APioneer::DestroyBuilding()
 }
 /*** Building : End ***/
 
+/*** Equipments : Start ***/
+void APioneer::InitEquipments()
+{
+	HelmetMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HelmetMesh"));
+	HelmetMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HeadSocket"));
 
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> helmetMesh(TEXT("StaticMesh'/Game/Characters/Equipments/LowHelmet/Lowhelmet.Lowhelmet'"));
+	if (helmetMesh.Succeeded())
+	{
+		HelmetMesh->SetStaticMesh(helmetMesh.Object);
+	}
+}
+/*** Equipments : End ***/
 
 //void APioneer::PunchAttack()
 //{
