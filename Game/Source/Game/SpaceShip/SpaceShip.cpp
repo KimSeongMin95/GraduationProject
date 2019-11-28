@@ -321,7 +321,8 @@ void ASpaceShip::InitParticleSystem()
 	ParticalScale = 0.015f;
 
 	EngineParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem"));
-	EngineParticleSystem->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Engine_L"));
+	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
+	EngineParticleSystem->SetupAttachment(SkeletalMeshComp, TEXT("Engine_L"));
 	EngineParticleSystem->bAutoActivate = true;
 	EngineParticleSystem->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
 	EngineParticleSystem->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
@@ -332,7 +333,8 @@ void ASpaceShip::InitParticleSystem()
 		EngineParticleSystem->SetTemplate(engineParticleSystem.Object);
 	}
 	EngineParticleSystem2 = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem2"));
-	EngineParticleSystem2->AttachToComponent(SkeletalMeshComp, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Engine_R"));
+	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
+	EngineParticleSystem2->SetupAttachment(SkeletalMeshComp, TEXT("Engine_R"));
 	EngineParticleSystem2->bAutoActivate = true;
 	EngineParticleSystem2->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
 	EngineParticleSystem2->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);

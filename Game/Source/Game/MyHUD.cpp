@@ -3,7 +3,7 @@
 #include "MyHUD.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-
+#include "PioneerManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 AMyHUD::AMyHUD()
@@ -25,20 +25,61 @@ AMyHUD::AMyHUD()
 		MainUI = MainUITexObj.Object;
 	}
 
-	/*static ConstructorHelpers::FObjectFinder<UTexture2D> SubUITexObj(TEXT("Texture2D'/Game/UI/Black.Black'"));
-	if (SubUITexObj.Succeeded())
+
+
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconPioneerUITexObj(TEXT("Texture2D'/Game/UI/Icon_Pioneer2.Icon_Pioneer2'"));
+	if (IconPioneerUITexObj.Succeeded())
 	{
-		SubUI_1 = SubUITexObj.Object;
-		SubUI_2 = SubUITexObj.Object;
-		SubUI_3 = SubUITexObj.Object;
-		SubUI_4 = SubUITexObj.Object;
-		SubUI_5 = SubUITexObj.Object;
-	}*/
+		IconPioneerUI = IconPioneerUITexObj.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconMineralUITexObj(TEXT("Texture2D'/Game/UI/Icon_Mineral.Icon_Mineral'"));
+	if (IconMineralUITexObj.Succeeded())
+	{
+		IconMineralUI = IconMineralUITexObj.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconOrganicUITexObj(TEXT("Texture2D'/Game/UI/Icon_Organic.Icon_Organic'"));
+	if (IconOrganicUITexObj.Succeeded())
+	{
+		IconOrganicUI = IconOrganicUITexObj.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconEnergyUITexObj(TEXT("Texture2D'/Game/UI/Icon_Energy.Icon_Energy'"));
+	if (IconEnergyUITexObj.Succeeded())
+	{
+		IconEnergyUI = IconEnergyUITexObj.Object;
+	}
 }
 
 void AMyHUD::DrawHUD()
 {
 	Super::DrawHUD();
+
+	if (!PioneerManager)
+	{
+		UWorld* const world = GetWorld();
+		if (!world)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+			return;
+		}
+
+		// UWorld에서 AWorldViewCameraActor를 찾습니다.
+		if (PioneerManager == nullptr)
+		{
+			for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
+			{
+				PioneerManager = *ActorItr;
+			}
+		}
+	}
+
+	
+	
+		//PioneerText.FromInt(PioneerManager->Pioneers.Num());
+	
+
 
 	const float ViewportSizeX = GEngine->GameViewport->Viewport->GetSizeXY().X;
 	const float ViewportSizeY = GEngine->GameViewport->Viewport->GetSizeXY().Y;
@@ -58,38 +99,39 @@ void AMyHUD::DrawHUD()
 	Canvas->DrawItem(MinimapUITileItem);
 
 
-
-
-
-
-
-
-	/*FCanvasTileItem SubUI_1TileItem(FVector2D(), SubUI_1->Resource, FVector2D(), FLinearColor::White);
-	SubUI_1TileItem.BlendMode = SE_BLEND_Translucent;
-	Canvas->DrawItem(SubUI_1TileItem);
-
-	FCanvasTileItem SubUI_2TileItem(FVector2D(), SubUI_2->Resource, FVector2D(), FLinearColor::White);
-	SubUI_2TileItem.BlendMode = SE_BLEND_Translucent;
-	Canvas->DrawItem(SubUI_2TileItem);
-
-	FCanvasTileItem SubUI_3TileItem(FVector2D(), SubUI_3->Resource, FVector2D(), FLinearColor::White);
-	SubUI_3TileItem.BlendMode = SE_BLEND_Translucent;
-	Canvas->DrawItem(SubUI_3TileItem);
-
-	FCanvasTileItem SubUI_4TileItem(FVector2D(), SubUI_4->Resource, FVector2D(), FLinearColor::White);
-	SubUI_4TileItem.BlendMode = SE_BLEND_Translucent;
-	Canvas->DrawItem(SubUI_4TileItem);
-
-	FCanvasTileItem SubUI_5TileItem(FVector2D(), SubUI_5->Resource, FVector2D(), FLinearColor::White);
-	SubUI_5TileItem.BlendMode = SE_BLEND_Translucent;
-	Canvas->DrawItem(SubUI_5TileItem);*/
-
-	
-
 	const FVector2D MainUIDrawPosition(0.0f, 0.0f);
 
 	// draw the Tex
 	FCanvasTileItem MainUITileItem(MainUIDrawPosition, MainUI->Resource, ViewportSize, FLinearColor::White);
 	MainUITileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem(MainUITileItem);
+
+	const FVector2D IconDrawPisition(1600.0f * (ViewportSizeX / 1920.0f), 850.0f * (ViewportSizeY / 1080.0f));
+	const FVector2D IconDrawSize(45.0f * (ViewportSizeX / 1920.0f), 45.0f* (ViewportSizeY / 1080.0f));
+
+	FCanvasTileItem IconPioneerUITileItem(IconDrawPisition + FVector2D(0.0f, 0.0f * (ViewportSizeY / 1080.0f)), IconPioneerUI->Resource, IconDrawSize, FLinearColor::White);
+	IconPioneerUITileItem.BlendMode = SE_BLEND_Translucent;
+	Canvas->DrawItem(IconPioneerUITileItem);
+
+	if (PioneerManager)
+		DrawText(FString::FromInt(PioneerManager->Pioneers.Num()), FLinearColor::Green, IconDrawPisition.X + 55.0f, IconDrawPisition.Y, IconPioneerFont, 1.5f * (ViewportSizeX / 1920.0f), false);
+
+	FCanvasTileItem IconMineralUITileItem(IconDrawPisition + FVector2D(0.0f, 50.0f * (ViewportSizeY / 1080.0f)), IconMineralUI->Resource, IconDrawSize, FLinearColor::White);
+	IconMineralUITileItem.BlendMode = SE_BLEND_Translucent;
+	Canvas->DrawItem(IconMineralUITileItem);
+
+	DrawText(TEXT("312"), FLinearColor::Green, IconDrawPisition.X + 55.0f, IconDrawPisition.Y + 50.0f, IconMineralFont, 1.5f * (ViewportSizeX / 1920.0f), false);
+
+	FCanvasTileItem IconOrganicUITileItem(IconDrawPisition + FVector2D(0.0f, 100.0f * (ViewportSizeY / 1080.0f)), IconOrganicUI->Resource, IconDrawSize, FLinearColor::White);
+	IconOrganicUITileItem.BlendMode = SE_BLEND_Translucent;
+	Canvas->DrawItem(IconOrganicUITileItem);
+
+	DrawText(TEXT("178"), FLinearColor::Green, IconDrawPisition.X + 55.0f, IconDrawPisition.Y + 100.0f, IconOrganicFont, 1.5f * (ViewportSizeX / 1920.0f), false);
+
+	FCanvasTileItem IconEnergyUITileItem(IconDrawPisition + FVector2D(0.0f, 150.0f * (ViewportSizeY / 1080.0f)), IconEnergyUI->Resource, IconDrawSize, FLinearColor::White);
+	IconEnergyUITileItem.BlendMode = SE_BLEND_Translucent;
+	Canvas->DrawItem(IconEnergyUITileItem);
+
+	DrawText(TEXT("50"), FLinearColor::Green, IconDrawPisition.X + 55.0f, IconDrawPisition.Y + 150.0f, IconEnergyFont, 1.5f * (ViewportSizeX / 1920.0f), false);
+
 }

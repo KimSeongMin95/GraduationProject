@@ -81,7 +81,7 @@ void APioneer::Tick(float DeltaTime)
 	// 죽으면 함수를 실행하지 않음.
 	if (bDead)
 		return;
-
+	UE_LOG(LogTemp, Warning, TEXT("Test"));
 	SetCursorToWorld();
 
 	OnConstructingMode();
@@ -750,9 +750,12 @@ void APioneer::DestroyBuilding()
 void APioneer::InitEquipments()
 {
 	HelmetMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HelmetMesh"));
-	HelmetMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HeadSocket"));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> helmetMesh(TEXT("StaticMesh'/Game/Characters/Equipments/LowHelmet/Lowhelmet.Lowhelmet'"));
+	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
+	//HelmetMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("HeadSocket"));
+	HelmetMesh->SetupAttachment(GetMesh(), TEXT("HeadSocket"));
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> helmetMesh(TEXT("StaticMesh'/Game/Characters/Equipments/LowHelmet/Lowhelmet.Lowhelmet'"));
 	if (helmetMesh.Succeeded())
 	{
 		HelmetMesh->SetStaticMesh(helmetMesh.Object);

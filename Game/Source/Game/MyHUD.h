@@ -29,9 +29,17 @@ private:
 
 	class UTexture2D* MainUI;
 
-	/*class UTexture2D* SubUI_1;
-	class UTexture2D* SubUI_2;
-	class UTexture2D* SubUI_3;
-	class UTexture2D* SubUI_4;
-	class UTexture2D* SubUI_5;*/
+	class UTexture2D* IconPioneerUI;
+	class UTexture2D* IconMineralUI;
+	class UTexture2D* IconOrganicUI;
+	class UTexture2D* IconEnergyUI;
+
+public:
+	class UFont* IconPioneerFont;
+	class UFont* IconMineralFont;
+	class UFont* IconOrganicFont;
+	class UFont* IconEnergyFont;
+
+	class APioneerManager* PioneerManager = nullptr;
+	const FString PioneerText;
 };
