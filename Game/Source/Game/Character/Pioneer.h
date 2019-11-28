@@ -91,6 +91,7 @@ public:
 	int SocketID;
 
 /*** Stat : Start ***/
+public:
 	virtual void CalculateDead();
 
 	EPioneerFSM State;

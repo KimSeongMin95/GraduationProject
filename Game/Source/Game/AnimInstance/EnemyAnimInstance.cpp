@@ -48,6 +48,10 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		// again check pointers
 		if (enemy)
 		{
+			bDead = enemy->bDead;
+			if (enemy->bDead) // 죽으면 실행하지 않음.
+				return;
+
 			bIdle = false;
 			bMove = false;
 			bStop = false;
@@ -121,5 +125,25 @@ void UEnemyAnimInstance::DamageToTargetActor()
 		{
 			enemy->DamageToTargetActor();
 		}
+	}
+}
+
+void UEnemyAnimInstance::DestroyEnemy()
+{
+	if (AEnemy* enemy = Cast<AEnemy>(Owner))
+	{
+		UWorld* const world = GetWorld();
+		if (!world)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::DestroyPioneer() Failed: UWorld* const World = GetWorld();"));
+			return;
+		}
+
+		if (enemy->GetMesh())
+			enemy->GetMesh()->DestroyComponent();
+		if (enemy->GetCharacterMovement())
+			enemy->GetCharacterMovement()->DestroyComponent();
+
+		enemy->Destroy();
 	}
 }

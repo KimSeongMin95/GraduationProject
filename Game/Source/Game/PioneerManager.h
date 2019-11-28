@@ -60,6 +60,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		float SwitchTime; /** 다른 폰으로 변경하는 시간입니다. */
 	
+	// bLockOutgoing: 보간 도중에 나가는 뷰타겟을 업데이트하지 않음.
 	void SwitchPawn(float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰으로 변경하는 함수입니다. */
 	
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.

@@ -70,6 +70,20 @@ void APioneerManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	/*if (PioneerCtrl)
+	{
+		if (PioneerCtrl->GetPawn())
+		{
+			if (PioneerCtrl->GetPawn()->IsActorBeingDestroyed() == false)
+			{
+				FVector location = PioneerCtrl->GetPawn()->GetActorLocation();
+				location.Z = 5000.0f;
+				WorldViewCamFirst->SetActorLocation(location);
+			}
+		}
+	}*/
+
 	if (TargetViewActor == nullptr || TargetViewActor->IsActorBeingDestroyed())
 	{
 		for (auto& pioneer : Pioneers)
@@ -171,10 +185,14 @@ void APioneerManager::SwitchPawn(float BlendTime, EViewTargetBlendFunction blend
 	{
 		if (PioneerCtrl->GetPawn())
 		{
-			FVector location = PioneerCtrl->GetPawn()->GetActorLocation();
-			location.Z = 5000.0f;
-			WorldViewCamFirst->SetActorLocation(location);
-			SwitchViewTarget(WorldViewCamFirst, BlendTime);
+			if (PioneerCtrl->GetPawn()->IsActorBeingDestroyed() == false)
+			{
+				FVector location = PioneerCtrl->GetPawn()->GetActorLocation();
+				location.Z = 5000.0f;
+				WorldViewCamFirst->SetActorLocation(location);
+
+				SwitchViewTarget(WorldViewCamFirst, BlendTime);
+			}
 		}
 	}
 

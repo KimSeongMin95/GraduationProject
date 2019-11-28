@@ -80,6 +80,16 @@ void ABaseCharacter::CalculateDead()
 			GetController()->StopMovement();
 		if (HelthPointBar)
 			HelthPointBar->DestroyComponent();
+		if (GetMesh())
+		{
+			GetMesh()->SetGenerateOverlapEvents(false);
+			GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+		if (GetCapsuleComponent())
+		{
+			GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
 	}
 	else
 		bDead = false;

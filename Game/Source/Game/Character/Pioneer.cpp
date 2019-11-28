@@ -37,8 +37,6 @@ APioneer::APioneer() // Sets default values
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
 
-	InitStat();
-
 	InitHelthPointBar();
 
 	InitSkeletalAnimation();
@@ -81,7 +79,7 @@ void APioneer::Tick(float DeltaTime)
 	// 죽으면 함수를 실행하지 않음.
 	if (bDead)
 		return;
-	UE_LOG(LogTemp, Warning, TEXT("Test"));
+
 	SetCursorToWorld();
 
 	OnConstructingMode();

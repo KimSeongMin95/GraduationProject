@@ -15,15 +15,15 @@
 AEnemy::AEnemy() // Sets default values
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(140.0f, 80.0f);
+	//GetCapsuleComponent()->InitCapsuleSize(140.0f, 80.0f);
 
-	GetCharacterMovement()->MaxWalkSpeed = 500.0f; // 움직일 때 걷는 속도
+	//GetCharacterMovement()->MaxWalkSpeed = 500.0f; // 움직일 때 걷는 속도
 
-	InitStat();
+	//InitStat();
 
-	InitHelthPointBar();
+	//InitHelthPointBar();
 
-	InitSkeletalAnimation();
+	//InitSkeletalAnimation();
 
 	InitFSM();
 }
@@ -44,19 +44,33 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// 죽으면 함수를 실행하지 않음.
+	if (bDead)
+		return;
+
 	RotateTargetRotation(DeltaTime);
 
 	RunFSM(DeltaTime);
-
-	if (bDead)
-		Destroy();
 }
 /*** Basic Function : End ***/
 
 /*** Stat : Start ***/
+void AEnemy::CalculateDead()
+{
+	Super::CalculateDead();
+
+	if (!bDead)
+	{
+		return;
+	}
+
+	if (DetactRangeSphereComp)
+		DetactRangeSphereComp->DestroyComponent();
+}
+
 void AEnemy::InitStat()
 {
-	HealthPoint = 100.0f;
+	/*HealthPoint = 100.0f;
 	MaxHealthPoint = 100.0f;
 	bDead = false;
 
@@ -65,18 +79,18 @@ void AEnemy::InitStat()
 	AttackSpeed = 1.0f;
 	AttackRange = 4.0f;
 	DetectRange = 8.0f;
-	SightRange = 10.0f;
+	SightRange = 10.0f;*/
 }
 /*** Stat : End ***/
 
 /*** HelthPointBar : Start ***/
 void AEnemy::InitHelthPointBar()
 {
-	if (!HelthPointBar)
+	/*if (!HelthPointBar)
 		return;
 
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 140.0f));
-	HelthPointBar->SetDrawSize(FVector2D(100, 25));
+	HelthPointBar->SetDrawSize(FVector2D(100, 25));*/
 }
 /*** HelthPointBar : End ***/
 
@@ -94,30 +108,30 @@ void AEnemy::RotateTargetRotation(float DeltaTime)
 /*** SkeletalAnimation : Start ***/
 void AEnemy::InitSkeletalAnimation()
 {
-	// USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Characters/Enemy/Prop2/Mesh/Prop2.Prop2'"));
-	if (skeletalMeshAsset.Succeeded())
-	{
-		// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
-		GetMesh()->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
-		GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
-		GetMesh()->bCastDynamicShadow = true; // ???
-		GetMesh()->CastShadow = true; // ???
+	//// USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Characters/Enemy/Prop2/Mesh/Prop2.Prop2'"));
+	//if (skeletalMeshAsset.Succeeded())
+	//{
+	//	// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
+	//	GetMesh()->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
+	//	GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
+	//	GetMesh()->bCastDynamicShadow = true; // ???
+	//	GetMesh()->CastShadow = true; // ???
 
-		GetMesh()->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
-		GetMesh()->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-		GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -142.0f));
-	}
+	//	GetMesh()->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
+	//	GetMesh()->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+	//	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -142.0f));
+	//}
 
-	// 각 Enemy의 BP_Animation을 가져오기. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
-	FString animBP_Reference = "AnimBlueprint'/Game/Characters/Enemy/Prop2/Animations/BP_Prop2Animation.BP_Prop2Animation_C'";
-	UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
-	if (!animBP)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("!animBP"));
-	}
-	else
-		GetMesh()->SetAnimInstanceClass(animBP);
+	//// 각 Enemy의 BP_Animation을 가져오기. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
+	//FString animBP_Reference = "AnimBlueprint'/Game/Characters/Enemy/Prop2/Animations/BP_Prop2Animation.BP_Prop2Animation_C'";
+	//UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
+	//if (!animBP)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("!animBP"));
+	//}
+	//else
+	//	GetMesh()->SetAnimInstanceClass(animBP);
 }
 /*** SkeletalAnimation : End ***/
 
@@ -177,7 +191,11 @@ void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedCom
 
 	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
 	{
-		OverapedActors.Add(OtherActor);
+		if (OverapedActors.Contains(OtherActor) == false)
+		{
+			OverapedActors.Add(OtherActor);
+			UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Add(OtherActor): %s"), *OtherActor->GetName());
+		}
 	}
 }
 
@@ -198,6 +216,7 @@ void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp,
 	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
 	{
 		OverapedActors.Remove(OtherActor);
+		UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Remove(OtherActor): %s"), *OtherActor->GetName());
 	}
 }
 
@@ -216,6 +235,8 @@ void AEnemy::InitFSM()
 
 	DetactRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
 	DetactRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
+
+	AttackDistance = 256.0f;
 }
 
 void AEnemy::RunFSM(float DeltaTime)
@@ -229,8 +250,21 @@ void AEnemy::RunFSM(float DeltaTime)
 			if (actor->IsA(APioneer::StaticClass()) && !Cast<APioneer>(actor)->bDead)
 			{
 				State = EEnemyFSM::Tracing;
-				TargetActor = actor;
-				break;
+				if (TargetActor)
+				{
+					float dist = ActorDistance(TargetActor);
+					//UE_LOG(LogTemp, Warning, TEXT("ActorDistance(TargetActor) dist: %f"), dist);
+					if (ActorDistance(actor) < dist)
+					{
+						//UE_LOG(LogTemp, Warning, TEXT("ActorDistance(TargetActor) dist: %f"), ActorDistance(actor));
+						//UE_LOG(LogTemp, Warning, TEXT("TargetActor: %s"), *TargetActor->GetName());
+						TargetActor = actor;
+					}
+				}
+				else
+				{
+					TargetActor = actor;
+				}
 			}
 		}
 		/*for (auto& actor : OverapedActors)
@@ -276,7 +310,7 @@ void AEnemy::RunFSM(float DeltaTime)
 		if (TargetActor)
 		{
 			float dist = FVector::Distance(this->GetActorLocation(), TargetActor->GetActorLocation());
-			if (dist < 256.0f)
+			if (dist < AttackDistance)
 				State = EEnemyFSM::Attack;
 		}
 		//UE_LOG(LogTemp, Warning, TEXT("Tracing"));
@@ -289,6 +323,16 @@ void AEnemy::RunFSM(float DeltaTime)
 		break; 
 	}
 	}
+}
+
+float AEnemy::ActorDistance(AActor* Actor)
+{
+	if (!Actor)
+	{
+		return 100000.0f;
+	}
+	
+	return FVector::Distance(this->GetActorLocation(), Actor->GetActorLocation());
 }
 /*** FSM : End ***/
 

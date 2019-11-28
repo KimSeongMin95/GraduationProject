@@ -49,6 +49,11 @@ public:
 		void AttackEnd();
 	UFUNCTION(BlueprintCallable)
 		void DamageToTargetActor();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		bool bDead;
+	UFUNCTION(BlueprintCallable)
+		void DestroyEnemy();
 private:
 	APawn* Owner;
 };

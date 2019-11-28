@@ -37,6 +37,8 @@ public:
 
 /*** Stat : Start ***/
 public:
+	virtual void CalculateDead();
+
 	virtual void InitStat();
 /*** Stat : End ***/
 
@@ -76,9 +78,12 @@ public:
 
 	void InitFSM();
 	void RunFSM(float DeltaTime);
+
+	float ActorDistance(AActor* Actor);
 /*** FSM : End ***/
 
 /*** Damage : Start ***/
+	float AttackDistance;
 	void DamageToTargetActor();
 /*** Damage : End ***/
 };
