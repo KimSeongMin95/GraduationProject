@@ -10,7 +10,9 @@
 /*** Basic Function : Start ***/
 ANuclearFusionPowerPlant::ANuclearFusionPowerPlant()
 {
-	InitStatement();
+	InitStat();
+
+	InitHelthPointBar();
 
 	InitConstructBuilding();
 
@@ -31,8 +33,8 @@ void ANuclearFusionPowerPlant::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Statements : Start ***/
-void ANuclearFusionPowerPlant::InitStatement()
+/*** Stat : Start ***/
+void ANuclearFusionPowerPlant::InitStat()
 {
 	// Default Settings
 	HealthPoint = 10.0f;
@@ -52,14 +54,25 @@ void ANuclearFusionPowerPlant::InitStatement()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Statements : End ***/
+/*** Stat : End ***/
+
+/*** HelthPointBar : Start ***/
+void ANuclearFusionPowerPlant::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** HelthPointBar : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void ANuclearFusionPowerPlant::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/NuclearFusionPowerPlant/Temp_NuclearFusionPowerPlant.Temp_NuclearFusionPowerPlant'"),
-		FVector(30.0f, 30.0f, 5.0f), FRotator(0.0f, 0.0f, 0.0f));
+		FVector(25.0f, 25.0f, 4.0f), FRotator(0.0f, 0.0f, 0.0f));
 }
 /*** ConstructBuildingStaticMeshComponent : End ***/
 
@@ -68,6 +81,6 @@ void ANuclearFusionPowerPlant::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/NuclearFusionPowerPlant/Temp_NuclearFusionPowerPlant.Temp_NuclearFusionPowerPlant'"),
-		FVector(30.0f, 30.0f, 10.0f), FRotator(0.0f, 0.0f, 0.0f));
+		FVector(25.0f, 25.0f, 8.0f), FRotator(0.0f, 0.0f, 0.0f));
 }
 /*** BuildingStaticMeshComponent : End ***/

@@ -10,7 +10,9 @@
 /*** Basic Function : Start ***/
 ATurret::ATurret()
 {
-	InitStatement();
+	InitStat();
+
+	InitHelthPointBar();
 
 	InitConstructBuilding();
 
@@ -30,8 +32,8 @@ void ATurret::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Statements : Start ***/
-void ATurret::InitStatement()
+/*** Stat : Start ***/
+void ATurret::InitStat()
 {
 	// Default Settings
 	HealthPoint = 10.0f;
@@ -51,7 +53,18 @@ void ATurret::InitStatement()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Statements : End ***/
+/*** Stat : End ***/
+
+/*** HelthPointBar : Start ***/
+void ATurret::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 170.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** HelthPointBar : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void ATurret::InitConstructBuilding()

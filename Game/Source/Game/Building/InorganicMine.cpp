@@ -10,7 +10,9 @@
 /*** Basic Function : Start ***/
 AInorganicMine::AInorganicMine()
 {
-	InitStatement();
+	InitStat();
+
+	InitHelthPointBar();
 
 	InitConstructBuilding();
 
@@ -31,8 +33,8 @@ void AInorganicMine::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Statements : Start ***/
-void AInorganicMine::InitStatement()
+/*** Stat : Start ***/
+void AInorganicMine::InitStat()
 {
 	// Default Settings
 	HealthPoint = 10.0f;
@@ -52,14 +54,25 @@ void AInorganicMine::InitStatement()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Statements : End ***/
+/*** Stat : End ***/
+
+/*** HelthPointBar : Start ***/
+void AInorganicMine::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** HelthPointBar : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void AInorganicMine::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/InorganicMine/Temp_InorganicMine.Temp_InorganicMine'"),
-		FVector(2.0f, 2.0f, 1.0f), FRotator(0.0f, 0.0f, 0.0f));
+		FVector(1.3f, 1.3f, 0.65f), FRotator(0.0f, 0.0f, 0.0f));
 }
 /*** ConstructBuildingStaticMeshComponent : End ***/
 
@@ -68,6 +81,6 @@ void AInorganicMine::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/InorganicMine/Temp_InorganicMine.Temp_InorganicMine'"),
-		FVector(2.0f, 2.0f, 2.0f), FRotator(0.0f, 0.0f, 0.0f));
+		FVector(1.3f, 1.3f, 1.3f), FRotator(0.0f, 0.0f, 0.0f));
 }
 /*** BuildingStaticMeshComponent : End ***/

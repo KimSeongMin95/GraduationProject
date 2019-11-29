@@ -10,7 +10,9 @@
 /*** Basic Function : Start ***/
 AResearchInstitute::AResearchInstitute()
 {
-	InitStatement();
+	InitStat();
+
+	InitHelthPointBar();
 
 	InitConstructBuilding();
 
@@ -31,8 +33,8 @@ void AResearchInstitute::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Statements : Start ***/
-void AResearchInstitute::InitStatement()
+/*** Stat : Start ***/
+void AResearchInstitute::InitStat()
 {
 	// Default Settings
 	HealthPoint = 10.0f;
@@ -52,7 +54,18 @@ void AResearchInstitute::InitStatement()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Statements : End ***/
+/*** Stat : End ***/
+
+/*** HelthPointBar : Start ***/
+void AResearchInstitute::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** HelthPointBar : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void AResearchInstitute::InitConstructBuilding()

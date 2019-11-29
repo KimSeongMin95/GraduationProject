@@ -10,7 +10,9 @@
 /*** Basic Function : Start ***/
 AFloor::AFloor()
 {
-	InitStatement();
+	InitStat();
+
+	InitHelthPointBar();
 
 	InitConstructBuilding();
 
@@ -31,8 +33,8 @@ void AFloor::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Statements : Start ***/
-void AFloor::InitStatement()
+/*** Stat : Start ***/
+void AFloor::InitStat()
 {
 	// Default Settings
 	HealthPoint = 10.0f;
@@ -52,7 +54,18 @@ void AFloor::InitStatement()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Statements : End ***/
+/*** Stat : End ***/
+
+/*** HelthPointBar : Start ***/
+void AFloor::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 40.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** HelthPointBar : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void AFloor::InitConstructBuilding()

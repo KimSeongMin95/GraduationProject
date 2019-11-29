@@ -23,12 +23,18 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
 /*** Basic Function : End ***/
 
-/*** Statements : Start ***/
+/*** Stat : Start ***/
 public:
-	virtual void InitStatement();
-/*** Statements : End ***/
+	virtual void InitStat();
+/*** Stat : End ***/
+
+/*** HelthPointBar : Start ***/
+public:
+	virtual void InitHelthPointBar();
+/*** HelthPointBar : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 public:

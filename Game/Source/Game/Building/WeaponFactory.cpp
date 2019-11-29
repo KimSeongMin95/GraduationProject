@@ -10,7 +10,9 @@
 /*** Basic Function : Start ***/
 AWeaponFactory::AWeaponFactory()
 {
-	InitStatement();
+	InitStat();
+
+	InitHelthPointBar();
 
 	InitConstructBuilding();
 
@@ -31,8 +33,8 @@ void AWeaponFactory::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Statements : Start ***/
-void AWeaponFactory::InitStatement()
+/*** Stat : Start ***/
+void AWeaponFactory::InitStat()
 {
 	// Default Settings
 	HealthPoint = 10.0f;
@@ -52,14 +54,25 @@ void AWeaponFactory::InitStatement()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Statements : End ***/
+/*** Stat : End ***/
+
+/*** HelthPointBar : Start ***/
+void AWeaponFactory::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** HelthPointBar : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void AWeaponFactory::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/WeaponFactory/Temp_WeaponFactory.Temp_WeaponFactory'"),
-		FVector(6.0f, 6.0f, 3.0f), FRotator(0.0f, 0.0f, 0.0f));
+		FVector(5.0f, 5.0f, 2.5f), FRotator(0.0f, 0.0f, 0.0f));
 }
 /*** ConstructBuildingStaticMeshComponent : End ***/
 
@@ -68,6 +81,6 @@ void AWeaponFactory::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/WeaponFactory/Temp_WeaponFactory.Temp_WeaponFactory'"),
-		FVector(6.0f, 6.0f, 6.0f), FRotator(0.0f, 0.0f, 0.0f));
+		FVector(5.0f, 5.0f, 5.0f), FRotator(0.0f, 0.0f, 0.0f));
 }
 /*** BuildingStaticMeshComponent : End ***/
