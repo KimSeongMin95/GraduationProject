@@ -195,7 +195,7 @@ void ABuilding::OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* Over
 	{
 		AProjectile* projectile = dynamic_cast<AProjectile*>(OtherActor);
 
-		HealthPoint -= projectile->TotalDamage;
+		//HealthPoint -= projectile->TotalDamage;
 	}
 }
 
@@ -294,7 +294,7 @@ void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedCom
 		{
 			AProjectile* projectile = dynamic_cast<AProjectile*>(OtherActor);
 
-			HealthPoint -= projectile->TotalDamage;
+			//HealthPoint -= projectile->TotalDamage;
 		}
 	}
 }

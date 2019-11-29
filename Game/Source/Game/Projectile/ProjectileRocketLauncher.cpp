@@ -187,6 +187,10 @@ void AProjectileRocketLauncher::OnOverlapBegin(class UPrimitiveComponent* Overla
 			if (enemy->DetactRangeSphereComp == OtherComp)
 				return;
 
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->AttackRangeSphereComp == OtherComp)
+				return;
+
 			enemy->Calculatehealth(-TotalDamage);
 		}
 	}
@@ -259,6 +263,10 @@ void AProjectileRocketLauncher::SplashOnOverlapBegin(class UPrimitiveComponent* 
 		{
 			// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
 			if (enemy->DetactRangeSphereComp == OtherComp)
+				return;
+
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->AttackRangeSphereComp == OtherComp)
 				return;
 
 			enemy->Calculatehealth(-TotalDamage);

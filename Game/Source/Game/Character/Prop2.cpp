@@ -25,7 +25,7 @@ AProp2::AProp2() // Sets default values
 	//InitFSM();
 
 	DetactRangeSphereComp->SetSphereRadius(1024.0f);
-	AttackDistance = 256.0f;
+	AttackRangeSphereComp->SetSphereRadius(256.0f);
 }
 
 // Called when the game starts or when spawned

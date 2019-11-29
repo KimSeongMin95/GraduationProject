@@ -25,7 +25,7 @@ APumpkinhulkLShaw::APumpkinhulkLShaw() // Sets default values
 	//InitFSM();
 
 	DetactRangeSphereComp->SetSphereRadius(2048.0f);
-	AttackDistance = 256.0f;
+	AttackRangeSphereComp->SetSphereRadius(256.0f);
 }
 
 // Called when the game starts or when spawned

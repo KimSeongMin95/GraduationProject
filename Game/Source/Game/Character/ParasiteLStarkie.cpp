@@ -25,7 +25,7 @@ AParasiteLStarkie::AParasiteLStarkie() // Sets default values
 	//InitFSM();
 
 	DetactRangeSphereComp->SetSphereRadius(2048.0f);
-	AttackDistance = 200.0f;
+	AttackRangeSphereComp->SetSphereRadius(128.0f);
 }
 
 // Called when the game starts or when spawned

@@ -68,13 +68,24 @@ public:
 public:
 	EEnemyFSM State;
 
+	TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
+
+
 	UPROPERTY(EditAnywhere)
 		class USphereComponent* DetactRangeSphereComp = nullptr;
-	TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
 	UFUNCTION()
 		virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 		virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	TArray<class AActor*> OverapedAttackRangeActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
+	UPROPERTY(EditAnywhere)
+		class USphereComponent* AttackRangeSphereComp = nullptr;
+	UFUNCTION()
+		virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 
 	void InitFSM();
 	void RunFSM(float DeltaTime);
