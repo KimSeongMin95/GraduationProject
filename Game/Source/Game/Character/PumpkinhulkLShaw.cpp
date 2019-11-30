@@ -24,7 +24,7 @@ APumpkinhulkLShaw::APumpkinhulkLShaw() // Sets default values
 
 	//InitFSM();
 
-	DetactRangeSphereComp->SetSphereRadius(2048.0f);
+	DetactRangeSphereComp->SetSphereRadius(4096.0f);
 	AttackRangeSphereComp->SetSphereRadius(256.0f);
 }
 
@@ -46,11 +46,11 @@ void APumpkinhulkLShaw::Tick(float DeltaTime)
 /*** Stat : Start ***/
 void APumpkinhulkLShaw::InitStat()
 {
-	HealthPoint = 200.0f;
-	MaxHealthPoint = 200.0f;
+	HealthPoint = 500.0f;
+	MaxHealthPoint = 500.0f;
 	bDead = false;
 
-	AttackPower = 30.0f;
+	AttackPower = 50.0f;
 	MoveSpeed = 2.0f;
 	AttackSpeed = 0.5f;
 	AttackRange = 4.0f;

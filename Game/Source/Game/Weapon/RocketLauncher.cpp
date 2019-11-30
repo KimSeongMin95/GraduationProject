@@ -38,7 +38,7 @@ ARocketLauncher::ARocketLauncher()
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 
 	// 무기 스텟 설정
-	AttackPower = 50.0f;
+	AttackPower = 30.0f;
 	AttackSpeed = 1.0f;
 	AttackRange = 10.0f * AMyGameModeBase::CellSize;
 	LimitedLevel = 10;

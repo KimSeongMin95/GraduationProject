@@ -186,4 +186,5 @@ public:
 	UFUNCTION()
 		void CompleteConstructing();
 /*** Constructing And Destorying: End ***/
+
 };

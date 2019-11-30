@@ -86,19 +86,22 @@ void UPioneerAnimInstance::DestroyPioneer()
 		if (pioneer->HelmetMesh)
 			pioneer->HelmetMesh->DestroyComponent();
 
-		// 플레이어가 조종하는 pioneer면
-		if (pioneer->GetController()->IsA(APioneerController::StaticClass()))
+		if (pioneer->GetController())
 		{
-			if (PioneerManager)
+			// 플레이어가 조종하는 pioneer면
+			if (pioneer->GetController()->IsA(APioneerController::StaticClass()))
 			{
-				PioneerManager->SwitchPawn(1.0f);
+				if (PioneerManager)
+				{
+					PioneerManager->SwitchPawn(1.0f);
+				}
 			}
-		}
-		else
-		{
-			if (PioneerManager)
+			else
 			{
-				pioneer->Destroy();
+				if (PioneerManager)
+				{
+					pioneer->Destroy();
+				}
 			}
 		}
 

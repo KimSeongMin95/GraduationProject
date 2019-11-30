@@ -24,7 +24,7 @@ AParasiteLStarkie::AParasiteLStarkie() // Sets default values
 
 	//InitFSM();
 
-	DetactRangeSphereComp->SetSphereRadius(2048.0f);
+	DetactRangeSphereComp->SetSphereRadius(4096.0f);
 	AttackRangeSphereComp->SetSphereRadius(128.0f);
 }
 
@@ -46,11 +46,11 @@ void AParasiteLStarkie::Tick(float DeltaTime)
 /*** Stat : Start ***/
 void AParasiteLStarkie::InitStat()
 {
-	HealthPoint = 30.0f;
-	MaxHealthPoint = 30.0f;
+	HealthPoint = 150.0f;
+	MaxHealthPoint = 150.0f;
 	bDead = false;
 
-	AttackPower = 8.0f;
+	AttackPower = 10.0f;
 	MoveSpeed = 3.0f;
 	AttackSpeed = 2.0f;
 	AttackRange = 4.0f;

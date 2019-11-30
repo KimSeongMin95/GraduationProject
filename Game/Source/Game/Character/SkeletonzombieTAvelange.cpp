@@ -14,7 +14,7 @@ ASkeletonzombieTAvelange::ASkeletonzombieTAvelange() // Sets default values
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(80.0f, 50.0f);
 
-	GetCharacterMovement()->MaxWalkSpeed = 100.0f; // 움직일 때 걷는 속도
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f; // 움직일 때 걷는 속도
 
 	InitStat();
 
@@ -24,7 +24,7 @@ ASkeletonzombieTAvelange::ASkeletonzombieTAvelange() // Sets default values
 
 	//InitFSM();
 
-	DetactRangeSphereComp->SetSphereRadius(2048.0f);
+	DetactRangeSphereComp->SetSphereRadius(4096.0f);
 	AttackRangeSphereComp->SetSphereRadius(128.0f);
 }
 
@@ -46,11 +46,11 @@ void ASkeletonzombieTAvelange::Tick(float DeltaTime)
 /*** Stat : Start ***/
 void ASkeletonzombieTAvelange::InitStat()
 {
-	HealthPoint = 80.0f;
+	HealthPoint = 200.0f;
 	MaxHealthPoint = 80.0f;
 	bDead = false;
 
-	AttackPower = 12.0f;
+	AttackPower = 20.0f;
 	MoveSpeed = 2.0f;
 	AttackSpeed = 0.5f;
 	AttackRange = 4.0f;

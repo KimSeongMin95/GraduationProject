@@ -24,7 +24,7 @@ AProp2::AProp2() // Sets default values
 
 	//InitFSM();
 
-	DetactRangeSphereComp->SetSphereRadius(1024.0f);
+	DetactRangeSphereComp->SetSphereRadius(4096.0f);
 	AttackRangeSphereComp->SetSphereRadius(256.0f);
 }
 
@@ -46,11 +46,11 @@ void AProp2::Tick(float DeltaTime)
 /*** Stat : Start ***/
 void AProp2::InitStat()
 {
-	HealthPoint = 100.0f;
-	MaxHealthPoint = 100.0f;
+	HealthPoint = 400.0f;
+	MaxHealthPoint = 400.0f;
 	bDead = false;
 
-	AttackPower = 30.0f;
+	AttackPower = 40.0f;
 	MoveSpeed = 4.0f;
 	AttackSpeed = 1.0f;
 	AttackRange = 4.0f;

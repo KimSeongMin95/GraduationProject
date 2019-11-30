@@ -37,8 +37,8 @@ void AGate::Tick(float DeltaTime)
 void AGate::InitStat()
 {
 	// Default Settings
-	HealthPoint = 10.0f;
-	MaxHealthPoint = 100.0f;
+	HealthPoint = 50.0f;
+	MaxHealthPoint = 500.0f;
 
 	Size = FVector2D(1.0f, 1.0f);
 	ConstructionTime = 2.0f;
@@ -72,10 +72,10 @@ void AGate::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Gate/SM_Doorway_L.SM_Doorway_L'"),
-		FVector(1.0f, 1.0f, 0.5f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+		FVector(1.5f, 1.5f, 0.75f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 	AddConstructBuildingSMC(&ConstructBuildingSMC_2, TEXT("ConstructBuildingSMC_2"),
 		TEXT("StaticMesh'/Game/Buildings/Gate/SM_Door_L.SM_Door_L'"),
-		FVector(1.0f, 1.0f, 0.5f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+		FVector(1.5f, 1.5f, 0.75f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 /*** ConstructBuildingStaticMeshComponent : End ***/
 
@@ -84,9 +84,9 @@ void AGate::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Gate/SM_Doorway_L.SM_Doorway_L'"),
-		FVector(1.0f, 1.0f, 1.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+		FVector(1.5f, 1.5f, 1.5f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 	AddBuildingSMC(&BuildingSMC_2, TEXT("BuildingSMC_2"),
 		TEXT("StaticMesh'/Game/Buildings/Gate/SM_Door_L.SM_Door_L'"),
-		FVector(1.0f, 1.0f, 1.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+		FVector(1.5f, 1.5f, 1.5f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 /*** BuildingStaticMeshComponent : End ***/

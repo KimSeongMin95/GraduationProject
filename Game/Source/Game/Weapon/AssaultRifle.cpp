@@ -38,7 +38,7 @@ AAssaultRifle::AAssaultRifle()
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 
 	// 무기 스텟 설정
-	AttackPower = 15.0f;
+	AttackPower = 10.0f;
 	AttackSpeed = 5.0f;
 	AttackRange = 12.0f * AMyGameModeBase::CellSize;
 	LimitedLevel = 5;

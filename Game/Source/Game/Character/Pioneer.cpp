@@ -26,6 +26,8 @@
 #include "Building/WeaponFactory.h"
 
 #include "Landscape.h"
+
+#include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -53,15 +55,23 @@ APioneer::APioneer() // Sets default values
 	bConstructingMode = false;
 	/*** Building : End ***/
 
+	InitFSM();
+
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
 	//BaseLookUpRate = 45.0f;
+
+
+	TempChangeWeaponCount = FMath::RandRange(1, 2);
 }
 
 // Called when the game starts or when spawned
 void APioneer::BeginPlay()
 {
 	Super::BeginPlay();
+
+
+	InsertThis();
 
 
 	// Init()이 끝나고 AIController에 빙의합니다.
@@ -80,14 +90,28 @@ void APioneer::Tick(float DeltaTime)
 	if (bDead)
 		return;
 
+	InsertThis();
+
 	SetCursorToWorld();
 
 	OnConstructingMode();
 
 	RotateTargetRotation(DeltaTime);
 
+	// RunFSM(DeltaTime); // AIController에서만 실행
+
 	// 회전시 떨림을 방지하기 위해 카메라 위치 조정은 가장 마지막에 실행합니다.
 	SetCameraBoomSettings();
+
+
+	if (TempChangeWeaponCount > 0)
+	{
+		TempChangeWeaponCount--;
+		if (TempChangeWeaponCount < 0)
+			TempChangeWeaponCount = 0;
+
+		ChangeWeapon();
+	}
 }
 
 void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -108,22 +132,8 @@ void APioneer::CalculateDead()
 		return;
 	}
 
-	APioneerManager* PioneerManager = nullptr;
-
-	UWorld* const world = GetWorld();
-	if (!world)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::DestroyPioneer() Failed: UWorld* const World = GetWorld();"));
-		return;
-	}
-
-	// UWorld에서 AWorldViewCameraActor를 찾습니다.
-	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
-	{
-		PioneerManager = *ActorItr;
-	}
-
-	PioneerManager->Pioneers.Remove(this);
+	if (PioneerManager)
+		PioneerManager->Pioneers.Remove(this);
 
 	if (CursorToWorld)
 		CursorToWorld->DestroyComponent();
@@ -131,12 +141,14 @@ void APioneer::CalculateDead()
 		Weapon->Destroy();
 	if (Building)
 		Building->Destroy();
+	if (DetactRangeSphereComp)
+		DetactRangeSphereComp->DestroyComponent();
+	if (AttackRangeSphereComp)
+		AttackRangeSphereComp->DestroyComponent();
 }
 
 void APioneer::InitStat()
 {
-	State = EPioneerFSM::Idle;
-
 	HealthPoint = 100.0f;
 	MaxHealthPoint = 100.0f;
 	bDead = false;
@@ -527,6 +539,8 @@ void APioneer::FireWeapon()
 				if (PAnimInst)
 					PAnimInst->bFired = true;
 			}
+
+			State = EPioneerFSM::Idle;
 		}
 	}
 }
@@ -760,6 +774,367 @@ void APioneer::InitEquipments()
 	}
 }
 /*** Equipments : End ***/
+
+/*** FSM : Start ***/
+void APioneer::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	{
+		return;
+	}
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	{
+		return;
+	}
+
+	// 자기 자신과 충돌하면 무시합니다.
+	if (OtherActor->GetFName() == this->GetFName())
+	{
+		return;
+	}
+
+	if (OtherActor->IsA(AEnemy::StaticClass()))
+	{
+		AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
+		if (enemy)
+		{
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->DetactRangeSphereComp == OtherComp)
+				return;
+
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
+		//if (OverapedActors.Contains(OtherActor) == false)
+		{
+			OverapedActors.Add(OtherActor);
+			UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Add(OtherActor): %s"), *OtherActor->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Num(): %d"), OverapedActors.Num());
+			UE_LOG(LogTemp, Warning, TEXT("_______"));
+		}
+	}
+}
+
+void APioneer::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	{
+		return;
+	}
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	{
+		return;
+	}
+
+	if (OtherActor->IsA(AEnemy::StaticClass()))
+	{
+		AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
+		if (enemy)
+		{
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->DetactRangeSphereComp == OtherComp)
+				return;
+
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
+		//OverapedActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
+		OverapedActors.RemoveSingle(OtherActor); // OtherActor 하나를 지웁니다.
+		UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Remove(OtherActor): %s"), *OtherActor->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Num(): %d"), OverapedActors.Num());
+		UE_LOG(LogTemp, Warning, TEXT("_______"));
+	}
+}
+
+void APioneer::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	{
+		return;
+	}
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	{
+		return;
+	}
+
+	// 자기 자신과 충돌하면 무시합니다.
+	if (OtherActor->GetFName() == this->GetFName())
+	{
+		return;
+	}
+
+	if (OtherActor->IsA(AEnemy::StaticClass()))
+	{
+		AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
+		if (enemy)
+		{
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->DetactRangeSphereComp == OtherComp)
+				return;
+
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
+		//if (OverapedAttackRangeActors.Contains(OtherActor) == false)
+		{
+			OverapedAttackRangeActors.Add(OtherActor);
+			UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
+			UE_LOG(LogTemp, Warning, TEXT("_______"));
+		}
+	}
+}
+
+void APioneer::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	{
+		return;
+	}
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	{
+		return;
+	}
+
+	if (OtherActor->IsA(AEnemy::StaticClass()))
+	{
+		AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
+		if (enemy)
+		{
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->DetactRangeSphereComp == OtherComp)
+				return;
+
+			// 만약 OtherActor가 enemy이기는 하지만 enemy의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (enemy->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
+		//OverapedAttackRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
+		OverapedAttackRangeActors.RemoveSingle(OtherActor); // OtherActor 하나만 지웁니다.
+		UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
+		UE_LOG(LogTemp, Warning, TEXT("_______"));
+	}
+}
+
+void APioneer::InitFSM()
+{
+	State = EPioneerFSM::Idle;
+
+	DetactRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetactRangeSphereComp"));
+	DetactRangeSphereComp->SetupAttachment(RootComponent);
+	DetactRangeSphereComp->SetSphereRadius(4096.0f);
+
+	DetactRangeSphereComp->SetGenerateOverlapEvents(true);
+	DetactRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	DetactRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	DetactRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+	DetactRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_DetectRange);
+	DetactRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_DetectRange);
+
+	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
+	AttackRangeSphereComp->SetupAttachment(RootComponent);
+	AttackRangeSphereComp->SetSphereRadius(1024.0f);
+
+	AttackRangeSphereComp->SetGenerateOverlapEvents(true);
+	AttackRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AttackRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	AttackRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_AttackRange);
+	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_AttackRange);
+}
+
+void APioneer::RunFSM(float DeltaTime)
+{
+	if (State != EPioneerFSM::Attack)
+	{
+		TargetActor = nullptr;
+
+		for (auto& actor : OverapedActors)
+		{
+			if (actor->IsA(AEnemy::StaticClass()) && !Cast<AEnemy>(actor)->bDead)
+			{
+				State = EPioneerFSM::Tracing;
+				if (TargetActor)
+				{
+					float dist = ActorDistance(TargetActor);
+					//UE_LOG(LogTemp, Warning, TEXT("ActorDistance(TargetActor) dist: %f"), dist);
+					if (ActorDistance(actor) < dist)
+					{
+						//UE_LOG(LogTemp, Warning, TEXT("ActorDistance(TargetActor) dist: %f"), ActorDistance(actor));
+						//UE_LOG(LogTemp, Warning, TEXT("TargetActor: %s"), *TargetActor->GetName());
+						TargetActor = actor;
+					}
+				}
+				else
+				{
+					TargetActor = actor;
+				}
+			}
+		}
+
+		if (State == EPioneerFSM::Tracing && TargetActor == nullptr)
+		{
+			State = EPioneerFSM::Idle;
+			if (GetController())
+				GetController()->StopMovement();
+		}
+	}
+
+	switch (State)
+	{
+	case EPioneerFSM::Idle:
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Idle"));
+		break;
+	}
+	case EPioneerFSM::Move:
+	{
+		float dist = FVector::Distance(this->GetActorLocation(), TartgetPosition);
+		if (dist < 128.0f)
+			State = EPioneerFSM::Idle;
+		//UE_LOG(LogTemp, Warning, TEXT("Move"));
+		break;
+	}
+	case EPioneerFSM::Stop:
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Stop"));
+		break;
+	}
+	case EPioneerFSM::Tracing:
+	{
+		TracingTargetActor();
+		if (TargetActor)
+		{
+			LookAtTheLocation(TargetActor->GetActorLocation());
+
+			/*float dist = FVector::Distance(this->GetActorLocation(), TargetActor->GetActorLocation());
+			if (dist < AttackDistance)
+				State = EPioneerFSM::Attack;*/
+			if (OverapedAttackRangeActors.Contains(TargetActor))
+			{
+				State = EPioneerFSM::Attack;
+			}
+		}
+		//UE_LOG(LogTemp, Warning, TEXT("Tracing"));
+		break;
+	}
+	case EPioneerFSM::Attack:
+	{
+		if (GetController())
+			GetController()->StopMovement();
+		// 공격 애니메이션이 끝난 후 AnimationBlueprint에서 EventGraph로 Atteck을 Idle로 바꿔줌
+		//UE_LOG(LogTemp, Warning, TEXT("Attack"));
+		
+		if (TargetActor)
+		{
+			FireWeapon();
+		}
+
+		break;
+	}
+	}
+}
+
+float APioneer::ActorDistance(AActor* Actor)
+{
+	if (!Actor)
+	{
+		return 100000.0f;
+	}
+
+	return FVector::Distance(this->GetActorLocation(), Actor->GetActorLocation());
+}
+/*** FSM : End ***/
+
+///*** Damage : Start ***/
+//void APioneer::DamageToTargetActor()
+//{
+//	if (!TargetActor)
+//		return;
+//
+//	if (TargetActor->IsA(APioneer::StaticClass()))
+//	{
+//		APioneer* pioneer = dynamic_cast<APioneer*>(TargetActor);
+//		pioneer->Calculatehealth(-AttackPower);
+//
+//		if (pioneer->bDead)
+//			TargetActor = nullptr;
+//
+//		return;
+//	}
+//
+//	if (TargetActor->IsA(ABuilding::StaticClass()))
+//	{
+//		ABuilding* building = dynamic_cast<ABuilding*>(TargetActor);
+//		building->HealthPoint -= AttackPower;
+//
+//		if (building->HealthPoint <= 0.0f)
+//		{
+//			TargetActor = nullptr;
+//			building->Destroy();
+//		}
+//
+//		return;
+//	}
+//}
+///*** Damage : End ***/
+
+
+
+void APioneer::InsertThis()
+{
+	if (PioneerManager)
+		return;
+
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+
+	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		PioneerManager = *ActorItr;
+	}
+	
+
+	if (PioneerManager)
+	{
+		PioneerManager->Pioneers.Insert(this, 0);
+	}
+
+}
+
+
+
 
 //void APioneer::PunchAttack()
 //{

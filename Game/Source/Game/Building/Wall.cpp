@@ -37,8 +37,8 @@ void AWall::Tick(float DeltaTime)
 void AWall::InitStat()
 {
 	// Default Settings
-	HealthPoint = 10.0f;
-	MaxHealthPoint = 100.0f;
+	HealthPoint = 100.0f;
+	MaxHealthPoint = 1000.0f;
 
 	Size = FVector2D(1.0f, 1.0f);
 	ConstructionTime = 2.0f;

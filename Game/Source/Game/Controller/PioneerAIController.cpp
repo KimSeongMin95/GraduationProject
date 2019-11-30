@@ -21,12 +21,14 @@ void APioneerAIController::Tick(float DeltaTime)
 		// 죽으면 함수를 실행하지 않음.
 		if (MyPawn->bDead)
 			return;
+
+		MyPawn->RunFSM(DeltaTime);
 	}
 
 	Timer += DeltaTime;
 	if (Timer >= CoolTime)
 	{
-		MoveRandomDestination();
+		//MoveRandomDestination();
 		Timer = 0.0f;
 	}
 }

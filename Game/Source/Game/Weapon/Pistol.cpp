@@ -38,7 +38,7 @@ APistol::APistol()
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 
 	// 무기 스텟 설정
-	AttackPower = 6.0f;
+	AttackPower = 5.0f;
 	AttackSpeed = 3.0f;
 	AttackRange = 8.0f * AMyGameModeBase::CellSize;
 	LimitedLevel = 1;

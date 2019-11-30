@@ -4,6 +4,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Projectile/Projectile.h"
+#include "Character/Pioneer.h"
 #include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
@@ -32,6 +33,13 @@ void ABuilding::BeginPlay()
 	Super::BeginPlay();
 
 	BeginPlayHelthPointBar();
+
+	// Pioneer가 생성한게 아니라면 완성
+	if (!GetOwner())
+	{
+		bCompleted = true;
+		CompleteConstructing();
+	}
 }
 
 // Called every frame
@@ -283,8 +291,28 @@ void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedCom
 				// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
 				if (enemy->DetactRangeSphereComp == OtherComp)
 					return;
+
+				// 만약 OtherActor가 enemy이기는 하지만 enemy의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+				if (enemy->AttackRangeSphereComp == OtherComp)
+					return;
 			}
 		}
+
+		if (OtherActor->IsA(APioneer::StaticClass()))
+		{
+			APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor);
+			if (pioneer)
+			{
+				// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+				if (pioneer->DetactRangeSphereComp == OtherComp)
+					return;
+
+				// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+				if (pioneer->AttackRangeSphereComp == OtherComp)
+					return;
+			}
+		}
+
 		OverapedActors.Add(OtherActor);
 	}
 	else
@@ -330,7 +358,7 @@ void ABuilding::OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp,
 		{
 			OverapedActors.RemoveAt(index);
 		}*/
-		OverapedActors.Remove(OtherActor);
+		OverapedActors.RemoveSingle(OtherActor);
 	}
 }
 

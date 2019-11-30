@@ -4,6 +4,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "PioneerManager.h"
+#include "Character/Pioneer.h"
 #include "Controller/PioneerController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
@@ -118,6 +119,25 @@ void ASpaceShip::GetOffPioneer()
 
 	if (countPioneerNum >= PioneerNum)
 	{
+		if (PioneerCtrl->GetPawn())
+		{
+			APioneer* Pioneer = Cast<APioneer>(PioneerCtrl->GetPawn());
+			if (Pioneer)
+			{
+				if (Pioneer->bDead)
+				{
+					PioneerManager->SwitchPawn(2.0f);
+					
+					
+					
+				}
+			}
+
+			TakeOff(FVector(-13725.0f, -12455.0f, 87.0f));
+			GetWorldTimerManager().ClearTimer(TimerHandleGetOffPioneer);
+			return;
+		}
+
 		PioneerManager->SwitchPawn(2.0f);
 		TakeOff(FVector(-13725.0f, -12455.0f, 87.0f));
 		GetWorldTimerManager().ClearTimer(TimerHandleGetOffPioneer);

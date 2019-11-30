@@ -193,6 +193,18 @@ void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedCom
 
 	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
 	{
+		APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor);
+		if (pioneer)
+		{
+			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetactRangeSphereComp == OtherComp)
+				return;
+
+			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
 		//if (OverapedActors.Contains(OtherActor) == false)
 		{
 			OverapedActors.Add(OtherActor);
@@ -219,6 +231,18 @@ void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp,
 
 	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
 	{
+		APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor);
+		if (pioneer)
+		{
+			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetactRangeSphereComp == OtherComp)
+				return;
+
+			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
 		//OverapedActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
 		OverapedActors.RemoveSingle(OtherActor); // OtherActor 하나를 지웁니다.
 		UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Remove(OtherActor): %s"), *OtherActor->GetName());
@@ -251,6 +275,18 @@ void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedCom
 
 	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
 	{
+		APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor);
+		if (pioneer)
+		{
+			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetactRangeSphereComp == OtherComp)
+				return;
+
+			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
 		//if (OverapedAttackRangeActors.Contains(OtherActor) == false)
 		{
 			OverapedAttackRangeActors.Add(OtherActor);
@@ -277,6 +313,18 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 
 	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
 	{
+		APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor);
+		if (pioneer)
+		{
+			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetactRangeSphereComp == OtherComp)
+				return;
+
+			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
 		//OverapedAttackRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
 		OverapedAttackRangeActors.RemoveSingle(OtherActor); // OtherActor 하나만 지웁니다.
 		UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());

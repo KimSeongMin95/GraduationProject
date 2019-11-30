@@ -142,7 +142,8 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	///** Actor will fail to spawn. */
 	//DontSpawnIfColliding					UMETA(DisplayName = "Do Not Spawn"),
 	
-	Pioneers.Add(World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams));
+	//Pioneers.Add(World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams));
+	World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
 }
 
 APioneer* APioneerManager::GetPioneerBySocketID(int SocketID)
