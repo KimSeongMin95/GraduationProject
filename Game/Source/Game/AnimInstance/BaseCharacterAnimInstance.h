@@ -26,7 +26,7 @@ public:
 
 	/*** Animation : Start ***/
 public:
-	class ABaseCharacter* BaseCharacter = nullptr;
+	class ABaseCharacter* BaseCharacter = nullptr; // Owner를 Casting하여 저장
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		float Speed;
@@ -46,7 +46,7 @@ public:
 	/*** CharacterAI : Start ***/
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterAI")
-		int CharacterAI;
+		int CharacterAI; // FSM, BehaviorTree, 등등 어떤 AI를 사용하는지 AnimationBluprint에 알림
 	/*** CharacterAI : End ***/
 
 	/*** FSM : Start ***/

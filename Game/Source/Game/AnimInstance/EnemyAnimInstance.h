@@ -26,7 +26,7 @@ public:
 
 	/*** Animation : Start ***/
 public:
-	class AEnemy* Enemy = nullptr;
+	class AEnemy* Enemy = nullptr; // Owner를 Casting하여 저장
 
 	virtual void DestroyCharacter() override;
 

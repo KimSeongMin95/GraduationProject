@@ -27,7 +27,7 @@ public:
 
 	/*** Animation : Start ***/
 public:
-	class APioneer* Pioneer = nullptr;
+	class APioneer* Pioneer = nullptr; // Owner를 Casting하여 저장
 
 	virtual void DestroyCharacter() override;
 

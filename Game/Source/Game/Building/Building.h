@@ -10,12 +10,11 @@
 #include "Materials/Material.h"
 #include "Materials/MaterialInterface.h"
 #include "Engine/TriggerVolume.h" // For ATriggerVolume::StaticClass()
-
-#include "Components/WidgetComponent.h"
-#include "Components/ProgressBar.h"
-#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
-#include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
+
+/*** Interface 헤더 선언 : Start ***/
+#include "Interface/HealthPointBarInterface.h"
+/*** Interface 헤더 선언 : Start ***/
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -33,7 +32,7 @@ struct FTArrayOfUMaterialInterface
 /*** For TArray_2Dimension : End ***/
 
 UCLASS()
-class GAME_API ABuilding : public AActor
+class GAME_API ABuilding : public AActor, public IHealthPointBarInterface
 {
 	GENERATED_BODY()
 
@@ -94,19 +93,12 @@ public:
 	virtual void InitStat();
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 public:
-	UPROPERTY(VisibleAnywhere)
-		class UWidgetComponent* HelthPointBar = nullptr;
-	UPROPERTY(EditAnywhere)
-		class UUserWidget* HelthPointBarUserWidget = nullptr;
-	UPROPERTY(EditAnywhere)
-		class UProgressBar* ProgressBar = nullptr;
-
-	virtual void InitHelthPointBar();
-	void BeginPlayHelthPointBar();
-	void TickHelthPointBar();
-/*** HelthPointBar : End ***/
+	virtual void InitHelthPointBar() override;
+	virtual void BeginPlayHelthPointBar() override;
+	virtual void TickHelthPointBar() override;
+/*** IHealthPointBarInterface : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 public:
