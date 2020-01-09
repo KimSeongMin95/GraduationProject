@@ -152,6 +152,8 @@
         C++ 에서 AActor 는 모든 액터의 베이스 클래스입니다.
         AActor 클래스 인스턴스를 새로 생성하는 것을 Spawn (스폰)이라 합니다. 
         그 방법은 범용 함수 SpawnActor() 나, 그 특수 템플릿 버전을 사용하면 됩니다.
+            Owner: 옵션. 스폰된 Actor 를 소유하는 AActor 입니다.
+            Outer: 컴포넌트의 주인을 설정
         <UActorComponent>
             베이스 컴포넌트입니다. 
             액터의 일부로 포함 가능합니다. 
@@ -358,9 +360,14 @@
     Content/: 에셋 파일들 존재 (제거X)
     Intermediate/: 프로젝트 관리에 필요한 임시파일들을 저장. 제거하면 VisualStudio에서 프로젝트 다 날라감. (제거X)
     Saved/: 에디터 작업 중에 생성된 결과물들 저장. 게임의 Save파일, 스크린샷, 게임내 생성 파일, 로그파일 (제거X)
+        Saved/Cooked/WindowsNoEditor/: (제거O)
+        Saved/StagedBuilds/WindowsNoEditor: (제거O)
     Source/: C++ 코드가 저장되는 폴더 (제거X)
     Game.sln: VisualStudio 솔루션. 제거해도 생성 가능 (제거X)
     Game: 언리얼엔진 (제거X)
+
+[최소 실행 조건]
+    온전한 Build, Config, Content, Source, Game.sln, Game.uproject만 있으면 에디터를 다시 실행할 수 있다.
     
 [C++ 클래스 폴더 생성]
     1. Source/"프로젝트명"/ 폴더에서 원하는 이름의 폴더를 생성하고 옮기고 싶은 클래스의 cpp, h 파일을 옮긴다.
@@ -376,3 +383,30 @@
     3. 프로젝트 폴더의 Source 폴더 안에 남아있는 클래스의 헤더(.h)와 소스파일(.cpp) 역시 삭제해준다.
     4. 비주얼 스튜디오로 돌아가서 [빌드 > 솔루션 다시 빌드]를 선택해서 프로젝트를 다시 빌드한다.
     5. 프로젝트 빌드가 성공적으로 끝났다면 에디터를 다시 실행시킨다. 그렇게 하고 콘텐츠 브라우저를 보면 필요없는 C++ 클래스가 성공적으로 삭제된 것을 확인할 수 있다.
+
+
+[Visual Studio IntelliSense 오류]
+    - 정상 코드인데 빨간 줄이 그어져 있다면
+    소스코드 -> 마우스 우클릭 -> 다시 검사 -> 파일 다시 검사 or 솔루션 다시 검사
+
+[UWorld와 UEditoWorld??의 차이점]
+    ???
+
+[Interface]
+    - 참고: https://docs.unrealengine.com/ko/Programming/UnrealArchitecture/Reference/Interfaces/index.html
+    - 클래스 생성: Add C++ class에서 Unreal Interface를 상속받아 생성
+    - 멤버변수 선언 가능 (단, UPROPERTY를 사용할 수 없음)
+    - 멤버함수 선언 가능 (순수가상함수로 선언하는 것이 좋을 듯)
+        virtual function() = 0;
+    - Interface를 상속받는 클래스는 : public AActor, public ICustomInterface 이렇게 상속
+    - 주어진 클래스의 인터페이스 구현 여부 확인
+        // OriginalObject 가 UReactToTriggerInterface 를 구현한다면 bIsImplemented 는 true 가 됩니다.
+        bool bIsImplemented = OriginalObject->GetClass()->ImplementsInterface(UReactToTriggerInterface::StaticClass()); 
+        // OriginalObject 가 UReactToTriggerInterface 를 구현한다면 ReactingObject 는 null 이외의 값이 됩니다.
+        IReactToTriggerInterface* ReactingObject = Cast<IReactToTriggerInterface>(OriginalObject); 
+
+
+
+
+
+
