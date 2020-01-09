@@ -11,113 +11,133 @@
 
 UPioneerAnimInstance::UPioneerAnimInstance()
 {
-	bIsAnimationBlended = true;
-	Speed = 0.f;
+
 }
 
 void UPioneerAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
-	// cache the pawn
-	Owner = TryGetPawnOwner();
+	if (BaseCharacter)
+	{
+		if (BaseCharacter->IsA(APioneer::StaticClass()))
+			Pioneer = Cast<APioneer>(BaseCharacter);
+
+		return;
+	}
+	// else
+	if (APawn* Owner = TryGetPawnOwner())
+	{
+		// Owner가 APioneer이거나 APioneer의 하위클래스인지 확인합니다.
+		if (Owner->IsA(APioneer::StaticClass()))
+			Pioneer = Cast<APioneer>(Owner);
+	}
 }
 
 void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 {
 	Super::NativeUpdateAnimation(DeltaTimeX);
 
-	// double check our pointers make sure nothing is empty
-	if (!Owner)
+	if (!Pioneer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::NativeUpdateAnimation Failed: Owner = TryGetPawnOwner()"));
+		if (APawn* Owner = TryGetPawnOwner())
+		{
+			// Owner가 APioneer이거나 APioneer의 하위클래스인지 확인합니다.
+			if (Owner->IsA(APioneer::StaticClass()))
+				Pioneer = Cast<APioneer>(Owner);
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::NativeUpdateAnimation: !Pioneer"));
 		return;
 	}
 
-	// Owner가 APioneer::StaticClass()인지 확인합니다.
-	if (Owner->IsA(APioneer::StaticClass()))
+	/*** CharacterAI : Start ***/
+	switch (CharacterAI)
 	{
-		APioneer* pioneer = Cast<APioneer>(Owner);
-
-		// again check pointers
-		if (pioneer)
-		{
-			bDead = pioneer->bDead;
-			if (pioneer->bDead) // 죽으면 실행하지 않음.
-				return;
-
-			bIsAnimationBlended = pioneer->IsAnimationBlended();
-			Speed = pioneer->GetVelocity().Size();
-			bIsMoving = Speed > 0 ? true : false;
-
-			bHasPistolType = pioneer->HasPistolType();
-			bHasRifleType = pioneer->HasRifleType();
-			bHasLauncherType = pioneer->HasLauncherType();
-
-			Direction = CalculateDirection(pioneer->GetVelocity(), pioneer->GetActorRotation());
-		}
+	case 0:
+		SetFSM();
+		break;
+	case 1:
+		SetBehaviorTree();
+		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::NativeUpdateAnimation: switch (CharacterAI): default"));
+		break;
 	}
+	/*** CharacterAI : End ***/
+
+	bHasPistolType = Pioneer->HasPistolType();
+	bHasRifleType = Pioneer->HasRifleType();
+	bHasLauncherType = Pioneer->HasLauncherType();
 }
 
-void UPioneerAnimInstance::DestroyPioneer()
+void UPioneerAnimInstance::DestroyCharacter()
 {
-	if (APioneer* pioneer = Cast<APioneer>(Owner))
+	Super::DestroyCharacter();
+
+	if (!Pioneer)
 	{
-		APioneerManager* PioneerManager = nullptr;
+		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::DestroyCharacter: !Pioneer"));
+		return;
+	}
 
-		UWorld* const world = GetWorld();
-		if (!world)
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::DestroyCharacter() Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+	APioneerManager* PioneerManager = nullptr;
+
+	// UWorld에서 AWorldViewCameraActor를 찾습니다.
+	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		PioneerManager = *ActorItr;
+	}
+
+
+
+
+
+
+	if (Pioneer->GetMesh())
+		Pioneer->GetMesh()->DestroyComponent();
+	if (Pioneer->GetCharacterMovement())
+		Pioneer->GetCharacterMovement()->DestroyComponent();
+	if (Pioneer->HelmetMesh)
+		Pioneer->HelmetMesh->DestroyComponent();
+
+	if (Pioneer->GetController())
+	{
+		// 플레이어가 조종하는 pioneer면
+		if (Pioneer->GetController()->IsA(APioneerController::StaticClass()))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::DestroyPioneer() Failed: UWorld* const World = GetWorld();"));
-			return;
-		}
-
-		// UWorld에서 AWorldViewCameraActor를 찾습니다.
-		for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
-		{
-			PioneerManager = *ActorItr;
-		}
-
-
-		if (pioneer->GetMesh())
-			pioneer->GetMesh()->DestroyComponent();
-		if (pioneer->GetCharacterMovement())
-			pioneer->GetCharacterMovement()->DestroyComponent();
-		if (pioneer->HelmetMesh)
-			pioneer->HelmetMesh->DestroyComponent();
-
-		if (pioneer->GetController())
-		{
-			// 플레이어가 조종하는 pioneer면
-			if (pioneer->GetController()->IsA(APioneerController::StaticClass()))
+			if (PioneerManager)
 			{
-				if (PioneerManager)
-				{
-					PioneerManager->SwitchPawn(1.0f);
-				}
-			}
-			else
-			{
-				if (PioneerManager)
-				{
-					pioneer->Destroy();
-				}
-			}
-		}
-
-		/*if (pioneer->GetOwner() && pioneer->GetOwner()->IsA(APioneerManager::StaticClass()))
-		{
-			if (APioneerManager* PioneerManager = Cast<APioneerManager>(pioneer->GetOwner()))
-			{
-				PioneerManager->SwitchPawn(2.0f);
+				PioneerManager->SwitchPawn(1.0f);
 			}
 		}
-		else if (pioneer->GetOuter() && pioneer->GetOuter()->IsA(APioneerManager::StaticClass()))
+		else
 		{
-			if (APioneerManager* PioneerManager = Cast<APioneerManager>(pioneer->GetOuter()))
+			if (PioneerManager)
 			{
-				PioneerManager->SwitchPawn(2.0f);
+				Pioneer->Destroy();
 			}
-		}*/
+		}
 	}
 }
+
+/*** FSM : Start ***/
+void UPioneerAnimInstance::SetFSM()
+{
+	
+}
+/*** FSM : End ***/
+
+/*** BehaviorTree : Start ***/
+void UPioneerAnimInstance::SetBehaviorTree()
+{
+
+}
+/*** BehaviorTree : End ***/

@@ -3,22 +3,21 @@
 #pragma once
 
 /*** 언리얼엔진 헤더 선언 : Start ***/
-#include "EngineUtils.h" // TActorIterator<>
-#include "GameFramework/PawnMovementComponent.h"
+#include "Engine.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
-#include "BaseCharacterAnimInstance.h"
-#include "PioneerAnimInstance.generated.h"
+#include "Animation/AnimInstance.h"
+#include "BaseCharacterAnimInstance.generated.h"
 
 UCLASS()
-class GAME_API UPioneerAnimInstance : public UBaseCharacterAnimInstance
+class GAME_API UBaseCharacterAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
 	/*** AnimInstance Basic Function : Start ***/
 public:
-	UPioneerAnimInstance();
+	UBaseCharacterAnimInstance();
 
 	virtual void NativeInitializeAnimation() override;
 
@@ -27,28 +26,36 @@ public:
 
 	/*** Animation : Start ***/
 public:
-	class APioneer* Pioneer = nullptr;
-
-	virtual void DestroyCharacter() override;
+	class ABaseCharacter* BaseCharacter = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bHasPistolType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bHasRifleType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bHasLauncherType;
+		float Speed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bFired;
+		bool bIsMoving;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		float Direction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		bool bDead;
+	UFUNCTION(BlueprintCallable)
+		virtual void DestroyCharacter();
 	/*** Animation : End ***/
+
+	/*** CharacterAI : Start ***/
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterAI")
+		int CharacterAI;
+	/*** CharacterAI : End ***/
 
 	/*** FSM : Start ***/
 public:
-	virtual void SetFSM() override;
+	virtual void SetFSM();
 	/*** FSM : End ***/
 
 	/*** BehaviorTree : Start ***/
 public:
-	virtual void SetBehaviorTree() override;
+	virtual void SetBehaviorTree();
 	/*** BehaviorTree : End ***/
 };

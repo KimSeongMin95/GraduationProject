@@ -24,6 +24,13 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class ECharacterAI : uint8
+{
+	FSM = 0,
+	BehaviorTree = 1
+};
+
 UCLASS()
 class GAME_API ABaseCharacter : public ACharacter
 {
@@ -127,4 +134,9 @@ public:
 
 	FVector TartgetPosition;
 /*** CharacterMovement : End ***/
+
+	/*** CharacterAI : Start ***/
+public:
+	ECharacterAI CharacterAI;
+	/*** CharacterAI : End ***/
 };

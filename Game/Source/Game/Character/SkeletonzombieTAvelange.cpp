@@ -47,7 +47,7 @@ void ASkeletonzombieTAvelange::Tick(float DeltaTime)
 void ASkeletonzombieTAvelange::InitStat()
 {
 	HealthPoint = 200.0f;
-	MaxHealthPoint = 80.0f;
+	MaxHealthPoint = 200.0f;
 	bDead = false;
 
 	AttackPower = 20.0f;

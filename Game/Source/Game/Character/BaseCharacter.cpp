@@ -24,6 +24,8 @@ ABaseCharacter::ABaseCharacter() // Sets default values
 	TargetRotation = FRotator::ZeroRotator;
 
 	InitCharacterMovement();
+
+	CharacterAI = ECharacterAI::FSM;
 }
 
 // Called when the game starts or when spawned

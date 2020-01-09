@@ -126,7 +126,7 @@ void ASpaceShip::GetOffPioneer()
 			{
 				if (Pioneer->bDead)
 				{
-					PioneerManager->SwitchPawn(2.0f);
+					PioneerManager->SwitchPawn(1.0f);
 					
 					
 					
@@ -138,7 +138,7 @@ void ASpaceShip::GetOffPioneer()
 			return;
 		}
 
-		PioneerManager->SwitchPawn(2.0f);
+		PioneerManager->SwitchPawn(1.0f);
 		TakeOff(FVector(-13725.0f, -12455.0f, 87.0f));
 		GetWorldTimerManager().ClearTimer(TimerHandleGetOffPioneer);
 	}
@@ -225,7 +225,7 @@ void ASpaceShip::_Landing(FVector TargetPosition)
 		EngineParticleSystem->ToggleActive();
 		EngineParticleSystem2->ToggleActive();
 
-		GetWorldTimerManager().SetTimer(TimerHandleGetOffPioneer, this, &ASpaceShip::GetOffPioneer, 0.5f, true);
+		GetWorldTimerManager().SetTimer(TimerHandleGetOffPioneer, this, &ASpaceShip::GetOffPioneer, 0.2f, true);
 		GetWorldTimerManager().ClearTimer(TimerHandleLanding);
 		return;
 	}
@@ -261,12 +261,20 @@ void ASpaceShip::TakeOff(FVector TargetPosition)
 	//SkeletalMeshComp->PlayAnimation(AnimSequence, false);
 	SkeletalMeshComp->OverrideAnimationData(AnimSequence, false, true, 0.0f, 2.0f); // 거꾸로 재생하기위해 OverrideAnimationData 함수를 이용합니다.
 	//SkeletalMeshComp->Play(false);
-	SkeletalMeshComp->PlayAnimation(AnimSequence, false);
+	SkeletalMeshComp->PlayAnimation(AnimSequence, true);
 
 	// 엔진을 킵니다.
 	EngineParticleSystem->ToggleActive();
 	EngineParticleSystem2->ToggleActive();
 
+	FTimerDelegate TimerDelegate;
+	// 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
+	TimerDelegate.BindUFunction(this, FName("TakeOff2"), TargetPosition, 3.0f);
+	GetWorldTimerManager().SetTimer(TimerHandleTakeOff, TimerDelegate, 3.0f, false);
+}
+
+void ASpaceShip::TakeOff2(FVector TargetPosition)
+{
 	FTimerDelegate TimerDelegate;
 	// 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
 	TimerDelegate.BindUFunction(this, FName("_TakeOff"), TargetPosition, 0.0166f);

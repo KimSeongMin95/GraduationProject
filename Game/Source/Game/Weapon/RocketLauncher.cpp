@@ -39,7 +39,7 @@ ARocketLauncher::ARocketLauncher()
 
 	// 무기 스텟 설정
 	AttackPower = 30.0f;
-	AttackSpeed = 1.0f;
+	AttackSpeed = 0.5f;
 	AttackRange = 10.0f * AMyGameModeBase::CellSize;
 	LimitedLevel = 10;
 }

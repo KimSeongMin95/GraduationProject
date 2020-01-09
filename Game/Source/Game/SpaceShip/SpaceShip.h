@@ -115,6 +115,9 @@ public:
 		void TakeOff(FVector TargetPosition);
 
 	UFUNCTION()
+		void TakeOff2(FVector TargetPosition);
+
+	UFUNCTION()
 		void _TakeOff(FVector TargetPosition);
 
 /*** Animation : End ***/

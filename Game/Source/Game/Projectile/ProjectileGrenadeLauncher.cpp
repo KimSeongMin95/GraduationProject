@@ -164,7 +164,7 @@ void AProjectileGrenadeLauncher::Suicide()
 
 void AProjectileGrenadeLauncher::SetSuicideTimer(float Time)
 {
-	UE_LOG(LogTemp, Warning, TEXT("SetSuicideTimer"));
+	//UE_LOG(LogTemp, Warning, TEXT("SetSuicideTimer"));
 	FTimerHandle timer;
 	GetWorldTimerManager().SetTimer(timer, this, &AProjectileGrenadeLauncher::Suicide, Time, false);
 }

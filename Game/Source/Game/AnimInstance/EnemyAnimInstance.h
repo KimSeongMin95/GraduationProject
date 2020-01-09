@@ -3,57 +3,57 @@
 #pragma once
 
 /*** 언리얼엔진 헤더 선언 : Start ***/
-#include "Engine.h"
+
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
-#include "Animation/AnimInstance.h"
+#include "BaseCharacterAnimInstance.h"
 #include "EnemyAnimInstance.generated.h"
 
 UCLASS()
-class GAME_API UEnemyAnimInstance : public UAnimInstance
+class GAME_API UEnemyAnimInstance : public UBaseCharacterAnimInstance
 {
 	GENERATED_BODY()
 	
-/*** AnimInstance Basic Function : Start ***/
+	/*** AnimInstance Basic Function : Start ***/
 public:
 	UEnemyAnimInstance();
 
 	virtual void NativeInitializeAnimation() override;
 
 	virtual void NativeUpdateAnimation(float DeltaTimeX) override;
-/*** AnimInstance Basic Function : End ***/
+	/*** AnimInstance Basic Function : End ***/
 
+	/*** Animation : Start ***/
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bIdle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bMove;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bStop;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bTracing;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bAttack;
+	class AEnemy* Enemy = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		float Speed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bIsMoving;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		float Direction;
+	virtual void DestroyCharacter() override;
 
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd();
 	UFUNCTION(BlueprintCallable)
 		void DamageToTargetActor();
+	/*** Animation : End ***/
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bDead;
-	UFUNCTION(BlueprintCallable)
-		void DestroyEnemy();
-private:
-	APawn* Owner;
+	/*** FSM : Start ***/
+public:
+	virtual void SetFSM() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
+		bool bIdle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
+		bool bMove;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
+		bool bStop;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
+		bool bTracing;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
+		bool bAttack;
+	/*** FSM : End ***/
+
+	/*** BehaviorTree : Start ***/
+public:
+	virtual void SetBehaviorTree() override;
+	/*** BehaviorTree : End ***/
 };

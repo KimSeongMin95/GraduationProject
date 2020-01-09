@@ -81,7 +81,7 @@ void AProjectile::BeginPlay()
 	}
 
 	// 생성자에서 SetTimer를 실행하면 안됨. 무조건 BeginPlay()에 두어야 함.
-	SetDestoryTimer(15.0f); // 10초 뒤 투사체를 소멸합니다.
+	SetDestoryTimer(8.0f); // 10초 뒤 투사체를 소멸합니다.
 }
 
 // Called every frame

@@ -38,12 +38,12 @@ AShotgun::AShotgun()
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 
 	// 무기 스텟 설정
-	AttackPower = 6.0f;
-	AttackSpeed = 1.0f;
+	AttackPower = 10.0f;
+	AttackSpeed = 0.8f;
 	AttackRange = 10.0f * AMyGameModeBase::CellSize;
 	LimitedLevel = 10;
 
-	BulletNumber = 10;
+	BulletNumber = 6;
 }
 
 // Called when the game starts or when spawned

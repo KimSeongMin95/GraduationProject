@@ -10,140 +10,152 @@
 
 UEnemyAnimInstance::UEnemyAnimInstance()
 {
+	/*** FSM : Start ***/
 	bIdle = true;
 	bMove = false;
 	bStop = false;
 	bTracing = false;
 	bAttack = false;
-
-	Speed = 0.0f;
-	bIsMoving = false;
-	Direction = 0.0f;
+	/*** FSM : End ***/
 }
 
 void UEnemyAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
-	// cache the pawn
-	Owner = TryGetPawnOwner();
+	if (BaseCharacter)
+	{
+		if (BaseCharacter->IsA(AEnemy::StaticClass()))
+			Enemy = Cast<AEnemy>(BaseCharacter);
+
+		return;
+	}
+	// else
+	if (APawn* Owner = TryGetPawnOwner())
+	{
+		// Owner가 AEnemy이거나 AEnemy의 하위클래스인지 확인합니다.
+		if (Owner->IsA(AEnemy::StaticClass()))
+			Enemy = Cast<AEnemy>(Owner);
+	}
 }
 
 void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 {
 	Super::NativeUpdateAnimation(DeltaTimeX);
 
-	// double check our pointers make sure nothing is empty
-	if (!Owner)
+	if (!Enemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::NativeUpdateAnimation Failed: Owner = TryGetPawnOwner()"));
+		if (APawn* Owner = TryGetPawnOwner())
+		{
+			// Owner가 AEnemy이거나 AEnemy의 하위클래스인지 확인합니다.
+			if (Owner->IsA(AEnemy::StaticClass()))
+				Enemy = Cast<AEnemy>(Owner);
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::NativeUpdateAnimation: !Enemy"));
 		return;
 	}
 
-	// Owner가 APioneer::StaticClass()인지 확인합니다.
-	if (Owner->IsA(AEnemy::StaticClass()))
+	/*** CharacterAI : Start ***/
+	switch (CharacterAI)
 	{
-		AEnemy* enemy = Cast<AEnemy>(Owner);
-
-		// again check pointers
-		if (enemy)
-		{
-			bDead = enemy->bDead;
-			if (enemy->bDead) // 죽으면 실행하지 않음.
-				return;
-
-			bIdle = false;
-			bMove = false;
-			bStop = false;
-			bTracing = false;
-			bAttack = false;
-
-			switch (enemy->State)
-			{
-			case EEnemyFSM::Idle:
-				bIdle = true;
-				break;
-			case EEnemyFSM::Move:
-				bMove = true;
-				break;
-			case EEnemyFSM::Stop:
-				bStop = true;
-				break;
-			case EEnemyFSM::Tracing:
-				bTracing = true;
-				break;
-			case EEnemyFSM::Attack:
-				bAttack = true;
-				break;
-			}
-
-			Speed = enemy->GetVelocity().Size();
-			bIsMoving = Speed > 0 ? true : false;
-			Direction = CalculateDirection(enemy->GetVelocity(), enemy->GetActorRotation());
-		}
+	case 0:
+		SetFSM();
+		break;
+	case 1:
+		SetBehaviorTree();
+		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::NativeUpdateAnimation: switch (CharacterAI): default"));
+		break;
 	}
+	/*** CharacterAI : End ***/
+
+
+}
+
+void UEnemyAnimInstance::DestroyCharacter()
+{
+	Super::DestroyCharacter();
+
+	if (!Enemy)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::DestroyCharacter: !Enemy"));
+		return;
+	}
+
+
+
+
+	if (Enemy->GetMesh())
+		Enemy->GetMesh()->DestroyComponent();
+	if (Enemy->GetCharacterMovement())
+		Enemy->GetCharacterMovement()->DestroyComponent();
+
+	Enemy->Destroy();
 }
 
 void UEnemyAnimInstance::AttackEnd()
 {
-	// double check our pointers make sure nothing is empty
-	if (!Owner)
+	if (!Enemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::AttackEnd Failed: Owner = TryGetPawnOwner()"));
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::AttackEnd: !Enemy"));
 		return;
 	}
 
-	// Owner가 APioneer::StaticClass()인지 확인합니다.
-	if (Owner->IsA(AEnemy::StaticClass()))
-	{
-		AEnemy* enemy = Cast<AEnemy>(Owner);
-
-		// again check pointers
-		if (enemy)
-		{
-			enemy->State = EEnemyFSM::Idle;
-		}
-	}
+	Enemy->State = EEnemyFSM::Idle;
 }
 
 void UEnemyAnimInstance::DamageToTargetActor()
 {
-	// double check our pointers make sure nothing is empty
-	if (!Owner)
+	if (!Enemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::DamageToTargetActor Failed: Owner = TryGetPawnOwner()"));
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::DamageToTargetActor: !Enemy"));
 		return;
 	}
 
-	// Owner가 APioneer::StaticClass()인지 확인합니다.
-	if (Owner->IsA(AEnemy::StaticClass()))
-	{
-		AEnemy* enemy = Cast<AEnemy>(Owner);
-
-		// again check pointers
-		if (enemy)
-		{
-			enemy->DamageToTargetActor();
-		}
-	}
+	Enemy->DamageToTargetActor();
 }
 
-void UEnemyAnimInstance::DestroyEnemy()
+/*** FSM : Start ***/
+void UEnemyAnimInstance::SetFSM()
 {
-	if (AEnemy* enemy = Cast<AEnemy>(Owner))
+	if (!Enemy)
 	{
-		UWorld* const world = GetWorld();
-		if (!world)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::DestroyPioneer() Failed: UWorld* const World = GetWorld();"));
-			return;
-		}
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::SetFSM: !Enemy"));
+		return;
+	}
 
-		if (enemy->GetMesh())
-			enemy->GetMesh()->DestroyComponent();
-		if (enemy->GetCharacterMovement())
-			enemy->GetCharacterMovement()->DestroyComponent();
+	bIdle = false;
+	bMove = false;
+	bStop = false;
+	bTracing = false;
+	bAttack = false;
 
-		enemy->Destroy();
+	switch (Enemy->State)
+	{
+	case EEnemyFSM::Idle:
+		bIdle = true;
+		break;
+	case EEnemyFSM::Move:
+		bMove = true;
+		break;
+	case EEnemyFSM::Stop:
+		bStop = true;
+		break;
+	case EEnemyFSM::Tracing:
+		bTracing = true;
+		break;
+	case EEnemyFSM::Attack:
+		bAttack = true;
+		break;
 	}
 }
+/*** FSM : End ***/
+
+/*** BehaviorTree : Start ***/
+void UEnemyAnimInstance::SetBehaviorTree()
+{
+
+}
+/*** BehaviorTree : End ***/

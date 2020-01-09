@@ -46,8 +46,8 @@ void AParasiteLStarkie::Tick(float DeltaTime)
 /*** Stat : Start ***/
 void AParasiteLStarkie::InitStat()
 {
-	HealthPoint = 150.0f;
-	MaxHealthPoint = 150.0f;
+	HealthPoint = 60.0f;
+	MaxHealthPoint = 60.0f;
 	bDead = false;
 
 	AttackPower = 10.0f;
