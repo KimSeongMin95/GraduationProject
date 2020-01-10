@@ -38,7 +38,7 @@ public:
 		float Direction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		bool bDead;
+		bool bDying;
 	UFUNCTION(BlueprintCallable)
 		virtual void DestroyCharacter();
 	/*** Animation : End ***/

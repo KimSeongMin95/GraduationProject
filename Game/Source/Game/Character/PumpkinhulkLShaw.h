@@ -18,22 +18,22 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() final;
 
 public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) final;
 /*** Basic Function : End ***/
 
 
 /*** Stat : Start ***/
 public:
-	virtual void InitStat();
+	virtual void InitStat() final;
 /*** Stat : End ***/
 
 /*** HelthPointBar : Start ***/
 public:
-	virtual void InitHelthPointBar();
+	virtual void InitHelthPointBar() final;
 /*** HelthPointBar : End ***/
 
 /*** SkeletalAnimation : Start ***/

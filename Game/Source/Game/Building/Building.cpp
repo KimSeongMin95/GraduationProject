@@ -4,8 +4,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Projectile/Projectile.h"
-#include "Character/Pioneer.h"
-#include "Character/Enemy.h"
+#include "Character/BaseCharacter.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values
@@ -36,7 +35,7 @@ void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Pioneer가 생성한게 아니라면 완성
+	// Pioneer가 생성한게 아니라면 건물을 바로 완성시킴
 	if (!GetOwner())
 	{
 		BuildingState = EBuildingState::Constructed;
@@ -240,39 +239,18 @@ void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedCom
 	if (OtherActor->IsA(AProjectile::StaticClass()))
 		return;
 
-	// ???
+	// 자기 자신과 충돌하면 무시합니다.
 	if (OtherActor->GetFName() == this->GetFName())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ABuilding::OnOverlapBegin_Building: OtherActor->GetFName() == this->GetFName()"));
 		return;
-	}
 
 	if (BuildingState == EBuildingState::Constructable)
 	{
-		if (OtherActor->IsA(AEnemy::StaticClass()))
+		if (OtherActor->IsA(ABaseCharacter::StaticClass()))
 		{
-			if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
+			if (ABaseCharacter* baseCharacter = dynamic_cast<ABaseCharacter*>(OtherActor))
 			{
-				// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
-				if (enemy->DetactRangeSphereComp == OtherComp)
-					return;
-
-				// 만약 OtherActor가 enemy이기는 하지만 enemy의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-				if (enemy->AttackRangeSphereComp == OtherComp)
-					return;
-			}
-		}
-
-		if (OtherActor->IsA(APioneer::StaticClass()))
-		{
-			if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
-			{
-				// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
-				if (pioneer->DetactRangeSphereComp == OtherComp)
-					return;
-
-				// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-				if (pioneer->AttackRangeSphereComp == OtherComp)
+				// 만약 OtherActor가 ABaseCharacter이기는 하지만 DetactRangeSphereComp와 AttackRangeSphereComp에 충돌한 것이라면 무시합니다.
+				if (baseCharacter->DetactRangeSphereComp == OtherComp || baseCharacter->AttackRangeSphereComp == OtherComp)
 					return;
 			}
 		}

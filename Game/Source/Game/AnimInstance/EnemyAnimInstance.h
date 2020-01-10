@@ -43,10 +43,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 		bool bIdle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
-		bool bMove;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
-		bool bStop;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 		bool bTracing;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 		bool bAttack;

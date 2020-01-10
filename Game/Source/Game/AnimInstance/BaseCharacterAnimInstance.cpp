@@ -53,7 +53,7 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 	}
 
 
-	bDead = BaseCharacter->bDead;
+	bDying = BaseCharacter->bDying;
 
 	CharacterAI = (int)BaseCharacter->CharacterAI;
 

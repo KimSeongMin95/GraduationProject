@@ -83,8 +83,11 @@ void APioneerController::MoveToMouseCursor()
 	{
 		if (APioneer* MyPawn = Cast<APioneer>(GetPawn()))
 		{
+			if (MyPawn->CursorToWorld == nullptr)
+				return;
+
 			// 죽으면 함수를 실행하지 않음.
-			if (MyPawn->bDead)
+			if (MyPawn->bDying == true)
 				return;
 
 			//// Trace to see what is under the mouse cursor
@@ -147,7 +150,7 @@ void APioneerController::MoveForward(float Value)
 	if (MyPawn && (Value != 0.0f))
 	{
 		// 죽으면 함수를 실행하지 않음.
-		if (MyPawn->bDead)
+		if (MyPawn->bDying)
 			return;
 
 		// Navigation으로 이동하던 중이었으면 멈춥니다. 
@@ -172,7 +175,7 @@ void APioneerController::MoveRight(float Value)
 	if (MyPawn && (Value != 0.0f))
 	{
 		// 죽으면 함수를 실행하지 않음.
-		if (MyPawn->bDead)
+		if (MyPawn->bDying)
 			return;
 
 		// Navigation으로 이동하던 중이었으면 멈춥니다. 
@@ -197,7 +200,7 @@ void APioneerController::ZoomInOrZoomOut(float Value)
 	if (MyPawn && (Value != 0.0f))
 	{
 		// 죽으면 함수를 실행하지 않음.
-		if (MyPawn->bDead)
+		if (MyPawn->bDying)
 			return;
 
 		MyPawn->ZoomInOrZoomOut(Value);
@@ -212,7 +215,7 @@ void APioneerController::FireWeapon()
 	if (MyPawn)
 	{
 		// 죽으면 함수를 실행하지 않음.
-		if (MyPawn->bDead)
+		if (MyPawn->bDying)
 			return;
 
 		MyPawn->FireWeapon();
@@ -227,7 +230,7 @@ void APioneerController::ChangeWeapon()
 	if (MyPawn)
 	{
 		// 죽으면 함수를 실행하지 않음.
-		if (MyPawn->bDead)
+		if (MyPawn->bDying)
 			return;
 
 		if (MyPawn->bConstructingMode == false)
@@ -245,7 +248,7 @@ void APioneerController::RotatingBuilding(float Value)
 	if (MyPawn)
 	{
 		// 죽으면 함수를 실행하지 않음.
-		if (MyPawn->bDead)
+		if (MyPawn->bDying)
 			return;
 
 		MyPawn->RotatingBuilding(Value);
@@ -260,7 +263,7 @@ void APioneerController::PlaceBuilding()
 	if (MyPawn)
 	{
 		// 죽으면 함수를 실행하지 않음.
-		if (MyPawn->bDead)
+		if (MyPawn->bDying)
 			return;
 
 		MyPawn->PlaceBuilding();
@@ -275,7 +278,7 @@ void APioneerController::ConstructingMode()
 	if (MyPawn)
 	{
 		// 죽으면 함수를 실행하지 않음.
-		if (MyPawn->bDead)
+		if (MyPawn->bDying)
 			return;
 
 		MyPawn->bConstructingMode = 1 - MyPawn->bConstructingMode;

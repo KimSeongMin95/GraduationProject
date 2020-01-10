@@ -9,11 +9,9 @@
 UENUM(BlueprintType)
 enum class EEnemyFSM : uint8
 {
-	Idle,
-	Move,
-	Stop,
-	Tracing,
-	Attack
+	Idle = 0,
+	Tracing = 1,
+	Attack = 2
 };
 
 UCLASS()
@@ -35,16 +33,26 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-/*** Stat : Start ***/
+	/*** Stat : Start ***/
 public:
-	virtual void CalculateDead();
+	virtual void Calculatehealth(float Delta) final;
 
-	virtual void InitStat();
-/*** Stat : End ***/
+	virtual void InitStat() override;
+
+	// DetectRange
+	virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
+
+	// AttackRange
+	virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
+
+	virtual void InitRanges() override;
+	/*** Stat : End ***/
 
 /*** HelthPointBar : Start ***/
 public:
-	virtual void InitHelthPointBar();
+	virtual void InitHelthPointBar() override;
 /*** HelthPointBar : End ***/
 
 /*** CharacterMovement : Start ***/
@@ -64,37 +72,25 @@ public:
 	virtual void PossessAIController() override;
 /*** AEnemyAIController : End ***/
 
+	/*** Damage : Start ***/
+public:
+	float AttackDistance;
+	void DamageToTargetActor();
+	/*** Damage : End ***/
+
 /*** FSM : Start ***/
 public:
 	EEnemyFSM State;
 
-	TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
-
-
-	UPROPERTY(EditAnywhere)
-		class USphereComponent* DetactRangeSphereComp = nullptr;
-	UFUNCTION()
-		virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-		virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	TArray<class AActor*> OverapedAttackRangeActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
-	UPROPERTY(EditAnywhere)
-		class USphereComponent* AttackRangeSphereComp = nullptr;
-	UFUNCTION()
-		virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-		virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-
 	void InitFSM();
 	void RunFSM(float DeltaTime);
 
-	float ActorDistance(AActor* Actor);
+	void FindTheTargetActor();
+
+	void IdlingOfFSM();
+	void TracingOfFSM();
+	void AttackingOfFSM();
 /*** FSM : End ***/
 
-/*** Damage : Start ***/
-	float AttackDistance;
-	void DamageToTargetActor();
-/*** Damage : End ***/
+	/*** BehaviorTree : Start ***/
 };

@@ -54,14 +54,14 @@ public:
 
 	bool bInitialized = false;
 
-/*** Stat : Start ***/
+	/*** Stat : Start ***/
 public:
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float HealthPoint; // 현재 생명력
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float MaxHealthPoint; // 최대 생명력
 	UPROPERTY(EditAnywhere, Category = "Stat")
-		bool bDead;
+		bool bDying;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackPower;
@@ -69,25 +69,41 @@ public:
 		float MoveSpeed;
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackSpeed;
+
 	UPROPERTY(EditAnywhere, Category = "Stat")
-		float AttackRange;
+		float SightRange;
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float DetectRange;
 	UPROPERTY(EditAnywhere, Category = "Stat")
-		float SightRange;
+		float AttackRange;
 
 	virtual void InitStat();
 
 	UFUNCTION(Category = "Stat")
 		virtual void Calculatehealth(float Delta);
 
-	// Calcaulate death function (helper)
-	virtual void CalculateDead();
+	// DetectRange
+	UPROPERTY(EditAnywhere)
+		TArray<class AActor*> OverapedDetectRangeActors; /** DetactRangeSphereComp와 Overlap된 액터들을 모두 저장하고 벗어나면 삭제 */
+	UPROPERTY(EditAnywhere)
+		class USphereComponent* DetactRangeSphereComp = nullptr;
+	UFUNCTION()
+		virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-//#if WITH_EDITOR
-//	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-//#endif
-/*** Stat : End ***/
+	// AttackRange
+	UPROPERTY(EditAnywhere)
+		TArray<class AActor*> OverapedAttackRangeActors; /** AttackRangeSphereComp와 Overlap된 액터들을 모두 저장하고 벗어나면 삭제 */
+	UPROPERTY(EditAnywhere)
+		class USphereComponent* AttackRangeSphereComp = nullptr;
+	UFUNCTION()
+		virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	virtual void InitRanges();
+	/*** Stat : End ***/
 
 	/*** IHealthPointBarInterface : Start ***/
 public:
@@ -120,15 +136,15 @@ public:
 
 	virtual void RotateTargetRotation(float DeltaTime);
 
-	UPROPERTY(EditAnywhere, Category = "Character Movement")
-		class AActor* TargetActor = nullptr;
-	void TracingTargetActor();
-
-	FVector TartgetPosition;
+	float DistanceToActor(AActor* Actor);
 /*** CharacterMovement : End ***/
 
 	/*** CharacterAI : Start ***/
 public:
 	ECharacterAI CharacterAI;
+
+	UPROPERTY(EditAnywhere, Category = "CharacterAI")
+		class AActor* TargetActor = nullptr;
+	void TracingTargetActor(); /** TargetActor 위치로 이동 */
 	/*** CharacterAI : End ***/
 };

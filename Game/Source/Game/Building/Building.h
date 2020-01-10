@@ -23,7 +23,7 @@
 UENUM()
 enum class EBuildingState : uint8
 {
-	Constructable = 0,	/** 건설할 수 있는 지 확인하는 상태 */
+	Constructable = 0,	/** 건설할 수 있는지 확인하는 상태 */
 	Constructing = 1,	/** 건설중인 상태 */
 	Constructed = 2		/** 건설이 완료된 상태*/
 };

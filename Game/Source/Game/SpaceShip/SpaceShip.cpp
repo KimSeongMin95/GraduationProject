@@ -119,25 +119,6 @@ void ASpaceShip::GetOffPioneer()
 
 	if (countPioneerNum >= PioneerNum)
 	{
-		if (PioneerCtrl->GetPawn())
-		{
-			APioneer* Pioneer = Cast<APioneer>(PioneerCtrl->GetPawn());
-			if (Pioneer)
-			{
-				if (Pioneer->bDead)
-				{
-					PioneerManager->SwitchPawn(1.0f);
-					
-					
-					
-				}
-			}
-
-			TakeOff(FVector(-13725.0f, -12455.0f, 87.0f));
-			GetWorldTimerManager().ClearTimer(TimerHandleGetOffPioneer);
-			return;
-		}
-
 		PioneerManager->SwitchPawn(1.0f);
 		TakeOff(FVector(-13725.0f, -12455.0f, 87.0f));
 		GetWorldTimerManager().ClearTimer(TimerHandleGetOffPioneer);

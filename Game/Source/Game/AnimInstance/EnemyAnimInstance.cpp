@@ -12,8 +12,6 @@ UEnemyAnimInstance::UEnemyAnimInstance()
 {
 	/*** FSM : Start ***/
 	bIdle = true;
-	bMove = false;
-	bStop = false;
 	bTracing = false;
 	bAttack = false;
 	/*** FSM : End ***/
@@ -84,9 +82,6 @@ void UEnemyAnimInstance::DestroyCharacter()
 		return;
 	}
 
-
-
-
 	if (Enemy->GetMesh())
 		Enemy->GetMesh()->DestroyComponent();
 	if (Enemy->GetCharacterMovement())
@@ -127,8 +122,6 @@ void UEnemyAnimInstance::SetFSM()
 	}
 
 	bIdle = false;
-	bMove = false;
-	bStop = false;
 	bTracing = false;
 	bAttack = false;
 
@@ -136,12 +129,6 @@ void UEnemyAnimInstance::SetFSM()
 	{
 	case EEnemyFSM::Idle:
 		bIdle = true;
-		break;
-	case EEnemyFSM::Move:
-		bMove = true;
-		break;
-	case EEnemyFSM::Stop:
-		bStop = true;
 		break;
 	case EEnemyFSM::Tracing:
 		bTracing = true;

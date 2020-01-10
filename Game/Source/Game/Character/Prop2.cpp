@@ -48,7 +48,6 @@ void AProp2::InitStat()
 {
 	HealthPoint = 400.0f;
 	MaxHealthPoint = 400.0f;
-	bDead = false;
 
 	AttackPower = 40.0f;
 	MoveSpeed = 4.0f;
@@ -59,7 +58,7 @@ void AProp2::InitStat()
 }
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void AProp2::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -68,7 +67,7 @@ void AProp2::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 	HelthPointBar->SetDrawSize(FVector2D(80, 20));
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** SkeletalAnimation : Start ***/
 void AProp2::InitSkeletalAnimation()

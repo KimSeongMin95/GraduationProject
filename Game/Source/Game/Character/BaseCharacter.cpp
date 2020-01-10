@@ -18,6 +18,8 @@ ABaseCharacter::ABaseCharacter() // Sets default values
 
 	InitStat();
 
+	InitRanges();
+
 	InitHelthPointBar();
 
 	bRotateTargetRotation = false;
@@ -57,7 +59,7 @@ void ABaseCharacter::InitStat()
 {
 	HealthPoint = 100.0f;
 	MaxHealthPoint = 100.0f;
-	bDead = false;
+	bDying = false;
 
 	AttackPower = 0.0f;
 	MoveSpeed = 4.0f;
@@ -70,44 +72,73 @@ void ABaseCharacter::InitStat()
 void ABaseCharacter::Calculatehealth(float Delta)
 {
 	HealthPoint += Delta;
-	CalculateDead();
-}
 
-void ABaseCharacter::CalculateDead()
-{
-	if (HealthPoint <= 0.0f)
+	if (HealthPoint > 0.0f)
+		return;
+
+	bDying = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	if (GetController())
+		GetController()->StopMovement();
+	if (HelthPointBar)
+		HelthPointBar->DestroyComponent();
+
+	if (GetMesh())
 	{
-		bDead = true;
-		if (GetController())
-			GetController()->StopMovement();
-		if (HelthPointBar)
-			HelthPointBar->DestroyComponent();
-		if (GetMesh())
-		{
-			GetMesh()->SetGenerateOverlapEvents(false);
-			GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		}
-		if (GetCapsuleComponent())
-		{
-			GetCapsuleComponent()->SetGenerateOverlapEvents(false);
-			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		}
+		GetMesh()->SetGenerateOverlapEvents(false);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
-	else
-		bDead = false;
+	if (GetCapsuleComponent())
+	{
+		GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	if (DetactRangeSphereComp)
+		DetactRangeSphereComp->DestroyComponent();
+	if (AttackRangeSphereComp)
+		AttackRangeSphereComp->DestroyComponent();
 }
 
-//#if WITH_EDITOR
-//void ABaseCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-//{
-//	bDead = false;
-//	HealthPoint = 100;
-//
-//	Super::PostEditChangeProperty(PropertyChangedEvent);
-//
-//	CalculateDead();
-//}
-//#endif
+void ABaseCharacter::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// 자식클래스에서 overriding 할 것.
+}
+void ABaseCharacter::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// 자식클래스에서 overriding 할 것.
+}
+
+void ABaseCharacter::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// 자식클래스에서 overriding 할 것.
+}
+void ABaseCharacter::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// 자식클래스에서 overriding 할 것.
+}
+
+void ABaseCharacter::InitRanges()
+{
+	DetactRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetactRangeSphereComp"));
+	DetactRangeSphereComp->SetupAttachment(RootComponent);
+	DetactRangeSphereComp->SetSphereRadius(512.0f);
+
+	DetactRangeSphereComp->SetGenerateOverlapEvents(true);
+	DetactRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	DetactRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	DetactRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
+	AttackRangeSphereComp->SetupAttachment(RootComponent);
+	AttackRangeSphereComp->SetSphereRadius(256.0f);
+
+	AttackRangeSphereComp->SetGenerateOverlapEvents(true);
+	AttackRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AttackRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	AttackRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+}
 /*** State : End ***/
 
 /*** IHealthPointBarInterface : Start ***/
@@ -296,7 +327,16 @@ void ABaseCharacter::RotateTargetRotation(float DeltaTime)
 
 	TickHelthPointBar();
 }
+float ABaseCharacter::DistanceToActor(AActor* Actor)
+{
+	if (!Actor)
+		return 100000000.0f;
 
+	return FVector::Distance(this->GetActorLocation(), Actor->GetActorLocation());
+}
+/*** CharacterMovement : End ***/
+
+/*** CharacterAI : Start ***/
 void ABaseCharacter::TracingTargetActor()
 {
 	if (!TargetActor || !GetController())
@@ -304,5 +344,7 @@ void ABaseCharacter::TracingTargetActor()
 
 	FVector destination = TargetActor->GetActorLocation();
 	PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), destination);
+
+	LookAtTheLocation(destination);
 }
-/*** CharacterMovement : End ***/
+/*** CharacterAI : End ***/

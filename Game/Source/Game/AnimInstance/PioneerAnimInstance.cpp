@@ -99,8 +99,6 @@ void UPioneerAnimInstance::DestroyCharacter()
 
 
 
-
-
 	if (Pioneer->GetMesh())
 		Pioneer->GetMesh()->DestroyComponent();
 	if (Pioneer->GetCharacterMovement())

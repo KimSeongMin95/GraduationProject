@@ -48,7 +48,6 @@ void ASkeletonzombieTAvelange::InitStat()
 {
 	HealthPoint = 200.0f;
 	MaxHealthPoint = 200.0f;
-	bDead = false;
 
 	AttackPower = 20.0f;
 	MoveSpeed = 2.0f;
@@ -59,7 +58,7 @@ void ASkeletonzombieTAvelange::InitStat()
 }
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void ASkeletonzombieTAvelange::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -68,7 +67,7 @@ void ASkeletonzombieTAvelange::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	HelthPointBar->SetDrawSize(FVector2D(80, 20));
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** SkeletalAnimation : Start ***/
 void ASkeletonzombieTAvelange::InitSkeletalAnimation()

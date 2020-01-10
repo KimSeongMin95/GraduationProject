@@ -19,7 +19,7 @@ void APioneerAIController::Tick(float DeltaTime)
 	if (APioneer* MyPawn = Cast<APioneer>(GetPawn()))
 	{
 		// 죽으면 함수를 실행하지 않음.
-		if (MyPawn->bDead)
+		if (MyPawn->bDying)
 			return;
 
 		MyPawn->RunFSM(DeltaTime);

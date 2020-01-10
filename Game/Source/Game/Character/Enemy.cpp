@@ -21,6 +21,8 @@ AEnemy::AEnemy() // Sets default values
 
 	//InitStat();
 
+	InitRanges();
+
 	//InitHelthPointBar();
 
 	//InitSkeletalAnimation();
@@ -44,57 +46,191 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// 죽으면 함수를 실행하지 않음.
-	if (bDead)
-		return;
-
 	RotateTargetRotation(DeltaTime);
 
-	RunFSM(DeltaTime);
+	/*** CharacterAI : Start ***/
+	// 0.2초마다 실행하자!!!~~~!~!
+	switch (CharacterAI)
+	{
+	case ECharacterAI::FSM:
+		RunFSM(DeltaTime);
+		break;
+	case ECharacterAI::BehaviorTree:
+		
+		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("AEnemy::Tick: switch (CharacterAI): default"));
+		break;
+	}
+	/*** CharacterAI : End ***/
 }
 /*** Basic Function : End ***/
 
 /*** Stat : Start ***/
-void AEnemy::CalculateDead()
+void AEnemy::Calculatehealth(float Delta)
 {
-	Super::CalculateDead();
+	Super::Calculatehealth(Delta);
 
-	if (!bDead)
-	{
-		return;
-	}
 
-	if (DetactRangeSphereComp)
-		DetactRangeSphereComp->DestroyComponent();
-	if (AttackRangeSphereComp)
-		AttackRangeSphereComp->DestroyComponent();
 }
 
 void AEnemy::InitStat()
 {
-	/*HealthPoint = 100.0f;
-	MaxHealthPoint = 100.0f;
-	bDead = false;
+	// 자식클래스에서 overriding 할 것.
+}
 
-	AttackPower = 30.0f;
-	MoveSpeed = 4.0f;
-	AttackSpeed = 1.0f;
-	AttackRange = 4.0f;
-	DetectRange = 8.0f;
-	SightRange = 10.0f;*/
+void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+		return;
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return;
+
+	// 자기 자신과 충돌하면 무시합니다.
+	if (OtherActor->GetFName() == this->GetFName())
+		return;
+
+	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
+		{
+			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetactRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetactRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
+		if (ABuilding* building = dynamic_cast<ABuilding*>(OtherActor))
+		{
+			// 만약 OtherActor가 ABuilding이기는 하지만 ABuilding이 건설할 수 있는지 확인하는 상태라면 존재하지 않으므로 무시.
+			if (building->BuildingState == EBuildingState::Constructable)
+				return;
+		}
+
+		//if (OverapedDetectRangeActors.Contains(OtherActor) == false)
+		{
+			OverapedDetectRangeActors.Add(OtherActor);
+			//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Num(): %d"), OverapedDetectRangeActors.Num());
+			//UE_LOG(LogTemp, Warning, TEXT("_______"));
+		}
+	}
+}
+void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+		return;
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return;
+
+	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
+		{
+			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetactRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetactRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
+		//OverapedDetectRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
+		OverapedDetectRangeActors.RemoveSingle(OtherActor); // OtherActor 하나를 지웁니다.
+		//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Num(): %d"), OverapedDetectRangeActors.Num());
+		//UE_LOG(LogTemp, Warning, TEXT("_______"));
+	}
+}
+
+void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+		return;
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return;
+
+	// 자기 자신과 충돌하면 무시합니다.
+	if (OtherActor->GetFName() == this->GetFName())
+		return;
+
+	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
+		{
+			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetactRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetactRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
+		if (ABuilding* building = dynamic_cast<ABuilding*>(OtherActor))
+		{
+			// 만약 OtherActor가 ABuilding이기는 하지만 ABuilding이 건설할 수 있는지 확인하는 상태라면 존재하지 않으므로 무시.
+			if (building->BuildingState == EBuildingState::Constructable)
+				return;
+		}
+
+		//if (OverapedAttackRangeActors.Contains(OtherActor) == false)
+		{
+			OverapedAttackRangeActors.Add(OtherActor);
+			//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
+			//UE_LOG(LogTemp, Warning, TEXT("_______"));
+		}
+	}
+}
+void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+		return;
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return;
+
+	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
+		{
+			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetactRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetactRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+				return;
+		}
+
+		//OverapedAttackRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
+		OverapedAttackRangeActors.RemoveSingle(OtherActor); // OtherActor 하나만 지웁니다.
+		//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
+		//UE_LOG(LogTemp, Warning, TEXT("_______"));
+	}
+}
+
+void AEnemy::InitRanges()
+{
+	DetactRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
+	DetactRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
+
+	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
+	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
 }
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void AEnemy::InitHelthPointBar()
 {
-	/*if (!HelthPointBar)
-		return;
-
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 140.0f));
-	HelthPointBar->SetDrawSize(FVector2D(100, 25));*/
+	// 자식클래스에서 overriding 할 것.
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** CharacterMovement : Start ***/
 void AEnemy::RotateTargetRotation(float DeltaTime)
@@ -168,325 +304,6 @@ void AEnemy::PossessAIController()
 }
 /*** AEnemyAIController : End ***/
 
-/*** FSM : Start ***/
-void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
-
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-	{
-		return;
-	}
-
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-	{
-		return;
-	}
-
-	// 자기 자신과 충돌하면 무시합니다.
-	if (OtherActor->GetFName() == this->GetFName())
-	{
-		return;
-	}
-
-	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
-	{
-		APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor);
-		if (pioneer)
-		{
-			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetactRangeSphereComp == OtherComp)
-				return;
-
-			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->AttackRangeSphereComp == OtherComp)
-				return;
-		}
-
-		//if (OverapedActors.Contains(OtherActor) == false)
-		{
-			OverapedActors.Add(OtherActor);
-			//UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Add(OtherActor): %s"), *OtherActor->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Num(): %d"), OverapedActors.Num());
-			//UE_LOG(LogTemp, Warning, TEXT("_______"));
-		}
-	}
-}
-
-void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-	{
-		return;
-	}
-
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-	{
-		return;
-	}
-
-	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
-	{
-		APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor);
-		if (pioneer)
-		{
-			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetactRangeSphereComp == OtherComp)
-				return;
-
-			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->AttackRangeSphereComp == OtherComp)
-				return;
-		}
-
-		//OverapedActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
-		OverapedActors.RemoveSingle(OtherActor); // OtherActor 하나를 지웁니다.
-		//UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Remove(OtherActor): %s"), *OtherActor->GetName());
-		//UE_LOG(LogTemp, Warning, TEXT("OverapedActors.Num(): %d"), OverapedActors.Num());
-		//UE_LOG(LogTemp, Warning, TEXT("_______"));
-	}
-}
-
-void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
-
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-	{
-		return;
-	}
-
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-	{
-		return;
-	}
-
-	// 자기 자신과 충돌하면 무시합니다.
-	if (OtherActor->GetFName() == this->GetFName())
-	{
-		return;
-	}
-
-	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
-	{
-		APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor);
-		if (pioneer)
-		{
-			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetactRangeSphereComp == OtherComp)
-				return;
-
-			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->AttackRangeSphereComp == OtherComp)
-				return;
-		}
-
-		//if (OverapedAttackRangeActors.Contains(OtherActor) == false)
-		{
-			OverapedAttackRangeActors.Add(OtherActor);
-			//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
-			//UE_LOG(LogTemp, Warning, TEXT("_______"));
-		}
-	}
-}
-
-void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-	{
-		return;
-	}
-
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-	{
-		return;
-	}
-
-	if (OtherActor->IsA(APioneer::StaticClass()) || OtherActor->IsA(ABuilding::StaticClass()))
-	{
-		APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor);
-		if (pioneer)
-		{
-			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetactRangeSphereComp == OtherComp)
-				return;
-
-			// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->AttackRangeSphereComp == OtherComp)
-				return;
-		}
-
-		//OverapedAttackRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
-		OverapedAttackRangeActors.RemoveSingle(OtherActor); // OtherActor 하나만 지웁니다.
-		//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());
-		//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
-		//UE_LOG(LogTemp, Warning, TEXT("_______"));
-	}
-}
-
-void AEnemy::InitFSM()
-{
-	State = EEnemyFSM::Idle;
-
-	DetactRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetactRangeSphereComp"));
-	DetactRangeSphereComp->SetupAttachment(RootComponent);
-	DetactRangeSphereComp->SetSphereRadius(1024.0f);
-
-	DetactRangeSphereComp->SetGenerateOverlapEvents(true);
-	DetactRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	DetactRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	DetactRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-
-	DetactRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
-	DetactRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
-
-	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
-	AttackRangeSphereComp->SetupAttachment(RootComponent);
-	AttackRangeSphereComp->SetSphereRadius(256.0f);
-
-	AttackRangeSphereComp->SetGenerateOverlapEvents(true);
-	AttackRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	AttackRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	AttackRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-
-	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
-	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
-}
-
-void AEnemy::RunFSM(float DeltaTime)
-{
-	if (State != EEnemyFSM::Attack)
-	{
-		TargetActor = nullptr;
-
-		for (auto& actor : OverapedActors)
-		{
-			if (actor->IsA(APioneer::StaticClass()) && !Cast<APioneer>(actor)->bDead)
-			{
-				State = EEnemyFSM::Tracing;
-				if (TargetActor)
-				{
-					float dist = ActorDistance(TargetActor);
-					//UE_LOG(LogTemp, Warning, TEXT("ActorDistance(TargetActor) dist: %f"), dist);
-					if (ActorDistance(actor) < dist)
-					{
-						//UE_LOG(LogTemp, Warning, TEXT("ActorDistance(TargetActor) dist: %f"), ActorDistance(actor));
-						//UE_LOG(LogTemp, Warning, TEXT("TargetActor: %s"), *TargetActor->GetName());
-						TargetActor = actor;
-					}
-				}
-				else
-				{
-					TargetActor = actor;
-				}
-			}
-		}
-
-		if (TargetActor == nullptr)
-		{
-			for (auto& actor : OverapedActors)
-			{
-				if (actor->IsA(ABuilding::StaticClass()))
-				{
-					ABuilding* building = Cast<ABuilding>(actor);
-
-					// 건설중이거나 건설이 완료된 건물만 추가
-					if (building->BuildingState == EBuildingState::Constructing
-						|| building->BuildingState == EBuildingState::Constructed)
-					{
-						State = EEnemyFSM::Tracing;
-						if (TargetActor)
-						{
-							float dist = ActorDistance(TargetActor);
-							//UE_LOG(LogTemp, Warning, TEXT("ActorDistance(TargetActor) dist: %f"), dist);
-							if (ActorDistance(actor) < dist)
-							{
-								//UE_LOG(LogTemp, Warning, TEXT("ActorDistance(TargetActor) dist: %f"), ActorDistance(actor));
-								//UE_LOG(LogTemp, Warning, TEXT("TargetActor: %s"), *TargetActor->GetName());
-								TargetActor = actor;
-							}
-						}
-						else
-						{
-							TargetActor = actor;
-						}
-					}
-				}
-			}
-		}
-
-		if (State == EEnemyFSM::Tracing && TargetActor == nullptr)
-		{
-			State = EEnemyFSM::Idle;
-			GetController()->StopMovement();
-		}
-	}
-
-	switch (State)
-	{
-	case EEnemyFSM::Idle:
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Idle"));
-		break; 
-	}
-	case EEnemyFSM::Move:
-	{	
-		float dist = FVector::Distance(this->GetActorLocation(), TartgetPosition);
-		if (dist < 128.0f)
-			State = EEnemyFSM::Idle;
-		//UE_LOG(LogTemp, Warning, TEXT("Move"));
-		break; 
-	}
-	case EEnemyFSM::Stop:
-	{	
-		//UE_LOG(LogTemp, Warning, TEXT("Stop"));
-		break; 
-	}
-	case EEnemyFSM::Tracing:
-	{	
-		TracingTargetActor();
-		if (TargetActor)
-		{
-			/*float dist = FVector::Distance(this->GetActorLocation(), TargetActor->GetActorLocation());
-			if (dist < AttackDistance)
-				State = EEnemyFSM::Attack;*/
-			if (OverapedAttackRangeActors.Contains(TargetActor))
-			{
-				State = EEnemyFSM::Attack;
-			}
-		}
-		//UE_LOG(LogTemp, Warning, TEXT("Tracing"));
-		break; 
-	}
-	case EEnemyFSM::Attack:
-	{	
-		// 공격 애니메이션이 끝난 후 AnimationBlueprint에서 EventGraph로 Atteck을 Idle로 바꿔줌
-		//UE_LOG(LogTemp, Warning, TEXT("Attack"));
-		break; 
-	}
-	}
-}
-
-float AEnemy::ActorDistance(AActor* Actor)
-{
-	if (!Actor)
-	{
-		return 100000.0f;
-	}
-	
-	return FVector::Distance(this->GetActorLocation(), Actor->GetActorLocation());
-}
-/*** FSM : End ***/
-
 /*** Damage : Start ***/
 void AEnemy::DamageToTargetActor()
 {
@@ -498,7 +315,7 @@ void AEnemy::DamageToTargetActor()
 		APioneer* pioneer = dynamic_cast<APioneer*>(TargetActor);
 		pioneer->Calculatehealth(-AttackPower);
 
-		if (pioneer->bDead)
+		if (pioneer->bDying)
 			TargetActor = nullptr;
 
 		return;
@@ -519,3 +336,111 @@ void AEnemy::DamageToTargetActor()
 	}
 }
 /*** Damage : End ***/
+
+/*** FSM : Start ***/
+void AEnemy::InitFSM()
+{
+	State = EEnemyFSM::Idle;
+}
+
+void AEnemy::RunFSM(float DeltaTime)
+{
+	switch (State)
+	{
+	case EEnemyFSM::Idle:
+	{
+		IdlingOfFSM();
+		break;
+	}
+	case EEnemyFSM::Tracing:
+	{
+		TracingOfFSM();
+		break;
+	}
+	case EEnemyFSM::Attack:
+	{
+		// 공격 애니메이션이 끝난 후 AnimationBlueprint에서 EventGraph로 Atteck을 Idle로 바꿔줌
+		AttackingOfFSM();
+		break;
+	}
+	}
+}
+
+void AEnemy::FindTheTargetActor()
+{
+	TargetActor = nullptr;
+
+	for (auto& actor : OverapedDetectRangeActors)
+	{
+		if (actor->IsA(APioneer::StaticClass())) // 개척자
+		{
+			// APioneer가 죽어있다면 skip
+			if (APioneer* pioneer = Cast<APioneer>(actor))
+			{
+				if (pioneer->bDying)
+					continue;
+			}
+
+			if (!TargetActor)
+			{
+				TargetActor = actor;
+				continue;
+			}
+
+			if (DistanceToActor(actor) < DistanceToActor(TargetActor))
+				TargetActor = actor;
+		}
+	}
+
+	// 개척자를 발견하면 끝냄
+	if (TargetActor)
+		return;
+
+	for (auto& actor : OverapedDetectRangeActors)
+	{
+		if (actor->IsA(ABuilding::StaticClass())) // 건물
+		{
+			if (!TargetActor)
+			{
+				TargetActor = actor;
+				continue;
+			}
+
+			if (DistanceToActor(actor) < DistanceToActor(TargetActor))
+				TargetActor = actor;
+		}
+	}
+}
+
+void AEnemy::IdlingOfFSM()
+{
+	FindTheTargetActor();
+
+	if (TargetActor)
+		State = EEnemyFSM::Tracing;
+}
+void AEnemy::TracingOfFSM()
+{
+	FindTheTargetActor();
+
+	TracingTargetActor();
+
+	if (!TargetActor)
+	{
+		State = EEnemyFSM::Idle;
+		if (AIController)
+			AIController->StopMovement();
+	}
+	else if (OverapedAttackRangeActors.Contains(TargetActor))
+	{
+		State = EEnemyFSM::Attack;
+		if (AIController)
+			AIController->StopMovement();
+	}
+}
+void AEnemy::AttackingOfFSM()
+{
+
+}
+/*** FSM : End ***/
+

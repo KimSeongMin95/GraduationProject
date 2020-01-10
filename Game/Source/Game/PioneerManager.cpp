@@ -88,7 +88,11 @@ void APioneerManager::Tick(float DeltaTime)
 	{
 		for (auto& pioneer : Pioneers)
 		{
-			if (pioneer->SocketID == -1 && pioneer->bDead == false)
+			// pioneer가 nullptr면 건너띄기
+			if (!pioneer)
+				continue;
+
+			if (pioneer->SocketID == -1 && pioneer->bDying == false)
 			{
 				TargetViewActor = pioneer;
 				break;
@@ -201,7 +205,11 @@ void APioneerManager::SwitchPawn(float BlendTime, EViewTargetBlendFunction blend
 	APioneer* Pawn = nullptr;
 	for (auto& pioneer : Pioneers)
 	{
-		if (pioneer->SocketID == -1 && pioneer->bDead == false)
+		// pioneer가 nullptr면 건너띄기
+		if (!pioneer)
+			continue;
+
+		if (pioneer->SocketID == -1 && pioneer->bDying == false)
 		{
 			Pawn = pioneer;
 			break;
@@ -266,7 +274,7 @@ void APioneerManager::SwitchViewTarget(AActor* Actor, float BlendTime, EViewTarg
 
 	if (Actor->IsA(APioneer::StaticClass()))
 	{
-		if (Cast<APioneer>(Actor)->bDead || Actor->IsActorBeingDestroyed())
+		if (Cast<APioneer>(Actor)->bDying || Actor->IsActorBeingDestroyed())
 		{
 			/*TargetViewActor = nullptr;
 			UE_LOG(LogTemp, Warning, TEXT("APioneerManager::SwitchViewTarget: !Actor"));
@@ -377,10 +385,6 @@ void APioneerManager::PossessPioneer(APioneer* Pioneer)
 		APioneer* ToDestroy = Cast<APioneer>(PioneerCtrl->GetPawn());
 
 		PioneerCtrl->UnPossess();
-
-		if (ToDestroy->bDead)
-			ToDestroy->Destroy();
-
 	}
 
 	
@@ -400,7 +404,7 @@ void APioneerManager::PossessPioneer(APioneer* Pioneer)
 		return;
 	}
 
-	if (Pioneer->bDead || Pioneer->IsActorBeingDestroyed())
+	if (Pioneer->bDying || Pioneer->IsActorBeingDestroyed())
 	{
 		SwitchViewTarget(WorldViewCamSecond, 1.0f);
 		if (GetWorldTimerManager().IsTimerActive(timer))

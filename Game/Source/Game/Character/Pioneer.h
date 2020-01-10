@@ -68,11 +68,9 @@
 UENUM(BlueprintType)
 enum class EPioneerFSM : uint8
 {
-	Idle,
-	Move,
-	Stop,
-	Tracing,
-	Attack
+	Idle = 0,
+	Tracing = 1,
+	Attack = 2
 };
 
 UCLASS()
@@ -87,36 +85,44 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() final;
 
 public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) final;
 
 	// Called to bind functionality to input
 	// 바인딩한 키 입력을 매핑합니다.
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; // APawn 인터페이스     
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) final; // APawn 인터페이스     
 /*** Basic Function : End ***/
 
 	int SocketID;
 
-/*** Stat : Start ***/
+	/*** Stat : Start ***/
 public:
-	virtual void CalculateDead();
+	virtual void Calculatehealth(float Delta) final;
 
-	//EPioneerFSM State;
+	virtual void InitStat() final;
 
-	virtual void InitStat();
-/*** Stat : End ***/
+	// DetectRange
+	virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
+	virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) final;
 
-/*** HelthPointBar : Start ***/
+	// AttackRange
+	virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
+	virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) final;
+	
+	virtual void InitRanges() final;
+	/*** Stat : End ***/
+
+/*** IHealthPointBarInterface : Start ***/
 public:
-	virtual void InitHelthPointBar();
-/*** HelthPointBar : End ***/
+	virtual void InitHelthPointBar() final;
+/*** IHealthPointBarInterface : End ***/
 
 /*** CharacterMovement : Start ***/
 public:
-	virtual void RotateTargetRotation(float DeltaTime) override;
+	virtual void RotateTargetRotation(float DeltaTime) final;
 	void StopMovement();
 /*** CharacterMovement : End ***/
 
@@ -198,9 +204,9 @@ public:
 
 /*** APioneerAIController : Start ***/
 public:
-	virtual void InitAIController() override;
+	virtual void InitAIController() final;
 
-	virtual void PossessAIController() override;
+	virtual void PossessAIController() final;
 /*** APioneerAIController : End ***/
 
 /*** Weapon : Start ***/
@@ -256,30 +262,19 @@ public:
 public:
 	EPioneerFSM State;
 
-	TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
-
-
-	UPROPERTY(EditAnywhere)
-		class USphereComponent* DetactRangeSphereComp = nullptr;
-	UFUNCTION()
-		virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-		virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	TArray<class AActor*> OverapedAttackRangeActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
-	UPROPERTY(EditAnywhere)
-		class USphereComponent* AttackRangeSphereComp = nullptr;
-	UFUNCTION()
-		virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-		virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-
 	void InitFSM();
 	void RunFSM(float DeltaTime);
 
-	float ActorDistance(AActor* Actor);
+	void FindTheTargetActor();
+
+	void IdlingOfFSM();
+	void TracingOfFSM();
+	void AttackingOfFSM();
 /*** FSM : End ***/
+
+
+
+
 
 	UPROPERTY(EditAnywhere)
 		int TempChangeWeaponCount;

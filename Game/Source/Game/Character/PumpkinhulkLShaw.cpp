@@ -48,7 +48,6 @@ void APumpkinhulkLShaw::InitStat()
 {
 	HealthPoint = 500.0f;
 	MaxHealthPoint = 500.0f;
-	bDead = false;
 
 	AttackPower = 50.0f;
 	MoveSpeed = 2.0f;
@@ -59,7 +58,7 @@ void APumpkinhulkLShaw::InitStat()
 }
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void APumpkinhulkLShaw::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -68,7 +67,7 @@ void APumpkinhulkLShaw::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 190.0f));
 	HelthPointBar->SetDrawSize(FVector2D(120, 20));
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** SkeletalAnimation : Start ***/
 void APumpkinhulkLShaw::InitSkeletalAnimation()

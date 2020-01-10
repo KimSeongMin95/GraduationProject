@@ -48,7 +48,6 @@ void AParasiteLStarkie::InitStat()
 {
 	HealthPoint = 60.0f;
 	MaxHealthPoint = 60.0f;
-	bDead = false;
 
 	AttackPower = 10.0f;
 	MoveSpeed = 3.0f;
@@ -59,7 +58,7 @@ void AParasiteLStarkie::InitStat()
 }
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void AParasiteLStarkie::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -68,7 +67,7 @@ void AParasiteLStarkie::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	HelthPointBar->SetDrawSize(FVector2D(60, 20));
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** SkeletalAnimation : Start ***/
 void AParasiteLStarkie::InitSkeletalAnimation()
