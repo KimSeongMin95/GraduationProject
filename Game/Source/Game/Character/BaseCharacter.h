@@ -12,10 +12,9 @@
 #include "Engine/SkeletalMesh.h"
 #include "Animation/AnimBlueprint.h"
 
-#include "Components/WidgetComponent.h"
-#include "Components/ProgressBar.h"
-#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
-#include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
+/*** Interface 헤더 선언 : Start ***/
+#include "Interface/HealthPointBarInterface.h"
+/*** Interface 헤더 선언 : Start ***/
 
 //#include "Editor/EditorEngine.h" // 어따 쓰지...
 /*** 언리얼엔진 헤더 선언 : End ***/
@@ -32,7 +31,7 @@ enum class ECharacterAI : uint8
 };
 
 UCLASS()
-class GAME_API ABaseCharacter : public ACharacter
+class GAME_API ABaseCharacter : public ACharacter, public IHealthPointBarInterface
 {
 	GENERATED_BODY()
 
@@ -90,19 +89,12 @@ public:
 //#endif
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+	/*** IHealthPointBarInterface : Start ***/
 public:
-	UPROPERTY(VisibleAnywhere)
-		class UWidgetComponent* HelthPointBar = nullptr;
-	UPROPERTY(EditAnywhere)
-		class UUserWidget* HelthPointBarUserWidget = nullptr;
-	UPROPERTY(EditAnywhere)
-		class UProgressBar* ProgressBar = nullptr;
-
-	virtual void InitHelthPointBar();
-	void BeginPlayHelthPointBar();
-	void TickHelthPointBar();
-/*** HelthPointBar : End ***/
+	virtual void InitHelthPointBar() override;
+	virtual void BeginPlayHelthPointBar() final;
+	virtual void TickHelthPointBar() final;
+	/*** IHealthPointBarInterface : End ***/
 
 /*** AIController : Start ***/
 public:

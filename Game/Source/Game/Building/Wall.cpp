@@ -56,7 +56,7 @@ void AWall::InitStat()
 }
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void AWall::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -65,7 +65,7 @@ void AWall::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 400.0f));
 	HelthPointBar->SetDrawSize(FVector2D(100, 20));
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void AWall::InitConstructBuilding()

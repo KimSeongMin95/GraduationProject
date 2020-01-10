@@ -16,6 +16,8 @@ ABuilding::ABuilding()
 
 	InitRootComponent();
 
+	BuildingState = EBuildingState::Constructable;
+
 	InitStat();
 
 	InitHelthPointBar();
@@ -25,6 +27,8 @@ ABuilding::ABuilding()
 	InitBuilding();
 
 	InitMaterial();
+
+
 }
 
 // Called when the game starts or when spawned
@@ -32,14 +36,14 @@ void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BeginPlayHelthPointBar();
-
 	// Pioneer가 생성한게 아니라면 완성
 	if (!GetOwner())
 	{
-		bCompleted = true;
+		BuildingState = EBuildingState::Constructed;
 		CompleteConstructing();
 	}
+
+	BeginPlayHelthPointBar();
 }
 
 // Called every frame
@@ -47,16 +51,12 @@ void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!bCompleted)
+	if (BuildingState == EBuildingState::Constructable)
 	{
-		if (!bIsConstructing && OverapedActors.Num() > 0)
-		{
+		if (OverapedActors.Num() > 0)
 			SetUnConstructableMaterial();
-		}
 		else
-		{
 			SetConstructableMaterial();
-		}
 	}
 
 	TickHelthPointBar();
@@ -95,7 +95,7 @@ void ABuilding::InitStat()
 }
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void ABuilding::InitHelthPointBar()
 {
 	HelthPointBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelthPointBar"));
@@ -158,58 +158,28 @@ void ABuilding::TickHelthPointBar()
 {
 	if (ProgressBar)
 		ProgressBar->SetPercent(HealthPoint / MaxHealthPoint);
-	/*if (HelthPointBar)
-	{
-		HelthPointBar->SetWorldRotation(FRotator(45.0f, 180.0f, 0.0f));
-	}*/
-
-	// 사용하지 않음.
-	/*APlayerController* abc = UGameplayStatics::GetPlayerController(this, 0);
-	if (abc)
-	{
-		APioneerController* PioneerController = Cast<APioneerController>(abc);
-		if (PioneerController)
-		{
-			APioneer* Pioneer = Cast< APioneer>(PioneerController->GetPawn());
-			if (Pioneer)
-			{
-				FVector location = Pioneer->TopDownCameraComponent->GetComponentLocation();
-				FVector direction = location - this->GetActorLocation();
-				direction.Normalize();
-				HelthPointBar->SetRelativeRotation(FRotator(0.0f, direction.Rotation().Yaw, 0.0f));
-			}
-		}
-	}*/
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void ABuilding::OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-	{
 		return;
-	}
 
 	// Collision의 기본인 ATriggerVolume은 무시합니다.
 	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-	{
 		return;
-	}
 
-	// 투사체
+	// 투사체 무시 (충돌 주체인 AProjectile의 코드에서 처리할 것)
 	if (OtherActor->IsA(AProjectile::StaticClass()))
-	{
-		AProjectile* projectile = dynamic_cast<AProjectile*>(OtherActor);
-
-		//HealthPoint -= projectile->TotalDamage;
-	}
+		return;
 }
 
 void ABuilding::InitConstructBuilding()
 {
-
+	// 자식클래스에서 overriding 할 것.
 }
 
 void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale, FRotator Rotation, FVector Location)
@@ -260,33 +230,28 @@ void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedCom
 
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-	{
 		return;
-	}
 
 	// Collision의 기본인 ATriggerVolume은 무시합니다.
 	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-	{
 		return;
-	}
 
+	// 투사체 무시 (충돌 주체인 AProjectile의 코드에서 처리할 것)
+	if (OtherActor->IsA(AProjectile::StaticClass()))
+		return;
+
+	// ???
 	if (OtherActor->GetFName() == this->GetFName())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("ABuilding::OnOverlapBegin_Building: OtherActor->GetFName() == this->GetFName()"));
 		return;
 	}
 
-	if (!bIsConstructing)
+	if (BuildingState == EBuildingState::Constructable)
 	{
-		// 투사체도 무시합니다.
-		if (OtherActor->IsA(AProjectile::StaticClass()))
-		{
-			return;
-		}
-
 		if (OtherActor->IsA(AEnemy::StaticClass()))
 		{
-			AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-			if (enemy)
+			if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 			{
 				// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
 				if (enemy->DetactRangeSphereComp == OtherComp)
@@ -300,8 +265,7 @@ void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedCom
 
 		if (OtherActor->IsA(APioneer::StaticClass()))
 		{
-			APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor);
-			if (pioneer)
+			if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 			{
 				// 만약 OtherActor가 pioneer이기는 하지만 pioneer의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
 				if (pioneer->DetactRangeSphereComp == OtherComp)
@@ -315,57 +279,29 @@ void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedCom
 
 		OverapedActors.Add(OtherActor);
 	}
-	else
-	{
-		// 투사체
-		if (OtherActor->IsA(AProjectile::StaticClass()))
-		{
-			AProjectile* projectile = dynamic_cast<AProjectile*>(OtherActor);
-
-			//HealthPoint -= projectile->TotalDamage;
-		}
-	}
 }
 
 void ABuilding::OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-	{
 		return;
-	}
 
 	// Collision의 기본인 ATriggerVolume은 무시합니다.
 	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-	{
 		return;
-	}
 
-	// 투사체도 무시합니다.
+	// 투사체 무시 (충돌 주체인 AProjectile의 코드에서 처리할 것)
 	if (OtherActor->IsA(AProjectile::StaticClass()))
-	{
 		return;
-	}
 
-	if (bIsConstructing)
-	{
-
-	}
-	else
-	{
-		/*int index = OverapedActors.Find(OtherActor);
-		if (index >= 0)
-		{
-			OverapedActors.RemoveAt(index);
-		}*/
+	if (BuildingState == EBuildingState::Constructable)
 		OverapedActors.RemoveSingle(OtherActor);
-	}
 }
 
 void ABuilding::InitBuilding()
 {
-	bIsConstructing = false;
-	bCompleted = false;
+	// 자식클래스에서 overriding 할 것.
 }
 
 void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale, FRotator Rotation, FVector Location)
@@ -448,8 +384,8 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, UStat
 		// StaticMesh의 원본 사이즈 측정
 		FVector minBounds, maxBounds;
 		(*SubStaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
-		UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
-		UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
 
 		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
 		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
@@ -466,7 +402,7 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, UStat
 		TArrayOfUMaterialInterface.Object = (*SkeletalMeshComp)->GetMaterials();
 		BuildingSkMCsMaterials.Add(TArrayOfUMaterialInterface);
 
-		UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
 	}
 
 	BuildingSkMCs.Add(*SkeletalMeshComp);
@@ -576,8 +512,10 @@ bool ABuilding::Constructing()
 	if (OverapedActors.Num() > 0)
 		return false;
 
-	bIsConstructing = true;
+	// Constructable --> Constructing
+	BuildingState = EBuildingState::Constructing;
 
+	// Constructable Building들 비활성화
 	for (auto& BuildingSMC : BuildingSMCs)
 	{
 		if (BuildingSMC)
@@ -599,6 +537,7 @@ bool ABuilding::Constructing()
 		}
 	}
 
+	// Constructing Building들 활성화
 	for (auto& ConstructBuildingSMC : ConstructBuildingSMCs)
 	{
 		if (ConstructBuildingSMC)
@@ -612,6 +551,7 @@ bool ABuilding::Constructing()
 		}
 	}
 
+	// 임시 코드: 시간 지나면 건설되도록 한 것으로 나중에 직접 건설하는 것으로 변경해야 함.
 	FTimerHandle timer;
 	GetWorldTimerManager().SetTimer(timer, this, &ABuilding::CompleteConstructing, ConstructionTime, false);
 
@@ -623,9 +563,22 @@ void ABuilding::Destroying()
 }
 void ABuilding::CompleteConstructing()
 {
-	bIsConstructing = false;
-	bCompleted = true;
+	// Constructing --> Constructed
+	BuildingState = EBuildingState::Constructed;
 
+	// Constructing Building들 비활성화
+	for (auto& ConstructBuildingSMC : ConstructBuildingSMCs)
+	{
+		if (ConstructBuildingSMC)
+		{
+			ConstructBuildingSMC->SetGenerateOverlapEvents(false);
+			ConstructBuildingSMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+			ConstructBuildingSMC->SetHiddenInGame(true);
+		}
+	}
+
+	// Constructed Building들 활성화
 	for (auto& BuildingSMC : BuildingSMCs)
 	{
 		if (BuildingSMC)
@@ -635,10 +588,11 @@ void ABuilding::CompleteConstructing()
 			BuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 			BuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 
+			// SkeletalMesh가 하나라도 있으면 StaticMesh를 숨김
 			if (BuildingSkMCs.Num() == 0)
 				BuildingSMC->SetHiddenInGame(false);
-			//else
-			//	BuildingSMC->SetHiddenInGame(true);
+			else
+				BuildingSMC->SetHiddenInGame(true);
 		}
 	}
 	for (auto& BuildingSkMC : BuildingSkMCs)
@@ -654,19 +608,11 @@ void ABuilding::CompleteConstructing()
 		}
 	}
 
-	for (auto& ConstructBuildingSMC : ConstructBuildingSMCs)
-	{
-		if (ConstructBuildingSMC)
-		{
-			ConstructBuildingSMC->SetGenerateOverlapEvents(false);
-			ConstructBuildingSMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-			ConstructBuildingSMC->SetHiddenInGame(true);
-		}
-	}
-
 	SetBuildingMaterials();
 
 	HealthPoint = MaxHealthPoint;
 }
 /*** Constructing And Destorying : End ***/
+
+
+

@@ -56,7 +56,7 @@ void AStairs::InitStat()
 }
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void AStairs::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -65,7 +65,7 @@ void AStairs::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 200.0f));
 	HelthPointBar->SetDrawSize(FVector2D(100, 20));
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void AStairs::InitConstructBuilding()

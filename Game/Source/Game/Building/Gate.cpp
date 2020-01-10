@@ -56,7 +56,7 @@ void AGate::InitStat()
 }
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void AGate::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -65,7 +65,7 @@ void AGate::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 500.0f));
 	HelthPointBar->SetDrawSize(FVector2D(100, 20));
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void AGate::InitConstructBuilding()

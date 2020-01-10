@@ -400,7 +400,8 @@ void AEnemy::RunFSM(float DeltaTime)
 					ABuilding* building = Cast<ABuilding>(actor);
 
 					// 건설중이거나 건설이 완료된 건물만 추가
-					if (building->bIsConstructing || building->bCompleted)
+					if (building->BuildingState == EBuildingState::Constructing
+						|| building->BuildingState == EBuildingState::Constructed)
 					{
 						State = EEnemyFSM::Tracing;
 						if (TargetActor)

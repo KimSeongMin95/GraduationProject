@@ -56,7 +56,7 @@ void AWeaponFactory::InitStat()
 }
 /*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void AWeaponFactory::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -65,7 +65,7 @@ void AWeaponFactory::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
 	HelthPointBar->SetDrawSize(FVector2D(100, 20));
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** ConstructBuildingStaticMeshComponent : Start ***/
 void AWeaponFactory::InitConstructBuilding()

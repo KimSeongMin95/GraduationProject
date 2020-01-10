@@ -110,7 +110,7 @@ void ABaseCharacter::CalculateDead()
 //#endif
 /*** State : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 void ABaseCharacter::InitHelthPointBar()
 {
 	HelthPointBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelthPointBar"));
@@ -172,30 +172,8 @@ void ABaseCharacter::TickHelthPointBar()
 {
 	if (ProgressBar)
 		ProgressBar->SetPercent(HealthPoint / MaxHealthPoint);
-	/*if (HelthPointBar)
-	{
-		HelthPointBar->SetWorldRotation(FRotator(45.0f, 180.0f, 0.0f));
-	}*/
-
-	// 사용하지 않음.
-	/*APlayerController* abc = UGameplayStatics::GetPlayerController(this, 0);
-	if (abc)
-	{
-		APioneerController* PioneerController = Cast<APioneerController>(abc);
-		if (PioneerController)
-		{
-			APioneer* Pioneer = Cast< APioneer>(PioneerController->GetPawn());
-			if (Pioneer)
-			{
-				FVector location = Pioneer->TopDownCameraComponent->GetComponentLocation();
-				FVector direction = location - this->GetActorLocation();
-				direction.Normalize();
-				HelthPointBar->SetRelativeRotation(FRotator(0.0f, direction.Rotation().Yaw, 0.0f));
-			}
-		}
-	}*/
 }
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
 /*** AIController : Start ***/
 void ABaseCharacter::InitAIController()

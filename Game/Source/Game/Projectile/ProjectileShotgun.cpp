@@ -93,15 +93,11 @@ void AProjectileShotgun::OnOverlapBegin(class UPrimitiveComponent* OverlappedCom
 
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-	{
 		return;
-	}
 
 	// Collision의 기본인 ATriggerVolume은 무시합니다.
 	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-	{
 		return;
-	}
 
 	// owner가 없으면 충돌나기 때문에 체크합니다.
 	if (this->GetOwner() && this->GetOwner()->GetOwner())
@@ -115,24 +111,18 @@ void AProjectileShotgun::OnOverlapBegin(class UPrimitiveComponent* OverlappedCom
 
 	// 개척자 끼리는 무시합니다.
 	if (OtherActor->IsA(APioneer::StaticClass()))
-	{
 		return;
-	}
 
 	// 투사체 끼리는 무시합니다.
 	if (OtherActor->IsA(AProjectile::StaticClass()))
-	{
 		return;
-	}
 
-	// 배치 대기중인 건물은 무시합니다.
+	// 건물에서
 	if (OtherActor->IsA(ABuilding::StaticClass()))
 	{
-		if (dynamic_cast<ABuilding*>(OtherActor)->bIsConstructing == false
-			&& dynamic_cast<ABuilding*>(OtherActor)->bCompleted == false)
-		{
+		// 건설할 수 있는 지 확인하는 상태면 무시합니다.
+		if (dynamic_cast<ABuilding*>(OtherActor)->BuildingState == EBuildingState::Constructable)
 			return;
-		}
 	}
 
 	if (OtherActor->IsA(AEnemy::StaticClass()))
