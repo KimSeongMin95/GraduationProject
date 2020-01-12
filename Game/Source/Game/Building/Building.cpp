@@ -92,6 +92,17 @@ void ABuilding::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
+void ABuilding::Calculatehealth(float Delta)
+{
+	HealthPoint += Delta;
+
+	if (HealthPoint > 0.0f)
+		return;
+
+	BuildingState = EBuildingState::Destroying;
+
+	Destroy();
+}
 /*** Stat : End ***/
 
 /*** IHealthPointBarInterface : Start ***/

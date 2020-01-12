@@ -38,6 +38,11 @@ void APumpkinhulkLShaw::BeginPlay()
 // Called every frame
 void APumpkinhulkLShaw::Tick(float DeltaTime)
 {
+	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있음.
+	// 따라서, Tick 가장 앞에서 죽었는지 여부를 체크해야 함.
+	if (bDying)
+		return;
+
 	Super::Tick(DeltaTime);
 
 }

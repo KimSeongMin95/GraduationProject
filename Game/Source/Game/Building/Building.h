@@ -25,7 +25,8 @@ enum class EBuildingState : uint8
 {
 	Constructable = 0,	/** 건설할 수 있는지 확인하는 상태 */
 	Constructing = 1,	/** 건설중인 상태 */
-	Constructed = 2		/** 건설이 완료된 상태*/
+	Constructed = 2,	/** 건설이 완료된 상태*/
+	Destroying = 3		/** 생명력이 0이하가 되어 소멸되는 상태 */
 };
 
 USTRUCT()
@@ -69,37 +70,40 @@ public:
 
 	/*** Stat : Start ***/
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float HealthPoint; /** 초기 생명력 */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float MaxHealthPoint; /** 완성된 생명력 */
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		FVector2D Size; /** 크기 (NxN) */
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float ConstructionTime; /** 건설시간 (s) */
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float NeedMineral; /** 건설재료 무기물 (kg) */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float NeedOrganicMatter; /** 건설재료 유기물 (kg) */
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float ConsumeMineral; /** 소비 무기물 (kg/h) */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float ConsumeOrganicMatter; /** 소비 유기물 (kg/h) */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float ConsumeElectricPower; /** 소비 전력 (MW) */
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float ProductionMineral; /** 생산 무기물 (kg/h) */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float ProductionOrganicMatter; /** 생산 유기물 (kg/h) */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float ProductionElectricPower; /** 생산 전력 (MW) */
 
 	virtual void InitStat();
+
+	UFUNCTION(Category = "Stat")
+		virtual void Calculatehealth(float Delta);
 	/*** Stat : End ***/
 
 	/*** IHealthPointBarInterface : Start ***/

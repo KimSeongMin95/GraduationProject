@@ -44,6 +44,11 @@ void AEnemy::BeginPlay()
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
+	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있음.
+	// 따라서, Tick 가장 앞에서 죽었는지 여부를 체크해야 함.
+	if (bDying)
+		return;
+
 	Super::Tick(DeltaTime);
 
 	RotateTargetRotation(DeltaTime);
@@ -69,6 +74,9 @@ void AEnemy::Tick(float DeltaTime)
 /*** Stat : Start ***/
 void AEnemy::Calculatehealth(float Delta)
 {
+	if (bDying)
+		return;
+
 	Super::Calculatehealth(Delta);
 
 
@@ -312,27 +320,30 @@ void AEnemy::DamageToTargetActor()
 
 	if (TargetActor->IsA(APioneer::StaticClass()))
 	{
-		APioneer* pioneer = dynamic_cast<APioneer*>(TargetActor);
-		pioneer->Calculatehealth(-AttackPower);
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(TargetActor))
+		{
+			pioneer->Calculatehealth(-AttackPower);
 
-		if (pioneer->bDying)
-			TargetActor = nullptr;
+			if (pioneer->bDying)
+				TargetActor = nullptr;
 
-		return;
+			return;
+		}
 	}
 
 	if (TargetActor->IsA(ABuilding::StaticClass()))
 	{
-		ABuilding* building = dynamic_cast<ABuilding*>(TargetActor);
-		building->HealthPoint -= AttackPower;
-
-		if (building->HealthPoint <= 0.0f)
+		if (ABuilding* building = dynamic_cast<ABuilding*>(TargetActor))
 		{
-			TargetActor = nullptr;
-			building->Destroy();
-		}
+			building->Calculatehealth(-AttackPower);
 
-		return;
+			if (!building)
+				TargetActor = nullptr;
+			else if (building->BuildingState == EBuildingState::Destroying)
+				TargetActor = nullptr;
+
+			return;
+		}
 	}
 }
 /*** Damage : End ***/

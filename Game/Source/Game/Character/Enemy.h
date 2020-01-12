@@ -47,7 +47,7 @@ public:
 	virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
-	virtual void InitRanges() override;
+	virtual void InitRanges() final;
 	/*** Stat : End ***/
 
 /*** HelthPointBar : Start ***/
@@ -57,7 +57,7 @@ public:
 
 /*** CharacterMovement : Start ***/
 public:
-	virtual void RotateTargetRotation(float DeltaTime) override;
+	virtual void RotateTargetRotation(float DeltaTime) final;
 /*** CharacterMovement : End ***/
 
 /*** SkeletalAnimation : Start ***/
