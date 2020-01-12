@@ -14,18 +14,17 @@ APumpkinhulkLShaw::APumpkinhulkLShaw() // Sets default values
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(140.0f, 80.0f);
 
-	GetCharacterMovement()->MaxWalkSpeed = 300.0f; // 움직일 때 걷는 속도
-
 	InitStat();
+
+	AEnemy::InitRanges();
+
+	AEnemy::InitCharacterMovement();
 
 	InitSkeletalAnimation();
 
 	InitHelthPointBar();
 
 	//InitFSM();
-
-	DetactRangeSphereComp->SetSphereRadius(4096.0f);
-	AttackRangeSphereComp->SetSphereRadius(256.0f);
 }
 
 // Called when the game starts or when spawned
@@ -51,15 +50,18 @@ void APumpkinhulkLShaw::Tick(float DeltaTime)
 /*** Stat : Start ***/
 void APumpkinhulkLShaw::InitStat()
 {
-	HealthPoint = 500.0f;
-	MaxHealthPoint = 500.0f;
+	HealthPoint = 300.0f;
+	MaxHealthPoint = 300.0f;
+	bDying = false;
+
+	MoveSpeed = 8.0f;
+	AttackSpeed = 0.5f;
 
 	AttackPower = 50.0f;
-	MoveSpeed = 2.0f;
-	AttackSpeed = 0.5f;
+
 	AttackRange = 4.0f;
 	DetectRange = 8.0f;
-	SightRange = 10.0f;
+	SightRange = 16.0f;
 }
 /*** Stat : End ***/
 

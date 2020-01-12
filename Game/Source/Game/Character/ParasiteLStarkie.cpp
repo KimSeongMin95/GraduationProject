@@ -14,18 +14,17 @@ AParasiteLStarkie::AParasiteLStarkie() // Sets default values
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(80.0f, 50.0f);
 
-	GetCharacterMovement()->MaxWalkSpeed = 800.0f; // 움직일 때 걷는 속도
-
 	InitStat();
+
+	AEnemy::InitRanges();
+
+	AEnemy::InitCharacterMovement();
 
 	InitSkeletalAnimation();
 
 	InitHelthPointBar();
 
 	//InitFSM();
-
-	DetactRangeSphereComp->SetSphereRadius(4096.0f);
-	AttackRangeSphereComp->SetSphereRadius(128.0f);
 }
 
 // Called when the game starts or when spawned
@@ -53,13 +52,16 @@ void AParasiteLStarkie::InitStat()
 {
 	HealthPoint = 60.0f;
 	MaxHealthPoint = 60.0f;
+	bDying = false;
+
+	MoveSpeed = 12.0f;
+	AttackSpeed = 2.0f;
 
 	AttackPower = 10.0f;
-	MoveSpeed = 3.0f;
-	AttackSpeed = 2.0f;
-	AttackRange = 4.0f;
+
+	AttackRange = 3.0f;
 	DetectRange = 8.0f;
-	SightRange = 10.0f;
+	SightRange = 16.0f;
 }
 /*** Stat : End ***/
 

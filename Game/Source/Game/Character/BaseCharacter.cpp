@@ -5,9 +5,6 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Controller/BaseAIController.h"
-
-#include "Character/Pioneer.h"
-#include "Controller/PioneerController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 /*** Basic Function : Start ***/
@@ -66,15 +63,17 @@ void ABaseCharacter::InitStat()
 	MaxHealthPoint = 100.0f;
 	bDying = false;
 
-	AttackPower = 0.0f;
-	MoveSpeed = 4.0f;
+	MoveSpeed = 9.0f;
 	AttackSpeed = 1.0f;
-	AttackRange = 4.0f;
-	DetectRange = 8.0f;
-	SightRange = 10.0f;
+
+	AttackPower = 1.0f;
+
+	AttackRange = 8.0f;
+	DetectRange = 16.0f;
+	SightRange = 32.0f;
 }
 
-void ABaseCharacter::Calculatehealth(float Delta)
+void ABaseCharacter::SetHealthPoint(float Delta)
 {
 	if (bDying)
 		return;
@@ -88,8 +87,6 @@ void ABaseCharacter::Calculatehealth(float Delta)
 
 	if (GetController())
 		GetController()->StopMovement();
-	if (HelthPointBar)
-		HelthPointBar->DestroyComponent();
 
 	if (GetMesh())
 	{
@@ -101,6 +98,9 @@ void ABaseCharacter::Calculatehealth(float Delta)
 		GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
+	if (HelthPointBar)
+		HelthPointBar->DestroyComponent();
 
 	if (DetactRangeSphereComp)
 		DetactRangeSphereComp->DestroyComponent();
@@ -130,7 +130,7 @@ void ABaseCharacter::InitRanges()
 {
 	DetactRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetactRangeSphereComp"));
 	DetactRangeSphereComp->SetupAttachment(RootComponent);
-	DetactRangeSphereComp->SetSphereRadius(512.0f);
+	DetactRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
 
 	DetactRangeSphereComp->SetGenerateOverlapEvents(true);
 	DetactRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -139,7 +139,7 @@ void ABaseCharacter::InitRanges()
 
 	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
 	AttackRangeSphereComp->SetupAttachment(RootComponent);
-	AttackRangeSphereComp->SetSphereRadius(256.0f);
+	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
 
 	AttackRangeSphereComp->SetGenerateOverlapEvents(true);
 	AttackRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -196,13 +196,13 @@ void ABaseCharacter::BeginPlayHelthPointBar()
 
 			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
 			if (ProgressBar == nullptr)
-				UE_LOG(LogTemp, Warning, TEXT("ProgressBar == nullptr"));
+				UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar(): ProgressBar == nullptr"));
 		}
 		else
-			UE_LOG(LogTemp, Warning, TEXT("WidgetTree == nullptr"));
+			UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar(): WidgetTree == nullptr"));
 	}
 	else
-		UE_LOG(LogTemp, Warning, TEXT("HelthPointBarUserWidget == nullptr"));
+		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar(): HelthPointBarUserWidget == nullptr"));
 
 	HelthPointBar->SetWidget(HelthPointBarUserWidget);
 }
@@ -223,15 +223,13 @@ void ABaseCharacter::PossessAIController()
 {
 	if (!AIController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("!AIController"));
+		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::PossessAIController(): !AIController"));
 		return;
 	}
 
 	// 안전하게 하기 위해 현재 폰이 컨트롤러를 가지고 있으면 빙의를 해제합니다.
 	if (GetController())
-	{
 		GetController()->UnPossess();
-	}
 
 	// 그뒤 AI 컨트롤러를 빙의합니다.
 	AIController->Possess(this);
@@ -255,7 +253,8 @@ void ABaseCharacter::InitCharacterMovement()
 	GetCharacterMovement()->bSnapToPlaneAtStart = true; // 시작할 때 캐릭터의 위치가 평면을 벗어난 상태라면 가까운 평면으로 붙여서 시작되도록 합니다. 여기서 평면이란 내비게이션 메시를 의미합니다.
 	//GetCharacterMovement()->JumpZVelocity = 600.0f;
 	//GetCharacterMovement()->AirControl = 0.2f;
-	GetCharacterMovement()->MaxWalkSpeed = 600.0f; // 움직일 때 걷는 속도
+	//GetCharacterMovement()->MaxWalkSpeed = 600.0f; // 움직일 때 걷는 속도
+	GetCharacterMovement()->MaxWalkSpeed = AMyGameModeBase::CellSize * MoveSpeed;
 	GetCharacterMovement()->MaxStepHeight = 45.0f; // 움직일 때 45.0f 높이는 올라갈 수 있도록 합니다. ex) 계단
 }
 

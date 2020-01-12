@@ -9,7 +9,7 @@
 #include "MyHUD.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
-const float AMyGameModeBase::CellSize = 300.0f;
+const float AMyGameModeBase::CellSize = 64.0f;
 
 AMyGameModeBase::AMyGameModeBase()
 {

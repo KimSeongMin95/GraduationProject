@@ -14,19 +14,6 @@
 /*** Basic Function : Start ***/
 AEnemy::AEnemy() // Sets default values
 {
-	// 충돌 캡슐의 크기를 설정합니다.
-	//GetCapsuleComponent()->InitCapsuleSize(140.0f, 80.0f);
-
-	//GetCharacterMovement()->MaxWalkSpeed = 500.0f; // 움직일 때 걷는 속도
-
-	//InitStat();
-
-	InitRanges();
-
-	//InitHelthPointBar();
-
-	//InitSkeletalAnimation();
-
 	InitFSM();
 }
 
@@ -72,12 +59,12 @@ void AEnemy::Tick(float DeltaTime)
 /*** Basic Function : End ***/
 
 /*** Stat : Start ***/
-void AEnemy::Calculatehealth(float Delta)
+void AEnemy::SetHealthPoint(float Delta)
 {
 	if (bDying)
 		return;
 
-	Super::Calculatehealth(Delta);
+	Super::SetHealthPoint(Delta);
 
 
 }
@@ -225,11 +212,17 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 
 void AEnemy::InitRanges()
 {
+	if (!DetactRangeSphereComp || !AttackRangeSphereComp)
+		return;
+
 	DetactRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
 	DetactRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
 
 	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
 	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
+
+	DetactRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
+	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
 }
 /*** Stat : End ***/
 
@@ -241,6 +234,11 @@ void AEnemy::InitHelthPointBar()
 /*** IHealthPointBarInterface : End ***/
 
 /*** CharacterMovement : Start ***/
+void AEnemy::InitCharacterMovement()
+{
+	GetCharacterMovement()->MaxWalkSpeed = AMyGameModeBase::CellSize * MoveSpeed; // 움직일 때 걷는 속도
+}
+
 void AEnemy::RotateTargetRotation(float DeltaTime)
 {
 	// 회전을 할 필요가 없으면 실행하지 않습니다.
@@ -322,7 +320,7 @@ void AEnemy::DamageToTargetActor()
 	{
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(TargetActor))
 		{
-			pioneer->Calculatehealth(-AttackPower);
+			pioneer->SetHealthPoint(-AttackPower);
 
 			if (pioneer->bDying)
 				TargetActor = nullptr;
@@ -335,7 +333,7 @@ void AEnemy::DamageToTargetActor()
 	{
 		if (ABuilding* building = dynamic_cast<ABuilding*>(TargetActor))
 		{
-			building->Calculatehealth(-AttackPower);
+			building->SetHealthPoint(-AttackPower);
 
 			if (!building)
 				TargetActor = nullptr;

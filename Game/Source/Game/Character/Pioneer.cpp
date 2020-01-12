@@ -45,6 +45,8 @@ APioneer::APioneer() // Sets default values
 
 	InitHelthPointBar();
 
+	InitCharacterMovement();
+
 	InitSkeletalAnimation();
 	
 	InitCamera();
@@ -130,12 +132,12 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 /*** Basic Function : End ***/
 
 /*** Stat : Start ***/
-void APioneer::Calculatehealth(float Delta)
+void APioneer::SetHealthPoint(float Delta)
 {
 	if (bDying)
 		return;
 
-	Super::Calculatehealth(Delta);
+	Super::SetHealthPoint(Delta);
 
 	if (HealthPoint > 0.0f)
 		return;
@@ -159,12 +161,14 @@ void APioneer::InitStat()
 	MaxHealthPoint = 100.0f;
 	bDying = false;
 
-	AttackPower = 0.0f;
-	MoveSpeed = 4.0f;
+	MoveSpeed = 10.0f;
 	AttackSpeed = 1.0f;
-	AttackRange = 4.0f;
-	DetectRange = 8.0f;
-	SightRange = 10.0f;
+
+	AttackPower = 1.0f;
+
+	AttackRange = 8.0f;
+	DetectRange = 16.0f;
+	SightRange = 32.0f;
 }
 
 void APioneer::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -291,11 +295,17 @@ void APioneer::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedCom
 
 void APioneer::InitRanges()
 {
+	if (!DetactRangeSphereComp || !AttackRangeSphereComp)
+		return;
+
 	DetactRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_DetectRange);
 	DetactRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_DetectRange);
 
 	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_AttackRange);
 	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_AttackRange);
+
+	DetactRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
+	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
 }
 /*** Stat : End ***/
 
@@ -311,6 +321,11 @@ void APioneer::InitHelthPointBar()
 /*** IHealthPointBarInterface : End ***/
 
 /*** CharacterMovement : Start ***/
+void APioneer::InitCharacterMovement()
+{
+	GetCharacterMovement()->MaxWalkSpeed = AMyGameModeBase::CellSize * MoveSpeed; // 움직일 때 걷는 속도
+}
+
 void APioneer::RotateTargetRotation(float DeltaTime)
 {
 	// 무기가 없거나 회전을 할 필요가 없으면 실행하지 않습니다.
@@ -319,6 +334,7 @@ void APioneer::RotateTargetRotation(float DeltaTime)
 
 	Super::RotateTargetRotation(DeltaTime);
 }
+
 void APioneer::StopMovement()
 {
 	if (GetController())
@@ -606,7 +622,7 @@ void APioneer::InitAIController()
 	UWorld* const World = GetWorld();
 	if (!World)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::InitAIController(): !World"));
 		return;
 	}
 

@@ -141,7 +141,7 @@ void AProjectilePistol::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp
 			if (enemy->AttackRangeSphereComp == OtherComp)
 				return;
 
-			enemy->Calculatehealth(-TotalDamage);
+			enemy->SetHealthPoint(-TotalDamage);
 		}
 	}
 	

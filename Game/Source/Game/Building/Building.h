@@ -103,7 +103,7 @@ public:
 	virtual void InitStat();
 
 	UFUNCTION(Category = "Stat")
-		virtual void Calculatehealth(float Delta);
+		void SetHealthPoint(float Delta);
 	/*** Stat : End ***/
 
 	/*** IHealthPointBarInterface : Start ***/

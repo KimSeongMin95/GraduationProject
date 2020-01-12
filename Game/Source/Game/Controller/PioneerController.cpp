@@ -292,21 +292,35 @@ void APioneerController::ConstructingMode()
 
 void APioneerController::OnPossess(APawn* InPawn)
 {
-	Super::OnPossess(InPawn);
+	if (!InPawn)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::OnPossess: !InPawn"));
+		return;
+	}
 
+	if (APioneer* pioneer = dynamic_cast<APioneer*>(InPawn))
+	{
+		Super::OnPossess(InPawn);
+	}
 }
 
 void APioneerController::OnUnPossess()
 {
+	if (!GetPawn())
+	{	
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::OnUnPossess: !GetPawn()"));
+		return;
+	}
+
 	// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
-	APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
-	
-	Super::OnUnPossess();
+	if (APioneer* pioneer = dynamic_cast<APioneer*>(GetPawn()))
+	{
+		Super::OnUnPossess();
 
-	SetPawn(nullptr);
+		SetPawn(nullptr);
 
-	// AIController()에게 빙의하도록 합니다.
-	if (MyPawn)
-		MyPawn->PossessAIController();
-	
+		// AIController()에게 빙의하도록 합니다.
+		if (pioneer)
+			pioneer->PossessAIController();
+	}
 }

@@ -233,7 +233,7 @@ void AProjectileGrenadeLauncher::OnOverlapBegin(class UPrimitiveComponent* Overl
 			if (enemy->AttackRangeSphereComp == OtherComp)
 				return;
 
-			enemy->Calculatehealth(-TotalDamage);
+			enemy->SetHealthPoint(-TotalDamage);
 		}
 
 		// ¼Ò¸êÇÕ´Ï´Ù.
@@ -295,7 +295,7 @@ void AProjectileGrenadeLauncher::SplashOnOverlapBegin(class UPrimitiveComponent*
 			if (enemy->AttackRangeSphereComp == OtherComp)
 				return;
 
-			enemy->Calculatehealth(-TotalDamage);
+			enemy->SetHealthPoint(-TotalDamage);
 		}
 	}
 	

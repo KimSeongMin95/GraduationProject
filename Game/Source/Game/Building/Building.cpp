@@ -92,7 +92,7 @@ void ABuilding::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-void ABuilding::Calculatehealth(float Delta)
+void ABuilding::SetHealthPoint(float Delta)
 {
 	HealthPoint += Delta;
 

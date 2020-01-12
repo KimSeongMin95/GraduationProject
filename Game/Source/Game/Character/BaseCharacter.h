@@ -12,12 +12,16 @@
 #include "Engine/SkeletalMesh.h"
 #include "Animation/AnimBlueprint.h"
 
+//#include "Editor/EditorEngine.h" // 어따 쓰지...
+/*** 언리얼엔진 헤더 선언 : End ***/
+
 /*** Interface 헤더 선언 : Start ***/
 #include "Interface/HealthPointBarInterface.h"
 /*** Interface 헤더 선언 : Start ***/
 
-//#include "Editor/EditorEngine.h" // 어따 쓰지...
-/*** 언리얼엔진 헤더 선언 : End ***/
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "MyGameModeBase.h"
+/*** 직접 정의한 헤더 전방 선언 : End ***/
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -64,11 +68,12 @@ public:
 		bool bDying;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
-		float AttackPower;
-	UPROPERTY(EditAnywhere, Category = "Stat")
 		float MoveSpeed;
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackSpeed;
+
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float AttackPower;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float SightRange;
@@ -80,7 +85,7 @@ public:
 	virtual void InitStat();
 
 	UFUNCTION(Category = "Stat")
-		virtual void Calculatehealth(float Delta);
+		virtual void SetHealthPoint(float Delta);
 
 	// DetectRange
 	UPROPERTY(EditAnywhere)
@@ -124,7 +129,7 @@ public:
 
 /*** CharacterMovement : Start ***/
 public:
-	void InitCharacterMovement();
+	virtual void InitCharacterMovement();
 
 	UPROPERTY(EditAnywhere, Category = "Character Movement")
 		bool bRotateTargetRotation;

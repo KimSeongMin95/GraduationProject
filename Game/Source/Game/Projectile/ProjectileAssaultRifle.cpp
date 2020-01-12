@@ -140,7 +140,7 @@ void AProjectileAssaultRifle::OnOverlapBegin(class UPrimitiveComponent* Overlapp
 			if (enemy->AttackRangeSphereComp == OtherComp)
 				return;
 
-			enemy->Calculatehealth(-TotalDamage);
+			enemy->SetHealthPoint(-TotalDamage);
 		}
 	}
 	

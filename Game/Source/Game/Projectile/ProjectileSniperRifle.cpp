@@ -151,7 +151,7 @@ void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* Overlappe
 			if (enemy->AttackRangeSphereComp == OtherComp)
 				return;
 
-			enemy->Calculatehealth(-TotalDamage);
+			enemy->SetHealthPoint(-TotalDamage);
 		}
 
 		// ImpactParticleSystem을 실행합니다.

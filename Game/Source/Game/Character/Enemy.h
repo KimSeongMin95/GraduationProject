@@ -35,7 +35,7 @@ public:
 
 	/*** Stat : Start ***/
 public:
-	virtual void Calculatehealth(float Delta) final;
+	virtual void SetHealthPoint(float Delta) final;
 
 	virtual void InitStat() override;
 
@@ -57,6 +57,8 @@ public:
 
 /*** CharacterMovement : Start ***/
 public:
+	virtual void InitCharacterMovement() final;
+
 	virtual void RotateTargetRotation(float DeltaTime) final;
 /*** CharacterMovement : End ***/
 

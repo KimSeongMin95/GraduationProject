@@ -14,18 +14,17 @@ AProp2::AProp2() // Sets default values
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(140.0f, 80.0f);
 
-	GetCharacterMovement()->MaxWalkSpeed = 500.0f; // 움직일 때 걷는 속도
-
 	InitStat();
+
+	AEnemy::InitRanges();
+
+	AEnemy::InitCharacterMovement();
 
 	InitSkeletalAnimation();
 
 	InitHelthPointBar();
 
 	//InitFSM();
-
-	DetactRangeSphereComp->SetSphereRadius(4096.0f);
-	AttackRangeSphereComp->SetSphereRadius(256.0f);
 }
 
 // Called when the game starts or when spawned
@@ -51,15 +50,18 @@ void AProp2::Tick(float DeltaTime)
 /*** Stat : Start ***/
 void AProp2::InitStat()
 {
-	HealthPoint = 400.0f;
-	MaxHealthPoint = 400.0f;
+	HealthPoint = 250.0f;
+	MaxHealthPoint = 250.0f;
+	bDying = false;
+
+	MoveSpeed = 8.0f;
+	AttackSpeed = 1.0f;
 
 	AttackPower = 40.0f;
-	MoveSpeed = 4.0f;
-	AttackSpeed = 1.0f;
+
 	AttackRange = 4.0f;
 	DetectRange = 8.0f;
-	SightRange = 10.0f;
+	SightRange = 16.0f;
 }
 /*** Stat : End ***/
 

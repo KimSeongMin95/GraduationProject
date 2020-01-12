@@ -87,6 +87,9 @@ void UEnemyAnimInstance::DestroyCharacter()
 	if (Enemy->GetCharacterMovement())
 		Enemy->GetCharacterMovement()->DestroyComponent();
 
+	// 어차피 Character를 Possess하는 Controller는 Enemy->Destory()할 때, 같이 소멸됨.
+	if (Enemy->GetController()) {}
+
 	Enemy->Destroy();
 }
 
