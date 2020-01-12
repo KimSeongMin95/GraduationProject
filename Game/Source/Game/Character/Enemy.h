@@ -85,7 +85,7 @@ public:
 	EEnemyFSM State;
 
 	void InitFSM();
-	void RunFSM(float DeltaTime);
+	virtual void RunFSM(float DeltaTime) override;
 
 	void FindTheTargetActor();
 
@@ -95,4 +95,7 @@ public:
 /*** FSM : End ***/
 
 	/*** BehaviorTree : Start ***/
+public:
+	virtual void RunBehaviorTree(float DeltaTime) override;
+	/*** BehaviorTree : End ***/
 };

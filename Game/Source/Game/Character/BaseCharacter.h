@@ -152,4 +152,14 @@ public:
 		class AActor* TargetActor = nullptr;
 	void TracingTargetActor(); /** TargetActor 위치로 이동 */
 	/*** CharacterAI : End ***/
+
+	/*** FSM : Start ***/
+public:
+	virtual void RunFSM(float DeltaTime);
+	/*** FSM : End ***/
+
+	/*** BehaviorTree : Start ***/
+public:
+	virtual void RunBehaviorTree(float DeltaTime);
+	/*** BehaviorTree : End ***/
 };

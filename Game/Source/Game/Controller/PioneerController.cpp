@@ -67,6 +67,12 @@ void APioneerController::SetupInputComponent()
 /** Navigate player to the current mouse cursor location. */
 void APioneerController::MoveToMouseCursor()
 {
+	if (!GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::MoveToMouseCursor: !GetPawn()"));
+		return;
+	}
+
 	// VR »ç¿ë½Ã
 	/*if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
 	{

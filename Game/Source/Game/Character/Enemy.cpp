@@ -39,22 +39,6 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	RotateTargetRotation(DeltaTime);
-
-	/*** CharacterAI : Start ***/
-	// 0.2초마다 실행하자!!!~~~!~!
-	switch (CharacterAI)
-	{
-	case ECharacterAI::FSM:
-		RunFSM(DeltaTime);
-		break;
-	case ECharacterAI::BehaviorTree:
-		
-		break;
-	default:
-		UE_LOG(LogTemp, Warning, TEXT("AEnemy::Tick: switch (CharacterAI): default"));
-		break;
-	}
-	/*** CharacterAI : End ***/
 }
 /*** Basic Function : End ***/
 
@@ -453,3 +437,10 @@ void AEnemy::AttackingOfFSM()
 }
 /*** FSM : End ***/
 
+/*** BehaviorTree : Start ***/
+void AEnemy::RunBehaviorTree(float DeltaTime)
+{
+	Super::RunBehaviorTree(DeltaTime);
+
+}
+/*** BehaviorTree : End ***/

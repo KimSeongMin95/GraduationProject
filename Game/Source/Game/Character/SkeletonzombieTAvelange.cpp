@@ -105,3 +105,19 @@ void ASkeletonzombieTAvelange::InitSkeletalAnimation()
 		GetMesh()->SetAnimInstanceClass(animBP);
 }
 /*** SkeletalAnimation : End ***/
+
+/*** FSM : Start ***/
+void ASkeletonzombieTAvelange::RunFSM(float DeltaTime)
+{
+	Super::RunFSM(DeltaTime);
+
+}
+/*** FSM : End ***/
+
+/*** BehaviorTree : Start ***/
+void ASkeletonzombieTAvelange::RunBehaviorTree(float DeltaTime)
+{
+	Super::RunBehaviorTree(DeltaTime);
+
+}
+/*** BehaviorTree : End ***/

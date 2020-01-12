@@ -14,6 +14,12 @@ AEnemyAIController::AEnemyAIController()
 
 void AEnemyAIController::Tick(float DeltaTime)
 {
+	if (!GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AEnemyAIController::Tick: !GetPawn()"));
+		return;
+	}
+
 	Super::Tick(DeltaTime);
 
 	/*Timer += DeltaTime;
@@ -26,18 +32,21 @@ void AEnemyAIController::Tick(float DeltaTime)
 
 void AEnemyAIController::MoveRandomDestination()
 {
-	if (GetPawn())
+	if (!GetPawn())
 	{
-		AEnemy* MyPawn = dynamic_cast<AEnemy*>(GetPawn());
-
-		FVector dest = FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), MyPawn->GetActorLocation().Z);
-		PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, dest);
-
-		/*FAIMoveRequest FAI;
-		FAI.SetGoalLocation(dest);
-		MoveTo(FAI);*/
-
-		// 목표 지점을 바라보도록 합니다.
-		//MyPawn->LookAtTheLocation(dest);
+		UE_LOG(LogTemp, Warning, TEXT("AEnemyAIController::MoveRandomDestination: !GetPawn()"));
+		return;
 	}
+
+	AEnemy* MyPawn = dynamic_cast<AEnemy*>(GetPawn());
+
+	FVector dest = FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), MyPawn->GetActorLocation().Z);
+	PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, dest);
+
+	/*FAIMoveRequest FAI;
+	FAI.SetGoalLocation(dest);
+	MoveTo(FAI);*/
+
+	// 목표 지점을 바라보도록 합니다.
+	//MyPawn->LookAtTheLocation(dest);
 }

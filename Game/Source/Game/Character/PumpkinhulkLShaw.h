@@ -40,4 +40,14 @@ public:
 public:
 	void InitSkeletalAnimation();
 /*** SkeletalAnimation : End ***/
+
+		/*** FSM : Start ***/
+public:
+	virtual void RunFSM(float DeltaTime) final;
+	/*** FSM : End ***/
+
+	/*** BehaviorTree : Start ***/
+public:
+	virtual void RunBehaviorTree(float DeltaTime) final;
+	/*** BehaviorTree : End ***/
 };

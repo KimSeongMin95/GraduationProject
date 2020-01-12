@@ -105,3 +105,19 @@ void AParasiteLStarkie::InitSkeletalAnimation()
 		GetMesh()->SetAnimInstanceClass(animBP);
 }
 /*** SkeletalAnimation : End ***/
+
+/*** FSM : Start ***/
+void AParasiteLStarkie::RunFSM(float DeltaTime)
+{
+	Super::RunFSM(DeltaTime);
+
+}
+/*** FSM : End ***/
+
+/*** BehaviorTree : Start ***/
+void AParasiteLStarkie::RunBehaviorTree(float DeltaTime)
+{
+	Super::RunBehaviorTree(DeltaTime);
+
+}
+/*** BehaviorTree : End ***/

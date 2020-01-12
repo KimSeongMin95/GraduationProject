@@ -354,3 +354,17 @@ void ABaseCharacter::TracingTargetActor()
 	LookAtTheLocation(destination);
 }
 /*** CharacterAI : End ***/
+
+/*** FSM : Start ***/
+void ABaseCharacter::RunFSM(float DeltaTime)
+{
+	// 자식 클래스에서 구현할 것!
+}
+/*** FSM : End ***/
+
+/*** BehaviorTree : Start ***/
+void ABaseCharacter::RunBehaviorTree(float DeltaTime)
+{
+	// 자식 클래스에서 구현할 것!
+}
+/*** BehaviorTree : End ***/

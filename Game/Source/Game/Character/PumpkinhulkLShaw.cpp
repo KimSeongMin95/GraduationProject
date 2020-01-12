@@ -105,3 +105,19 @@ void APumpkinhulkLShaw::InitSkeletalAnimation()
 		GetMesh()->SetAnimInstanceClass(animBP);
 }
 /*** SkeletalAnimation : End ***/
+
+/*** FSM : Start ***/
+void APumpkinhulkLShaw::RunFSM(float DeltaTime)
+{
+	Super::RunFSM(DeltaTime);
+
+}
+/*** FSM : End ***/
+
+/*** BehaviorTree : Start ***/
+void APumpkinhulkLShaw::RunBehaviorTree(float DeltaTime)
+{
+	Super::RunBehaviorTree(DeltaTime);
+
+}
+/*** BehaviorTree : End ***/

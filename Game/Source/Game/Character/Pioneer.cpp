@@ -1019,6 +1019,13 @@ void APioneer::AttackingOfFSM()
 }
 /*** FSM : End ***/
 
+/*** BehaviorTree : Start ***/
+void APioneer::RunBehaviorTree(float DeltaTime)
+{
+	Super::RunBehaviorTree(DeltaTime);
+
+}
+/*** BehaviorTree : End ***/
 
 
 
@@ -1032,7 +1039,7 @@ void APioneer::InsertThis()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::InsertThis: !world"));
 		return;
 	}
 
