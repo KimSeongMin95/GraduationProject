@@ -96,7 +96,19 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) final; // APawn 인터페이스     
 /*** Basic Function : End ***/
 
-	int SocketID;
+	/*** PioneerManager : Start ***/
+public:
+	UPROPERTY(EditAnywhere)
+		int SocketID;
+
+	UPROPERTY(EditAnywhere)
+		class APioneerManager* PioneerManager = nullptr;
+	void InitPioneerManager();
+
+	void DestroyCharacter();
+
+	bool CopyTopDownCameraTo(AActor* CameraToBeCopied); /** PioneerManager의 CameraOfCurrentPioneer의 Transform을 TopDownCameraTo로 설정 */
+	/*** PioneerManager : End ***/
 
 	/*** Stat : Start ***/
 public:
@@ -284,9 +296,5 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		int TempChangeWeaponCount;
-
-	void InsertThis();
-
-	class APioneerManager* PioneerManager = nullptr;
 };
 

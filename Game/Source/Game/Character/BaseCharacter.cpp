@@ -85,6 +85,9 @@ void ABaseCharacter::SetHealthPoint(float Delta)
 
 	bDying = true;
 
+	if (GetCharacterMovement())
+		GetCharacterMovement()->StopActiveMovement();
+
 	if (GetController())
 		GetController()->StopMovement();
 

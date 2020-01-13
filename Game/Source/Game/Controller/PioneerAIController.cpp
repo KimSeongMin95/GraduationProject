@@ -16,7 +16,7 @@ void APioneerAIController::Tick(float DeltaTime)
 {
 	if (!GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerAIController::Tick: !GetPawn()"));
+		//UE_LOG(LogTemp, Warning, TEXT("APioneerAIController::Tick: !GetPawn()"));
 		return;
 	}
 

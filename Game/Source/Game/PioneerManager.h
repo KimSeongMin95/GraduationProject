@@ -18,6 +18,16 @@
 #include "GameFramework/Actor.h"
 #include "PioneerManager.generated.h"
 
+UENUM()
+enum class ESwitchState : int8
+{
+	Switchable = 0,			/** 전환 가능 */
+	Current = 1,			/** SetViewTargetWithBlend: CameraOfCurrentPioneer -> WorldViewCameraOfCurrentPioneer */
+	FindTargetViewActor = 2,/** SetViewTargetWithBlend: WorldViewCameraOfCurrentPioneer -> WorldViewCameraOfNextPioneer */
+	Next = 3,				/** SetViewTargetWithBlend: WorldViewCameraOfNextPioneer -> CameraOfNextPioneer */
+	Finish = 4				/** SetViewTarget: CameraOfNextPioneer -> NextPioneer */
+};
+
 UCLASS()
 class GAME_API APioneerManager : public AActor
 {
@@ -48,12 +58,23 @@ public:
 	void SpawnPioneer(FTransform Transform); /** APioneer 객체를 생성합니다. */
 	class APioneer* GetPioneerBySocketID(int SocketID);
 
+	ESwitchState SwitchState;
+
+	AActor* TargetViewActor = nullptr;
+
 	UPROPERTY(EditAnywhere)
 		class AWorldViewCameraActor* WorldViewCamera = nullptr; /** 월드 전체를 바라보는 카메라입니다. */
+
 	UPROPERTY(EditAnywhere)
-		class AWorldViewCameraActor* WorldViewCamFirst = nullptr; /** 월드 전체를 바라보는 카메라입니다. */
+		class AWorldViewCameraActor* CameraOfCurrentPioneer = nullptr; /** 현재 개척자의 카메라입니다. */
 	UPROPERTY(EditAnywhere)
-		class AWorldViewCameraActor* WorldViewCamSecond = nullptr; /** 월드 전체를 바라보는 카메라입니다. */
+		class AWorldViewCameraActor* WorldViewCameraOfCurrentPioneer = nullptr; /** 현재 개척자의 월드뷰 카메라입니다. */
+
+	UPROPERTY(EditAnywhere)
+		class AWorldViewCameraActor* WorldViewCameraOfNextPioneer = nullptr; /** 다음 개척자의 월드뷰 카메라입니다. */
+	UPROPERTY(EditAnywhere)
+		class AWorldViewCameraActor* CameraOfNextPioneer = nullptr; /** 다음 개척자의 카메라입니다. */
+
 	UPROPERTY(EditAnywhere)
 		class APioneerController* PioneerCtrl = nullptr; /** Pioneer 전용 컨트롤러 입니다. */
 
@@ -61,19 +82,33 @@ public:
 		float SwitchTime; /** 다른 폰으로 변경하는 시간입니다. */
 	
 	// bLockOutgoing: 보간 도중에 나가는 뷰타겟을 업데이트하지 않음.
-	void SwitchPawn(float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰으로 변경하는 함수입니다. */
+	void SwitchPawn(APioneer* CurrentPioneer, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰으로 변경하는 함수입니다. */
+	
 	
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
 		void SwitchViewTarget(AActor* Actor, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰의 카메라로 변경하는 함수입니다. */
 	
+	FTimerHandle TimerHandleOfFindTargetViewActor;
+	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
+		void FindTargetViewActor(float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true);
+
+	FTimerHandle TimerOfSwitchNext;
+	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
+		void SwitchNext(float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰의 카메라로 변경하는 함수입니다. */
+
+	FTimerHandle TimerHandleOfSwitchFinish;
+	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
+		void SwitchFinish(float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰의 카메라로 변경하는 함수입니다. */
+
+
+
+
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
 		void PossessPioneer(APioneer* Pioneer); /** 다른 폰을 Possess() 합니다. */
 
-	FTimerHandle timer;
-	FTimerHandle timer1;
-	FTimerHandle timer2;
-	FTimerHandle timer3;
-	AActor* TargetViewActor = nullptr;
+
+
+
 
 
 /*** UI : Start ***/

@@ -119,7 +119,7 @@ void ASpaceShip::GetOffPioneer()
 
 	if (countPioneerNum >= PioneerNum)
 	{
-		PioneerManager->SwitchPawn(1.0f);
+		PioneerManager->SwitchPawn(nullptr, 2.0f);
 		TakeOff(FVector(-13725.0f, -12455.0f, 87.0f));
 		GetWorldTimerManager().ClearTimer(TimerHandleGetOffPioneer);
 	}

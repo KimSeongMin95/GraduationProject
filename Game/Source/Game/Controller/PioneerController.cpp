@@ -324,9 +324,5 @@ void APioneerController::OnUnPossess()
 		Super::OnUnPossess();
 
 		SetPawn(nullptr);
-
-		// AIController()에게 빙의하도록 합니다.
-		if (pioneer)
-			pioneer->PossessAIController();
 	}
 }

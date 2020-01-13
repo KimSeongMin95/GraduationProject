@@ -3,7 +3,6 @@
 #include "PioneerAnimInstance.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "PioneerManager.h"
 #include "Character/Pioneer.h"
 #include "Controller/PioneerController.h"
 #include "Controller/PioneerAIController.h"
@@ -82,47 +81,7 @@ void UPioneerAnimInstance::DestroyCharacter()
 		return;
 	}
 
-	UWorld* const world = GetWorld();
-	if (!world)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::DestroyCharacter() Failed: UWorld* const World = GetWorld();"));
-		return;
-	}
-
-	//APioneerManager* PioneerManager = nullptr;
-
-	//// UWorld에서 AWorldViewCameraActor를 찾습니다.
-	//for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
-	//{
-	//	PioneerManager = *ActorItr;
-	//}
-
-
-	if (Pioneer->GetMesh())
-		Pioneer->GetMesh()->DestroyComponent();
-	if (Pioneer->GetCharacterMovement())
-		Pioneer->GetCharacterMovement()->DestroyComponent();
-	if (Pioneer->HelmetMesh)
-		Pioneer->HelmetMesh->DestroyComponent();
-
-	// 어차피 Character를 Possess하는 Controller는 Pioneer->Destory()할 때, 같이 소멸됨.
-	if (Pioneer->GetController())
-	{
-		if (Pioneer->GetController()->IsA(APioneerController::StaticClass()))
-		{
-			// 소멸하기전에 APioneerController의 빙의를 해제하고 AIController에 빙의해서 AIController도 함께 소멸하도록 함.
-			Cast<APioneerController>(Pioneer->GetController())->OnUnPossess();
-
-			Pioneer->Destroy();
-
-			/*if (PioneerManager)
-			{
-				PioneerManager->SwitchPawn(1.0f);
-			}*/
-		}
-		else if (Pioneer->GetController()->IsA(APioneerAIController::StaticClass()))
-			Pioneer->Destroy();
-	}
+	Pioneer->DestroyCharacter();
 }
 
 /*** FSM : Start ***/

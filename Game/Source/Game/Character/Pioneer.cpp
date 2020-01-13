@@ -4,6 +4,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "AnimInstance/PioneerAnimInstance.h"
+#include "Controller/PioneerController.h"
 #include "Controller/PioneerAIController.h"
 #include "PioneerManager.h"
 
@@ -35,6 +36,8 @@
 APioneer::APioneer() // Sets default values
 {
 	SocketID = -1; // -1은 AI를 뜻합니다.
+	InitPioneerManager();
+
 
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
@@ -52,8 +55,6 @@ APioneer::APioneer() // Sets default values
 	InitCamera();
 
 	InitCursor();
-
-	InitAIController();
 
 	InitEquipments();
 
@@ -76,9 +77,7 @@ void APioneer::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-	InsertThis();
-
+	InitAIController();
 
 	// Init()이 끝나고 AIController에 빙의합니다.
 	PossessAIController();
@@ -98,8 +97,6 @@ void APioneer::Tick(float DeltaTime)
 		return;
 
 	Super::Tick(DeltaTime);
-	
-	//InsertThis();
 
 	SetCursorToWorld();
 
@@ -121,6 +118,9 @@ void APioneer::Tick(float DeltaTime)
 
 		ChangeWeapon();
 	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("Test"));
+
 }
 
 void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -130,6 +130,72 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 
 }
 /*** Basic Function : End ***/
+
+/*** PioneerManager : Start ***/
+void APioneer::InitPioneerManager()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::FindPioneerManager: !world"));
+		return;
+	}
+
+	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		PioneerManager = *ActorItr;
+	}
+
+	// 추가
+	if (PioneerManager)
+		PioneerManager->Pioneers.Add(this);
+}
+
+void APioneer::DestroyCharacter()
+{
+	if (!GetController())
+	{
+		Destroy();
+		return;
+	}
+
+	if (GetMesh())
+		GetMesh()->DestroyComponent();
+
+	if (GetCharacterMovement())
+		GetCharacterMovement()->DestroyComponent();
+
+	if (HelmetMesh)
+		HelmetMesh->DestroyComponent();
+
+	if (PioneerManager)
+	{
+		PioneerManager->Pioneers.Remove(this);
+		PioneerManager->SwitchPawn(this, 1.0f);
+	}
+
+	// 여기서 Destroy()하는 대신에 PioneerManager의 PossessPioneer()에서 Destroy를 대신 함.
+	//Destroy();
+}
+
+bool APioneer::CopyTopDownCameraTo(AActor* CameraToBeCopied)
+{
+	if (!TopDownCameraComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("!APioneer::CopyTopDownCameraToPioneerManager: !TopDownCameraComponent"));
+		return false;
+	}
+
+	if (!CameraToBeCopied)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("!APioneer::CopyTopDownCameraToPioneerManager: !CameraToBeCopied"));
+		return false;
+	}
+
+	CameraToBeCopied->SetActorTransform(TopDownCameraComponent->GetComponentTransform());
+	return true;
+}
+/*** PioneerManager : End ***/
 
 /*** Stat : Start ***/
 void APioneer::SetHealthPoint(float Delta)
@@ -151,8 +217,11 @@ void APioneer::SetHealthPoint(float Delta)
 	if (Building)
 		Building->Destroy();
 
-	if (PioneerManager)
-		PioneerManager->Pioneers.Remove(this);
+	if (AIController)
+	{
+		AIController->UnPossess();
+		AIController->Destroy();
+	}
 }
 
 void APioneer::InitStat()
@@ -626,7 +695,7 @@ void APioneer::InitAIController()
 		return;
 	}
 
-	FTransform myTrans = GetTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
+	FTransform myTrans = GetTransform();
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
@@ -1027,35 +1096,6 @@ void APioneer::RunBehaviorTree(float DeltaTime)
 }
 /*** BehaviorTree : End ***/
 
-
-
-
-
-void APioneer::InsertThis()
-{
-	if (PioneerManager)
-		return;
-
-	UWorld* const world = GetWorld();
-	if (!world)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::InsertThis: !world"));
-		return;
-	}
-
-
-	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
-	{
-		PioneerManager = *ActorItr;
-	}
-	
-
-	if (PioneerManager)
-	{
-		PioneerManager->Pioneers.Insert(this, 0);
-	}
-
-}
 
 
 
