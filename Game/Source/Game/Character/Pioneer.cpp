@@ -148,16 +148,22 @@ void APioneer::InitPioneerManager()
 
 	// 추가
 	if (PioneerManager)
-		PioneerManager->Pioneers.Add(this);
+	{
+		if (PioneerManager->Pioneers.Contains(this) == false)
+			PioneerManager->Pioneers.Add(this);
+	}
 }
 
 void APioneer::DestroyCharacter()
 {
+	// AIController는 이미 제거되었으므로 플레이어가 조종하는 개척자가 아니면 바로 소멸
 	if (!GetController())
 	{
 		Destroy();
 		return;
 	}
+
+
 
 	if (GetMesh())
 		GetMesh()->DestroyComponent();
@@ -173,6 +179,9 @@ void APioneer::DestroyCharacter()
 		PioneerManager->Pioneers.Remove(this);
 		PioneerManager->SwitchPawn(this, 1.0f);
 	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::DestroyCharacter: if (PioneerManager) else"));
+
 
 	// 여기서 Destroy()하는 대신에 PioneerManager의 PossessPioneer()에서 Destroy를 대신 함.
 	//Destroy();
@@ -236,7 +245,7 @@ void APioneer::InitStat()
 	AttackPower = 1.0f;
 
 	AttackRange = 8.0f;
-	DetectRange = 16.0f;
+	DetectRange = 32.0f;
 	SightRange = 32.0f;
 }
 
@@ -1069,18 +1078,20 @@ void APioneer::TracingOfFSM()
 {
 	FindTheTargetActor();
 
-	TracingTargetActor();
-
 	if (!TargetActor)
 	{
 		State = EPioneerFSM::Idle;
 		GetController()->StopMovement();
+		return;
 	}
 	else if (OverapedAttackRangeActors.Num() > 0)
 	{
 		State = EPioneerFSM::Attack;
-		//GetController()->StopMovement();
+		GetController()->StopMovement();
+		return;
 	}
+
+	TracingTargetActor();
 }
 void APioneer::AttackingOfFSM()
 {

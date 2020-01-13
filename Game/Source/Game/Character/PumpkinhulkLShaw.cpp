@@ -60,8 +60,8 @@ void APumpkinhulkLShaw::InitStat()
 	AttackPower = 50.0f;
 
 	AttackRange = 4.0f;
-	DetectRange = 8.0f;
-	SightRange = 16.0f;
+	DetectRange = 32.0f;
+	SightRange = 32.0f;
 }
 /*** Stat : End ***/
 
