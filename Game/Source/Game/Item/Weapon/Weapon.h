@@ -17,7 +17,7 @@
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Item/Item.h"
 #include "Weapon.generated.h"
 
 // DECLARE_DELEGATE(FFireDelegate);
@@ -31,7 +31,7 @@ enum class EWeaponType : uint8
 };
 
 UCLASS()
-class GAME_API AWeapon : public AActor
+class GAME_API AWeapon : public AItem
 {
 	GENERATED_BODY()
 	
@@ -49,6 +49,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
+	/*** Item : Start ***/
+public:
+	virtual void InitItem() override; /** 초기화 */
+
+	virtual void Droped() final;   /** 땅에 떨어진 상태 */
+	virtual void Acquired() final; /** 획득된 상태 */
+	/*** Item : End ***/
+
 public:
 	UPROPERTY(EditAnywhere)
 		class USkeletalMeshComponent* WeaponMesh = nullptr;
@@ -60,24 +68,24 @@ public:
 public:
 	EWeaponType WeaponType;
 
-	UPROPERTY(EditAnywhere, Category = "StateMent")
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		int LimitedLevel; /** 제한 전투력 */
 
-	UPROPERTY(EditAnywhere, Category = "StateMent")
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackPower; /** 공격력 */
-	UPROPERTY(EditAnywhere, Category = "StateMent")
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackSpeed; /** 공격속도 (쿨타임) */
-	UPROPERTY(EditAnywhere, Category = "StateMent")
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackRange; /** 사정거리 */
 
-	UPROPERTY(EditAnywhere, Category = "StateMent")
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float FireCoolTime; /** 발사 쿨타임 */
-	UPROPERTY(EditAnywhere, Category = "StateMent")
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float ReloadTime; /** 재장전 쿨타임 */
 
-	UPROPERTY(EditAnywhere, Category = "StateMent")
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float CurrentNumOfBullets; /** 현재 총알 개수 */
-	UPROPERTY(EditAnywhere, Category = "StateMent")
+	UPROPERTY(EditAnywhere, Category = "Stat")
 		float MaximumNumOfBullets; /** 최대 총알 개수 */
 
 	virtual void InitStat();

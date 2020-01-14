@@ -3,27 +3,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon/Weapon.h"
-#include "Pistol.generated.h"
+#include "Item/Weapon/Weapon.h"
+#include "GrenadeLauncher.generated.h"
 
 UCLASS()
-class GAME_API APistol : public AWeapon
+class GAME_API AGrenadeLauncher : public AWeapon
 {
 	GENERATED_BODY()
-
+	
 /*** Basic Function : Start ***/
-public:	
+public:
 	// Sets default values for this actor's properties
-	APistol();
+	AGrenadeLauncher();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
+
+	/*** Item : Start ***/
+public:
+	virtual void InitItem() final;
+	/*** Item : End ***/
 
 	/*** Stat : Start ***/
 public:

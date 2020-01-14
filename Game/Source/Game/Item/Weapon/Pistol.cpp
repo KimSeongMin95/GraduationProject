@@ -1,34 +1,35 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GrenadeLauncher.h"
+#include "Pistol.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Projectile/ProjectileGrenadeLauncher.h"
+#include "Projectile/ProjectilePistol.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values
-AGrenadeLauncher::AGrenadeLauncher()
+APistol::APistol()
 {
+	InitItem();
+
 	InitStat();
 
 	// Weapon SkeletalMesh Asset을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_GrenadeLauncher.White_GrenadeLauncher'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Pistol.White_Pistol'"));
 	if (skeletalMeshAsset.Succeeded())
 	{
 		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
-		WeaponMesh->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
 	}
 
 	// SkeletalMesh가 사용하는 Skeleton Asset을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_GrenadeLauncher_Skeleton.White_GrenadeLauncher_Skeleton'"));
+	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_Pistol_Skeleton.White_Pistol_Skeleton'"));
 	if (skeleton.Succeeded())
 	{
 		Skeleton = skeleton.Object;
 	}
 
 	// 총 쏘는 애니메이션을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_GrenadeLauncher_W.Fire_GrenadeLauncher_W'"));
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Pistol_W.Fire_Pistol_W'"));
 	if (animSequence.Succeeded())
 	{
 		AnimSequence = animSequence.Object;
@@ -36,45 +37,59 @@ AGrenadeLauncher::AGrenadeLauncher()
 	}
 
 	// 발사될 Projectile의 Transform을 설정
-	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 56.0f, 15.0f));
+	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 28.0f, 15.0f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 }
 
 // Called when the game starts or when spawned
-void AGrenadeLauncher::BeginPlay()
+void APistol::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//FireDelegate.BindUObject(this, &APistol::Fire);
 }
 
 // Called every frame
-void AGrenadeLauncher::Tick(float DeltaTime)
+void APistol::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-/*** Stat : Start ***/
-void AGrenadeLauncher::InitStat()
+/*** Item : Start ***/
+void APistol::InitItem()
 {
-	WeaponType = EWeaponType::Launcher;
+	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"));
+	if (staticMesh.Succeeded())
+	{
+		StaticMeshOfItem->SetStaticMesh(staticMesh.Object);
+	}
+}
+/*** Item : End ***/
 
-	LimitedLevel = 10;
+/*** Stat : Start ***/
+void APistol::InitStat()
+{
+	WeaponType = EWeaponType::Pistol;
 
-	AttackPower = 40.0f;
-	AttackSpeed = 0.5f;
-	AttackRange = 10.0f * AMyGameModeBase::CellSize;
+	LimitedLevel = 1;
 
-	FireCoolTime = 0.0f;
-	ReloadTime = 5.0f;
+	AttackPower = 5.0f;
+	AttackSpeed = 3.0f;
+	AttackRange = 8.0f * AMyGameModeBase::CellSize;
 
-	CurrentNumOfBullets = 6;
-	MaximumNumOfBullets = 6;
+	FireCoolTime = 0.0;
+	ReloadTime = 3.0f;
+
+	CurrentNumOfBullets = 15;
+	MaximumNumOfBullets = 15;
 }
 /*** Stat : End ***/
 
-bool AGrenadeLauncher::Fire()
+bool APistol::Fire()
 {
+	//Super::Fire();
+
 	if (FireCoolTime < (1.0f / AttackSpeed))
 		return false;
 	else
@@ -96,7 +111,7 @@ bool AGrenadeLauncher::Fire()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	AProjectile* projectile = World->SpawnActor<AProjectileGrenadeLauncher>(AProjectileGrenadeLauncher::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+	AProjectile* projectile = World->SpawnActor<AProjectilePistol>(AProjectilePistol::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 
 	return true;
 }

@@ -10,12 +10,12 @@
 
 #include "PioneerManager.h"
 
-#include "Weapon/AssaultRifle.h"
-#include "Weapon/GrenadeLauncher.h"
-#include "Weapon/Pistol.h"
-#include "Weapon/RocketLauncher.h"
-#include "Weapon/Shotgun.h"
-#include "Weapon/SniperRifle.h"
+#include "Item/Weapon/AssaultRifle.h"
+#include "Item/Weapon/GrenadeLauncher.h"
+#include "Item/Weapon/Pistol.h"
+#include "Item/Weapon/RocketLauncher.h"
+#include "Item/Weapon/Shotgun.h"
+#include "Item/Weapon/SniperRifle.h"
 
 #include "Building/Wall.h"
 #include "Building/Floor.h"
@@ -731,7 +731,7 @@ void APioneer::InitWeapon()
 	APistol* Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
 	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	//Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-
+	Pistol->Acquired();
 	if (Weapons.Contains(Pistol) == false)
 		Weapons.Add(Pistol);
 
@@ -746,18 +746,21 @@ void APioneer::InitWeapon()
 	AAssaultRifle* assaultRifle = World->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
 	assaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	assaultRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	assaultRifle->Acquired();
 	if (Weapons.Contains(assaultRifle) == false)
 		Weapons.Add(assaultRifle);
 
 	AGrenadeLauncher* grenadeLauncher = World->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
 	grenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	grenadeLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	grenadeLauncher->Acquired();
 	if (Weapons.Contains(grenadeLauncher) == false)
 		Weapons.Add(grenadeLauncher);
 
 	Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
 	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	Pistol->Acquired();
 	if (Weapons.Contains(Pistol) == false)
 		Weapons.Add(Pistol);
 
@@ -767,12 +770,14 @@ void APioneer::InitWeapon()
 	ARocketLauncher* rocketLauncher = World->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
 	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	rocketLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	rocketLauncher->Acquired();
 	if (Weapons.Contains(rocketLauncher) == false)
 		Weapons.Add(rocketLauncher);
 
 	AShotgun* shotgun = World->SpawnActor<AShotgun>(AShotgun::StaticClass(), myTrans, SpawnParams);
 	shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ShotgunSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	shotgun->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	shotgun->Acquired();
 	if (Weapons.Contains(shotgun) == false)
 		Weapons.Add(shotgun);
 
@@ -781,6 +786,7 @@ void APioneer::InitWeapon()
 	ASniperRifle* sniperRifle = World->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), myTrans, SpawnParams);
 	sniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	sniperRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	sniperRifle->Acquired();
 	if (Weapons.Contains(sniperRifle) == false)
 		Weapons.Add(sniperRifle);
 
@@ -791,7 +797,7 @@ void APioneer::InitWeapon()
 	/*** 임시 코드 : End ***/
 }
 
-void APioneer::AquireWeapon()
+void APioneer::AcquireWeapon()
 {
 
 }
@@ -878,7 +884,7 @@ void APioneer::ChangeWeapon(int Value)
 	CurrentWeapon->SetActorHiddenInGame(true);
 
 	int32 start = IdxOfCurrentWeapon;
-	int32 end = Value == 1 ? Weapons.Num() : 0;
+	int32 end = (Value == 1) ? Weapons.Num() : 0;
 
 	for (int32 idx{ start }; 
 		Weapons.IsValidIndex(idx); // 인덱스가 유효하지 않다면 건너띄기

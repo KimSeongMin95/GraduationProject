@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon/Weapon.h"
-#include "SniperRifle.generated.h"
+#include "Item/Weapon/Weapon.h"
+#include "AssaultRifle.generated.h"
 
 UCLASS()
-class GAME_API ASniperRifle : public AWeapon
+class GAME_API AAssaultRifle : public AWeapon
 {
 	GENERATED_BODY()
-	
+
 /*** Basic Function : Start ***/
 public:
 	// Sets default values for this actor's properties
-	ASniperRifle();
+	AAssaultRifle();
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,6 +24,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
+
+	/*** Item : Start ***/
+public:
+	virtual void InitItem() final;
+	/*** Item : End ***/
 
 	/*** Stat : Start ***/
 public:

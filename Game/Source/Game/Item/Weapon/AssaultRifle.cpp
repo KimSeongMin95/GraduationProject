@@ -10,6 +10,8 @@
 // Sets default values
 AAssaultRifle::AAssaultRifle()
 {
+	InitItem();
+
 	InitStat();
 
 	// Weapon SkeletalMesh Asset을 가져와서 적용
@@ -17,7 +19,6 @@ AAssaultRifle::AAssaultRifle()
 	if (skeletalMeshAsset.Succeeded())
 	{
 		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
-		WeaponMesh->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
 	}
 
 	// SkeletalMesh가 사용하는 Skeleton Asset을 가져와서 적용
@@ -36,8 +37,8 @@ AAssaultRifle::AAssaultRifle()
 	}
 
 	// 발사될 Projectile의 Transform을 설정
-	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 65.0f, 12.0f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 65.0f, 12.0f));
 }
 
 // Called when the game starts or when spawned
@@ -53,6 +54,45 @@ void AAssaultRifle::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+/*** Item : Start ***/
+void AAssaultRifle::InitItem()
+{
+	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"));
+	if (staticMesh.Succeeded())
+	{
+		StaticMeshOfItem->SetStaticMesh(staticMesh.Object);
+
+		// StaticMesh의 원본 사이즈 측정
+		FVector minBounds, maxBounds;
+		StaticMeshOfItem->GetLocalBounds(minBounds, maxBounds);
+
+		// StaticMeshOfItem의 사이즈를 통일하기 위해 메시의 최대 사이즈로 구한 scale을 일괄적으로 적용
+		float gap[3] = { maxBounds.X - minBounds.X, maxBounds.Y - minBounds.Y, maxBounds.Z - minBounds.Z };
+		float maxOfGap = 0.0f;
+		for (float g : gap)
+		{
+			if (g > maxOfGap)
+				maxOfGap = g;
+		}
+		float scaleOfItem = (maxOfGap != 0.0f) ? (RadiusOfItem / maxOfGap) : 1.0f;
+		FVector Scale(scaleOfItem, scaleOfItem, scaleOfItem);
+
+		FRotator Rotation(0.0f, 0.0f, 0.0f);
+		FVector Location(0.0f, 0.0f, 0.0f);
+
+		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
+		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
+		StaticMeshOfItem->SetRelativeScale3D(Scale);
+		StaticMeshOfItem->SetRelativeRotation(Rotation);
+		FVector center;
+		center.X = -1.0f * (((maxBounds.X + minBounds.X) * Scale.X) / 2.0f);
+		center.Y = -1.0f * (((maxBounds.Y + minBounds.Y) * Scale.Y) / 2.0f);
+		center.Z = -1.0f * (minBounds.Z * Scale.Z);
+		StaticMeshOfItem->SetRelativeLocation(center + Location);
+	}
+}
+/*** Item : End ***/
 
 /*** Stat : Start ***/
 void AAssaultRifle::InitStat()

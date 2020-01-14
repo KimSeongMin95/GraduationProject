@@ -237,7 +237,7 @@ public:
 	// 주의2!!! AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	void InitWeapon(); /** */
 
-	void AquireWeapon(); /** Weapon을 습득 */
+	void AcquireWeapon(); /** Weapon을 습득 */
 	void AbandonWeapon(); /** CurrentWeapon을 바닥에 버림 */
 
 	void FireWeapon(); /** CurrentWeapon을 Fire */

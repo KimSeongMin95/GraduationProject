@@ -1,34 +1,35 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Shotgun.h"
+#include "RocketLauncher.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Projectile/ProjectileShotgun.h"
+#include "Projectile/ProjectileRocketLauncher.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values
-AShotgun::AShotgun()
+ARocketLauncher::ARocketLauncher()
 {
+	InitItem();
+
 	InitStat();
 
 	// Weapon SkeletalMesh Asset을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Shotgun.White_Shotgun'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_RocketLauncher.White_RocketLauncher'"));
 	if (skeletalMeshAsset.Succeeded())
 	{
 		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
-		WeaponMesh->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
 	}
 
 	// SkeletalMesh가 사용하는 Skeleton Asset을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_Shotgun_Skeleton.White_Shotgun_Skeleton'"));
+	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_RocketLauncher_Skeleton.White_RocketLauncher_Skeleton'"));
 	if (skeleton.Succeeded())
 	{
 		Skeleton = skeleton.Object;
 	}
 
 	// 총 쏘는 애니메이션을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Shotgun_W.Fire_Shotgun_W'"));
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_RocketLauncher_W.Fire_RocketLauncher_W'"));
 	if (animSequence.Succeeded())
 	{
 		AnimSequence = animSequence.Object;
@@ -41,42 +42,50 @@ AShotgun::AShotgun()
 }
 
 // Called when the game starts or when spawned
-void AShotgun::BeginPlay()
+void ARocketLauncher::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
 // Called every frame
-void AShotgun::Tick(float DeltaTime)
+void ARocketLauncher::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
+/*** Item : Start ***/
+void ARocketLauncher::InitItem()
+{
+	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"));
+	if (staticMesh.Succeeded())
+	{
+		StaticMeshOfItem->SetStaticMesh(staticMesh.Object);
+	}
+}
+/*** Item : End ***/
+
 /*** Stat : Start ***/
-void AShotgun::InitStat()
+void ARocketLauncher::InitStat()
 {
 	WeaponType = EWeaponType::Launcher;
 
 	LimitedLevel = 10;
 
-	AttackPower = 10.0f;
-	AttackSpeed = 0.8f;
+	AttackPower = 30.0f;
+	AttackSpeed = 0.5f;
 	AttackRange = 10.0f * AMyGameModeBase::CellSize;
 
 	FireCoolTime = 0.0f;
-	ReloadTime = 4.0f;
+	ReloadTime = 5.0f;
 
-	CurrentNumOfBullets = 8;
-	MaximumNumOfBullets = 8;
-
-
-	NumOfSlugs = 6;
+	CurrentNumOfBullets = 6;
+	MaximumNumOfBullets = 6;
 }
 /*** Stat : End ***/
 
-bool AShotgun::Fire()
+bool ARocketLauncher::Fire()
 {
 	if (FireCoolTime < (1.0f / AttackSpeed))
 		return false;
@@ -99,17 +108,7 @@ bool AShotgun::Fire()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	for (int i = 0; i < NumOfSlugs; i++)
-	{
-		// 총알이 산탄되도록 각도를 조정합니다.
-		myTrans = ProjectileSpawnPoint->GetComponentTransform();
-		FRotator rotation = myTrans.GetRotation().Rotator(); // GetRotation()으로 얻은 FQuat의 Rotator()로 FRotator를 획득.
-		rotation.Pitch += FMath::RandRange(-10.0f, 10.0f);
-		rotation.Yaw += FMath::RandRange(-10.0f, 10.0f);
-		myTrans.SetRotation(FQuat(rotation));
-
-		AProjectile* projectile = World->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
-	}
+	AProjectile* projectile = World->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 
 	return true;
 }

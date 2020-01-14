@@ -1,34 +1,35 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SniperRifle.h"
+#include "GrenadeLauncher.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Projectile/ProjectileSniperRifle.h"
+#include "Projectile/ProjectileGrenadeLauncher.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values
-ASniperRifle::ASniperRifle()
+AGrenadeLauncher::AGrenadeLauncher()
 {
+	InitItem();
+
 	InitStat();
 
 	// Weapon SkeletalMesh Asset을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_SniperRifle.White_SniperRifle'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_GrenadeLauncher.White_GrenadeLauncher'"));
 	if (skeletalMeshAsset.Succeeded())
 	{
 		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
-		WeaponMesh->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f); // 90도 돌아가 있어서 -90을 해줘야 정방향이 됩니다.
 	}
 
 	// SkeletalMesh가 사용하는 Skeleton Asset을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_SniperRifle_Skeleton.White_SniperRifle_Skeleton'"));
+	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_GrenadeLauncher_Skeleton.White_GrenadeLauncher_Skeleton'"));
 	if (skeleton.Succeeded())
 	{
 		Skeleton = skeleton.Object;
 	}
 
 	// 총 쏘는 애니메이션을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_SniperRifle_W.Fire_SniperRifle_W'"));
+	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_GrenadeLauncher_W.Fire_GrenadeLauncher_W'"));
 	if (animSequence.Succeeded())
 	{
 		AnimSequence = animSequence.Object;
@@ -36,44 +37,55 @@ ASniperRifle::ASniperRifle()
 	}
 
 	// 발사될 Projectile의 Transform을 설정
-	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.7f, 97.0f, 11.5f));
+	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 56.0f, 15.0f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 }
 
 // Called when the game starts or when spawned
-void ASniperRifle::BeginPlay()
+void AGrenadeLauncher::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
 // Called every frame
-void ASniperRifle::Tick(float DeltaTime)
+void AGrenadeLauncher::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-/*** Stat : Start ***/
-void ASniperRifle::InitStat()
+/*** Item : Start ***/
+void AGrenadeLauncher::InitItem()
 {
-	WeaponType = EWeaponType::Rifle;
+	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"));
+	if (staticMesh.Succeeded())
+	{
+		StaticMeshOfItem->SetStaticMesh(staticMesh.Object);
+	}
+}
+/*** Item : End ***/
+
+/*** Stat : Start ***/
+void AGrenadeLauncher::InitStat()
+{
+	WeaponType = EWeaponType::Launcher;
 
 	LimitedLevel = 10;
 
-	AttackPower = 25.0f;
-	AttackSpeed = 1.0f;
+	AttackPower = 40.0f;
+	AttackSpeed = 0.5f;
 	AttackRange = 10.0f * AMyGameModeBase::CellSize;
 
 	FireCoolTime = 0.0f;
-	ReloadTime = 4.0f;
+	ReloadTime = 5.0f;
 
-	CurrentNumOfBullets = 5;
-	MaximumNumOfBullets = 5;
+	CurrentNumOfBullets = 6;
+	MaximumNumOfBullets = 6;
 }
 /*** Stat : End ***/
 
-bool ASniperRifle::Fire()
+bool AGrenadeLauncher::Fire()
 {
 	if (FireCoolTime < (1.0f / AttackSpeed))
 		return false;
@@ -96,7 +108,7 @@ bool ASniperRifle::Fire()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	AProjectile* projectile = World->SpawnActor<AProjectileSniperRifle>(AProjectileSniperRifle::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+	AProjectile* projectile = World->SpawnActor<AProjectileGrenadeLauncher>(AProjectileGrenadeLauncher::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 
 	return true;
 }
