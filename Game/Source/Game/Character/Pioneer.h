@@ -242,7 +242,8 @@ public:
 
 	void FireWeapon(); /** CurrentWeapon을 Fire */
 
-	void ChangeWeapon(float Value); /** Value 값에 따라 + - 되어 Weapons중 하나로 변경 */
+	void SetWeaponType();
+	void ChangeWeapon(float Value); /** Value 값이 1이면 CurrentWeapon의 앞쪽 인덱스, -1이면 CurrentWeapon의 뒤쪽 인덱스 Weapons중 하나로 변경 */
 
 	void Arming(); /** 비무장 -> 무장(CurrentWeapon) */
 	void Disarming(); /** 무장(CurrentWeapon) -> 비무장 */
