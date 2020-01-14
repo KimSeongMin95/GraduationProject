@@ -10,6 +10,8 @@
 // Sets default values
 AAssaultRifle::AAssaultRifle()
 {
+	InitStat();
+
 	// Weapon SkeletalMesh Asset을 가져와서 적용
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_AssaultRifle.White_AssaultRifle'"));
 	if (skeletalMeshAsset.Succeeded())
@@ -36,12 +38,6 @@ AAssaultRifle::AAssaultRifle()
 	// 발사될 Projectile의 Transform을 설정
 	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 65.0f, 12.0f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-
-	// 무기 스텟 설정
-	AttackPower = 10.0f;
-	AttackSpeed = 5.0f;
-	AttackRange = 12.0f * AMyGameModeBase::CellSize;
-	LimitedLevel = 5;
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +53,26 @@ void AAssaultRifle::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+/*** Stat : Start ***/
+void AAssaultRifle::InitStat()
+{
+	WeaponType = EWeaponType::Rifle;
+
+	LimitedLevel = 5;
+
+	AttackPower = 10.0f;
+	AttackSpeed = 5.0f;
+	AttackRange = 12.0f * AMyGameModeBase::CellSize;
+
+	FireCoolTime = 0.0;
+	ReloadTime = 2.0f;
+
+	CurrentNumOfBullets = 30;
+	MaximumNumOfBullets = 30;
+}
+/*** Stat : End ***/
+
 
 bool AAssaultRifle::Fire()
 {

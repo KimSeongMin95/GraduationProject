@@ -10,6 +10,8 @@
 // Sets default values
 AShotgun::AShotgun()
 {
+	InitStat();
+
 	// Weapon SkeletalMesh Asset을 가져와서 적용
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Shotgun.White_Shotgun'"));
 	if (skeletalMeshAsset.Succeeded())
@@ -36,14 +38,6 @@ AShotgun::AShotgun()
 	// 발사될 Projectile의 Transform을 설정
 	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 46.0f, 17.0f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-
-	// 무기 스텟 설정
-	AttackPower = 10.0f;
-	AttackSpeed = 0.8f;
-	AttackRange = 10.0f * AMyGameModeBase::CellSize;
-	LimitedLevel = 10;
-
-	BulletNumber = 6;
 }
 
 // Called when the game starts or when spawned
@@ -59,6 +53,28 @@ void AShotgun::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+/*** Stat : Start ***/
+void AShotgun::InitStat()
+{
+	WeaponType = EWeaponType::Launcher;
+
+	LimitedLevel = 10;
+
+	AttackPower = 10.0f;
+	AttackSpeed = 0.8f;
+	AttackRange = 10.0f * AMyGameModeBase::CellSize;
+
+	FireCoolTime = 0.0f;
+	ReloadTime = 4.0f;
+
+	CurrentNumOfBullets = 8;
+	MaximumNumOfBullets = 8;
+
+
+	NumOfSlugs = 6;
+}
+/*** Stat : End ***/
 
 bool AShotgun::Fire()
 {
@@ -83,7 +99,7 @@ bool AShotgun::Fire()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	for (int i = 0; i < BulletNumber; i++)
+	for (int i = 0; i < NumOfSlugs; i++)
 	{
 		// 총알이 산탄되도록 각도를 조정합니다.
 		myTrans = ProjectileSpawnPoint->GetComponentTransform();

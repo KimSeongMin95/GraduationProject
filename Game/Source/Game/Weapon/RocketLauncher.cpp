@@ -10,6 +10,8 @@
 // Sets default values
 ARocketLauncher::ARocketLauncher()
 {
+	InitStat();
+
 	// Weapon SkeletalMesh Asset을 가져와서 적용
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_RocketLauncher.White_RocketLauncher'"));
 	if (skeletalMeshAsset.Succeeded())
@@ -36,12 +38,6 @@ ARocketLauncher::ARocketLauncher()
 	// 발사될 Projectile의 Transform을 설정
 	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 46.0f, 17.0f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-
-	// 무기 스텟 설정
-	AttackPower = 30.0f;
-	AttackSpeed = 0.5f;
-	AttackRange = 10.0f * AMyGameModeBase::CellSize;
-	LimitedLevel = 10;
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +53,25 @@ void ARocketLauncher::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+/*** Stat : Start ***/
+void ARocketLauncher::InitStat()
+{
+	WeaponType = EWeaponType::Launcher;
+
+	LimitedLevel = 10;
+
+	AttackPower = 30.0f;
+	AttackSpeed = 0.5f;
+	AttackRange = 10.0f * AMyGameModeBase::CellSize;
+
+	FireCoolTime = 0.0f;
+	ReloadTime = 5.0f;
+
+	CurrentNumOfBullets = 6;
+	MaximumNumOfBullets = 6;
+}
+/*** Stat : End ***/
 
 bool ARocketLauncher::Fire()
 {

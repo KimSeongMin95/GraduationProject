@@ -195,8 +195,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		class UCameraComponent* TopDownCameraComponent = nullptr; /** 따라다니는 카메라입니다. */
-
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return TopDownCameraComponent; }
+	FORCEINLINE class UCameraComponent* GetTopDownCamera() const { return TopDownCameraComponent; }
 
 	void InitCamera();
 
@@ -226,26 +225,28 @@ public:
 
 /*** Weapon : Start ***/
 public:
-	UPROPERTY(EditAnywhere)
-		class AWeapon* Weapon = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+		TArray<class AWeapon*> Weapons; /** Weapon들을 관리할 TArray */
 
-	class APistol* Pistol = nullptr;
-	class AAssaultRifle* AssaultRifle = nullptr;
-	class ASniperRifle* SniperRifle = nullptr;
-	class AShotgun* Shotgun = nullptr;
-	class ARocketLauncher* RocketLauncher = nullptr;
-	class AGrenadeLauncher* GrenadeLauncher = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+		class AWeapon* CurrentWeapon = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+		int IdxOfCurrentWeapon; /** 현재 무기의 인덱스를 저장 */
 
-	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
-	// 주의!!!! Weapon을 가져오면 Owner를 this로 설정해주어야 발사할 때 충돌감지를 벗어날 수 있습니다.
-	void SpawnWeapon();
+	// 주의!!! Weapon을 생성할 때, Owner를 this로 설정해주어야 발사할 때 충돌감지를 벗어날 수 있습니다.
+	// 주의2!!! AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
+	void InitWeapon(); /** */
 
-	void FireWeapon();
+	void AquireWeapon(); /** Weapon을 습득 */
+	void AbandonWeapon(); /** CurrentWeapon을 바닥에 버림 */
 
-	// 임시
-	int tempIdx = 0;
-	void ChangeWeapon(); /** Pistol, Rifle, Launcher 중 하나로 변경합니다. */
-	void Disarming();
+	void FireWeapon(); /** CurrentWeapon을 Fire */
+
+	void ChangeWeapon(float Value); /** Value 값에 따라 + - 되어 Weapons중 하나로 변경 */
+
+	void Arming(); /** 비무장 -> 무장(CurrentWeapon) */
+	void Disarming(); /** 무장(CurrentWeapon) -> 비무장 */
+
 /*** Weapon : End ***/
 
 /*** Building : Start ***/
@@ -291,10 +292,5 @@ public:
 public:
 	virtual void RunBehaviorTree(float DeltaTime) final;
 	/*** BehaviorTree : End ***/
-
-
-
-	UPROPERTY(EditAnywhere)
-		int TempChangeWeaponCount;
 };
 

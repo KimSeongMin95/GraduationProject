@@ -10,6 +10,8 @@
 // Sets default values
 ASniperRifle::ASniperRifle()
 {
+	InitStat();
+
 	// Weapon SkeletalMesh Asset을 가져와서 적용
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_SniperRifle.White_SniperRifle'"));
 	if (skeletalMeshAsset.Succeeded())
@@ -36,12 +38,6 @@ ASniperRifle::ASniperRifle()
 	// 발사될 Projectile의 Transform을 설정
 	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.7f, 97.0f, 11.5f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-
-	// 무기 스텟 설정
-	AttackPower = 20.0f;
-	AttackSpeed = 1.0f;
-	AttackRange = 10.0f * AMyGameModeBase::CellSize;
-	LimitedLevel = 10;
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +53,25 @@ void ASniperRifle::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+/*** Stat : Start ***/
+void ASniperRifle::InitStat()
+{
+	WeaponType = EWeaponType::Rifle;
+
+	LimitedLevel = 10;
+
+	AttackPower = 25.0f;
+	AttackSpeed = 1.0f;
+	AttackRange = 10.0f * AMyGameModeBase::CellSize;
+
+	FireCoolTime = 0.0f;
+	ReloadTime = 4.0f;
+
+	CurrentNumOfBullets = 5;
+	MaximumNumOfBullets = 5;
+}
+/*** Stat : End ***/
 
 bool ASniperRifle::Fire()
 {

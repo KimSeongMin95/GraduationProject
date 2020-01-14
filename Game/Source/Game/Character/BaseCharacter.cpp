@@ -219,7 +219,9 @@ void ABaseCharacter::TickHelthPointBar()
 /*** AIController : Start ***/
 void ABaseCharacter::InitAIController()
 {
-	// 자식 클래스에서 구현할 것!
+	// Pawn을 상속받는 클래스를 Editor에서 끌어다 객체화 할 때, 자동으로 생성되는 상위 클래스인 AIController를 삭제
+	if (GetController())
+		GetController()->Destroy();
 }
 
 void ABaseCharacter::PossessAIController()

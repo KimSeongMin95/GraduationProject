@@ -34,9 +34,12 @@ public:
 	///** Resets HMD orientation in VR. */
 	//void OnResetVR(); 
 
+	UPROPERTY(EditAnywhere)
+		class APioneer* Pioneer = nullptr;
+
 	/*** Navigating player : Start ***/
 	void MoveToMouseCursor(); /** Navigate player to the current mouse cursor location. */
-	void MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location); /** Navigate player to the current touch location. */
+	//void MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location); /** Navigate player to the current touch location. */
 	/*** Navigating player : End ***/
 
 	/*** Input handlers for SetDestination action. : Start ***/
@@ -52,16 +55,17 @@ public:
 		void ZoomInOrZoomOut(float Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
-		void FireWeapon();
+		void FireWeapon(float Value);
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
-		void ChangeWeapon();
+		void ChangeWeapon(float Value);
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void ArmOrDisArmWeapon();
 
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void RotatingBuilding(float Value);
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void PlaceBuilding();
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
-		void ConstructingMode();
+
 	/*** Input handlers for SetDestination action. : End ***/
 
 /*** Overrided Function : Start ***/

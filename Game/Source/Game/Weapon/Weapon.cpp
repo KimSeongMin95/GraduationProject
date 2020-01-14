@@ -8,11 +8,7 @@ AWeapon::AWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	AttackPower = 0;
-	AttackSpeed = 1.0f;
-	AttackRange = 1.0f;
-	LimitedLevel = 1;
-	FireCoolTime = 0.0f;
+	InitStat();
 
 	// Empty WeaponMesh 생성후 RootComponent에 부착.
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
@@ -37,6 +33,25 @@ void AWeapon::Tick(float DeltaTime)
 
 	FireCoolTime += DeltaTime;
 }
+
+/*** Stat : Start ***/
+void AWeapon::InitStat()
+{
+	WeaponType = EWeaponType::Pistol;
+
+	LimitedLevel = 1;
+
+	AttackPower = 1.0f;
+	AttackSpeed = 1.0f;
+	AttackRange = 1.0f * AMyGameModeBase::CellSize;
+
+	FireCoolTime = 0.0;
+	ReloadTime = 1.0f;
+
+	CurrentNumOfBullets = 1;
+	MaximumNumOfBullets = 1;
+}
+/*** Stat : End ***/
 
 bool AWeapon::Fire()
 {

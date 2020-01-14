@@ -10,6 +10,8 @@
 // Sets default values
 APistol::APistol()
 {
+	InitStat();
+
 	// Weapon SkeletalMesh Asset을 가져와서 적용
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Pistol.White_Pistol'"));
 	if (skeletalMeshAsset.Succeeded())
@@ -36,12 +38,6 @@ APistol::APistol()
 	// 발사될 Projectile의 Transform을 설정
 	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 28.0f, 15.0f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-
-	// 무기 스텟 설정
-	AttackPower = 5.0f;
-	AttackSpeed = 3.0f;
-	AttackRange = 8.0f * AMyGameModeBase::CellSize;
-	LimitedLevel = 1;
 }
 
 // Called when the game starts or when spawned
@@ -58,6 +54,25 @@ void APistol::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+/*** Stat : Start ***/
+void APistol::InitStat()
+{
+	WeaponType = EWeaponType::Pistol;
+
+	LimitedLevel = 1;
+
+	AttackPower = 5.0f;
+	AttackSpeed = 3.0f;
+	AttackRange = 8.0f * AMyGameModeBase::CellSize;
+
+	FireCoolTime = 0.0;
+	ReloadTime = 3.0f;
+
+	CurrentNumOfBullets = 15;
+	MaximumNumOfBullets = 15;
+}
+/*** Stat : End ***/
 
 bool APistol::Fire()
 {

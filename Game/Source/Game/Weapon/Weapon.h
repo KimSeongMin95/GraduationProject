@@ -22,6 +22,14 @@
 
 // DECLARE_DELEGATE(FFireDelegate);
 
+UENUM()
+enum class EWeaponType : uint8
+{
+	Pistol = 0,
+	Rifle = 1,
+	Launcher = 2
+};
+
 UCLASS()
 class GAME_API AWeapon : public AActor
 {
@@ -48,23 +56,32 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UArrowComponent* ProjectileSpawnPoint = nullptr;
 
-/*** 무기 스텟 설정 : Start ***/
+/*** Stat : Start ***/
 public:
-	UPROPERTY(EditAnywhere, Category = "StateMent")
-		float AttackPower; // 공격력
-	UPROPERTY(EditAnywhere, Category = "StateMent")
-		float AttackSpeed; // 공격속도
-	UPROPERTY(EditAnywhere, Category = "StateMent")
-		float AttackRange; // 사정거리
-	UPROPERTY(EditAnywhere, Category = "StateMent")
-		int LimitedLevel; // 제한 전투력
+	EWeaponType WeaponType;
 
 	UPROPERTY(EditAnywhere, Category = "StateMent")
-		float FireCoolTime;
+		int LimitedLevel; /** 제한 전투력 */
 
 	UPROPERTY(EditAnywhere, Category = "StateMent")
-		float BulletNumber;
-/*** 무기 스텟 설정 : End ***/
+		float AttackPower; /** 공격력 */
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		float AttackSpeed; /** 공격속도 (쿨타임) */
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		float AttackRange; /** 사정거리 */
+
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		float FireCoolTime; /** 발사 쿨타임 */
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		float ReloadTime; /** 재장전 쿨타임 */
+
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		float CurrentNumOfBullets; /** 현재 총알 개수 */
+	UPROPERTY(EditAnywhere, Category = "StateMent")
+		float MaximumNumOfBullets; /** 최대 총알 개수 */
+
+	virtual void InitStat();
+/*** Stat : End ***/
 
 public:
 	UPROPERTY(EditAnywhere)

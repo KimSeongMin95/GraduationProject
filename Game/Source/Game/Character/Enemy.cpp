@@ -266,6 +266,8 @@ void AEnemy::InitSkeletalAnimation()
 /*** AEnemyAIController : Start ***/
 void AEnemy::InitAIController()
 {
+	Super::InitAIController();
+
 	// 이미 AIController를 가지고 있으면 생성하지 않음.
 	if (AIController)
 		return;

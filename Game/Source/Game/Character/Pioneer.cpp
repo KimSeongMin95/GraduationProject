@@ -9,11 +9,6 @@
 #include "PioneerManager.h"
 
 #include "Weapon/Pistol.h"
-#include "Weapon/AssaultRifle.h"
-#include "Weapon/SniperRifle.h"
-#include "Weapon/Shotgun.h"
-#include "Weapon/RocketLauncher.h"
-#include "Weapon/GrenadeLauncher.h"
 
 #include "Building/Wall.h"
 #include "Building/Floor.h"
@@ -67,9 +62,6 @@ APioneer::APioneer() // Sets default values
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
 	//BaseLookUpRate = 45.0f;
-
-
-	TempChangeWeaponCount = FMath::RandRange(1, 2);
 }
 
 // Called when the game starts or when spawned
@@ -82,8 +74,7 @@ void APioneer::BeginPlay()
 	// Init()이 끝나고 AIController에 빙의합니다.
 	PossessAIController();
 
-	// 여기서 Actor를 생성하지 않고 나중에 무기생산 공장에서 생성한 액터를 가져오면 됩니다.
-	SpawnWeapon();
+	InitWeapon();
 }
 
 // Called every frame
@@ -104,23 +95,8 @@ void APioneer::Tick(float DeltaTime)
 
 	RotateTargetRotation(DeltaTime);
 
-	// RunFSM(DeltaTime); // AIController에서만 실행
-
 	// 회전시 떨림을 방지하기 위해 카메라 위치 조정은 가장 마지막에 실행합니다.
 	SetCameraBoomSettings();
-
-
-	if (TempChangeWeaponCount > 0)
-	{
-		TempChangeWeaponCount--;
-		if (TempChangeWeaponCount < 0)
-			TempChangeWeaponCount = 0;
-
-		ChangeWeapon();
-	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("Test"));
-
 }
 
 void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -220,8 +196,11 @@ void APioneer::SetHealthPoint(float Delta)
 	if (CursorToWorld)
 		CursorToWorld->DestroyComponent();
 
-	if (Weapon)
-		Weapon->Destroy();
+	for (auto& weapon : Weapons)
+	{
+		if (weapon)
+			weapon->Destroy();
+	}
 
 	if (Building)
 		Building->Destroy();
@@ -407,7 +386,7 @@ void APioneer::InitCharacterMovement()
 void APioneer::RotateTargetRotation(float DeltaTime)
 {
 	// 무기가 없거나 회전을 할 필요가 없으면 실행하지 않습니다.
-	if (!Weapon || !bRotateTargetRotation)
+	if (!CurrentWeapon || !bRotateTargetRotation)
 		return;
 
 	Super::RotateTargetRotation(DeltaTime);
@@ -635,7 +614,7 @@ void APioneer::SetCursorToWorld()
 		CursorToWorld->SetWorldRotation(CursorR);
 
 		// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
-		if (Weapon)
+		if (CurrentWeapon)
 		{ 
 			LookAtTheLocation(CursorToWorld->GetComponentLocation());
 		}
@@ -693,6 +672,8 @@ void APioneer::SetCursorToWorld()
 /*** APioneerAIController : Start ***/
 void APioneer::InitAIController()
 {
+	Super::InitAIController();
+
 	// 이미 AIController를 가지고 있으면 생성하지 않음.
 	if (AIController)
 		return;
@@ -724,12 +705,12 @@ void APioneer::PossessAIController()
 /*** APioneerAIController : End ***/
 
 /*** Weapon : Start ***/
-void APioneer::SpawnWeapon()
+void APioneer::InitWeapon()
 {
 	UWorld* const World = GetWorld();
 	if (!World)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::InitWeapon: !World"));
 		return;
 	}
 
@@ -739,36 +720,36 @@ void APioneer::SpawnWeapon()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	// 임시로 전부다 만들어 놓습니다.
-	Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
-	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket"));
-	Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	AssaultRifle = World->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
-	AssaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket"));
-	AssaultRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	SniperRifle = World->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), myTrans, SpawnParams);
-	SniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket"));
-	SniperRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	Shotgun = World->SpawnActor<AShotgun>(AShotgun::StaticClass(), myTrans, SpawnParams);
-	Shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ShotgunSocket"));
-	Shotgun->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	RocketLauncher = World->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
-	RocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket"));
-	RocketLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	GrenadeLauncher = World->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
-	GrenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket"));
-	GrenadeLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	// 개척자는 기본적으로 권총을 가지고 있음
+	APistol* Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
+	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
+	//Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+
+	if (Weapons.Contains(Pistol) == false)
+		Weapons.Add(Pistol);
+
+	IdxOfCurrentWeapon = 0;
+	Arming();
+}
+
+void APioneer::AquireWeapon()
+{
+
+}
+void APioneer::AbandonWeapon()
+{
+
 }
 
 void APioneer::FireWeapon()
 {
-	if (Weapon)
+	if (CurrentWeapon)
 	{
 		// 쿨타임이 돌아와서 발사가 되었다면 UPioneerAnimInstance에 알려줍니다.
-		if (Weapon->Fire())
+		if (CurrentWeapon->Fire())
 		{
 			// Pistol은 Fire 애니메이션이 없어서 제외합니다.
-			if (!Weapon->IsA(APistol::StaticClass()))
+			if (CurrentWeapon->IsA(APistol::StaticClass()) == false)
 			{
 				// 사용중인 BP_PioneerAnimation을 가져와서 bFired 변수를 조정합니다.
 				UPioneerAnimInstance* PAnimInst = dynamic_cast<UPioneerAnimInstance*>(GetMesh()->GetAnimInstance());
@@ -781,10 +762,15 @@ void APioneer::FireWeapon()
 	}
 }
 
-// 임시
-void APioneer::ChangeWeapon()
+void APioneer::ChangeWeapon(float Value)
 {
-	tempIdx++;
+
+
+
+
+
+
+	/*tempIdx++;
 
 	switch (tempIdx)
 	{
@@ -839,21 +825,78 @@ void APioneer::ChangeWeapon()
 	}
 
 	if (tempIdx >= 7)
-		tempIdx = 0;
+		tempIdx = 0;*/
+}
+void APioneer::Arming()
+{
+	// IdxOfCurrentWeapon가 유효하지 않으면
+	if (Weapons.IsValidIndex(IdxOfCurrentWeapon) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::Arming: if (IdxOfCurrentWeapon == INDEX_NONE)"));
+
+		CurrentWeapon = nullptr;
+
+		// Weapons에 존재하는 가장 앞의 Weapon을 설정
+		for (auto& weapon : Weapons)
+		{
+			if (weapon)
+			{
+				CurrentWeapon = weapon;
+				IdxOfCurrentWeapon = Weapons.IndexOfByKey(CurrentWeapon);
+				break;
+			}
+		}
+	}
+	else
+		CurrentWeapon = Weapons[IdxOfCurrentWeapon];
+
+	if (!CurrentWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::Arming: if (!CurrentWeapon)"));
+		return;
+	}
+
+	CurrentWeapon->SetActorHiddenInGame(false);
+
+	GetCharacterMovement()->bOrientRotationToMovement = false; // 무기를 들면 이동 방향에 캐릭터 메시가 따라 회전하지 않습니다.
+
+	// BP_PioneerAnimation에서 무기 들기
+	switch (CurrentWeapon->WeaponType)
+	{
+	case EWeaponType::Pistol:
+		bHasPistolType = true;
+		break;
+	case EWeaponType::Rifle:
+		bHasRifleType = true;
+		break;
+	case EWeaponType::Launcher:
+		bHasLauncherType = true;
+		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::Arming: switch (CurrentWeapon->WeaponType) default:"));
+		break;
+	}
+
+
 }
 void APioneer::Disarming()
 {
-	if (!Weapon)
-		return;
-
-	// 무기 내려놓기
+	// BP_PioneerAnimation에서 무기 내려놓기
 	bHasPistolType = false;
 	bHasRifleType = false;
 	bHasLauncherType = false;
-	Weapon->SetActorHiddenInGame(true);
-	Weapon = nullptr;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	tempIdx = 0;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true; // 무기를 들지 않으면 이동 방향에 캐릭터 메시가 따라 회전합니다.
+
+
+	if (!CurrentWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::Arming: if (!CurrentWeapon)"));
+		return;
+	}
+
+	CurrentWeapon->SetActorHiddenInGame(true);
+	CurrentWeapon = nullptr;
 }
 /*** Weapon : End ***/
 
