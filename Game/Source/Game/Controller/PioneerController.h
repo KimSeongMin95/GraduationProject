@@ -57,7 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void FireWeapon(float Value);
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
-		void ChangeWeapon(float Value);
+		void ChangePreviousWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void ChangeNextWeapon();
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void ArmOrDisArmWeapon();
 

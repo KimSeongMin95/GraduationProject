@@ -49,7 +49,8 @@ void APioneerController::SetupInputComponent()
 	InputComponent->BindAxis("ZoomInOut", this, &APioneerController::ZoomInOrZoomOut);
 
 	InputComponent->BindAxis("FireWeapon", this, &APioneerController::FireWeapon);
-	InputComponent->BindAxis("ChangeWeapon", this, &APioneerController::ChangeWeapon);
+	InputComponent->BindAction("ChangePreviousWeapon", IE_Pressed, this, &APioneerController::ChangePreviousWeapon);
+	InputComponent->BindAction("ChangeNextWeapon", IE_Pressed, this, &APioneerController::ChangeNextWeapon);
 	InputComponent->BindAction("ArmOrDisArmWeapon", IE_Pressed, this, &APioneerController::ArmOrDisArmWeapon);
 
 	// E키: 바닥에 있는 아이템 줍기
@@ -230,7 +231,6 @@ void APioneerController::ZoomInOrZoomOut(float Value)
 
 	Pioneer->ZoomInOrZoomOut(Value);
 }
-
 void APioneerController::FireWeapon(float Value)
 {
 	// Value에 값이 없으면 실행할 필요가 없으니 종료
@@ -251,12 +251,8 @@ void APioneerController::FireWeapon(float Value)
 	Pioneer->FireWeapon();
 }
 
-void APioneerController::ChangeWeapon(float Value)
+void APioneerController::ChangePreviousWeapon()
 {
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
-	if (Value == 0.0f)
-		return;
-
 	if (!Pioneer || !GetPawn())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ChangeWeapon: if (!Pioneer || !GetPawn())"));
@@ -272,7 +268,26 @@ void APioneerController::ChangeWeapon(float Value)
 	if (Pioneer->bConstructingMode)
 		return;
 		
-	Pioneer->ChangeWeapon(Value);
+	Pioneer->ChangeWeapon(-1);
+}
+void APioneerController::ChangeNextWeapon()
+{
+	if (!Pioneer || !GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ChangeWeapon: if (!Pioneer || !GetPawn())"));
+		return;
+	}
+
+
+	// 죽으면 함수를 실행하지 않음.
+	if (Pioneer->bDying)
+		return;
+
+	// 건설모드면 실행하지 않음.
+	if (Pioneer->bConstructingMode)
+		return;
+
+	Pioneer->ChangeWeapon(1);
 }
 void APioneerController::ArmOrDisArmWeapon()
 {
