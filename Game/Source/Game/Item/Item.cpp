@@ -45,6 +45,7 @@ void AItem::InitItem()
 	PhysicsBoxComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	PhysicsBoxComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	PhysicsBoxComp->SetSimulatePhysics(true);
+	PhysicsBoxComp->SetRelativeLocation(FVector(0.0f, 0.0f, HalfHeightOfBox));
 
 	InteractionRange = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionRange"));
 	InteractionRange->SetupAttachment(RootComponent);
@@ -56,6 +57,43 @@ void AItem::InitItem()
 	StaticMeshOfItem->SetupAttachment(RootComponent);
 	StaticMeshOfItem->SetGenerateOverlapEvents(false);
 	StaticMeshOfItem->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AItem::InitStaticMeshOfItem(const TCHAR* ObjectToFind, FRotator Rotation, FVector Location)
+{
+	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMesh(ObjectToFind);
+	if (staticMesh.Succeeded())
+	{
+		StaticMeshOfItem->SetStaticMesh(staticMesh.Object);
+
+		// StaticMesh의 원본 사이즈 측정
+		FVector minBounds, maxBounds;
+		StaticMeshOfItem->GetLocalBounds(minBounds, maxBounds);
+
+		// StaticMeshOfItem의 사이즈를 통일하기 위해 메시의 최대 사이즈로 구한 scale을 일괄적으로 적용
+		float gap[3] = { maxBounds.X - minBounds.X, maxBounds.Y - minBounds.Y, maxBounds.Z - minBounds.Z };
+		float maxOfGap = 0.0f;
+		for (float g : gap)
+		{
+			if (g > maxOfGap)
+				maxOfGap = g;
+		}
+		float scaleOfItem = (maxOfGap != 0.0f) ? (RadiusOfItem / maxOfGap) : 1.0f;
+		FVector Scale(scaleOfItem, scaleOfItem, scaleOfItem);
+
+		//FRotator Rotation(-45.0f, 0.0f, 0.0f); // 플레이어에게 잘 보이도록 45도 기울임
+		//FVector Location(0.0f, 0.0f, 0.0f);
+
+		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
+		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
+		StaticMeshOfItem->SetRelativeScale3D(Scale);
+		StaticMeshOfItem->SetRelativeRotation(Rotation);
+		FVector center;
+		center.X = -1.0f * (((maxBounds.X + minBounds.X) * Scale.X) / 2.0f);
+		center.Y = -1.0f * (((maxBounds.Y + minBounds.Y) * Scale.Y) / 2.0f);
+		center.Z = -1.0f * (minBounds.Z * Scale.Z);
+		StaticMeshOfItem->SetRelativeLocation(center + Location);
+	}
 }
 
 void AItem::Droped()

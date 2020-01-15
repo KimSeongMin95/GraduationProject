@@ -54,6 +54,7 @@ public:
 
 	virtual void SetHierarchy();
 
+	bool SkipOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult); /** OnOverlapBegin에서 무시해서 return;하는 것들을 Projectile에서 일괄적으로 처리하기 위해 자식클래스의 OnOverlapBegin에서 사용 */
 	UFUNCTION()
 		virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

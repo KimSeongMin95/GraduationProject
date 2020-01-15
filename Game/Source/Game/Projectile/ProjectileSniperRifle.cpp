@@ -26,9 +26,10 @@ AProjectileSniperRifle::AProjectileSniperRifle()
 	{
 		StaticMeshComp->SetStaticMesh(sphereMeshAsset.Object);
 
-		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-		StaticMeshComp->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
 		StaticMeshComp->SetRelativeScale3D(FVector(5.0f, 5.0f, 5.0f));
+		StaticMeshComp->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
 		// UMaterialInstance를 직접 생성하여 Parent로 Material을 가져오는 방법도 있으나 지금은 만들어진 것을 가져오겠습니다.
 		static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> projectileMatInst(TEXT("MaterialInstanceConstant'/Game/Weapons/Materials/Projectile/Mat_Inst_ProjectileSniperRifle.Mat_Inst_ProjectileSniperRifle'"));
@@ -49,8 +50,9 @@ AProjectileSniperRifle::AProjectileSniperRifle()
 	/*** ProjectileMovement : End ***/
 
 	/*** ParticleSystem : Start ***/
-	TrailParticleSystem->SetRelativeLocation(FVector(-28.0f, 0.0f, 0.0f));
 	TrailParticleSystem->SetRelativeScale3D(FVector(0.8f, 1.2f, 1.2f));
+	TrailParticleSystem->SetRelativeLocation(FVector(-28.0f, 0.0f, 0.0f));
+	
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> trailParticleSystem(TEXT("ParticleSystem'/Game/Weapons/FX/Particles/P_SniperRifle_Tracer_Light.P_SniperRifle_Tracer_Light'"));
 	if (trailParticleSystem.Succeeded())
 	{
@@ -96,39 +98,24 @@ void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* Overlappe
 {
 	AProjectile::OnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	if (SkipOnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult))
 		return;
 
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-		return;
-
-	// owner가 없으면 충돌나기 때문에 체크합니다.
-	if (this->GetOwner() && this->GetOwner()->GetOwner())
+	if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
 	{
-		// 충돌한 액터가 투사체의 소유자(Weapon) 또는 소유자의 소유자(Pioneer)면 무시합니다.
-		if (OtherActor == this->GetOwner() || OtherActor == this->GetOwner()->GetOwner())
-		{
-			return;
-		}
+		// ImpactParticleSystem을 실행합니다.
+		if (ImpactParticleSystem && ImpactParticleSystem->Template)
+			ImpactParticleSystem->ToggleActive();
+
+		hitCount = 3;
 	}
 
-	// 개척자 끼리는 무시합니다.
-	if (OtherActor->IsA(APioneer::StaticClass()))
-		return;
-
-	// 투사체 끼리는 무시합니다.
-	if (OtherActor->IsA(AProjectile::StaticClass()))
-		return;
 
 	// 건물에서
 	if (OtherActor->IsA(ABuilding::StaticClass()))
 	{
-		// 건설할 수 있는 지 확인하는 상태면 무시합니다.
-		if (dynamic_cast<ABuilding*>(OtherActor)->BuildingState == EBuildingState::Constructable)
-			return;
-		else // 건물에 닿으면 바로 소멸시킵니다.
+		// 건설할 수 있는 지 확인하는 상태가 아니면
+		if (dynamic_cast<ABuilding*>(OtherActor)->BuildingState != EBuildingState::Constructable)
 		{
 			// ImpactParticleSystem을 실행합니다.
 			if (ImpactParticleSystem && ImpactParticleSystem->Template)
@@ -140,17 +127,8 @@ void AProjectileSniperRifle::OnOverlapBegin(class UPrimitiveComponent* Overlappe
 
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
-		AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor);
-		if (enemy)
+		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 		{
-			// 만약 OtherActor가 enemy이기는 하지만 enemy의 DetactRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (enemy->DetactRangeSphereComp == OtherComp)
-				return;
-
-			// 만약 OtherActor가 enemy이기는 하지만 enemy의 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (enemy->AttackRangeSphereComp == OtherComp)
-				return;
-
 			enemy->SetHealthPoint(-TotalDamage);
 		}
 

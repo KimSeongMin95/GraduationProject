@@ -37,8 +37,8 @@ AGrenadeLauncher::AGrenadeLauncher()
 	}
 
 	// 발사될 Projectile의 Transform을 설정
-	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 56.0f, 15.0f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 56.0f, 15.0f));
 }
 
 // Called when the game starts or when spawned
@@ -58,11 +58,8 @@ void AGrenadeLauncher::Tick(float DeltaTime)
 /*** Item : Start ***/
 void AGrenadeLauncher::InitItem()
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"));
-	if (staticMesh.Succeeded())
-	{
-		StaticMeshOfItem->SetStaticMesh(staticMesh.Object);
-	}
+	InitStaticMeshOfItem(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_GrenadeLauncher.SM_White_GrenadeLauncher'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+
 }
 /*** Item : End ***/
 

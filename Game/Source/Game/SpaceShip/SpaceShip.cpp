@@ -60,8 +60,10 @@ void ASpaceShip::InitSpawnPioneer()
 
 	PioneerSpawnPoint = CreateDefaultSubobject<UArrowComponent>("PioneerSpawnPoint");
 	PioneerSpawnPoint->SetupAttachment(RootComponent);
-	PioneerSpawnPoint->SetRelativeLocation(FVector(-625.0f, -345.0f, -20.0f));
+
 	PioneerSpawnPoint->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+	PioneerSpawnPoint->SetRelativeLocation(FVector(-625.0f, -345.0f, -20.0f));
+
 }
 
 void ASpaceShip::FindPioneerCtrl()

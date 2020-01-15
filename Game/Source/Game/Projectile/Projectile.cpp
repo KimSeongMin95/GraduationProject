@@ -5,6 +5,9 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Item/Weapon/Weapon.h"
+#include "Character/Enemy.h"
+#include "Character/Pioneer.h"
+#include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 // Sets default values
@@ -89,6 +92,8 @@ void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	//UE_LOG(LogTemp, Warning, TEXT("TEST"));
 }
 
 void AProjectile::SetHierarchy()
@@ -96,6 +101,50 @@ void AProjectile::SetHierarchy()
 	/** Child 클래스에서 꼭 오버라이드 해야 합니다. */
 }
 
+bool AProjectile::SkipOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+		return true;
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return true;
+
+	// owner가 없으면 충돌나기 때문에 체크합니다.
+	if (this->GetOwner() && this->GetOwner()->GetOwner())
+	{
+		// 충돌한 액터가 투사체의 소유자(Weapon) 또는 소유자의 소유자(Pioneer)면 무시합니다.
+		if (OtherActor == this->GetOwner() || OtherActor == this->GetOwner()->GetOwner())
+		{
+			return true;
+		}
+	}
+
+	// 개척자 끼리는 무시합니다.
+	if (OtherActor->IsA(APioneer::StaticClass()))
+		return true;
+
+	// 투사체 끼리는 무시합니다.
+	if (OtherActor->IsA(AProjectile::StaticClass()))
+		return true;
+
+	// 건물에서
+	if (OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		// 건설할 수 있는 지 확인하는 상태면 무시합니다.
+		if (dynamic_cast<ABuilding*>(OtherActor)->BuildingState == EBuildingState::Constructable)
+			return true;
+	}
+
+	// 충돌한 액터의 OtherComp가 SphereComponent라면 무시
+	if (OtherComp->IsA(USphereComponent::StaticClass()))
+		return true;
+
+
+	// 자식의 OnOverlapBegin 함수 실행 가능
+	return false;
+}
 void AProjectile::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	/** Child 클래스에서 꼭 오버라이드 해야 합니다. */

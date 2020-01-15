@@ -37,8 +37,8 @@ ASniperRifle::ASniperRifle()
 	}
 
 	// 발사될 Projectile의 Transform을 설정
-	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.7f, 97.0f, 11.5f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.7f, 97.0f, 11.5f));
 }
 
 // Called when the game starts or when spawned
@@ -58,11 +58,8 @@ void ASniperRifle::Tick(float DeltaTime)
 /*** Item : Start ***/
 void ASniperRifle::InitItem()
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"));
-	if (staticMesh.Succeeded())
-	{
-		StaticMeshOfItem->SetStaticMesh(staticMesh.Object);
-	}
+	InitStaticMeshOfItem(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_SniperRifle.SM_White_SniperRifle'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+
 }
 /*** Item : End ***/
 

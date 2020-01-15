@@ -37,8 +37,8 @@ APistol::APistol()
 	}
 
 	// 발사될 Projectile의 Transform을 설정
-	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 28.0f, 15.0f));
 	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
+	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 28.0f, 15.0f));
 }
 
 // Called when the game starts or when spawned
@@ -59,11 +59,8 @@ void APistol::Tick(float DeltaTime)
 /*** Item : Start ***/
 void APistol::InitItem()
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"));
-	if (staticMesh.Succeeded())
-	{
-		StaticMeshOfItem->SetStaticMesh(staticMesh.Object);
-	}
+	InitStaticMeshOfItem(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_Pistol.SM_White_Pistol'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+
 }
 /*** Item : End ***/
 

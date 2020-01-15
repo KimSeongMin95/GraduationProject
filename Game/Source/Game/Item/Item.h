@@ -64,6 +64,7 @@ public:
 		class UStaticMeshComponent* StaticMeshOfItem = nullptr; /** 크기가 일정해야 함 */
 
 	virtual void InitItem(); /** 초기화 */
+	void InitStaticMeshOfItem(const TCHAR* ObjectToFind = TEXT("NULL"), FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
 	virtual void Droped();	 /** 땅에 떨어진 상태 */
 	virtual void Acquired(); /** 획득된 상태 */
