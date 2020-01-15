@@ -139,14 +139,21 @@ void APioneer::InitPioneerManager()
 
 void APioneer::DestroyCharacter()
 {
+	// Weapon은 PioneerController와 PioneerAIController 상관없기 때문에 제일 먼저 소멸
+	for (auto& weapon : Weapons)
+	{
+		if (weapon)
+			weapon->Destroy();
+	}
+
+
+
 	// AIController는 이미 제거되었으므로 플레이어가 조종하는 개척자가 아니면 바로 소멸
 	if (!GetController())
 	{
 		Destroy();
 		return;
 	}
-
-
 
 	if (GetMesh())
 		GetMesh()->DestroyComponent();
@@ -202,12 +209,6 @@ void APioneer::SetHealthPoint(float Delta)
 
 	if (CursorToWorld)
 		CursorToWorld->DestroyComponent();
-
-	for (auto& weapon : Weapons)
-	{
-		if (weapon)
-			weapon->Destroy();
-	}
 
 	if (Building)
 		Building->Destroy();

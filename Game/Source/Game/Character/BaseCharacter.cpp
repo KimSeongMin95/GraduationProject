@@ -98,8 +98,12 @@ void ABaseCharacter::SetHealthPoint(float Delta)
 	}
 	if (GetCapsuleComponent())
 	{
+		// 죽으면 바닥을 뚫고 내려가지 않게 하기위해 PhysicsOnly, 모든 채널에 ECR_Ignore로 적용하는데
+		// WorldStatic인 Landscape와는 Block으로 설정하여 충돌되도록 함. (Building 클래스도 WorldStatic)
 		GetCapsuleComponent()->SetGenerateOverlapEvents(false);
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	}
 
 	if (HelthPointBar)

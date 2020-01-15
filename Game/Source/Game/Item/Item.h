@@ -3,6 +3,7 @@
 #pragma once
 
 /*** 언리얼엔진 헤더 선언 : Start ***/
+#include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 
@@ -39,8 +40,19 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	/*** Basic Function : End ***/
 
+	/*** Physics : Start ***/
+private:
+	UPROPERTY(VisibleAnywhere)
+		float HalfHeightOfBox; /** PhysicsBox의 높이 절반 */
+
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* PhysicsBoxComp = nullptr;
+	/*** Physics : End ***/
+
 public:
 	EItemState State;
+
+
 
 	UPROPERTY(VisibleAnywhere)
 		float RadiusOfItem;  /** 반지름 */

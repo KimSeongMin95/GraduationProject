@@ -32,13 +32,24 @@ void AItem::InitItem()
 {
 	State = EItemState::Droped;
 
-	RadiusOfItem = 128.0f;
+	HalfHeightOfBox = 5.0f; // 너무 작으면 충돌이 제대로 이루어지지 않음.
+
+	RadiusOfItem = 192.0f;
+
+	PhysicsBoxComp = CreateDefaultSubobject<UBoxComponent>("PhysicsBoxComp");
+	RootComponent = PhysicsBoxComp;
+	PhysicsBoxComp->SetBoxExtent(FVector(RadiusOfItem / 2.0f, RadiusOfItem / 2.0f, HalfHeightOfBox), false);
+	PhysicsBoxComp->SetGenerateOverlapEvents(false);
+	PhysicsBoxComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	PhysicsBoxComp->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+	PhysicsBoxComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	PhysicsBoxComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	PhysicsBoxComp->SetSimulatePhysics(true);
 
 	InteractionRange = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionRange"));
-	RootComponent = InteractionRange;
+	InteractionRange->SetupAttachment(RootComponent);
 	InteractionRange->SetGenerateOverlapEvents(true);
 	InteractionRange->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
 	InteractionRange->SetSphereRadius(RadiusOfItem);
 
 	StaticMeshOfItem = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshOfItem"));
@@ -51,6 +62,9 @@ void AItem::Droped()
 {
 	State = EItemState::Droped;
 
+	if (PhysicsBoxComp)
+		PhysicsBoxComp->SetSimulatePhysics(true);
+
 	if (InteractionRange)
 		InteractionRange->SetGenerateOverlapEvents(true);
 
@@ -60,6 +74,9 @@ void AItem::Droped()
 void AItem::Acquired()
 {
 	State = EItemState::Acquired;
+
+	if (PhysicsBoxComp)
+		PhysicsBoxComp->SetSimulatePhysics(false);
 
 	if (InteractionRange)
 		InteractionRange->SetGenerateOverlapEvents(false);

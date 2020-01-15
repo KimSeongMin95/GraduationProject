@@ -78,7 +78,7 @@ void AAssaultRifle::InitItem()
 		float scaleOfItem = (maxOfGap != 0.0f) ? (RadiusOfItem / maxOfGap) : 1.0f;
 		FVector Scale(scaleOfItem, scaleOfItem, scaleOfItem);
 
-		FRotator Rotation(0.0f, 0.0f, 0.0f);
+		FRotator Rotation(-45.0f, 0.0f, 0.0f); // 플레이어에게 잘 보이도록 45도 기울임
 		FVector Location(0.0f, 0.0f, 0.0f);
 
 		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.

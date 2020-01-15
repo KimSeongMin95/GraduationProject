@@ -256,17 +256,32 @@ void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedCom
 
 	if (BuildingState == EBuildingState::Constructable)
 	{
-		if (OtherActor->IsA(ABaseCharacter::StaticClass()))
-		{
-			if (ABaseCharacter* baseCharacter = dynamic_cast<ABaseCharacter*>(OtherActor))
-			{
-				// 만약 OtherActor가 ABaseCharacter이기는 하지만 DetactRangeSphereComp와 AttackRangeSphereComp에 충돌한 것이라면 무시합니다.
-				if (baseCharacter->DetactRangeSphereComp == OtherComp || baseCharacter->AttackRangeSphereComp == OtherComp)
-					return;
-			}
-		}
+		//if (OtherActor->IsA(ABaseCharacter::StaticClass()))
+		//{
+		//	if (ABaseCharacter* baseCharacter = dynamic_cast<ABaseCharacter*>(OtherActor))
+		//	{
+		//		// 만약 OtherActor가 ABaseCharacter이기는 하지만 DetactRangeSphereComp와 AttackRangeSphereComp에 충돌한 것이라면 무시합니다.
+		//		if (baseCharacter->DetactRangeSphereComp == OtherComp || baseCharacter->AttackRangeSphereComp == OtherComp)
+		//			return;
+		//	}
+		//}
 
-		OverapedActors.Add(OtherActor);
+		// 충돌한 액터의 OtherComp가 SphereComponent라면 무시
+		if (OtherComp->IsA(USphereComponent::StaticClass()))
+			return;
+
+		// 충돌한 액터의 OtherComp가 UCapsuleComponent(사실상 SkeletalMeshComponent)나 UStaticMeshComponent면 추가
+		if (OtherComp->IsA(UCapsuleComponent::StaticClass()) ||
+			OtherComp->IsA(UStaticMeshComponent::StaticClass()))
+		{
+			OverapedActors.Add(OtherActor);
+		}
+		// StaticMesh 자체인 액터는 AStaticMeshActor인지 UStaticMesh인지 확인해봐야 함.
+		else if (OtherActor->IsA(AStaticMeshActor::StaticClass()) ||
+			OtherActor->IsA(UStaticMesh::StaticClass()))
+		{
+			OverapedActors.Add(OtherActor);
+		}
 	}
 }
 
@@ -282,6 +297,10 @@ void ABuilding::OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp,
 
 	// 투사체 무시 (충돌 주체인 AProjectile의 코드에서 처리할 것)
 	if (OtherActor->IsA(AProjectile::StaticClass()))
+		return;
+
+	// 자기 자신과 충돌하면 무시합니다.
+	if (OtherActor->GetFName() == this->GetFName())
 		return;
 
 	if (BuildingState == EBuildingState::Constructable)
