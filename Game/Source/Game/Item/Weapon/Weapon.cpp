@@ -74,6 +74,8 @@ void AWeapon::InitStat()
 
 	CurrentNumOfBullets = 1;
 	MaximumNumOfBullets = 1;
+
+	SocketName = TEXT("PistolSocket");
 }
 /*** Stat : End ***/
 

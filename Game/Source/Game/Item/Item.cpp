@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Item.h"
+
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Character/Pioneer.h"
+/*** 직접 정의한 헤더 전방 선언 : End ***/
 
 /*** Basic Function : Start ***/
 // Sets default values
@@ -28,6 +31,57 @@ void AItem::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
+
+
+//void AItem::OnOverlapBegin_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+//	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+//		return;
+//
+//	// Collision의 기본인 ATriggerVolume은 무시합니다.
+//	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+//		return;
+//
+//
+//	if (OtherActor->IsA(APioneer::StaticClass()))
+//	{
+//		if (APioneer* pioneer = Cast<APioneer>(OtherActor))
+//		{
+//			// APioneer의 CapsuleComponent와 충돌했을 때만
+//			if (pioneer->GetCapsuleComponent() == OtherComp)
+//			{
+//				
+//			}
+//		}
+//
+//	}
+//}
+//
+//void AItem::OnOverlapEnd_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+//{
+//	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+//	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+//		return;
+//
+//	// Collision의 기본인 ATriggerVolume은 무시합니다.
+//	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+//		return;
+//
+//	if (OtherActor->IsA(APioneer::StaticClass()))
+//	{
+//		if (APioneer* pioneer = Cast<APioneer>(OtherActor))
+//		{
+//			// APioneer의 CapsuleComponent와 충돌했을 때만
+//			if (pioneer->GetCapsuleComponent() == OtherComp)
+//			{
+//				
+//			}
+//		}
+//
+//	}
+//}
+
 void AItem::InitItem()
 {
 	State = EItemState::Droped;
@@ -46,12 +100,18 @@ void AItem::InitItem()
 	PhysicsBoxComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	PhysicsBoxComp->SetSimulatePhysics(true);
 	PhysicsBoxComp->SetRelativeLocation(FVector(0.0f, 0.0f, HalfHeightOfBox));
+	// Detail의 Physics의 Constraints의 Lock Rotaion 활성화: 물리회전을 고정
+	PhysicsBoxComp->BodyInstance.bLockXRotation = true;
+	PhysicsBoxComp->BodyInstance.bLockYRotation = true;
+	PhysicsBoxComp->BodyInstance.bLockZRotation = true;
 
 	InteractionRange = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionRange"));
 	InteractionRange->SetupAttachment(RootComponent);
+	InteractionRange->SetSphereRadius(RadiusOfItem);
 	InteractionRange->SetGenerateOverlapEvents(true);
 	InteractionRange->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	InteractionRange->SetSphereRadius(RadiusOfItem);
+	//InteractionRange->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnOverlapBegin_InteractionRange);
+	//InteractionRange->OnComponentEndOverlap.AddDynamic(this, &AItem::OnOverlapEnd_InteractionRange);
 
 	StaticMeshOfItem = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshOfItem"));
 	StaticMeshOfItem->SetupAttachment(RootComponent);

@@ -146,7 +146,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TArray<FTArrayOfUMaterialInterface> BuildingSkMCsMaterials; /** 기존 머터리얼들을 저장 */
 
-	TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
+	UPROPERTY(VisibleAnywhere)
+		TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
 	UFUNCTION()
 		virtual void OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

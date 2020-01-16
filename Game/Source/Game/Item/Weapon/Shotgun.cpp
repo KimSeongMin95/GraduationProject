@@ -82,6 +82,8 @@ void AShotgun::InitStat()
 
 
 	NumOfSlugs = 6;
+
+	SocketName = TEXT("ShotgunSocket");
 }
 /*** Stat : End ***/
 

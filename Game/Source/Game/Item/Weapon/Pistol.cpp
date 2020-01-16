@@ -80,6 +80,8 @@ void APistol::InitStat()
 
 	CurrentNumOfBullets = 15;
 	MaximumNumOfBullets = 15;
+
+	SocketName = TEXT("PistolSocket");
 }
 /*** Stat : End ***/
 

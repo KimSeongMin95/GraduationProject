@@ -80,6 +80,8 @@ void ASniperRifle::InitStat()
 
 	CurrentNumOfBullets = 5;
 	MaximumNumOfBullets = 5;
+
+	SocketName = TEXT("SniperRifleSocket");
 }
 /*** Stat : End ***/
 

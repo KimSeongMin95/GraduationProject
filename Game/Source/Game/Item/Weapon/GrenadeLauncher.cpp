@@ -79,6 +79,8 @@ void AGrenadeLauncher::InitStat()
 
 	CurrentNumOfBullets = 6;
 	MaximumNumOfBullets = 6;
+
+	SocketName = TEXT("GrenadeLauncherSocket");
 }
 /*** Stat : End ***/
 

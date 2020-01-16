@@ -64,6 +64,11 @@ public:
 		void ArmOrDisArmWeapon();
 
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void AcquireItem();
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void AbandonWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void RotatingBuilding(float Value);
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void PlaceBuilding();

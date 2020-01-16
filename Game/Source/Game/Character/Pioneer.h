@@ -237,7 +237,7 @@ public:
 	// 주의2!!! AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	void InitWeapon(); /** */
 
-	void AcquireWeapon(); /** Weapon을 습득 */
+	void AcquireWeapon(class AWeapon* weapon); /** Weapon을 습득 */
 	void AbandonWeapon(); /** CurrentWeapon을 바닥에 버림 */
 
 	void FireWeapon(); /** CurrentWeapon을 Fire */
@@ -293,5 +293,17 @@ public:
 public:
 	virtual void RunBehaviorTree(float DeltaTime) final;
 	/*** BehaviorTree : End ***/
+
+
+	/*** Item : Start ***/
+public:
+	void InitItem();
+	UPROPERTY(EditAnywhere, Category = "Item")
+		TArray<class AItem*> OverapedItems; /** 충돌한 AItem들을 모두 저장하고 벗어나면 삭제 */
+	UFUNCTION()
+		virtual void OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		virtual void OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	/*** Item : End ***/
 };
 

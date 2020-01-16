@@ -31,6 +31,8 @@
 #include "Landscape.h"
 
 #include "Character/Enemy.h"
+
+#include "Item/Item.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -66,6 +68,7 @@ APioneer::APioneer() // Sets default values
 
 	InitFSM();
 
+	InitItem();
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
 	//BaseLookUpRate = 45.0f;
@@ -734,10 +737,10 @@ void APioneer::InitWeapon()
 	//Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	Pistol->Acquired();
 	if (Weapons.Contains(Pistol) == false)
-		Weapons.Add(Pistol);
-
-	IdxOfCurrentWeapon = 0;
-	Arming();
+	{
+		IdxOfCurrentWeapon = Weapons.Add(Pistol);
+		Arming();
+	}
 
 	/*** 임시 코드 : Start ***/
 	Weapons.Add(nullptr);
@@ -798,13 +801,39 @@ void APioneer::InitWeapon()
 	/*** 임시 코드 : End ***/
 }
 
-void APioneer::AcquireWeapon()
+void APioneer::AcquireWeapon(class AWeapon* weapon)
 {
+	if (!weapon || !GetMesh())
+		return;
 
+	// 먼저 무장해제
+	Disarming();
+
+	OverapedItems.RemoveSingle(weapon);
+
+	weapon->Acquired();
+	weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), weapon->SocketName);
+
+	CurrentWeapon = weapon;
+	IdxOfCurrentWeapon = Weapons.Add(CurrentWeapon);
+
+	// 다시 획득한 무기로 무장
+	Arming();
 }
 void APioneer::AbandonWeapon()
 {
+	if (!CurrentWeapon)
+		return;
 
+	CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	Weapons.RemoveSingle(CurrentWeapon);
+	CurrentWeapon->Droped();
+	
+	CurrentWeapon = nullptr;
+	SetWeaponType();
+	GetCharacterMovement()->bOrientRotationToMovement = true; // 무기를 들지 않으면 이동 방향에 캐릭터 메시가 따라 회전합니다.
+
+	Arming();
 }
 
 void APioneer::FireWeapon()
@@ -855,7 +884,7 @@ void APioneer::SetWeaponType()
 		bHasLauncherType = true;
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::Arming: switch (CurrentWeapon->WeaponType) default:"));
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::SetWeaponType: switch (CurrentWeapon->WeaponType) default:"));
 		break;
 	}
 }
@@ -923,8 +952,24 @@ void APioneer::Arming()
 			}
 		}
 	}
-	else
-		CurrentWeapon = Weapons[IdxOfCurrentWeapon];
+	else // IdxOfCurrentWeapon가 유효하면
+	{
+		if (Weapons[IdxOfCurrentWeapon])
+			CurrentWeapon = Weapons[IdxOfCurrentWeapon];
+		else
+		{
+			// Weapons에 존재하는 가장 앞의 Weapon을 설정
+			for (auto& weapon : Weapons)
+			{
+				if (weapon)
+				{
+					CurrentWeapon = weapon;
+					IdxOfCurrentWeapon = Weapons.IndexOfByKey(CurrentWeapon);
+					break;
+				}
+			}
+		}
+	}
 
 	if (!CurrentWeapon)
 	{
@@ -1202,8 +1247,54 @@ void APioneer::RunBehaviorTree(float DeltaTime)
 /*** BehaviorTree : End ***/
 
 
+/*** Item : Start ***/
+void APioneer::InitItem()
+{
+	if (!GetCapsuleComponent())
+		return;
 
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_Item);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_Item);
+}
+void APioneer::OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+		return;
 
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return;
+
+	if (OtherActor->IsA(AItem::StaticClass()))
+	{
+		if (AItem* item = Cast<AItem>(OtherActor))
+		{
+			if (OtherComp == item->InteractionRange)
+				OverapedItems.Add(item);
+		}
+	}
+}
+void APioneer::OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+		return;
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return;
+
+	if (OtherActor->IsA(AItem::StaticClass()))
+	{
+		if (AItem* item = Cast<AItem>(OtherActor))
+		{
+			if (OtherComp == item->InteractionRange)
+				OverapedItems.RemoveSingle(item);
+		}
+	}
+}
+/*** Item : Start ***/
 
 //void APioneer::PunchAttack()
 //{

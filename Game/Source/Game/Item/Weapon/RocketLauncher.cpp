@@ -79,6 +79,8 @@ void ARocketLauncher::InitStat()
 
 	CurrentNumOfBullets = 6;
 	MaximumNumOfBullets = 6;
+
+	SocketName = TEXT("RocketLauncherSocket");
 }
 /*** Stat : End ***/
 

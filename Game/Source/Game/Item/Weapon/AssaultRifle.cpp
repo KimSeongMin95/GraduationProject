@@ -78,6 +78,8 @@ void AAssaultRifle::InitStat()
 
 	CurrentNumOfBullets = 30;
 	MaximumNumOfBullets = 30;
+
+	SocketName = TEXT("AssaultRifleSocket");
 }
 /*** Stat : End ***/
 

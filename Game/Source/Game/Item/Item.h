@@ -8,6 +8,12 @@
 #include "Components/StaticMeshComponent.h"
 
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
+
+#include "Engine/TriggerVolume.h" // For ATriggerVolume::StaticClass()
+
+#include "ParticleHelper.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
@@ -59,6 +65,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		class USphereComponent* InteractionRange = nullptr;
+	//UFUNCTION()
+	//	virtual void OnOverlapBegin_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	//UFUNCTION()
+	//	virtual void OnOverlapEnd_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* StaticMeshOfItem = nullptr; /** 크기가 일정해야 함 */
@@ -68,5 +78,4 @@ public:
 
 	virtual void Droped();	 /** 땅에 떨어진 상태 */
 	virtual void Acquired(); /** 획득된 상태 */
-
 };

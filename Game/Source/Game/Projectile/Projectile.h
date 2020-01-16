@@ -12,6 +12,7 @@
 #include "ParticleHelper.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Engine/TriggerVolume.h" // For ATriggerVolume::StaticClass()
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"

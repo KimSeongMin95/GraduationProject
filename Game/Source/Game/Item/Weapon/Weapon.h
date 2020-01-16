@@ -88,6 +88,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float MaximumNumOfBullets; /** 최대 총알 개수 */
 
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+		FName SocketName; /** Pioneer의 Skeleton Socket에 붙이기 위한 소켓명 */
+
 	virtual void InitStat();
 /*** Stat : End ***/
 
@@ -100,6 +103,7 @@ public:
 
 	UFUNCTION()
 		virtual bool Fire();
+
 
 /*** 블루프린트의 Event : Start ***/
 public:

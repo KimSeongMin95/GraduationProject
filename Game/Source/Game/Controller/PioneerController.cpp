@@ -6,6 +6,9 @@
 #include "Character/Pioneer.h"
 #include "PathFinding.h"
 #include "Controller/PioneerAIController.h"
+
+#include "Item/Item.h"
+#include "Item/Weapon/Weapon.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 APioneerController::APioneerController()
@@ -53,8 +56,11 @@ void APioneerController::SetupInputComponent()
 	InputComponent->BindAction("ChangeNextWeapon", IE_Pressed, this, &APioneerController::ChangeNextWeapon);
 	InputComponent->BindAction("ArmOrDisArmWeapon", IE_Pressed, this, &APioneerController::ArmOrDisArmWeapon);
 
-	// E키: 바닥에 있는 아이템 줍기
+	// F키: 바닥에 있는 아이템 줍기
+	InputComponent->BindAction("AcquireItem", IE_Pressed, this, &APioneerController::AcquireItem);
+
 	// G키: 현재 무기를 바닥에 버리기
+	InputComponent->BindAction("AbandonWeapon", IE_Pressed, this, &APioneerController::AbandonWeapon);
 
 
 	InputComponent->BindAxis("RotatingBuilding", this, &APioneerController::RotatingBuilding);
@@ -308,6 +314,56 @@ void APioneerController::ArmOrDisArmWeapon()
 		Pioneer->Arming();
 }
 
+
+
+void APioneerController::AcquireItem()
+{
+	UE_LOG(LogTemp, Warning, TEXT("APioneerController::AcquireItem()"));
+
+
+	if (!Pioneer || !GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ChangeWeapon: if (!Pioneer || !GetPawn())"));
+		return;
+	}
+
+	if (Pioneer->OverapedItems.Num() <= 0)
+		return;
+	
+	AItem* closestItem = nullptr;
+	float minDistance = 1000000.0f;
+	for (auto& item : Pioneer->OverapedItems)
+	{
+		if (!item)
+			continue;
+
+		float dist = FVector::Distance(Pioneer->GetActorLocation(), item->GetActorLocation());
+		if (dist < minDistance)
+		{
+			minDistance = dist;
+			closestItem = item;
+		}
+	}
+
+	if (!closestItem)
+		return;
+	
+	UE_LOG(LogTemp, Warning, TEXT("APioneerController::AcquireItem(): find"));
+
+	if (closestItem->IsA(AWeapon::StaticClass()))
+		Pioneer->AcquireWeapon(Cast<AWeapon>(closestItem));
+}
+
+void APioneerController::AbandonWeapon()
+{
+	if (!Pioneer || !GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ChangeWeapon: if (!Pioneer || !GetPawn())"));
+		return;
+	}
+
+	Pioneer->AbandonWeapon();
+}
 
 void APioneerController::RotatingBuilding(float Value)
 {
