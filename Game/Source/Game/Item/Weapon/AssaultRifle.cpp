@@ -14,13 +14,7 @@ AAssaultRifle::AAssaultRifle()
 
 	InitStat();
 
-	InitMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_AssaultRifle.White_AssaultRifle'"));
-
-	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 65.0f, 12.0f));
-
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_AssaultRifle_Skeleton.White_AssaultRifle_Skeleton'"));
-
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Rifle_W.Fire_Rifle_W'"));
+	InitWeapon();
 }
 
 void AAssaultRifle::BeginPlay()
@@ -39,7 +33,13 @@ void AAssaultRifle::Tick(float DeltaTime)
 /*** Item : Start ***/
 void AAssaultRifle::InitItem()
 {
-	InitStaticMeshOfItem(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	State = EItemState::Droped;
+
+	InitInteractionRange(192.0f);
+
+	InitPhysicsBox(5.0f);
+
+	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 /*** Item : End ***/
 
@@ -65,6 +65,17 @@ void AAssaultRifle::InitStat()
 /*** Stat : End ***/
 
 /*** Weapon : Start ***/
+void AAssaultRifle::InitWeapon()
+{
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_AssaultRifle.White_AssaultRifle'"));
+
+	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 65.0f, 12.0f));
+
+	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_AssaultRifle_Skeleton.White_AssaultRifle_Skeleton'"));
+
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Rifle_W.Fire_Rifle_W'"));
+}
+
 bool AAssaultRifle::Fire()
 {
 	if (Super::Fire() == false)

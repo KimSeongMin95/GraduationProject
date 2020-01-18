@@ -14,13 +14,7 @@ AGrenadeLauncher::AGrenadeLauncher()
 
 	InitStat();
 
-	InitMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_GrenadeLauncher.White_GrenadeLauncher'"));
-
-	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 56.0f, 15.0f));
-
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_GrenadeLauncher_Skeleton.White_GrenadeLauncher_Skeleton'"));
-
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_GrenadeLauncher_W.Fire_GrenadeLauncher_W'"));
+	InitWeapon();
 }
 
 void AGrenadeLauncher::BeginPlay()
@@ -39,7 +33,13 @@ void AGrenadeLauncher::Tick(float DeltaTime)
 /*** Item : Start ***/
 void AGrenadeLauncher::InitItem()
 {
-	InitStaticMeshOfItem(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_GrenadeLauncher.SM_White_GrenadeLauncher'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	State = EItemState::Droped;
+
+	InitInteractionRange(192.0f);
+
+	InitPhysicsBox(5.0f);
+
+	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_GrenadeLauncher.SM_White_GrenadeLauncher'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 /*** Item : End ***/
 
@@ -65,6 +65,17 @@ void AGrenadeLauncher::InitStat()
 /*** Stat : End ***/
 
 /*** Weapon : Start ***/
+void AGrenadeLauncher::InitWeapon()
+{
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_GrenadeLauncher.White_GrenadeLauncher'"));
+
+	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 56.0f, 15.0f));
+
+	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_GrenadeLauncher_Skeleton.White_GrenadeLauncher_Skeleton'"));
+
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_GrenadeLauncher_W.Fire_GrenadeLauncher_W'"));
+}
+
 bool AGrenadeLauncher::Fire()
 {
 	if (Super::Fire() == false)

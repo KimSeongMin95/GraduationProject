@@ -50,9 +50,10 @@ public:
 /*** Basic Function : End ***/
 
 /*** Item : Start ***/
-public:
+protected:
 	virtual void InitItem() override; /** 아이템 초기화 */
 
+public:
 	virtual void Droped() final;   /** 땅에 떨어진 상태 */
 	virtual void Acquired() final; /** 획득된 상태 */
 /*** Item : End ***/
@@ -92,8 +93,8 @@ protected:
 private:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-		/** weapon의 main skeletal mesh. */
-		class USkeletalMeshComponent* Mesh = nullptr;
+		/** main skeletal mesh. */
+		class USkeletalMeshComponent* WeaponMesh = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon") 
 		/** Projectile이 Spawn되는 방향을 표시 */
@@ -108,14 +109,15 @@ private:
 		class UAnimSequence* FireAnimSequence = nullptr;
 
 protected:
-	void InitMesh(const TCHAR* ReferencePath);
+	virtual void InitWeapon();
+	void InitWeaponMesh(const TCHAR* ReferencePath);
 	void InitArrowComponent(FRotator Rotatation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 	void InitSkeleton(const TCHAR* ReferencePath);
 	void InitFireAnimSequence(const TCHAR* ReferencePath);
 
 public:
 	/** Returns Mesh **/
-	FORCEINLINE class USkeletalMeshComponent* GetMesh() const { return Mesh; }
+	FORCEINLINE class USkeletalMeshComponent* GetMesh() const { return WeaponMesh; }
 
 	/** Returns ArrowComponent **/
 	FORCEINLINE class UArrowComponent* GetArrowComponent() const { return ArrowComponent; }
@@ -125,7 +127,6 @@ public:
 
 	/** Returns FireAnimSequence **/
 	FORCEINLINE class UAnimSequence* GetFireAnimSequence() const { return FireAnimSequence; }
-
 
 
 	UFUNCTION()

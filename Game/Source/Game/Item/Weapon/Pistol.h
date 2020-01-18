@@ -26,7 +26,7 @@ public:
 /*** Basic Function : End ***/
 
 /*** Item : Start ***/
-public:
+protected:
 	virtual void InitItem() final;
 /*** Item : End ***/
 
@@ -36,6 +36,9 @@ protected:
 /*** Stat : End ***/
 
 /*** Weapon : Start ***/
+protected:
+	virtual void InitWeapon() final;
+
 public:
 	virtual bool Fire() final; // 오버라이드 하면 UFUNCTION()를 다시 선언할 필요가 없음.
 /*** Weapon : End ***/

@@ -23,8 +23,8 @@
 UENUM()
 enum class EItemState : uint8
 {
-	Droped = 0,
-	Acquired = 1
+	Droped = 0,  /** 바닥에 놓여진 상태 */
+	Acquired = 1 /** 획득된 상태 */
 };
 
 UCLASS()
@@ -32,7 +32,7 @@ class GAME_API AItem : public AActor
 {
 	GENERATED_BODY()
 
-	/*** Basic Function : Start ***/
+/*** Basic Function : Start ***/
 public:	
 	// Sets default values for this actor's properties
 	AItem();
@@ -44,42 +44,46 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	/*** Basic Function : End ***/
+/*** Basic Function : End ***/
 
-	/*** Item : Start ***/
+/*** Item : Start ***/
 public:
 	EItemState State;
 
+private:
+	UPROPERTY(EditAnywhere, Category = "Item")
+		/** 다른 액터가 이 아이템과 상호작용할 수 있는 충돌범위 */
+		class USphereComponent* InteractionRange = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Item")
+		/** InteractionRange의 반지름 */
+		float RadiusOfInteractionRange;
+
+	UPROPERTY(EditAnywhere, Category = "Item")
+		/** Item을 Landscape 위에 올려지도록 물리가 작용하는 박스 */
+		class UBoxComponent* PhysicsBox = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Item")
+		/** PhysicsBox의 높이 절반 */
+		float HalfHeightOfPhysicsBox;
+
+	UPROPERTY(EditAnywhere, Category = "Item")
+		/** Item으로 보여질 StaticMesh입니다. (최대 크기에 제한이 있습니다.) */
+		class UStaticMeshComponent* ItemMesh = nullptr;
+
+protected:
 	virtual void InitItem(); /** 초기화 */
-	void InitStaticMeshOfItem(const TCHAR* ObjectToFind = TEXT("NULL"), FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	void InitInteractionRange(float Radius);
+	void InitPhysicsBox(float HalfHeight);
+	void InitItemMesh(const TCHAR* ReferencePath, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+
+public:
+	FORCEINLINE class USphereComponent* GetInteractionRange() const { return InteractionRange; }
+	FORCEINLINE class UBoxComponent* GetPhysicsBox() const { return PhysicsBox; }
+	FORCEINLINE class UStaticMeshComponent* GetItemMesh() const { return ItemMesh; }
 
 	virtual void Droped();	 /** 땅에 떨어진 상태 */
 	virtual void Acquired(); /** 획득된 상태 */
-	/*** Item : End ***/
+/*** Item : End ***/
 
-	/*** Physics : Start ***/
-private:
-	UPROPERTY(EditAnywhere)
-		class UBoxComponent* PhysicsBoxComp = nullptr;
-	UPROPERTY(VisibleAnywhere)
-		float HalfHeightOfPhysicsBox; /** PhysicsBox의 높이 절반 */
-	/*** Physics : End ***/
 
-	/*** InteractionRange : Start ***/
-public:
-	UPROPERTY(EditAnywhere)
-		class USphereComponent* InteractionRange = nullptr;
-	UPROPERTY(VisibleAnywhere)
-		float RadiusOfInteractionRange;  /** 반지름 */
-	//UFUNCTION()
-	//	virtual void OnOverlapBegin_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	//UFUNCTION()
-	//	virtual void OnOverlapEnd_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	/*** InteractionRange : End ***/
-
-	/*** StaticMeshOfItem : Start ***/
-	UPROPERTY(EditAnywhere)
-		class UStaticMeshComponent* StaticMeshOfItem = nullptr; /** 크기가 일정해야 함 */
-	/*** StaticMeshOfItem : End ***/
 
 };

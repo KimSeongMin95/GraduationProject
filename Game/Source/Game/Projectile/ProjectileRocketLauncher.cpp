@@ -12,56 +12,19 @@
 // Sets default values
 AProjectileRocketLauncher::AProjectileRocketLauncher()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	InitHitRange(32.0f);
 
-	/*** USphereComponent : Start ***/
-	SphereComp->SetSphereRadius(32.0f);
-	/*** USphereComponent : End ***/
+	InitProjectileMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/White_RocketLauncher_Ammo.White_RocketLauncher_Ammo'"),
+		TEXT("MaterialInstanceConstant'/Game/Weapons/Materials/Projectile/Mat_Inst_ProjectileRocketLauncher.Mat_Inst_ProjectileRocketLauncher'"),
+		FVector(2.0f, 2.0f, 2.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
-	/*** Mesh : Start ***/
-	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>("Rocket");
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> sphereMeshAsset(TEXT("StaticMesh'/Game/Weapons/Meshes/White_RocketLauncher_Ammo.White_RocketLauncher_Ammo'"));
-	if (sphereMeshAsset.Succeeded())
-	{
-		StaticMeshComp->SetStaticMesh(sphereMeshAsset.Object);
+	InitProjectileMovement(1600.0f, 1600.0f, 0.05f, false, 0.0f);
 
-		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
-		StaticMeshComp->SetRelativeScale3D(FVector(2.0f, 2.0f, 2.0f));
-		StaticMeshComp->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-		StaticMeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+	InitParticleSystem(TrailParticleSystem, TEXT("ParticleSystem'/Game/Weapons/FX/Particles/P_RocketLauncher_Trail_Light.P_RocketLauncher_Trail_Light'"));
 
-		// UMaterialInstance를 직접 생성하여 Parent로 Material을 가져오는 방법도 있으나 지금은 만들어진 것을 가져오겠습니다.
-		static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> projectileMatInst(TEXT("MaterialInstanceConstant'/Game/Weapons/Materials/Projectile/Mat_Inst_ProjectileRocketLauncher.Mat_Inst_ProjectileRocketLauncher'"));
-		if (projectileMatInst.Succeeded())
-		{
-			StaticMeshComp->SetMaterial(0, projectileMatInst.Object);
-		}
-	}
+	InitParticleSystem(ImpactParticleSystem, TEXT("ParticleSystem'/Game/Weapons/FX/Particles/P_RocketLauncher_Explosion_Light.P_RocketLauncher_Explosion_Light'"));
 
-	// StaticMesh는 충돌하지 않도록 설정합니다.
-	StaticMeshComp->SetGenerateOverlapEvents(false);
-	StaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	/*** Mesh : End ***/
 
-	/*** ProjectileMovement : Start ***/
-	ProjectileMovementComp->InitialSpeed = 1600.0f;
-	ProjectileMovementComp->ProjectileGravityScale = 0.05f;
-	/*** ProjectileMovement : End ***/
-
-	/*** ParticleSystem : Start ***/
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> trailParticleSystem(TEXT("ParticleSystem'/Game/Weapons/FX/Particles/P_RocketLauncher_Trail_Light.P_RocketLauncher_Trail_Light'"));
-	if (trailParticleSystem.Succeeded())
-	{
-		TrailParticleSystem->SetTemplate(trailParticleSystem.Object);
-	}
-
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> impactParticleSystem(TEXT("ParticleSystem'/Game/Weapons/FX/Particles/P_RocketLauncher_Explosion_Light.P_RocketLauncher_Explosion_Light'"));
-	if (impactParticleSystem.Succeeded())
-	{
-		ImpactParticleSystem->SetTemplate(impactParticleSystem.Object);
-	}
-	/*** ParticleSystem : End ***/
 
 	/*** Splash : Start ***/
 	SplashSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("Splash Collision"));
@@ -100,8 +63,6 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 	//	}
 	//}
 	/*** Splash : End ***/
-
-	SetHierarchy();
 }
 
 // Called when the game starts or when spawned
@@ -120,16 +81,6 @@ void AProjectileRocketLauncher::Tick(float DeltaTime)
 		countFrame++;
 }
 
-void AProjectileRocketLauncher::SetHierarchy()
-{
-	RootComponent = SphereComp;
-	StaticMeshComp->SetupAttachment(RootComponent);
-	TrailParticleSystem->SetupAttachment(RootComponent);
-	ImpactParticleSystem->SetupAttachment(RootComponent);
-
-	SplashSphereComp->SetupAttachment(RootComponent);
-	//SplashStaticMeshComp->SetupAttachment(SplashSphereComp);
-}
 
 void AProjectileRocketLauncher::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -149,14 +100,6 @@ void AProjectileRocketLauncher::OnOverlapBegin(class UPrimitiveComponent* Overla
 	// ImpactParticleSystem을 실행합니다.
 	if (ImpactParticleSystem && ImpactParticleSystem->Template)
 		ImpactParticleSystem->ToggleActive();
-
-	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
-	if (SphereComp)
-		SphereComp->DestroyComponent();
-	if (StaticMeshComp)
-		StaticMeshComp->DestroyComponent();
-	if (ProjectileMovementComp)
-		ProjectileMovementComp->DestroyComponent();
 
 	// 파티클 시스템이 충분히 보여지도록 3초뒤 소멸
 	SetDestoryTimer(3.0f);

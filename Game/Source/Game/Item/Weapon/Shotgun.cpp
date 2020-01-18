@@ -14,13 +14,7 @@ AShotgun::AShotgun()
 
 	InitStat();
 
-	InitMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Shotgun.White_Shotgun'"));
-
-	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 46.0f, 17.0f));
-
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_Shotgun_Skeleton.White_Shotgun_Skeleton'"));
-
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Shotgun_W.Fire_Shotgun_W'"));
+	InitWeapon();
 }
 
 void AShotgun::BeginPlay()
@@ -39,8 +33,13 @@ void AShotgun::Tick(float DeltaTime)
 /*** Item : Start ***/
 void AShotgun::InitItem()
 {
-	InitStaticMeshOfItem(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_Shotgun.SM_White_Shotgun'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	State = EItemState::Droped;
 
+	InitInteractionRange(192.0f);
+
+	InitPhysicsBox(5.0f);
+
+	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_Shotgun.SM_White_Shotgun'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 /*** Item : End ***/
 
@@ -68,6 +67,17 @@ void AShotgun::InitStat()
 /*** Stat : End ***/
 
 /*** Weapon : Start ***/
+void AShotgun::InitWeapon()
+{
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Shotgun.White_Shotgun'"));
+
+	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 46.0f, 17.0f));
+
+	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_Shotgun_Skeleton.White_Shotgun_Skeleton'"));
+
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Shotgun_W.Fire_Shotgun_W'"));
+}
+
 bool AShotgun::Fire()
 {
 	if (Super::Fire() == false)

@@ -1276,7 +1276,7 @@ void APioneer::OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, cl
 	{
 		if (AItem* item = Cast<AItem>(OtherActor))
 		{
-			if (OtherComp == item->InteractionRange)
+			if (OtherComp == item->GetInteractionRange())
 				OverlapedItems.Add(item);
 		}
 	}
@@ -1295,7 +1295,7 @@ void APioneer::OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, clas
 	{
 		if (AItem* item = Cast<AItem>(OtherActor))
 		{
-			if (OtherComp == item->InteractionRange)
+			if (OtherComp == item->GetInteractionRange())
 				OverlapedItems.RemoveSingle(item);
 		}
 	}

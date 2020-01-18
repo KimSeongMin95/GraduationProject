@@ -14,13 +14,7 @@ ARocketLauncher::ARocketLauncher()
 
 	InitStat();
 
-	InitMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_RocketLauncher.White_RocketLauncher'"));
-
-	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 46.0f, 17.0f));
-
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_RocketLauncher_Skeleton.White_RocketLauncher_Skeleton'"));
-
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_RocketLauncher_W.Fire_RocketLauncher_W'"));
+	InitWeapon();
 }
 
 void ARocketLauncher::BeginPlay()
@@ -39,8 +33,13 @@ void ARocketLauncher::Tick(float DeltaTime)
 /*** Item : Start ***/
 void ARocketLauncher::InitItem()
 {
-	InitStaticMeshOfItem(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_RocketLauncher.SM_White_RocketLauncher'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	State = EItemState::Droped;
 
+	InitInteractionRange(192.0f);
+
+	InitPhysicsBox(5.0f);
+
+	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_RocketLauncher.SM_White_RocketLauncher'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 /*** Item : End ***/
 
@@ -66,6 +65,17 @@ void ARocketLauncher::InitStat()
 /*** Stat : End ***/
 
 /*** Weapon : Start ***/
+void ARocketLauncher::InitWeapon()
+{
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_RocketLauncher.White_RocketLauncher'"));
+
+	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 46.0f, 17.0f));
+
+	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_RocketLauncher_Skeleton.White_RocketLauncher_Skeleton'"));
+
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_RocketLauncher_W.Fire_RocketLauncher_W'"));
+}
+
 bool ARocketLauncher::Fire()
 {
 	if (Super::Fire() == false)

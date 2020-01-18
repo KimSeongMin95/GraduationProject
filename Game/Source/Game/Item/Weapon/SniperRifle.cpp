@@ -14,13 +14,7 @@ ASniperRifle::ASniperRifle()
 
 	InitStat();
 
-	InitMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_SniperRifle.White_SniperRifle'"));
-
-	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.7f, 97.0f, 11.5f));
-
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_SniperRifle_Skeleton.White_SniperRifle_Skeleton'"));
-
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_SniperRifle_W.Fire_SniperRifle_W'"));
+	InitWeapon();
 }
 
 void ASniperRifle::BeginPlay()
@@ -39,8 +33,13 @@ void ASniperRifle::Tick(float DeltaTime)
 /*** Item : Start ***/
 void ASniperRifle::InitItem()
 {
-	InitStaticMeshOfItem(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_SniperRifle.SM_White_SniperRifle'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	State = EItemState::Droped;
 
+	InitInteractionRange(192.0f);
+
+	InitPhysicsBox(5.0f);
+
+	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_SniperRifle.SM_White_SniperRifle'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 /*** Item : End ***/
 
@@ -67,6 +66,17 @@ void ASniperRifle::InitStat()
 /*** Stat : End ***/
 
 /*** Weapon : Start ***/
+void ASniperRifle::InitWeapon()
+{
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_SniperRifle.White_SniperRifle'"));
+
+	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.7f, 97.0f, 11.5f));
+
+	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_SniperRifle_Skeleton.White_SniperRifle_Skeleton'"));
+
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_SniperRifle_W.Fire_SniperRifle_W'"));
+}
+
 bool ASniperRifle::Fire()
 {
 	if (Super::Fire() == false)

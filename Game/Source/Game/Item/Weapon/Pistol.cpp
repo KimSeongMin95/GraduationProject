@@ -14,13 +14,7 @@ APistol::APistol()
 
 	InitStat();
 
-	InitMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Pistol.White_Pistol'"));
-
-	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 28.0f, 15.0f));
-
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_Pistol_Skeleton.White_Pistol_Skeleton'"));
-
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Pistol_W.Fire_Pistol_W'"));
+	InitWeapon();
 }
 
 void APistol::BeginPlay()
@@ -40,8 +34,13 @@ void APistol::Tick(float DeltaTime)
 /*** Item : Start ***/
 void APistol::InitItem()
 {
-	InitStaticMeshOfItem(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_Pistol.SM_White_Pistol'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	State = EItemState::Droped;
 
+	InitInteractionRange(192.0f);
+
+	InitPhysicsBox(5.0f);
+
+	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_Pistol.SM_White_Pistol'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 /*** Item : End ***/
 
@@ -67,6 +66,17 @@ void APistol::InitStat()
 /*** Stat : End ***/
 
 /*** Weapon : Start ***/
+void APistol::InitWeapon()
+{
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Pistol.White_Pistol'"));
+
+	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 28.0f, 15.0f));
+
+	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_Pistol_Skeleton.White_Pistol_Skeleton'"));
+
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Pistol_W.Fire_Pistol_W'"));
+}
+
 bool APistol::Fire()
 {
 	if (Super::Fire() == false)

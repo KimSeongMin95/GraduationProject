@@ -8,17 +8,13 @@ AWeapon::AWeapon()
 	//// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	//PrimaryActorTick.bCanEverTick = true;
 
-	InitItem();
-
-	InitStat();
-
 	// Empty WeaponMesh 생성후 RootComponent에 부착.
-	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
-	Mesh->SetupAttachment(RootComponent);
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
+	WeaponMesh->SetupAttachment(RootComponent);
 
 	// 발사될 Projectile의 Transform 값을 저장할 ArrowComponent 생성후 Mesh에 부착
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>("Arrow");
-	ArrowComponent->SetupAttachment(Mesh);
+	ArrowComponent->SetupAttachment(WeaponMesh);
 }
 
 // Called when the game starts or when spawned
@@ -40,28 +36,28 @@ void AWeapon::Tick(float DeltaTime)
 /*** Item : Start ***/
 void AWeapon::InitItem()
 {
-	// 자식클래스에서 overriding 할 것.
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
 void AWeapon::Droped()
 {
 	Super::Droped();
 
-	if (Mesh)
-		Mesh->SetHiddenInGame(true);
+	if (WeaponMesh)
+		WeaponMesh->SetHiddenInGame(true);
 }
 void AWeapon::Acquired()
 {
 	Super::Acquired();
 
-	if (Mesh)
-		Mesh->SetHiddenInGame(false);
+	if (WeaponMesh)
+		WeaponMesh->SetHiddenInGame(false);
 }
 /*** Item : End ***/
 
 /*** Stat : Start ***/
 void AWeapon::InitStat()
 {
-	/* 자식클래스에서 오버라이딩하여 사용
+	/* 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 	WeaponType = EWeaponType::Pistol;
 
 	LimitedLevel = 1;
@@ -82,13 +78,17 @@ void AWeapon::InitStat()
 /*** Stat : End ***/
 
 /*** Weapon : Start ***/
-void AWeapon::InitMesh(const TCHAR* ReferencePath)
+void AWeapon::InitWeapon()
+{
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+}
+void AWeapon::InitWeaponMesh(const TCHAR* ReferencePath)
 {
 	// Weapon SkeletalMesh Asset을 가져와서 적용
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(ReferencePath);
 	if (skeletalMeshAsset.Succeeded())
 	{
-		Mesh->SetSkeletalMesh(skeletalMeshAsset.Object);
+		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
 	}
 }
 void AWeapon::InitArrowComponent(FRotator Rotatation, FVector Location)
@@ -127,8 +127,8 @@ bool AWeapon::Fire()
 		FireCoolTime = 0.0f;
 
 	// Fire 애니메이션 실행
-	if (Mesh)
-		Mesh->PlayAnimation(FireAnimSequence, false);
+	if (WeaponMesh)
+		WeaponMesh->PlayAnimation(FireAnimSequence, false);
 
 	return true;
 }
