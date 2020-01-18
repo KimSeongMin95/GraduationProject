@@ -7,53 +7,34 @@
 #include "Projectile/ProjectileShotgun.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
-// Sets default values
+/*** Basic Function : Start ***/
 AShotgun::AShotgun()
 {
 	InitItem();
 
 	InitStat();
 
-	// Weapon SkeletalMesh Asset을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Shotgun.White_Shotgun'"));
-	if (skeletalMeshAsset.Succeeded())
-	{
-		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
-	}
+	InitMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Shotgun.White_Shotgun'"));
 
-	// SkeletalMesh가 사용하는 Skeleton Asset을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_Shotgun_Skeleton.White_Shotgun_Skeleton'"));
-	if (skeleton.Succeeded())
-	{
-		Skeleton = skeleton.Object;
-	}
+	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 46.0f, 17.0f));
 
-	// 총 쏘는 애니메이션을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Shotgun_W.Fire_Shotgun_W'"));
-	if (animSequence.Succeeded())
-	{
-		AnimSequence = animSequence.Object;
-		AnimSequence->SetSkeleton(Skeleton);
-	}
+	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_Shotgun_Skeleton.White_Shotgun_Skeleton'"));
 
-	// 발사될 Projectile의 Transform을 설정
-	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 46.0f, 17.0f));
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Shotgun_W.Fire_Shotgun_W'"));
 }
 
-// Called when the game starts or when spawned
 void AShotgun::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
-// Called every frame
 void AShotgun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
+/*** Basic Function : End ***/
 
 /*** Item : Start ***/
 void AShotgun::InitItem()
@@ -80,22 +61,17 @@ void AShotgun::InitStat()
 	CurrentNumOfBullets = 8;
 	MaximumNumOfBullets = 8;
 
+	SocketName = TEXT("ShotgunSocket");
 
 	NumOfSlugs = 6;
-
-	SocketName = TEXT("ShotgunSocket");
 }
 /*** Stat : End ***/
 
+/*** Weapon : Start ***/
 bool AShotgun::Fire()
 {
-	if (FireCoolTime < (1.0f / AttackSpeed))
+	if (Super::Fire() == false)
 		return false;
-	else
-		FireCoolTime = 0.0f;
-
-	// Fire 애니메이션 실행
-	WeaponMesh->PlayAnimation(AnimSequence, false);
 
 	UWorld* const World = GetWorld();
 	if (!World)
@@ -104,7 +80,7 @@ bool AShotgun::Fire()
 		return false;
 	}
 
-	FTransform myTrans = ProjectileSpawnPoint->GetComponentTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
+	FTransform myTrans;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
@@ -113,7 +89,11 @@ bool AShotgun::Fire()
 	for (int i = 0; i < NumOfSlugs; i++)
 	{
 		// 총알이 산탄되도록 각도를 조정합니다.
-		myTrans = ProjectileSpawnPoint->GetComponentTransform();
+		if (GetArrowComponent())
+			myTrans = GetArrowComponent()->GetComponentTransform();
+		else
+			myTrans.SetIdentity();
+
 		FRotator rotation = myTrans.GetRotation().Rotator(); // GetRotation()으로 얻은 FQuat의 Rotator()로 FRotator를 획득.
 		rotation.Pitch += FMath::RandRange(-10.0f, 10.0f);
 		rotation.Yaw += FMath::RandRange(-10.0f, 10.0f);
@@ -124,3 +104,4 @@ bool AShotgun::Fire()
 
 	return true;
 }
+/*** Weapon : End ***/

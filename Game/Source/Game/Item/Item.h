@@ -46,36 +46,40 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	/*** Basic Function : End ***/
 
-	/*** Physics : Start ***/
-private:
-	UPROPERTY(VisibleAnywhere)
-		float HalfHeightOfBox; /** PhysicsBox의 높이 절반 */
-
-	UPROPERTY(EditAnywhere)
-		class UBoxComponent* PhysicsBoxComp = nullptr;
-	/*** Physics : End ***/
-
+	/*** Item : Start ***/
 public:
 	EItemState State;
-
-
-
-	UPROPERTY(VisibleAnywhere)
-		float RadiusOfItem;  /** 반지름 */
-
-	UPROPERTY(EditAnywhere)
-		class USphereComponent* InteractionRange = nullptr;
-	//UFUNCTION()
-	//	virtual void OnOverlapBegin_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	//UFUNCTION()
-	//	virtual void OnOverlapEnd_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UPROPERTY(EditAnywhere)
-		class UStaticMeshComponent* StaticMeshOfItem = nullptr; /** 크기가 일정해야 함 */
 
 	virtual void InitItem(); /** 초기화 */
 	void InitStaticMeshOfItem(const TCHAR* ObjectToFind = TEXT("NULL"), FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
 	virtual void Droped();	 /** 땅에 떨어진 상태 */
 	virtual void Acquired(); /** 획득된 상태 */
+	/*** Item : End ***/
+
+	/*** Physics : Start ***/
+private:
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* PhysicsBoxComp = nullptr;
+	UPROPERTY(VisibleAnywhere)
+		float HalfHeightOfPhysicsBox; /** PhysicsBox의 높이 절반 */
+	/*** Physics : End ***/
+
+	/*** InteractionRange : Start ***/
+public:
+	UPROPERTY(EditAnywhere)
+		class USphereComponent* InteractionRange = nullptr;
+	UPROPERTY(VisibleAnywhere)
+		float RadiusOfInteractionRange;  /** 반지름 */
+	//UFUNCTION()
+	//	virtual void OnOverlapBegin_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	//UFUNCTION()
+	//	virtual void OnOverlapEnd_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	/*** InteractionRange : End ***/
+
+	/*** StaticMeshOfItem : Start ***/
+	UPROPERTY(EditAnywhere)
+		class UStaticMeshComponent* StaticMeshOfItem = nullptr; /** 크기가 일정해야 함 */
+	/*** StaticMeshOfItem : End ***/
+
 };

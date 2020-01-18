@@ -86,20 +86,21 @@ void AItem::InitItem()
 {
 	State = EItemState::Droped;
 
-	HalfHeightOfBox = 5.0f; // 너무 작으면 충돌이 제대로 이루어지지 않음.
+	HalfHeightOfPhysicsBox = 5.0f; // 너무 작으면 충돌이 제대로 이루어지지 않음.
 
-	RadiusOfItem = 192.0f;
+	RadiusOfInteractionRange = 192.0f;
 
 	PhysicsBoxComp = CreateDefaultSubobject<UBoxComponent>("PhysicsBoxComp");
 	RootComponent = PhysicsBoxComp;
-	PhysicsBoxComp->SetBoxExtent(FVector(RadiusOfItem / 2.0f, RadiusOfItem / 2.0f, HalfHeightOfBox), false);
+	PhysicsBoxComp->SetBoxExtent(FVector(RadiusOfInteractionRange / 2.0f, RadiusOfInteractionRange / 2.0f, HalfHeightOfPhysicsBox), false);
 	PhysicsBoxComp->SetGenerateOverlapEvents(false);
 	PhysicsBoxComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	PhysicsBoxComp->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
 	PhysicsBoxComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	PhysicsBoxComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	PhysicsBoxComp->SetSimulatePhysics(true);
-	PhysicsBoxComp->SetRelativeLocation(FVector(0.0f, 0.0f, HalfHeightOfBox));
+	PhysicsBoxComp->SetRelativeLocation(FVector(0.0f, 0.0f, HalfHeightOfPhysicsBox));
+
 	// Detail의 Physics의 Constraints의 Lock Rotaion 활성화: 물리회전을 고정
 	PhysicsBoxComp->BodyInstance.bLockXRotation = true;
 	PhysicsBoxComp->BodyInstance.bLockYRotation = true;
@@ -107,7 +108,7 @@ void AItem::InitItem()
 
 	InteractionRange = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionRange"));
 	InteractionRange->SetupAttachment(RootComponent);
-	InteractionRange->SetSphereRadius(RadiusOfItem);
+	InteractionRange->SetSphereRadius(RadiusOfInteractionRange);
 	InteractionRange->SetGenerateOverlapEvents(true);
 	InteractionRange->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	//InteractionRange->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnOverlapBegin_InteractionRange);
@@ -138,7 +139,7 @@ void AItem::InitStaticMeshOfItem(const TCHAR* ObjectToFind, FRotator Rotation, F
 			if (g > maxOfGap)
 				maxOfGap = g;
 		}
-		float scaleOfItem = (maxOfGap != 0.0f) ? (RadiusOfItem / maxOfGap) : 1.0f;
+		float scaleOfItem = (maxOfGap != 0.0f) ? (RadiusOfInteractionRange / maxOfGap) : 1.0f;
 		FVector Scale(scaleOfItem, scaleOfItem, scaleOfItem);
 
 		//FRotator Rotation(-45.0f, 0.0f, 0.0f); // 플레이어에게 잘 보이도록 45도 기울임

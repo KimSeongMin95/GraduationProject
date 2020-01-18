@@ -7,53 +7,34 @@
 #include "Projectile/ProjectileRocketLauncher.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
-// Sets default values
+/*** Basic Function : Start ***/
 ARocketLauncher::ARocketLauncher()
 {
 	InitItem();
 
 	InitStat();
 
-	// Weapon SkeletalMesh Asset을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_RocketLauncher.White_RocketLauncher'"));
-	if (skeletalMeshAsset.Succeeded())
-	{
-		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
-	}
+	InitMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_RocketLauncher.White_RocketLauncher'"));
 
-	// SkeletalMesh가 사용하는 Skeleton Asset을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_RocketLauncher_Skeleton.White_RocketLauncher_Skeleton'"));
-	if (skeleton.Succeeded())
-	{
-		Skeleton = skeleton.Object;
-	}
+	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 46.0f, 17.0f));
 
-	// 총 쏘는 애니메이션을 가져와서 적용
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_RocketLauncher_W.Fire_RocketLauncher_W'"));
-	if (animSequence.Succeeded())
-	{
-		AnimSequence = animSequence.Object;
-		AnimSequence->SetSkeleton(Skeleton);
-	}
+	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_RocketLauncher_Skeleton.White_RocketLauncher_Skeleton'"));
 
-	// 발사될 Projectile의 Transform을 설정
-	ProjectileSpawnPoint->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
-	ProjectileSpawnPoint->SetRelativeLocation(FVector(0.0f, 46.0f, 17.0f));
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_RocketLauncher_W.Fire_RocketLauncher_W'"));
 }
 
-// Called when the game starts or when spawned
 void ARocketLauncher::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
-// Called every frame
 void ARocketLauncher::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
+/*** Basic Function : End ***/
 
 /*** Item : Start ***/
 void ARocketLauncher::InitItem()
@@ -84,15 +65,11 @@ void ARocketLauncher::InitStat()
 }
 /*** Stat : End ***/
 
+/*** Weapon : Start ***/
 bool ARocketLauncher::Fire()
 {
-	if (FireCoolTime < (1.0f / AttackSpeed))
+	if (Super::Fire() == false)
 		return false;
-	else
-		FireCoolTime = 0.0f;
-
-	// Fire 애니메이션 실행
-	WeaponMesh->PlayAnimation(AnimSequence, false);
 
 	UWorld* const World = GetWorld();
 	if (!World)
@@ -101,7 +78,13 @@ bool ARocketLauncher::Fire()
 		return false;
 	}
 
-	FTransform myTrans = ProjectileSpawnPoint->GetComponentTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
+	FTransform myTrans;
+
+	if (GetArrowComponent())
+		myTrans = GetArrowComponent()->GetComponentTransform();
+	else
+		myTrans.SetIdentity();
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
@@ -111,3 +94,4 @@ bool ARocketLauncher::Fire()
 
 	return true;
 }
+/*** Weapon : End ***/

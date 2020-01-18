@@ -49,20 +49,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-	/*** Item : Start ***/
+/*** Item : Start ***/
 public:
-	virtual void InitItem() override; /** 초기화 */
+	virtual void InitItem() override; /** 아이템 초기화 */
 
 	virtual void Droped() final;   /** 땅에 떨어진 상태 */
 	virtual void Acquired() final; /** 획득된 상태 */
-	/*** Item : End ***/
-
-public:
-	UPROPERTY(EditAnywhere)
-		class USkeletalMeshComponent* WeaponMesh = nullptr;
-
-	UPROPERTY(EditAnywhere)
-		class UArrowComponent* ProjectileSpawnPoint = nullptr;
+/*** Item : End ***/
 
 /*** Stat : Start ***/
 public:
@@ -91,31 +84,52 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 		FName SocketName; /** Pioneer의 Skeleton Socket에 붙이기 위한 소켓명 */
 
+protected:
 	virtual void InitStat();
 /*** Stat : End ***/
 
-public:
-	UPROPERTY(EditAnywhere)
-		class USkeleton* Skeleton;
+/*** Weapon : Start ***/
+private:
+	
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+		/** weapon의 main skeletal mesh. */
+		class USkeletalMeshComponent* Mesh = nullptr;
 
-	UPROPERTY(EditAnywhere)
-		class UAnimSequence* AnimSequence;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon") 
+		/** Projectile이 Spawn되는 방향을 표시 */
+		class UArrowComponent* ArrowComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon") 
+		/** main skeletal mesh의 skeleton */
+		class USkeleton* Skeleton = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+		/** main skeletal mesh의 무기를 발사하는 AinmSequence */
+		class UAnimSequence* FireAnimSequence = nullptr;
+
+protected:
+	void InitMesh(const TCHAR* ReferencePath);
+	void InitArrowComponent(FRotator Rotatation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	void InitSkeleton(const TCHAR* ReferencePath);
+	void InitFireAnimSequence(const TCHAR* ReferencePath);
+
+public:
+	/** Returns Mesh **/
+	FORCEINLINE class USkeletalMeshComponent* GetMesh() const { return Mesh; }
+
+	/** Returns ArrowComponent **/
+	FORCEINLINE class UArrowComponent* GetArrowComponent() const { return ArrowComponent; }
+
+	/** Returns Skeleton **/
+	FORCEINLINE class USkeleton* GetSkeleton() const { return Skeleton; }
+
+	/** Returns FireAnimSequence **/
+	FORCEINLINE class UAnimSequence* GetFireAnimSequence() const { return FireAnimSequence; }
+
+
 
 	UFUNCTION()
-		virtual bool Fire();
-
-
-/*** 블루프린트의 Event : Start ***/
-public:
-	//// BlueprintImplementableEvent: 헤더에만 선언해줘서 블루프린트에서 정의하는 매크로
-	//UFUNCTION(BlueprintImplementableEvent)
-	//	void PullTrigger();
-
-	// BlueprintNaitveEvent: C++에서 정의하는 이벤트
-	/*UFUNCTION(BlueprintNaitveEvent)
-	void PullTrigger();*/
-/*** 블루프린트의 Event : End ***/
-
-	// FFireDelegate FireDelegate;
+		virtual bool Fire(); /** 무기를 발사 */
+/*** Weapon : End ***/
 
 };

@@ -25,18 +25,19 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-	/*** Item : Start ***/
+/*** Item : Start ***/
 public:
 	virtual void InitItem() final;
-	/*** Item : End ***/
+/*** Item : End ***/
 
-	/*** Stat : Start ***/
-public:
+/*** Stat : Start ***/
+protected:
 	virtual void InitStat() final;
-	/*** Stat : End ***/
+/*** Stat : End ***/
 
+/*** Weapon : Start ***/
 public:
-	// 오버라이드 하면 UFUNCTION()를 다시 선언할 필요가 없음.
-	virtual bool Fire() final;
+	virtual bool Fire() final; // 오버라이드 하면 UFUNCTION()를 다시 선언할 필요가 없음.
+/*** Weapon : End ***/
 
 };

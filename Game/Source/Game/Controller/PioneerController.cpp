@@ -11,6 +11,7 @@
 #include "Item/Weapon/Weapon.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+/*** Basic Function : Start ***/
 APioneerController::APioneerController()
 {
 	// setting mouse
@@ -46,27 +47,82 @@ void APioneerController::SetupInputComponent()
 	//// support VR
 	//InputComponent->BindAction("ResetVR", IE_Pressed, this, &APioneerController::OnResetVR);
 	
+	// W S키: 전후진이동
 	InputComponent->BindAxis("MoveForward", this, &APioneerController::MoveForward);
+	// A D키: 좌우측이동
 	InputComponent->BindAxis("MoveRight", this, &APioneerController::MoveRight);
 
+	// 마우스 휠 위아래: 카메라 줌인&줌아웃
 	InputComponent->BindAxis("ZoomInOut", this, &APioneerController::ZoomInOrZoomOut);
 
+	// 마우스 좌클릭: 무기 발사
 	InputComponent->BindAxis("FireWeapon", this, &APioneerController::FireWeapon);
+	// Q키: 이전 무기로 변경
 	InputComponent->BindAction("ChangePreviousWeapon", IE_Pressed, this, &APioneerController::ChangePreviousWeapon);
+	// E키: 이전 무기로 변경
 	InputComponent->BindAction("ChangeNextWeapon", IE_Pressed, this, &APioneerController::ChangeNextWeapon);
+	// 마우스 휠클릭: 무장 <--> 무장해제
 	InputComponent->BindAction("ArmOrDisArmWeapon", IE_Pressed, this, &APioneerController::ArmOrDisArmWeapon);
-
 	// F키: 바닥에 있는 아이템 줍기
 	InputComponent->BindAction("AcquireItem", IE_Pressed, this, &APioneerController::AcquireItem);
-
 	// G키: 현재 무기를 바닥에 버리기
 	InputComponent->BindAction("AbandonWeapon", IE_Pressed, this, &APioneerController::AbandonWeapon);
 
 
+	// B키: 건물건설모드 진입
+	InputComponent->BindAction("ConstructingMode", IE_Pressed, this, &APioneerController::ConstructingMode);
+	// ESC키 (현재 임시로 Tab키): 건물건설모드 취소
+	InputComponent->BindAction("ESC_ConstructingMode", IE_Pressed, this, &APioneerController::ESC_ConstructingMode);
+	// 1~9키: 각 키에 해당하는 건물 스폰
+	InputComponent->BindAxis("SpawnBuilding", this, &APioneerController::SpawnBuilding);
+	// Q E키: 건물건설모드에서 건물 회전
 	InputComponent->BindAxis("RotatingBuilding", this, &APioneerController::RotatingBuilding);
+	// 마우스 좌클릭: 건물건설모드를 끝내고 건물을 건설
 	InputComponent->BindAction("PlaceBuilding", IE_Pressed, this, &APioneerController::PlaceBuilding);
-
 }
+/*** Basic Function : End ***/
+
+/*** Possess : Start ***/
+void APioneerController::OnPossess(APawn* InPawn)
+{
+	if (!InPawn)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::OnPossess: !InPawn"));
+		return;
+	}
+
+	if (APioneer* pioneer = dynamic_cast<APioneer*>(InPawn))
+	{
+		Super::OnPossess(InPawn);
+		Pioneer = pioneer;
+	}
+}
+void APioneerController::OnUnPossess()
+{
+	Pioneer = nullptr;
+
+	if (!GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::OnUnPossess: !GetPawn()"));
+		return;
+	}
+
+	Super::OnUnPossess();
+	SetPawn(nullptr);
+}
+
+void APioneerController::OnSetDestinationPressed()
+{
+	// set flag to keep updating destination until released
+	bMoveToMouseCursor = true;
+}
+
+void APioneerController::OnSetDestinationReleased()
+{
+	// clear flag to indicate we should stop updating the destination
+	bMoveToMouseCursor = false;
+}
+/*** Possess : End ***/
 
 //void APioneerController::OnResetVR()
 //{
@@ -143,17 +199,7 @@ void APioneerController::MoveToMouseCursor()
 //	}
 //}
 
-void APioneerController::OnSetDestinationPressed()
-{
-	// set flag to keep updating destination until released
-	bMoveToMouseCursor = true;
-}
 
-void APioneerController::OnSetDestinationReleased()
-{
-	// clear flag to indicate we should stop updating the destination
-	bMoveToMouseCursor = false;
-}
 
 
 void APioneerController::MoveForward(float Value)
@@ -327,12 +373,12 @@ void APioneerController::AcquireItem()
 		return;
 	}
 
-	if (Pioneer->OverapedItems.Num() <= 0)
+	if (Pioneer->OverlapedItems.Num() <= 0)
 		return;
 	
 	AItem* closestItem = nullptr;
 	float minDistance = 1000000.0f;
-	for (auto& item : Pioneer->OverapedItems)
+	for (auto& item : Pioneer->OverlapedItems)
 	{
 		if (!item)
 			continue;
@@ -365,6 +411,60 @@ void APioneerController::AbandonWeapon()
 	Pioneer->AbandonWeapon();
 }
 
+void APioneerController::ConstructingMode()
+{
+	if (!Pioneer || !GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::PlaceBuilding: if (!Pioneer || !GetPawn())"));
+		return;
+	}
+
+	// 죽으면 함수를 실행하지 않음.
+	if (Pioneer->bDying)
+		return;
+
+	Pioneer->Disarming();
+
+	Pioneer->bConstructingMode = true;
+}
+void APioneerController::ESC_ConstructingMode()
+{
+	if (!Pioneer || !GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::PlaceBuilding: if (!Pioneer || !GetPawn())"));
+		return;
+	}
+
+	// 죽으면 함수를 실행하지 않음.
+	if (Pioneer->bDying)
+		return;
+
+	// 건설중인 상태라면
+	if (Pioneer->bConstructingMode)
+	{
+		Pioneer->DestroyBuilding();
+		Pioneer->bConstructingMode = false;
+	}
+}
+void APioneerController::SpawnBuilding(float Value)
+{
+	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	if (Value == 0.0f)
+		return;
+
+	if (!Pioneer || !GetPawn())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneerController::RotatingBuilding: if (!Pioneer || !GetPawn())"));
+		return;
+	}
+
+	// 죽으면 함수를 실행하지 않음.
+	if (Pioneer->bDying)
+		return;
+
+	if (Pioneer->bConstructingMode)
+		Pioneer->SpawnBuilding((int)Value);
+}
 void APioneerController::RotatingBuilding(float Value)
 {
 	// Value에 값이 없으면 실행할 필요가 없으니 종료
@@ -384,7 +484,6 @@ void APioneerController::RotatingBuilding(float Value)
 
 	Pioneer->RotatingBuilding(Value);
 }
-
 void APioneerController::PlaceBuilding()
 {
 	if (!Pioneer || !GetPawn())
@@ -400,7 +499,6 @@ void APioneerController::PlaceBuilding()
 
 	Pioneer->PlaceBuilding();
 }
-
 
 
 
@@ -433,31 +531,3 @@ void APioneerController::PlaceBuilding()
 //	
 //}
 
-void APioneerController::OnPossess(APawn* InPawn)
-{
-	if (!InPawn)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::OnPossess: !InPawn"));
-		return;
-	}
-
-	if (APioneer* pioneer = dynamic_cast<APioneer*>(InPawn))
-	{
-		Super::OnPossess(InPawn);
-		Pioneer = pioneer;
-	}
-}
-
-void APioneerController::OnUnPossess()
-{
-	Pioneer = nullptr;
-
-	if (!GetPawn())
-	{	
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::OnUnPossess: !GetPawn()"));
-		return;
-	}
-
-	Super::OnUnPossess();
-	SetPawn(nullptr);
-}

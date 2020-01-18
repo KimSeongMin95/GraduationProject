@@ -20,6 +20,23 @@
 #include "GameFramework/Actor.h"
 #include "Building.generated.h"
 
+
+UENUM()
+enum class EBuildingType : uint8
+{
+	Floor = 0,
+
+	Wall = 1,
+	Stairs = 2,
+	Turret = 3,
+	Gate = 4,
+	OrganicMine = 5,
+	InorganicMine = 6,
+	NuclearFusionPowerPlant = 7,
+	ResearchInstitute = 8,
+	WeaponFactory = 9
+};
+
 UENUM()
 enum class EBuildingState : uint8
 {

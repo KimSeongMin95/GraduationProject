@@ -242,26 +242,21 @@ public:
 
 	void FireWeapon(); /** CurrentWeapon을 Fire */
 
-	void SetWeaponType();
+	void SetWeaponType(); /** PioneerAnimInstance -> BP_PioeerAnimation */
 	void ChangeWeapon(int Value); /** Value 값이 1이면 CurrentWeapon의 앞쪽 인덱스, -1이면 CurrentWeapon의 뒤쪽 인덱스 Weapons중 하나로 변경 */
 
 	void Arming(); /** 비무장 -> 무장(CurrentWeapon) */
 	void Disarming(); /** 무장(CurrentWeapon) -> 비무장 */
-
 /*** Weapon : End ***/
 
 /*** Building : Start ***/
 public:
 	class ABuilding* Building = nullptr;
-	void SpawnBuilding();
+	void SpawnBuilding(int Value);
 
 	bool bConstructingMode;
 
 	void OnConstructingMode();
-
-	// 임시
-	int tempBuildingIdx = 0;
-	void ChangeBuilding();
 
 	void RotatingBuilding(float Value);
 	void PlaceBuilding();
@@ -294,16 +289,16 @@ public:
 	virtual void RunBehaviorTree(float DeltaTime) final;
 	/*** BehaviorTree : End ***/
 
-
 	/*** Item : Start ***/
 public:
-	void InitItem();
 	UPROPERTY(EditAnywhere, Category = "Item")
-		TArray<class AItem*> OverapedItems; /** 충돌한 AItem들을 모두 저장하고 벗어나면 삭제 */
+		TArray<class AItem*> OverlapedItems; /** 충돌한 AItem들을 모두 저장하고 벗어나면 삭제 */
 	UFUNCTION()
 		virtual void OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 		virtual void OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	void InitItem();
 	/*** Item : End ***/
 };
 

@@ -34,6 +34,10 @@ enum class ECharacterAI : uint8
 	BehaviorTree = 1
 };
 
+/**
+* ABaseCharacter는 언리얼의 클래스인 ACharacter를 상속받고 APioneer와 AEnemy의 상위 클래스입니다.
+* 캐릭터의 상단에 체력바를 띄우기 위해 인터페이스 클래스인 IHealthPointBarInterface를 상속받고 기능들을 구현합니다.
+*/
 UCLASS()
 class GAME_API ABaseCharacter : public ACharacter, public IHealthPointBarInterface
 {

@@ -28,24 +28,31 @@ protected:
 	virtual void SetupInputComponent() override;
 /*** Basic Function : End ***/
 
+	/*** Possess : Start ***/
+public:
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
+
+	// Input handlers for SetDestination action.
+	void OnSetDestinationPressed();
+	void OnSetDestinationReleased();
+	/*** Possess : End ***/
+
+	/*** Pioneer : Start ***/
+private:
+	UPROPERTY(EditAnywhere)
+		class APioneer* Pioneer = nullptr;
+	/*** Pioneer : Start ***/
+
+	/*** Navigating player : Start ***/
 public:
 	uint32 bMoveToMouseCursor : 1; /** true면 마우스 커서로 navigating 합니다. */
 
-	///** Resets HMD orientation in VR. */
-	//void OnResetVR(); 
-
-	UPROPERTY(EditAnywhere)
-		class APioneer* Pioneer = nullptr;
-
-	/*** Navigating player : Start ***/
 	void MoveToMouseCursor(); /** Navigate player to the current mouse cursor location. */
 	//void MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location); /** Navigate player to the current touch location. */
 	/*** Navigating player : End ***/
 
-	/*** Input handlers for SetDestination action. : Start ***/
-	void OnSetDestinationPressed();
-	void OnSetDestinationReleased();
-
+public:
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void MoveForward(float Value); /** 플레이어를 앞뒤로 이동시키는 함수입니다. */
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
@@ -69,15 +76,17 @@ public:
 		void AbandonWeapon();
 
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void ConstructingMode();
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void ESC_ConstructingMode();
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+		void SpawnBuilding(float Value);
+	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void RotatingBuilding(float Value);
 	UFUNCTION(BlueprintCallable, Category = "Player Actions")
 		void PlaceBuilding();
 
-	/*** Input handlers for SetDestination action. : End ***/
-
-/*** Overrided Function : Start ***/
 public:
-	virtual void OnPossess(APawn* InPawn) override;
-	virtual void OnUnPossess() override;
-/*** Overrided Function : End ***/
+	///** Resets HMD orientation in VR. */
+	//void OnResetVR(); 
 };

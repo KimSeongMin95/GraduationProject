@@ -234,7 +234,7 @@ void APioneer::InitStat()
 
 	AttackPower = 1.0f;
 
-	AttackRange = 8.0f;
+	AttackRange = 16.0f;
 	DetectRange = 32.0f;
 	SightRange = 32.0f;
 }
@@ -351,7 +351,7 @@ void APioneer::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedCom
 			// 만약 OtherActor가 AEnemy이기는 하지만 AEnemy의 DetactRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
 			if (enemy->DetactRangeSphereComp == OtherComp || enemy->AttackRangeSphereComp == OtherComp)
 				return;
-		}	return;
+		}
 
 		//OverapedAttackRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
 		OverapedAttackRangeActors.RemoveSingle(OtherActor); // OtherActor 하나만 지웁니다.
@@ -733,9 +733,9 @@ void APioneer::InitWeapon()
 
 	// 개척자는 기본적으로 권총을 가지고 있음
 	APistol* Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
+	Pistol->Acquired();
 	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	//Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	Pistol->Acquired();
 	if (Weapons.Contains(Pistol) == false)
 	{
 		IdxOfCurrentWeapon = Weapons.Add(Pistol);
@@ -748,23 +748,23 @@ void APioneer::InitWeapon()
 	Weapons.Add(nullptr);
 	
 	AAssaultRifle* assaultRifle = World->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
+	assaultRifle->Acquired();
 	assaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	assaultRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	assaultRifle->Acquired();
 	if (Weapons.Contains(assaultRifle) == false)
 		Weapons.Add(assaultRifle);
 
 	AGrenadeLauncher* grenadeLauncher = World->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
+	grenadeLauncher->Acquired();
 	grenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	grenadeLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	grenadeLauncher->Acquired();
 	if (Weapons.Contains(grenadeLauncher) == false)
 		Weapons.Add(grenadeLauncher);
 
 	Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
+	Pistol->Acquired();
 	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	Pistol->Acquired();
 	if (Weapons.Contains(Pistol) == false)
 		Weapons.Add(Pistol);
 
@@ -772,25 +772,25 @@ void APioneer::InitWeapon()
 	Weapons.Add(nullptr);
 
 	ARocketLauncher* rocketLauncher = World->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
+	rocketLauncher->Acquired();
 	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	rocketLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	rocketLauncher->Acquired();
 	if (Weapons.Contains(rocketLauncher) == false)
 		Weapons.Add(rocketLauncher);
 
 	AShotgun* shotgun = World->SpawnActor<AShotgun>(AShotgun::StaticClass(), myTrans, SpawnParams);
+	shotgun->Acquired();
 	shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ShotgunSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	shotgun->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	shotgun->Acquired();
 	if (Weapons.Contains(shotgun) == false)
 		Weapons.Add(shotgun);
 
 	Weapons.Add(nullptr);
 
 	ASniperRifle* sniperRifle = World->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), myTrans, SpawnParams);
+	sniperRifle->Acquired();
 	sniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	sniperRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	sniperRifle->Acquired();
 	if (Weapons.Contains(sniperRifle) == false)
 		Weapons.Add(sniperRifle);
 
@@ -804,12 +804,15 @@ void APioneer::InitWeapon()
 void APioneer::AcquireWeapon(class AWeapon* weapon)
 {
 	if (!weapon || !GetMesh())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::AcquireWeapon: if (!weapon || !GetMesh())"));
 		return;
+	}
 
 	// 먼저 무장해제
 	Disarming();
 
-	OverapedItems.RemoveSingle(weapon);
+	OverlapedItems.RemoveSingle(weapon);
 
 	weapon->Acquired();
 	weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), weapon->SocketName);
@@ -823,14 +826,19 @@ void APioneer::AcquireWeapon(class AWeapon* weapon)
 void APioneer::AbandonWeapon()
 {
 	if (!CurrentWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::AbandonWeapon: if (!CurrentWeapon)"));
 		return;
+	}
 
 	CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	Weapons.RemoveSingle(CurrentWeapon);
 	CurrentWeapon->Droped();
-	
+
+	Weapons.RemoveSingle(CurrentWeapon);
 	CurrentWeapon = nullptr;
+
 	SetWeaponType();
+
 	GetCharacterMovement()->bOrientRotationToMovement = true; // 무기를 들지 않으면 이동 방향에 캐릭터 메시가 따라 회전합니다.
 
 	Arming();
@@ -981,7 +989,8 @@ void APioneer::Arming()
 
 	SetWeaponType();
 
-	GetCharacterMovement()->bOrientRotationToMovement = false; // 무기를 들면 이동 방향에 캐릭터 메시가 따라 회전하지 않습니다.
+	if (GetCharacterMovement())
+		GetCharacterMovement()->bOrientRotationToMovement = false; // 무기를 들면 이동 방향에 캐릭터 메시가 따라 회전하지 않습니다.
 }
 void APioneer::Disarming()
 {
@@ -992,19 +1001,20 @@ void APioneer::Disarming()
 
 	SetWeaponType();
 
-	GetCharacterMovement()->bOrientRotationToMovement = true; // 무기를 들지 않으면 이동 방향에 캐릭터 메시가 따라 회전합니다.
+	if (GetCharacterMovement())
+		GetCharacterMovement()->bOrientRotationToMovement = true; // 무기를 들지 않으면 이동 방향에 캐릭터 메시가 따라 회전합니다.
 }
 /*** Weapon : End ***/
 
 /*** Building : Start ***/
-void APioneer::SpawnBuilding()
+void APioneer::SpawnBuilding(int Value)
 {
 	DestroyBuilding();
 
 	UWorld* const World = GetWorld();
 	if (!World)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::SpawnBuilding: if (!World)"));
 		return;
 	}
 
@@ -1014,37 +1024,40 @@ void APioneer::SpawnBuilding()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	switch (tempBuildingIdx)
+	switch ((EBuildingType)Value)
 	{
-	case 0:
-		Building = World->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
-		break;
-	case 1:
+	case EBuildingType::Floor:
 		Building = World->SpawnActor<AFloor>(AFloor::StaticClass(), myTrans, SpawnParams);
 		break;
-	case 2:
+	case EBuildingType::Wall:
+		Building = World->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
+		break;
+	case EBuildingType::Stairs:
 		Building = World->SpawnActor<AStairs>(AStairs::StaticClass(), myTrans, SpawnParams);
 		break;
-	case 3:
+	case EBuildingType::Turret:
 		Building = World->SpawnActor<ATurret>(ATurret::StaticClass(), myTrans, SpawnParams);
 		break;
-	case 4:
+	case EBuildingType::Gate:
 		Building = World->SpawnActor<AGate>(AGate::StaticClass(), myTrans, SpawnParams);
 		break;
-	case 5:
+	case EBuildingType::OrganicMine:
 		Building = World->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
 		break;
-	case 6:
+	case EBuildingType::InorganicMine:
 		Building = World->SpawnActor<AInorganicMine>(AInorganicMine::StaticClass(), myTrans, SpawnParams);
 		break;
-	case 7:
+	case EBuildingType::NuclearFusionPowerPlant:
 		Building = World->SpawnActor<ANuclearFusionPowerPlant>(ANuclearFusionPowerPlant::StaticClass(), myTrans, SpawnParams);
 		break;
-	case 8:
+	case EBuildingType::ResearchInstitute:
 		Building = World->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
 		break;
-	case 9:
+	case EBuildingType::WeaponFactory:
 		Building = World->SpawnActor<AWeaponFactory>(AWeaponFactory::StaticClass(), myTrans, SpawnParams);
+		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::SpawnBuilding: if (!World)"));
 		break;
 	}
 }
@@ -1052,10 +1065,16 @@ void APioneer::SpawnBuilding()
 void APioneer::OnConstructingMode()
 {
 	if (!bConstructingMode || !CursorToWorld || !Building)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::OnConstructingMode: if (!bConstructingMode || !CursorToWorld || !Building)"));
 		return;
+	}
 
 	if (GetController() == AIController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::OnConstructingMode: if (GetController() == AIController)"));
 		return;
+	}
 
 	// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
 	if (UWorld* World = GetWorld())
@@ -1091,26 +1110,13 @@ void APioneer::OnConstructingMode()
 	}
 }
 
-void APioneer::ChangeBuilding()
-{
-	if (!bConstructingMode)
-		return;
-
-	tempBuildingIdx++;
-	if (tempBuildingIdx >= 10)
-		tempBuildingIdx = 0;
-
-	SpawnBuilding();
-}
-
 void APioneer::RotatingBuilding(float Value)
 {
-	if (!Building)
+	if (!Building || !bConstructingMode)
 		return;
 
 	Building->Rotating(Value);
 }
-
 void APioneer::PlaceBuilding()
 {
 	if (!bConstructingMode || !Building)
@@ -1217,6 +1223,8 @@ void APioneer::TracingOfFSM()
 {
 	FindTheTargetActor();
 
+	TracingTargetActor();
+
 	if (!TargetActor)
 	{
 		State = EPioneerFSM::Idle;
@@ -1229,8 +1237,6 @@ void APioneer::TracingOfFSM()
 		GetController()->StopMovement();
 		return;
 	}
-
-	TracingTargetActor();
 }
 void APioneer::AttackingOfFSM()
 {
@@ -1271,7 +1277,7 @@ void APioneer::OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, cl
 		if (AItem* item = Cast<AItem>(OtherActor))
 		{
 			if (OtherComp == item->InteractionRange)
-				OverapedItems.Add(item);
+				OverlapedItems.Add(item);
 		}
 	}
 }
@@ -1290,11 +1296,22 @@ void APioneer::OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, clas
 		if (AItem* item = Cast<AItem>(OtherActor))
 		{
 			if (OtherComp == item->InteractionRange)
-				OverapedItems.RemoveSingle(item);
+				OverlapedItems.RemoveSingle(item);
 		}
 	}
 }
 /*** Item : Start ***/
+
+
+
+
+
+
+
+
+
+
+
 
 //void APioneer::PunchAttack()
 //{
