@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Projectile/Projectile.h"
+#include "Projectile/ProjectileSplash/ProjectileSplash.h"
 #include "ProjectileRocketLauncher.generated.h"
 
 UCLASS()
-class GAME_API AProjectileRocketLauncher : public AProjectile
+class GAME_API AProjectileRocketLauncher : public AProjectileSplash
 {
 	GENERATED_BODY()
 
@@ -25,22 +25,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : Start ***/
 
-private:
+/*** Projectile : Start ***/
+protected:
+	virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
 
-	virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	virtual void SetTimerForDestroy(float Time) final;
+/*** Projectile : End ***/
 
-/*** Splash : Start ***/
-public:
-	UPROPERTY(EditAnywhere)
-		class USphereComponent* SplashSphereComp = nullptr;
-
-	//UPROPERTY(EditAnywhere)
-	//	class UStaticMeshComponent* SplashStaticMeshComp = nullptr; /** 임시로 범위를 시작적으로 보여주는 용도*/
-
-	UFUNCTION()
-		virtual void SplashOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	bool bPassed1Frame; /** Suicide되면 Tick()에서 countFrame++하는 플래그. */
-	int countFrame; /** SplashSphereComp가 존재할 프레임 횟수를 셈. */
-/*** Splash : End ***/
+/*** ProjectileSplash : Start ***/
+protected:
+	virtual void OnOverlapBegin_Splash(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
+/*** ProjectileSplash : End ***/
 };

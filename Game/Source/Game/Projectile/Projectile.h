@@ -26,23 +26,17 @@ class GAME_API AProjectile : public AActor
 
 /*** Basic Function : Start ***/
 public:
-	// Sets default values for this actor's properties
 	AProjectile();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
 /*** Projectile : Start ***/
-	//private:
-public:
-	float TotalDamage;
-
+private:
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 		/** Projectile의 충돌범위 */
 		class USphereComponent* HitRange = nullptr;
@@ -65,6 +59,9 @@ public:
 
 	FTimerHandle TimerHandleOfDestroy;
 
+public:
+	float TotalDamage;
+
 protected:
 	virtual void InitProjectile();
 	void InitHitRange(float Radius);
@@ -72,8 +69,8 @@ protected:
 	void InitProjectileMovement(float InitialSpeed = 1200.0f, float MaxSpeed = 1200.0f, float ProjectileGravityScale = 0.0f, bool bShouldBounce = false, float Friction = 0.0f);
 	void InitParticleSystem(class UParticleSystemComponent* ParticleSystem, const TCHAR* ReferencePath, FVector Scale = FVector::OneVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
-	/** HitRange가 충돌할 때, 무시할 것들을 정의하고 OnOverlapBegin_HitRange에 알려줍니다. */
-	bool SkipOnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	/** 충돌할 때, 무시할 것들을 정의하고 OnOverlapBegin에 알려줍니다. */
+	bool IgnoreOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 		virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -85,7 +82,13 @@ protected:
 		void DestroyByTimer();
 
 public:
+	FORCEINLINE class UParticleSystemComponent* GetTrailParticleSystem() const { return TrailParticleSystem; }
+
+	FORCEINLINE class UParticleSystemComponent* GetImpactParticleSystem() const { return ImpactParticleSystem; }
+
 	void SetDamage(float Damage);
+
+	void ActiveToggleOfImpactParticleSystem(bool bDefaultRotation = false);
 /*** Projectile : End ***/
 };
 

@@ -25,6 +25,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : Start ***/
 
-private:
-	virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+/*** Projectile : Start ***/
+protected:
+	virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+/*** Projectile : End ***/
 };

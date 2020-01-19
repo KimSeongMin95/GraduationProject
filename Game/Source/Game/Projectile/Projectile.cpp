@@ -20,8 +20,8 @@ AProjectile::AProjectile()
 	HitRange = CreateDefaultSubobject<USphereComponent>(TEXT("HitRange"));
 	RootComponent = HitRange;
 	HitRange->SetCollisionProfileName(TEXT("CollisionOfHitRange"));
-	HitRange->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin_HitRange);
 	HitRange->SetGenerateOverlapEvents(true);
+	HitRange->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin_HitRange);
 
 	// Collision 카테고리에서 Collision Presets을 커스텀으로 적용
 	HitRange->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // 쿼리 전용 - 이 바디는 공간 쿼리(레이캐스트, 스윕, 오버랩)에만 사용됩니다. 시뮬레이션(리짓 바디, 컨스트레인트)에는 사용할 수 없습니다. 이 세팅은 물리 시뮬레이션이 필요치 않은 오브젝트와 캐릭터 동작에 좋습니다. 물리 시뮬레이션 트리 내 데이터를 감소시키는 것으로 퍼포먼스를 약간 개선시킬 수 있습니다.
@@ -79,7 +79,8 @@ void AProjectile::BeginPlay()
 	}
 
 	// 생성자에서 SetTimer를 실행하면 안됨. 무조건 BeginPlay()에 두어야 함.
-	SetTimerForDestroy(8.0f); // Time초 뒤 투사체를 소멸합니다.
+	float time = 8.0f;
+	GetWorldTimerManager().SetTimer(TimerHandleOfDestroy, this, &AProjectile::DestroyByTimer, time, false); // time초 뒤 투사체를 소멸합니다.
 }
 
 void AProjectile::Tick(float DeltaTime)
@@ -166,7 +167,7 @@ void AProjectile::InitParticleSystem(class UParticleSystemComponent* ParticleSys
 }
 
 
-bool AProjectile::SkipOnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+bool AProjectile::IgnoreOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
@@ -207,12 +208,12 @@ bool AProjectile::SkipOnOverlapBegin_HitRange(class UPrimitiveComponent* Overlap
 		return true;
 
 
-	// 자식의 OnOverlapBegin 함수 실행 가능
+	// 자식클래스의 OnOverlapBegin 함수 실행 가능
 	return false;
 }
 void AProjectile::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	/** Child 클래스에서 꼭 오버라이드 해야 합니다. */
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
 
 void AProjectile::SetTimerForDestroy(float Time)
@@ -230,7 +231,6 @@ void AProjectile::SetTimerForDestroy(float Time)
 	// 이미 실행되고 있으면 재설정합니다.
 	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfDestroy))
 		GetWorldTimerManager().ClearTimer(TimerHandleOfDestroy);
-
 	GetWorldTimerManager().SetTimer(TimerHandleOfDestroy, this, &AProjectile::DestroyByTimer, Time, false);
 }
 void AProjectile::DestroyByTimer()
@@ -241,5 +241,16 @@ void AProjectile::DestroyByTimer()
 void AProjectile::SetDamage(float Damage)
 {
 	TotalDamage = Damage;
+}
+void AProjectile::ActiveToggleOfImpactParticleSystem(bool bDefaultRotation)
+{
+	if (!ImpactParticleSystem)
+		return;
+
+	if (bDefaultRotation)
+		ImpactParticleSystem->SetWorldRotation(FRotator::ZeroRotator);
+
+	if (ImpactParticleSystem->Template)
+		ImpactParticleSystem->ToggleActive();
 }
 /*** Projectile : End ***/

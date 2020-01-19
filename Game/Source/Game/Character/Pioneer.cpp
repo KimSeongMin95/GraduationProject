@@ -1066,7 +1066,7 @@ void APioneer::OnConstructingMode()
 {
 	if (!bConstructingMode || !CursorToWorld || !Building)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::OnConstructingMode: if (!bConstructingMode || !CursorToWorld || !Building)"));
+		//UE_LOG(LogTemp, Warning, TEXT("APioneer::OnConstructingMode: if (!bConstructingMode || !CursorToWorld || !Building)"));
 		return;
 	}
 
