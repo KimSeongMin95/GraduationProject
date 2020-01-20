@@ -8,66 +8,268 @@
 #include "Controller/PioneerController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
-// Sets default values
+/*** Basic Function : Start ***/
 ASpaceShip::ASpaceShip()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	/*** RootComponent : Start ***/
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponet"));
-	RootComponent = SphereComponent;
-	/*** RootComponent : End ***/
 
-	InitSpawnPioneer();
+	PhysicsBox = CreateDefaultSubobject<UBoxComponent>(TEXT("PhysicsBox"));
+	RootComponent = PhysicsBox;
 
-	InitCollision();
+	PhysicsBox->SetGenerateOverlapEvents(false);
+	PhysicsBox->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	PhysicsBox->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+	PhysicsBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	PhysicsBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 
-	InitAnimation();
+	PhysicsBox->SetSimulatePhysics(true);
 
-	InitCamera();
+	// Detail의 Physics의 Constraints의 Lock Rotaion 활성화: 물리회전을 고정
+	PhysicsBox->BodyInstance.bLockXRotation = true;
+	PhysicsBox->BodyInstance.bLockYRotation = true;
+	PhysicsBox->BodyInstance.bLockZRotation = true;
 
-	InitParticleSystem();
+	
+	InitPhysicsBox(FVector(256.0f, 256.0f, 256.0f), FVector(0.0f, 0.0f, 256.0f));
 
-	/*** Rotation : Start ***/
+
+	PioneerSpawnPoint = CreateDefaultSubobject<UArrowComponent>("PioneerSpawnPoint");
+	PioneerSpawnPoint->SetupAttachment(RootComponent);
+
+	InitSpawnPioneer(5, FRotator(0.0f, 180.0f, 0.0f), FVector(-548.77f, 347.474731, -20.0f));
+
+
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	StaticMesh->SetupAttachment(RootComponent);
+
+	InitStaticMesh(TEXT("StaticMesh'/Game/SpaceShip/SpaceShip_ForCollision.SpaceShip_ForCollision'"),
+		FVector(80.0f, 80.0f, 80.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(-3.0f, -214.0f, -260.0f));
+
+
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	SkeletalMesh->SetupAttachment(RootComponent);
+
+	bPlayAnimation = false;
+	Speed = 15.0f;
+	LandingZ = 155.0f;
+
+	InitSkeletalMesh(TEXT("SkeletalMesh'/Game/SpaceShip/SpaceShip.SpaceShip'"),
+		FVector(80.0f, 80.0f, 80.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(50.0f, 650.43f, -99.0f));
+
+
+	InitSkeleton(TEXT("Skeleton'/Game/SpaceShip/SpaceShip_Skeleton.SpaceShip_Skeleton'"));
+
+	InitPhysicsAsset(TEXT("PhysicsAsset'/Game/SpaceShip/SpaceShip_PhysicsAsset.SpaceShip_PhysicsAsset'"));
+
+	InitAnimSequence(TEXT("AnimSequence'/Game/SpaceShip/SpaceShip_Anim.SpaceShip_Anim'"),
+		false, true, 120.0f, -2.0f);
+
+
+	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+	SpringArmComp->SetupAttachment(RootComponent);
+	SpringArmComp->bAbsoluteRotation = true; // 캐릭터가 회전할 때 Arm을 회전시키지 않습니다. 월드 좌표계의 회전을 따르도록 합니다.
+	SpringArmComp->bUsePawnControlRotation = false; // 컨트롤러 기반으로 카메라 암을 회전시키지 않습니다.
+	SpringArmComp->bDoCollisionTest = false; // Arm과 카메라 사이의 선분이 어떤 물체와 충돌했을 때 뚫지 않도록 카메라를 당기지 않습니다.
+	SpringArmComp->bEnableCameraLag = false; // 이동시 부드러운 카메라 전환을 끕니다.
+	//SpringArmComp->CameraLagSpeed = 1.0f; // 카메라 이동속도입니다.
+
+	InitSpringArmComp(2500.0f, FRotator(-30.0f, 50.0f, 0.0f), FVector(-20.0f, -870.0f, 190.0f));
+
+
+	// 따라다니는 카메라를 생성합니다.
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName); // boom의 맨 뒤쪽에 해당 카메라를 붙이고, 컨트롤러의 방향에 맞게 boom을 적용합니다.
+	CameraComp->bUsePawnControlRotation = false; // 카메라는 Arm에 상대적으로 회전하지 않습니다.
+
+	ParticleScale = 0.015f;
+
+	EngineParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem"));
+	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
+	EngineParticleSystem->SetupAttachment(SkeletalMesh, TEXT("Engine_L")); // "Engine_L" 소켓에 붙입니다.
+
+	InitEngineParticleSystem(EngineParticleSystem, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), true,
+		FVector(ParticleScale, ParticleScale, ParticleScale), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+
+	EngineParticleSystem2 = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem2"));
+	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
+	EngineParticleSystem2->SetupAttachment(SkeletalMesh, TEXT("Engine_R")); // "Engine_R" 소켓에 붙입니다.
+
+	InitEngineParticleSystem(EngineParticleSystem2, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), true,
+		FVector(ParticleScale, ParticleScale, ParticleScale), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+
+
 	TargetRotation = FRotator(-30.0f, 335.0f, 0.0f);
 	bRotateTargetRotation = true;
-	/*** Rotation : End ***/
 }
 
-// Called when the game starts or when spawned
 void ASpaceShip::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FindPioneerManager();
+
 	FindPioneerCtrl();
 
-	Landing(FVector(-13725.0f, -12455.0f, 87.0f));
+	SetViewTargetToThisSpaceShip();
+
+	//Landing(FVector(-8018.749023, -6935.938965, 87.0f));
 }
 
-// Called every frame
 void ASpaceShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	RotateTargetRotation(DeltaTime);
+
+	PhysicsBox->AddForce(FVector(0.0f, 0.0f, 100.0f), NAME_None, true);
+	//PhysicsBox->AddImpulse(FVector(0.0f, 0.0f, 10000.0f), NAME_None, true);
+}
+/*** Basic Function : End ***/
+
+void ASpaceShip::InitPhysicsBox(FVector BoxExtent /*= FVector::ZeroVector*/, FVector Location /*= FVector::ZeroVector*/)
+{
+	PhysicsBox->SetBoxExtent(BoxExtent);
+
+	PhysicsBox->SetRelativeLocation(Location);
 }
 
-void ASpaceShip::InitSpawnPioneer()
+void ASpaceShip::InitSpawnPioneer(int NumOfSpawn /*= 8*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
 {
-	PioneerNum = 8;
+	PioneerNum = NumOfSpawn;
 	countPioneerNum = 0;
 
-	PioneerSpawnPoint = CreateDefaultSubobject<UArrowComponent>("PioneerSpawnPoint");
-	PioneerSpawnPoint->SetupAttachment(RootComponent);
+	PioneerSpawnPoint->SetRelativeRotation(Rotation);
+	PioneerSpawnPoint->SetRelativeLocation(Location);
+}
 
-	PioneerSpawnPoint->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
-	PioneerSpawnPoint->SetRelativeLocation(FVector(-625.0f, -345.0f, -20.0f));
+void ASpaceShip::InitStaticMesh(const TCHAR* ReferencePath, FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
+{
+	
+	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(ReferencePath);
+	if (staticMeshAsset.Succeeded())
+	{
+		StaticMesh->SetStaticMesh(staticMeshAsset.Object);
 
+		StaticMesh->SetHiddenInGame(true); // 게임에서 보이지 않게 합니다.
+
+		StaticMesh->SetRelativeScale3D(Scale);
+		StaticMesh->SetRelativeRotation(Rotation);
+		StaticMesh->SetRelativeLocation(Location);
+	}
+}
+
+void ASpaceShip::InitSkeletalMesh(const TCHAR* ReferencePath, FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
+{
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(ReferencePath);
+	if (skeletalMeshAsset.Succeeded())
+	{
+		SkeletalMesh->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
+		SkeletalMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
+		SkeletalMesh->bCastDynamicShadow = true; // ???
+		SkeletalMesh->CastShadow = true; // ???
+
+		SkeletalMesh->SetRelativeScale3D(Scale);
+		SkeletalMesh->SetRelativeRotation(Rotation);
+		SkeletalMesh->SetRelativeLocation(Location);
+	}
+}
+
+void ASpaceShip::InitSkeleton(const TCHAR* ReferencePath)
+{
+	// Skeleton을 가져옵니다.
+	ConstructorHelpers::FObjectFinder<USkeleton> skeletonAsset(ReferencePath);
+	if (skeletonAsset.Succeeded())
+	{
+		Skeleton = skeletonAsset.Object;
+	}
+}
+
+
+void ASpaceShip::InitPhysicsAsset(const TCHAR* ReferencePath)
+{
+	if (!SkeletalMesh)
+		return;
+
+	// PhysicsAsset을 가져옵니다.
+	ConstructorHelpers::FObjectFinder<UPhysicsAsset> physicsAsset(ReferencePath);
+	if (physicsAsset.Succeeded())
+	{
+		SkeletalMesh->SetPhysicsAsset(physicsAsset.Object);
+	}
+}
+
+void ASpaceShip::InitAnimSequence(const TCHAR* ReferencePath, bool bIsLooping /*= true*/, bool bIsPlaying /*= true*/, float Position /*= 0.0f*/, float PlayRate /*= 1.0f*/)
+{
+	if (!SkeletalMesh || !Skeleton)
+		return;
+
+	// AnimInstance를 사용하지 않고 간단하게 애니메이션을 재생하려면 AnimSequence를 가져와서 Skeleton에 적용합니다.
+	ConstructorHelpers::FObjectFinder<UAnimSequence> animSequenceAsset(ReferencePath);
+	if (animSequenceAsset.Succeeded())
+	{
+		AnimSequence = animSequenceAsset.Object;
+		AnimSequence->SetSkeleton(Skeleton);
+
+		SkeletalMesh->OverrideAnimationData(AnimSequence, bIsLooping, bIsPlaying, Position, PlayRate);
+		SkeletalMesh->Stop();
+	}
+}
+
+void ASpaceShip::InitSpringArmComp(float TargetArmLength /*= 2500.0f*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
+{
+	SpringArmComp->TargetArmLength = TargetArmLength; // 해당 간격으로 카메라가 Arm을 따라다닙니다.
+
+	SpringArmComp->SetRelativeRotation(Rotation);
+	SpringArmComp->SetRelativeLocation(Location);
+}
+
+void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* ParticleSystemComponent, const TCHAR* ReferencePath, bool bAutoActivate /*= true*/,
+	FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
+{
+	if (!ParticleSystemComponent)
+		return;
+
+	ConstructorHelpers::FObjectFinder<UParticleSystem> particleSystemAsset(ReferencePath);
+	if (particleSystemAsset.Succeeded())
+	{
+		ParticleSystemComponent->SetTemplate(particleSystemAsset.Object);
+
+		ParticleSystemComponent->bAutoActivate = bAutoActivate;
+		ParticleSystemComponent->SetRelativeScale3D(Scale);
+		ParticleSystemComponent->SetRelativeRotation(Rotation);
+		ParticleSystemComponent->SetRelativeLocation(Location);
+	}
+}
+
+
+void ASpaceShip::FindPioneerManager()
+{
+	// 이미 찾았으면 종료
+	if (PioneerManager)
+		return;
+
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+	// UWorld에서 APioneerManager를 찾습니다.
+	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		PioneerManager = *ActorItr;
+	}
 }
 
 void ASpaceShip::FindPioneerCtrl()
 {
+	// 이미 찾았으면 종료
+	if (PioneerCtrl)
+		return;
+
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
@@ -76,119 +278,33 @@ void ASpaceShip::FindPioneerCtrl()
 	}
 
 	// UWorld에서 APioneerController를 찾습니다.
-	if (PioneerCtrl == nullptr)
+	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
 	{
-		for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
-		{
-			PioneerCtrl = *ActorItr;
-		}
-	}
-
-	if (PioneerCtrl->GetPawn() == nullptr)
-		PioneerCtrl->SetViewTargetWithBlend(this);
-}
-
-void ASpaceShip::GetOffPioneer()
-{
-	if (!PioneerManager)
-	{
-		UWorld* const world = GetWorld();
-		if (!world)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-			return;
-		}
-
-		// UWorld에서 AWorldViewCameraActor를 찾습니다.
-		if (PioneerManager == nullptr)
-		{
-			for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
-			{
-				PioneerManager = *ActorItr;
-			}
-		}
-	}
-
-	if (!PioneerManager)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("!PioneerManager"));
-		GetWorldTimerManager().ClearTimer(TimerHandleGetOffPioneer);
-		return;
-	}
-
-	PioneerManager->SpawnPioneer(PioneerSpawnPoint->GetComponentToWorld());
-	countPioneerNum++;
-
-	if (countPioneerNum >= PioneerNum)
-	{
-		PioneerManager->SwitchPawn(nullptr, 2.0f);
-		TakeOff(FVector(-13725.0f, -12455.0f, 87.0f));
-		GetWorldTimerManager().ClearTimer(TimerHandleGetOffPioneer);
+		PioneerCtrl = *ActorItr;
 	}
 }
 
-void ASpaceShip::InitCollision()
+void ASpaceShip::SetViewTargetToThisSpaceShip()
 {
-	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Collision"));
-	StaticMeshComp->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(TEXT("StaticMesh'/Game/SpaceShip/SpaceShip_ForCollision.SpaceShip_ForCollision'"));
-	if (staticMeshAsset.Succeeded())
+	// PioneerManager와 PioneerCtrl 둘 다 존재하면 (게임이 어느정도 진행 된 상태)
+	if (PioneerManager && PioneerCtrl)
 	{
-		StaticMeshComp->SetStaticMesh(staticMeshAsset.Object);
-		StaticMeshComp->RelativeLocation = FVector(-50.0f, -865.0f, -165.0f);
-		StaticMeshComp->RelativeScale3D = FVector(80.0f, 80.0f, 80.0f);
-		StaticMeshComp->SetHiddenInGame(true); // 게임에서 보이지 않게 합니다.
-	}
-}
+		// 게임상에 Pioneer가 하나도 없을때만 SpaceShip의 카메라로 전환
+		if (PioneerManager->Pioneers.Num() == 0)
+			PioneerCtrl->SetViewTargetWithBlend(this);
 
-void ASpaceShip::InitAnimation()
-{
-	bPlayAnimation = false;
-	Speed = 15.0f;
-	LandingZ = 155.0f;
-
-	// USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
-	SkeletalMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SpaceShipBody"));
-	SkeletalMeshComp->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/SpaceShip/SpaceShip.SpaceShip'"));
-	if (skeletalMeshAsset.Succeeded())
-	{
-		// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
-		SkeletalMeshComp->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
-		SkeletalMeshComp->SetSkeletalMesh(skeletalMeshAsset.Object);
-		SkeletalMeshComp->bCastDynamicShadow = true; // ???
-		SkeletalMeshComp->CastShadow = true; // ???
-
-		SkeletalMeshComp->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
-		SkeletalMeshComp->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
-		SkeletalMeshComp->RelativeScale3D = FVector(80.0f, 80.0f, 80.0f);
 	}
-	// Skeleton을 가져옵니다.
-	static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/SpaceShip/SpaceShip_Skeleton.SpaceShip_Skeleton'"));
-	if (skeleton.Succeeded())
+	// PioneerManager는 없고 PioneerCtrl만 존재하면 (개임이 시작될 때)
+	else if (PioneerCtrl)
 	{
-		Skeleton = skeleton.Object;
-	}
-	// PhysicsAsset을 가져옵니다.
-	static ConstructorHelpers::FObjectFinder<UPhysicsAsset> physicsAsset(TEXT("PhysicsAsset'/Game/SpaceShip/SpaceShip_PhysicsAsset.SpaceShip_PhysicsAsset'"));
-	if (physicsAsset.Succeeded())
-	{
-		SkeletalMeshComp->SetPhysicsAsset(physicsAsset.Object);
-	}
-	// AnimInstance를 사용하지 않고 간단하게 애니메이션을 재생하려면 AnimSequence를 가져와서 Skeleton에 적용합니다.
-	static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/SpaceShip/SpaceShip_Anim.SpaceShip_Anim'"));
-	if (animSequence.Succeeded())
-	{
-		AnimSequence = animSequence.Object;
-		AnimSequence->SetSkeleton(Skeleton);
-		SkeletalMeshComp->OverrideAnimationData(AnimSequence, false, true, 120.0f, -2.0f); // 거꾸로 재생하기위해 OverrideAnimationData 함수를 이용합니다.
-		SkeletalMeshComp->Stop();
+		if (!PioneerCtrl->GetPawn())
+			PioneerCtrl->SetViewTargetWithBlend(this);
 	}
 }
 
 void ASpaceShip::Landing(FVector TargetPosition)
 {
-	SkeletalMeshComp->Stop();
+	SkeletalMesh->Stop();
 
 	FTimerDelegate TimerDelegate;
 	// 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
@@ -217,18 +333,18 @@ void ASpaceShip::_Landing(FVector TargetPosition)
 	{
 		bPlayAnimation = true;
 
-		SkeletalMeshComp->Play(false);
+		SkeletalMesh->Play(false);
 
 		Speed = 5.0f;
 	}
 
 	if (bPlayAnimation == true)
 	{
-		ParticalScale -= 0.00003f;
-		if (ParticalScale < 0.003f)
-			ParticalScale = 0.003f;
-		EngineParticleSystem->RelativeScale3D = FVector(ParticalScale, ParticalScale, ParticalScale);
-		EngineParticleSystem2->RelativeScale3D = FVector(ParticalScale, ParticalScale, ParticalScale);
+		ParticleScale -= 0.00003f;
+		if (ParticleScale < 0.003f)
+			ParticleScale = 0.003f;
+		EngineParticleSystem->RelativeScale3D = FVector(ParticleScale, ParticleScale, ParticleScale);
+		EngineParticleSystem2->RelativeScale3D = FVector(ParticleScale, ParticleScale, ParticleScale);
 
 		Speed -= 0.01f;
 		if (Speed < 0.5f)
@@ -239,12 +355,34 @@ void ASpaceShip::_Landing(FVector TargetPosition)
 	RootComponent->SetRelativeLocation(FVector(nowLocation.X, nowLocation.Y, nowLocation.Z - Speed));
 }
 
+void ASpaceShip::GetOffPioneer()
+{
+	FindPioneerManager();
+
+	if (!PioneerManager)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("!PioneerManager"));
+		GetWorldTimerManager().ClearTimer(TimerHandleGetOffPioneer);
+		return;
+	}
+
+	PioneerManager->SpawnPioneer(PioneerSpawnPoint->GetComponentToWorld());
+	countPioneerNum++;
+
+	if (countPioneerNum >= PioneerNum)
+	{
+		PioneerManager->SwitchPawn(nullptr, 2.0f);
+		TakeOff(FVector(-13725.0f, -12455.0f, 87.0f));
+		GetWorldTimerManager().ClearTimer(TimerHandleGetOffPioneer);
+	}
+}
+
 void ASpaceShip::TakeOff(FVector TargetPosition)
 {
 	//SkeletalMeshComp->PlayAnimation(AnimSequence, false);
-	SkeletalMeshComp->OverrideAnimationData(AnimSequence, false, true, 0.0f, 2.0f); // 거꾸로 재생하기위해 OverrideAnimationData 함수를 이용합니다.
+	SkeletalMesh->OverrideAnimationData(AnimSequence, false, true, 0.0f, 2.0f); // 거꾸로 재생하기위해 OverrideAnimationData 함수를 이용합니다.
 	//SkeletalMeshComp->Play(false);
-	SkeletalMeshComp->PlayAnimation(AnimSequence, true);
+	SkeletalMesh->PlayAnimation(AnimSequence, true);
 
 	// 엔진을 킵니다.
 	EngineParticleSystem->ToggleActive();
@@ -271,11 +409,11 @@ void ASpaceShip::_TakeOff(FVector TargetPosition)
 
 	if (bPlayAnimation == true)
 	{
-		ParticalScale += 0.00003f;
-		if (ParticalScale > 0.01f)
-			ParticalScale = 0.01f;
-		EngineParticleSystem->RelativeScale3D = FVector(ParticalScale, ParticalScale, ParticalScale);
-		EngineParticleSystem2->RelativeScale3D = FVector(ParticalScale, ParticalScale, ParticalScale);
+		ParticleScale += 0.00003f;
+		if (ParticleScale > 0.01f)
+			ParticleScale = 0.01f;
+		EngineParticleSystem->RelativeScale3D = FVector(ParticleScale, ParticleScale, ParticleScale);
+		EngineParticleSystem2->RelativeScale3D = FVector(ParticleScale, ParticleScale, ParticleScale);
 
 		Speed += 0.01f;
 	}
@@ -307,55 +445,9 @@ void ASpaceShip::_TakeOff(FVector TargetPosition)
 	RootComponent->SetRelativeLocation(FVector(nowLocation.X, nowLocation.Y, nowLocation.Z + Speed));
 }
 
-void ASpaceShip::InitCamera()
-{
-	// SpringArmComp을 생성합니다. (충돌 시 플레이어 쪽으로 다가와 위치합니다.)
-	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	SpringArmComp->SetupAttachment(RootComponent);
-	SpringArmComp->bAbsoluteRotation = true; // 캐릭터가 회전할 때 Arm을 회전시키지 않습니다. 월드 좌표계의 회전을 따르도록 합니다.
-	SpringArmComp->TargetArmLength = 2500.0f; // 해당 간격으로 카메라가 Arm을 따라다닙니다.
-	SpringArmComp->RelativeLocation = FVector(-20.0f, -870.0f, 190.0f);
-	SpringArmComp->RelativeRotation = FRotator(-30.0f, 50.0f, 0.0f);
-	SpringArmComp->bUsePawnControlRotation = false; // 컨트롤러 기반으로 카메라 암을 회전시키지 않습니다.
-	SpringArmComp->bDoCollisionTest = false; // Arm과 카메라 사이의 선분이 어떤 물체와 충돌했을 때 뚫지 않도록 카메라를 당기지 않습니다.
-	SpringArmComp->bEnableCameraLag = false; // 이동시 부드러운 카메라 전환을 위해 설정합니다.
-	//SpringArmComp->CameraLagSpeed = 1.0f; // 카메라 이동속도입니다.
 
-	// 따라다니는 카메라를 생성합니다.
-	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName); // boom의 맨 뒤쪽에 해당 카메라를 붙이고, 컨트롤러의 방향에 맞게 boom을 적용합니다.
-	CameraComp->bUsePawnControlRotation = false; // 카메라는 Arm에 상대적으로 회전하지 않습니다.
-}
 
-void ASpaceShip::InitParticleSystem()
-{
-	ParticalScale = 0.015f;
 
-	EngineParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem"));
-	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
-	EngineParticleSystem->SetupAttachment(SkeletalMeshComp, TEXT("Engine_L"));
-	EngineParticleSystem->bAutoActivate = true;
-	EngineParticleSystem->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
-	EngineParticleSystem->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
-	EngineParticleSystem->RelativeScale3D = FVector(ParticalScale, ParticalScale, ParticalScale);
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> engineParticleSystem(TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"));
-	if (engineParticleSystem.Succeeded())
-	{
-		EngineParticleSystem->SetTemplate(engineParticleSystem.Object);
-	}
-	EngineParticleSystem2 = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem2"));
-	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
-	EngineParticleSystem2->SetupAttachment(SkeletalMeshComp, TEXT("Engine_R"));
-	EngineParticleSystem2->bAutoActivate = true;
-	EngineParticleSystem2->RelativeLocation = FVector(0.0f, 0.0f, 0.0f);
-	EngineParticleSystem2->RelativeRotation = FRotator(0.0f, 0.0f, 0.0f);
-	EngineParticleSystem2->RelativeScale3D = FVector(ParticalScale, ParticalScale, ParticalScale);
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> engineParticleSystem2(TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"));
-	if (engineParticleSystem2.Succeeded())
-	{
-		EngineParticleSystem2->SetTemplate(engineParticleSystem2.Object);
-	}
-}
 
 /*** Rotation : Start ***/
 void ASpaceShip::RotateTargetRotation(float DeltaTime)
