@@ -37,7 +37,7 @@ void ASniperRifle::InitItem()
 
 	InitInteractionRange(192.0f);
 
-	InitPhysicsBox(5.0f);
+	InitPhysicsBox(15.0f);
 
 	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_SniperRifle.SM_White_SniperRifle'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }

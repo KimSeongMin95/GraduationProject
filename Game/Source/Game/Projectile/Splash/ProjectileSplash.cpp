@@ -53,6 +53,11 @@ void AProjectileSplash::SetTimerForDestroy(float Time)
 
 
 }
+
+void AProjectileSplash::SetLifespan(float Time)
+{
+	Super::SetLifespan(Time);
+}
 /*** Projectile : End ***/
 
 /*** ProjectileSplash : Start ***/

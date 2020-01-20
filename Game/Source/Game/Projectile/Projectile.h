@@ -57,9 +57,9 @@ private:
 		/** 충돌시 터지는 파티클시스템 */
 		class UParticleSystemComponent* ImpactParticleSystem; 
 
+public:
 	FTimerHandle TimerHandleOfDestroy;
 
-public:
 	float TotalDamage;
 
 protected:
@@ -71,12 +71,15 @@ protected:
 
 	/** 충돌할 때, 무시할 것들을 정의하고 OnOverlapBegin에 알려줍니다. */
 	bool IgnoreOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
 	UFUNCTION()
 		virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
-	/** 필요없는 Component들을 소멸시키고 AProjectile을 Time초 후에 소멸하도록 예약합니다. */
-	virtual void SetTimerForDestroy(float Time);
+	UFUNCTION()
+		/** 필요없는 Component들을 소멸시키고 AProjectile을 Time초 후에 소멸하도록 예약합니다. */
+		virtual void SetTimerForDestroy(float Time);
+
 	UFUNCTION()
 		/** SetDestoryTimer에 의하여 투사체를 소멸합니다. */
 		void DestroyByTimer();
@@ -89,6 +92,8 @@ public:
 	void SetDamage(float Damage);
 
 	void ActiveToggleOfImpactParticleSystem(bool bDefaultRotation = false);
+
+	virtual void SetLifespan(float Time);
 /*** Projectile : End ***/
 };
 

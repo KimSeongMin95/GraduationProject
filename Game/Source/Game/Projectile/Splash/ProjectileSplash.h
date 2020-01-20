@@ -33,6 +33,9 @@ protected:
 	virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
 	virtual void SetTimerForDestroy(float Time) override;
+
+public:
+	virtual void SetLifespan(float Time) override;
 /*** Projectile : End ***/
 
 /*** ProjectileSplash : Start ***/

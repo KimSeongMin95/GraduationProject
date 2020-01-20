@@ -32,6 +32,7 @@ void AProjectileRocketLauncher::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetLifespan(10.0f);
 }
 
 void AProjectileRocketLauncher::Tick(float DeltaTime)
@@ -62,7 +63,7 @@ void AProjectileRocketLauncher::OnOverlapBegin_HitRange(class UPrimitiveComponen
 }
 void AProjectileRocketLauncher::SetTimerForDestroy(float Time)
 {
-	// 3초뒤 소멸합니다.
+	// Time초뒤 소멸합니다.
 	Super::SetTimerForDestroy(Time);
 
 	// 스플래시용 충돌구체가 OverlapEvent를 발생하도록 크기를 조정.

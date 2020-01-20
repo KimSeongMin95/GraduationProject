@@ -50,6 +50,7 @@ void AProjectileGrenadeLauncher::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetLifespan(3.0f);
 }
 
 void AProjectileGrenadeLauncher::Tick(float DeltaTime)
@@ -60,21 +61,6 @@ void AProjectileGrenadeLauncher::Tick(float DeltaTime)
 /*** Basic Function : End ***/
 
 /*** Projectile : Start ***/
-void AProjectileGrenadeLauncher::SetTimerForDestroy(float Time)
-{
-	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
-	if (PhysicsBoxComp)
-		PhysicsBoxComp->DestroyComponent();
-
-	// 3초뒤 소멸합니다.
-	Super::SetTimerForDestroy(Time);
-
-	// 스플래시용 충돌구체가 OverlapEvent를 발생하도록 크기를 조정.
-	SetSplashRange(256.0f);
-
-	SetTimerForDestroySplash(0.1f);
-}
-
 void AProjectileGrenadeLauncher::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (IgnoreOnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult))
@@ -89,12 +75,39 @@ void AProjectileGrenadeLauncher::OnOverlapBegin_HitRange(class UPrimitiveCompone
 			{
 				enemy->SetHealthPoint(-TotalDamage);
 
-				ActiveToggleOfImpactParticleSystem(true);
+				//ActiveToggleOfImpactParticleSystem(true); // AProjectileGrenadeLauncher에서는 SetTimerForDestroy에서 실행
 				SetTimerForDestroy(3.0f);
 				return;
 			}
 		}
 	}
+}
+
+void AProjectileGrenadeLauncher::SetTimerForDestroy(float Time)
+{
+	ActiveToggleOfImpactParticleSystem(true);
+
+	// 기존 컴퍼넌트들을 모두 소멸시킵니다.
+	if (PhysicsBoxComp)
+		PhysicsBoxComp->DestroyComponent();
+
+	// Time초뒤 소멸합니다.
+	Super::SetTimerForDestroy(Time);
+
+	// 스플래시용 충돌구체가 OverlapEvent를 발생하도록 크기를 조정.
+	SetSplashRange(256.0f);
+
+	SetTimerForDestroySplash(0.1f);
+}
+
+void AProjectileGrenadeLauncher::SetLifespan(float Time)
+{
+	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfDestroy))
+		GetWorldTimerManager().ClearTimer(TimerHandleOfDestroy);
+
+	FTimerDelegate timerDel;
+	timerDel.BindUFunction(this, FName("SetTimerForDestroy"), 3.0f);
+	GetWorldTimerManager().SetTimer(TimerHandleOfDestroy, timerDel, Time, false);
 }
 /*** Projectile : End ***/
 

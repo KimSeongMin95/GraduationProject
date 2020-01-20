@@ -4,7 +4,7 @@
 #include "GrenadeLauncher.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Projectile/ProjectileGrenadeLauncher.h"
+#include "Projectile/Splash/ProjectileGrenadeLauncher.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 /*** Basic Function : Start ***/
@@ -37,7 +37,7 @@ void AGrenadeLauncher::InitItem()
 
 	InitInteractionRange(192.0f);
 
-	InitPhysicsBox(5.0f);
+	InitPhysicsBox(15.0f);
 
 	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_GrenadeLauncher.SM_White_GrenadeLauncher'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }

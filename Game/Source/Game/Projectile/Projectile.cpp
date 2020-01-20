@@ -74,13 +74,7 @@ void AProjectile::BeginPlay()
 	*/
 	// 위의 실행순서에 의해 SetDamage()가 나중에 실행되므로 미리 값을 가져와서 적용.
 	if (GetOwner())
-	{
 		TotalDamage = static_cast<AWeapon*>(GetOwner())->AttackPower;
-	}
-
-	// 생성자에서 SetTimer를 실행하면 안됨. 무조건 BeginPlay()에 두어야 함.
-	float time = 8.0f;
-	GetWorldTimerManager().SetTimer(TimerHandleOfDestroy, this, &AProjectile::DestroyByTimer, time, false); // time초 뒤 투사체를 소멸합니다.
 }
 
 void AProjectile::Tick(float DeltaTime)
@@ -252,5 +246,10 @@ void AProjectile::ActiveToggleOfImpactParticleSystem(bool bDefaultRotation)
 
 	if (ImpactParticleSystem->Template)
 		ImpactParticleSystem->ToggleActive();
+}
+void AProjectile::SetLifespan(float Time)
+{
+	// 생성자에서 SetTimer를 실행하면 안됨. 무조건 BeginPlay()에 두어야 함.
+	GetWorldTimerManager().SetTimer(TimerHandleOfDestroy, this, &AProjectile::DestroyByTimer, Time, false); // time초 뒤 투사체를 소멸합니다.
 }
 /*** Projectile : End ***/

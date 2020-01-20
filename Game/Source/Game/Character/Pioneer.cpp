@@ -743,10 +743,6 @@ void APioneer::InitWeapon()
 	}
 
 	/*** 임시 코드 : Start ***/
-	Weapons.Add(nullptr);
-	Weapons.Add(nullptr);
-	Weapons.Add(nullptr);
-	
 	AAssaultRifle* assaultRifle = World->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
 	assaultRifle->Acquired();
 	assaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
@@ -768,9 +764,6 @@ void APioneer::InitWeapon()
 	if (Weapons.Contains(Pistol) == false)
 		Weapons.Add(Pistol);
 
-	Weapons.Add(nullptr);
-	Weapons.Add(nullptr);
-
 	ARocketLauncher* rocketLauncher = World->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
 	rocketLauncher->Acquired();
 	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
@@ -785,19 +778,12 @@ void APioneer::InitWeapon()
 	if (Weapons.Contains(shotgun) == false)
 		Weapons.Add(shotgun);
 
-	Weapons.Add(nullptr);
-
 	ASniperRifle* sniperRifle = World->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), myTrans, SpawnParams);
 	sniperRifle->Acquired();
 	sniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	sniperRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(sniperRifle) == false)
 		Weapons.Add(sniperRifle);
-
-	Weapons.Add(nullptr);
-	Weapons.Add(nullptr);
-	Weapons.Add(nullptr);
-	Weapons.Add(nullptr);
 	/*** 임시 코드 : End ***/
 }
 

@@ -34,6 +34,7 @@ void AProjectileSniperRifle::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetLifespan(8.0f);
 }
 
 // Called every frame
