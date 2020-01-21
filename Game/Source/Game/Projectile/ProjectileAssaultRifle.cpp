@@ -54,10 +54,33 @@ void AProjectileAssaultRifle::OnOverlapBegin_HitRange(class UPrimitiveComponent*
 		{
 			// CollisionCylinder인 enemy의 CapsuleComponent에 충돌하면
 			if (enemy->GetCapsuleComponent() == OtherComp)
+			{
 				enemy->SetHealthPoint(-TotalDamage);
+
+				ActiveToggleOfImpactParticleSystem();
+				SetTimerForDestroy(1.0f);
+				return;
+			}
 		}
 	}
 
-	ActiveToggleOfImpactParticleSystem();
-	SetTimerForDestroy(1.0f);
+	if (OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		if (ABuilding* building = dynamic_cast<ABuilding*>(OtherActor))
+		{
+			if (building->BuildingState != EBuildingState::Constructable)
+			{
+				ActiveToggleOfImpactParticleSystem();
+				SetTimerForDestroy(1.0f);
+				return;
+			}
+		}
+	}
+
+	if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
+	{
+		ActiveToggleOfImpactParticleSystem();
+		SetTimerForDestroy(1.0f);
+		return;
+	}
 }

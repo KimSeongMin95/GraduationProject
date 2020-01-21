@@ -49,17 +49,6 @@ void AProjectileSniperRifle::OnOverlapBegin_HitRange(class UPrimitiveComponent* 
 	if (IgnoreOnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult))
 		return;
 
-	if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
-		hitCount = 3;
-
-
-	if (OtherActor->IsA(ABuilding::StaticClass()))
-	{
-		// 건설할 수 있는 지 확인하는 상태가 아니면
-		if (dynamic_cast<ABuilding*>(OtherActor)->BuildingState != EBuildingState::Constructable)
-			hitCount = 3;
-	}
-
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
 		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
@@ -74,6 +63,19 @@ void AProjectileSniperRifle::OnOverlapBegin_HitRange(class UPrimitiveComponent* 
 			}
 		}
 	}
+
+	if (OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		if (ABuilding* building = dynamic_cast<ABuilding*>(OtherActor))
+		{
+			if (building->BuildingState != EBuildingState::Constructable)
+				hitCount = 3;
+		}
+	}
+
+	if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
+		hitCount = 3;
+
 
 	if (hitCount >= 3)
 	{

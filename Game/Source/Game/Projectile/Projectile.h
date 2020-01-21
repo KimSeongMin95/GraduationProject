@@ -60,7 +60,8 @@ private:
 public:
 	FTimerHandle TimerHandleOfDestroy;
 
-	float TotalDamage;
+	UPROPERTY(VisibleAnywhere, Category = "Projectile")
+		float TotalDamage;
 
 protected:
 	virtual void InitProjectile();
