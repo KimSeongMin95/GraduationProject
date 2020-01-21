@@ -58,7 +58,7 @@ public:
 /*** SpaceShip : Start ***/
 private:
 	UPROPERTY(VisibleAnywhere)
-		/** RootComponent */
+		/** 물리작용 */
 		class UBoxComponent* PhysicsBox = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "SpaceShip")
@@ -69,7 +69,7 @@ private:
 		class UStaticMeshComponent* StaticMesh = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
-		/**  */
+		/** 애니메이션을 수행하는 스켈레탈메시입니다. */
 		class USkeletalMeshComponent* SkeletalMesh = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
@@ -93,6 +93,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "SpaceShip")
 		class UParticleSystemComponent* EngineParticleSystem2 = nullptr;
 
+
 	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
 		class APioneerManager* PioneerManager = nullptr;
 
@@ -109,24 +110,24 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
 		int countPioneerNum; /** PioneerNum를 카운트 */
 
-	float Gravity;
+	float Gravity; /** 중력가속도 */
 
 	UPROPERTY(EditAnywhere, Category = "SpaceShip")
 		FVector Acceleration; /** 우주선의 가속도 (중력의 기본 Z 값: -980.0f) */
 
 	UPROPERTY(EditAnywhere, Category = "SpaceShip")
-		float LandingHeight;
+		float LandingHeight; /** 착륙하는 땅까지의 높이 */
 
 
 	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
 		bool bRotateTargetRotation;
 
-	FRotator TargetRotation;
+	FRotator TargetRotation; /** 목표하는 회전값 */
 
 	FTimerHandle TimerHandle;
 
-	bool bPlayalbeLandingAnim;
-	bool bOnOffEngines;
+	bool bPlayalbeLandingAnim; /** 착륙 애니메이션 플래그 */
+	bool bOnOffEngines; /** 엔진 점화 플래그 */
 
 protected:
 	void InitPhysicsBox(FVector BoxExtent = FVector::ZeroVector, FVector Location = FVector::ZeroVector);
@@ -137,7 +138,7 @@ protected:
 	void InitPhysicsAsset(const TCHAR* ReferencePath);
 	void InitAnimSequence(const TCHAR* ReferencePath, bool bIsLooping = false, bool bIsPlaying = false, float Position = 0.0f, float PlayRate = 1.0f);
 	void InitSpringArmComp(float TargetArmLength = 2500.0f, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
-	void InitEngineParticleSystem(class UParticleSystemComponent* ParticleSystemComponent, const TCHAR* ReferencePath, bool bAutoActivate = true, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	void InitEngineParticleSystem(class UParticleSystemComponent* ParticleSystemComponent, const TCHAR* ReferencePath, bool bAutoActivate = false, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
 	void FindPioneerManager();
 	void FindPioneerCtrl();
@@ -157,37 +158,20 @@ public:
 	UFUNCTION()
 		void TakingOff();
 
-
-	
-
 	/** 바닥을 향해 수직으로 Ray를 쏴서 거리를 계산 */
 	float CalculateDistanceToLand();
 
+	/** 착륙할 때, 가속도를 계산합니다. */
 	void ManageAcceleration(float MinLimitOfVelocityZ = 1.0f, float MaxLimitOfVelocityZ = 1.0f, float Power = 1.0f);
 
+	/** 엔진 파티클을 켜고 끕니다. */
 	void OnOffEngines();
+
+	/** 엔진 파티클의 Scale을 조정합니다. */
 	void SetScaleOfEngineParticleSystem(float Scale = 0.015f);
 
 	void PlayLandingAnimation(bool bIsLooping = false, bool bIsPlaying = false, float Position = 0.0f, float PlayRate = 1.0f);
 	void PlayTakingOffAnimation(bool bIsLooping = false, bool bIsPlaying = false, float Position = 0.0f, float PlayRate = 1.0f);
-
-	/*UFUNCTION()
-		void Landing(FVector TargetPosition);
-
-	UFUNCTION()
-		void _Landing(FVector TargetPosition);
-
-	UFUNCTION()
-		void GetOffPioneer();
-
-	UFUNCTION()
-		void TakeOff(FVector TargetPosition);
-
-	UFUNCTION()
-		void TakeOff2(FVector TargetPosition);
-
-	UFUNCTION()
-		void _TakeOff(FVector TargetPosition);*/
 
 	virtual void RotateTargetRotation(float DeltaTime);
 /*** SpaceShip : End ***/

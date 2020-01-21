@@ -72,8 +72,9 @@ ASpaceShip::ASpaceShip()
 	SpringArmComp->bEnableCameraLag = false; // 이동시 부드러운 카메라 전환을 끕니다.
 	//SpringArmComp->CameraLagSpeed = 1.0f; // 카메라 이동속도입니다.
 
-	InitSpringArmComp(5000.0f, FRotator(-30.0f, 50.0f, 0.0f), FVector(-20.0f, -870.0f, 190.0f));
-
+	InitSpringArmComp(2500.0f, FRotator(-30.0f, 150.0f, 0.0f), FVector(-20.0f, -870.0f, 190.0f));
+	TargetRotation = FRotator(-30.0f, 45.0f, 0.0f);
+	bRotateTargetRotation = true;
 
 	// 따라다니는 카메라를 생성합니다.
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
@@ -85,26 +86,23 @@ ASpaceShip::ASpaceShip()
 	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
 	EngineParticleSystem->SetupAttachment(SkeletalMesh, TEXT("Engine_L")); // "Engine_L" 소켓에 붙입니다.
 
-	InitEngineParticleSystem(EngineParticleSystem, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), true,
-		FVector(0.003f, 0.003f, 0.003f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	InitEngineParticleSystem(EngineParticleSystem, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), false,
+		FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
 	EngineParticleSystem2 = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem2"));
 	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
 	EngineParticleSystem2->SetupAttachment(SkeletalMesh, TEXT("Engine_R")); // "Engine_R" 소켓에 붙입니다.
 
-	InitEngineParticleSystem(EngineParticleSystem2, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), true,
-		FVector(0.003f, 0.003f, 0.003f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
-
-
-	TargetRotation = FRotator(-30.0f, 335.0f, 0.0f);
-	bRotateTargetRotation = true;
+	InitEngineParticleSystem(EngineParticleSystem2, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), false,
+		FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
 
 	Gravity = 980.0f;
-	// 중력가속도가 9.8m/s^2 이므로 1초에 9.8미터는 언리얼에서 980이다. 
+
+	// 중력가속도가 9.8m/s^2 이므로 1초에 9.8미터가 언리얼에서는 980입니다. 
 	Acceleration = FVector(0.0f, 0.0f, Gravity);
 
-	LandingHeight = 273.0f;
+	LandingHeight = 300.0f;
 }
 
 void ASpaceShip::BeginPlay()
@@ -117,7 +115,6 @@ void ASpaceShip::BeginPlay()
 
 	SetViewTargetToThisSpaceShip();
 
-
 	Flying();
 }
 
@@ -129,10 +126,6 @@ void ASpaceShip::Tick(float DeltaTime)
 
 	if (PhysicsBox->IsSimulatingPhysics())
 		PhysicsBox->AddForce(Acceleration, NAME_None, true);
-	
-	FVector velo = GetVelocity();
-	UE_LOG(LogTemp, Warning, TEXT("Velocity: %f, %f, %f"), velo.X, velo.Y, velo.Z);
-	UE_LOG(LogTemp, Warning, TEXT("Z: %f"), GetActorLocation().Z);
 }
 /*** Basic Function : End ***/
 
@@ -233,7 +226,7 @@ void ASpaceShip::InitSpringArmComp(float TargetArmLength /*= 2500.0f*/, FRotator
 	SpringArmComp->SetRelativeLocation(Location);
 }
 
-void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* ParticleSystemComponent, const TCHAR* ReferencePath, bool bAutoActivate /*= true*/,
+void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* ParticleSystemComponent, const TCHAR* ReferencePath, bool bAutoActivate /*= false*/,
 	FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
 {
 	if (!ParticleSystemComponent)
@@ -310,15 +303,13 @@ void ASpaceShip::SetViewTargetToThisSpaceShip()
 	}
 }
 
-
-
-
-
 void ASpaceShip::Flying()
 {
 	State = ESpaceShipState::Flying;
 
+
 	Acceleration = FVector(0.0f, 0.0f, 0.0f);
+
 	PhysicsBox->BodyInstance.bLockXTranslation = true;
 	PhysicsBox->BodyInstance.bLockYTranslation = true;
 
@@ -344,37 +335,43 @@ void ASpaceShip::Landing()
 	// a(가속도):	 ??? // 1초후에 속도가 a만큼 증가합니다.
 	// m(질량): PhysicsBox->GetMass(); // 자동으로 계산됩니다.
 
-	if (2000.0f <= dist && dist < 5000.0f)
+	if (500.0f <= dist && dist < 2000.0f)
 	{
-		ManageAcceleration(2000.0f, dist, 5.0f);
+		ManageAcceleration(500.0f, dist, 5.0f);
 
-		SetScaleOfEngineParticleSystem(0.010f);
-	}
-	else if (500.0f <= dist && dist < 2000.0f)
-	{
-		ManageAcceleration(500.0f, dist, 3.0f);
+		// 속도가 좀 줄은 상태에서 엔진을 점화합니다.
+		if (500.0f <= dist && dist < 1500.0f)
+		{
+			SetScaleOfEngineParticleSystem(0.010f);
 
-		SetScaleOfEngineParticleSystem(0.015f);
+			OnOffEngines();
+		}
 	}
 	else if (100.0f <= dist && dist < 500.0f)
 	{
-		ManageAcceleration(100.0f, dist, 2.0f);
+		ManageAcceleration(100.0f, dist, 3.0f);
 
-		SetScaleOfEngineParticleSystem(0.010f);
+		SetScaleOfEngineParticleSystem(0.015f);
 	}
 	else if (3.0f <= dist && dist < 100.0f)
 	{
 		ManageAcceleration(3.0f, dist, 1.0f);
 
-		PlayLandingAnimation(false, true, 120.0f, -2.0f);
+		// 착륙 애니메이션을 실행합니다.
+		PlayLandingAnimation(false, true, 120.0f, -3.0f);
 
-		SetScaleOfEngineParticleSystem(dist * 0.0001f);
+		SetScaleOfEngineParticleSystem(0.005f + dist * 0.0001f);
 	}
 	else if (dist < 3.0f)
 	{
+		// 가속도를 중력가속도에 맞추어 정지상태로 만듭니다.
 		Acceleration = FVector(0.0f, 0.0f, Gravity);
-		PhysicsBox->SetSimulatePhysics(false);
 
+		// Physics를 끕니다.
+		PhysicsBox->SetSimulatePhysics(false);
+		
+		// 엔진을 끕니다.
+		bOnOffEngines = true;
 		OnOffEngines();
 
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
@@ -383,7 +380,6 @@ void ASpaceShip::Landing()
 		FindPioneerManager();
 
 		if (PioneerManager)
-			
 			GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::Spawning, 0.5f, true, 1.0f);
 		else
 			GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::TakingOff, 0.0166f, true, 4.0f);
@@ -396,42 +392,42 @@ void ASpaceShip::Spawning()
 {
 	State = ESpaceShipState::Spawning;
 
+	// 개척자를 PioneerSpawnPoint 위치에 생성합니다.
 	PioneerManager->SpawnPioneer(PioneerSpawnPoint->GetComponentToWorld());
 	countPioneerNum++;
 
 	if (countPioneerNum >= PioneerNum)
 	{
+		// 카메라를 개척자로 전환합니다.
 		PioneerManager->SwitchPawn(nullptr, 1.0f);
 
-		PhysicsBox->SetSimulatePhysics(true);
+		// 상승할 수 있도록 가속도를 높입니다.
+		Acceleration = FVector(0.0f, 0.0f, Gravity + 75.0f);
 
+		SetScaleOfEngineParticleSystem(0.0075f);
+
+		// 엔진을 점화합니다.
 		bOnOffEngines = true;
+		OnOffEngines();
 
+		// 이륙 애니메이션을 실행합니다.
 		PlayTakingOffAnimation(false, true, 0.0f, 3.0f);
 
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
 
 		GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::TakingOff, 1.0f, true, 4.0f);
-
-		State = ESpaceShipState::TakingOff;
 	}
 }
 
 void ASpaceShip::TakingOff()
 {
-	Acceleration = FVector(0.0f, 0.0f, Gravity + 100.0f);
+	State = ESpaceShipState::TakingOff;
+
+	// Physics를 킵니다.
+	PhysicsBox->SetSimulatePhysics(true);
+	
 	SetScaleOfEngineParticleSystem(0.015f);
-
-
-
-
-	OnOffEngines();
-
-
-
-
-
 
 	float dist = CalculateDistanceToLand();
 
@@ -488,19 +484,22 @@ void ASpaceShip::ManageAcceleration(float MinLimitOfVelocityZ, float MaxLimitOfV
 {
 	FVector velocity = GetVelocity();
 
-	
 	float veloZ = FMath::Abs(velocity.Z);
 
 	if (MaxLimitOfVelocityZ < veloZ)
+		// 현재 속력인 velocity.Z에 Power를 곱하여 더해 가속도를 줄입니다.
 		Acceleration = FVector(0.0f, 0.0f, Gravity - (velocity.Z * Power));
 	else if (MinLimitOfVelocityZ <= veloZ && veloZ <= MaxLimitOfVelocityZ)
+		// 적정범위이므로 가속도를 0으로 맞춥니다.
 		Acceleration = FVector(0.0f, 0.0f, Gravity);
 	else if (veloZ < MinLimitOfVelocityZ)
+		// 중력가속도를 받게하여 속도를 높입니다.
 		Acceleration = FVector(0.0f, 0.0f, 0.0f);
 }
 
 void ASpaceShip::OnOffEngines()
 {
+	// 한 번만 실행되도록 하는 플래그입니다.
 	if (!bOnOffEngines)
 		return;
 	else
@@ -524,6 +523,7 @@ void ASpaceShip::SetScaleOfEngineParticleSystem(float Scale /*= 0.015f*/)
 
 void ASpaceShip::PlayLandingAnimation(bool bIsLooping /*= false*/, bool bIsPlaying /*= true*/, float Position /*= 0.0f*/, float PlayRate /*= 1.0f*/)
 {
+	// 한 번만 실행되도록 하는 플래그입니다.
 	if (!bPlayalbeLandingAnim)
 		return;
 	else
