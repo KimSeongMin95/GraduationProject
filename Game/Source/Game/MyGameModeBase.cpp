@@ -65,12 +65,12 @@ void AMyGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
-	/*** Temporary code : Start ***/
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("B477004 KimSeongMin's 3D RTS Game"));
-	}
-	/*** Temporary code : End ***/
+	///*** Temporary code : Start ***/
+	//if (GEngine)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("B477004 KimSeongMin's 3D RTS Game"));
+	//}
+	///*** Temporary code : End ***/
 
 	// APioneerManager 객체를 생성합니다.
 	SpawnPioneerManager();

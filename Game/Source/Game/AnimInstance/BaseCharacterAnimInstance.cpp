@@ -9,17 +9,14 @@
 #include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+/*** AnimInstance Basic Function : Start ***/
 UBaseCharacterAnimInstance::UBaseCharacterAnimInstance()
 {
-	/*** Animation : Start ***/
 	Speed = 0.0f;
 	bIsMoving = false;
 	Direction = 0.0f;
-	/*** Animation : End ***/
 
-	/*** CharacterAI : Start ***/
 	CharacterAI = 0;
-	/*** CharacterAI : End ***/
 }
 
 void UBaseCharacterAnimInstance::NativeInitializeAnimation()
@@ -61,22 +58,21 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 	bIsMoving = Speed > 0 ? true : false;
 	Direction = CalculateDirection(BaseCharacter->GetVelocity(), BaseCharacter->GetActorRotation());
 }
+/*** AnimInstance Basic Function : End ***/
 
+/*** BaseCharacterAnimInstance : Start ***/
 void UBaseCharacterAnimInstance::DestroyCharacter()
 {
-	// 자식클래스에서 overriding 할 것.
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
 
-/*** FSM : Start ***/
 void UBaseCharacterAnimInstance::SetFSM()
 {
-	// 자식클래스에서 overriding 할 것.
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
-/*** FSM : End ***/
 
-/*** BehaviorTree : Start ***/
 void UBaseCharacterAnimInstance::SetBehaviorTree()
 {
-	// 자식클래스에서 overriding 할 것.
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
-/*** BehaviorTree : End ***/
+/*** BaseCharacterAnimInstance : End ***/

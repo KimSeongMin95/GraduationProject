@@ -16,21 +16,30 @@ class GAME_API UPioneerAnimInstance : public UBaseCharacterAnimInstance
 {
 	GENERATED_BODY()
 
-	/*** AnimInstance Basic Function : Start ***/
+/*** AnimInstance Basic Function : Start ***/
 public:
 	UPioneerAnimInstance();
 
 	virtual void NativeInitializeAnimation() override;
 
 	virtual void NativeUpdateAnimation(float DeltaTimeX) override;
-	/*** AnimInstance Basic Function : End ***/
+/*** AnimInstance Basic Function : End ***/
 
-	/*** Animation : Start ***/
+/*** BaseCharacterAnimInstance : Start ***/
+protected:
+	virtual void SetFSM() override;
+	virtual void SetBehaviorTree() override;
+
 public:
-	class APioneer* Pioneer = nullptr; // Owner를 Casting하여 저장
-
 	virtual void DestroyCharacter() override;
+/*** BaseCharacterAnimInstance : End ***/
 
+/*** EnemyAnimInstance : Start ***/
+protected:
+	/** Owner를 Casting하여 저장 */
+	class APioneer* Pioneer = nullptr; 
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bHasPistolType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
@@ -40,15 +49,5 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bFired;
-	/*** Animation : End ***/
-
-	/*** FSM : Start ***/
-public:
-	virtual void SetFSM() override;
-	/*** FSM : End ***/
-
-	/*** BehaviorTree : Start ***/
-public:
-	virtual void SetBehaviorTree() override;
-	/*** BehaviorTree : End ***/
+/*** EnemyAnimInstance : End ***/
 };

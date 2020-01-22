@@ -399,7 +399,7 @@ void ASpaceShip::Spawning()
 	if (countPioneerNum >= PioneerNum)
 	{
 		// 카메라를 개척자로 전환합니다.
-		PioneerManager->SwitchPawn(nullptr, 1.0f);
+		PioneerManager->SwitchOtherPioneer(nullptr, 1.0f);
 
 		// 상승할 수 있도록 가속도를 높입니다.
 		Acceleration = FVector(0.0f, 0.0f, Gravity + 75.0f);
@@ -447,7 +447,7 @@ float ASpaceShip::CalculateDistanceToLand()
 	{
 		FVector WorldOrigin = GetActorLocation(); // 시작 위치
 		FVector WorldDirection = FVector::DownVector; // 방향
-		float HitResultTraceDistance = 30000.f; // WorldDirection과 곱하여 끝 위치를 설정
+		float HitResultTraceDistance = 30000.f; // WorlDirection과 곱하여 끝 위치를 설정
 		FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
 
 		TArray<FHitResult> hitResults; // 결과를 저장

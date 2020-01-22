@@ -35,56 +35,61 @@ class GAME_API APioneerManager : public AActor
 
 /*** Basic Function : Start ***/
 public:
-	// Sets default values for this actor's properties
 	APioneerManager();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-public:
-	UPROPERTY(EditAnywhere)
+/*** PioneerManager : Start ***/
+private:
+	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
+		/** RootComponent */
 		class USceneComponent* SceneComp = nullptr;
 
-	APioneer* playerPioneer = nullptr;
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+		/** 월드 전체를 바라보는 카메라입니다. */
+		class AWorldViewCameraActor* WorldViewCamera = nullptr; 
 
-	UPROPERTY(EditAnywhere)
-		TArray<APioneer*> Pioneers; /** APioneer 객체를 관리할 TMap입니다. TMap을 선언할 때 Value 값으로 클래스가 들어간다면 해당 클래스의 헤더를 선언해야 합니다. */
-	void SpawnPioneer(FTransform Transform); /** APioneer 객체를 생성합니다. */
-	class APioneer* GetPioneerBySocketID(int SocketID);
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+		/** 현재 개척자의 카메라입니다. */
+		class AWorldViewCameraActor* CameraOfCurrentPioneer = nullptr; 
+
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+		/** 현재 개척자의 월드뷰 카메라입니다. */
+		class AWorldViewCameraActor* WorldViewCameraOfCurrentPioneer = nullptr; 
+
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+		/** 다음 개척자의 월드뷰 카메라입니다. */
+		class AWorldViewCameraActor* WorldViewCameraOfNextPioneer = nullptr; 
+
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+		/** 다음 개척자의 카메라입니다. */
+		class AWorldViewCameraActor* CameraOfNextPioneer = nullptr; 
+
+	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
+		/** Pioneer 전용 컨트롤러 입니다. */
+		class APioneerController* PioneerCtrl = nullptr; 
 
 	ESwitchState SwitchState;
 
-	AActor* TargetViewActor = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
+		/** 변경할 APioneer를 저장합니다. */
+		AActor* TargetViewActor = nullptr;
 
-	UPROPERTY(EditAnywhere)
-		class AWorldViewCameraActor* WorldViewCamera = nullptr; /** 월드 전체를 바라보는 카메라입니다. */
+	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
+		/** 최종적으로 플레이어가 조종하는 APioneer입니다. */
+		class APioneer* PioneerOfPlayer = nullptr;
 
-	UPROPERTY(EditAnywhere)
-		class AWorldViewCameraActor* CameraOfCurrentPioneer = nullptr; /** 현재 개척자의 카메라입니다. */
-	UPROPERTY(EditAnywhere)
-		class AWorldViewCameraActor* WorldViewCameraOfCurrentPioneer = nullptr; /** 현재 개척자의 월드뷰 카메라입니다. */
+public:
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+		/** APioneer 객체들을 관리할 TArray입니다. */
+		TArray<APioneer*> Pioneers;
 
-	UPROPERTY(EditAnywhere)
-		class AWorldViewCameraActor* WorldViewCameraOfNextPioneer = nullptr; /** 다음 개척자의 월드뷰 카메라입니다. */
-	UPROPERTY(EditAnywhere)
-		class AWorldViewCameraActor* CameraOfNextPioneer = nullptr; /** 다음 개척자의 카메라입니다. */
-
-	UPROPERTY(EditAnywhere)
-		class APioneerController* PioneerCtrl = nullptr; /** Pioneer 전용 컨트롤러 입니다. */
-
-	UPROPERTY(EditAnywhere)
-		float SwitchTime; /** 다른 폰으로 변경하는 시간입니다. */
-	
-	// bLockOutgoing: 보간 도중에 나가는 뷰타겟을 업데이트하지 않음.
-	void SwitchPawn(APioneer* CurrentPioneer, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰으로 변경하는 함수입니다. */
-	
-	
+private:
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
 		void SwitchViewTarget(AActor* Actor, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰의 카메라로 변경하는 함수입니다. */
 	
@@ -100,25 +105,20 @@ public:
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
 		void SwitchFinish(float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰의 카메라로 변경하는 함수입니다. */
 
-
-
-
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
-		void PossessPioneer(APioneer* Pioneer); /** 다른 폰을 Possess() 합니다. */
+		/** TargetViewActor인 APioneer 객체를 Possess() 합니다. */
+		void PossessPioneer(APioneer* Pioneer); 
 
-
-
-
-
-
-/*** UI : Start ***/
 public:
-	UPROPERTY(VisibleAnywhere)
-		class UWidgetComponent* UIWidgetComponent = nullptr;
-	UPROPERTY(EditAnywhere)
-		class UUserWidget* UIUserWidget = nullptr;
+	class APioneer* GetPioneerBySocketID(int SocketID);
 
-	void InitUI();
-	void BeginPlayUI();
-/*** UI : End ***/
+	/** APioneer 객체를 생성합니다. */
+	void SpawnPioneer(FTransform Transform);
+
+	/** 다른 폰으로 변경하는 함수입니다.
+	순서: FindTargetViewActor -> SwitchNext -> SwitchFinish -> PossessPioneer */
+	void SwitchOtherPioneer(APioneer* CurrentPioneer, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); // bLockOutgoing: 보간 도중에 나가는 뷰타겟을 업데이트하지 않음.
+
+
+/*** PioneerManager : End ***/
 };

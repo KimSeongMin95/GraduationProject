@@ -37,7 +37,7 @@
 
 
 /*** Basic Function : Start ***/
-APioneer::APioneer() // Sets default values
+APioneer::APioneer()
 {
 	SocketID = -1; // -1은 AI를 뜻합니다.
 	InitPioneerManager();
@@ -74,7 +74,6 @@ APioneer::APioneer() // Sets default values
 	//BaseLookUpRate = 45.0f;
 }
 
-// Called when the game starts or when spawned
 void APioneer::BeginPlay()
 {
 	Super::BeginPlay();
@@ -87,7 +86,6 @@ void APioneer::BeginPlay()
 	InitWeapon();
 }
 
-// Called every frame
 void APioneer::Tick(float DeltaTime)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Test"));
@@ -170,7 +168,7 @@ void APioneer::DestroyCharacter()
 	if (PioneerManager)
 	{
 		PioneerManager->Pioneers.Remove(this);
-		PioneerManager->SwitchPawn(this, 1.0f);
+		PioneerManager->SwitchOtherPioneer(this, 1.0f);
 	}
 	else
 		UE_LOG(LogTemp, Warning, TEXT("APioneer::DestroyCharacter: if (PioneerManager) else"));

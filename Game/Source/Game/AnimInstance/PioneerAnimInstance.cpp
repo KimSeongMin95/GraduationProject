@@ -8,7 +8,7 @@
 #include "Controller/PioneerAIController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
+/*** AnimInstance Basic Function : Start ***/
 UPioneerAnimInstance::UPioneerAnimInstance()
 {
 
@@ -51,7 +51,7 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		return;
 	}
 
-	/*** CharacterAI : Start ***/
+	/// CharacterAI
 	switch (CharacterAI)
 	{
 	case 0:
@@ -64,11 +64,22 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::NativeUpdateAnimation: switch (CharacterAI): default"));
 		break;
 	}
-	/*** CharacterAI : End ***/
 
 	bHasPistolType = Pioneer->HasPistolType();
 	bHasRifleType = Pioneer->HasRifleType();
 	bHasLauncherType = Pioneer->HasLauncherType();
+}
+/*** AnimInstance Basic Function : End ***/
+
+/*** BaseCharacterAnimInstance : Start ***/
+void UPioneerAnimInstance::SetFSM()
+{
+
+}
+
+void UPioneerAnimInstance::SetBehaviorTree()
+{
+
 }
 
 void UPioneerAnimInstance::DestroyCharacter()
@@ -83,17 +94,4 @@ void UPioneerAnimInstance::DestroyCharacter()
 
 	Pioneer->DestroyCharacter();
 }
-
-/*** FSM : Start ***/
-void UPioneerAnimInstance::SetFSM()
-{
-	
-}
-/*** FSM : End ***/
-
-/*** BehaviorTree : Start ***/
-void UPioneerAnimInstance::SetBehaviorTree()
-{
-
-}
-/*** BehaviorTree : End ***/
+/*** BaseCharacterAnimInstance : End ***/

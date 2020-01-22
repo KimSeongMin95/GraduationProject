@@ -15,47 +15,43 @@ class GAME_API UBaseCharacterAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
-	/*** AnimInstance Basic Function : Start ***/
+/*** AnimInstance Basic Function : Start ***/
 public:
 	UBaseCharacterAnimInstance();
 
 	virtual void NativeInitializeAnimation() override;
 
 	virtual void NativeUpdateAnimation(float DeltaTimeX) override;
-	/*** AnimInstance Basic Function : End ***/
+/*** AnimInstance Basic Function : End ***/
 
-	/*** Animation : Start ***/
-public:
+/*** BaseCharacterAnimInstance : Start ***/
+protected:
 	class ABaseCharacter* BaseCharacter = nullptr; // Owner를 Casting하여 저장
 
+public:
+	/// Animation
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		float Speed;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bIsMoving;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		float Direction;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bDying;
+
+	/// CharacterAI
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterAI")
+		/** FSM, BehaviorTree, 등등 어떤 AI를 사용하는지 AnimationBluprint에 알려줍니다. */
+		int CharacterAI;
+
+protected:
+	/// CharacterAI
+	virtual void SetFSM();
+	virtual void SetBehaviorTree();
+
+public:
 	UFUNCTION(BlueprintCallable)
 		virtual void DestroyCharacter();
-	/*** Animation : End ***/
-
-	/*** CharacterAI : Start ***/
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterAI")
-		int CharacterAI; // FSM, BehaviorTree, 등등 어떤 AI를 사용하는지 AnimationBluprint에 알림
-	/*** CharacterAI : End ***/
-
-	/*** FSM : Start ***/
-public:
-	virtual void SetFSM();
-	/*** FSM : End ***/
-
-	/*** BehaviorTree : Start ***/
-public:
-	virtual void SetBehaviorTree();
-	/*** BehaviorTree : End ***/
+	
+/*** BaseCharacterAnimInstance : End ***/
 };

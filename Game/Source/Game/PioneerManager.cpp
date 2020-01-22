@@ -9,19 +9,18 @@
 #include "Controller/PioneerAIController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
-// Sets default values
+/*** Basic Function : Start ***/
 APioneerManager::APioneerManager()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComp"));
 	RootComponent = SceneComp;
 
 	SwitchState = ESwitchState::Switchable;
 }
 
-// Called when the game starts or when spawned
 void APioneerManager::BeginPlay()
 {
 	Super::BeginPlay();
@@ -77,7 +76,6 @@ void APioneerManager::BeginPlay()
 	}
 }
 
-// Called every frame
 void APioneerManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -94,8 +92,9 @@ void APioneerManager::Tick(float DeltaTime)
 		}
 	}
 }
+/*** Basic Function : End ***/
 
-/** APioneer 객체를 생성합니다. */
+/*** PioneerManager : Start ***/
 void APioneerManager::SpawnPioneer(FTransform Transform)
 {
 	UWorld* const World = GetWorld();
@@ -143,8 +142,7 @@ APioneer* APioneerManager::GetPioneerBySocketID(int SocketID)
 	return nullptr;
 }
 
-/** 다른 폰으로 변경하는 함수입니다. */
-void APioneerManager::SwitchPawn(APioneer* CurrentPioneer, float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
+void APioneerManager::SwitchOtherPioneer(APioneer* CurrentPioneer, float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
 {
 	//enum EViewTargetBlendFunction
 	//{
@@ -354,11 +352,14 @@ void APioneerManager::SwitchFinish(float BlendTime, EViewTargetBlendFunction ble
 
 }
 
-
-/** 다른 폰을 Possess() 합니다. */
 void APioneerManager::PossessPioneer(APioneer* Pioneer)
 {
 	UE_LOG(LogTemp, Warning, TEXT("APioneerManager::PossessPioneer"));
+
+	// 플레이어가 조종하는 개척자를 저장합니다.
+	PioneerOfPlayer = Cast<APioneer>(TargetViewActor);
+
+	// TargetViewActor는 다시 초기화합니다.
 	TargetViewActor = nullptr;
 
 	// PioneerCtrl가 존재하는지 확인합니다.
@@ -373,5 +374,7 @@ void APioneerManager::PossessPioneer(APioneer* Pioneer)
 		PioneerCtrl->GetPawn()->Destroy();
 
 	PioneerCtrl->Possess(Pioneer);
+
 	UE_LOG(LogTemp, Warning, TEXT("APioneerManager::PossessPioneer: PioneerCtrl->Possess(Pioneer);"));
 }
+/*** PioneerManager : End ***/

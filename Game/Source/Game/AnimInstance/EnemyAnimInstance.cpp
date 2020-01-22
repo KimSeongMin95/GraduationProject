@@ -8,13 +8,13 @@
 #include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+/*** AnimInstance Basic Function : Start ***/
 UEnemyAnimInstance::UEnemyAnimInstance()
 {
-	/*** FSM : Start ***/
+	/// FSM
 	bIdle = true;
 	bTracing = false;
 	bAttack = false;
-	/*** FSM : End ***/
 }
 
 void UEnemyAnimInstance::NativeInitializeAnimation()
@@ -54,7 +54,7 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		return;
 	}
 
-	/*** CharacterAI : Start ***/
+	/// CharacterAI
 	switch (CharacterAI)
 	{
 	case 0:
@@ -67,55 +67,10 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::NativeUpdateAnimation: switch (CharacterAI): default"));
 		break;
 	}
-	/*** CharacterAI : End ***/
-
-
 }
+/*** AnimInstance Basic Function : End ***/
 
-void UEnemyAnimInstance::DestroyCharacter()
-{
-	Super::DestroyCharacter();
-
-	if (!Enemy)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::DestroyCharacter: !Enemy"));
-		return;
-	}
-
-	if (Enemy->GetMesh())
-		Enemy->GetMesh()->DestroyComponent();
-	if (Enemy->GetCharacterMovement())
-		Enemy->GetCharacterMovement()->DestroyComponent();
-
-	// 어차피 Character를 Possess하는 Controller는 Enemy->Destory()할 때, 같이 소멸됨.
-	if (Enemy->GetController()) {}
-
-	Enemy->Destroy();
-}
-
-void UEnemyAnimInstance::AttackEnd()
-{
-	if (!Enemy)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::AttackEnd: !Enemy"));
-		return;
-	}
-
-	Enemy->State = EEnemyFSM::Idle;
-}
-
-void UEnemyAnimInstance::DamageToTargetActor()
-{
-	if (!Enemy)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::DamageToTargetActor: !Enemy"));
-		return;
-	}
-
-	Enemy->DamageToTargetActor();
-}
-
-/*** FSM : Start ***/
+/*** BaseCharacterAnimInstance : Start ***/
 void UEnemyAnimInstance::SetFSM()
 {
 	if (!Enemy)
@@ -141,11 +96,54 @@ void UEnemyAnimInstance::SetFSM()
 		break;
 	}
 }
-/*** FSM : End ***/
 
-/*** BehaviorTree : Start ***/
 void UEnemyAnimInstance::SetBehaviorTree()
 {
 
 }
-/*** BehaviorTree : End ***/
+
+void UEnemyAnimInstance::DestroyCharacter()
+{
+	Super::DestroyCharacter();
+
+	if (!Enemy)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::DestroyCharacter: !Enemy"));
+		return;
+	}
+
+	if (Enemy->GetMesh())
+		Enemy->GetMesh()->DestroyComponent();
+	if (Enemy->GetCharacterMovement())
+		Enemy->GetCharacterMovement()->DestroyComponent();
+
+	// 어차피 Character를 Possess하는 Controller는 Enemy->Destory()할 때, 같이 소멸됨.
+	if (Enemy->GetController()) {}
+
+	Enemy->Destroy();
+}
+/*** BaseCharacterAnimInstance : End ***/
+
+/*** EnemyAnimInstance : Start ***/
+void UEnemyAnimInstance::AttackEnd()
+{
+	if (!Enemy)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::AttackEnd: !Enemy"));
+		return;
+	}
+
+	Enemy->State = EEnemyFSM::Idle;
+}
+
+void UEnemyAnimInstance::DamageToTargetActor()
+{
+	if (!Enemy)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::DamageToTargetActor: !Enemy"));
+		return;
+	}
+
+	Enemy->DamageToTargetActor();
+}
+/*** EnemyAnimInstance : End ***/

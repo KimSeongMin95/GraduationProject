@@ -16,9 +16,7 @@ void PathFinding::SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Con
 	case PathFindAlgorithm::PFA_NaveMesh:
 	{
 		// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 가져옵니다.
-		APawn* const MyPawn = Controller->GetPawn();
-
-		if (MyPawn)
+		if (APawn* const MyPawn = Controller->GetPawn())
 		{
 			// 현재 Pawn의 위치와 목적지 간의 거리를 구합니다.
 			float const Distance = FVector::Dist(DestLocation, MyPawn->GetActorLocation());
@@ -36,6 +34,12 @@ void PathFinding::SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Con
 	}
 	case PathFindAlgorithm::PFA_AStar:
 	{
+
+		break;
+	}
+	case PathFindAlgorithm::PFA_BreadthFirstSearch:
+	{
+
 
 		break;
 	}

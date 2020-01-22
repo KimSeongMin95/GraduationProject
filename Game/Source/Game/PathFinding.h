@@ -19,7 +19,8 @@ enum PathFindAlgorithm
 	NavMeshBoundsVolume을 레벨에 배치한 상태로 P키를 누르면 NavMesh가 커버하는 영역시 표시/숨겨집니다.
 	*/
 	PFA_NaveMesh,
-	PFA_AStar // 직접 구현한 A* 알고리즘을 사용합니다.
+	PFA_AStar, // 직접 구현한 A* 알고리즘을 사용합니다.
+	PFA_BreadthFirstSearch
 };
 
 static class GAME_API PathFinding
