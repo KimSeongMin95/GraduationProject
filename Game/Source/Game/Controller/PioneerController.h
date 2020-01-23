@@ -28,15 +28,17 @@ protected:
 	virtual void SetupInputComponent() override;
 /*** Basic Function : End ***/
 
-/*** PlayerController : Start ***/
+
+/*** APlayerController : Start ***/
 public:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
-/*** PlayerController : End ***/
+/*** APlayerController : End ***/
+
 
 /*** APioneerController : Start ***/
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Pioneer Controller")
+	UPROPERTY(VisibleAnywhere, Category = "PioneerController")
 		/** 조종하는 APioneer를 저장합니다. */
 		class APioneer* Pioneer = nullptr;
 
@@ -54,39 +56,39 @@ private:
 	void OnSetDestinationPressed();
 	void OnSetDestinationReleased();
 
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		/** 플레이어를 앞뒤로 이동시키는 함수입니다. */
 		void MoveForward(float Value); 
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		/** 플레이어를 좌우로 이동시키는 함수입니다. */
 		void MoveRight(float Value); 
 
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void ZoomInOrZoomOut(float Value);
 
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void FireWeapon(float Value);
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void ChangePreviousWeapon();
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void ChangeNextWeapon();
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void ArmOrDisArmWeapon();
 
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void AcquireItem();
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void AbandonWeapon();
 
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void ConstructingMode();
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void ESC_ConstructingMode();
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void SpawnBuilding(float Value);
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void RotatingBuilding(float Value);
-	UFUNCTION(BlueprintCallable, Category = "Player Actions")
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void PlaceBuilding();
 /*** APioneerController : End ***/
 

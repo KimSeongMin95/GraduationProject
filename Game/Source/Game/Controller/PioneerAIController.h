@@ -20,9 +20,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-/*** BaseAIController : Start ***/
+
+/*** ABaseAIController : Start ***/
 public:
-	UFUNCTION()
-		virtual void MoveRandomlyInDetectionRange(bool bLookAtDestination) override;
-/*** BaseAIController : End ***/
+	virtual void MoveRandomlyInDetectionRange(bool bLookAtDestination) override;
+/*** ABaseAIController : End ***/
 };

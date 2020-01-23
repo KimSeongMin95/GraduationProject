@@ -7,6 +7,7 @@
 #include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AEnemyAIController::AEnemyAIController()
 {
@@ -27,9 +28,10 @@ void AEnemyAIController::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** BaseAIController : Start ***/
+
+/*** ABaseAIController : Start ***/
 void AEnemyAIController::MoveRandomlyInDetectionRange(bool bLookAtDestination)
 {
 	Super::MoveRandomlyInDetectionRange(bLookAtDestination);
 }
-/*** BaseAIController : End ***/
+/*** ABaseAIController : End ***/

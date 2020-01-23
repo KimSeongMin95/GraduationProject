@@ -7,6 +7,7 @@
 #include "Projectile/ProjectileShotgun.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AShotgun::AShotgun()
 {
@@ -30,7 +31,8 @@ void AShotgun::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Item : Start ***/
+
+/*** AItem : Start ***/
 void AShotgun::InitItem()
 {
 	State = EItemState::Droped;
@@ -39,11 +41,12 @@ void AShotgun::InitItem()
 
 	InitPhysicsBox(15.0f);
 
-	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_Shotgun.SM_White_Shotgun'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	InitItemMesh(TEXT("StaticMesh'/Game/Items/Weapons/Meshes/SM_White_Shotgun.SM_White_Shotgun'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
-/*** Item : End ***/
+/*** AItem : End ***/
 
-/*** Stat : Start ***/
+
+/*** AWeapon : Start ***/
 void AShotgun::InitStat()
 {
 	WeaponType = EWeaponType::Launcher;
@@ -64,19 +67,18 @@ void AShotgun::InitStat()
 
 	NumOfSlugs = 6;
 }
-/*** Stat : End ***/
 
-/*** Weapon : Start ***/
 void AShotgun::InitWeapon()
 {
-	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Shotgun.White_Shotgun'"));
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Items/Weapons/Meshes/White_Shotgun.White_Shotgun'"));
 
 	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 46.0f, 17.0f));
 
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_Shotgun_Skeleton.White_Shotgun_Skeleton'"));
+	InitSkeleton(TEXT("Skeleton'/Game/Items/Weapons/Meshes/White_Shotgun_Skeleton.White_Shotgun_Skeleton'"));
 
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Shotgun_W.Fire_Shotgun_W'"));
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Items/Weapons/Animations/Fire_Shotgun_W.Fire_Shotgun_W'"));
 }
+
 
 bool AShotgun::Fire()
 {
@@ -114,4 +116,4 @@ bool AShotgun::Fire()
 
 	return true;
 }
-/*** Weapon : End ***/
+/*** AWeapon : End ***/

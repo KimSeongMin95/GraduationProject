@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PumpkinhulkLShaw.h"
+#include "RobotRaptor.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 
@@ -9,7 +9,7 @@
 
 
 /*** Basic Function : Start ***/
-APumpkinhulkLShaw::APumpkinhulkLShaw()
+ARobotRaptor::ARobotRaptor()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(140.0f, 80.0f);
@@ -22,18 +22,18 @@ APumpkinhulkLShaw::APumpkinhulkLShaw()
 
 	AEnemy::InitCharacterMovement();
 
-	InitSkeletalAnimation(TEXT("SkeletalMesh'/Game/Characters/Enemy/PumpkinhulkLShaw/PumpkinhulkLShaw_Idle.PumpkinhulkLShaw_Idle'"), 
-		"AnimBlueprint'/Game/Characters/Enemy/PumpkinhulkLShaw/BP_PumpkinhulkLShawAnimation.BP_PumpkinhulkLShawAnimation_C'", 
-		FVector(1.5f, 1.5f, 1.5f), FRotator(0.0f, -90.0f, 0.0f), FVector(0.0f, 0.0f, -142.0f));
+	InitSkeletalAnimation(TEXT("SkeletalMesh'/Game/Characters/Enemies/RobotRaptor/Meshes/RobotRaptor.RobotRaptor'"), 
+		"AnimBlueprint'/Game/Characters/Enemies/RobotRaptor/Animations/RobotRaptor_AnimBP.RobotRaptor_AnimBP_C'", 
+		FVector(1.5f, 1.5f, 1.5f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, -142.0f));
 }
 
-void APumpkinhulkLShaw::BeginPlay()
+void ARobotRaptor::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
-void APumpkinhulkLShaw::Tick(float DeltaTime)
+void ARobotRaptor::Tick(float DeltaTime)
 {
 	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있음.
 	// 따라서, Tick 가장 앞에서 죽었는지 여부를 체크해야 함.
@@ -47,28 +47,28 @@ void APumpkinhulkLShaw::Tick(float DeltaTime)
 
 
 /*** IHealthPointBarInterface : Start ***/
-void APumpkinhulkLShaw::InitHelthPointBar()
+void ARobotRaptor::InitHelthPointBar()
 {
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 190.0f));
-	HelthPointBar->SetDrawSize(FVector2D(120, 20));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+	HelthPointBar->SetDrawSize(FVector2D(80, 20));
 }
 /*** IHealthPointBarInterface : End ***/
 
 
 /*** ABaseCharacter : Start ***/
-void APumpkinhulkLShaw::InitStat()
+void ARobotRaptor::InitStat()
 {
-	HealthPoint = 300.0f;
-	MaxHealthPoint = 300.0f;
+	HealthPoint = 250.0f;
+	MaxHealthPoint = 250.0f;
 	bDying = false;
 
 	MoveSpeed = 8.0f;
-	AttackSpeed = 0.5f;
+	AttackSpeed = 1.0f;
 
-	AttackPower = 50.0f;
+	AttackPower = 40.0f;
 
 	AttackRange = 4.0f;
 	DetectRange = 32.0f;
@@ -76,13 +76,13 @@ void APumpkinhulkLShaw::InitStat()
 }
 
 
-void APumpkinhulkLShaw::RunFSM()
+void ARobotRaptor::RunFSM()
 {
 	Super::RunFSM();
 
 }
 
-void APumpkinhulkLShaw::RunBehaviorTree()
+void ARobotRaptor::RunBehaviorTree()
 {
 	Super::RunBehaviorTree();
 

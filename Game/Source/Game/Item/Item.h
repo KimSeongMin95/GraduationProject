@@ -34,19 +34,17 @@ class GAME_API AItem : public AActor
 
 /*** Basic Function : Start ***/
 public:	
-	// Sets default values for this actor's properties
 	AItem();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-/*** Item : Start ***/
+
+/*** AItem : Start ***/
 public:
 	EItemState State;
 
@@ -82,7 +80,7 @@ public:
 
 	virtual void Droped();	 /** ¶¥¿¡ ¶³¾îÁø »óÅÂ */
 	virtual void Acquired(); /** È¹µæµÈ »óÅÂ */
-/*** Item : End ***/
+/*** AItem : End ***/
 
 
 

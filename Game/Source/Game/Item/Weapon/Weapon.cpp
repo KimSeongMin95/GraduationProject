@@ -2,7 +2,12 @@
 
 #include "Weapon.h"
 
-// Sets default values
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
+
+/*** Basic Function : Start ***/
 AWeapon::AWeapon()
 {
 	//// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -17,7 +22,6 @@ AWeapon::AWeapon()
 	ArrowComponent->SetupAttachment(WeaponMesh);
 }
 
-// Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
@@ -25,15 +29,16 @@ void AWeapon::BeginPlay()
 	Droped(); // 기본적으로 Drop된 상태
 }
 
-// Called every frame
 void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	FireCoolTime += DeltaTime;
 }
+/*** Basic Function : End ***/
 
-/*** Item : Start ***/
+
+/*** AItem : Start ***/
 void AWeapon::InitItem()
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
@@ -52,9 +57,10 @@ void AWeapon::Acquired()
 	if (WeaponMesh)
 		WeaponMesh->SetHiddenInGame(false);
 }
-/*** Item : End ***/
+/*** AItem : End ***/
 
-/*** Stat : Start ***/
+
+/*** AWeapon : Start ***/
 void AWeapon::InitStat()
 {
 	/* 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
@@ -75,13 +81,12 @@ void AWeapon::InitStat()
 	SocketName = TEXT("PistolSocket");
 	*/
 }
-/*** Stat : End ***/
 
-/*** Weapon : Start ***/
 void AWeapon::InitWeapon()
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
+
 void AWeapon::InitWeaponMesh(const TCHAR* ReferencePath)
 {
 	// Weapon SkeletalMesh Asset을 가져와서 적용
@@ -91,6 +96,7 @@ void AWeapon::InitWeaponMesh(const TCHAR* ReferencePath)
 		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
 	}
 }
+
 void AWeapon::InitArrowComponent(FRotator Rotatation, FVector Location)
 {
 	if (!ArrowComponent)
@@ -99,6 +105,7 @@ void AWeapon::InitArrowComponent(FRotator Rotatation, FVector Location)
 	ArrowComponent->SetRelativeRotation(Rotatation);
 	ArrowComponent->SetRelativeLocation(Location);
 }
+
 void AWeapon::InitSkeleton(const TCHAR* ReferencePath)
 {
 	// SkeletalMesh가 사용하는 Skeleton Asset을 가져와서 적용
@@ -108,6 +115,7 @@ void AWeapon::InitSkeleton(const TCHAR* ReferencePath)
 		Skeleton = skeletonAsset.Object;
 	}
 }
+
 void AWeapon::InitFireAnimSequence(const TCHAR* ReferencePath)
 {
 	// 총 쏘는 애니메이션을 가져와서 적용
@@ -118,6 +126,7 @@ void AWeapon::InitFireAnimSequence(const TCHAR* ReferencePath)
 		FireAnimSequence->SetSkeleton(Skeleton);
 	}
 }
+
 
 bool AWeapon::Fire()
 {
@@ -132,4 +141,4 @@ bool AWeapon::Fire()
 
 	return true;
 }
-/*** Weapon : End ***/
+/*** AWeapon : End ***/

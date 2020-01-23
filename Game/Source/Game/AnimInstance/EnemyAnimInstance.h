@@ -24,34 +24,37 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTimeX) override;
 /*** AnimInstance Basic Function : End ***/
 
-/*** BaseCharacterAnimInstance : Start ***/
+
+/*** UBaseCharacterAnimInstance : Start ***/
 protected:
 	virtual void SetFSM() override;
 	virtual void SetBehaviorTree() override;
 
 public:
 	virtual void DestroyCharacter() override;
-/*** BaseCharacterAnimInstance : End ***/
+/*** UBaseCharacterAnimInstance : End ***/
 
-/*** EnemyAnimInstance : Start ***/
+
+/*** UEnemyAnimInstance : Start ***/
 protected:
 	/** Owner를 Casting하여 저장 */
 	class AEnemy* Enemy = nullptr;
 
 public:
-	/// FSM
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 		bool bIdle;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 		bool bTracing;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FSM")
 		bool bAttack;
 	
 public:
-	/// Animation
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Animation")
 		void AttackEnd();
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintCallable, Category = "Animation")
 		void DamageToTargetActor();
-/*** EnemyAnimInstance : End ***/
+/*** UEnemyAnimInstance : End ***/
 };

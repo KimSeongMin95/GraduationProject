@@ -75,7 +75,7 @@ protected:
 
 
 public:
-	UPROPERTY(VisibleAnywhere, Category = "Character AI")
+	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
 		EEnemyFSM State;
 
 private:
@@ -87,16 +87,16 @@ protected:
 	void InitFSM();
 
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		void FindTheTargetActor();
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		void IdlingOfFSM();
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		void TracingOfFSM();
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		void AttackingOfFSM();
 
 public:

@@ -7,6 +7,7 @@
 #include "Projectile/ProjectileSniperRifle.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 ASniperRifle::ASniperRifle()
 {
@@ -30,7 +31,8 @@ void ASniperRifle::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Item : Start ***/
+
+/*** AItem : Start ***/
 void ASniperRifle::InitItem()
 {
 	State = EItemState::Droped;
@@ -39,12 +41,12 @@ void ASniperRifle::InitItem()
 
 	InitPhysicsBox(15.0f);
 
-	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_SniperRifle.SM_White_SniperRifle'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	InitItemMesh(TEXT("StaticMesh'/Game/Items/Weapons/Meshes/SM_White_SniperRifle.SM_White_SniperRifle'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
-/*** Item : End ***/
+/*** AItem : End ***/
 
 
-/*** Stat : Start ***/
+/*** AWeapon : Start ***/
 void ASniperRifle::InitStat()
 {
 	WeaponType = EWeaponType::Rifle;
@@ -63,19 +65,18 @@ void ASniperRifle::InitStat()
 
 	SocketName = TEXT("SniperRifleSocket");
 }
-/*** Stat : End ***/
 
-/*** Weapon : Start ***/
 void ASniperRifle::InitWeapon()
 {
-	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_SniperRifle.White_SniperRifle'"));
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Items/Weapons/Meshes/White_SniperRifle.White_SniperRifle'"));
 
 	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.7f, 97.0f, 11.5f));
 
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_SniperRifle_Skeleton.White_SniperRifle_Skeleton'"));
+	InitSkeleton(TEXT("Skeleton'/Game/Items/Weapons/Meshes/White_SniperRifle_Skeleton.White_SniperRifle_Skeleton'"));
 
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_SniperRifle_W.Fire_SniperRifle_W'"));
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Items/Weapons/Animations/Fire_SniperRifle_W.Fire_SniperRifle_W'"));
 }
+
 
 bool ASniperRifle::Fire()
 {
@@ -105,4 +106,4 @@ bool ASniperRifle::Fire()
 
 	return true;
 }
-/*** Weapon : End ***/
+/*** AWeapon : End ***/

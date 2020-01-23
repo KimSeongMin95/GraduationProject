@@ -81,7 +81,7 @@ public:
 
 /*** APioneer : Start ***/
 private:
-	UPROPERTY(EditAnywhere, Category = "Pioneer Manager")
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
 		class APioneerManager* PioneerManager = nullptr;
 
 protected:
@@ -112,17 +112,17 @@ protected:
 
 
 public:
-	UPROPERTY(EditAnywhere, Category = "Pioneer Manager")
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
 		int SocketID;
 
 
-	UPROPERTY(VisibleAnywhere, Category = "Anim Instance")
+	UPROPERTY(VisibleAnywhere, Category = "AnimInstance")
 		bool bHasPistolType;
 
-	UPROPERTY(VisibleAnywhere, Category = "Anim Instance")
+	UPROPERTY(VisibleAnywhere, Category = "AnimInstance")
 		bool bHasRifleType;
 
-	UPROPERTY(VisibleAnywhere, Category = "Anim Instance")
+	UPROPERTY(VisibleAnywhere, Category = "AnimInstance")
 		bool bHasLauncherType;
 
 
@@ -157,7 +157,7 @@ public:
 		bool bConstructingMode;
 
 
-	UPROPERTY(VisibleAnywhere, Category = "Character AI")
+	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
 		EPioneerFSM State;
 
 
@@ -190,16 +190,16 @@ protected:
 	void InitItem();
 
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		void FindTheTargetActor();
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		void IdlingOfFSM();
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		void TracingOfFSM();
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		void AttackingOfFSM();
 
 
@@ -217,23 +217,23 @@ public:
 	FORCEINLINE class AWeapon* GetCurrentWeapon() { return CurrentWeapon; }
 
 
-	UFUNCTION(Category = "Pioneer Manager")
+	UFUNCTION(Category = "PioneerManager")
 		void DestroyCharacter();
 
-	UFUNCTION(Category = "Pioneer Manager")
+	UFUNCTION(Category = "PioneerManager")
 		/** PioneerManager의 CameraOfCurrentPioneer의 Transform을 TopDownCameraTo로 설정 */
 		bool CopyTopDownCameraTo(AActor* CameraToBeCopied); 
 
 
-	UFUNCTION(Category = "Character Movement")
+	UFUNCTION(Category = "CharacterMovement")
 		void StopMovement();
 
 
-	UFUNCTION(BlueprintCallable, Category = "Anim Instance")
+	UFUNCTION(BlueprintCallable, Category = "AnimInstance")
 		bool HasPistolType();
-	UFUNCTION(BlueprintCallable, Category = "Anim Instance")
+	UFUNCTION(BlueprintCallable, Category = "AnimInstance")
 		bool HasRifleType();
-	UFUNCTION(BlueprintCallable, Category = "Anim Instance")
+	UFUNCTION(BlueprintCallable, Category = "AnimInstance")
 		bool HasLauncherType();
 
 

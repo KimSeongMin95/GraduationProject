@@ -5,9 +5,8 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Enemy.h"
-#include "Character/Pioneer.h"
-#include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
+
 
 /*** Basic Function : Start ***/
 AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
@@ -15,18 +14,18 @@ AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
 	InitHitRange(32.0f);
 
 
-	InitProjectileMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/White_GrenadeLauncher_Ammo.White_GrenadeLauncher_Ammo'"),
-		TEXT("MaterialInstanceConstant'/Game/Weapons/Materials/Projectile/Mat_Inst_ProjectileGrenadeLauncher.Mat_Inst_ProjectileGrenadeLauncher'"),
+	InitProjectileMesh(TEXT("StaticMesh'/Game/Items/Weapons/Meshes/White_GrenadeLauncher_Ammo.White_GrenadeLauncher_Ammo'"),
+		TEXT("MaterialInstanceConstant'/Game/Items/Weapons/Materials/Projectile/Mat_Inst_ProjectileGrenadeLauncher.Mat_Inst_ProjectileGrenadeLauncher'"),
 		FVector(4.0f, 4.0f, 2.0f), FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
 	
 	InitProjectileMovement(800.0f, 800.0f, 0.8f, true, 1.0f);
 
 
-	InitParticleSystem(GetTrailParticleSystem(), TEXT("ParticleSystem'/Game/Weapons/FX/Particles/P_Grenade_Trail_Light.P_Grenade_Trail_Light'"));
+	InitParticleSystem(GetTrailParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Grenade_Trail_Light.P_Grenade_Trail_Light'"));
 	
 	
-	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Weapons/FX/Particles/P_Grenade_Explosion_Light.P_Grenade_Explosion_Light'"));
+	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Grenade_Explosion_Light.P_Grenade_Explosion_Light'"));
 
 
 	PhysicsBoxComp = CreateDefaultSubobject<UBoxComponent>("PhysicsBoxComp");
@@ -60,7 +59,8 @@ void AProjectileGrenadeLauncher::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Projectile : Start ***/
+
+/*** AProjectile : Start ***/
 void AProjectileGrenadeLauncher::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (IgnoreOnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult))
@@ -109,11 +109,12 @@ void AProjectileGrenadeLauncher::SetLifespan(float Time)
 	timerDel.BindUFunction(this, FName("SetTimerForDestroy"), 3.0f);
 	GetWorldTimerManager().SetTimer(TimerHandleOfDestroy, timerDel, Time, false);
 }
-/*** Projectile : End ***/
+/*** AProjectile : End ***/
 
-/*** ProjectileSplash : Start ***/
+
+/*** AProjectileSplash : Start ***/
 void AProjectileGrenadeLauncher::OnOverlapBegin_Splash(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Super::OnOverlapBegin_Splash(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 }
-/*** ProjectileSplash : End ***/
+/*** AProjectileSplash : End ***/

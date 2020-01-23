@@ -12,6 +12,7 @@
 #include "Item/Weapon/Weapon.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 APioneerController::APioneerController()
 {
@@ -83,7 +84,8 @@ void APioneerController::SetupInputComponent()
 }
 /*** Basic Function : End ***/
 
-/*** PlayerController : Start ***/
+
+/*** APlayerController : Start ***/
 void APioneerController::OnPossess(APawn* InPawn)
 {
 	if (!InPawn)
@@ -111,7 +113,8 @@ void APioneerController::OnUnPossess()
 	Super::OnUnPossess();
 	SetPawn(nullptr);
 }
-/*** PlayerController : End ***/
+/*** APlayerController : End ***/
+
 
 /*** APioneerController : Start ***/
 void APioneerController::MoveToMouseCursor()

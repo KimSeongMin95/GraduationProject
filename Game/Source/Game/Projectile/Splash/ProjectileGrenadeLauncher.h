@@ -17,19 +17,17 @@ class GAME_API AProjectileGrenadeLauncher : public AProjectileSplash
 
 /*** Basic Function : Start ***/
 public:
-	// Sets default values for this actor's properties
 	AProjectileGrenadeLauncher();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() final;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) final;
 /*** Basic Function : End ***/
 
-/*** Projectile : Start ***/
+
+/*** AProjectile : Start ***/
 protected:
 	virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
 
@@ -37,19 +35,18 @@ protected:
 
 public:
 	virtual void SetLifespan(float Time) final;
-/*** Projectile : End ***/
+/*** AProjectile : End ***/
 
-/*** Splash : Start ***/
+
+/*** ASplash : Start ***/
 public:
 	virtual void OnOverlapBegin_Splash(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
+/*** ASplash : End ***/
 
 
+/*** AGrenadeLauncher : Start ***/
+protected:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* PhysicsBoxComp = nullptr;
-/*** Splash : End ***/
-
-/*** GrenadeLauncher : Start ***/
-public:
-
-/*** GrenadeLauncher : End ***/
+/*** AGrenadeLauncher : End ***/
 };

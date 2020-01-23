@@ -8,6 +8,7 @@
 #include "Controller/PioneerController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 ASpaceShip::ASpaceShip()
 {
@@ -129,7 +130,8 @@ void ASpaceShip::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** SpaceShip : Start ***/
+
+/*** ASpaceShip : Start ***/
 void ASpaceShip::InitPhysicsBox(FVector BoxExtent /*= FVector::ZeroVector*/, FVector Location /*= FVector::ZeroVector*/)
 {
 	PhysicsBox->SetBoxExtent(BoxExtent);
@@ -596,5 +598,5 @@ void ASpaceShip::RotateTargetRotation(float DeltaTime)
 	// 변경된 각도로 다시 설정합니다.
 	SpringArmComp->SetRelativeRotation(CurrentRotation);
 }
-/*** SpaceShip : End ***/
+/*** ASpaceShip : End ***/
 

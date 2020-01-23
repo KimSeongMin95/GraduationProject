@@ -37,30 +37,47 @@ class GAME_API AWeapon : public AItem
 	
 /*** Basic Function : Start ***/
 public:	
-	// Sets default values for this actor's properties
 	AWeapon();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-/*** Item : Start ***/
+
+/*** AItem : Start ***/
 protected:
 	virtual void InitItem() override; /** 아이템 초기화 */
 
 public:
 	virtual void Droped() final;   /** 땅에 떨어진 상태 */
 	virtual void Acquired() final; /** 획득된 상태 */
-/*** Item : End ***/
+/*** AItem : End ***/
 
-/*** Stat : Start ***/
+
+/*** AWeapon : Start ***/
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+		/** main skeletal mesh. */
+		class USkeletalMeshComponent* WeaponMesh = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon") 
+		/** Projectile이 Spawn되는 방향을 표시 */
+		class UArrowComponent* ArrowComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon") 
+		/** main skeletal mesh의 skeleton */
+		class USkeleton* Skeleton = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+		/** main skeletal mesh의 무기를 발사하는 AinmSequence */
+		class UAnimSequence* FireAnimSequence = nullptr;
+
 public:
 	EWeaponType WeaponType;
+
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		int LimitedLevel; /** 제한 전투력 */
@@ -85,30 +102,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 		FName SocketName; /** Pioneer의 Skeleton Socket에 붙이기 위한 소켓명 */
 
+
 protected:
 	virtual void InitStat();
-/*** Stat : End ***/
-
-/*** Weapon : Start ***/
-private:
-	
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-		/** main skeletal mesh. */
-		class USkeletalMeshComponent* WeaponMesh = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon") 
-		/** Projectile이 Spawn되는 방향을 표시 */
-		class UArrowComponent* ArrowComponent = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon") 
-		/** main skeletal mesh의 skeleton */
-		class USkeleton* Skeleton = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-		/** main skeletal mesh의 무기를 발사하는 AinmSequence */
-		class UAnimSequence* FireAnimSequence = nullptr;
-
-protected:
 	virtual void InitWeapon();
 	void InitWeaponMesh(const TCHAR* ReferencePath);
 	void InitArrowComponent(FRotator Rotatation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
@@ -131,6 +127,6 @@ public:
 
 	UFUNCTION()
 		virtual bool Fire(); /** 무기를 발사 */
-/*** Weapon : End ***/
+/*** AWeapon : End ***/
 
 };

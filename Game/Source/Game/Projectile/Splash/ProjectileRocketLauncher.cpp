@@ -7,24 +7,21 @@
 #include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AProjectileRocketLauncher::AProjectileRocketLauncher()
 {
 	InitHitRange(32.0f);
 
-	InitProjectileMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/White_RocketLauncher_Ammo.White_RocketLauncher_Ammo'"),
-		TEXT("MaterialInstanceConstant'/Game/Weapons/Materials/Projectile/Mat_Inst_ProjectileRocketLauncher.Mat_Inst_ProjectileRocketLauncher'"),
+	InitProjectileMesh(TEXT("StaticMesh'/Game/Items/Weapons/Meshes/White_RocketLauncher_Ammo.White_RocketLauncher_Ammo'"),
+		TEXT("MaterialInstanceConstant'/Game/Items/Weapons/Materials/Projectile/Mat_Inst_ProjectileRocketLauncher.Mat_Inst_ProjectileRocketLauncher'"),
 		FVector(2.0f, 2.0f, 2.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
 	InitProjectileMovement(1600.0f, 1600.0f, 0.05f, false, 0.0f);
 
-	InitParticleSystem(GetTrailParticleSystem(), TEXT("ParticleSystem'/Game/Weapons/FX/Particles/P_RocketLauncher_Trail_Light.P_RocketLauncher_Trail_Light'"));
+	InitParticleSystem(GetTrailParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_RocketLauncher_Trail_Light.P_RocketLauncher_Trail_Light'"));
 
-	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Weapons/FX/Particles/P_RocketLauncher_Explosion_Light.P_RocketLauncher_Explosion_Light'"));
-
-
-
-
+	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_RocketLauncher_Explosion_Light.P_RocketLauncher_Explosion_Light'"));
 
 }
 
@@ -42,7 +39,8 @@ void AProjectileRocketLauncher::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Projectile : Start ***/
+
+/*** AProjectile : Start ***/
 void AProjectileRocketLauncher::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (IgnoreOnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult))
@@ -94,11 +92,12 @@ void AProjectileRocketLauncher::SetTimerForDestroy(float Time)
 
 	SetTimerForDestroySplash(0.1f);
 }
-/*** Projectile : Start ***/
+/*** AProjectile : Start ***/
 
-/*** ProjectileSplash : Start ***/
+
+/*** AProjectileSplash : Start ***/
 void AProjectileRocketLauncher::OnOverlapBegin_Splash(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Super::OnOverlapBegin_Splash(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 }
-/*** ProjectileSplash : End ***/
+/*** AProjectileSplash : End ***/

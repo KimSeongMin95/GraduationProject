@@ -13,27 +13,26 @@ class GAME_API AProjectileRocketLauncher : public AProjectileSplash
 
 /*** Basic Function : Start ***/
 public:
-	// Sets default values for this actor's properties
 	AProjectileRocketLauncher();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-/*** Projectile : Start ***/
+
+/*** AProjectile : Start ***/
 protected:
 	virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
 
 	virtual void SetTimerForDestroy(float Time) final;
-/*** Projectile : End ***/
+/*** AProjectile : End ***/
 
-/*** Splash : Start ***/
+
+/*** ASplash : Start ***/
 protected:
 	virtual void OnOverlapBegin_Splash(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
-/*** Splash : End ***/
+/*** ASplash : End ***/
 };

@@ -35,32 +35,33 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-/*** Projectile : Start ***/
+
+/*** AProjectile : Start ***/
 private:
-	UPROPERTY(EditAnywhere, Category = "Projectile")
+	UPROPERTY(EditAnywhere, Category = "AProjectile")
 		/** Projectile의 충돌범위 */
 		class USphereComponent* HitRange = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Projectile")
+	UPROPERTY(EditAnywhere, Category = "AProjectile")
 		/** Projectile 탄환 메시 */
 		class UStaticMeshComponent* ProjectileMesh = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Projectile")
+	UPROPERTY(EditAnywhere, Category = "AProjectile")
 		/** Projectile의 움직임을 제어 */
 		class UProjectileMovementComponent* ProjectileMovement = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Projectile")
+	UPROPERTY(EditAnywhere, Category = "AProjectile")
 		/** 탄환을 따라다니는 파티클시스템 */
 		class UParticleSystemComponent* TrailParticleSystem; 
 
-	UPROPERTY(EditAnywhere, Category = "Projectile")
+	UPROPERTY(EditAnywhere, Category = "AProjectile")
 		/** 충돌시 터지는 파티클시스템 */
 		class UParticleSystemComponent* ImpactParticleSystem; 
 
 public:
 	FTimerHandle TimerHandleOfDestroy;
 
-	UPROPERTY(VisibleAnywhere, Category = "Projectile")
+	UPROPERTY(VisibleAnywhere, Category = "AProjectile")
 		float TotalDamage;
 
 protected:
@@ -73,15 +74,15 @@ protected:
 	/** 충돌할 때, 무시할 것들을 정의하고 OnOverlapBegin에 알려줍니다. */
 	bool IgnoreOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
-	UFUNCTION()
+	UFUNCTION(Category = "Collision")
 		virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
-	UFUNCTION()
+	UFUNCTION(Category = "Destroy")
 		/** 필요없는 Component들을 소멸시키고 AProjectile을 Time초 후에 소멸하도록 예약합니다. */
 		virtual void SetTimerForDestroy(float Time);
 
-	UFUNCTION()
+	UFUNCTION(Category = "Destroy")
 		/** SetDestoryTimer에 의하여 투사체를 소멸합니다. */
 		void DestroyByTimer();
 
@@ -94,9 +95,10 @@ public:
 
 	void ActiveToggleOfImpactParticleSystem(bool bDefaultRotation = false);
 
+
 	/** Time초 후에 Projectile이 자동적으로 소멸되도록 BeginPlay에서 호출 */
 	virtual void SetLifespan(float Time);
-/*** Projectile : End ***/
+/*** AProjectile : End ***/
 };
 
 

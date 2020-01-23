@@ -8,6 +8,7 @@
 #include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** AnimInstance Basic Function : Start ***/
 UEnemyAnimInstance::UEnemyAnimInstance()
 {
@@ -70,7 +71,8 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 }
 /*** AnimInstance Basic Function : End ***/
 
-/*** BaseCharacterAnimInstance : Start ***/
+
+/*** UBaseCharacterAnimInstance : Start ***/
 void UEnemyAnimInstance::SetFSM()
 {
 	if (!Enemy)
@@ -122,9 +124,10 @@ void UEnemyAnimInstance::DestroyCharacter()
 
 	Enemy->Destroy();
 }
-/*** BaseCharacterAnimInstance : End ***/
+/*** UBaseCharacterAnimInstance : End ***/
 
-/*** EnemyAnimInstance : Start ***/
+
+/*** UEnemyAnimInstance : Start ***/
 void UEnemyAnimInstance::AttackEnd()
 {
 	if (!Enemy)
@@ -146,4 +149,4 @@ void UEnemyAnimInstance::DamageToTargetActor()
 
 	Enemy->DamageToTargetActor();
 }
-/*** EnemyAnimInstance : End ***/
+/*** UEnemyAnimInstance : End ***/

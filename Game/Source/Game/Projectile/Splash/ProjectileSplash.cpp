@@ -7,6 +7,7 @@
 #include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AProjectileSplash::AProjectileSplash()
 {
@@ -36,7 +37,8 @@ void AProjectileSplash::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Projectile : Start ***/
+
+/*** AProjectile : Start ***/
 void AProjectileSplash::InitProjectile()
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
@@ -58,9 +60,10 @@ void AProjectileSplash::SetLifespan(float Time)
 {
 	Super::SetLifespan(Time);
 }
-/*** Projectile : End ***/
+/*** AProjectile : End ***/
 
-/*** ProjectileSplash : Start ***/
+
+/*** AProjectileSplash : Start ***/
 void AProjectileSplash::SetSplashRange(float Radius)
 {
 	if (!SplashRange)
@@ -99,4 +102,4 @@ void AProjectileSplash::DestroySplashByTimer()
 	if (SplashRange)
 		SplashRange->DestroyComponent();
 }
-/*** ProjectileSplash : End ***/
+/*** AProjectileSplash : End ***/

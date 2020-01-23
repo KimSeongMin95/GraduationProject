@@ -44,33 +44,34 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-/*** PioneerManager : Start ***/
+
+/*** APioneerManager : Start ***/
 private:
-	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
+	UPROPERTY(VisibleAnywhere, Category = "APioneerManager")
 		/** RootComponent */
 		class USceneComponent* SceneComp = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+	UPROPERTY(EditAnywhere, Category = Camera)
 		/** 월드 전체를 바라보는 카메라입니다. */
 		class AWorldViewCameraActor* WorldViewCamera = nullptr; 
 
-	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+	UPROPERTY(EditAnywhere, Category = Camera)
 		/** 현재 개척자의 카메라입니다. */
 		class AWorldViewCameraActor* CameraOfCurrentPioneer = nullptr; 
 
-	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+	UPROPERTY(EditAnywhere, Category = Camera)
 		/** 현재 개척자의 월드뷰 카메라입니다. */
 		class AWorldViewCameraActor* WorldViewCameraOfCurrentPioneer = nullptr; 
 
-	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+	UPROPERTY(EditAnywhere, Category = Camera)
 		/** 다음 개척자의 월드뷰 카메라입니다. */
 		class AWorldViewCameraActor* WorldViewCameraOfNextPioneer = nullptr; 
 
-	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+	UPROPERTY(EditAnywhere, Category = Camera)
 		/** 다음 개척자의 카메라입니다. */
 		class AWorldViewCameraActor* CameraOfNextPioneer = nullptr; 
 
-	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
+	UPROPERTY(VisibleAnywhere, Category = Camera)
 		/** Pioneer 전용 컨트롤러 입니다. */
 		class APioneerController* PioneerCtrl = nullptr; 
 
@@ -120,5 +121,5 @@ public:
 	void SwitchOtherPioneer(APioneer* CurrentPioneer, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); // bLockOutgoing: 보간 도중에 나가는 뷰타겟을 업데이트하지 않음.
 
 
-/*** PioneerManager : End ***/
+/*** APioneerManager : End ***/
 };

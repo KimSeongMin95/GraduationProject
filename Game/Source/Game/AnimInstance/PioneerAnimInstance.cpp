@@ -8,6 +8,7 @@
 #include "Controller/PioneerAIController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** AnimInstance Basic Function : Start ***/
 UPioneerAnimInstance::UPioneerAnimInstance()
 {
@@ -71,7 +72,8 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 }
 /*** AnimInstance Basic Function : End ***/
 
-/*** BaseCharacterAnimInstance : Start ***/
+
+/*** UBaseCharacterAnimInstance : Start ***/
 void UPioneerAnimInstance::SetFSM()
 {
 
@@ -94,4 +96,4 @@ void UPioneerAnimInstance::DestroyCharacter()
 
 	Pioneer->DestroyCharacter();
 }
-/*** BaseCharacterAnimInstance : End ***/
+/*** UBaseCharacterAnimInstance : End ***/

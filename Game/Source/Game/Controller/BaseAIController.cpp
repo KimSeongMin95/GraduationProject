@@ -7,6 +7,7 @@
 #include "Character/BaseCharacter.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 ABaseAIController::ABaseAIController()
 {
@@ -31,7 +32,8 @@ void ABaseAIController::Tick(float DeltaTime)
 }
 /*** Basic Function : Start ***/
 
-/*** BaseAIController : Start ***/
+
+/*** ABaseAIController : Start ***/
 bool ABaseAIController::CheckDying()
 {
 	if (!GetPawn())
@@ -95,4 +97,4 @@ void ABaseAIController::MoveRandomlyInDetectionRange(bool bLookAtDestination)
 			baseCharacter->LookAtTheLocation(dest);
 	}
 }
-/*** BaseAIController : End ***/
+/*** ABaseAIController : End ***/

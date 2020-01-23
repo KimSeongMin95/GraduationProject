@@ -9,6 +9,7 @@
 #include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** AnimInstance Basic Function : Start ***/
 UBaseCharacterAnimInstance::UBaseCharacterAnimInstance()
 {
@@ -60,7 +61,8 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 }
 /*** AnimInstance Basic Function : End ***/
 
-/*** BaseCharacterAnimInstance : Start ***/
+
+/*** UBaseCharacterAnimInstance : Start ***/
 void UBaseCharacterAnimInstance::DestroyCharacter()
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
@@ -75,4 +77,4 @@ void UBaseCharacterAnimInstance::SetBehaviorTree()
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
-/*** BaseCharacterAnimInstance : End ***/
+/*** UBaseCharacterAnimInstance : End ***/

@@ -70,26 +70,26 @@ public:
 
 /*** ABaseCharacter : Start ***/
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Character AI")
+	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
 		ECharacterAI CharacterAI;
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "Detect Range")
+	UPROPERTY(EditAnywhere, Category = "DetectRange")
 		class USphereComponent* DetectRangeSphereComp = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Attack Range")
+	UPROPERTY(EditAnywhere, Category = "AttackRange")
 		class USphereComponent* AttackRangeSphereComp = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Detect Range")
+	UPROPERTY(EditAnywhere, Category = "DetectRange")
 		/** DetactRangeSphereComp와 Overlap된 액터들을 모두 저장하고 벗어나면 삭제 */
 		TArray<class AActor*> OverapedDetectRangeActors; 
 
-	UPROPERTY(EditAnywhere, Category = "Attack Range")
+	UPROPERTY(EditAnywhere, Category = "AttackRange")
 		/** AttackRangeSphereComp와 Overlap된 액터들을 모두 저장하고 벗어나면 삭제 */
 		TArray<class AActor*> OverapedAttackRangeActors; 
 
 
-	UPROPERTY(EditAnywhere, Category = "AI Controller")
+	UPROPERTY(EditAnywhere, Category = "AIController")
 		class ABaseAIController* AIController = nullptr;
 
 
@@ -100,7 +100,7 @@ protected:
 		FRotator TargetRotation;
 
 
-	UPROPERTY(EditAnywhere, Category = "Character AI")
+	UPROPERTY(EditAnywhere, Category = "CharacterAI")
 		class AActor* TargetActor = nullptr;
 
 public:
@@ -138,14 +138,14 @@ protected:
 	virtual void InitCharacterMovement();
 
 
-	UFUNCTION(Category = "Detect Range")
+	UFUNCTION(Category = "DetectRange")
 		virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION(Category = "Detect Range")
+	UFUNCTION(Category = "DetectRange")
 		virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UFUNCTION(Category = "Attack Range")
+	UFUNCTION(Category = "AttackRange")
 		virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION(Category = "Attack Range")
+	UFUNCTION(Category = "AttackRange")
 		virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 
@@ -153,7 +153,7 @@ protected:
 		virtual void RotateTargetRotation(float DeltaTime);
 
 
-	UFUNCTION(Category = "Character Movement")
+	UFUNCTION(Category = "CharacterMovement")
 		float DistanceToActor(AActor* Actor);
 
 public:
@@ -166,7 +166,7 @@ public:
 		virtual void SetHealthPoint(float Value);
 
 
-	UFUNCTION(Category = "AI Controller")
+	UFUNCTION(Category = "AIController")
 		/** AIController에 Possess 합니다. */
 		virtual void PossessAIController();
 
@@ -176,14 +176,14 @@ public:
 		void LookAtTheLocation(FVector Location);
 
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		/** TargetActor 위치로 이동 */
 		void TracingTargetActor();
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		virtual void RunFSM();
 
-	UFUNCTION(Category = "Character AI")
+	UFUNCTION(Category = "CharacterAI")
 		virtual void RunBehaviorTree();
 /*** ABaseCharacter : End ***/
 };

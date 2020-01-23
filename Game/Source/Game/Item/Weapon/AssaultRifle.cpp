@@ -7,6 +7,7 @@
 #include "Projectile/ProjectileAssaultRifle.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AAssaultRifle::AAssaultRifle()
 {
@@ -30,7 +31,8 @@ void AAssaultRifle::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Item : Start ***/
+
+/*** AItem : Start ***/
 void AAssaultRifle::InitItem()
 {
 	State = EItemState::Droped;
@@ -39,11 +41,12 @@ void AAssaultRifle::InitItem()
 
 	InitPhysicsBox(15.0f);
 
-	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	InitItemMesh(TEXT("StaticMesh'/Game/Items/Weapons/Meshes/SM_White_AssaultRifle.SM_White_AssaultRifle'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
-/*** Item : End ***/
+/*** AItem : End ***/
 
-/*** Stat : Start ***/
+
+/*** AWeapon : Start ***/
 void AAssaultRifle::InitStat()
 {
 	WeaponType = EWeaponType::Rifle;
@@ -62,19 +65,18 @@ void AAssaultRifle::InitStat()
 
 	SocketName = TEXT("AssaultRifleSocket");
 }
-/*** Stat : End ***/
 
-/*** Weapon : Start ***/
 void AAssaultRifle::InitWeapon()
 {
-	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_AssaultRifle.White_AssaultRifle'"));
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Items/Weapons/Meshes/White_AssaultRifle.White_AssaultRifle'"));
 
 	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 65.0f, 12.0f));
 
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_AssaultRifle_Skeleton.White_AssaultRifle_Skeleton'"));
+	InitSkeleton(TEXT("Skeleton'/Game/Items/Weapons/Meshes/White_AssaultRifle_Skeleton.White_AssaultRifle_Skeleton'"));
 
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Rifle_W.Fire_Rifle_W'"));
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Items/Weapons/Animations/Fire_Rifle_W.Fire_Rifle_W'"));
 }
+
 
 bool AAssaultRifle::Fire()
 {
@@ -104,4 +106,4 @@ bool AAssaultRifle::Fire()
 
 	return true;
 }
-/*** Weapon : End ***/
+/*** AWeapon : End ***/

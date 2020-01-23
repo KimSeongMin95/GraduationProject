@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Character/Enemy.h"
-#include "Prop2.generated.h"
+#include "SlowZombie.generated.h"
 
 UCLASS()
-class GAME_API AProp2 : public AEnemy
+class GAME_API ASlowZombie : public AEnemy
 {
 	GENERATED_BODY()
 
 /*** Basic Function : Start ***/
 public:
-	AProp2();
+	ASlowZombie();
 
 protected:
 	virtual void BeginPlay() final;

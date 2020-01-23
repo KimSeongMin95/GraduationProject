@@ -55,74 +55,76 @@ public:
 
 /*** Basic Function : End ***/
 
-/*** SpaceShip : Start ***/
+
+/*** ASpaceShip : Start ***/
 private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "ASpaceShip")
 		/** 물리작용 */
 		class UBoxComponent* PhysicsBox = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "SpaceShip")
+	UPROPERTY(EditAnywhere, Category = "ASpaceShip")
 		class UArrowComponent* PioneerSpawnPoint = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = "Meshes")
 		/** 오로지 충돌에만 사용하고 보이지 않는 스태틱메시입니다. */
 		class UStaticMeshComponent* StaticMesh = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = "Meshes")
 		/** 애니메이션을 수행하는 스켈레탈메시입니다. */
 		class USkeletalMeshComponent* SkeletalMesh = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = "Meshes")
 		class USkeleton* Skeleton = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = "Meshes")
 		/** 날개를 펼치고 접는 애니메이션입니다. */
 		class UAnimSequence* AnimSequence = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = Camera)
 		/** 카메라의 위치를 조정합니다. */
 		class USpringArmComponent* SpringArmComp = nullptr; 
 
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = Camera)
 		/** 따라다니는 카메라입니다. */
 		class UCameraComponent* CameraComp = nullptr; 
 
-	UPROPERTY(EditAnywhere, Category = "SpaceShip")
+	UPROPERTY(EditAnywhere, Category = "ParticleSystem")
 		class UParticleSystemComponent* EngineParticleSystem = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "SpaceShip")
+	UPROPERTY(EditAnywhere, Category = "ParticleSystem")
 		class UParticleSystemComponent* EngineParticleSystem2 = nullptr;
 
 
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
 		class APioneerManager* PioneerManager = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
 		class APioneerController* PioneerCtrl = nullptr;
 
 public:
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = "ASpaceShip")
 		ESpaceShipState State;
 
-	UPROPERTY(EditAnywhere, Category = "SpaceShip")
+	UPROPERTY(EditAnywhere, Category = "Pioneer")
 		int PioneerNum; /** Spawn할 Pioneer 개수 */
 
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
 		int countPioneerNum; /** PioneerNum를 카운트 */
 
 	float Gravity; /** 중력가속도 */
 
-	UPROPERTY(EditAnywhere, Category = "SpaceShip")
+	UPROPERTY(EditAnywhere, Category = "ASpaceShip")
 		FVector Acceleration; /** 우주선의 가속도 (중력의 기본 Z 값: -980.0f) */
 
-	UPROPERTY(EditAnywhere, Category = "SpaceShip")
+	UPROPERTY(EditAnywhere, Category = "ASpaceShip")
 		float LandingHeight; /** 착륙하는 땅까지의 높이 */
 
 
-	UPROPERTY(VisibleAnywhere, Category = "SpaceShip")
+	UPROPERTY(VisibleAnywhere, Category = "Rotation")
 		bool bRotateTargetRotation;
 
-	FRotator TargetRotation; /** 목표하는 회전값 */
+	UPROPERTY(VisibleAnywhere, Category = "Rotation")
+		FRotator TargetRotation; /** 목표하는 회전값 */
 
 	FTimerHandle TimerHandle;
 
@@ -146,16 +148,16 @@ protected:
 	void SetViewTargetToThisSpaceShip();
 
 public:
-	UFUNCTION()
+	UFUNCTION(Category = "ASpaceShip")
 		void Flying();
 
-	UFUNCTION()
+	UFUNCTION(Category = "ASpaceShip")
 		void Landing();
 
-	UFUNCTION()
+	UFUNCTION(Category = "ASpaceShip")
 		void Spawning();
 
-	UFUNCTION()
+	UFUNCTION(Category = "ASpaceShip")
 		void TakingOff();
 
 	/** 바닥을 향해 수직으로 Ray를 쏴서 거리를 계산 */
@@ -174,5 +176,5 @@ public:
 	void PlayTakingOffAnimation(bool bIsLooping = false, bool bIsPlaying = false, float Position = 0.0f, float PlayRate = 1.0f);
 
 	virtual void RotateTargetRotation(float DeltaTime);
-/*** SpaceShip : End ***/
+/*** ASpaceShip : End ***/
 };

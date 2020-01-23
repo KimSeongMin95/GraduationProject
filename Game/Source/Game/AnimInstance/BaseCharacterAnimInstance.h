@@ -24,34 +24,38 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTimeX) override;
 /*** AnimInstance Basic Function : End ***/
 
-/*** BaseCharacterAnimInstance : Start ***/
+
+/*** UBaseCharacterAnimInstance : Start ***/
 protected:
 	class ABaseCharacter* BaseCharacter = nullptr; // Owner를 Casting하여 저장
 
 public:
-	/// Animation
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		float Speed;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bIsMoving;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		float Direction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bDying;
 
-	/// CharacterAI
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterAI")
 		/** FSM, BehaviorTree, 등등 어떤 AI를 사용하는지 AnimationBluprint에 알려줍니다. */
 		int CharacterAI;
 
 protected:
-	/// CharacterAI
-	virtual void SetFSM();
-	virtual void SetBehaviorTree();
+	UFUNCTION(Category = "CharacterAI")
+		virtual void SetFSM();
+
+	UFUNCTION(Category = "CharacterAI")
+		virtual void SetBehaviorTree();
 
 public:
 	UFUNCTION(BlueprintCallable)
 		virtual void DestroyCharacter();
 	
-/*** BaseCharacterAnimInstance : End ***/
+/*** UBaseCharacterAnimInstance : End ***/
 };

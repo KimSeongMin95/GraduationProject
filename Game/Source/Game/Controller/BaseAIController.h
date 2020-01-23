@@ -31,19 +31,22 @@ public:
 	//virtual void OnPossess(class APawn* InPawn) override;
 /*** Basic Function : End ***/
 
-/*** BaseAIController : Start ***/
+
+/*** ABaseAIController : Start ***/
 private:
 	FTimerHandle TimerHandleOfRunCharacterAI;
 
 private:
 	bool CheckDying();
 
-	UFUNCTION()
+	UFUNCTION(Category = "CharacterAI")
 		void RunCharacterAI();
 
-	void SetTimerOfRunCharacterAI(float Time);
+	UFUNCTION(Category = "CharacterAI")
+		void SetTimerOfRunCharacterAI(float Time);
 
 public:
-	virtual void MoveRandomlyInDetectionRange(bool bLookAtDestination);
-/*** BaseAIController : End ***/
+	UFUNCTION()
+		virtual void MoveRandomlyInDetectionRange(bool bLookAtDestination);
+/*** ABaseAIController : End ***/
 };

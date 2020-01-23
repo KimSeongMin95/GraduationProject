@@ -7,6 +7,7 @@
 #include "Projectile/ProjectilePistol.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 APistol::APistol()
 {
@@ -31,7 +32,8 @@ void APistol::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Item : Start ***/
+
+/*** AItem : Start ***/
 void APistol::InitItem()
 {
 	State = EItemState::Droped;
@@ -40,11 +42,12 @@ void APistol::InitItem()
 
 	InitPhysicsBox(15.0f);
 
-	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_Pistol.SM_White_Pistol'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	InitItemMesh(TEXT("StaticMesh'/Game/Items/Weapons/Meshes/SM_White_Pistol.SM_White_Pistol'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
-/*** Item : End ***/
+/*** AItem : End ***/
 
-/*** Stat : Start ***/
+
+/*** AWeapon : Start ***/
 void APistol::InitStat()
 {
 	WeaponType = EWeaponType::Pistol;
@@ -63,19 +66,18 @@ void APistol::InitStat()
 
 	SocketName = TEXT("PistolSocket");
 }
-/*** Stat : End ***/
 
-/*** Weapon : Start ***/
 void APistol::InitWeapon()
 {
-	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_Pistol.White_Pistol'"));
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Items/Weapons/Meshes/White_Pistol.White_Pistol'"));
 
 	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 28.0f, 15.0f));
 
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_Pistol_Skeleton.White_Pistol_Skeleton'"));
+	InitSkeleton(TEXT("Skeleton'/Game/Items/Weapons/Meshes/White_Pistol_Skeleton.White_Pistol_Skeleton'"));
 
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_Pistol_W.Fire_Pistol_W'"));
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Items/Weapons/Animations/Fire_Pistol_W.Fire_Pistol_W'"));
 }
+
 
 bool APistol::Fire()
 {
@@ -105,4 +107,4 @@ bool APistol::Fire()
 
 	return true;
 }
-/*** Weapon : End ***/
+/*** AWeapon : End ***/

@@ -25,16 +25,19 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTimeX) override;
 /*** AnimInstance Basic Function : End ***/
 
-/*** BaseCharacterAnimInstance : Start ***/
+
+/*** UBaseCharacterAnimInstance : Start ***/
 protected:
+
 	virtual void SetFSM() override;
 	virtual void SetBehaviorTree() override;
 
 public:
 	virtual void DestroyCharacter() override;
-/*** BaseCharacterAnimInstance : End ***/
+/*** UBaseCharacterAnimInstance : End ***/
 
-/*** EnemyAnimInstance : Start ***/
+
+/*** UEnemyAnimInstance : Start ***/
 protected:
 	/** Owner를 Casting하여 저장 */
 	class APioneer* Pioneer = nullptr; 
@@ -42,12 +45,14 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bHasPistolType;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bHasRifleType;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bHasLauncherType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bFired;
-/*** EnemyAnimInstance : End ***/
+/*** UEnemyAnimInstance : End ***/
 };

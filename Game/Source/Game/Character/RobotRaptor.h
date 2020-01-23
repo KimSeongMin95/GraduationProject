@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Character/Enemy.h"
-#include "PumpkinhulkLShaw.generated.h"
+#include "RobotRaptor.generated.h"
 
 UCLASS()
-class GAME_API APumpkinhulkLShaw : public AEnemy
+class GAME_API ARobotRaptor : public AEnemy
 {
 	GENERATED_BODY()
 
 /*** Basic Function : Start ***/
 public:
-	APumpkinhulkLShaw();
+	ARobotRaptor();
 
 protected:
 	virtual void BeginPlay() final;

@@ -6,6 +6,7 @@
 #include "Character/Pioneer.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AItem::AItem()
 {
@@ -59,7 +60,8 @@ void AItem::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Item : Start ***/
+
+/*** AItem : Start ***/
 void AItem::InitItem()
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
@@ -143,7 +145,7 @@ void AItem::Acquired()
 	if (ItemMesh)
 		ItemMesh->SetHiddenInGame(true);
 }
-/*** Item : End ***/
+/*** AItem : End ***/
 
 
 //void AItem::OnOverlapBegin_InteractionRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

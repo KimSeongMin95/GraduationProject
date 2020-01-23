@@ -7,6 +7,7 @@
 #include "Projectile/Splash/ProjectileGrenadeLauncher.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AGrenadeLauncher::AGrenadeLauncher()
 {
@@ -30,7 +31,8 @@ void AGrenadeLauncher::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Item : Start ***/
+
+/*** AItem : Start ***/
 void AGrenadeLauncher::InitItem()
 {
 	State = EItemState::Droped;
@@ -39,11 +41,12 @@ void AGrenadeLauncher::InitItem()
 
 	InitPhysicsBox(15.0f);
 
-	InitItemMesh(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_White_GrenadeLauncher.SM_White_GrenadeLauncher'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	InitItemMesh(TEXT("StaticMesh'/Game/Items/Weapons/Meshes/SM_White_GrenadeLauncher.SM_White_GrenadeLauncher'"), FRotator(-45.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
-/*** Item : End ***/
+/*** AItem : End ***/
 
-/*** Stat : Start ***/
+
+/*** AWeapon : Start ***/
 void AGrenadeLauncher::InitStat()
 {
 	WeaponType = EWeaponType::Launcher;
@@ -62,19 +65,18 @@ void AGrenadeLauncher::InitStat()
 
 	SocketName = TEXT("GrenadeLauncherSocket");
 }
-/*** Stat : End ***/
 
-/*** Weapon : Start ***/
 void AGrenadeLauncher::InitWeapon()
 {
-	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Weapons/Meshes/White_GrenadeLauncher.White_GrenadeLauncher'"));
+	InitWeaponMesh(TEXT("SkeletalMesh'/Game/Items/Weapons/Meshes/White_GrenadeLauncher.White_GrenadeLauncher'"));
 
 	InitArrowComponent(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 56.0f, 15.0f));
 
-	InitSkeleton(TEXT("Skeleton'/Game/Weapons/Meshes/White_GrenadeLauncher_Skeleton.White_GrenadeLauncher_Skeleton'"));
+	InitSkeleton(TEXT("Skeleton'/Game/Items/Weapons/Meshes/White_GrenadeLauncher_Skeleton.White_GrenadeLauncher_Skeleton'"));
 
-	InitFireAnimSequence(TEXT("AnimSequence'/Game/Weapons/Animations/Fire_GrenadeLauncher_W.Fire_GrenadeLauncher_W'"));
+	InitFireAnimSequence(TEXT("AnimSequence'/Game/Items/Weapons/Animations/Fire_GrenadeLauncher_W.Fire_GrenadeLauncher_W'"));
 }
+
 
 bool AGrenadeLauncher::Fire()
 {
@@ -104,4 +106,4 @@ bool AGrenadeLauncher::Fire()
 
 	return true;
 }
-/*** Weapon : End ***/
+/*** AWeapon : End ***/

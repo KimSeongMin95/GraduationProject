@@ -10,6 +10,7 @@
 #include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AProjectile::AProjectile()
 {
@@ -86,8 +87,7 @@ void AProjectile::Tick(float DeltaTime)
 /*** Basic Function : End ***/
 
 
-
-/*** Projectile : Start ***/
+/*** AProjectile : Start ***/
 void AProjectile::InitProjectile()
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
@@ -252,4 +252,4 @@ void AProjectile::SetLifespan(float Time)
 	// 생성자에서 SetTimer를 실행하면 안됨. 무조건 BeginPlay()에 두어야 함.
 	GetWorldTimerManager().SetTimer(TimerHandleOfDestroy, this, &AProjectile::DestroyByTimer, Time, false); // time초 뒤 투사체를 소멸합니다.
 }
-/*** Projectile : End ***/
+/*** AProjectile : End ***/

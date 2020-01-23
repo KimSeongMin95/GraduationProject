@@ -13,22 +13,25 @@ class GAME_API AProjectileSniperRifle : public AProjectile
 
 /*** Basic Function : Start ***/
 public:
-	// Sets default values for this actor's properties
 	AProjectileSniperRifle();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : Start ***/
+/*** Basic Function : End ***/
 
-/*** Projectile : Start ***/
+
+/*** AProjectile : Start ***/
 protected:
 	virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
-/*** Projectile : End ***/
+/*** AProjectile : End ***/
 
-	int hitCount; /** 관통하는 적들의 수를 셉니다. */
+
+/*** AProjectileSniperRifle : Start ***/
+	UPROPERTY(EditAnywhere, Category = "AProjectileSniperRifle")
+		/** 관통하는 적들의 수를 셉니다. */
+		int hitCount; 
+/*** AProjectileSniperRifle : End ***/
 };

@@ -9,6 +9,7 @@
 #include "Controller/PioneerAIController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 APioneerManager::APioneerManager()
 {
@@ -95,7 +96,8 @@ void APioneerManager::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** PioneerManager : Start ***/
+
+/*** APioneerManager : Start ***/
 void APioneerManager::SpawnPioneer(FTransform Transform)
 {
 	UWorld* const World = GetWorld();
@@ -378,4 +380,4 @@ void APioneerManager::PossessPioneer(APioneer* Pioneer)
 
 	UE_LOG(LogTemp, Warning, TEXT("APioneerManager::PossessPioneer: PioneerCtrl->Possess(Pioneer);"));
 }
-/*** PioneerManager : End ***/
+/*** APioneerManager : End ***/

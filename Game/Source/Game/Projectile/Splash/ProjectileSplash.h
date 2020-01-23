@@ -26,7 +26,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-/*** Projectile : Start ***/
+
+/*** AProjectile : Start ***/
 protected:
 	virtual void InitProjectile();
 
@@ -36,26 +37,28 @@ protected:
 
 public:
 	virtual void SetLifespan(float Time) override;
-/*** Projectile : End ***/
+/*** AProjectile : End ***/
 
-/*** ProjectileSplash : Start ***/
+
+/*** AProjectileSplash : Start ***/
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "AProjectileSplash")
 		class USphereComponent* SplashRange = nullptr;
 
 protected:
 	void SetSplashRange(float Radius);
 
-	UFUNCTION()
+	UFUNCTION(Category = "Splash")
 		virtual void OnOverlapBegin_Splash(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	void SetTimerForDestroySplash(float Time = 0.1f);
+	UFUNCTION(Category = "Destroy")
+		void SetTimerForDestroySplash(float Time = 0.1f);
 
-	UFUNCTION()
+	UFUNCTION(Category = "Destroy")
 		void DestroySplashByTimer();
 
 public:
 	FORCEINLINE class USphereComponent* GetSplashRange() const { return SplashRange; }
 
-/*** ProjectileSplash : End ***/
+/*** AProjectileSplash : End ***/
 };
