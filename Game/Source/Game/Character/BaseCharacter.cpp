@@ -7,27 +7,30 @@
 #include "Controller/BaseAIController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
-ABaseCharacter::ABaseCharacter() // Sets default values
+ABaseCharacter::ABaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+
+	InitHelthPointBar();
 
 	InitStat();
 
 	InitRanges();
 
-	InitHelthPointBar();
+	InitCharacterMovement();
+
+
+	CharacterAI = ECharacterAI::FSM;
+
 
 	bRotateTargetRotation = false;
 	TargetRotation = FRotator::ZeroRotator;
-
-	InitCharacterMovement();
-
-	CharacterAI = ECharacterAI::FSM;
 }
 
-// Called when the game starts or when spawned
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -35,7 +38,6 @@ void ABaseCharacter::BeginPlay()
 	BeginPlayHelthPointBar();
 }
 
-// Called every frame
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있음.
@@ -48,7 +50,6 @@ void ABaseCharacter::Tick(float DeltaTime)
 	TickHelthPointBar();
 }
 
-// Called to bind functionality to input
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -56,104 +57,6 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 }
 /*** Basic Function : End ***/
 
-/*** State : Start ***/
-void ABaseCharacter::InitStat()
-{
-	HealthPoint = 100.0f;
-	MaxHealthPoint = 100.0f;
-	bDying = false;
-
-	MoveSpeed = 9.0f;
-	AttackSpeed = 1.0f;
-
-	AttackPower = 1.0f;
-
-	AttackRange = 8.0f;
-	DetectRange = 16.0f;
-	SightRange = 32.0f;
-}
-
-void ABaseCharacter::SetHealthPoint(float Delta)
-{
-	if (bDying)
-		return;
-
-	HealthPoint += Delta;
-
-	if (HealthPoint > 0.0f)
-		return;
-
-	bDying = true;
-
-	if (GetCharacterMovement())
-		GetCharacterMovement()->StopActiveMovement();
-
-	if (GetController())
-		GetController()->StopMovement();
-
-	if (GetMesh())
-	{
-		GetMesh()->SetGenerateOverlapEvents(false);
-		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
-	if (GetCapsuleComponent())
-	{
-		// 죽으면 바닥을 뚫고 내려가지 않게 하기위해 PhysicsOnly, 모든 채널에 ECR_Ignore로 적용하는데
-		// WorldStatic인 Landscape와는 Block으로 설정하여 충돌되도록 함. (Building 클래스도 WorldStatic)
-		GetCapsuleComponent()->SetGenerateOverlapEvents(false);
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-	}
-
-	if (HelthPointBar)
-		HelthPointBar->DestroyComponent();
-
-	if (DetectRangeSphereComp)
-		DetectRangeSphereComp->DestroyComponent();
-	if (AttackRangeSphereComp)
-		AttackRangeSphereComp->DestroyComponent();
-}
-
-void ABaseCharacter::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	// 자식클래스에서 overriding 할 것.
-}
-void ABaseCharacter::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	// 자식클래스에서 overriding 할 것.
-}
-
-void ABaseCharacter::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	// 자식클래스에서 overriding 할 것.
-}
-void ABaseCharacter::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	// 자식클래스에서 overriding 할 것.
-}
-
-void ABaseCharacter::InitRanges()
-{
-	DetectRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetectRangeSphereComp"));
-	DetectRangeSphereComp->SetupAttachment(RootComponent);
-	DetectRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
-
-	DetectRangeSphereComp->SetGenerateOverlapEvents(true);
-	DetectRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	DetectRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	DetectRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-
-	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
-	AttackRangeSphereComp->SetupAttachment(RootComponent);
-	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
-
-	AttackRangeSphereComp->SetGenerateOverlapEvents(true);
-	AttackRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	AttackRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	AttackRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-}
-/*** State : End ***/
 
 /*** IHealthPointBarInterface : Start ***/
 void ABaseCharacter::InitHelthPointBar()
@@ -220,7 +123,45 @@ void ABaseCharacter::TickHelthPointBar()
 }
 /*** IHealthPointBarInterface : End ***/
 
-/*** AIController : Start ***/
+
+/*** ABaseCharacter : Start ***/
+void ABaseCharacter::InitStat()
+{
+	HealthPoint = 100.0f;
+	MaxHealthPoint = 100.0f;
+	bDying = false;
+
+	MoveSpeed = 9.0f;
+	AttackSpeed = 1.0f;
+
+	AttackPower = 1.0f;
+
+	AttackRange = 8.0f;
+	DetectRange = 16.0f;
+	SightRange = 32.0f;
+}
+
+void ABaseCharacter::InitRanges()
+{
+	DetectRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetectRangeSphereComp"));
+	DetectRangeSphereComp->SetupAttachment(RootComponent);
+	DetectRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
+
+	DetectRangeSphereComp->SetGenerateOverlapEvents(true);
+	DetectRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	DetectRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	DetectRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
+	AttackRangeSphereComp->SetupAttachment(RootComponent);
+	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
+
+	AttackRangeSphereComp->SetGenerateOverlapEvents(true);
+	AttackRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AttackRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	AttackRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+}
+
 void ABaseCharacter::InitAIController()
 {
 	// Pawn을 상속받는 클래스를 Editor에서 끌어다 객체화 할 때, 자동으로 생성되는 상위 클래스인 AIController를 삭제
@@ -228,24 +169,6 @@ void ABaseCharacter::InitAIController()
 		GetController()->Destroy();
 }
 
-void ABaseCharacter::PossessAIController()
-{
-	if (!AIController)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::PossessAIController(): !AIController"));
-		return;
-	}
-
-	// 안전하게 하기 위해 현재 폰이 컨트롤러를 가지고 있으면 빙의를 해제합니다.
-	if (GetController())
-		GetController()->UnPossess();
-
-	// 그뒤 AI 컨트롤러를 빙의합니다.
-	AIController->Possess(this);
-}
-/*** AIController : End ***/
-
-/*** CharacterMovement : Start ***/
 void ABaseCharacter::InitCharacterMovement()
 {
 	// Don't rotate character to camera direction
@@ -267,30 +190,25 @@ void ABaseCharacter::InitCharacterMovement()
 	GetCharacterMovement()->MaxStepHeight = 45.0f; // 움직일 때 45.0f 높이는 올라갈 수 있도록 합니다. ex) 계단
 }
 
-void ABaseCharacter::LookAtTheLocation(FVector Location)
+
+void ABaseCharacter::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!RootComponent)
-		return;
-
-	// 현재 rootComponent 위치
-	FVector rootCompLocation = RootComponent->GetComponentLocation();
-
-	// 방향을 구합니다.
-	FVector direction = FVector(
-		Location.X - rootCompLocation.X,
-		Location.Y - rootCompLocation.Y,
-		Location.Z - rootCompLocation.Z);
-
-	// 벡터를 정규화합니다.
-	direction.Normalize();
-
-	TargetRotation = FRotator(
-		RootComponent->GetComponentRotation().Pitch,
-		direction.Rotation().Yaw,
-		RootComponent->GetComponentRotation().Roll);
-
-	bRotateTargetRotation = true;
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
+void ABaseCharacter::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+}
+
+void ABaseCharacter::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+}
+void ABaseCharacter::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+}
+
 
 void ABaseCharacter::RotateTargetRotation(float DeltaTime)
 {
@@ -342,6 +260,8 @@ void ABaseCharacter::RotateTargetRotation(float DeltaTime)
 
 	TickHelthPointBar();
 }
+
+
 float ABaseCharacter::DistanceToActor(AActor* Actor)
 {
 	if (!Actor)
@@ -349,9 +269,94 @@ float ABaseCharacter::DistanceToActor(AActor* Actor)
 
 	return FVector::Distance(this->GetActorLocation(), Actor->GetActorLocation());
 }
-/*** CharacterMovement : End ***/
 
-/*** CharacterAI : Start ***/
+
+void ABaseCharacter::SetHealthPoint(float Value)
+{
+	if (bDying)
+		return;
+
+	HealthPoint += Value;
+
+	if (HealthPoint > 0.0f)
+		return;
+
+	bDying = true;
+
+	if (GetCharacterMovement())
+		GetCharacterMovement()->StopActiveMovement();
+
+	if (GetController())
+		GetController()->StopMovement();
+
+	if (GetMesh())
+	{
+		GetMesh()->SetGenerateOverlapEvents(false);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	if (GetCapsuleComponent())
+	{
+		// 죽으면 바닥을 뚫고 내려가지 않게 하기위해 PhysicsOnly, 모든 채널에 ECR_Ignore로 적용하는데
+		// WorldStatic인 Landscape와는 Block으로 설정하여 충돌되도록 함. (Building 클래스도 WorldStatic)
+		GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	}
+
+	if (HelthPointBar)
+		HelthPointBar->DestroyComponent();
+
+	if (DetectRangeSphereComp)
+		DetectRangeSphereComp->DestroyComponent();
+	if (AttackRangeSphereComp)
+		AttackRangeSphereComp->DestroyComponent();
+}
+
+
+void ABaseCharacter::PossessAIController()
+{
+	if (!AIController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::PossessAIController(): !AIController"));
+		return;
+	}
+
+	// 안전하게 하기 위해 현재 폰이 컨트롤러를 가지고 있으면 빙의를 해제합니다.
+	if (GetController())
+		GetController()->UnPossess();
+
+	// 그뒤 AI 컨트롤러를 빙의합니다.
+	AIController->Possess(this);
+}
+
+
+void ABaseCharacter::LookAtTheLocation(FVector Location)
+{
+	if (!RootComponent)
+		return;
+
+	// 현재 rootComponent 위치
+	FVector rootCompLocation = RootComponent->GetComponentLocation();
+
+	// 방향을 구합니다.
+	FVector direction = FVector(
+		Location.X - rootCompLocation.X,
+		Location.Y - rootCompLocation.Y,
+		Location.Z - rootCompLocation.Z);
+
+	// 벡터를 정규화합니다.
+	direction.Normalize();
+
+	TargetRotation = FRotator(
+		RootComponent->GetComponentRotation().Pitch,
+		direction.Rotation().Yaw,
+		RootComponent->GetComponentRotation().Roll);
+
+	bRotateTargetRotation = true;
+}
+
+
 void ABaseCharacter::TracingTargetActor()
 {
 	if (!TargetActor || !GetController())
@@ -362,18 +367,14 @@ void ABaseCharacter::TracingTargetActor()
 
 	LookAtTheLocation(destination);
 }
-/*** CharacterAI : End ***/
 
-/*** FSM : Start ***/
 void ABaseCharacter::RunFSM()
 {
-	// 자식 클래스에서 구현할 것!
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
-/*** FSM : End ***/
 
-/*** BehaviorTree : Start ***/
 void ABaseCharacter::RunBehaviorTree()
 {
-	// 자식 클래스에서 구현할 것!
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
-/*** BehaviorTree : End ***/
+/*** ABaseCharacter : End ***/

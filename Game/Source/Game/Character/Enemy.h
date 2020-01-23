@@ -21,81 +21,86 @@ class GAME_API AEnemy : public ABaseCharacter
 	
 /*** Basic Function : Start ***/
 public:
-	// Sets default values for this character's properties
 	AEnemy();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-	/*** Stat : Start ***/
+
+/*** IHealthPointBarInterface : Start ***/
 public:
-	virtual void SetHealthPoint(float Delta) final;
+	virtual void InitHelthPointBar() override;
+/*** IHealthPointBarInterface : End ***/
 
+
+/*** ABaseCharacter : Start ***/
+protected:
 	virtual void InitStat() override;
+	virtual void InitRanges() final;
+	virtual void InitAIController() final;
+	virtual void InitCharacterMovement() final;
 
-	// DetectRange
+
 	virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
-	// AttackRange
 	virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
-	virtual void InitRanges() final;
-	/*** Stat : End ***/
-
-/*** HelthPointBar : Start ***/
-public:
-	virtual void InitHelthPointBar() override;
-/*** HelthPointBar : End ***/
-
-/*** CharacterMovement : Start ***/
-public:
-	virtual void InitCharacterMovement() final;
 
 	virtual void RotateTargetRotation(float DeltaTime) final;
-/*** CharacterMovement : End ***/
 
-/*** SkeletalAnimation : Start ***/
 public:
-	void InitSkeletalAnimation();
-/*** SkeletalAnimation : End ***/
+	virtual void SetHealthPoint(float Delta) final;
 
-/*** AEnemyAIController : Start ***/
-public:
-	virtual void InitAIController() override;
 
 	virtual void PossessAIController() override;
-/*** AEnemyAIController : End ***/
 
-	/*** Damage : Start ***/
-public:
-	float AttackDistance;
-	void DamageToTargetActor();
-	/*** Damage : End ***/
 
-/*** FSM : Start ***/
-public:
-	EEnemyFSM State;
-
-	void InitFSM();
 	virtual void RunFSM() override;
 
-	void FindTheTargetActor();
-
-	void IdlingOfFSM();
-	void TracingOfFSM();
-	void AttackingOfFSM();
-/*** FSM : End ***/
-
-	/*** BehaviorTree : Start ***/
-public:
 	virtual void RunBehaviorTree() override;
-	/*** BehaviorTree : End ***/
+/*** ABaseCharacter : End ***/
+
+
+/*** AEnemy : Start ***/
+private:
+
+
+protected:
+
+
+public:
+	UPROPERTY(VisibleAnywhere, Category = "Character AI")
+		EEnemyFSM State;
+
+private:
+
+
+protected:
+	virtual void InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FString ReferencePathOfBP_AnimInstance, 
+		FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	void InitFSM();
+
+
+	UFUNCTION(Category = "Character AI")
+		void FindTheTargetActor();
+
+	UFUNCTION(Category = "Character AI")
+		void IdlingOfFSM();
+
+	UFUNCTION(Category = "Character AI")
+		void TracingOfFSM();
+
+	UFUNCTION(Category = "Character AI")
+		void AttackingOfFSM();
+
+public:
+	UFUNCTION(Category = "Damage")
+		void DamageToTargetActor();
+/*** AEnemy : End ***/
 };

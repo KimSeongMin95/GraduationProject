@@ -12,12 +12,11 @@
 
 
 /*** Basic Function : Start ***/
-AEnemy::AEnemy() // Sets default values
+AEnemy::AEnemy()
 {
 	InitFSM();
 }
 
-// Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
@@ -28,7 +27,6 @@ void AEnemy::BeginPlay()
 	PossessAIController();
 }
 
-// Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
 	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있음.
@@ -42,21 +40,65 @@ void AEnemy::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Stat : Start ***/
-void AEnemy::SetHealthPoint(float Delta)
+
+/*** IHealthPointBarInterface : Start ***/
+void AEnemy::InitHelthPointBar()
 {
-	if (bDying)
-		return;
-
-	Super::SetHealthPoint(Delta);
-
-
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
+/*** IHealthPointBarInterface : End ***/
 
+
+/*** ABaseCharacter : Start ***/
 void AEnemy::InitStat()
 {
-	// 자식클래스에서 overriding 할 것.
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
+
+void AEnemy::InitRanges()
+{
+	if (!DetectRangeSphereComp || !AttackRangeSphereComp)
+		return;
+
+	DetectRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
+	DetectRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
+
+	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
+	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
+
+	DetectRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
+	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
+}
+
+void AEnemy::InitAIController()
+{
+	Super::InitAIController();
+
+	// 이미 AIController를 가지고 있으면 생성하지 않음.
+	if (AIController)
+		return;
+
+	UWorld* const World = GetWorld();
+	if (!World)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+	FTransform myTrans = GetTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	AIController = World->SpawnActor<AEnemyAIController>(AEnemyAIController::StaticClass(), myTrans, SpawnParams);
+}
+
+void AEnemy::InitCharacterMovement()
+{
+	GetCharacterMovement()->MaxWalkSpeed = AMyGameModeBase::CellSize * MoveSpeed; // 움직일 때 걷는 속도
+}
+
 
 void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -79,7 +121,7 @@ void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedCom
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
 			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetectRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+			if (pioneer->GetDetectRangeSphereComp() == OtherComp || pioneer->GetAttackRangeSphereComp() == OtherComp)
 				return;
 		}
 
@@ -114,7 +156,7 @@ void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp,
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
 			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetectRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+			if (pioneer->GetDetectRangeSphereComp() == OtherComp || pioneer->GetAttackRangeSphereComp() == OtherComp)
 				return;
 		}
 
@@ -147,7 +189,7 @@ void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedCom
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
 			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetectRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+			if (pioneer->GetDetectRangeSphereComp() == OtherComp || pioneer->GetAttackRangeSphereComp() == OtherComp)
 				return;
 		}
 
@@ -182,7 +224,7 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
 			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetectRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+			if (pioneer->GetDetectRangeSphereComp() == OtherComp || pioneer->GetAttackRangeSphereComp() == OtherComp)
 				return;
 		}
 
@@ -194,34 +236,6 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 	}
 }
 
-void AEnemy::InitRanges()
-{
-	if (!DetectRangeSphereComp || !AttackRangeSphereComp)
-		return;
-
-	DetectRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
-	DetectRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
-
-	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
-	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
-
-	DetectRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
-	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
-}
-/*** Stat : End ***/
-
-/*** IHealthPointBarInterface : Start ***/
-void AEnemy::InitHelthPointBar()
-{
-	// 자식클래스에서 overriding 할 것.
-}
-/*** IHealthPointBarInterface : End ***/
-
-/*** CharacterMovement : Start ***/
-void AEnemy::InitCharacterMovement()
-{
-	GetCharacterMovement()->MaxWalkSpeed = AMyGameModeBase::CellSize * MoveSpeed; // 움직일 때 걷는 속도
-}
 
 void AEnemy::RotateTargetRotation(float DeltaTime)
 {
@@ -231,62 +245,18 @@ void AEnemy::RotateTargetRotation(float DeltaTime)
 
 	Super::RotateTargetRotation(DeltaTime);
 }
-/*** CharacterMovement : End ***/
 
-/*** SkeletalAnimation : Start ***/
-void AEnemy::InitSkeletalAnimation()
+
+void AEnemy::SetHealthPoint(float Delta)
 {
-	//// USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
-	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Characters/Enemy/Prop2/Mesh/Prop2.Prop2'"));
-	//if (skeletalMeshAsset.Succeeded())
-	//{
-	//	// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
-	//	GetMesh()->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
-	//	GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
-	//	GetMesh()->bCastDynamicShadow = true; // ???
-	//	GetMesh()->CastShadow = true; // ???
-
-	//	GetMesh()->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
-	//	GetMesh()->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-	//	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -142.0f));
-	//}
-
-	//// 각 Enemy의 BP_Animation을 가져오기. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
-	//FString animBP_Reference = "AnimBlueprint'/Game/Characters/Enemy/Prop2/Animations/BP_Prop2Animation.BP_Prop2Animation_C'";
-	//UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
-	//if (!animBP)
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("!animBP"));
-	//}
-	//else
-	//	GetMesh()->SetAnimInstanceClass(animBP);
-}
-/*** SkeletalAnimation : End ***/
-
-/*** AEnemyAIController : Start ***/
-void AEnemy::InitAIController()
-{
-	Super::InitAIController();
-
-	// 이미 AIController를 가지고 있으면 생성하지 않음.
-	if (AIController)
+	if (bDying)
 		return;
 
-	UWorld* const World = GetWorld();
-	if (!World)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-		return;
-	}
+	Super::SetHealthPoint(Delta);
 
-	FTransform myTrans = GetTransform(); // 현재 PioneerManager 객체 위치를 기반으로 합니다.
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	AIController = World->SpawnActor<AEnemyAIController>(AEnemyAIController::StaticClass(), myTrans, SpawnParams);
 }
+
 
 void AEnemy::PossessAIController()
 {
@@ -294,49 +264,7 @@ void AEnemy::PossessAIController()
 
 
 }
-/*** AEnemyAIController : End ***/
 
-/*** Damage : Start ***/
-void AEnemy::DamageToTargetActor()
-{
-	if (!TargetActor)
-		return;
-
-	if (TargetActor->IsA(APioneer::StaticClass()))
-	{
-		if (APioneer* pioneer = dynamic_cast<APioneer*>(TargetActor))
-		{
-			pioneer->SetHealthPoint(-AttackPower);
-
-			if (pioneer->bDying)
-				TargetActor = nullptr;
-
-			return;
-		}
-	}
-
-	if (TargetActor->IsA(ABuilding::StaticClass()))
-	{
-		if (ABuilding* building = dynamic_cast<ABuilding*>(TargetActor))
-		{
-			building->SetHealthPoint(-AttackPower);
-
-			if (!building)
-				TargetActor = nullptr;
-			else if (building->BuildingState == EBuildingState::Destroying)
-				TargetActor = nullptr;
-
-			return;
-		}
-	}
-}
-/*** Damage : End ***/
-
-/*** FSM : Start ***/
-void AEnemy::InitFSM()
-{
-	State = EEnemyFSM::Idle;
-}
 
 void AEnemy::RunFSM()
 {
@@ -360,6 +288,50 @@ void AEnemy::RunFSM()
 	}
 	}
 }
+
+void AEnemy::RunBehaviorTree()
+{
+	Super::RunBehaviorTree();
+
+}
+/*** ABaseCharacter : End ***/
+
+
+/*** AEnemy : Start ***/
+void AEnemy::InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FString ReferencePathOfBP_AnimInstance,
+	FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
+{
+	// USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(ReferencePathOfMesh);
+	if (skeletalMeshAsset.Succeeded())
+	{
+		// 각 Enemy의 BP_Animation을 가져오기. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
+		FString referencePathOfBP_AnimInstance = ReferencePathOfBP_AnimInstance;
+		UClass* animBP = LoadObject<UClass>(NULL, *referencePathOfBP_AnimInstance);
+		if (!animBP)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("!animBP"));
+		}
+		else
+			GetMesh()->SetAnimInstanceClass(animBP);
+
+		// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
+		GetMesh()->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
+		GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
+		GetMesh()->bCastDynamicShadow = true; // ???
+		GetMesh()->CastShadow = true; // ???
+
+		GetMesh()->SetRelativeScale3D(Scale);
+		GetMesh()->SetRelativeRotation(Rotation);
+		GetMesh()->SetRelativeLocation(Location);
+	}
+}
+
+void AEnemy::InitFSM()
+{
+	State = EEnemyFSM::Idle;
+}
+
 
 void AEnemy::FindTheTargetActor()
 {
@@ -414,6 +386,7 @@ void AEnemy::IdlingOfFSM()
 	if (TargetActor)
 		State = EEnemyFSM::Tracing;
 }
+
 void AEnemy::TracingOfFSM()
 {
 	FindTheTargetActor();
@@ -433,16 +406,44 @@ void AEnemy::TracingOfFSM()
 			AIController->StopMovement();
 	}
 }
+
 void AEnemy::AttackingOfFSM()
 {
 
 }
-/*** FSM : End ***/
 
-/*** BehaviorTree : Start ***/
-void AEnemy::RunBehaviorTree()
+
+void AEnemy::DamageToTargetActor()
 {
-	Super::RunBehaviorTree();
+	if (!TargetActor)
+		return;
 
+	if (TargetActor->IsA(APioneer::StaticClass()))
+	{
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(TargetActor))
+		{
+			pioneer->SetHealthPoint(-AttackPower);
+
+			if (pioneer->bDying)
+				TargetActor = nullptr;
+
+			return;
+		}
+	}
+
+	if (TargetActor->IsA(ABuilding::StaticClass()))
+	{
+		if (ABuilding* building = dynamic_cast<ABuilding*>(TargetActor))
+		{
+			building->SetHealthPoint(-AttackPower);
+
+			if (!building)
+				TargetActor = nullptr;
+			else if (building->BuildingState == EBuildingState::Destroying)
+				TargetActor = nullptr;
+
+			return;
+		}
+	}
 }
-/*** BehaviorTree : End ***/
+/*** AEnemy : End ***/

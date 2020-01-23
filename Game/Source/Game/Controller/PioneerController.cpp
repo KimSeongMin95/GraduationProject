@@ -136,13 +136,13 @@ void APioneerController::MoveToMouseCursor()
 	else*/
 	// 마우스 커서 사용시
 	{
-		if (APioneer* MyPawn = Cast<APioneer>(GetPawn()))
+		if (APioneer* pioneer = Cast<APioneer>(GetPawn()))
 		{
-			if (MyPawn->CursorToWorld == nullptr)
+			if (pioneer->GetCursorToWorld() == nullptr)
 				return;
 
 			// 죽으면 함수를 실행하지 않음.
-			if (MyPawn->bDying == true)
+			if (pioneer->bDying == true)
 				return;
 
 			//// Trace to see what is under the mouse cursor
@@ -158,7 +158,7 @@ void APioneerController::MoveToMouseCursor()
 			//	// Hit.ImpactPoint는 Ray와 충돌한 물체의 표면 지점을 반환합니다.
 			//	PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, HitResult.ImpactPoint);
 			//}
-			PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, MyPawn->CursorToWorld->GetComponentLocation());
+			PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, pioneer->GetCursorToWorld()->GetComponentLocation());
 		}
 	}
 }
@@ -347,7 +347,7 @@ void APioneerController::ArmOrDisArmWeapon()
 	if (Pioneer->bDying)
 		return;
 
-	if (Pioneer->CurrentWeapon)
+	if (Pioneer->GetCurrentWeapon())
 		Pioneer->Disarming();
 	else
 		Pioneer->Arming();

@@ -54,7 +54,7 @@ void ABaseAIController::RunCharacterAI()
 
 	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
 	{
-		switch (baseCharacter->CharacterAI)
+		switch (baseCharacter->GetCharacterAI())
 		{
 		case ECharacterAI::FSM:
 			baseCharacter->RunFSM();

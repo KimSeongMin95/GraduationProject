@@ -135,7 +135,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
-		float HealthPoint; /** 초기 생명력 */
+		float HealthPoint; /** 초기(현재) 생명력 */
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float MaxHealthPoint; /** 완성된 생명력 */
 

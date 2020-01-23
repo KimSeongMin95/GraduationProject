@@ -72,7 +72,8 @@ void APioneerManager::BeginPlay()
 	{
 		if (Pioneers.Contains(*ActorItr) == false) // 이미 추가되어있지 않다면
 			Pioneers.Add(*ActorItr);
-		ActorItr->PioneerManager = this;
+
+		ActorItr->SetPioneerManager(this);
 	}
 }
 

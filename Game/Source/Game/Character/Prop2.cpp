@@ -9,10 +9,12 @@
 
 
 /*** Basic Function : Start ***/
-AProp2::AProp2() // Sets default values
+AProp2::AProp2()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(140.0f, 80.0f);
+
+	InitHelthPointBar();
 
 	InitStat();
 
@@ -20,21 +22,17 @@ AProp2::AProp2() // Sets default values
 
 	AEnemy::InitCharacterMovement();
 
-	InitSkeletalAnimation();
-
-	InitHelthPointBar();
-
-	//InitFSM();
+	InitSkeletalAnimation(TEXT("SkeletalMesh'/Game/Characters/Enemy/Prop2/Mesh/Prop2.Prop2'"), 
+		"AnimBlueprint'/Game/Characters/Enemy/Prop2/Animations/BP_Prop2Animation.BP_Prop2Animation_C'", 
+		FVector(1.5f, 1.5f, 1.5f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, -142.0f));
 }
 
-// Called when the game starts or when spawned
 void AProp2::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
-// Called every frame
 void AProp2::Tick(float DeltaTime)
 {
 	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있음.
@@ -47,7 +45,20 @@ void AProp2::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Stat : Start ***/
+
+/*** IHealthPointBarInterface : Start ***/
+void AProp2::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+	HelthPointBar->SetDrawSize(FVector2D(80, 20));
+}
+/*** IHealthPointBarInterface : End ***/
+
+
+/*** ABaseCharacter : Start ***/
 void AProp2::InitStat()
 {
 	HealthPoint = 250.0f;
@@ -63,61 +74,17 @@ void AProp2::InitStat()
 	DetectRange = 32.0f;
 	SightRange = 32.0f;
 }
-/*** Stat : End ***/
 
-/*** IHealthPointBarInterface : Start ***/
-void AProp2::InitHelthPointBar()
-{
-	if (!HelthPointBar)
-		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
-	HelthPointBar->SetDrawSize(FVector2D(80, 20));
-}
-/*** IHealthPointBarInterface : End ***/
-
-/*** SkeletalAnimation : Start ***/
-void AProp2::InitSkeletalAnimation()
-{
-	// USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Characters/Enemy/Prop2/Mesh/Prop2.Prop2'"));
-	if (skeletalMeshAsset.Succeeded())
-	{
-		// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
-		GetMesh()->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
-		GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
-		GetMesh()->bCastDynamicShadow = true; // ???
-		GetMesh()->CastShadow = true; // ???
-
-		GetMesh()->SetRelativeScale3D(FVector(1.5f, 1.5f, 1.5f));
-		GetMesh()->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-		GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -142.0f));
-	}
-
-	// 각 Enemy의 BP_Animation을 가져오기. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
-	FString animBP_Reference = "AnimBlueprint'/Game/Characters/Enemy/Prop2/Animations/BP_Prop2Animation.BP_Prop2Animation_C'";
-	UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
-	if (!animBP)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("!animBP"));
-	}
-	else
-		GetMesh()->SetAnimInstanceClass(animBP);
-}
-/*** SkeletalAnimation : End ***/
-
-/*** FSM : Start ***/
 void AProp2::RunFSM()
 {
 	Super::RunFSM();
 
 }
-/*** FSM : End ***/
 
-/*** BehaviorTree : Start ***/
 void AProp2::RunBehaviorTree()
 {
 	Super::RunBehaviorTree();
 
 }
-/*** BehaviorTree : End ***/
+/*** ABaseCharacter : End ***/

@@ -39,20 +39,18 @@
 /*** Basic Function : Start ***/
 APioneer::APioneer()
 {
-	SocketID = -1; // -1은 AI를 뜻합니다.
-	InitPioneerManager();
-
-
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
+
+	InitHelthPointBar();
 
 	InitStat();
 
 	InitRanges();
 
-	InitHelthPointBar();
-
 	InitCharacterMovement();
+
+	InitPioneerManager();
 
 	InitSkeletalAnimation();
 	
@@ -60,15 +58,14 @@ APioneer::APioneer()
 
 	InitCursor();
 
-	InitEquipments();
+	InitBuilding();
 
-	/*** Building : Start ***/
-	bConstructingMode = false;
-	/*** Building : End ***/
+	InitEquipments();
 
 	InitFSM();
 
 	InitItem();
+
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
 	//BaseLookUpRate = 45.0f;
@@ -80,10 +77,9 @@ void APioneer::BeginPlay()
 
 	InitAIController();
 
-	// Init()이 끝나고 AIController에 빙의합니다.
-	PossessAIController();
-
 	InitWeapon();
+
+	PossessAIController();
 }
 
 void APioneer::Tick(float DeltaTime)
@@ -115,112 +111,20 @@ void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 }
 /*** Basic Function : End ***/
 
-/*** PioneerManager : Start ***/
-void APioneer::InitPioneerManager()
+
+/*** IHealthPointBarInterface : Start ***/
+void APioneer::InitHelthPointBar()
 {
-	UWorld* const world = GetWorld();
-	if (!world)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::FindPioneerManager: !world"));
-		return;
-	}
-
-	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
-	{
-		PioneerManager = *ActorItr;
-	}
-
-	// 추가
-	if (PioneerManager)
-	{
-		if (PioneerManager->Pioneers.Contains(this) == false)
-			PioneerManager->Pioneers.Add(this);
-	}
-}
-
-void APioneer::DestroyCharacter()
-{
-	// Weapon은 PioneerController와 PioneerAIController 상관없기 때문에 제일 먼저 소멸
-	for (auto& weapon : Weapons)
-	{
-		if (weapon)
-			weapon->Destroy();
-	}
-
-
-
-	// AIController는 이미 제거되었으므로 플레이어가 조종하는 개척자가 아니면 바로 소멸
-	if (!GetController())
-	{
-		Destroy();
-		return;
-	}
-
-	if (GetMesh())
-		GetMesh()->DestroyComponent();
-
-	if (GetCharacterMovement())
-		GetCharacterMovement()->DestroyComponent();
-
-	if (HelmetMesh)
-		HelmetMesh->DestroyComponent();
-
-	if (PioneerManager)
-	{
-		PioneerManager->Pioneers.Remove(this);
-		PioneerManager->SwitchOtherPioneer(this, 1.0f);
-	}
-	else
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::DestroyCharacter: if (PioneerManager) else"));
-
-
-	// 여기서 Destroy()하는 대신에 PioneerManager의 PossessPioneer()에서 Destroy를 대신 함.
-	//Destroy();
-}
-
-bool APioneer::CopyTopDownCameraTo(AActor* CameraToBeCopied)
-{
-	if (!TopDownCameraComponent)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("!APioneer::CopyTopDownCameraToPioneerManager: !TopDownCameraComponent"));
-		return false;
-	}
-
-	if (!CameraToBeCopied)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("!APioneer::CopyTopDownCameraToPioneerManager: !CameraToBeCopied"));
-		return false;
-	}
-
-	CameraToBeCopied->SetActorTransform(TopDownCameraComponent->GetComponentTransform());
-	return true;
-}
-/*** PioneerManager : End ***/
-
-/*** Stat : Start ***/
-void APioneer::SetHealthPoint(float Delta)
-{
-	if (bDying)
+	if (!HelthPointBar)
 		return;
 
-	Super::SetHealthPoint(Delta);
-
-	if (HealthPoint > 0.0f)
-		return;
-
-	if (CursorToWorld)
-		CursorToWorld->DestroyComponent();
-
-	if (Building)
-		Building->Destroy();
-
-	if (AIController)
-	{
-		AIController->UnPossess();
-		AIController->Destroy();
-	}
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+	HelthPointBar->SetDrawSize(FVector2D(80, 20));
 }
+/*** IHealthPointBarInterface : End ***/
 
+
+/*** ABaseCharacter : Start ***/
 void APioneer::InitStat()
 {
 	HealthPoint = 100.0f;
@@ -236,6 +140,53 @@ void APioneer::InitStat()
 	DetectRange = 32.0f;
 	SightRange = 32.0f;
 }
+
+void APioneer::InitRanges()
+{
+	if (!GetDetectRangeSphereComp() || !GetAttackRangeSphereComp())
+		return;
+
+	GetDetectRangeSphereComp()->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_DetectRange);
+	GetDetectRangeSphereComp()->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_DetectRange);
+
+	GetAttackRangeSphereComp()->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_AttackRange);
+	GetAttackRangeSphereComp()->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_AttackRange);
+
+	GetDetectRangeSphereComp()->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
+	GetAttackRangeSphereComp()->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
+}
+
+void APioneer::InitAIController()
+{
+	Super::InitAIController();
+
+	// 이미 AIController를 가지고 있으면 생성하지 않음.
+	if (AIController)
+		return;
+
+	UWorld* const World = GetWorld();
+	if (!World)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::InitAIController(): !World"));
+		return;
+	}
+
+	FTransform myTrans = GetTransform();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	AIController = World->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
+
+	// Controller는 Attach가 안됨.
+}
+
+void APioneer::InitCharacterMovement()
+{
+	GetCharacterMovement()->MaxWalkSpeed = AMyGameModeBase::CellSize * MoveSpeed; // 움직일 때 걷는 속도
+}
+
 
 void APioneer::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -258,7 +209,7 @@ void APioneer::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedC
 		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 		{
 			// 만약 OtherActor가 AEnemy이기는 하지만 AEnemy의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (enemy->DetectRangeSphereComp == OtherComp || enemy->AttackRangeSphereComp == OtherComp)
+			if (enemy->GetDetectRangeSphereComp() == OtherComp || enemy->GetAttackRangeSphereComp() == OtherComp)
 				return;
 		}
 
@@ -286,7 +237,7 @@ void APioneer::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedCom
 		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 		{
 			// 만약 OtherActor가 AEnemy이기는 하지만 AEnemy의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (enemy->DetectRangeSphereComp == OtherComp || enemy->AttackRangeSphereComp == OtherComp)
+			if (enemy->GetDetectRangeSphereComp() == OtherComp || enemy->GetAttackRangeSphereComp() == OtherComp)
 				return;
 		}
 
@@ -319,7 +270,7 @@ void APioneer::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedC
 		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 		{
 			// 만약 OtherActor가 AEnemy이기는 하지만 AEnemy의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (enemy->DetectRangeSphereComp == OtherComp || enemy->AttackRangeSphereComp == OtherComp)
+			if (enemy->GetDetectRangeSphereComp() == OtherComp || enemy->GetAttackRangeSphereComp() == OtherComp)
 				return;
 		}
 
@@ -347,7 +298,7 @@ void APioneer::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedCom
 		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 		{
 			// 만약 OtherActor가 AEnemy이기는 하지만 AEnemy의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (enemy->DetectRangeSphereComp == OtherComp || enemy->AttackRangeSphereComp == OtherComp)
+			if (enemy->GetDetectRangeSphereComp() == OtherComp || enemy->GetAttackRangeSphereComp() == OtherComp)
 				return;
 		}
 
@@ -359,38 +310,6 @@ void APioneer::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedCom
 	}
 }
 
-void APioneer::InitRanges()
-{
-	if (!DetectRangeSphereComp || !AttackRangeSphereComp)
-		return;
-
-	DetectRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_DetectRange);
-	DetectRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_DetectRange);
-
-	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_AttackRange);
-	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_AttackRange);
-
-	DetectRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
-	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
-}
-/*** Stat : End ***/
-
-/*** IHealthPointBarInterface : Start ***/
-void APioneer::InitHelthPointBar()
-{
-	if (!HelthPointBar)
-		return;
-
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
-	HelthPointBar->SetDrawSize(FVector2D(80, 20));
-}
-/*** IHealthPointBarInterface : End ***/
-
-/*** CharacterMovement : Start ***/
-void APioneer::InitCharacterMovement()
-{
-	GetCharacterMovement()->MaxWalkSpeed = AMyGameModeBase::CellSize * MoveSpeed; // 움직일 때 걷는 속도
-}
 
 void APioneer::RotateTargetRotation(float DeltaTime)
 {
@@ -401,14 +320,203 @@ void APioneer::RotateTargetRotation(float DeltaTime)
 	Super::RotateTargetRotation(DeltaTime);
 }
 
-void APioneer::StopMovement()
-{
-	if (GetController())
-		GetController()->StopMovement();
-}
-/*** CharacterMovement : End ***/
 
-/*** SkeletalAnimation : Start ***/
+void APioneer::SetHealthPoint(float Value)
+{
+	if (bDying)
+		return;
+
+	Super::SetHealthPoint(Value);
+
+	if (HealthPoint > 0.0f)
+		return;
+
+	if (CursorToWorld)
+		CursorToWorld->DestroyComponent();
+
+	if (Building)
+		Building->Destroy();
+
+	if (AIController)
+	{
+		AIController->UnPossess();
+		AIController->Destroy();
+	}
+}
+
+
+void APioneer::PossessAIController()
+{
+	ABaseCharacter::PossessAIController();
+
+}
+
+
+void APioneer::RunFSM()
+{
+	switch (State)
+	{
+	case EPioneerFSM::Idle:
+	{
+		IdlingOfFSM();
+		break;
+	}
+	case EPioneerFSM::Tracing:
+	{
+		TracingOfFSM();
+		break;
+	}
+	case EPioneerFSM::Attack:
+	{
+		// 공격 애니메이션이 끝난 후 AnimationBlueprint에서 EventGraph로 Atteck을 Idle로 바꿔줌
+		AttackingOfFSM();
+		break;
+	}
+	}
+}
+
+void APioneer::RunBehaviorTree()
+{
+	Super::RunBehaviorTree();
+
+}
+/*** ABaseCharacter : End ***/
+
+
+/*** APioneer : Start ***/
+void APioneer::SetCameraBoomSettings()
+{
+	// 개척민 현재 위치를 찾습니다.
+	FVector rootComponentLocation = RootComponent->GetComponentLocation();
+
+	// Pioneer의 현재 위치에서 position 만큼 더하고 rotation을 설정합니다.
+	CameraBoom->SetWorldLocationAndRotation(
+		FVector(rootComponentLocation.X + CameraBoomLocation.X, rootComponentLocation.Y + CameraBoomLocation.Y, rootComponentLocation.Z + CameraBoomLocation.Z),
+		CameraBoomRotation);
+
+	CameraBoom->TargetArmLength = TargetArmLength; // 캐릭터 뒤에서 해당 간격으로 따라다니는 카메라
+	CameraBoom->CameraLagSpeed = CameraLagSpeed;
+}
+
+
+void APioneer::SetCursorToWorld()
+{
+	if (!CursorToWorld || !GetController())
+		return;
+
+	if (GetController() == AIController)
+	{
+		CursorToWorld->SetVisibility(false);
+		return;
+	}
+
+
+	/*if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
+	{
+		if (UWorld* World = GetWorld())
+		{
+			FHitResult HitResult;
+			FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
+			FVector StartLocation = TopDownCameraComponent->GetComponentLocation();
+			FVector EndLocation = TopDownCameraComponent->GetComponentRotation().Vector() * 2000.0f;
+			Params.AddIgnoredActor(this);
+			World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+			FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
+			CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
+		}
+	}*/
+	//// 이 코드는 Collision채널이 ECC_Visibility인 가장 상단의 액터 정보를 가져옴.
+	//else if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		FHitResult TraceHitResult;
+		PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
+		FVector CursorFV = TraceHitResult.ImpactNormal;
+		FRotator CursorR = CursorFV.Rotation();
+		CursorToWorld->SetWorldLocation(TraceHitResult.Location);
+		CursorToWorld->SetWorldRotation(CursorR);
+
+		// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
+		if (CurrentWeapon)
+		{
+			LookAtTheLocation(CursorToWorld->GetComponentLocation());
+		}
+
+		CursorToWorld->SetVisibility(true);
+	}
+
+	//// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
+	//if (UWorld* World = GetWorld())
+	//{
+	//	// 현재 Player의 뷰포트의 마우스포지션을 가져옵니다.
+	//	APlayerController* PC = Cast<APlayerController>(GetController());
+	//	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PC->Player);
+	//	FVector2D MousePosition;
+	//	if (LocalPlayer && LocalPlayer->ViewportClient)
+	//	{
+	//		LocalPlayer->ViewportClient->GetMousePosition(MousePosition);
+	//	}
+
+	//	FVector WorldOrigin; // 시작 위치
+	//	FVector WorldDirection; // 방향
+	//	float HitResultTraceDistance = 100000.f; // WorldDirection과 곱하여 끝 위치를 설정
+	//	UGameplayStatics::DeprojectScreenToWorld(PC, MousePosition, WorldOrigin, WorldDirection);
+	//	FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
+	//	//FCollisionQueryParams& CollisionQueryParams()
+
+	//	TArray<FHitResult> hitResults; // 결과를 저장
+	//	World->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
+
+	//	for (auto& hit : hitResults)
+	//	{
+	//		//if (hit.Actor->GetClass() == ALandscape::StaticClass())
+	//		//if (Cast<ALandscape>(hit.Actor))
+	//		if (hit.Actor->IsA(ALandscape::StaticClass())) // hit한 Actor가 ALandscape면
+	//		{
+	//			FVector CursorFV = hit.ImpactNormal;
+	//			FRotator CursorR = CursorFV.Rotation();
+	//			CursorToWorld->SetWorldLocation(hit.Location);
+	//			CursorToWorld->SetWorldRotation(CursorR);
+
+	//			// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
+	//			if (Weapon)
+	//			{ 
+	//				LookAtTheLocation(CursorToWorld->GetComponentLocation());
+	//			}
+
+	//			CursorToWorld->SetVisibility(true);
+	//		}
+	//	}
+	//}
+
+}
+
+
+void APioneer::InitPioneerManager()
+{
+	SocketID = -1; // -1은 AI를 뜻합니다.
+
+
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::FindPioneerManager: !world"));
+		return;
+	}
+
+	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		PioneerManager = *ActorItr;
+	}
+
+	// 추가
+	if (PioneerManager)
+	{
+		if (PioneerManager->Pioneers.Contains(this) == false)
+			PioneerManager->Pioneers.Add(this);
+	}
+}
+
 void APioneer::InitSkeletalAnimation()
 {
 	// 1. USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
@@ -484,35 +592,9 @@ void APioneer::InitSkeletalAnimation()
 	//	{
 	//		PlayerAttackDataTable = PlayerAttackMontageDataObject.Object;
 	//	}
-	//	// set animation blending on by default
-	//	bIsAnimationBlended = true;
 	//}
 }
 
-bool APioneer::HasPistolType()
-{
-	return bHasPistolType;
-}
-bool APioneer::HasRifleType()
-{
-	return bHasRifleType;
-}
-bool APioneer::HasLauncherType()
-{
-	return bHasLauncherType;
-}
-
-void APioneer::SetIsKeyboardEnabled(bool Enabled)
-{
-	bIsKeyboardEnabled = Enabled;
-}
-bool APioneer::IsAnimationBlended()
-{
-	return bIsAnimationBlended;
-}
-/*** SkeletalAnimation : End ***/
-
-/*** Camera : Start ***/
 void APioneer::InitCamera()
 {
 	/*** 카메라 설정을 PIE때 변경합니다. : Start ***/
@@ -542,32 +624,6 @@ void APioneer::InitCamera()
 	TopDownCameraComponent->bUsePawnControlRotation = false;
 }
 
-void APioneer::SetCameraBoomSettings()
-{
-	// 개척민 현재 위치를 찾습니다.
-	FVector rootComponentLocation = RootComponent->GetComponentLocation();
-
-	// Pioneer의 현재 위치에서 position 만큼 더하고 rotation을 설정합니다.
-	CameraBoom->SetWorldLocationAndRotation(
-		FVector(rootComponentLocation.X + CameraBoomLocation.X, rootComponentLocation.Y + CameraBoomLocation.Y, rootComponentLocation.Z + CameraBoomLocation.Z),
-		CameraBoomRotation);
-
-	CameraBoom->TargetArmLength = TargetArmLength; // 캐릭터 뒤에서 해당 간격으로 따라다니는 카메라
-	CameraBoom->CameraLagSpeed = CameraLagSpeed;
-}
-
-void APioneer::ZoomInOrZoomOut(float Value)
-{
-	TargetArmLength += Value * 64.0f;
-
-	if (TargetArmLength < 0.0f)
-		TargetArmLength = 0.0f;
-	/*else if (TargetArmLength > 1500.0f)
-		TargetArmLength = 1500.0f;*/
-}
-/*** Camera : End ***/
-
-/*** Cursor : Start ***/
 void APioneer::InitCursor()
 {
 	// Create a decal in the world to show the cursor's location
@@ -585,135 +641,6 @@ void APioneer::InitCursor()
 	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 }
 
-void APioneer::SetCursorToWorld()
-{
-	if (!CursorToWorld || !GetController())
-		return;
-
-	if (GetController() == AIController)
-	{
-		CursorToWorld->SetVisibility(false);
-		return;
-	}
-
-
-	/*if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
-	{
-		if (UWorld* World = GetWorld())
-		{
-			FHitResult HitResult;
-			FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
-			FVector StartLocation = TopDownCameraComponent->GetComponentLocation();
-			FVector EndLocation = TopDownCameraComponent->GetComponentRotation().Vector() * 2000.0f;
-			Params.AddIgnoredActor(this);
-			World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
-			FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
-			CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
-		}
-	}*/
-	//// 이 코드는 Collision채널이 ECC_Visibility인 가장 상단의 액터 정보를 가져옴.
-	//else if (APlayerController* PC = Cast<APlayerController>(GetController()))
-	if (APlayerController* PC = Cast<APlayerController>(GetController()))
-	{
-		FHitResult TraceHitResult;
-		PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
-		FVector CursorFV = TraceHitResult.ImpactNormal;
-		FRotator CursorR = CursorFV.Rotation();
-		CursorToWorld->SetWorldLocation(TraceHitResult.Location);
-		CursorToWorld->SetWorldRotation(CursorR);
-
-		// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
-		if (CurrentWeapon)
-		{ 
-			LookAtTheLocation(CursorToWorld->GetComponentLocation());
-		}
-
-		CursorToWorld->SetVisibility(true);
-	}
-
-	//// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
-	//if (UWorld* World = GetWorld())
-	//{
-	//	// 현재 Player의 뷰포트의 마우스포지션을 가져옵니다.
-	//	APlayerController* PC = Cast<APlayerController>(GetController());
-	//	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PC->Player);
-	//	FVector2D MousePosition;
-	//	if (LocalPlayer && LocalPlayer->ViewportClient)
-	//	{
-	//		LocalPlayer->ViewportClient->GetMousePosition(MousePosition);
-	//	}
-
-	//	FVector WorldOrigin; // 시작 위치
-	//	FVector WorldDirection; // 방향
-	//	float HitResultTraceDistance = 100000.f; // WorldDirection과 곱하여 끝 위치를 설정
-	//	UGameplayStatics::DeprojectScreenToWorld(PC, MousePosition, WorldOrigin, WorldDirection);
-	//	FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
-	//	//FCollisionQueryParams& CollisionQueryParams()
-
-	//	TArray<FHitResult> hitResults; // 결과를 저장
-	//	World->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
-
-	//	for (auto& hit : hitResults)
-	//	{
-	//		//if (hit.Actor->GetClass() == ALandscape::StaticClass())
-	//		//if (Cast<ALandscape>(hit.Actor))
-	//		if (hit.Actor->IsA(ALandscape::StaticClass())) // hit한 Actor가 ALandscape면
-	//		{
-	//			FVector CursorFV = hit.ImpactNormal;
-	//			FRotator CursorR = CursorFV.Rotation();
-	//			CursorToWorld->SetWorldLocation(hit.Location);
-	//			CursorToWorld->SetWorldRotation(CursorR);
-
-	//			// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
-	//			if (Weapon)
-	//			{ 
-	//				LookAtTheLocation(CursorToWorld->GetComponentLocation());
-	//			}
-
-	//			CursorToWorld->SetVisibility(true);
-	//		}
-	//	}
-	//}
-
-}
-/*** Cursor : End ***/
-
-/*** APioneerAIController : Start ***/
-void APioneer::InitAIController()
-{
-	Super::InitAIController();
-
-	// 이미 AIController를 가지고 있으면 생성하지 않음.
-	if (AIController)
-		return;
-
-	UWorld* const World = GetWorld();
-	if (!World)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::InitAIController(): !World"));
-		return;
-	}
-
-	FTransform myTrans = GetTransform();
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
-
-	AIController = World->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
-
-	// Controller는 Attach가 안됨.
-}
-
-void APioneer::PossessAIController()
-{
-	ABaseCharacter::PossessAIController();
-
-
-}
-/*** APioneerAIController : End ***/
-
-/*** Weapon : Start ***/
 void APioneer::InitWeapon()
 {
 	UWorld* const World = GetWorld();
@@ -785,6 +712,236 @@ void APioneer::InitWeapon()
 	/*** 임시 코드 : End ***/
 }
 
+void APioneer::InitBuilding()
+{
+	bConstructingMode = false;
+}
+
+void APioneer::InitEquipments()
+{
+	HelmetMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HelmetMesh"));
+
+	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
+	//HelmetMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("HeadSocket"));
+	HelmetMesh->SetupAttachment(GetMesh(), TEXT("HeadSocket"));
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> helmetMesh(TEXT("StaticMesh'/Game/Characters/Equipments/LowHelmet/Lowhelmet.Lowhelmet'"));
+	if (helmetMesh.Succeeded())
+	{
+		HelmetMesh->SetStaticMesh(helmetMesh.Object);
+	}
+}
+
+void APioneer::InitFSM()
+{
+	State = EPioneerFSM::Idle;
+}
+
+void APioneer::InitItem()
+{
+	if (!GetCapsuleComponent())
+		return;
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_Item);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_Item);
+}
+
+
+void APioneer::FindTheTargetActor()
+{
+	TargetActor = nullptr;
+
+	for (auto& actor : OverapedDetectRangeActors)
+	{
+		if (actor->IsA(AEnemy::StaticClass()))
+		{
+			// AEnemy가 죽어있다면 skip
+			if (AEnemy* enemy = Cast<AEnemy>(actor))
+			{
+				if (enemy->bDying)
+					continue;
+			}
+
+			if (!TargetActor)
+			{
+				TargetActor = actor;
+				continue;
+			}
+
+			if (DistanceToActor(actor) < DistanceToActor(TargetActor))
+				TargetActor = actor;
+		}
+	}
+}
+
+void APioneer::IdlingOfFSM()
+{
+	FindTheTargetActor();
+
+	if (TargetActor)
+		State = EPioneerFSM::Tracing;
+}
+
+void APioneer::TracingOfFSM()
+{
+	FindTheTargetActor();
+
+	TracingTargetActor();
+
+	if (!TargetActor)
+	{
+		State = EPioneerFSM::Idle;
+		GetController()->StopMovement();
+		return;
+	}
+	else if (OverapedAttackRangeActors.Num() > 0)
+	{
+		State = EPioneerFSM::Attack;
+		GetController()->StopMovement();
+		return;
+	}
+}
+
+void APioneer::AttackingOfFSM()
+{
+	FireWeapon();
+}
+
+
+void APioneer::OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+		return;
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return;
+
+	if (OtherActor->IsA(AItem::StaticClass()))
+	{
+		if (AItem* item = Cast<AItem>(OtherActor))
+		{
+			if (OtherComp == item->GetInteractionRange())
+				OverlapedItems.Add(item);
+		}
+	}
+}
+void APioneer::OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+		return;
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return;
+
+	if (OtherActor->IsA(AItem::StaticClass()))
+	{
+		if (AItem* item = Cast<AItem>(OtherActor))
+		{
+			if (OtherComp == item->GetInteractionRange())
+				OverlapedItems.RemoveSingle(item);
+		}
+	}
+}
+
+
+void APioneer::DestroyCharacter()
+{
+	// Weapon은 PioneerController와 PioneerAIController 상관없기 때문에 제일 먼저 소멸
+	for (auto& weapon : Weapons)
+	{
+		if (weapon)
+			weapon->Destroy();
+	}
+
+
+
+	// AIController는 이미 제거되었으므로 플레이어가 조종하는 개척자가 아니면 바로 소멸
+	if (!GetController())
+	{
+		Destroy();
+		return;
+	}
+
+	if (GetMesh())
+		GetMesh()->DestroyComponent();
+
+	if (GetCharacterMovement())
+		GetCharacterMovement()->DestroyComponent();
+
+	if (HelmetMesh)
+		HelmetMesh->DestroyComponent();
+
+	if (PioneerManager)
+	{
+		PioneerManager->Pioneers.Remove(this);
+		PioneerManager->SwitchOtherPioneer(this, 1.0f);
+	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("APioneer::DestroyCharacter: if (PioneerManager) else"));
+
+
+	// 여기서 Destroy()하는 대신에 PioneerManager의 PossessPioneer()에서 Destroy를 대신 함.
+	//Destroy();
+}
+
+
+bool APioneer::CopyTopDownCameraTo(AActor* CameraToBeCopied)
+{
+	if (!TopDownCameraComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("!APioneer::CopyTopDownCameraToPioneerManager: !TopDownCameraComponent"));
+		return false;
+	}
+
+	if (!CameraToBeCopied)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("!APioneer::CopyTopDownCameraToPioneerManager: !CameraToBeCopied"));
+		return false;
+	}
+
+	CameraToBeCopied->SetActorTransform(TopDownCameraComponent->GetComponentTransform());
+	return true;
+}
+
+
+void APioneer::StopMovement()
+{
+	if (GetController())
+		GetController()->StopMovement();
+}
+
+
+bool APioneer::HasPistolType()
+{
+	return bHasPistolType;
+}
+
+bool APioneer::HasRifleType()
+{
+	return bHasRifleType;
+}
+
+bool APioneer::HasLauncherType()
+{
+	return bHasLauncherType;
+}
+
+
+void APioneer::ZoomInOrZoomOut(float Value)
+{
+	TargetArmLength += Value * 64.0f;
+
+	if (TargetArmLength < 0.0f)
+		TargetArmLength = 0.0f;
+	/*else if (TargetArmLength > 1500.0f)
+		TargetArmLength = 1500.0f;*/
+}
+
+
 void APioneer::AcquireWeapon(class AWeapon* weapon)
 {
 	if (!weapon || !GetMesh())
@@ -807,6 +964,7 @@ void APioneer::AcquireWeapon(class AWeapon* weapon)
 	// 다시 획득한 무기로 무장
 	Arming();
 }
+
 void APioneer::AbandonWeapon()
 {
 	if (!CurrentWeapon)
@@ -908,7 +1066,7 @@ void APioneer::ChangeWeapon(int Value)
 	int32 start = IdxOfCurrentWeapon;
 	int32 end = (Value == 1) ? Weapons.Num() : 0;
 
-	for (int32 idx{ start }; 
+	for (int32 idx{ start };
 		Weapons.IsValidIndex(idx); // 인덱스가 유효하지 않다면 건너띄기
 		idx += Value)
 	{
@@ -924,6 +1082,7 @@ void APioneer::ChangeWeapon(int Value)
 	CurrentWeapon->SetActorHiddenInGame(false);
 	SetWeaponType();
 }
+
 void APioneer::Arming()
 {
 	// IdxOfCurrentWeapon가 유효하지 않으면
@@ -976,6 +1135,7 @@ void APioneer::Arming()
 	if (GetCharacterMovement())
 		GetCharacterMovement()->bOrientRotationToMovement = false; // 무기를 들면 이동 방향에 캐릭터 메시가 따라 회전하지 않습니다.
 }
+
 void APioneer::Disarming()
 {
 	if (CurrentWeapon)
@@ -988,9 +1148,8 @@ void APioneer::Disarming()
 	if (GetCharacterMovement())
 		GetCharacterMovement()->bOrientRotationToMovement = true; // 무기를 들지 않으면 이동 방향에 캐릭터 메시가 따라 회전합니다.
 }
-/*** Weapon : End ***/
 
-/*** Building : Start ***/
+
 void APioneer::SpawnBuilding(int Value)
 {
 	DestroyBuilding();
@@ -1101,6 +1260,7 @@ void APioneer::RotatingBuilding(float Value)
 
 	Building->Rotating(Value);
 }
+
 void APioneer::PlaceBuilding()
 {
 	if (!bConstructingMode || !Building)
@@ -1113,6 +1273,7 @@ void APioneer::PlaceBuilding()
 		bConstructingMode = false;
 	}
 }
+
 void APioneer::DestroyBuilding()
 {
 	if (Building)
@@ -1121,178 +1282,7 @@ void APioneer::DestroyBuilding()
 		Building = nullptr;
 	}
 }
-/*** Building : End ***/
-
-/*** Equipments : Start ***/
-void APioneer::InitEquipments()
-{
-	HelmetMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HelmetMesh"));
-
-	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
-	//HelmetMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("HeadSocket"));
-	HelmetMesh->SetupAttachment(GetMesh(), TEXT("HeadSocket"));
-
-	ConstructorHelpers::FObjectFinder<UStaticMesh> helmetMesh(TEXT("StaticMesh'/Game/Characters/Equipments/LowHelmet/Lowhelmet.Lowhelmet'"));
-	if (helmetMesh.Succeeded())
-	{
-		HelmetMesh->SetStaticMesh(helmetMesh.Object);
-	}
-}
-/*** Equipments : End ***/
-
-/*** FSM : Start ***/
-void APioneer::InitFSM()
-{
-	State = EPioneerFSM::Idle;
-}
-
-void APioneer::RunFSM()
-{
-	switch (State)
-	{
-	case EPioneerFSM::Idle:
-	{
-		IdlingOfFSM();
-		break;
-	}
-	case EPioneerFSM::Tracing:
-	{
-		TracingOfFSM();
-		break;
-	}
-	case EPioneerFSM::Attack:
-	{
-		// 공격 애니메이션이 끝난 후 AnimationBlueprint에서 EventGraph로 Atteck을 Idle로 바꿔줌
-		AttackingOfFSM();
-		break;
-	}
-	}
-}
-
-void APioneer::FindTheTargetActor()
-{
-	TargetActor = nullptr;
-
-	for (auto& actor : OverapedDetectRangeActors)
-	{
-		if (actor->IsA(AEnemy::StaticClass()))
-		{
-			// AEnemy가 죽어있다면 skip
-			if (AEnemy* enemy = Cast<AEnemy>(actor))
-			{
-				if (enemy->bDying)
-					continue;
-			}
-
-			if (!TargetActor)
-			{
-				TargetActor = actor;
-				continue;
-			}
-
-			if (DistanceToActor(actor) < DistanceToActor(TargetActor))
-				TargetActor = actor;
-		}
-	}
-}
-
-void APioneer::IdlingOfFSM()
-{
-	FindTheTargetActor();
-
-	if (TargetActor)
-		State = EPioneerFSM::Tracing;
-}
-void APioneer::TracingOfFSM()
-{
-	FindTheTargetActor();
-
-	TracingTargetActor();
-
-	if (!TargetActor)
-	{
-		State = EPioneerFSM::Idle;
-		GetController()->StopMovement();
-		return;
-	}
-	else if (OverapedAttackRangeActors.Num() > 0)
-	{
-		State = EPioneerFSM::Attack;
-		GetController()->StopMovement();
-		return;
-	}
-}
-void APioneer::AttackingOfFSM()
-{
-	FireWeapon();
-}
-/*** FSM : End ***/
-
-/*** BehaviorTree : Start ***/
-void APioneer::RunBehaviorTree()
-{
-	Super::RunBehaviorTree();
-
-}
-/*** BehaviorTree : End ***/
-
-
-/*** Item : Start ***/
-void APioneer::InitItem()
-{
-	if (!GetCapsuleComponent())
-		return;
-
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_Item);
-	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_Item);
-}
-void APioneer::OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-		return;
-
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-		return;
-
-	if (OtherActor->IsA(AItem::StaticClass()))
-	{
-		if (AItem* item = Cast<AItem>(OtherActor))
-		{
-			if (OtherComp == item->GetInteractionRange())
-				OverlapedItems.Add(item);
-		}
-	}
-}
-void APioneer::OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-		return;
-
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-		return;
-
-	if (OtherActor->IsA(AItem::StaticClass()))
-	{
-		if (AItem* item = Cast<AItem>(OtherActor))
-		{
-			if (OtherComp == item->GetInteractionRange())
-				OverlapedItems.RemoveSingle(item);
-		}
-	}
-}
-/*** Item : Start ***/
-
-
-
-
-
-
-
-
+/*** APioneer : End ***/
 
 
 

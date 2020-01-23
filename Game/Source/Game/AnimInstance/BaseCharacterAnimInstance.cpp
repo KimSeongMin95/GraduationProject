@@ -52,7 +52,7 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 
 	bDying = BaseCharacter->bDying;
 
-	CharacterAI = (int)BaseCharacter->CharacterAI;
+	CharacterAI = (int)BaseCharacter->GetCharacterAI();
 
 	Speed = BaseCharacter->GetVelocity().Size();
 	bIsMoving = Speed > 0 ? true : false;

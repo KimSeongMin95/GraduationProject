@@ -11,43 +11,31 @@ class GAME_API AProp2 : public AEnemy
 {
 	GENERATED_BODY()
 
-		/*** Basic Function : Start ***/
+/*** Basic Function : Start ***/
 public:
-	// Sets default values for this character's properties
 	AProp2();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() final;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) final;
-	/*** Basic Function : End ***/
+/*** Basic Function : End ***/
 
 
-	/*** Stat : Start ***/
-public:
-	virtual void InitStat() final;
-	/*** Stat : End ***/
-
-	/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 public:
 	virtual void InitHelthPointBar() final;
-	/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
-	/*** SkeletalAnimation : Start ***/
-public:
-	void InitSkeletalAnimation();
-	/*** SkeletalAnimation : End ***/
 
-	/*** FSM : Start ***/
+/*** ABaseCharacter : Start ***/
+protected:
+	virtual void InitStat() final;
+
 public:
 	virtual void RunFSM() final;
-	/*** FSM : End ***/
 
-	/*** BehaviorTree : Start ***/
-public:
 	virtual void RunBehaviorTree() final;
-	/*** BehaviorTree : End ***/
+/*** ABaseCharacter : End ***/
 };
