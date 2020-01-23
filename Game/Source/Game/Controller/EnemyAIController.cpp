@@ -7,46 +7,29 @@
 #include "Character/Enemy.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+/*** Basic Function : Start ***/
 AEnemyAIController::AEnemyAIController()
 {
 
 }
 
+void AEnemyAIController::BeginPlay()
+{
+	Super::BeginPlay();
+
+}
+
 void AEnemyAIController::Tick(float DeltaTime)
 {
-	if (!GetPawn())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AEnemyAIController::Tick: !GetPawn()"));
-		return;
-	}
 
 	Super::Tick(DeltaTime);
 
-	/*Timer += DeltaTime;
-	if (Timer >= CoolTime)
-	{
-		MoveRandomDestination();
-		Timer = 0.0f;
-	}*/
 }
+/*** Basic Function : End ***/
 
-void AEnemyAIController::MoveRandomDestination()
+/*** BaseAIController : Start ***/
+void AEnemyAIController::MoveRandomlyInDetectionRange(bool bLookAtDestination)
 {
-	if (!GetPawn())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AEnemyAIController::MoveRandomDestination: !GetPawn()"));
-		return;
-	}
-
-	AEnemy* MyPawn = dynamic_cast<AEnemy*>(GetPawn());
-
-	FVector dest = FVector(FMath::RandRange(-1000.0f, 1000.0f), FMath::RandRange(-1000.0f, 1000.0f), MyPawn->GetActorLocation().Z);
-	PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, dest);
-
-	/*FAIMoveRequest FAI;
-	FAI.SetGoalLocation(dest);
-	MoveTo(FAI);*/
-
-	// 목표 지점을 바라보도록 합니다.
-	//MyPawn->LookAtTheLocation(dest);
+	Super::MoveRandomlyInDetectionRange(bLookAtDestination);
 }
+/*** BaseAIController : End ***/

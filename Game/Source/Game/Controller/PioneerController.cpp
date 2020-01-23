@@ -3,8 +3,9 @@
 #include "PioneerController.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Character/Pioneer.h"
 #include "PathFinding.h"
+
+#include "Character/Pioneer.h"
 #include "Controller/PioneerAIController.h"
 
 #include "Item/Item.h"
@@ -82,7 +83,7 @@ void APioneerController::SetupInputComponent()
 }
 /*** Basic Function : End ***/
 
-/*** Possess : Start ***/
+/*** PlayerController : Start ***/
 void APioneerController::OnPossess(APawn* InPawn)
 {
 	if (!InPawn)
@@ -110,26 +111,9 @@ void APioneerController::OnUnPossess()
 	Super::OnUnPossess();
 	SetPawn(nullptr);
 }
+/*** PlayerController : End ***/
 
-void APioneerController::OnSetDestinationPressed()
-{
-	// set flag to keep updating destination until released
-	bMoveToMouseCursor = true;
-}
-
-void APioneerController::OnSetDestinationReleased()
-{
-	// clear flag to indicate we should stop updating the destination
-	bMoveToMouseCursor = false;
-}
-/*** Possess : End ***/
-
-//void APioneerController::OnResetVR()
-//{
-//	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-//}
-
-/** Navigate player to the current mouse cursor location. */
+/*** APioneerController : Start ***/
 void APioneerController::MoveToMouseCursor()
 {
 	if (!Pioneer)
@@ -179,7 +163,6 @@ void APioneerController::MoveToMouseCursor()
 	}
 }
 
-///** Navigate player to the current touch location. */
 //void APioneerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location)
 //{
 //	// 받아온 터치한 위치를 ScreenSpaceLocation에 저장합니다.
@@ -199,7 +182,17 @@ void APioneerController::MoveToMouseCursor()
 //	}
 //}
 
+void APioneerController::OnSetDestinationPressed()
+{
+	// set flag to keep updating destination until released
+	bMoveToMouseCursor = true;
+}
 
+void APioneerController::OnSetDestinationReleased()
+{
+	// clear flag to indicate we should stop updating the destination
+	bMoveToMouseCursor = false;
+}
 
 
 void APioneerController::MoveForward(float Value)
@@ -499,35 +492,11 @@ void APioneerController::PlaceBuilding()
 
 	Pioneer->PlaceBuilding();
 }
+/*** APioneerController : End ***/
 
 
 
-
-
-
-
-
-//void APioneerController::ConstructingMode()
+//void APioneerController::OnResetVR()
 //{
-//	if (!Pioneer || !GetPawn())
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ConstructingMode: if (!Pioneer || !GetPawn())"));
-//		return;
-//	}
-//
-//
-//	// 죽으면 함수를 실행하지 않음.
-//	if (Pioneer->bDying)
-//		return;
-//
-//	Pioneer->bConstructingMode = 1 - Pioneer->bConstructingMode;
-//
-//	if (Pioneer->bConstructingMode)
-//		Pioneer->SpawnBuilding();
-//	else
-//		Pioneer->DestroyBuilding();
-//
-//	Pioneer->Disarming();
-//	
+//	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
 //}
-

@@ -7,60 +7,92 @@
 #include "Character/BaseCharacter.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+/*** Basic Function : Start ***/
 ABaseAIController::ABaseAIController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	//bWantsPlayerState = true;
+}
 
-	Timer = 0.0f;
-	CoolTime = 3.0f;
+void ABaseAIController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetTimerOfRunCharacterAI(0.033f);
 }
 
 void ABaseAIController::Tick(float DeltaTime)
 {
-	if (!GetPawn())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ABaseAIController::Tick: !GetPawn()"));
+	// BaseCharacter가 죽은 상태라면 실행하지 않습니다.
+	if (CheckDying())
 		return;
-	}
 
 	Super::Tick(DeltaTime);
+}
+/*** Basic Function : Start ***/
 
+/*** BaseAIController : Start ***/
+bool ABaseAIController::CheckDying()
+{
+	if (!GetPawn())
+		return true;
 
 	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
 	{
 		// 죽으면 함수를 실행하지 않음.
 		if (baseCharacter->bDying)
-			return;
+			return true;
+	}
 
-		/*** CharacterAI : Start ***/
+	return false;
+}
+
+void ABaseAIController::RunCharacterAI()
+{
+	if (CheckDying())
+		return;
+
+	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
+	{
 		switch (baseCharacter->CharacterAI)
 		{
 		case ECharacterAI::FSM:
-			baseCharacter->RunFSM(DeltaTime);
+			baseCharacter->RunFSM();
 			break;
 		case ECharacterAI::BehaviorTree:
-			baseCharacter->RunBehaviorTree(DeltaTime);
+			baseCharacter->RunBehaviorTree();
 			break;
 		default:
-			UE_LOG(LogTemp, Warning, TEXT("ABaseAIController::Tick: switch (baseCharacter->CharacterAI): default"));
+			UE_LOG(LogTemp, Warning, TEXT("ABaseAIController::RunCharacterAI: switch (baseCharacter->CharacterAI): default"));
 			break;
 		}
-		/*** CharacterAI : End ***/
 	}
 }
-
-//void APioneerAIController::InitMoveRandomDestination()
-//{
-//	time = 1.0f;
-//	FTimerHandle timer;
-//	FTimerDelegate timerDel;
-//	timerDel.BindUFunction(this, FName("MoveRandomDestination"));
-//	GetWorldTimerManager().SetTimer(timer, timerDel, time, true);
-//}
-
-void ABaseAIController::MoveRandomDestination()
+void ABaseAIController::SetTimerOfRunCharacterAI(float Time)
 {
+	// 이미 실행되고 있으면 재설정합니다.
+	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfRunCharacterAI))
+		GetWorldTimerManager().ClearTimer(TimerHandleOfRunCharacterAI);
 
+	GetWorldTimerManager().SetTimer(TimerHandleOfRunCharacterAI, this, &ABaseAIController::RunCharacterAI, Time, true);
 }
+void ABaseAIController::MoveRandomlyInDetectionRange(bool bLookAtDestination)
+{
+	if (CheckDying())
+		return;
+
+	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
+	{
+		FVector dest = FVector(FMath::RandRange(-500.0f, 500.0f), FMath::RandRange(-500.0f, 500.0f), 0.0f);
+		dest += baseCharacter->GetActorLocation();
+		PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, dest);
+
+		//FAIMoveRequest FAI;
+		//FAI.SetGoalLocation(dest);
+		//MoveTo(FAI);
+
+		if (bLookAtDestination)
+			baseCharacter->LookAtTheLocation(dest);
+	}
+}
+/*** BaseAIController : End ***/

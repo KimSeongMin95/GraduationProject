@@ -23,15 +23,27 @@ class GAME_API ABaseAIController : public AAIController
 public:
 	ABaseAIController();
 
-	//// Possess는 더이상 override 안되기 때문에 OnPossess로 대체
-	//virtual void OnPossess(class APawn* InPawn) override;
+	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
+
+	//// Possess는 더이상 override 안되기 때문에 OnPossess로 대체
+	//virtual void OnPossess(class APawn* InPawn) override;
 /*** Basic Function : End ***/
 
+/*** BaseAIController : Start ***/
+private:
+	FTimerHandle TimerHandleOfRunCharacterAI;
+
+private:
+	bool CheckDying();
+
+	UFUNCTION()
+		void RunCharacterAI();
+
+	void SetTimerOfRunCharacterAI(float Time);
+
 public:
-	// 임시
-	virtual void MoveRandomDestination();
-	float Timer;
-	float CoolTime;
+	virtual void MoveRandomlyInDetectionRange(bool bLookAtDestination);
+/*** BaseAIController : End ***/
 };

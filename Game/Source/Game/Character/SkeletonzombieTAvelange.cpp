@@ -107,17 +107,17 @@ void ASkeletonzombieTAvelange::InitSkeletalAnimation()
 /*** SkeletalAnimation : End ***/
 
 /*** FSM : Start ***/
-void ASkeletonzombieTAvelange::RunFSM(float DeltaTime)
+void ASkeletonzombieTAvelange::RunFSM()
 {
-	Super::RunFSM(DeltaTime);
+	Super::RunFSM();
 
 }
 /*** FSM : End ***/
 
 /*** BehaviorTree : Start ***/
-void ASkeletonzombieTAvelange::RunBehaviorTree(float DeltaTime)
+void ASkeletonzombieTAvelange::RunBehaviorTree()
 {
-	Super::RunBehaviorTree(DeltaTime);
+	Super::RunBehaviorTree();
 
 }
 /*** BehaviorTree : End ***/

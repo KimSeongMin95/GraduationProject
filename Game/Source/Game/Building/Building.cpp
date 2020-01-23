@@ -7,30 +7,38 @@
 #include "Character/BaseCharacter.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
-// Sets default values
+
+/*** Basic Function : Start ***/
 ABuilding::ABuilding()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	InitRootComponent();
 
-	BuildingState = EBuildingState::Constructable;
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
+	SphereComponent->SetGenerateOverlapEvents(false);
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RootComponent = SphereComponent;
+
 
 	InitStat();
 
+
 	InitHelthPointBar();
+
 
 	InitConstructBuilding();
 
+
 	InitBuilding();
+
 
 	InitMaterial();
 
 
+	BuildingState = EBuildingState::Constructable;
 }
 
-// Called when the game starts or when spawned
 void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
@@ -45,7 +53,6 @@ void ABuilding::BeginPlay()
 	BeginPlayHelthPointBar();
 }
 
-// Called every frame
 void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -60,50 +67,8 @@ void ABuilding::Tick(float DeltaTime)
 
 	TickHelthPointBar();
 }
+/*** Basic Function : End ***/
 
-/*** RootComponent : Start ***/
-void ABuilding::InitRootComponent()
-{
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
-	SphereComponent->SetGenerateOverlapEvents(false);
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	RootComponent = SphereComponent;
-}
-/*** RootComponent : End ***/
-
-/*** Stat : Start ***/
-void ABuilding::InitStat()
-{
-	// Default Settings
-	HealthPoint = 10.0f;
-	MaxHealthPoint = 100.0f;
-
-	Size = FVector2D(1.0f, 1.0f);
-	ConstructionTime = 2.0f;
-
-	NeedMineral = 0.0f;
-	NeedOrganicMatter = 0.0f;
-
-	ConsumeMineral = 0.0f;
-	ConsumeOrganicMatter = 0.0f;
-	ConsumeElectricPower = 0.0f;
-
-	ProductionMineral = 0.0f;
-	ProductionOrganicMatter = 0.0f;
-	ProductionElectricPower = 0.0f;
-}
-void ABuilding::SetHealthPoint(float Delta)
-{
-	HealthPoint += Delta;
-
-	if (HealthPoint > 0.0f)
-		return;
-
-	BuildingState = EBuildingState::Destroying;
-
-	Destroy();
-}
-/*** Stat : End ***/
 
 /*** IHealthPointBarInterface : Start ***/
 void ABuilding::InitHelthPointBar()
@@ -171,26 +136,54 @@ void ABuilding::TickHelthPointBar()
 }
 /*** IHealthPointBarInterface : End ***/
 
-/*** ConstructBuildingStaticMeshComponent : Start ***/
-void ABuilding::OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+
+/*** ABuilding : Start ***/
+void ABuilding::InitStat()
 {
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-		return;
+	/// Default Settings
+	HealthPoint = 10.0f;
+	MaxHealthPoint = 100.0f;
 
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-		return;
+	Size = FVector2D(1.0f, 1.0f);
+	ConstructionTime = 2.0f;
 
-	// 투사체 무시 (충돌 주체인 AProjectile의 코드에서 처리할 것)
-	if (OtherActor->IsA(AProjectile::StaticClass()))
-		return;
+	NeedMineral = 0.0f;
+	NeedOrganicMatter = 0.0f;
+
+	ConsumeMineral = 0.0f;
+	ConsumeOrganicMatter = 0.0f;
+	ConsumeElectricPower = 0.0f;
+
+	ProductionMineral = 0.0f;
+	ProductionOrganicMatter = 0.0f;
+	ProductionElectricPower = 0.0f;
 }
 
 void ABuilding::InitConstructBuilding()
 {
-	// 자식클래스에서 overriding 할 것.
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
+
+void ABuilding::InitBuilding()
+{
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+}
+
+void ABuilding::InitMaterial()
+{
+	static ConstructorHelpers::FObjectFinder<UMaterial> constructableMaterial(TEXT("Material'/Game/Buildings/Constructable.Constructable'"));
+	if (constructableMaterial.Succeeded())
+	{
+		ConstructableMaterial = constructableMaterial.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterial> unConstructableMaterial(TEXT("Material'/Game/Buildings/UnConstructable.UnConstructable'"));
+	if (unConstructableMaterial.Succeeded())
+	{
+		UnConstructableMaterial = unConstructableMaterial.Object;
+	}
+}
+
 
 void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale, FRotator Rotation, FVector Location)
 {
@@ -214,7 +207,7 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
 		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
 		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
-		
+
 
 		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
 		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
@@ -231,9 +224,127 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 
 	ConstructBuildingSMCs.Add(*StaticMeshComp);
 }
-/*** ConstructBuildingStaticMeshComponent : End ***/
 
-/*** BuildingStaticMeshComponent : Start ***/
+void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale, FRotator Rotation, FVector Location)
+{
+	(*StaticMeshComp) = CreateDefaultSubobject<UStaticMeshComponent>(CompName);
+	(*StaticMeshComp)->SetupAttachment(RootComponent);
+	(*StaticMeshComp)->SetVisibility(true);
+
+	(*StaticMeshComp)->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_Building);
+	(*StaticMeshComp)->OnComponentEndOverlap.AddDynamic(this, &ABuilding::OnOverlapEnd_Building);
+
+	(*StaticMeshComp)->SetGenerateOverlapEvents(true);
+	(*StaticMeshComp)->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	(*StaticMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	(*StaticMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+	// (기본적으로 true로 되어 있음) NavMesh에 업데이트 되도록 CanEverAffectNavigation을 true로 변경.
+	//StaticMeshComp->SetCanEverAffectNavigation(true);
+
+	// static 키워드를 제거하여 인스턴스마다 애셋(리소스)를 매 번 새로 로드합니다. (주의: static이 붙으면 다 같은 모델이 됩니다.)
+	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshComp(ObjectToFind);
+	if (staticMeshComp.Succeeded())
+	{
+		(*StaticMeshComp)->SetStaticMesh(staticMeshComp.Object);
+
+		// StaticMesh의 원본 사이즈 측정
+		FVector minBounds, maxBounds;
+		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
+		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
+
+		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
+		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
+		(*StaticMeshComp)->SetRelativeScale3D(Scale);
+		(*StaticMeshComp)->SetRelativeRotation(Rotation);
+		FVector center;
+		center.X = -1.0f * ((maxBounds.X * Scale.X + minBounds.X * Scale.X) / 2.0f);
+		center.Y = -1.0f * ((maxBounds.Y * Scale.Y + minBounds.Y * Scale.Y) / 2.0f);
+		center.Z = -1.0f * (minBounds.Z * Scale.Z);
+		(*StaticMeshComp)->SetRelativeLocation(center + Location);
+
+		// 원본 머터리얼 저장
+		FTArrayOfUMaterialInterface TArrayOfUMaterialInterface;
+		TArrayOfUMaterialInterface.Object = (*StaticMeshComp)->GetMaterials();
+		BuildingSMCsMaterials.Add(TArrayOfUMaterialInterface);
+
+		//UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
+	}
+
+	BuildingSMCs.Add(*StaticMeshComp);
+
+}
+
+void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, UStaticMeshComponent** SubStaticMeshComp,
+	const TCHAR* CompName, const TCHAR* ObjectToFind,
+	FVector Scale, FRotator Rotation, FVector Location)
+{
+	(*SkeletalMeshComp) = CreateDefaultSubobject<USkeletalMeshComponent>(CompName);
+	(*SkeletalMeshComp)->SetupAttachment(RootComponent);
+	(*SkeletalMeshComp)->SetVisibility(true);
+
+	/*(*SkeletalMeshComp)->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_Building);
+	(*SkeletalMeshComp)->OnComponentEndOverlap.AddDynamic(this, &ABuilding::OnOverlapEnd_Building);*/
+
+	(*SkeletalMeshComp)->SetGenerateOverlapEvents(true);
+	(*SkeletalMeshComp)->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	(*SkeletalMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	(*SkeletalMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+	//// (기본적으로 true로 되어 있음) NavMesh에 업데이트 되도록 CanEverAffectNavigation을 true로 변경.
+	////StaticMeshComp->SetCanEverAffectNavigation(true);
+
+	// static 키워드를 제거하여 인스턴스마다 애셋(리소스)를 매 번 새로 로드합니다. (주의: static이 붙으면 다 같은 모델이 됩니다.)
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshComp(ObjectToFind);
+	if (skeletalMeshComp.Succeeded())
+	{
+		(*SkeletalMeshComp)->SetSkeletalMesh(skeletalMeshComp.Object);
+
+		// StaticMesh의 원본 사이즈 측정
+		FVector minBounds, maxBounds;
+		(*SubStaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
+		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
+
+		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
+		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
+		(*SkeletalMeshComp)->SetRelativeScale3D(Scale);
+		(*SkeletalMeshComp)->SetRelativeRotation(Rotation);
+		FVector center;
+		center.X = -1.0f * ((maxBounds.X * Scale.X + minBounds.X * Scale.X) / 2.0f);
+		center.Y = -1.0f * ((maxBounds.Y * Scale.Y + minBounds.Y * Scale.Y) / 2.0f);
+		center.Z = -1.0f * (minBounds.Z * Scale.Z);
+		(*SkeletalMeshComp)->SetRelativeLocation(center + Location);
+
+		// 원본 머터리얼 저장
+		FTArrayOfUMaterialInterface TArrayOfUMaterialInterface;
+		TArrayOfUMaterialInterface.Object = (*SkeletalMeshComp)->GetMaterials();
+		BuildingSkMCsMaterials.Add(TArrayOfUMaterialInterface);
+
+		//UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
+	}
+
+	BuildingSkMCs.Add(*SkeletalMeshComp);
+
+}
+
+
+void ABuilding::OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Other Actor is the actor that triggered the event. Check that is not ourself.  
+	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+		return;
+
+	// Collision의 기본인 ATriggerVolume은 무시합니다.
+	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return;
+
+	// 투사체 무시 (충돌 주체인 AProjectile의 코드에서 처리할 것)
+	if (OtherActor->IsA(AProjectile::StaticClass()))
+		return;
+}
+
 void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
@@ -307,115 +418,19 @@ void ABuilding::OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp,
 		OverapedActors.RemoveSingle(OtherActor);
 }
 
-void ABuilding::InitBuilding()
+
+void ABuilding::SetHealthPoint(float Value)
 {
-	// 자식클래스에서 overriding 할 것.
+	HealthPoint += Value;
+
+	if (HealthPoint > 0.0f)
+		return;
+
+	BuildingState = EBuildingState::Destroying;
+
+	Destroy();
 }
 
-void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale, FRotator Rotation, FVector Location)
-{
-	(*StaticMeshComp) = CreateDefaultSubobject<UStaticMeshComponent>(CompName);
-	(*StaticMeshComp)->SetupAttachment(RootComponent);
-	(*StaticMeshComp)->SetVisibility(true);
-
-	(*StaticMeshComp)->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_Building);
-	(*StaticMeshComp)->OnComponentEndOverlap.AddDynamic(this, &ABuilding::OnOverlapEnd_Building);
-
-	(*StaticMeshComp)->SetGenerateOverlapEvents(true);
-	(*StaticMeshComp)->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	(*StaticMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	(*StaticMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-
-	// (기본적으로 true로 되어 있음) NavMesh에 업데이트 되도록 CanEverAffectNavigation을 true로 변경.
-	//StaticMeshComp->SetCanEverAffectNavigation(true);
-
-	// static 키워드를 제거하여 인스턴스마다 애셋(리소스)를 매 번 새로 로드합니다. (주의: static이 붙으면 다 같은 모델이 됩니다.)
-	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshComp(ObjectToFind);
-	if (staticMeshComp.Succeeded())
-	{
-		(*StaticMeshComp)->SetStaticMesh(staticMeshComp.Object);
-
-		// StaticMesh의 원본 사이즈 측정
-		FVector minBounds, maxBounds;
-		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
-		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
-		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
-
-		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
-		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
-		(*StaticMeshComp)->SetRelativeScale3D(Scale);
-		(*StaticMeshComp)->SetRelativeRotation(Rotation);
-		FVector center;
-		center.X = -1.0f * ((maxBounds.X * Scale.X + minBounds.X * Scale.X) / 2.0f);
-		center.Y = -1.0f * ((maxBounds.Y * Scale.Y + minBounds.Y * Scale.Y) / 2.0f);
-		center.Z = -1.0f * (minBounds.Z * Scale.Z);
-		(*StaticMeshComp)->SetRelativeLocation(center + Location);
-
-		// 원본 머터리얼 저장
-		FTArrayOfUMaterialInterface TArrayOfUMaterialInterface;
-		TArrayOfUMaterialInterface.Object = (*StaticMeshComp)->GetMaterials();
-		BuildingSMCsMaterials.Add(TArrayOfUMaterialInterface);
-
-		//UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
-	}
-
-	BuildingSMCs.Add(*StaticMeshComp);
-
-}
-
-// SubStaticMeshComp엔 먼저 AddBuildingSMC(SubStaticMeshComp) 하고 가져와야 함.
-void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, UStaticMeshComponent** SubStaticMeshComp, 
-	const TCHAR* CompName, const TCHAR* ObjectToFind,
-	FVector Scale, FRotator Rotation, FVector Location)
-{
-	(*SkeletalMeshComp) = CreateDefaultSubobject<USkeletalMeshComponent>(CompName);
-	(*SkeletalMeshComp)->SetupAttachment(RootComponent);
-	(*SkeletalMeshComp)->SetVisibility(true);
-
-	/*(*SkeletalMeshComp)->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_Building);
-	(*SkeletalMeshComp)->OnComponentEndOverlap.AddDynamic(this, &ABuilding::OnOverlapEnd_Building);*/
-
-	(*SkeletalMeshComp)->SetGenerateOverlapEvents(true);
-	(*SkeletalMeshComp)->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	(*SkeletalMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	(*SkeletalMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-
-	//// (기본적으로 true로 되어 있음) NavMesh에 업데이트 되도록 CanEverAffectNavigation을 true로 변경.
-	////StaticMeshComp->SetCanEverAffectNavigation(true);
-
-	// static 키워드를 제거하여 인스턴스마다 애셋(리소스)를 매 번 새로 로드합니다. (주의: static이 붙으면 다 같은 모델이 됩니다.)
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshComp(ObjectToFind);
-	if (skeletalMeshComp.Succeeded())
-	{
-		(*SkeletalMeshComp)->SetSkeletalMesh(skeletalMeshComp.Object);
-
-		// StaticMesh의 원본 사이즈 측정
-		FVector minBounds, maxBounds;
-		(*SubStaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
-		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
-		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
-
-		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
-		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
-		(*SkeletalMeshComp)->SetRelativeScale3D(Scale);
-		(*SkeletalMeshComp)->SetRelativeRotation(Rotation);
-		FVector center;
-		center.X = -1.0f * ((maxBounds.X * Scale.X + minBounds.X * Scale.X) / 2.0f);
-		center.Y = -1.0f * ((maxBounds.Y * Scale.Y + minBounds.Y * Scale.Y) / 2.0f);
-		center.Z = -1.0f * (minBounds.Z * Scale.Z);
-		(*SkeletalMeshComp)->SetRelativeLocation(center + Location);
-
-		// 원본 머터리얼 저장
-		FTArrayOfUMaterialInterface TArrayOfUMaterialInterface;
-		TArrayOfUMaterialInterface.Object = (*SkeletalMeshComp)->GetMaterials();
-		BuildingSkMCsMaterials.Add(TArrayOfUMaterialInterface);
-
-		//UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
-	}
-
-	BuildingSkMCs.Add(*SkeletalMeshComp);
-
-}
 
 void ABuilding::SetBuildingMaterials()
 {
@@ -434,9 +449,7 @@ void ABuilding::SetBuildingMaterials()
 		}
 	}
 }
-/*** BuildingStaticMeshComponent : End ***/
 
-/*** Material : Start ***/
 void ABuilding::SetConstructableMaterial()
 {
 	if (!ConstructableMaterial)
@@ -483,23 +496,7 @@ void ABuilding::SetUnConstructableMaterial()
 	}
 }
 
-void ABuilding::InitMaterial()
-{
-	static ConstructorHelpers::FObjectFinder<UMaterial> constructableMaterial(TEXT("Material'/Game/Buildings/Constructable.Constructable'"));
-	if (constructableMaterial.Succeeded())
-	{
-		ConstructableMaterial = constructableMaterial.Object;
-	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterial> unConstructableMaterial(TEXT("Material'/Game/Buildings/UnConstructable.UnConstructable'"));
-	if (unConstructableMaterial.Succeeded())
-	{
-		UnConstructableMaterial = unConstructableMaterial.Object;
-	}
-}
-/*** Material : End ***/
-
-/*** Rotation : Start ***/
 void ABuilding::Rotating(float Value)
 {
 	FRotator rot = RootComponent->RelativeRotation;
@@ -512,9 +509,8 @@ void ABuilding::Rotating(float Value)
 
 	RootComponent->SetRelativeRotation(rot);
 }
-/*** Rotation : End ***/
 
-/*** Constructing And Destorying : Start ***/
+
 bool ABuilding::Constructing()
 {
 	if (OverapedActors.Num() > 0)
@@ -565,10 +561,7 @@ bool ABuilding::Constructing()
 
 	return true;
 }
-void ABuilding::Destroying()
-{
-	Destroy();
-}
+
 void ABuilding::CompleteConstructing()
 {
 	// Constructing --> Constructed
@@ -620,7 +613,10 @@ void ABuilding::CompleteConstructing()
 
 	HealthPoint = MaxHealthPoint;
 }
-/*** Constructing And Destorying : End ***/
 
-
+void ABuilding::Destroying()
+{
+	Destroy();
+}
+/*** ABuilding : End ***/
 

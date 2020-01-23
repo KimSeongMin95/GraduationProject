@@ -7,6 +7,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AWall::AWall()
 {
@@ -33,10 +34,22 @@ void AWall::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Stat : Start ***/
+
+/*** IHealthPointBarInterface : Start ***/
+void AWall::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 400.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** IHealthPointBarInterface : End ***/
+
+
+/*** ABuilding : Start ***/
 void AWall::InitStat()
 {
-	// Default Settings
 	HealthPoint = 100.0f;
 	MaxHealthPoint = 1000.0f;
 
@@ -54,39 +67,26 @@ void AWall::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Stat : End ***/
 
-/*** IHealthPointBarInterface : Start ***/
-void AWall::InitHelthPointBar()
-{
-	if (!HelthPointBar)
-		return;
-
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 400.0f));
-	HelthPointBar->SetDrawSize(FVector2D(100, 20));
-}
-/*** IHealthPointBarInterface : End ***/
-
-/*** ConstructBuildingStaticMeshComponent : Start ***/
 void AWall::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Walls/SM_Intersection_Wall.SM_Intersection_Wall'"),
 		FVector(0.733f, 6.0f, 0.4f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	
 	AddConstructBuildingSMC(&ConstructBuildingSMC_2, TEXT("ConstructBuildingSMC_2"),
 		TEXT("StaticMesh'/Game/Buildings/Floors/SM_Floor_Below.SM_Floor_Below'"),
 		FVector(0.39500f, 0.264f, 1.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.3249f, -0.3365f, 376.0f * 0.5f));
 }
-/*** ConstructBuildingStaticMeshComponent : End ***/
 
-/*** BuildingStaticMeshComponent : Start ***/
 void AWall::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Walls/SM_Intersection_Wall.SM_Intersection_Wall'"),
 		FVector(0.733f, 6.0f, 0.8f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	
 	AddBuildingSMC(&BuildingSMC_2, TEXT("BuildingSMC_2"),
 		TEXT("StaticMesh'/Game/Buildings/Floors/SM_Floor_Below.SM_Floor_Below'"),
 		FVector(0.39500f, 0.264f, 1.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.3249f, -0.3365f, 376.0f));
 }
-/*** BuildingStaticMeshComponent : End ***/
+/*** ABuilding : End ***/

@@ -109,8 +109,8 @@ void ABaseCharacter::SetHealthPoint(float Delta)
 	if (HelthPointBar)
 		HelthPointBar->DestroyComponent();
 
-	if (DetactRangeSphereComp)
-		DetactRangeSphereComp->DestroyComponent();
+	if (DetectRangeSphereComp)
+		DetectRangeSphereComp->DestroyComponent();
 	if (AttackRangeSphereComp)
 		AttackRangeSphereComp->DestroyComponent();
 }
@@ -135,14 +135,14 @@ void ABaseCharacter::OnOverlapEnd_AttackRange(class UPrimitiveComponent* Overlap
 
 void ABaseCharacter::InitRanges()
 {
-	DetactRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetactRangeSphereComp"));
-	DetactRangeSphereComp->SetupAttachment(RootComponent);
-	DetactRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
+	DetectRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetectRangeSphereComp"));
+	DetectRangeSphereComp->SetupAttachment(RootComponent);
+	DetectRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
 
-	DetactRangeSphereComp->SetGenerateOverlapEvents(true);
-	DetactRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	DetactRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	DetactRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	DetectRangeSphereComp->SetGenerateOverlapEvents(true);
+	DetectRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	DetectRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	DetectRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
 	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
 	AttackRangeSphereComp->SetupAttachment(RootComponent);
@@ -365,14 +365,14 @@ void ABaseCharacter::TracingTargetActor()
 /*** CharacterAI : End ***/
 
 /*** FSM : Start ***/
-void ABaseCharacter::RunFSM(float DeltaTime)
+void ABaseCharacter::RunFSM()
 {
 	// 자식 클래스에서 구현할 것!
 }
 /*** FSM : End ***/
 
 /*** BehaviorTree : Start ***/
-void ABaseCharacter::RunBehaviorTree(float DeltaTime)
+void ABaseCharacter::RunBehaviorTree()
 {
 	// 자식 클래스에서 구현할 것!
 }

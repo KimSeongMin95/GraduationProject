@@ -7,6 +7,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AInorganicMine::AInorganicMine()
 {
@@ -33,10 +34,22 @@ void AInorganicMine::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Stat : Start ***/
+
+/*** IHealthPointBarInterface : Start ***/
+void AInorganicMine::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** IHealthPointBarInterface : End ***/
+
+
+/*** ABuilding : Start ***/
 void AInorganicMine::InitStat()
 {
-	// Default Settings
 	HealthPoint = 10.0f;
 	MaxHealthPoint = 100.0f;
 
@@ -54,33 +67,18 @@ void AInorganicMine::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Stat : End ***/
 
-/*** IHealthPointBarInterface : Start ***/
-void AInorganicMine::InitHelthPointBar()
-{
-	if (!HelthPointBar)
-		return;
-
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
-	HelthPointBar->SetDrawSize(FVector2D(100, 20));
-}
-/*** IHealthPointBarInterface : End ***/
-
-/*** ConstructBuildingStaticMeshComponent : Start ***/
 void AInorganicMine::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/InorganicMine/Temp_InorganicMine.Temp_InorganicMine'"),
 		FVector(1.3f, 1.3f, 0.65f), FRotator(0.0f, 0.0f, 0.0f));
 }
-/*** ConstructBuildingStaticMeshComponent : End ***/
 
-/*** BuildingStaticMeshComponent : Start ***/
 void AInorganicMine::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/InorganicMine/Temp_InorganicMine.Temp_InorganicMine'"),
 		FVector(1.3f, 1.3f, 1.3f), FRotator(0.0f, 0.0f, 0.0f));
 }
-/*** BuildingStaticMeshComponent : End ***/
+/*** ABuilding : End ***/

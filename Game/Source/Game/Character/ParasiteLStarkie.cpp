@@ -107,17 +107,17 @@ void AParasiteLStarkie::InitSkeletalAnimation()
 /*** SkeletalAnimation : End ***/
 
 /*** FSM : Start ***/
-void AParasiteLStarkie::RunFSM(float DeltaTime)
+void AParasiteLStarkie::RunFSM()
 {
-	Super::RunFSM(DeltaTime);
+	Super::RunFSM();
 
 }
 /*** FSM : End ***/
 
 /*** BehaviorTree : Start ***/
-void AParasiteLStarkie::RunBehaviorTree(float DeltaTime)
+void AParasiteLStarkie::RunBehaviorTree()
 {
-	Super::RunBehaviorTree(DeltaTime);
+	Super::RunBehaviorTree();
 
 }
 /*** BehaviorTree : End ***/

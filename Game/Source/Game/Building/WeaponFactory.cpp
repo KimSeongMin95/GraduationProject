@@ -7,6 +7,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AWeaponFactory::AWeaponFactory()
 {
@@ -33,10 +34,22 @@ void AWeaponFactory::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Stat : Start ***/
+
+/*** IHealthPointBarInterface : Start ***/
+void AWeaponFactory::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** IHealthPointBarInterface : End ***/
+
+
+/*** ABuilding : Start ***/
 void AWeaponFactory::InitStat()
 {
-	// Default Settings
 	HealthPoint = 10.0f;
 	MaxHealthPoint = 100.0f;
 
@@ -54,33 +67,18 @@ void AWeaponFactory::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Stat : End ***/
 
-/*** IHealthPointBarInterface : Start ***/
-void AWeaponFactory::InitHelthPointBar()
-{
-	if (!HelthPointBar)
-		return;
-
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
-	HelthPointBar->SetDrawSize(FVector2D(100, 20));
-}
-/*** IHealthPointBarInterface : End ***/
-
-/*** ConstructBuildingStaticMeshComponent : Start ***/
 void AWeaponFactory::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/WeaponFactory/Temp_WeaponFactory.Temp_WeaponFactory'"),
 		FVector(5.0f, 5.0f, 2.5f), FRotator(0.0f, 0.0f, 0.0f));
 }
-/*** ConstructBuildingStaticMeshComponent : End ***/
 
-/*** BuildingStaticMeshComponent : Start ***/
 void AWeaponFactory::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/WeaponFactory/Temp_WeaponFactory.Temp_WeaponFactory'"),
 		FVector(5.0f, 5.0f, 5.0f), FRotator(0.0f, 0.0f, 0.0f));
 }
-/*** BuildingStaticMeshComponent : End ***/
+/*** ABuilding : End ***/

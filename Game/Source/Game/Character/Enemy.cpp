@@ -78,8 +78,8 @@ void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedCom
 	{
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
-			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetactRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetactRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetectRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
 				return;
 		}
 
@@ -113,8 +113,8 @@ void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp,
 	{
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
-			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetactRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetactRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetectRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
 				return;
 		}
 
@@ -146,8 +146,8 @@ void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedCom
 	{
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
-			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetactRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetactRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetectRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
 				return;
 		}
 
@@ -181,8 +181,8 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 	{
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
-			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetactRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->DetactRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
+			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
+			if (pioneer->DetectRangeSphereComp == OtherComp || pioneer->AttackRangeSphereComp == OtherComp)
 				return;
 		}
 
@@ -196,16 +196,16 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 
 void AEnemy::InitRanges()
 {
-	if (!DetactRangeSphereComp || !AttackRangeSphereComp)
+	if (!DetectRangeSphereComp || !AttackRangeSphereComp)
 		return;
 
-	DetactRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
-	DetactRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
+	DetectRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
+	DetectRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
 
 	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
 	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
 
-	DetactRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
+	DetectRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
 	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
 }
 /*** Stat : End ***/
@@ -338,7 +338,7 @@ void AEnemy::InitFSM()
 	State = EEnemyFSM::Idle;
 }
 
-void AEnemy::RunFSM(float DeltaTime)
+void AEnemy::RunFSM()
 {
 	switch (State)
 	{
@@ -440,9 +440,9 @@ void AEnemy::AttackingOfFSM()
 /*** FSM : End ***/
 
 /*** BehaviorTree : Start ***/
-void AEnemy::RunBehaviorTree(float DeltaTime)
+void AEnemy::RunBehaviorTree()
 {
-	Super::RunBehaviorTree(DeltaTime);
+	Super::RunBehaviorTree();
 
 }
 /*** BehaviorTree : End ***/

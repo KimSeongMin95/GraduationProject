@@ -7,6 +7,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 ATurret::ATurret()
 {
@@ -32,10 +33,22 @@ void ATurret::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Stat : Start ***/
+
+/*** IHealthPointBarInterface : Start ***/
+void ATurret::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 170.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** IHealthPointBarInterface : End ***/
+
+
+/*** ABuilding : Start ***/
 void ATurret::InitStat()
 {
-	// Default Settings
 	HealthPoint = 10.0f;
 	MaxHealthPoint = 100.0f;
 
@@ -53,44 +66,32 @@ void ATurret::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Stat : End ***/
 
-/*** IHealthPointBarInterface : Start ***/
-void ATurret::InitHelthPointBar()
-{
-	if (!HelthPointBar)
-		return;
-
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 170.0f));
-	HelthPointBar->SetDrawSize(FVector2D(100, 20));
-}
-/*** IHealthPointBarInterface : End ***/
-
-/*** ConstructBuildingStaticMeshComponent : Start ***/
 void ATurret::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Turrets/MotionGun/MotionGun_StaticMesh.MotionGun_StaticMesh'"),
 		FVector(60.0f, 60.0f, 30.0f), FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
-/*** ConstructBuildingStaticMeshComponent : End ***/
 
-/*** BuildingStaticMeshComponent : Start ***/
 void ATurret::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Turrets/MotionGun/MotionGun_StaticMesh.MotionGun_StaticMesh'"),
 		FVector(60.0f, 60.0f, 60.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	
 	BuildingSMC_1->SetHiddenInGame(true);
+	
 	AddBuildingSkMC(&BuildingSkMC_1, &ConstructBuildingSMC_1, TEXT("BuildingSkMC_1"),
 		TEXT("SkeletalMesh'/Game/Buildings/Turrets/MotionGun/Motion_gun.Motion_gun'"),
 		FVector(60.0f, 60.0f, 60.0f), FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+	
 	InitAnimation(BuildingSkMC_1);
 
 }
-/*** BuildingStaticMeshComponent : End ***/
+/*** ABuilding : End ***/
 
-/*** Animation : Start ***/
+/*** ATurret : Start ***/
 void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent)
 {
 	// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
@@ -119,4 +120,4 @@ void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent)
 		SkeletalMeshComponent->OverrideAnimationData(AnimSequence, true, true, 0.0f, 1.0f); // 애니메이션 반복재생
 	}
 }
-/*** Animation : End ***/
+/*** ATurret : End ***/

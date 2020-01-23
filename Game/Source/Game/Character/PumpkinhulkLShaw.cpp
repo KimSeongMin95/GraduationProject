@@ -107,17 +107,17 @@ void APumpkinhulkLShaw::InitSkeletalAnimation()
 /*** SkeletalAnimation : End ***/
 
 /*** FSM : Start ***/
-void APumpkinhulkLShaw::RunFSM(float DeltaTime)
+void APumpkinhulkLShaw::RunFSM()
 {
-	Super::RunFSM(DeltaTime);
+	Super::RunFSM();
 
 }
 /*** FSM : End ***/
 
 /*** BehaviorTree : Start ***/
-void APumpkinhulkLShaw::RunBehaviorTree(float DeltaTime)
+void APumpkinhulkLShaw::RunBehaviorTree()
 {
-	Super::RunBehaviorTree(DeltaTime);
+	Super::RunBehaviorTree();
 
 }
 /*** BehaviorTree : End ***/

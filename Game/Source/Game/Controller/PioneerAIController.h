@@ -15,11 +15,14 @@ class GAME_API APioneerAIController : public ABaseAIController
 public:
 	APioneerAIController();
 
+	virtual void BeginPlay() override;
+
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
+/*** BaseAIController : Start ***/
 public:
-	// юс╫ц
 	UFUNCTION()
-		virtual void MoveRandomDestination() override;
+		virtual void MoveRandomlyInDetectionRange(bool bLookAtDestination) override;
+/*** BaseAIController : End ***/
 };

@@ -13,45 +13,43 @@ class GAME_API AGate : public ABuilding
 
 /*** Basic Function : Start ***/
 public:
-	// Sets default values for this actor's properties
 	AGate();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-/*** Stat : Start ***/
-public:
-	virtual void InitStat();
-/*** Stat : End ***/
 
-/*** HelthPointBar : Start ***/
+/*** IHealthPointBarInterface : Start ***/
 public:
 	virtual void InitHelthPointBar();
-/*** HelthPointBar : End ***/
+/*** IHealthPointBarInterface : End ***/
 
-/*** ConstructBuildingStaticMeshComponent : Start ***/
+
+/*** ABuilding : Start ***/
+protected:
+	virtual void InitStat() override;
+	virtual void InitConstructBuilding() override;
+	virtual void InitBuilding() override;
+/*** ABuilding : End ***/
+
+
+/*** AGate : Start ***/
 public:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "AGate")
 		class UStaticMeshComponent* ConstructBuildingSMC_1 = nullptr;
-	UPROPERTY(VisibleAnywhere)
+
+	UPROPERTY(VisibleAnywhere, Category = "AGate")
 		class UStaticMeshComponent* ConstructBuildingSMC_2 = nullptr;
 
-	virtual void InitConstructBuilding();
-/*** ConstructBuildingStaticMeshComponent : End ***/
-
-/*** BuildingStaticMeshComponent : Start ***/
 public:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "AGate")
 		class UStaticMeshComponent* BuildingSMC_1 = nullptr;
-	UPROPERTY(VisibleAnywhere)
-		class UStaticMeshComponent* BuildingSMC_2 = nullptr;
 
-	virtual void InitBuilding();
-/*** BuildingStaticMeshComponent : End ***/
+	UPROPERTY(VisibleAnywhere, Category = "AGate")
+		class UStaticMeshComponent* BuildingSMC_2 = nullptr;
+/*** AGate : End ***/
 };

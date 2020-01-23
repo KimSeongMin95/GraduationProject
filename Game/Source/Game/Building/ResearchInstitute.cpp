@@ -7,6 +7,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+
 /*** Basic Function : Start ***/
 AResearchInstitute::AResearchInstitute()
 {
@@ -33,10 +34,22 @@ void AResearchInstitute::Tick(float DeltaTime)
 }
 /*** Basic Function : End ***/
 
-/*** Stat : Start ***/
+
+/*** IHealthPointBarInterface : Start ***/
+void AResearchInstitute::InitHelthPointBar()
+{
+	if (!HelthPointBar)
+		return;
+
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+}
+/*** IHealthPointBarInterface : End ***/
+
+
+/*** ABuilding : Start ***/
 void AResearchInstitute::InitStat()
 {
-	// Default Settings
 	HealthPoint = 10.0f;
 	MaxHealthPoint = 100.0f;
 
@@ -54,33 +67,18 @@ void AResearchInstitute::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-/*** Stat : End ***/
 
-/*** IHealthPointBarInterface : Start ***/
-void AResearchInstitute::InitHelthPointBar()
-{
-	if (!HelthPointBar)
-		return;
-
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
-	HelthPointBar->SetDrawSize(FVector2D(100, 20));
-}
-/*** IHealthPointBarInterface : End ***/
-
-/*** ConstructBuildingStaticMeshComponent : Start ***/
 void AResearchInstitute::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/ResearchInstitute/Temp_ResearchInstitute.Temp_ResearchInstitute'"),
 		FVector(20.0f, 20.0f, 10.0f), FRotator(0.0f, 0.0f, 0.0f));
 }
-/*** ConstructBuildingStaticMeshComponent : End ***/
 
-/*** BuildingStaticMeshComponent : Start ***/
 void AResearchInstitute::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/ResearchInstitute/Temp_ResearchInstitute.Temp_ResearchInstitute'"),
 		FVector(20.0f, 20.0f, 20.0f), FRotator(0.0f, 0.0f, 0.0f));
 }
-/*** BuildingStaticMeshComponent : End ***/
+/*** ABuilding : End ***/

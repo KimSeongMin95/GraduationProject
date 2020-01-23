@@ -275,7 +275,7 @@ public:
 	EPioneerFSM State;
 
 	void InitFSM();
-	virtual void RunFSM(float DeltaTime) final;
+	virtual void RunFSM() final;
 
 	void FindTheTargetActor();
 
@@ -286,7 +286,7 @@ public:
 
 	/*** BehaviorTree : Start ***/
 public:
-	virtual void RunBehaviorTree(float DeltaTime) final;
+	virtual void RunBehaviorTree() final;
 	/*** BehaviorTree : End ***/
 
 	/*** Item : Start ***/

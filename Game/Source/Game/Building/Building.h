@@ -47,7 +47,8 @@ enum class EBuildingState : uint8
 };
 
 USTRUCT()
-struct FTArrayOfUMaterialInterface /** TArray는 1차원만 사용가능하므로 구조체를 이용하여 2차원으로 사용합니다.*/
+/** TArray는 1차원만 사용가능하므로 구조체를 이용하여 2차원으로 사용합니다.*/
+struct FTArrayOfUMaterialInterface 
 {
 	GENERATED_BODY()
 
@@ -60,33 +61,79 @@ class GAME_API ABuilding : public AActor, public IHealthPointBarInterface
 {
 	GENERATED_BODY()
 
-	/*** Basic Function : Start ***/
+
+/*** Basic Function : Start ***/
 public:
-	// Sets default values for this actor's properties
 	ABuilding();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	/*** Basic Function : End ***/
+/*** Basic Function : End ***/
 
-	/*** RootComponent : Start ***/
+
+/*** IHealthPointBarInterface : Start ***/
 public:
-	UPROPERTY(VisibleAnywhere)
-		class USphereComponent* SphereComponent = nullptr; /** RootComponent */
+	virtual void InitHelthPointBar() override;
+	virtual void BeginPlayHelthPointBar() final;
+	virtual void TickHelthPointBar() final;
+/*** IHealthPointBarInterface : End ***/
 
-	void InitRootComponent();
-	/*** RootComponent : End ***/
+
+/*** ABuilding : Start ***/
+private:
+	UPROPERTY(VisibleAnywhere, Category = "ABuilding")
+		/** RootComponent */
+		class USphereComponent* SphereComponent = nullptr; 
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "ConstructBuilding")
+		/** StaticMeshs */
+		TArray<class UStaticMeshComponent*> ConstructBuildingSMCs;
+
+	UPROPERTY(VisibleAnywhere, Category = "ConstructBuilding")
+		/** SkeltalMeshs */
+		TArray<class UStaticMeshComponent*> ConstructBuildingSkMCs;
+
+
+	UPROPERTY(VisibleAnywhere)
+		/** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
+		TArray<class AActor*> OverapedActors;
+
+
+	UPROPERTY(VisibleAnywhere, Category = "Building")
+		/** StaticMeshs */
+		TArray<class UStaticMeshComponent*> BuildingSMCs;
+
+	UPROPERTY(VisibleAnywhere, Category = "Building")
+		/** SkeltalMeshs */
+		TArray<class USkeletalMeshComponent*> BuildingSkMCs;
+
+	UPROPERTY(VisibleAnywhere, Category = "Building")
+		/** StaticMeshs의 원본 머터리얼들을 저장합니다.
+		TArray는 1차원만 사용가능하므로 구조체를 이용하여 2차원으로 사용합니다.*/
+		TArray<FTArrayOfUMaterialInterface> BuildingSMCsMaterials;
+
+	UPROPERTY(VisibleAnywhere, Category = "Building")
+		/** SkeltalMeshs의 원본 머터리얼들을 저장합니다.
+		TArray는 1차원만 사용가능하므로 구조체를 이용하여 2차원으로 사용합니다.*/
+		TArray<FTArrayOfUMaterialInterface> BuildingSkMCsMaterials;
+
+
+	UPROPERTY(VisibleAnywhere)
+		/** EBuildingState::Constructable일 때 사용할 연두색 반투명한 머터리얼 */
+		class UMaterial* ConstructableMaterial = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+		/** EBuildingState::Constructable일 때 사용할 빨간색 반투명한 머터리얼 */
+		class UMaterial* UnConstructableMaterial = nullptr;
 
 public:
 	EBuildingState BuildingState;
 
-	/*** Stat : Start ***/
-public:
+
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float HealthPoint; /** 초기 생명력 */
 	UPROPERTY(EditAnywhere, Category = "Stat")
@@ -117,90 +164,62 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float ProductionElectricPower; /** 생산 전력 (MW) */
 
+private:
+
+
+protected:
 	virtual void InitStat();
-
-	UFUNCTION(Category = "Stat")
-		void SetHealthPoint(float Delta);
-	/*** Stat : End ***/
-
-	/*** IHealthPointBarInterface : Start ***/
-public:
-	virtual void InitHelthPointBar() override;
-	virtual void BeginPlayHelthPointBar() final;
-	virtual void TickHelthPointBar() final;
-	/*** IHealthPointBarInterface : End ***/
-
-	/*** ConstructBuildingStaticMeshComponent : Start ***/
-public:
-	// StaticMeshs
-	UPROPERTY(VisibleAnywhere)
-		TArray<class UStaticMeshComponent*> ConstructBuildingSMCs;
-
-	// SkeltalMeshs
-	UPROPERTY(VisibleAnywhere)
-		TArray<class UStaticMeshComponent*> ConstructBuildingSkMCs;
-
-	UFUNCTION()
-		virtual void OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 	virtual void InitConstructBuilding();
-	void AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind = TEXT("NULL"), FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
-	/*** ConstructBuildingStaticMeshComponent : End ***/
+	virtual void InitBuilding();
+	void InitMaterial();
 
-	/*** BuildingStaticMeshComponent : Start ***/
-public:
-	// StaticMeshs
-	UPROPERTY(VisibleAnywhere)
-		TArray<class UStaticMeshComponent*> BuildingSMCs;
-	// TArray는 1차원만 사용가능하므로 구조체를 이용하여 2차원으로 사용합니다.
-	UPROPERTY(VisibleAnywhere)
-		TArray<FTArrayOfUMaterialInterface> BuildingSMCsMaterials; /** 기존 머터리얼들을 저장 */
+	void AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 	
-	// SkeltalMeshs
-	UPROPERTY(VisibleAnywhere)
-		TArray<class USkeletalMeshComponent*> BuildingSkMCs;
-	// TArray는 1차원만 사용가능하므로 구조체를 이용하여 2차원으로 사용합니다.
-	UPROPERTY(VisibleAnywhere)
-		TArray<FTArrayOfUMaterialInterface> BuildingSkMCsMaterials; /** 기존 머터리얼들을 저장 */
+	void AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	
+	/** SubStaticMeshComp엔 먼저 AddBuildingSMC(SubStaticMeshComp) 하고 가져와야 함. */
+	void AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, UStaticMeshComponent** SubStaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
-	UPROPERTY(VisibleAnywhere)
-		TArray<class AActor*> OverapedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
-	UFUNCTION()
+
+	UFUNCTION(Category = "ConstructBuilding")
+		virtual void OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION(Category = "Building")
 		virtual void OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
+	
+	UFUNCTION(Category = "Building")
 		virtual void OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	virtual void InitBuilding();
-	void AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind = TEXT("NULL"), FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
-	void AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, UStaticMeshComponent** SubStaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind = TEXT("NULL"), FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
-	void SetBuildingMaterials();
-	/*** BuildingStaticMeshComponent : End ***/
 
-	/*** Material : Start ***/
 public:
-	UPROPERTY(VisibleAnywhere)
-		class UMaterial* ConstructableMaterial = nullptr; /** 연두색 반투명한 머터리얼 */
-	void SetConstructableMaterial();
+	UFUNCTION(Category = "Stat")
+		void SetHealthPoint(float Value);
 
-	UPROPERTY(VisibleAnywhere)
-		class UMaterial* UnConstructableMaterial = nullptr; /** 빨간색 반투명한 머터리얼 */
-	void SetUnConstructableMaterial();
 
-	void InitMaterial();
-	/*** Material : End ***/
+	UFUNCTION(Category = "Building")
+		void SetBuildingMaterials();
 
-	/*** Rotation : Start ***/
-public:
-	void Rotating(float Value);
-	/*** Rotation : End ***/
+	UFUNCTION(Category = "Building")
+		void SetConstructableMaterial();
+	
+	UFUNCTION(Category = "Building")
+		void SetUnConstructableMaterial();
 
-	/*** Constructing And Destorying : Start ***/
-public:
-	bool Constructing();
-	void Destroying();
-	UFUNCTION()
+
+	UFUNCTION(Category = "Rotation")
+		void Rotating(float Value);
+
+
+	UFUNCTION(Category = "ABuilding")
+		/** EBuildingState::Constructable -> Constructing */
+		bool Constructing();
+
+	UFUNCTION(Category = "ABuilding")
+		/** EBuildingState::Constructing -> Constructed */
 		void CompleteConstructing();
-	/*** Constructing And Destorying: End ***/
 
-
+	UFUNCTION(Category = "ABuilding")
+		/** EBuildingState::Destroying */
+		void Destroying();
+/*** ABuilding : End ***/
 };

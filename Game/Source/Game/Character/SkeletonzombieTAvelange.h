@@ -43,11 +43,11 @@ public:
 
 	/*** FSM : Start ***/
 public:
-	virtual void RunFSM(float DeltaTime) final;
+	virtual void RunFSM() final;
 	/*** FSM : End ***/
 
 	/*** BehaviorTree : Start ***/
 public:
-	virtual void RunBehaviorTree(float DeltaTime) final;
+	virtual void RunBehaviorTree() final;
 	/*** BehaviorTree : End ***/
 };

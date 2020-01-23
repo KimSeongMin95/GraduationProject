@@ -6,9 +6,6 @@
 #include "Camera/CameraActor.h"
 #include "WorldViewCameraActor.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class GAME_API AWorldViewCameraActor : public ACameraActor
 {

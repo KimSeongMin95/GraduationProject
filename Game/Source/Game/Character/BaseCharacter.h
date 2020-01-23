@@ -95,7 +95,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		TArray<class AActor*> OverapedDetectRangeActors; /** DetactRangeSphereComp와 Overlap된 액터들을 모두 저장하고 벗어나면 삭제 */
 	UPROPERTY(EditAnywhere)
-		class USphereComponent* DetactRangeSphereComp = nullptr;
+		class USphereComponent* DetectRangeSphereComp = nullptr;
 	UFUNCTION()
 		virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -159,11 +159,11 @@ public:
 
 	/*** FSM : Start ***/
 public:
-	virtual void RunFSM(float DeltaTime);
+	virtual void RunFSM();
 	/*** FSM : End ***/
 
 	/*** BehaviorTree : Start ***/
 public:
-	virtual void RunBehaviorTree(float DeltaTime);
+	virtual void RunBehaviorTree();
 	/*** BehaviorTree : End ***/
 };
