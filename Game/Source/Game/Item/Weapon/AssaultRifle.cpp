@@ -55,7 +55,7 @@ void AAssaultRifle::InitStat()
 
 	AttackPower = 10.0f;
 	AttackSpeed = 5.0f;
-	AttackRange = 12.0f * AMyGameModeBase::CellSize;
+	AttackRange = 12.0f * AOnlineGameMode::CellSize;
 
 	FireCoolTime = 0.0;
 	ReloadTime = 2.0f;

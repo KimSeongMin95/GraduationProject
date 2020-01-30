@@ -95,7 +95,6 @@ public:
 
 	void ActiveToggleOfImpactParticleSystem(bool bDefaultRotation = false);
 
-
 	/** Time초 후에 Projectile이 자동적으로 소멸되도록 BeginPlay에서 호출 */
 	virtual void SetLifespan(float Time);
 /*** AProjectile : End ***/

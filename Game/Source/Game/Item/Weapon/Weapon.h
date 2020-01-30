@@ -3,7 +3,7 @@
 #pragma once
 
 /*** 직접 정의한 헤더 선언 : Start ***/
-#include "MyGameModeBase.h"
+#include "GameMode/OnlineGameMode.h"
 /*** 직접 정의한 헤더 선언 : End ***/
 
 /*** 언리얼엔진 헤더 선언 : Start ***/

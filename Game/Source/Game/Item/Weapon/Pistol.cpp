@@ -56,7 +56,7 @@ void APistol::InitStat()
 
 	AttackPower = 5.0f;
 	AttackSpeed = 3.0f;
-	AttackRange = 8.0f * AMyGameModeBase::CellSize;
+	AttackRange = 8.0f * AOnlineGameMode::CellSize;
 
 	FireCoolTime = 0.0;
 	ReloadTime = 3.0f;

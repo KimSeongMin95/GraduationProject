@@ -20,7 +20,7 @@
 /*** Interface 헤더 선언 : Start ***/
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "MyGameModeBase.h"
+#include "GameMode/OnlineGameMode.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 #include "CoreMinimal.h"

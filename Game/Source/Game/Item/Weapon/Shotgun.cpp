@@ -55,7 +55,7 @@ void AShotgun::InitStat()
 
 	AttackPower = 10.0f;
 	AttackSpeed = 0.8f;
-	AttackRange = 10.0f * AMyGameModeBase::CellSize;
+	AttackRange = 10.0f * AOnlineGameMode::CellSize;
 
 	FireCoolTime = 0.0f;
 	ReloadTime = 4.0f;

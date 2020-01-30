@@ -152,8 +152,8 @@ void APioneer::InitRanges()
 	GetAttackRangeSphereComp()->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_AttackRange);
 	GetAttackRangeSphereComp()->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_AttackRange);
 
-	GetDetectRangeSphereComp()->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
-	GetAttackRangeSphereComp()->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
+	GetDetectRangeSphereComp()->SetSphereRadius(AOnlineGameMode::CellSize * DetectRange);
+	GetAttackRangeSphereComp()->SetSphereRadius(AOnlineGameMode::CellSize * AttackRange);
 }
 
 void APioneer::InitAIController()
@@ -184,7 +184,7 @@ void APioneer::InitAIController()
 
 void APioneer::InitCharacterMovement()
 {
-	GetCharacterMovement()->MaxWalkSpeed = AMyGameModeBase::CellSize * MoveSpeed; // 움직일 때 걷는 속도
+	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
 }
 
 

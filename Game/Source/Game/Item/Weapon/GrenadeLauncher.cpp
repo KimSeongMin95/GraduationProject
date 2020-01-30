@@ -55,7 +55,7 @@ void AGrenadeLauncher::InitStat()
 
 	AttackPower = 40.0f;
 	AttackSpeed = 0.5f;
-	AttackRange = 10.0f * AMyGameModeBase::CellSize;
+	AttackRange = 10.0f * AOnlineGameMode::CellSize;
 
 	FireCoolTime = 0.0f;
 	ReloadTime = 5.0f;

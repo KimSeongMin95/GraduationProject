@@ -145,7 +145,7 @@ void ABaseCharacter::InitRanges()
 {
 	DetectRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetectRangeSphereComp"));
 	DetectRangeSphereComp->SetupAttachment(RootComponent);
-	DetectRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
+	DetectRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * DetectRange);
 
 	DetectRangeSphereComp->SetGenerateOverlapEvents(true);
 	DetectRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -154,7 +154,7 @@ void ABaseCharacter::InitRanges()
 
 	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
 	AttackRangeSphereComp->SetupAttachment(RootComponent);
-	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
+	AttackRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * AttackRange);
 
 	AttackRangeSphereComp->SetGenerateOverlapEvents(true);
 	AttackRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -186,7 +186,7 @@ void ABaseCharacter::InitCharacterMovement()
 	//GetCharacterMovement()->JumpZVelocity = 600.0f;
 	//GetCharacterMovement()->AirControl = 0.2f;
 	//GetCharacterMovement()->MaxWalkSpeed = 600.0f; // 움직일 때 걷는 속도
-	GetCharacterMovement()->MaxWalkSpeed = AMyGameModeBase::CellSize * MoveSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed;
 	GetCharacterMovement()->MaxStepHeight = 45.0f; // 움직일 때 45.0f 높이는 올라갈 수 있도록 합니다. ex) 계단
 }
 

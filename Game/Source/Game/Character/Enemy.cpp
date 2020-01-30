@@ -66,8 +66,8 @@ void AEnemy::InitRanges()
 	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
 	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
 
-	DetectRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * DetectRange);
-	AttackRangeSphereComp->SetSphereRadius(AMyGameModeBase::CellSize * AttackRange);
+	DetectRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * DetectRange);
+	AttackRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * AttackRange);
 }
 
 void AEnemy::InitAIController()
@@ -96,7 +96,7 @@ void AEnemy::InitAIController()
 
 void AEnemy::InitCharacterMovement()
 {
-	GetCharacterMovement()->MaxWalkSpeed = AMyGameModeBase::CellSize * MoveSpeed; // 움직일 때 걷는 속도
+	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
 }
 
 

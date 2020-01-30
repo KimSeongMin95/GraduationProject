@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MyGameModeBase.h"
+#include "OnlineGameMode.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Controller/PioneerController.h"
@@ -9,9 +9,10 @@
 #include "MyHUD.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
-const float AMyGameModeBase::CellSize = 64.0f;
+const float AOnlineGameMode::CellSize = 64.0f;
 
-AMyGameModeBase::AMyGameModeBase()
+/*** Basic Function : Start ***/
+AOnlineGameMode::AOnlineGameMode()
 {
 	/***** 필수! 꼭 읽어주세요. : Start *****/
 	/*
@@ -53,15 +54,13 @@ AMyGameModeBase::AMyGameModeBase()
 	//PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
-/** Called when the game starts or when spawned. inherited in Actor, triggered before StartPlay()*/
-void AMyGameModeBase::BeginPlay()
+void AOnlineGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
-/** inherited in GameModeBase, BeginPlay()이후 실행됩니다. */
-void AMyGameModeBase::StartPlay()
+void AOnlineGameMode::StartPlay()
 {
 	Super::StartPlay();
 
@@ -76,15 +75,16 @@ void AMyGameModeBase::StartPlay()
 	SpawnPioneerManager();
 }
 
-// Called every frame
-void AMyGameModeBase::Tick(float DeltaTime)
+void AOnlineGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
 }
+/*** Basic Function : End ***/
+
 
 /** APioneerManager 객체를 생성합니다. */
-void AMyGameModeBase::SpawnPioneerManager()
+void AOnlineGameMode::SpawnPioneerManager()
 {
 	UWorld* const world = GetWorld();
 	if (!world)
