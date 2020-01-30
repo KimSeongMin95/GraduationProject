@@ -29,12 +29,16 @@ void AMainScreenGameMode::BeginPlay()
 	InitWidget(world, &MainScreenWidget, "WidgetBlueprint'/Game/UMG/MainScreen.MainScreen_C'", true);
 	InitWidget(world, &OnlineWidget, "WidgetBlueprint'/Game/UMG/Online.Online_C'", false);
 	InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/Settings.Settings_C'", false);
+
+	FindMatchList();
 }
 
 void AMainScreenGameMode::StartPlay()
 {
 	Super::StartPlay();
 
+	/*if (DefaultPawnClass)
+		DefaultPawnClass->b*/
 }
 
 void AMainScreenGameMode::Tick(float DeltaTime)
@@ -117,4 +121,37 @@ void AMainScreenGameMode::BackToMainScreenWidget()
 
 
 }
+
+
+void AMainScreenGameMode::FindMatchList()
+{
+	if (!OnlineWidget)
+		return;
+
+
+	UWidgetTree* WidgetTree = OnlineWidget->WidgetTree;
+	if (WidgetTree)
+	{
+		MatchListOfOnlineWidget = WidgetTree->FindWidget<UScrollBox>(FName(TEXT("MatchList")));
+		if (!MatchListOfOnlineWidget)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::FindMatchList: if (!MatchListOfOnlineWidget)"));
+		}
+		else
+		{
+			// 버튼을 새로 생성
+			Temp = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
+			Temp->SetCategoryName("Temp");
+
+			MatchListOfOnlineWidget->AddChild(Temp);
+		}
+	}
+
+	
+
+
+	//Temp = UUserWidget::CreateWidgetInstance(,WidgetTree, UButton::StaticClass(), "Temp");
+}
+
+
 /*** AMainScreenGameMode : End ***/
