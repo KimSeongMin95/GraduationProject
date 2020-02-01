@@ -12,12 +12,143 @@
 #include "Components/ScrollBox.h"
 #include "Components/Button.h"
 #include "Components/HorizontalBox.h"
+#include "Components/HorizontalBoxSlot.h"
 #include "Components/EditableTextBox.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
+
+#include <map>
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "MainScreenGameMode.generated.h"
+
+class CMatchOfOnlineWidget
+{
+public:
+	class UWidgetTree* WidgetTree = nullptr;
+	class UScrollBox* MatchList = nullptr;
+
+	class UHorizontalBox* Line = nullptr;
+	class UEditableTextBox* Game = nullptr;
+	class UEditableTextBox* Title = nullptr;
+	class UEditableTextBox* Leader = nullptr;
+	class UEditableTextBox* Stage = nullptr;
+	class UEditableTextBox* Numbers = nullptr;
+	class UButton* Button = nullptr;
+
+public:
+	CMatchOfOnlineWidget(
+		class UWidgetTree* WidgetTreeOfOnlineWidget,
+		class UScrollBox* MatchListOfOnlineWidget, 
+		const FString TextOfGame, 
+		const FString TextOfTitle, 
+		const FString TextOfLeader, /** SocketID */
+		const FString TextOfStage, 
+		const FString TextOfNumbers
+		) :
+		WidgetTree(WidgetTreeOfOnlineWidget),
+		MatchList(MatchListOfOnlineWidget)
+	{
+		if (!WidgetTree || !MatchList)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("if (!WidgetTree || !MatchList)"));
+			return;
+		}
+
+
+		Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
+		if (!Line) return;
+		MatchList->AddChild(Line);
+
+
+		Game = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
+		if (!Game) return;
+		Line->AddChild(Game);
+
+		Title = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
+		if (!Title) return;
+		Line->AddChild(Title);
+
+		Leader = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
+		if (!Leader) return;
+		Line->AddChild(Leader);
+
+		Stage = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
+		if (!Stage) return;
+		Line->AddChild(Stage);
+
+		Numbers = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
+		if (!Numbers) return;
+		Line->AddChild(Numbers);
+
+
+		Button = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
+		if (!Button) return;
+		Line->AddChild(Button);
+
+		
+		InitEditableTextBox(Game, TextOfGame, 160.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(Title, TextOfTitle, 700.0f, ETextJustify::Type::Left);
+		InitEditableTextBox(Leader, TextOfLeader, 160.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(Stage, TextOfStage, 160.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(Numbers, TextOfNumbers, 190.0f, ETextJustify::Type::Center);
+
+		
+		if (class UHorizontalBoxSlot* HorSlot = Cast<class UHorizontalBoxSlot>(Button->Slot))
+		{
+			FSlateChildSize Size(ESlateSizeRule::Type::Fill);
+			HorSlot->SetSize(Size);
+
+			HorSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
+
+			HorSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
+		}
+
+		FMargin normalPadding = 0;
+		Button->WidgetStyle.SetNormalPadding(normalPadding);
+
+		FSlateBrush slateBrush;
+		slateBrush.TintColor = FLinearColor(0.2f, 1.0f, 0.8f, 1.0f);
+		Button->WidgetStyle.SetHovered(slateBrush);
+	};
+
+	~CMatchOfOnlineWidget() 
+	{
+		if (WidgetTree && Line)
+			WidgetTree->RemoveWidget(Line);
+	};
+
+	void InitEditableTextBox(
+		class UEditableTextBox* EditableTextBox, 
+		const FString Text, 
+		float MinimumDesiredWidth, 
+		ETextJustify::Type Justification)
+	{
+		
+		EditableTextBox->SetText(FText::FromString(Text));
+		EditableTextBox->MinimumDesiredWidth = MinimumDesiredWidth;
+		EditableTextBox->Justification = Justification;
+
+
+		EditableTextBox->SetIsReadOnly(true);
+
+		/* 폰트를 적용하는 방법
+		폰트 파일인 .ttf는 기본적으로 Engine Content/Slate/Fonts/에 존재합니다.
+		// EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(GEngine->GetLargeFont(), 24);
+		// EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 24));
+		*/
+		EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 32));
+		
+		FMargin padding;
+		padding.Left = 10.0f;
+		padding.Right = 10.0f;
+		EditableTextBox->WidgetStyle.SetPadding(padding);
+
+		FSlateColor backgroundColor = FLinearColor(0.3f, 0.3f, 0.3f, 1.0f);
+		EditableTextBox->WidgetStyle.SetBackgroundColor(backgroundColor);
+	}
+
+};
 
 
 UCLASS()
@@ -43,18 +174,36 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 메인화면을 띄우는 HUD 객체 */
-		class UUserWidget* MainScreenWidget;
+		class UUserWidget* MainScreenWidget = nullptr;
+
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 온라인창을 띄우는 HUD 객체 */
-		class UUserWidget* OnlineWidget;
+		class UUserWidget* OnlineWidget = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** OnlineWidget의 WidgetTree */
+		class UWidgetTree* WidgetTreeOfOnlineWidget = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** OnlineWidget의 MatchList */
+		class UScrollBox* MatchListOfOnlineWidget = nullptr;
+
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 대기방 HUD 객체 */
+		class UUserWidget* OnlineWaitingRoomWidget = nullptr;
+
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 설정창을 띄우는 HUD 객체 */
-		class UUserWidget* SettingsWidget;
+		class UUserWidget* SettingsWidget = nullptr;
+
+	std::map<int, CMatchOfOnlineWidget*> MatchList;
 
 private:
 	void InitWidget(UWorld* const World, class UUserWidget** UserWidget, const FString ReferencePath, bool bAddToViewport);
+	void InitOnlineWidget();
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
@@ -67,85 +216,22 @@ public:
 		void ActivateSettingsWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void BackToMainScreenWidget();
+		void BackToMainScreenWidget();	
 
-	class UButton* Temp = nullptr;
-	class UScrollBox* MatchListOfOnlineWidget = nullptr;
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void FindMatchList();
+		void CreateMatch(int Key, const FString TextOfGame, const FString TextOfTitle, const FString TextOfLeader, const FString TextOfStage, const FString TextOfNumbers);
 
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeleteMatch(int Key);
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeleteAllMatch();
+
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateOnlineWaitingRoomWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void BackToOnlineWidget();
+	
 /*** AMainScreenGameMode : End ***/
 };
 
-
-////UPROPERTY(VisibleAnywhere)
-//class UWidgetComponent* HelthPointBar = nullptr;
-////UPROPERTY(EditAnywhere)
-//class UUserWidget* HelthPointBarUserWidget = nullptr;
-////UPROPERTY(EditAnywhere)
-//class UProgressBar* ProgressBar = nullptr;
-
-//void ABuilding::InitHelthPointBar()
-//{
-//	HelthPointBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelthPointBar"));
-//	//HelthPointBar = NewObject<UWidgetComponent>(this, UWidgetComponent::StaticClass());
-//	HelthPointBar->SetupAttachment(RootComponent);
-//	HelthPointBar->bAbsoluteRotation = true; // 절대적인 회전값을 적용합니다.
-//
-//	HelthPointBar->SetOnlyOwnerSee(false);
-//	//HelthPointBar->SetIsReplicated(false);
-//
-//	HelthPointBar->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
-//	//HelthPointBar->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-//	HelthPointBar->SetRelativeRotation(FRotator(45.0f, 180.0f, 0.0f)); // 항상 플레이어에게 보이도록 회전 값을 World로 해야 함.
-//	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
-//	HelthPointBar->SetDrawSize(FVector2D(100, 30));
-//
-//	// Screen은 뷰포트에서 UI처럼 띄워주는 것이고 World는 게임 내에서 UI처럼 띄워주는 것
-//	HelthPointBar->SetWidgetSpace(EWidgetSpace::World);
-//}
-//void ABuilding::BeginPlayHelthPointBar()
-//{
-//	UWorld* const world = GetWorld();
-//	if (!world)
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar() Failed: UWorld* const World = GetWorld();"));
-//		return;
-//	}
-//
-//	/*** 주의: Blueprint 애셋은 뒤에 _C를 붙여줘서 클래스를 가져와줘야 함. ***/
-//	FString HelthPointBarBP_Reference = "WidgetBlueprint'/Game/Characters/HelthPointBar.HelthPointBar_C'";
-//	UClass* HelthPointBarBP = LoadObject<UClass>(this, *HelthPointBarBP_Reference);
-//
-//	// 가져온 WidgetBlueprint를 UWidgetComponent에 바로 적용하지말고 따로 UUserWidget에 저장하여 설정을 한 뒤
-//	// UWidgetComponent->SetWidget(저장한 UUserWidget);으로 UWidgetComponent에 적용해야 함.
-//	//HelthPointBar->SetWidgetClass(HelthPointBarBP);
-//	HelthPointBarUserWidget = CreateWidget(world, HelthPointBarBP); // wolrd가 꼭 필요.
-//
-//	if (HelthPointBarUserWidget)
-//	{
-//		UWidgetTree* WidgetTree = HelthPointBarUserWidget->WidgetTree;
-//		if (WidgetTree)
-//		{
-//			//// 이 방법은 안됨.
-//			// ProgreeBar = Cast<UProgressBar>(HelthPointBarUserWidget->GetWidgetFromName(FName(TEXT("ProgressBar_153"))));
-//
-//			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
-//			if (ProgressBar == nullptr)
-//				UE_LOG(LogTemp, Warning, TEXT("ProgressBar == nullptr"));
-//		}
-//		else
-//			UE_LOG(LogTemp, Warning, TEXT("WidgetTree == nullptr"));
-//	}
-//	else
-//		UE_LOG(LogTemp, Warning, TEXT("HelthPointBarUserWidget == nullptr"));
-//
-//	HelthPointBar->SetWidget(HelthPointBarUserWidget);
-//}
-//
-//void ABuilding::TickHelthPointBar()
-//{
-//	if (ProgressBar)
-//		ProgressBar->SetPercent(HealthPoint / MaxHealthPoint);
-//}

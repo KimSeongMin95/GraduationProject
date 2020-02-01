@@ -1,17 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "MainScreenGameMode.h"
 
-/*** Á÷Á¢ Á¤ÀÇÇÑ Çì´õ Àü¹æ ¼±¾ð : Start ***/
+/*** ì§ì ‘ ì •ì˜í•œ í—¤ë” ì „ë°© ì„ ì–¸ : Start ***/
 
-/*** Á÷Á¢ Á¤ÀÇÇÑ Çì´õ Àü¹æ ¼±¾ð : End ***/
+/*** ì§ì ‘ ì •ì˜í•œ í—¤ë” ì „ë°© ì„ ì–¸ : End ***/
 
 
 /*** Basic Function : Start ***/
 AMainScreenGameMode::AMainScreenGameMode()
 {
-	//DefaultPawnClass = nullptr; // DefaultPawnÀÌ »ý¼ºµÇÁö ¾Ê°Ô ÇÕ´Ï´Ù.
+	//DefaultPawnClass = nullptr; // DefaultPawnì´ ìƒì„±ë˜ì§€ ì•Šê²Œ í•©ë‹ˆë‹¤.
 }
 
 void AMainScreenGameMode::BeginPlay()
@@ -27,10 +27,13 @@ void AMainScreenGameMode::BeginPlay()
 
 
 	InitWidget(world, &MainScreenWidget, "WidgetBlueprint'/Game/UMG/MainScreen.MainScreen_C'", true);
-	InitWidget(world, &OnlineWidget, "WidgetBlueprint'/Game/UMG/Online.Online_C'", false);
-	InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/Settings.Settings_C'", false);
 
-	FindMatchList();
+	InitWidget(world, &OnlineWidget, "WidgetBlueprint'/Game/UMG/Online.Online_C'", false);
+	InitOnlineWidget();
+
+	InitWidget(world, &OnlineWaitingRoomWidget, "WidgetBlueprint'/Game/UMG/OnlineWaitingRoom.OnlineWaitingRoom_C'", false);
+
+	InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/Settings.Settings_C'", false);
 }
 
 void AMainScreenGameMode::StartPlay()
@@ -67,6 +70,19 @@ void AMainScreenGameMode::InitWidget(UWorld* const World, class UUserWidget** Us
 }
 
 
+void AMainScreenGameMode::InitOnlineWidget()
+{
+	if (!OnlineWidget)
+		return;
+
+
+	WidgetTreeOfOnlineWidget = OnlineWidget->WidgetTree;
+
+	if (WidgetTreeOfOnlineWidget)
+		MatchListOfOnlineWidget = WidgetTreeOfOnlineWidget->FindWidget<UScrollBox>(FName(TEXT("MatchList")));
+}
+
+
 void AMainScreenGameMode::PlayTutorial()
 {
 	UGameplayStatics::OpenLevel(this, "Tutorial");
@@ -84,7 +100,13 @@ void AMainScreenGameMode::ActivateOnlineWidget()
 		MainScreenWidget->RemoveFromViewport();
 
 	if (OnlineWidget->IsInViewport() == false)
+	{
+		static int tempIdx = 0;
+		for (int i = 0; i < 15; i++)
+			CreateMatch(tempIdx, "Waiting", "GOGOGO!!!", FString::FromInt(tempIdx++), "1", "5 / 100");
+
 		OnlineWidget->AddToViewport();
+	}
 }
 
 void AMainScreenGameMode::ActivateSettingsWidget()
@@ -110,48 +132,91 @@ void AMainScreenGameMode::BackToMainScreenWidget()
 		return;
 	}
 
-	if (MainScreenWidget->IsInViewport() == false)
-		MainScreenWidget->AddToViewport();
-
 	if (OnlineWidget->IsInViewport() == true)
+	{
+		DeleteAllMatch();
+
 		OnlineWidget->RemoveFromViewport();
+	}
 
 	if (SettingsWidget->IsInViewport() == true)
 		SettingsWidget->RemoveFromViewport();
 
-
+	if (MainScreenWidget->IsInViewport() == false)
+		MainScreenWidget->AddToViewport();
 }
 
 
-void AMainScreenGameMode::FindMatchList()
+void AMainScreenGameMode::CreateMatch(int Key, const FString TextOfGame, const FString TextOfTitle, const FString TextOfLeader, const FString TextOfStage, const FString TextOfNumbers)
 {
-	if (!OnlineWidget)
-		return;
-
-
-	UWidgetTree* WidgetTree = OnlineWidget->WidgetTree;
-	if (WidgetTree)
+	if (!WidgetTreeOfOnlineWidget || !MatchListOfOnlineWidget)
 	{
-		MatchListOfOnlineWidget = WidgetTree->FindWidget<UScrollBox>(FName(TEXT("MatchList")));
-		if (!MatchListOfOnlineWidget)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::FindMatchList: if (!MatchListOfOnlineWidget)"));
-		}
-		else
-		{
-			// ¹öÆ°À» »õ·Î »ý¼º
-			Temp = WidgetTree->ConstructWidget<UButton>(UButton::StaticClass());
-			Temp->SetCategoryName("Temp");
-
-			MatchListOfOnlineWidget->AddChild(Temp);
-		}
+		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::CreateWidgetOfWaitingRoom: if (!WidgetTreeOfOnlineWidget || !MatchListOfOnlineWidget)"));
+		return;
 	}
 
-	
+	CMatchOfOnlineWidget* cMatchOfOnlineWidget = new CMatchOfOnlineWidget(
+		WidgetTreeOfOnlineWidget, MatchListOfOnlineWidget,
+		TextOfGame, TextOfTitle, TextOfLeader, TextOfStage, TextOfNumbers
+	);
 
+	MatchList.insert(std::pair<int, CMatchOfOnlineWidget*>(Key, cMatchOfOnlineWidget));
 
-	//Temp = UUserWidget::CreateWidgetInstance(,WidgetTree, UButton::StaticClass(), "Temp");
+}
+
+void AMainScreenGameMode::DeleteMatch(int Key)
+{
+	if (MatchList.at(Key))
+		delete MatchList.at(Key);
+
+	MatchList.erase(Key);
+}
+void AMainScreenGameMode::DeleteAllMatch()
+{
+	for (auto& value : MatchList)
+	{
+		if (value.second)
+			delete value.second;
+	}
+
+	MatchList.clear();
 }
 
 
+
+void AMainScreenGameMode::ActivateOnlineWaitingRoomWidget()
+{
+	if (!OnlineWidget || !OnlineWaitingRoomWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::ActivateOnlineWaitingRoomWidget(): if (!OnlineWidget || !OnlineWaitingRoomWidget)"));
+		return;
+	}
+
+	if (OnlineWidget->IsInViewport() == true)
+	{
+		DeleteAllMatch();
+
+		OnlineWidget->RemoveFromViewport();
+	}
+
+	if (OnlineWaitingRoomWidget->IsInViewport() == false)
+		OnlineWaitingRoomWidget->AddToViewport();
+}
+
+void AMainScreenGameMode::BackToOnlineWidget()
+{
+
+	if (!OnlineWaitingRoomWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::BackToOnlineWidget(): if (!OnlineWaitingRoomWidget)"));
+		return;
+	}
+
+	if (OnlineWaitingRoomWidget->IsInViewport() == true)
+		OnlineWaitingRoomWidget->RemoveFromViewport();
+
+	ActivateOnlineWidget();
+}
 /*** AMainScreenGameMode : End ***/
+
+
