@@ -14,6 +14,8 @@
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/EditableTextBox.h"
+#include "Components/UniformGridPanel.h"
+#include "Components/UniformGridSlot.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include <map>
@@ -22,14 +24,13 @@
 #include "GameFramework/GameModeBase.h"
 #include "MainScreenGameMode.generated.h"
 
-class CMatchOfOnlineWidget
+class CGameOfOnlineWidget
 {
 public:
 	class UWidgetTree* WidgetTree = nullptr;
-	class UScrollBox* MatchList = nullptr;
 
 	class UHorizontalBox* Line = nullptr;
-	class UEditableTextBox* Game = nullptr;
+	class UEditableTextBox* State = nullptr;
 	class UEditableTextBox* Title = nullptr;
 	class UEditableTextBox* Leader = nullptr;
 	class UEditableTextBox* Stage = nullptr;
@@ -37,33 +38,28 @@ public:
 	class UButton* Button = nullptr;
 
 public:
-	CMatchOfOnlineWidget(
-		class UWidgetTree* WidgetTreeOfOnlineWidget,
-		class UScrollBox* MatchListOfOnlineWidget, 
-		const FString TextOfGame, 
-		const FString TextOfTitle, 
+	CGameOfOnlineWidget(
+		class UWidgetTree* WidgetTree, class UScrollBox* ScrollBox,
+		const FString TextOfState,  const FString TextOfTitle,
 		const FString TextOfLeader, /** SocketID */
-		const FString TextOfStage, 
-		const FString TextOfNumbers
-		) :
-		WidgetTree(WidgetTreeOfOnlineWidget),
-		MatchList(MatchListOfOnlineWidget)
+		const FString TextOfStage, const FString TextOfNumbers
+		) : WidgetTree(WidgetTree)
 	{
-		if (!WidgetTree || !MatchList)
+		if (!WidgetTree || !ScrollBox)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("if (!WidgetTree || !MatchList)"));
+			UE_LOG(LogTemp, Warning, TEXT("if (!WidgetTree || !ScrollBox)"));
 			return;
 		}
 
 
 		Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
 		if (!Line) return;
-		MatchList->AddChild(Line);
+		ScrollBox->AddChild(Line);
 
 
-		Game = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
-		if (!Game) return;
-		Line->AddChild(Game);
+		State = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
+		if (!State) return;
+		Line->AddChild(State);
 
 		Title = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
 		if (!Title) return;
@@ -87,7 +83,7 @@ public:
 		Line->AddChild(Button);
 
 		
-		InitEditableTextBox(Game, TextOfGame, 160.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(State, TextOfState, 160.0f, ETextJustify::Type::Center);
 		InitEditableTextBox(Title, TextOfTitle, 700.0f, ETextJustify::Type::Left);
 		InitEditableTextBox(Leader, TextOfLeader, 160.0f, ETextJustify::Type::Center);
 		InitEditableTextBox(Stage, TextOfStage, 160.0f, ETextJustify::Type::Center);
@@ -112,7 +108,7 @@ public:
 		Button->WidgetStyle.SetHovered(slateBrush);
 	};
 
-	~CMatchOfOnlineWidget() 
+	~CGameOfOnlineWidget()
 	{
 		if (WidgetTree && Line)
 			WidgetTree->RemoveWidget(Line);
@@ -150,6 +146,69 @@ public:
 
 };
 
+class CPlayerOfWaitingRoom
+{
+public:
+	class UWidgetTree* WidgetTree = nullptr;
+
+	class UEditableTextBox* Player = nullptr;
+	const FString IPv4Addr;
+	int SocketID = 0;
+	int Num = 0; // Column[0, 10], Row[0, N]
+
+public:
+	CPlayerOfWaitingRoom(
+		class UWidgetTree* WidgetTree, class UUniformGridPanel* UniformGridPanel,
+		const FString IPv4Addr, int SocketID, int Num)
+		: WidgetTree(WidgetTree), IPv4Addr(IPv4Addr), SocketID(SocketID), Num(Num)
+	{
+		if (!WidgetTree || !UniformGridPanel)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("if (!WidgetTree || !WaitingRoom)"));
+			return;
+		}
+
+		Player = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
+		if (!Player) return;
+		UniformGridPanel->AddChild(Player);
+
+		InitEditableTextBox();
+	}
+	~CPlayerOfWaitingRoom()
+	{
+		if (WidgetTree && Player)
+			WidgetTree->RemoveWidget(Player);
+	}
+
+	void InitEditableTextBox()
+	{
+		Player->SetText(FText::FromString(FString::FromInt(SocketID)));
+		Player->MinimumDesiredWidth = 130.0f;
+		Player->Justification = ETextJustify::Type::Center;
+
+		Player->SetIsReadOnly(true);
+
+		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 32));
+
+		FMargin padding;
+		padding.Left = 10.0f;
+		padding.Right = 10.0f;
+		Player->WidgetStyle.SetPadding(padding);
+
+		if (class UUniformGridSlot* gridSlot = Cast<class UUniformGridSlot>(Player->Slot))
+		{
+			gridSlot->SetRow(Num / 11);
+			gridSlot->SetColumn(Num % 11);
+		}
+	}
+};
+
+UENUM()
+enum class EOnlineGameState : uint8
+{
+	Waiting = 0,
+	Playing = 1
+};
 
 UCLASS()
 class GAME_API AMainScreenGameMode : public AGameModeBase
@@ -183,27 +242,45 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** OnlineWidget의 WidgetTree */
-		class UWidgetTree* WidgetTreeOfOnlineWidget = nullptr;
+		class UWidgetTree* WidgetTreeOfOW = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** OnlineWidget의 MatchList */
-		class UScrollBox* MatchListOfOnlineWidget = nullptr;
+		/** OnlineGames를 표시할 OnlineWidget의 ScrollBox */
+		class UScrollBox* ScrollBoxOfOW = nullptr;
+
+	/** 현재 진행중이거나 대기중인 온라인 게임들을 표시하는 CMatchOfOnlineWidget를 저장하는 std::map */
+	std::map<int, CGameOfOnlineWidget*> OnlineGames;
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 대기방 HUD 객체 */
-		class UUserWidget* OnlineWaitingRoomWidget = nullptr;
+		/** Online의 대기방 HUD 객체 */
+		class UUserWidget* WaitingRoomWidget = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** WaitingRoomWidget의 WidgetTree */
+		class UWidgetTree* WidgetTreeOfWRW = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** Players를 표시할 WaitingRoomWidget의 UniformGridPanel */
+		class UUniformGridPanel* UniformGridPanelOfWRW = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** WaitingRoomWidget의 Start 버튼 */
+		class UButton* StartButton = nullptr;
+
+	/** 대기방에서 플레이어를 표시하는 CPlayerOfWaitingRoom를 저장하는 std::map */
+	std::map<int, CPlayerOfWaitingRoom*> Players;
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 설정창을 띄우는 HUD 객체 */
 		class UUserWidget* SettingsWidget = nullptr;
 
-	std::map<int, CMatchOfOnlineWidget*> MatchList;
-
+	
 private:
 	void InitWidget(UWorld* const World, class UUserWidget** UserWidget, const FString ReferencePath, bool bAddToViewport);
 	void InitOnlineWidget();
+	void InitWaitingRoomWidget();
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
@@ -220,18 +297,30 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void CreateMatch(int Key, const FString TextOfGame, const FString TextOfTitle, const FString TextOfLeader, const FString TextOfStage, const FString TextOfNumbers);
+		void RevealOnlineGame(int Key, const FString TextOfGame, const FString TextOfTitle, const FString TextOfLeader, const FString TextOfStage, const FString TextOfNumbers);
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ConcealOnlineGame(int Key);
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ConcealAllOnlineGames();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeleteMatch(int Key);
+		bool ActivateWaitingRoomWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeleteAllMatch();
-
+		void CreateWaitingRoom();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateOnlineWaitingRoomWidget();
+		void JoinOnlineGame(EOnlineGameState OnlineGameState);
+	
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void BackToOnlineWidget();
 	
+
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void PlayerJoined(const FString IPv4Addr, int SocketID, int Num);
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void PlayerLeaved(int SocketID);
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeleteWaitingRoom();
+
 /*** AMainScreenGameMode : End ***/
 };
 
