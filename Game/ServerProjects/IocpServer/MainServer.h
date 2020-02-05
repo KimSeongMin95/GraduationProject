@@ -21,19 +21,22 @@ public:
 	static void Send(stSOCKETINFO* pSocket);
 
 private:
-	static cCharactersInfo	CharactersInfo;	// 접속한 클라이언트의 정보를 저장	
-	static map<int, SOCKET> ClientsSocket;	// <클라이언트 소켓 ID, 소켓> 저장
 	FuncProcess				fnProcess[100];	// 패킷 처리 구조체
 
+	static map<int, SOCKET> ClientsSocket;	// <클라이언트 소켓 ID, 소켓> 저장
+	static CRITICAL_SECTION csClientsSocket;
+
+	static map<int, stInfoOfGame> Games; // <방장의 소켓 ID, 방 정보> 저장
+	static CRITICAL_SECTION csGames;
 
 	// 플레이어가 게임을 실행할 때
 	static void AcceptPlayer(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	//// MainScreenWidget에서 Online 버튼을 눌러 게임을 찾을 때
-	//static void FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	// OnlineWidget에서 CreateWaitingRoom 버튼을 눌러 대기방을 생성할 때
+	static void CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	//// OnlineWidget에서 CreateWaitingRoom 버튼을 눌러 대기방을 생성할 때
-	//static void CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	// MainScreenWidget에서 Online 버튼을 눌러 게임을 찾을 때
+	static void FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 	//// 방장이 대기방에서 Title이나 Stage나 MaxOfNum을 변경할 때
 	//static void ModifyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);

@@ -1,9 +1,11 @@
 #include "MainServer.h"
 
 // static 변수 초기화
-cCharactersInfo		MainServer::CharactersInfo;
 map<int, SOCKET>	MainServer::ClientsSocket;
+CRITICAL_SECTION	MainServer::csClientsSocket;
 
+map<int, stInfoOfGame>  MainServer::Games;
+CRITICAL_SECTION		MainServer::csGames;
 
 unsigned int WINAPI CallWorkerThread(LPVOID p)
 {
@@ -24,10 +26,13 @@ unsigned int WINAPI CallWorkerThread(LPVOID p)
 
 MainServer::MainServer()
 {
+	InitializeCriticalSection(&csClientsSocket);
+	InitializeCriticalSection(&csGames);
+
 	// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::ACCEPT_PLAYER].funcProcessPacket = AcceptPlayer;
-	//fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
-	//fnProcess[EPacketType::CREATE_WAITING_ROOM].funcProcessPacket = CreateWaitingRoom;
+	fnProcess[EPacketType::CREATE_WAITING_ROOM].funcProcessPacket = CreateWaitingRoom;
+	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
 	//fnProcess[EPacketType::MODIFY_WAITING_ROOM].funcProcessPacket = ModifyWaitingRoom;
 	//fnProcess[EPacketType::JOIN_WAITING_ROOM].funcProcessPacket = JoinWaitingRoom;
 	//fnProcess[EPacketType::JOIN_PLAYING_GAME].funcProcessPacket = JoinPlayingGame;
@@ -55,6 +60,9 @@ MainServer::~MainServer()
 		delete[] hWorkerHandle;
 		hWorkerHandle = NULL;
 	}
+
+	DeleteCriticalSection(&csClientsSocket);
+	DeleteCriticalSection(&csGames);
 }
 
 
@@ -202,12 +210,17 @@ void MainServer::Send(stSOCKETINFO* pSocket)
 
 void MainServer::AcceptPlayer(stringstream& RecvStream, stSOCKETINFO* pSocket)
 {
+	/// 수신
 	int PlayerSocketID = ((int)pSocket->socket > 0) ? (int)pSocket->socket : 0;
 
+	EnterCriticalSection(&csClientsSocket);
 	ClientsSocket[PlayerSocketID] = pSocket->socket;
+	LeaveCriticalSection(&csClientsSocket);
 
 	printf_s("[MainServer::AcceptPlayer] (int)pSocket->socket: %d\n", PlayerSocketID);
 
+
+	/// 송신
 	stringstream SendStream;
 	SendStream << EPacketType::ACCEPT_PLAYER << endl;
 	SendStream << PlayerSocketID << endl;
@@ -217,4 +230,60 @@ void MainServer::AcceptPlayer(stringstream& RecvStream, stSOCKETINFO* pSocket)
 	pSocket->dataBuf.len = SendStream.str().length();
 
 	Send(pSocket);
+}
+
+void MainServer::CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket)
+{
+	/// 수신
+	stInfoOfGame InfoOfGame;
+	RecvStream >> InfoOfGame.State; // Waiting
+	RecvStream >> InfoOfGame.Title; // Let's_go_together!
+	InfoOfGame.Leader = (int)pSocket->socket;
+	RecvStream >> InfoOfGame.Stage; // 1
+	RecvStream >> InfoOfGame.MaxOfNum; // 100
+	InfoOfGame.IPv4OfLeader = pSocket->IPv4Addr;
+
+	printf_s("[MainServer::CreateWaitingRoom] Client IP: %s\n", InfoOfGame.IPv4OfLeader.c_str());
+
+	EnterCriticalSection(&csGames);
+	Games[InfoOfGame.Leader] = InfoOfGame;
+	LeaveCriticalSection(&csGames);
+
+
+	/// 송신
+	// 없어도 될 듯.
+}
+
+void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket)
+{
+	/// 수신
+	printf_s("[MainServer::FindGames]\n");
+
+	/// 송신
+	map<int, stInfoOfGame> CopyOfGames;
+
+	EnterCriticalSection(&csGames);
+	CopyOfGames.insert(Games.begin(), Games.end());
+	LeaveCriticalSection(&csGames);
+
+	printf_s("[MainServer::FindGames] CopyOfGames.size(): %d\n", (int)CopyOfGames.size());
+
+	for (const auto& game : CopyOfGames)
+	{
+		stringstream SendStream;
+		SendStream << EPacketType::FIND_GAMES << endl;
+		SendStream << game.second.State << endl;
+		SendStream << game.second.Title << endl;
+		SendStream << game.second.Leader << endl;
+		SendStream << game.second.Stage << endl;
+		SendStream << game.second.MaxOfNum << endl;
+			
+		CopyMemory(pSocket->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
+		pSocket->dataBuf.buf = pSocket->messageBuffer;
+		pSocket->dataBuf.len = SendStream.str().length();
+
+		Send(pSocket);
+
+		printf_s("[MainServer::FindGames] Send(pSocket)\n");
+	}
 }

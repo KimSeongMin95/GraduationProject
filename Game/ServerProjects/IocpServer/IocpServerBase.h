@@ -7,8 +7,6 @@
 #pragma comment(lib, "ws2_32.lib")
 
 #include <WinSock2.h>
-#include <map>
-#include <vector>
 #include <iostream>
 #include <process.h>
 #include <sstream>
@@ -32,6 +30,7 @@ struct stSOCKETINFO
 	char			messageBuffer[MAX_BUFFER];
 	int				recvBytes;
 	int				sendBytes;
+	string			IPv4Addr; // 클라이언트의 IP 주소
 };
 
 /* stringstream의 이해

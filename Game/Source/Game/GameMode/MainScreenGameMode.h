@@ -20,6 +20,8 @@
 
 #include <map>
 
+#include "Network/ClientSocket.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "MainScreenGameMode.generated.h"
@@ -276,6 +278,11 @@ private:
 		/** ¼³Á¤Ã¢À» ¶ç¿ì´Â HUD °´Ã¼ */
 		class UUserWidget* SettingsWidget = nullptr;
 
+
+
+	ClientSocket* Socket = nullptr;
+	bool bIsConnected;
+
 	
 private:
 	void InitWidget(UWorld* const World, class UUserWidget** UserWidget, const FString ReferencePath, bool bAddToViewport);
@@ -320,6 +327,11 @@ public:
 		void PlayerLeaved(int SocketID);
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void DeleteWaitingRoom();
+
+
+
+
+	void RecvFindGames(stInfoOfGame InfoOfGame);
 
 /*** AMainScreenGameMode : End ***/
 };

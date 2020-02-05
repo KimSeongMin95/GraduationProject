@@ -114,6 +114,12 @@ void IocpServerBase::StartServer()
 		SocketInfo->dataBuf.buf = SocketInfo->messageBuffer;
 		flags = 0;
 
+
+		// char *inet_ntoa(struct in_addr adr); // 역으로 네트워크바이트순서로 된 정32비트 정수를 다시 문자열로 돌려주는 함수
+		SocketInfo->IPv4Addr = string(inet_ntoa(clientAddr.sin_addr));
+		printf_s("[IocpServerBase::StartServer] Client IP: %s\n", SocketInfo->IPv4Addr.c_str());
+
+
 		hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (DWORD)SocketInfo, 0);
 
 		// 중첩 소켓을 지정하고 완료시 실행될 함수를 넘겨줌

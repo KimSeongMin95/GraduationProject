@@ -35,6 +35,23 @@ void AMainScreenGameMode::BeginPlay()
 	InitWaitingRoomWidget();
 
 	InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/Settings.Settings_C'", false);
+
+
+
+	Socket = ClientSocket::GetSingleton();
+	Socket->InitSocket();
+	bIsConnected = Socket->Connect("127.0.0.1", 8000);
+	if (bIsConnected)
+	{
+		Socket->SetMainScreenGameMode(this);
+		UE_LOG(LogClass, Log, TEXT("[AMainScreenGameMode::BeginPlay] IOCP Server connect success!"));
+	}
+
+	// Recv 스레드 시작
+	Socket->StartListen();
+	UE_LOG(LogClass, Log, TEXT("[AMainScreenGameMode::BeginPlay] BeginPlay End"));
+
+	Socket->SendAcceptPlayer();
 }
 
 void AMainScreenGameMode::StartPlay()
@@ -126,9 +143,7 @@ void AMainScreenGameMode::ActivateOnlineWidget()
 
 	if (OnlineWidget->IsInViewport() == false)
 	{
-		static int tempIdx = 0;
-		for (int i = 0; i < 15; i++)
-			RevealOnlineGame(tempIdx, "Waiting", "GOGOGO!!!", FString::FromInt(tempIdx++), "1", "5 / 100");
+		Socket->SendFindGames();
 
 		OnlineWidget->AddToViewport();
 	}
@@ -223,6 +238,8 @@ bool AMainScreenGameMode::ActivateWaitingRoomWidget()
 	if (OnlineWidget->IsInViewport() == true)
 	{
 		ConcealAllOnlineGames();
+
+		Socket->SendCreateWaitingRoom(FText::FromString(FString("Waiting")), FText::FromString(FString("Let's_go!")), 1, 100);
 
 		OnlineWidget->RemoveFromViewport();
 	}
@@ -336,5 +353,14 @@ void AMainScreenGameMode::DeleteWaitingRoom()
 }
 
 /*** AMainScreenGameMode : End ***/
+
+void AMainScreenGameMode::RecvFindGames(stInfoOfGame InfoOfGame)
+{
+	RevealOnlineGame(InfoOfGame.Leader, FString(InfoOfGame.State.c_str()), FString(InfoOfGame.Title.c_str()),
+		FString::FromInt(InfoOfGame.Leader), FString::FromInt(InfoOfGame.Stage), FString::FromInt(InfoOfGame.MaxOfNum)
+	);
+
+}
+
 
 
