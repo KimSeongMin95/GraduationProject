@@ -277,7 +277,8 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket)
 		SendStream << game.second.Leader << endl;
 		SendStream << game.second.Stage << endl;
 		SendStream << game.second.MaxOfNum << endl;
-			
+		SendStream << game.second.SocketIDOfPlayers.size() << endl;
+
 		CopyMemory(pSocket->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
 		pSocket->dataBuf.buf = pSocket->messageBuffer;
 		pSocket->dataBuf.len = SendStream.str().length();

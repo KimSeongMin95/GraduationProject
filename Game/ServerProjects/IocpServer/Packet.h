@@ -28,6 +28,7 @@ struct stInfoOfGame
 	int Leader = 0; // πÊ¿Â¿« SocketID
 	int Stage = 1;
 	int MaxOfNum = 100;
+	int CurOfNum = 0;
 
 	string IPv4OfLeader;
 	std::list<int> SocketIDOfPlayers;

@@ -1,4 +1,10 @@
-﻿  MainServer.cpp
+﻿  IocpServerBase.cpp
+D:\Unreal Projects\Game\ServerProjects\IocpServer\IocpServerBase.cpp(123): warning C4311: '형식 캐스트': 'stSOCKETINFO *'에서 'DWORD'(으)로 포인터가 잘립니다.
+D:\Unreal Projects\Game\ServerProjects\IocpServer\IocpServerBase.cpp(123): warning C4302: '형식 캐스트': 'stSOCKETINFO *'에서 'DWORD'(으)로 잘립니다.
+  MainServer.cpp
 D:\Unreal Projects\Game\ServerProjects\IocpServer\MainServer.cpp(230): warning C4267: '=': 'size_t'에서 'ULONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-D:\Unreal Projects\Game\ServerProjects\IocpServer\MainServer.cpp(283): warning C4267: '=': 'size_t'에서 'ULONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\Unreal Projects\Game\ServerProjects\IocpServer\MainServer.cpp(284): warning C4267: '=': 'size_t'에서 'ULONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Packet.cpp
+  main.cpp
+  코드를 생성하고 있습니다...
   IocpServer.vcxproj -> D:\Unreal Projects\Game\ServerProjects\IocpServer\x64\Debug\IocpServer.exe

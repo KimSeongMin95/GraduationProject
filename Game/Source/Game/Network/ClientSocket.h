@@ -4,21 +4,42 @@
 
 #include "CoreMinimal.h"
 
-// winsock2 사용을 위해 아래 코멘트 추가
-#pragma comment(lib, "ws2_32.lib")
+////////////////////////////////////////////////////////////////
+// 언리얼엔진도 Windows.h를 사용하기 때문에 naming 충돌을 피하기 위해
+// AllowWindowsPlatformTypes.h과 prewindowsapi.h를 선언하고
+// 윈도우즈 헤더들을 선언한 뒤에
+// PostWindowsApi.h와 HideWindowsPlatformTypes.h를 선언해야 됩니다.
+////////////////////////////////////////////////////////////////
+
+// put this at the top of your .h file above #includes
+// UE4: allow Windows platform types to avoid naming collisions
+// must be undone at the bottom of this file!
+#include "AllowWindowsPlatformTypes.h"
+#include "prewindowsapi.h"
+
+
+/*** 윈도우즈 헤더 선언 : Start ***/
+#pragma comment(lib, "ws2_32.lib") // winsock2 사용을 위해 추가
 
 #include <WinSock2.h>
+#include <WS2tcpip.h> // For: inet_pron()
 #include <iostream>
 #include <map>
-#include <sstream>
-#include <algorithm>
-#include <string>
+#include <queue>
+/*** 윈도우즈 헤더 선언 : End ***/
+
+
+// put this at the bottom of the .h file
+// UE4: disallow windows platform types
+// this was enabled at the top of the file
+#include "PostWindowsApi.h"
+#include "HideWindowsPlatformTypes.h"
+
 
 #include "Runtime/Core/Public/HAL/Runnable.h"
-#include "Runtime/Core/Public/GenericPlatform/GenericPlatformAffinity.h"
-#include "Runtime/Core/Public/HAL/RunnableThread.h"
 
 #include "Packet.h"
+
 
 using namespace std;
 
@@ -65,8 +86,10 @@ public:
 	void SendCreateWaitingRoom(const FText State, const FText Title, int Stage, int MaxOfNum);
 
 	void SendFindGames();
-	stInfoOfGame RecvFindGames(stringstream& RecvStream);
-
+	void RecvFindGames(stringstream& RecvStream);
+	std::queue<stInfoOfGame> qRecvFindGames;
+	CRITICAL_SECTION csRecvFindGames;
+	bool GetRecvFindGames(stInfoOfGame& InfoOfGame);
 	//////////////////////////////////////////////////////////////////////////	
 
 	// 

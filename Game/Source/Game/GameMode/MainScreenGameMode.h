@@ -16,9 +16,12 @@
 #include "Components/EditableTextBox.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
+
+#include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include <map>
+#include <vector>
 
 #include "Network/ClientSocket.h"
 
@@ -29,8 +32,6 @@
 class CGameOfOnlineWidget
 {
 public:
-	class UWidgetTree* WidgetTree = nullptr;
-
 	class UHorizontalBox* Line = nullptr;
 	class UEditableTextBox* State = nullptr;
 	class UEditableTextBox* Title = nullptr;
@@ -40,12 +41,7 @@ public:
 	class UButton* Button = nullptr;
 
 public:
-	CGameOfOnlineWidget(
-		class UWidgetTree* WidgetTree, class UScrollBox* ScrollBox,
-		const FString TextOfState,  const FString TextOfTitle,
-		const FString TextOfLeader, /** SocketID */
-		const FString TextOfStage, const FString TextOfNumbers
-		) : WidgetTree(WidgetTree)
+	CGameOfOnlineWidget(class UWidgetTree* WidgetTree, class UScrollBox* ScrollBox)
 	{
 		if (!WidgetTree || !ScrollBox)
 		{
@@ -58,6 +54,8 @@ public:
 		if (!Line) return;
 		ScrollBox->AddChild(Line);
 
+		// 기본적으로 숨김 상태
+		Line->SetVisibility(ESlateVisibility::Hidden);
 
 		State = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
 		if (!State) return;
@@ -85,11 +83,11 @@ public:
 		Line->AddChild(Button);
 
 		
-		InitEditableTextBox(State, TextOfState, 160.0f, ETextJustify::Type::Center);
-		InitEditableTextBox(Title, TextOfTitle, 700.0f, ETextJustify::Type::Left);
-		InitEditableTextBox(Leader, TextOfLeader, 160.0f, ETextJustify::Type::Center);
-		InitEditableTextBox(Stage, TextOfStage, 160.0f, ETextJustify::Type::Center);
-		InitEditableTextBox(Numbers, TextOfNumbers, 190.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(State, 160.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(Title, 700.0f, ETextJustify::Type::Left);
+		InitEditableTextBox(Leader, 160.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(Stage, 160.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(Numbers, 190.0f, ETextJustify::Type::Center);
 
 		
 		if (class UHorizontalBoxSlot* HorSlot = Cast<class UHorizontalBoxSlot>(Button->Slot))
@@ -112,18 +110,17 @@ public:
 
 	~CGameOfOnlineWidget()
 	{
-		if (WidgetTree && Line)
-			WidgetTree->RemoveWidget(Line);
+		//if (WidgetTree && Line)
+		//	WidgetTree->RemoveWidget(Line);
 	};
 
 	void InitEditableTextBox(
 		class UEditableTextBox* EditableTextBox, 
-		const FString Text, 
 		float MinimumDesiredWidth, 
 		ETextJustify::Type Justification)
 	{
 		
-		EditableTextBox->SetText(FText::FromString(Text));
+		//EditableTextBox->SetText(FText::FromString(Text));
 		EditableTextBox->MinimumDesiredWidth = MinimumDesiredWidth;
 		EditableTextBox->Justification = Justification;
 
@@ -146,6 +143,45 @@ public:
 		EditableTextBox->WidgetStyle.SetBackgroundColor(backgroundColor);
 	}
 
+
+	void SetVisible(const stInfoOfGame& InfoOfGame)
+	{
+		if (!State || !Title || !Leader || !Stage || !Numbers || !Line)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("if (!State || !Title || !Leader || !Stage || !Numbers || !Line)"));
+			return;
+		}
+
+		State->SetText(FText::FromString(FString(InfoOfGame.State.c_str())));
+		Title->SetText(FText::FromString(FString(InfoOfGame.Title.c_str())));
+		Leader->SetText(FText::FromString(FString::FromInt(InfoOfGame.Leader)));
+		Stage->SetText(FText::FromString(FString::FromInt(InfoOfGame.Stage)));
+
+		FString tNumbers = FString::FromInt(InfoOfGame.CurOfNum) + " / " + FString::FromInt(InfoOfGame.MaxOfNum);
+		Numbers->SetText(FText::FromString(tNumbers));
+
+		Line->SetVisibility(ESlateVisibility::Visible);
+	}
+	void SetHidden()
+	{
+		if (!Line)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("if (!Line)"));
+			return;
+		}
+
+		Line->SetVisibility(ESlateVisibility::Hidden);
+	}
+	bool IsVisible()
+	{
+		if (!Line)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("if (!Line)"));
+			return false;
+		}
+
+		return Line->IsVisible();
+	}
 };
 
 class CPlayerOfWaitingRoom
@@ -250,8 +286,8 @@ private:
 		/** OnlineGames를 표시할 OnlineWidget의 ScrollBox */
 		class UScrollBox* ScrollBoxOfOW = nullptr;
 
-	/** 현재 진행중이거나 대기중인 온라인 게임들을 표시하는 CMatchOfOnlineWidget를 저장하는 std::map */
-	std::map<int, CGameOfOnlineWidget*> OnlineGames;
+	
+	std::vector<CGameOfOnlineWidget*> vecOnlineGames;
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
@@ -290,48 +326,77 @@ private:
 	void InitWaitingRoomWidget();
 
 public:
+	
+	/////////////////////////////////////////////////
+	// 위젯 활성화 / 비활성화
+	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void PlayTutorial();
-
+		void ActivateMainScreenWidget();
+	void _ActivateMainScreenWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateOnlineWidget();
+		void DeactivateMainScreenWidget();
+	void _DeactivateMainScreenWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void ActivateSettingsWidget();
+	void _ActivateSettingsWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateSettingsWidget();
+	void _DeactivateSettingsWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void BackToMainScreenWidget();	
+		void ActivateOnlineWidget();
+	void _ActivateOnlineWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateOnlineWidget();
+	void _DeactivateOnlineWidget();
+
+	//UFUNCTION(BlueprintCallable, Category = "Widget")
+	//	void ActivateWaitingRoomWidget();
+	void _ActivateWaitingRoomWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateWaitingRoomWidget();
+	void _DeactivateWaitingRoomWidget();
+
+
+	/////////////////////////////////////////////////
+	// 
+	/////////////////////////////////////////////////
+
 
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void RevealOnlineGame(int Key, const FString TextOfGame, const FString TextOfTitle, const FString TextOfLeader, const FString TextOfStage, const FString TextOfNumbers);
+		void PlayTutorial();
+	void _PlayTutorial();
+
+
+	UFUNCTION(Category = "Widget")
+		void RevealOnlineGame();
+	UFUNCTION(Category = "Timer")
+		void TimerOfRevealOnlineGame();
+	FTimerHandle thRevealOnlineGame;
+
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ConcealOnlineGame(int Key);
+		void ConcealOnlineGame(int SocketID);
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void ConcealAllOnlineGames();
 
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		bool ActivateWaitingRoomWidget();
+
+
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void CreateWaitingRoom();
+	void _CreateWaitingRoom();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void JoinOnlineGame(EOnlineGameState OnlineGameState);
-	
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void BackToOnlineWidget();
-	
+	void _JoinOnlineGame(EOnlineGameState OnlineGameState);
 
+	
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void PlayerJoined(const FString IPv4Addr, int SocketID, int Num);
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void PlayerLeaved(int SocketID);
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void DeleteWaitingRoom();
-
-
-
-
-	void RecvFindGames(stInfoOfGame InfoOfGame);
 
 /*** AMainScreenGameMode : End ***/
 };

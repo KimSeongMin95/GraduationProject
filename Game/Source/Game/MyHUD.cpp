@@ -115,7 +115,7 @@ void AMyHUD::DrawHUD()
 
 	// 서버 추가로 인한 TEXT 매크로 재정의 문제 때문에 주석처리 했습니다.
 
-	/*if (PioneerManager)
+	if (PioneerManager)
 		DrawText(FString::FromInt(PioneerManager->Pioneers.Num()), FLinearColor::Green, IconDrawPisition.X + 55.0f, IconDrawPisition.Y, IconPioneerFont, 1.5f * (ViewportSizeX / 1920.0f), false);
 
 	FCanvasTileItem IconMineralUITileItem(IconDrawPisition + FVector2D(0.0f, 50.0f * (ViewportSizeY / 1080.0f)), IconMineralUI->Resource, IconDrawSize, FLinearColor::White);
@@ -134,6 +134,6 @@ void AMyHUD::DrawHUD()
 	IconEnergyUITileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem(IconEnergyUITileItem);
 
-	DrawText(TEXT("50"), FLinearColor::Green, IconDrawPisition.X + 55.0f, IconDrawPisition.Y + 150.0f, IconEnergyFont, 1.5f * (ViewportSizeX / 1920.0f), false);*/
+	DrawText(TEXT("50"), FLinearColor::Green, IconDrawPisition.X + 55.0f, IconDrawPisition.Y + 150.0f, IconEnergyFont, 1.5f * (ViewportSizeX / 1920.0f), false);
 
 }

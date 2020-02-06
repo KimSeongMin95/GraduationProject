@@ -1,11 +1,19 @@
 
 #include "ClientSocket.h"
 
+#include "Runtime/Core/Public/GenericPlatform/GenericPlatformAffinity.h"
+#include "Runtime/Core/Public/HAL/RunnableThread.h"
+
+#include <sstream>
+#include <algorithm>
+#include <string>
+
 #include "GameMode/MainScreenGameMode.h"
 
 ClientSocket::ClientSocket()
 	:StopTaskCounter(0)
 {
+	InitializeCriticalSection(&csRecvFindGames);
 
 }
 
@@ -16,6 +24,8 @@ ClientSocket::~ClientSocket()
 
 	closesocket(ServerSocket);
 	WSACleanup();
+
+	DeleteCriticalSection(&csRecvFindGames);
 }
 
 bool ClientSocket::InitSocket()
@@ -46,7 +56,8 @@ bool ClientSocket::Connect(const char * pszIP, int nPort)
 	stServerAddr.sin_family = AF_INET;
 	// 접속할 서버 포트 및 IP
 	stServerAddr.sin_port = htons(nPort);
-	stServerAddr.sin_addr.s_addr = inet_addr(pszIP);
+	//stServerAddr.sin_addr.s_addr = inet_addr(pszIP); // Waring: C4996 심각도	코드	설명	프로젝트	파일	줄	비표시 오류(Suppression) 상태, 경고 C4996	'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings	Game
+	inet_pton(AF_INET, pszIP, &stServerAddr.sin_addr.s_addr);
 
 	if (connect(ServerSocket, (sockaddr*)&stServerAddr, sizeof(sockaddr)) == SOCKET_ERROR)
 	{
@@ -94,7 +105,7 @@ void ClientSocket::SendFindGames()
 
 	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
 }
-stInfoOfGame ClientSocket::RecvFindGames(stringstream& RecvStream)
+void ClientSocket::RecvFindGames(stringstream& RecvStream)
 {
 	stInfoOfGame infoOfGame;
 
@@ -103,9 +114,35 @@ stInfoOfGame ClientSocket::RecvFindGames(stringstream& RecvStream)
 	RecvStream >> infoOfGame.Leader;
 	RecvStream >> infoOfGame.Stage;
 	RecvStream >> infoOfGame.MaxOfNum;
+	RecvStream >> infoOfGame.CurOfNum;
 
-	return infoOfGame;
+	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvFindGames] infoOfGame: %s %s %d %d %d %d"),
+		*FString(infoOfGame.State.c_str()), *FString(infoOfGame.Title.c_str()), infoOfGame.Leader,
+		infoOfGame.Stage, infoOfGame.MaxOfNum, infoOfGame.CurOfNum);
+
+	EnterCriticalSection(&csRecvFindGames);
+	qRecvFindGames.push(infoOfGame);
+	LeaveCriticalSection(&csRecvFindGames);
 }
+
+bool ClientSocket::GetRecvFindGames(stInfoOfGame& InfoOfGame)
+{
+	EnterCriticalSection(&csRecvFindGames);
+	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::GetRecvFindGames] 1 qRecvFindGames.size(): %d"), qRecvFindGames.size());
+	if (qRecvFindGames.size() == 0)
+	{
+		LeaveCriticalSection(&csRecvFindGames);
+		return false;
+	}
+	InfoOfGame = qRecvFindGames.front();
+	qRecvFindGames.pop();
+	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::GetRecvFindGames] 2 qRecvFindGames.size(): %d"), qRecvFindGames.size());
+
+	LeaveCriticalSection(&csRecvFindGames);
+
+	return true;
+}
+
 
 void ClientSocket::SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode)
 {
@@ -153,7 +190,7 @@ uint32 ClientSocket::Run()
 			break;
 			case EPacketType::FIND_GAMES:
 			{
-				MainScreenGameMode->RecvFindGames(RecvFindGames(RecvStream));
+				RecvFindGames(RecvStream);
 			}
 			break;
 			default:
