@@ -474,7 +474,8 @@
         Game/Content/**
         Game/Intermediate/**
         Game/Saved/**
-
+        Game/Game.sln
+        
         # Visual Studio
         Game/ServerProjects/**/Debug
 
