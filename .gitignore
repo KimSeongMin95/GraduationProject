@@ -7,13 +7,13 @@
 
 # UnrealEngine (Project Name: Game)
 **/.vs
-Game./Binaries/**
-Game./Content/**
+Game/Binaries/**
+Game/Content/**
 Game/Intermediate/**
-Game./Saved/**
+Game/Saved/**
 
-# Visual Studio (Folder Name: ServerPfojects)
-ServerProjects/**/Debug
+# Visual Studio
+Game/ServerProjects/**/Debug
 
 # Precompiled Headers
 *.gch
