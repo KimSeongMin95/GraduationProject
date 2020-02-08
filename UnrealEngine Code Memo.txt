@@ -363,8 +363,8 @@
     /Content/: (제거X) 에셋 파일들 존재 
     /Intermediate/: (제거X) 프로젝트 관리에 필요한 임시파일들을 저장. 제거하면 VisualStudio에서 프로젝트 다 날라감. 
     /Saved/: (제거X) 에디터 작업 중에 생성된 결과물들 저장. 게임의 Save파일, 스크린샷, 게임내 생성 파일, 로그파일 
-        /Saved/Cooked/: [WindowsNoEditor 폴더 (제거O)] 
-        /Saved/StagedBuilds/: [WindowsNoEditor 폴더 (제거O)] 
+        /Saved/Cooked/: [WindowsNoEditor 폴더 (제거O)] 패키징을 하면 생성됩니다.
+        /Saved/StagedBuilds/: [WindowsNoEditor 폴더 (제거O)] 패키징을 하면 생성됩니다.
         /Saved/Crashes/: [UE4CC-Windows-0A2E006149F26F3A1FCA318FAB5DE9F8_0000 같은 폴더들 (제거O)]
     /Source/: (제거X) C++ 코드가 저장되는 폴더 
     /Game.sln: (제거X) VisualStudio 솔루션. 제거해도 생성 가능 
