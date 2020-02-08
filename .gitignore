@@ -1,5 +1,5 @@
 # Custom Ignore
-Game./.vs/*
+#Game./.vs/*
 Game./Binaries/*
 Game./Content/*
 Game/Intermediate/*
@@ -25,7 +25,7 @@ Game./Saved/*
 *.VC.opendb
 
 # .vs
-*/.vs/
+**/.vs
 
 # File Size +99M Ignore
 # (Git Bash) find . -size +99M | cat >> .gitignore

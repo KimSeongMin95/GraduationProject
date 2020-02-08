@@ -1,3 +1,0 @@
-﻿  main.cpp
-D:\Unreal Projects\Game\ServerProjects\IocpTestClient\main.cpp(68): warning C4101: 'szOutMsg' :참조되지 않은 지역 변수입니다.
-  IocpTestClient.vcxproj -> D:\Unreal Projects\Game\ServerProjects\IocpTestClient\Debug\IocpTestClient.exe
