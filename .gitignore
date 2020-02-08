@@ -3,3 +3,8 @@
 Binaries/
 Intermediate/
 Saved/
+Content/
+
+# File Size +99M Ignore
+# (Git Bash) find . -size +99M | cat >> .gitignore
+

@@ -307,11 +307,14 @@
         - 스켈레톤
         - 애니메이션 시퀸스
 
-[물리??]
+[Physics]
     GetMesh()->SetSimultaePhysics(true);
     충돌체에 오버래핑된 액터 찾기
         TArray<AActor*> overlappedActors
         충돌체->GetOverlappingAcotrs(overlappedActors);
+    속도조정
+        PhysicsBox->AddForce(FVector(속도), NAME_None, true); // 매 틱마다 지속적으로 force 적용
+        PhysicsBox->AddImpulse(FVector(속도), NAME_None, true); // 즉각적으로 한 번 호출하여 적용
 
 [Shape Component]
     Arrow Component
@@ -351,20 +354,21 @@
     Fatal: 파일과 에디터 로그에 빨간색으로 출력되며 프로그램을 종료한다.
 
 [프로젝트 폴더 관리]
-    .vs/: VisualStudio 실행하면 생성. 제거 후 디버깅에서 Development Editor로 변경해주고 Win64 해주면 되지만 (제거X)
-        그냥 .vs/Game/v15/에서 ipch/ 폴더만 삭제하는게 좋음. (제거O)
-    Binaries/: C++ 코드가 컴파일된 결과물이 저장. C++ 코드를 컴파일 할 때마다 새로 생성. (제거O)
-        Binaries/Win64/에서 Game, Game.exp, Game.lib, Game.pdb, Game.target 는 에디터에서 Launch하면 새로 생성되고 나머지는 에디터에서 컴파일하면 생성됨.
-    Build/: ???
-    Config/: 프로젝트의 설정값들 보관 (제거X)
-    Content/: 에셋 파일들 존재 (제거X)
-    Intermediate/: 프로젝트 관리에 필요한 임시파일들을 저장. 제거하면 VisualStudio에서 프로젝트 다 날라감. (제거X)
-    Saved/: 에디터 작업 중에 생성된 결과물들 저장. 게임의 Save파일, 스크린샷, 게임내 생성 파일, 로그파일 (제거X)
-        Saved/Cooked/WindowsNoEditor/: (제거O)
-        Saved/StagedBuilds/WindowsNoEditor: (제거O)
-    Source/: C++ 코드가 저장되는 폴더 (제거X)
-    Game.sln: VisualStudio 솔루션. 제거해도 생성 가능 (제거X)
-    Game: 언리얼엔진 (제거X)
+    /.vs/: (제거X) VisualStudio 실행하면 생성. 제거 후 디버깅에서 Development Editor로 변경해주고 Win64 해주면 되지만 
+        /.vs/Game/v15/: [ipch 폴더 (제거O)]
+    /Binaries: (제거O) C++ 코드가 컴파일된 결과물이 저장. C++ 코드를 컴파일 할 때마다 새로 생성. 
+        /Binaries/Win64/에서 Game, Game.exp, Game.lib, Game.pdb, Game.target 는 에디터에서 Launch하면 새로 생성되고 나머지는 에디터에서 컴파일하면 생성됨.
+    /Build/: ???
+    /Config/: (제거X) 프로젝트의 설정값들 보관 
+    /Content/: (제거X) 에셋 파일들 존재 
+    /Intermediate/: (제거X) 프로젝트 관리에 필요한 임시파일들을 저장. 제거하면 VisualStudio에서 프로젝트 다 날라감. 
+    /Saved/: (제거X) 에디터 작업 중에 생성된 결과물들 저장. 게임의 Save파일, 스크린샷, 게임내 생성 파일, 로그파일 
+        /Saved/Cooked/: [WindowsNoEditor 폴더 (제거O)] 
+        /Saved/StagedBuilds/: [WindowsNoEditor 폴더 (제거O)] 
+        /Saved/Crashes/: [UE4CC-Windows-0A2E006149F26F3A1FCA318FAB5DE9F8_0000 같은 폴더들 (제거O)]
+    /Source/: (제거X) C++ 코드가 저장되는 폴더 
+    /Game.sln: (제거X) VisualStudio 솔루션. 제거해도 생성 가능 
+    /Game: (제거X) 언리얼엔진 실행파일
 
 [최소 실행 조건]
     온전한 Build, Config, Content, Source, Game.sln, Game.uproject만 있으면 에디터를 다시 실행할 수 있다.
@@ -404,6 +408,83 @@
         bool bIsImplemented = OriginalObject->GetClass()->ImplementsInterface(UReactToTriggerInterface::StaticClass()); 
         // OriginalObject 가 UReactToTriggerInterface 를 구현한다면 ReactingObject 는 null 이외의 값이 됩니다.
         IReactToTriggerInterface* ReactingObject = Cast<IReactToTriggerInterface>(OriginalObject); 
+
+
+[#define WIN32_LEAN_AND_MEAN]
+    - 참고: https://javawoo.tistory.com/42
+        #include "windows.h" 보다 먼저 선언되어 중복되는 헤더를 방지해준다.
+        #include <WinSock2.h>이 windows.h를 포함하므로 이것보다 먼저 선언하면 에러 해결
+
+[레벨(Level)]
+    - 설명
+        Project Settings에서는 Default Mode와 Level만 설정할 수 있다.
+        레벨을 생성하고 해당 레벨에서 사용할 GameMode를 적용해줘야 한다.
+        중앙 상단의 Settings에서 World Settings를 클릭하면 Details 창에 World Settings가 나타나고
+        GameMode에서 GameMode Override로 덮어씌워주면 된다.
+
+    - 전환
+        #include "Kismet/GameplayStatics.h"
+
+        UGameplayStatics::OpenLevel
+
+[네트워크(Network)]
+    - FSocket
+
+    - FRunnable
+        Module:	 Core
+        Header:	 /Engine/Source/Runtime/Core/Public/HAL/Runnable.h
+        Include: #include "HAL/Runnable.h"
+
+        // FRunnable Thread members	
+        FRunnableThread* Thread;
+        FThreadSafeCounter StopTaskCounter;
+
+        // FRunnable override 함수
+        virtual bool Init();
+        virtual uint32 Run();
+        virtual void Stop();
+        virtual void Exit();
+
+[한글 표기 오류 해결방법]
+    - 참고: 
+    - 개념
+        언리얼 엔진에서는 문자열 관련해 용도에 따라 FName , FString, FText 의 타입을 제공합니다.
+        FName : 불변하는 문자열 값으로 어떤 데이터를 지칭할 때 사용합니다. 빌드시 내부적으로 해시로 변환해서 데이터를 관리합니다.
+        FString : 일반적인 문자열을 관리합니다.
+        FText : 다국어를 지원하는 기능이 들어가 있습니다. UI 시스템에서 사용하는 기본 문자열입니다.
+
+        TCHAR_TO_ANSI(str)
+        TCHAR_TO_OEM(str)
+        ANSI_TO_TCHAR(str)
+        TCHAR_TO_UTF8(str)
+        UTF8_TO_TCHAR(str)
+
+[Github]
+    - .gitignore.txt 기본
+        # Custom Ignore
+        .vs/
+        Binaries/
+        Intermediate/
+        Saved/
+    - .gitignore.txt 파일 사이즈 제한
+        Git Bash에서 먼저 find . -size +99M | cat >> .gitignore 명령어를 실행
+        그러면 .gitignore.txt에 사이즈가 99메가 이상인 파일들의 경로가 기록되어 무시
+        그 뒤, git add . -> git commit -m "massega" -> git push origin 진행
+    - /.git 폴더 용량 줄이기
+        (Git Bash) git gc --aggressive --prune=now
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
