@@ -1,9 +1,17 @@
+# 사용법 (참고: https://git-scm.com/docs/gitignore)
+# 
+# 
+# *.gch == 확장자가 .gch인 모든 파일 무시
+# a/**/b == a/b, a/x/b, a/x/y/b 등과 일치
+# **/.vs == 모든 .vs 폴더와 그 하위의 파일을 무시
+
 # Custom Ignore
-#Game./.vs/*
-Game./Binaries/*
-Game./Content/*
-Game/Intermediate/*
-Game./Saved/*
+#Game./.vs/**
+**/.vs
+Game./Binaries/**
+Game./Content/**
+Game/Intermediate/**
+Game./Saved/**
 
 # Precompiled Headers
 *.gch
@@ -24,8 +32,8 @@ Game./Saved/*
 *.VC.db
 *.VC.opendb
 
-# .vs
-**/.vs
+# Visual Studio
+**/x64/Debug/**
 
 # File Size +99M Ignore
 # (Git Bash) find . -size +99M | cat >> .gitignore
