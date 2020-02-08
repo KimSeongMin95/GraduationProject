@@ -5,13 +5,15 @@
 # a/**/b == a/b, a/x/b, a/x/y/b 등과 일치
 # **/.vs == 모든 .vs 폴더와 그 하위의 파일을 무시
 
-# Custom Ignore
-#Game./.vs/**
+# UnrealEngine (Project Name: Game)
 **/.vs
 Game./Binaries/**
 Game./Content/**
 Game/Intermediate/**
 Game./Saved/**
+
+# Visual Studio (Folder Name: ServerPfojects)
+ServerProjects/**/Debug
 
 # Precompiled Headers
 *.gch
@@ -32,8 +34,7 @@ Game./Saved/**
 *.VC.db
 *.VC.opendb
 
-# Visual Studio
-**/x64/Debug/**
+
 
 # File Size +99M Ignore
 # (Git Bash) find . -size +99M | cat >> .gitignore
