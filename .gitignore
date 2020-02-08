@@ -1,7 +1,6 @@
 # 사용법 (참고: https://git-scm.com/docs/gitignore)
-# 
-# 
-# *.gch == 확장자가 .gch인 모든 파일 무시
+# Game/Saved/** == 게임폴더의 Saved폴더의 모든 파일들 무시
+# *.gch ==  [파일명].gch인 모든 파일 무시
 # a/**/b == a/b, a/x/b, a/x/y/b 등과 일치
 # **/.vs == 모든 .vs 폴더와 그 하위의 파일을 무시
 
@@ -33,7 +32,6 @@ Game/ServerProjects/**/Debug
 *.sdf
 *.VC.db
 *.VC.opendb
-
 
 
 # File Size +99M Ignore
