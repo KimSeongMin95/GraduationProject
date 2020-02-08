@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.25807.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{17D10A5E-D6CE-47D3-99C6-A8ABCD9B4C30}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{CFA4C331-ABC9-421C-B5B9-B7B397D4211A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{001982C9-DE62-4CBF-8C75-2DB6C2DC8B49}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{5FAD9C77-8C01-4075-A319-14C374BB509E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Intermediate\ProjectFiles\Game.vcxproj", "{881AECFB-54D1-4E15-8343-29D639713981}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UE4", "Intermediate\ProjectFiles\UE4.vcxproj", "{6C0F0001-0746-49E2-8A41-88C249277B17}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Visualizers", "Visualizers", "{C3617A7C-040D-4F1B-B650-4D0FAE3F39A1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Visualizers", "Visualizers", "{4CE040B9-976D-463B-851A-9DD4EE2FF942}"
 	ProjectSection(SolutionItems) = preProject
 		H:\Program Files (x86)\UE_4.23\Engine\Extras\VisualStudioDebugging\UE4.natvis = H:\Program Files (x86)\UE_4.23\Engine\Extras\VisualStudioDebugging\UE4.natvis
 	EndProjectSection
@@ -99,7 +99,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{6C0F0001-0746-49E2-8A41-88C249277B17} = {17D10A5E-D6CE-47D3-99C6-A8ABCD9B4C30}
-		{881AECFB-54D1-4E15-8343-29D639713981} = {001982C9-DE62-4CBF-8C75-2DB6C2DC8B49}
+		{6C0F0001-0746-49E2-8A41-88C249277B17} = {CFA4C331-ABC9-421C-B5B9-B7B397D4211A}
+		{881AECFB-54D1-4E15-8343-29D639713981} = {5FAD9C77-8C01-4075-A319-14C374BB509E}
 	EndGlobalSection
 EndGlobal

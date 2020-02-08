@@ -1,9 +1,9 @@
 # Custom Ignore
-.vs/
-Binaries/
-Content/
-Intermediate/
-Saved/
+Game./.vs/
+Game./Binaries/
+Game./Content/
+Game/Intermediate/
+Game./Saved/
 
 
 # File Size +99M Ignore

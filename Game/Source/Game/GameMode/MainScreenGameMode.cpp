@@ -1,0 +1,447 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "MainScreenGameMode.h"
+
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
+
+/*** Basic Function : Start ***/
+AMainScreenGameMode::AMainScreenGameMode()
+{
+	//DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
+}
+
+void AMainScreenGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::AMainScreenGameMode() Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+
+	InitWidget(world, &MainScreenWidget, "WidgetBlueprint'/Game/UMG/MainScreen.MainScreen_C'", true);
+
+	InitWidget(world, &OnlineWidget, "WidgetBlueprint'/Game/UMG/Online/Online.Online_C'", false);
+	InitOnlineWidget();
+
+	InitWidget(world, &WaitingRoomWidget, "WidgetBlueprint'/Game/UMG/Online/WaitingRoom.WaitingRoom_C'", false);
+	InitWaitingRoomWidget();
+
+	InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/Settings.Settings_C'", false);
+
+
+
+	Socket = ClientSocket::GetSingleton();
+	Socket->InitSocket();
+	bIsConnected = Socket->Connect("127.0.0.1", 8000);
+	if (bIsConnected)
+	{
+		Socket->SetMainScreenGameMode(this);
+		UE_LOG(LogClass, Log, TEXT("[AMainScreenGameMode::BeginPlay] IOCP Server connect success!"));
+	}
+
+	// Recv 스레드 시작
+	Socket->StartListen();
+	UE_LOG(LogClass, Log, TEXT("[AMainScreenGameMode::BeginPlay] BeginPlay End"));
+
+	Socket->SendAcceptPlayer();
+}
+
+void AMainScreenGameMode::StartPlay()
+{
+	Super::StartPlay();
+
+
+	/*if (DefaultPawnClass)
+		DefaultPawnClass->b*/
+}
+
+void AMainScreenGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+/*** Basic Function : End ***/
+
+
+/*** AMainScreenGameMode : Start ***/
+void AMainScreenGameMode::InitWidget(UWorld* const World, class UUserWidget** UserWidget, const FString ReferencePath, bool bAddToViewport)
+{
+	UClass* widget = LoadObject<UClass>(this, *ReferencePath);
+
+	if (widget == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::InitWidget(): if (widget == nullptr)"));
+		return;
+	}
+
+	(*UserWidget) = CreateWidget(World, widget);
+
+	if ((*UserWidget) && bAddToViewport)
+		(*UserWidget)->AddToViewport();
+}
+
+
+void AMainScreenGameMode::InitOnlineWidget()
+{
+	if (!OnlineWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::InitOnlineWidget(): if (!OnlineWidget)"));
+		return;
+	}
+
+	WidgetTreeOfOW = OnlineWidget->WidgetTree;
+
+	if (WidgetTreeOfOW)
+		ScrollBoxOfOW = WidgetTreeOfOW->FindWidget<UScrollBox>(FName(TEXT("ScrollBox")));
+
+	for (int i{}; i < 100; i++)
+		vecOnlineGames.emplace_back(new CGameOfOnlineWidget(WidgetTreeOfOW, ScrollBoxOfOW));
+}
+
+void AMainScreenGameMode::InitWaitingRoomWidget()
+{
+	if (!WaitingRoomWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::InitWaitingRoomWidget(): if (!WaitingRoomWidget)"));
+		return;
+	}
+
+
+	WidgetTreeOfWRW = WaitingRoomWidget->WidgetTree;
+
+	if (WidgetTreeOfWRW)
+	{
+		UniformGridPanelOfWRW = WidgetTreeOfWRW->FindWidget<UUniformGridPanel>(FName(TEXT("UniformGridPanel")));
+		StartButton = WidgetTreeOfWRW->FindWidget<UButton>(FName(TEXT("Button_Start")));
+		
+		if (StartButton)
+			StartButton->SetVisibility(ESlateVisibility::Hidden); // Slate 숨기기
+	}
+}
+
+/////////////////////////////////////////////////
+// 위젯 활성화 / 비활성화
+/////////////////////////////////////////////////
+void AMainScreenGameMode::ActivateMainScreenWidget()
+{
+	_ActivateMainScreenWidget();
+}
+void AMainScreenGameMode::_ActivateMainScreenWidget()
+{
+	if (!MainScreenWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateMainScreenWidget] if (!MainScreenWidget)"));
+		return;
+	}
+
+	if (MainScreenWidget->IsInViewport() == false)
+		MainScreenWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateMainScreenWidget()
+{
+	_DeactivateMainScreenWidget();
+}
+void AMainScreenGameMode::_DeactivateMainScreenWidget()
+{
+	if (!MainScreenWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateMainScreenWidget] if (!MainScreenWidget)"));
+		return;
+	}
+
+	if (MainScreenWidget->IsInViewport() == true)
+		MainScreenWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateSettingsWidget()
+{
+	_ActivateSettingsWidget();
+}
+void AMainScreenGameMode::_ActivateSettingsWidget()
+{
+	if (!SettingsWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateSettingsWidget] if (!SettingsWidget)"));
+		return;
+	}
+
+	if (SettingsWidget->IsInViewport() == false)
+		SettingsWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateSettingsWidget()
+{
+	_DeactivateSettingsWidget();
+}
+void AMainScreenGameMode::_DeactivateSettingsWidget()
+{
+	if (!SettingsWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateSettingsWidget] if (!SettingsWidget)"));
+		return;
+	}
+
+	if (SettingsWidget->IsInViewport() == true)
+		SettingsWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateOnlineWidget()
+{
+	_ActivateOnlineWidget();
+}
+void AMainScreenGameMode::_ActivateOnlineWidget()
+{
+	if (!OnlineWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateOnlineWidget] if (!OnlineWidget)"));
+		return;
+	}
+
+	if (OnlineWidget->IsInViewport() == false)
+	{
+		Socket->SendFindGames();
+
+		RevealOnlineGame();
+
+		OnlineWidget->AddToViewport();
+	}
+}
+void AMainScreenGameMode::DeactivateOnlineWidget()
+{
+	_DeactivateOnlineWidget();
+}
+void AMainScreenGameMode::_DeactivateOnlineWidget()
+{
+	if (!OnlineWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateOnlineWidget] if (!OnlineWidget)"));
+		return;
+	}
+
+	if (OnlineWidget->IsInViewport() == true)
+	{
+		ConcealAllOnlineGames();
+
+		OnlineWidget->RemoveFromViewport();
+	}
+}
+
+//void AMainScreenGameMode::ActivateWaitingRoomWidget()
+//{
+//	_ActivateWaitingRoomWidget();
+//}
+void AMainScreenGameMode::_ActivateWaitingRoomWidget()
+{
+	if (!WaitingRoomWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateWaitingRoomWidget] if (!WaitingRoomWidget)"));
+		return;
+	}
+
+	// AddToViewport하기 전에 모든 작업을 완료해야 정상적으로 표시됩니다.
+	if (WaitingRoomWidget->IsInViewport() == false)
+	{
+		WaitingRoomWidget->AddToViewport();
+	}
+}
+void AMainScreenGameMode::DeactivateWaitingRoomWidget()
+{
+	_DeactivateWaitingRoomWidget();
+}
+void AMainScreenGameMode::_DeactivateWaitingRoomWidget()
+{
+	if (!WaitingRoomWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateWaitingRoomWidget] if (!WaitingRoomWidget)"));
+		return;
+	}
+
+	if (WaitingRoomWidget->IsInViewport() == true)
+	{
+		DeleteWaitingRoom();
+
+		WaitingRoomWidget->RemoveFromViewport();
+	}
+}
+
+/////////////////////////////////////////////////
+// 
+/////////////////////////////////////////////////
+void AMainScreenGameMode::PlayTutorial()
+{
+	_PlayTutorial();
+}
+void AMainScreenGameMode::_PlayTutorial()
+{
+	UGameplayStatics::OpenLevel(this, "Tutorial");
+}
+
+
+void AMainScreenGameMode::RevealOnlineGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::RevealOnlineGame]"));
+
+	if (GetWorldTimerManager().IsTimerActive(thRevealOnlineGame))
+		GetWorldTimerManager().ClearTimer(thRevealOnlineGame);
+	GetWorldTimerManager().SetTimer(thRevealOnlineGame, this, &AMainScreenGameMode::TimerOfRevealOnlineGame, 1.0f, true);
+}
+void AMainScreenGameMode::TimerOfRevealOnlineGame()
+{
+	if (!WidgetTreeOfOW || !ScrollBoxOfOW)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame] if (!WidgetTreeOfOW || !ScrollBoxOfOW)"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame]"));
+
+	stInfoOfGame InfoOfGame;
+
+	// 비어있는 부분을 발견할 때까지 iter를 증가시킵니다.
+	auto iter = vecOnlineGames.begin();
+	for (; iter != vecOnlineGames.end(); iter++)
+	{
+		// 이미 사용하고 있으면 건너뜁니다.
+		if ((*iter)->IsVisible())
+			continue;
+		else
+			break;
+	}
+
+	// 큐가 빌 때까지 계속 가져옵니다.
+	while (Socket->GetRecvFindGames(InfoOfGame))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame] InfoOfGame: %s %s %d %d %d %d"),
+			*FString(InfoOfGame.State.c_str()), *FString(InfoOfGame.Title.c_str()), InfoOfGame.Leader,
+			InfoOfGame.Stage, InfoOfGame.MaxOfNum, InfoOfGame.CurOfNum);
+
+		for (; iter != vecOnlineGames.end(); iter++)
+		{
+			// 이미 사용하고 있으면 건너뜁니다.
+			if ((*iter)->IsVisible())
+				continue;
+
+			(*iter)->SetVisible(InfoOfGame);
+			break;
+		}
+	}
+}
+void AMainScreenGameMode::ConcealOnlineGame(int SocketID)
+{
+	// 
+}
+void AMainScreenGameMode::ConcealAllOnlineGames()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ConcealAllOnlineGames]"));
+
+	/*for (auto& game : vecOnlineGames)
+	{
+		game->SetHidden();
+	}*/
+
+	if (GetWorldTimerManager().IsTimerActive(thRevealOnlineGame))
+		GetWorldTimerManager().ClearTimer(thRevealOnlineGame);
+}
+
+
+void AMainScreenGameMode::CreateWaitingRoom()
+{
+	_CreateWaitingRoom();
+	
+}
+void AMainScreenGameMode::_CreateWaitingRoom()
+{
+	// 임시
+	static int tempIdx2 = 0;
+	for (int i = 0; i < 15; i++)
+	{
+		PlayerJoined(FString("127.0.0.1"), tempIdx2, tempIdx2);
+		tempIdx2++;
+	}
+
+	if (StartButton)
+		StartButton->SetVisibility(ESlateVisibility::Visible);
+
+	Socket->SendCreateWaitingRoom(FText::FromString(FString("Waiting")), FText::FromString(FString("Let's_go!")), 1, 100);
+
+
+	_ActivateWaitingRoomWidget();
+}
+
+void AMainScreenGameMode::JoinOnlineGame(EOnlineGameState OnlineGameState)
+{
+	_JoinOnlineGame(OnlineGameState);
+}
+void AMainScreenGameMode::_JoinOnlineGame(EOnlineGameState OnlineGameState)
+{
+	switch (OnlineGameState)
+	{
+	case EOnlineGameState::Waiting:
+	{
+		if (StartButton)
+			StartButton->SetVisibility(ESlateVisibility::Hidden);
+
+
+		_ActivateWaitingRoomWidget();
+
+		break;
+	}
+	case EOnlineGameState::Playing:
+	{
+		// 서버 연결
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+
+
+
+void AMainScreenGameMode::PlayerJoined(const FString IPv4Addr, int SocketID, int Num)
+{
+	if (!WidgetTreeOfWRW || !UniformGridPanelOfWRW)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("if (!WidgetTreeOfWRW || !UniformGridPanelOfWRW)"));
+		return;
+	}
+
+	CPlayerOfWaitingRoom* cPlayerOfWaitingRoom = new CPlayerOfWaitingRoom(
+		WidgetTreeOfWRW, UniformGridPanelOfWRW,
+		IPv4Addr, SocketID, Num
+	);
+
+	Players.insert(std::pair<int, CPlayerOfWaitingRoom*>(SocketID, cPlayerOfWaitingRoom));
+
+}
+
+void AMainScreenGameMode::PlayerLeaved(int SocketID)
+{
+	if (Players.at(SocketID))
+		delete Players.at(SocketID);
+
+	Players.erase(SocketID);
+}
+void AMainScreenGameMode::DeleteWaitingRoom()
+{
+	for (auto& value : Players)
+	{
+		if (value.second)
+			delete value.second;
+	}
+
+	Players.clear();
+}
+
+/*** AMainScreenGameMode : End ***/
+
+
+
