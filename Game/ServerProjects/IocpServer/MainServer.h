@@ -23,10 +23,10 @@ public:
 private:
 	FuncProcess				fnProcess[100];	// 패킷 처리 구조체
 
-	static map<int, SOCKET> ClientsSocket;	// <클라이언트 소켓 ID, 소켓> 저장
+	static map<SOCKET, stSOCKETINFO*> ClientsSocketInfo; // <클라이언트 소켓 ID, 소켓> 저장
 	static CRITICAL_SECTION csClientsSocket;
 
-	static map<int, stInfoOfGame> Games; // <방장의 소켓 ID, 방 정보> 저장
+	static map<SOCKET, stInfoOfGame> Games; // <방장의 소켓 ID, 방 정보> 저장
 	static CRITICAL_SECTION csGames;
 
 	// 플레이어가 게임을 실행할 때
@@ -38,8 +38,8 @@ private:
 	// MainScreenWidget에서 Online 버튼을 눌러 게임을 찾을 때
 	static void FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	//// 방장이 대기방에서 Title이나 Stage나 MaxOfNum을 변경할 때
-	//static void ModifyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	// 방장이 대기방에서 Title이나 Stage나 MaxOfNum을 변경할 때
+	static void ModifyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 	//// 어떤 플레이어가 대기방에 들어올 때
 	//static void JoinWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
@@ -63,7 +63,9 @@ private:
 
 
 
-
+	// 브로드캐스트 함수
+	static void Broadcast(stringstream& SendStream);
+	static void BroadcastExcept(stringstream& SendStream, SOCKET Except);
 
 
 

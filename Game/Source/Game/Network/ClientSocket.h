@@ -90,7 +90,17 @@ public:
 	std::queue<stInfoOfGame> qRecvFindGames;
 	CRITICAL_SECTION csRecvFindGames;
 	bool GetRecvFindGames(stInfoOfGame& InfoOfGame);
+
+	void SendModifyWaitingRoom(const FString Title, int Stage, int MaxOfNum);
+	void RecvModifyWaitingRoom(stringstream& RecvStream);
+	stInfoOfGame mRecvModifyWaitingRoom;
+	CRITICAL_SECTION csRecvModifyWaitingRoom;
+	bool GetRecvModifyWaitingRoom(stInfoOfGame& InfoOfGame);
+
+	void SendJoinWaitingRoom(int SocketIDOfLeader);
+	void RecvJoinWaitingRoom(stringstream& RecvStream);
 	//////////////////////////////////////////////////////////////////////////	
+
 
 	// 
 	void SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode);

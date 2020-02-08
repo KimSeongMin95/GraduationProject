@@ -119,12 +119,16 @@ void AMainScreenGameMode::InitWaitingRoomWidget()
 
 	if (WidgetTreeOfWRW)
 	{
+		InfoOfTitle = WidgetTreeOfWRW->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfTitle")));
+		InfoOfStage = WidgetTreeOfWRW->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfStage")));
+		InfoOfNumOfMax = WidgetTreeOfWRW->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfNumOfMax")));
+
 		UniformGridPanelOfWRW = WidgetTreeOfWRW->FindWidget<UUniformGridPanel>(FName(TEXT("UniformGridPanel")));
 		StartButton = WidgetTreeOfWRW->FindWidget<UButton>(FName(TEXT("Button_Start")));
-		
-		if (StartButton)
-			StartButton->SetVisibility(ESlateVisibility::Hidden); // Slate 숨기기
 	}
+
+	for (int i{}; i < 100; i++)
+		vecPlayers.emplace_back(new CPlayerOfWaitingRoom(WidgetTreeOfWRW, UniformGridPanelOfWRW, i));
 }
 
 /////////////////////////////////////////////////
@@ -302,7 +306,7 @@ void AMainScreenGameMode::TimerOfRevealOnlineGame()
 
 	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame]"));
 
-	stInfoOfGame InfoOfGame;
+	stInfoOfGame infoOfGame;
 
 	// 비어있는 부분을 발견할 때까지 iter를 증가시킵니다.
 	auto iter = vecOnlineGames.begin();
@@ -316,11 +320,11 @@ void AMainScreenGameMode::TimerOfRevealOnlineGame()
 	}
 
 	// 큐가 빌 때까지 계속 가져옵니다.
-	while (Socket->GetRecvFindGames(InfoOfGame))
+	while (Socket->GetRecvFindGames(infoOfGame))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame] InfoOfGame: %s %s %d %d %d %d"),
-			*FString(InfoOfGame.State.c_str()), *FString(InfoOfGame.Title.c_str()), InfoOfGame.Leader,
-			InfoOfGame.Stage, InfoOfGame.MaxOfNum, InfoOfGame.CurOfNum);
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame] infoOfGame: %s %s %d %d %d %d"),
+			*FString(infoOfGame.State.c_str()), *FString(infoOfGame.Title.c_str()), infoOfGame.Leader,
+			infoOfGame.Stage, infoOfGame.MaxOfNum, infoOfGame.CurOfNum);
 
 		for (; iter != vecOnlineGames.end(); iter++)
 		{
@@ -328,7 +332,20 @@ void AMainScreenGameMode::TimerOfRevealOnlineGame()
 			if ((*iter)->IsVisible())
 				continue;
 
-			(*iter)->SetVisible(InfoOfGame);
+			(*iter)->Button->SocketID = infoOfGame.Leader;
+
+			if ((*iter)->Button->CustomOnClicked.IsBound() == true)
+				(*iter)->Button->CustomOnClicked.Clear();
+
+			if (infoOfGame.State._Equal("Waiting"))
+				(*iter)->Button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinWaitingRoom);
+			else if (infoOfGame.State._Equal("Playing"))
+				(*iter)->Button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinPlayingGame);
+			else
+				UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame] else"));
+			
+
+			(*iter)->SetVisible(infoOfGame);
 			break;
 		}
 	}
@@ -341,10 +358,9 @@ void AMainScreenGameMode::ConcealAllOnlineGames()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ConcealAllOnlineGames]"));
 
-	/*for (auto& game : vecOnlineGames)
-	{
+	// 보여지는 모든 게임방들을 숨깁니다.
+	for (auto& game : vecOnlineGames)
 		game->SetHidden();
-	}*/
 
 	if (GetWorldTimerManager().IsTimerActive(thRevealOnlineGame))
 		GetWorldTimerManager().ClearTimer(thRevealOnlineGame);
@@ -369,77 +385,202 @@ void AMainScreenGameMode::_CreateWaitingRoom()
 	if (StartButton)
 		StartButton->SetVisibility(ESlateVisibility::Visible);
 
-	Socket->SendCreateWaitingRoom(FText::FromString(FString("Waiting")), FText::FromString(FString("Let's_go!")), 1, 100);
+	Socket->SendCreateWaitingRoom(FText::FromString(FString("Waiting")), FText::FromString(FString("Let's_go_together!")), 1, 100);
 
 
 	_ActivateWaitingRoomWidget();
 }
 
-void AMainScreenGameMode::JoinOnlineGame(EOnlineGameState OnlineGameState)
+void AMainScreenGameMode::SendJoinWaitingRoom(int SocketIDOfLeader)
 {
-	_JoinOnlineGame(OnlineGameState);
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::SendJoinWaitingRoom] SocketID: %d"), SocketIDOfLeader);
+
+	_DeactivateOnlineWidget();
+
+	Socket->SendJoinWaitingRoom(SocketIDOfLeader);
+
+	if (InfoOfTitle)
+		InfoOfTitle->SetIsReadOnly(true);
+	if (InfoOfStage)
+		InfoOfStage->SetIsReadOnly(true);
+	if (InfoOfNumOfMax)
+		InfoOfNumOfMax->SetIsReadOnly(true);
+
+	if (StartButton)
+		StartButton->SetVisibility(ESlateVisibility::Hidden);
+
+	_ActivateWaitingRoomWidget();
 }
-void AMainScreenGameMode::_JoinOnlineGame(EOnlineGameState OnlineGameState)
+void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 {
-	switch (OnlineGameState)
-	{
-	case EOnlineGameState::Waiting:
-	{
-		if (StartButton)
-			StartButton->SetVisibility(ESlateVisibility::Hidden);
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::SendJoinPlayingGame] SocketID: %d"), SocketIDOfLeader);
 
+	_DeactivateOnlineWidget();
 
-		_ActivateWaitingRoomWidget();
+	// Socket->SendJoinPlayingGame(SocketIDOfLeader);
 
-		break;
-	}
-	case EOnlineGameState::Playing:
-	{
-		// 서버 연결
-		break;
-	}
-	default:
-		break;
-	}
+	UGameplayStatics::OpenLevel(this, "Online");
 }
+//void AMainScreenGameMode::JoinOnlineGame(EOnlineGameState OnlineGameState)
+//{
+//	_JoinOnlineGame(OnlineGameState);
+//}
+//void AMainScreenGameMode::_JoinOnlineGame(EOnlineGameState OnlineGameState)
+//{
+//	switch (OnlineGameState)
+//	{
+//	case EOnlineGameState::Waiting:
+//	{
+//		if (StartButton)
+//			StartButton->SetVisibility(ESlateVisibility::Hidden);
+//
+//
+//		_ActivateWaitingRoomWidget();
+//
+//		break;
+//	}
+//	case EOnlineGameState::Playing:
+//	{
+//		// 서버 연결
+//		break;
+//	}
+//	default:
+//		break;
+//	}
+//}
 
 
-
-
-void AMainScreenGameMode::PlayerJoined(const FString IPv4Addr, int SocketID, int Num)
+void AMainScreenGameMode::ModifyWaitingRoom()
 {
-	if (!WidgetTreeOfWRW || !UniformGridPanelOfWRW)
+	_ModifyWaitingRoom();
+}
+void AMainScreenGameMode::_ModifyWaitingRoom()
+{
+	if (!InfoOfTitle || !InfoOfStage || !InfoOfNumOfMax)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("if (!WidgetTreeOfWRW || !UniformGridPanelOfWRW)"));
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ModifyWaitingRoom] if (!InfoOfTitle || !InfoOfStage || !InfoOfNumOfMax)"));
 		return;
 	}
 
-	CPlayerOfWaitingRoom* cPlayerOfWaitingRoom = new CPlayerOfWaitingRoom(
-		WidgetTreeOfWRW, UniformGridPanelOfWRW,
-		IPv4Addr, SocketID, Num
-	);
 
-	Players.insert(std::pair<int, CPlayerOfWaitingRoom*>(SocketID, cPlayerOfWaitingRoom));
+	FString title = InfoOfTitle->GetText().ToString();
+	FString titleForSend = "Let's go together!";
 
-}
-
-void AMainScreenGameMode::PlayerLeaved(int SocketID)
-{
-	if (Players.at(SocketID))
-		delete Players.at(SocketID);
-
-	Players.erase(SocketID);
-}
-void AMainScreenGameMode::DeleteWaitingRoom()
-{
-	for (auto& value : Players)
+	if (title.Len() > 0)
 	{
-		if (value.second)
-			delete value.second;
+		// 제목 길이가 20개를 넘어가면 하나를 지웁니다.
+		while (title.Len() > 30)
+		{
+			title.RemoveAt(title.Len() - 1);
+
+		}
+
+		titleForSend = title;
+	}
+	InfoOfTitle->SetText(FText::FromString(titleForSend));
+
+	titleForSend.ReplaceCharInline(' ', '_');
+
+
+	int stage = 1;
+	if (InfoOfStage->GetText().ToString().IsNumeric())
+	{
+		stage = FCString::Atoi(*InfoOfStage->GetText().ToString());
+
+		if (stage <= 0)
+			stage = 1;
+		else if (stage > 10)
+			stage = 10;
+	}
+	InfoOfStage->SetText(FText::FromString(FString::FromInt(stage)));
+
+
+	int maxOfNum = 100;
+	if (InfoOfNumOfMax->GetText().ToString().IsNumeric())
+	{
+		maxOfNum = FCString::Atoi(*InfoOfNumOfMax->GetText().ToString());
+
+		if (maxOfNum <= 0)
+			maxOfNum = 1;
+		else if (maxOfNum > 100)
+			maxOfNum = 100;
+	}
+	InfoOfNumOfMax->SetText(FText::FromString(FString::FromInt(maxOfNum)));
+
+
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ModifyWaitingRoom] %s %d %d"), *title, stage, maxOfNum);
+
+
+	Socket->SendModifyWaitingRoom(titleForSend, stage, maxOfNum);
+}
+void AMainScreenGameMode::CheckModifyWaitingRoom()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::CheckModifyWaitingRoom]"));
+
+	if (GetWorldTimerManager().IsTimerActive(thCheckModifyWaitingRoom))
+		GetWorldTimerManager().ClearTimer(thCheckModifyWaitingRoom);
+	GetWorldTimerManager().SetTimer(thCheckModifyWaitingRoom, this, &AMainScreenGameMode::TimerOfCheckModifyWaitingRoom, 1.0f, true);
+}
+void AMainScreenGameMode::TimerOfCheckModifyWaitingRoom()
+{
+	if (!WidgetTreeOfWRW || !InfoOfTitle || !InfoOfStage || !InfoOfNumOfMax)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfCheckModifyWaitingRoom] if (!WidgetTreeOfWRW || !InfoOfTitle || !InfoOfStage || !InfoOfNumOfMax)"));
+		return;
 	}
 
-	Players.clear();
+	stInfoOfGame infoOfGame;
+	
+	while (Socket->GetRecvModifyWaitingRoom(infoOfGame))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfCheckModifyWaitingRoom] infoOfGame: %s %d %d"),
+			*FString(infoOfGame.Title.c_str()), infoOfGame.Stage, infoOfGame.MaxOfNum);
+
+		FString title(infoOfGame.Title.c_str());
+		title.ReplaceCharInline('_', ' ');
+		InfoOfTitle->SetText(FText::FromString(title));
+		InfoOfStage->SetText(FText::FromString(FString::FromInt(infoOfGame.Stage)));
+		InfoOfNumOfMax->SetText(FText::FromString(FString::FromInt(infoOfGame.MaxOfNum)));
+
+	}
 }
+
+
+
+//void AMainScreenGameMode::PlayerJoined(const FString IPv4Addr, int SocketID, int Num)
+//{
+//	if (!WidgetTreeOfWRW || !UniformGridPanelOfWRW)
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("if (!WidgetTreeOfWRW || !UniformGridPanelOfWRW)"));
+//		return;
+//	}
+//
+//	CPlayerOfWaitingRoom* cPlayerOfWaitingRoom = new CPlayerOfWaitingRoom(
+//		WidgetTreeOfWRW, UniformGridPanelOfWRW,
+//		IPv4Addr, SocketID, Num
+//	);
+//
+//	Players.insert(std::pair<int, CPlayerOfWaitingRoom*>(SocketID, cPlayerOfWaitingRoom));
+//
+//}
+//
+//void AMainScreenGameMode::PlayerLeaved(int SocketID)
+//{
+//	if (Players.at(SocketID))
+//		delete Players.at(SocketID);
+//
+//	Players.erase(SocketID);
+//}
+//void AMainScreenGameMode::DeleteWaitingRoom()
+//{
+//	for (auto& value : Players)
+//	{
+//		if (value.second)
+//			delete value.second;
+//	}
+//
+//	Players.clear();
+//}
 
 /*** AMainScreenGameMode : End ***/
 

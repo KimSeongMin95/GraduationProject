@@ -16,12 +16,14 @@ IocpServerBase::~IocpServerBase()
 	// 다 사용한 객체를 삭제
 	if (SocketInfo)
 	{
+		// 배열 할당 해제
 		delete[] SocketInfo;
 		SocketInfo = nullptr;
 	}
 
 	if (hWorkerHandle)
 	{
+		// 배열 할당 해제
 		delete[] hWorkerHandle;
 		hWorkerHandle = nullptr;
 	}
@@ -154,23 +156,23 @@ void IocpServerBase::WorkerThread()
 
 void IocpServerBase::Send(stSOCKETINFO* pSocket)
 {
-	DWORD	sendBytes;
-	DWORD	dwFlags = 0;
+	//DWORD	sendBytes;
+	//DWORD	dwFlags = 0;
 
-	int nResult = WSASend(
-		pSocket->socket,
-		&(pSocket->dataBuf),
-		1,
-		&sendBytes,
-		dwFlags,
-		NULL,
-		NULL
-	);
+	//int nResult = WSASend(
+	//	pSocket->socket,
+	//	&(pSocket->dataBuf),
+	//	1,
+	//	&sendBytes,
+	//	dwFlags,
+	//	NULL,
+	//	NULL
+	//);
 
-	if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
-	{
-		printf_s("[ERROR] WSASend 실패 : %d", WSAGetLastError());
-	}
+	//if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+	//{
+	//	printf_s("[ERROR] WSASend 실패 : %d", WSAGetLastError());
+	//}
 }
 
 void IocpServerBase::Recv(stSOCKETINFO* pSocket)

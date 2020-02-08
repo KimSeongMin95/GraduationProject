@@ -14,7 +14,7 @@ ClientSocket::ClientSocket()
 	:StopTaskCounter(0)
 {
 	InitializeCriticalSection(&csRecvFindGames);
-
+	InitializeCriticalSection(&csRecvModifyWaitingRoom);
 }
 
 ClientSocket::~ClientSocket()
@@ -26,6 +26,7 @@ ClientSocket::~ClientSocket()
 	WSACleanup();
 
 	DeleteCriticalSection(&csRecvFindGames);
+	DeleteCriticalSection(&csRecvModifyWaitingRoom);
 }
 
 bool ClientSocket::InitSocket()
@@ -137,11 +138,80 @@ bool ClientSocket::GetRecvFindGames(stInfoOfGame& InfoOfGame)
 	InfoOfGame = qRecvFindGames.front();
 	qRecvFindGames.pop();
 	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::GetRecvFindGames] 2 qRecvFindGames.size(): %d"), qRecvFindGames.size());
-
 	LeaveCriticalSection(&csRecvFindGames);
 
 	return true;
 }
+
+void ClientSocket::SendModifyWaitingRoom(const FString Title, int Stage, int MaxOfNum)
+{
+	stringstream SendStream;
+
+	SendStream << EPacketType::MODIFY_WAITING_ROOM << endl;
+	SendStream << TCHAR_TO_UTF8(*Title) << endl;
+	SendStream << Stage << endl;
+	SendStream << MaxOfNum << endl;
+
+	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
+}
+void ClientSocket::RecvModifyWaitingRoom(stringstream& RecvStream)
+{
+	stInfoOfGame infoOfGame;
+
+	RecvStream >> infoOfGame.Title;
+	RecvStream >> infoOfGame.Stage;
+	RecvStream >> infoOfGame.MaxOfNum;
+
+	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvModifyWaitingRoom] infoOfGame: %s %d %d"),
+		*FString(infoOfGame.Title.c_str()), infoOfGame.Stage, infoOfGame.MaxOfNum);
+
+	EnterCriticalSection(&csRecvModifyWaitingRoom);
+	mRecvModifyWaitingRoom = infoOfGame;
+	LeaveCriticalSection(&csRecvModifyWaitingRoom);
+}
+bool ClientSocket::GetRecvModifyWaitingRoom(stInfoOfGame& InfoOfGame)
+{
+	EnterCriticalSection(&csRecvModifyWaitingRoom);
+	InfoOfGame = mRecvModifyWaitingRoom;
+	LeaveCriticalSection(&csRecvModifyWaitingRoom);
+
+	return true;
+}
+
+
+void ClientSocket::SendJoinWaitingRoom(int SocketIDOfLeader)
+{
+	stringstream SendStream;
+
+	SendStream << EPacketType::JOIN_WAITING_ROOM << endl;
+	SendStream << SocketIDOfLeader << endl;
+
+	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
+}
+void ClientSocket::RecvJoinWaitingRoom(stringstream& RecvStream)
+{
+	stInfoOfGame infoOfGame;
+
+	RecvStream >> infoOfGame.State;
+	RecvStream >> infoOfGame.Title;
+	RecvStream >> infoOfGame.Leader;
+	RecvStream >> infoOfGame.Stage;
+	RecvStream >> infoOfGame.MaxOfNum;
+	RecvStream >> infoOfGame.CurOfNum;
+	RecvStream >> infoOfGame.IPv4OfLeader;
+	int socketIDOfPlayers;
+	while (RecvStream >> socketIDOfPlayers)
+		infoOfGame.SocketIDOfPlayers.push_back(socketIDOfPlayers);
+
+	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvJoinWaitingRoom] infoOfGame: %s %s %d %d %d %d"),
+		*FString(infoOfGame.State.c_str()), *FString(infoOfGame.Title.c_str()), infoOfGame.Leader,
+		infoOfGame.Stage, infoOfGame.MaxOfNum, infoOfGame.CurOfNum);
+
+	EnterCriticalSection(&csRecvModifyWaitingRoom);
+	mRecvModifyWaitingRoom = infoOfGame;
+	LeaveCriticalSection(&csRecvModifyWaitingRoom);
+}
+
 
 
 void ClientSocket::SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode)

@@ -1,10 +1,10 @@
 #include "MainServer.h"
 
 // static 변수 초기화
-map<int, SOCKET>	MainServer::ClientsSocket;
+map<SOCKET, stSOCKETINFO*>	MainServer::ClientsSocketInfo;
 CRITICAL_SECTION	MainServer::csClientsSocket;
 
-map<int, stInfoOfGame>  MainServer::Games;
+map<SOCKET, stInfoOfGame>  MainServer::Games;
 CRITICAL_SECTION		MainServer::csGames;
 
 unsigned int WINAPI CallWorkerThread(LPVOID p)
@@ -33,7 +33,7 @@ MainServer::MainServer()
 	fnProcess[EPacketType::ACCEPT_PLAYER].funcProcessPacket = AcceptPlayer;
 	fnProcess[EPacketType::CREATE_WAITING_ROOM].funcProcessPacket = CreateWaitingRoom;
 	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
-	//fnProcess[EPacketType::MODIFY_WAITING_ROOM].funcProcessPacket = ModifyWaitingRoom;
+	fnProcess[EPacketType::MODIFY_WAITING_ROOM].funcProcessPacket = ModifyWaitingRoom;
 	//fnProcess[EPacketType::JOIN_WAITING_ROOM].funcProcessPacket = JoinWaitingRoom;
 	//fnProcess[EPacketType::JOIN_PLAYING_GAME].funcProcessPacket = JoinPlayingGame;
 	//fnProcess[EPacketType::DESTROY_WAITING_ROOM].funcProcessPacket = DestroyWaitingRoom;
@@ -85,6 +85,7 @@ bool MainServer::CreateWorkerThread()
 	nThreadCnt = sysInfo.dwNumberOfProcessors * 2;
 
 	// thread handler 선언
+	// 동적 배열 할당 [상수가 아니어도 됨]
 	hWorkerHandle = new HANDLE[nThreadCnt];
 
 	// thread 생성
@@ -204,26 +205,26 @@ void MainServer::Send(stSOCKETINFO* pSocket)
 
 	if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 	{
-		printf_s("[ERROR] WSASend 실패 : %d", WSAGetLastError());
+		printf_s("[ERROR] WSASend 실패 : %d\n", WSAGetLastError());
 	}
 }
 
 void MainServer::AcceptPlayer(stringstream& RecvStream, stSOCKETINFO* pSocket)
 {
-	/// 수신
-	int PlayerSocketID = ((int)pSocket->socket > 0) ? (int)pSocket->socket : 0;
+	printf_s("[MainServer::AcceptPlayer]\n");
 
+	/// 수신
 	EnterCriticalSection(&csClientsSocket);
-	ClientsSocket[PlayerSocketID] = pSocket->socket;
+	ClientsSocketInfo[pSocket->socket] = pSocket;
 	LeaveCriticalSection(&csClientsSocket);
 
-	printf_s("[MainServer::AcceptPlayer] (int)pSocket->socket: %d\n", PlayerSocketID);
+	printf_s("[MainServer::AcceptPlayer] (int)pSocket->socket: %I64d\n", pSocket->socket);
 
 
 	/// 송신
 	stringstream SendStream;
 	SendStream << EPacketType::ACCEPT_PLAYER << endl;
-	SendStream << PlayerSocketID << endl;
+	SendStream << pSocket->socket << endl;
 
 	CopyMemory(pSocket->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
 	pSocket->dataBuf.buf = pSocket->messageBuffer;
@@ -234,6 +235,8 @@ void MainServer::AcceptPlayer(stringstream& RecvStream, stSOCKETINFO* pSocket)
 
 void MainServer::CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket)
 {
+	printf_s("[MainServer::CreateWaitingRoom]\n");
+
 	/// 수신
 	stInfoOfGame InfoOfGame;
 	RecvStream >> InfoOfGame.State; // Waiting
@@ -256,8 +259,10 @@ void MainServer::CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSock
 
 void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket)
 {
-	/// 수신
 	printf_s("[MainServer::FindGames]\n");
+
+	/// 수신
+	
 
 	/// 송신
 	map<int, stInfoOfGame> CopyOfGames;
@@ -288,3 +293,72 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket)
 		printf_s("[MainServer::FindGames] Send(pSocket)\n");
 	}
 }
+
+void MainServer::ModifyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket)
+{
+	printf_s("[MainServer::ModifyWaitingRoom]\n");
+
+	/// 수신
+	// Games에 존재하지 않으면 종료합니다.
+	EnterCriticalSection(&csGames);
+	if (Games.find(pSocket->socket) == Games.end())
+	{
+		LeaveCriticalSection(&csGames);
+		return;
+	}
+
+	RecvStream >> Games.at(pSocket->socket).Title;
+	RecvStream >> Games.at(pSocket->socket).Stage;
+	RecvStream >> Games.at(pSocket->socket).MaxOfNum;
+
+	printf_s("[MainServer::ModifyWaitingRoom] %s %d %d\n",
+		Games.at(pSocket->socket).Title.c_str(), Games.at(pSocket->socket).Stage, Games.at(pSocket->socket).MaxOfNum);
+	LeaveCriticalSection(&csGames);
+
+
+	/// 송신
+	// 같은 방에 있는 참가자들에게 송신
+	for (const auto& socketID : Games.at(pSocket->socket).SocketIDOfPlayers)
+	{
+		if (ClientsSocketInfo.find(socketID) == ClientsSocketInfo.end())
+		{
+			printf_s("[MainServer::ModifyWaitingRoom] if (ClientsSocketInfo.find(socketID) == ClientsSocketInfo.end())\n");
+			continue;
+		}
+
+		stSOCKETINFO* client = ClientsSocketInfo.at(socketID);
+
+		CopyMemory(client->messageBuffer, (CHAR*)RecvStream.str().c_str(), RecvStream.str().length());
+		client->dataBuf.buf = client->messageBuffer;
+		client->dataBuf.len = RecvStream.str().length();
+
+		Send(client);
+	}
+}
+
+void MainServer::Broadcast(stringstream& SendStream)
+{
+	for (const auto& CS : ClientsSocketInfo)
+	{
+		CopyMemory(CS.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
+		CS.second->dataBuf.buf = CS.second->messageBuffer;
+		CS.second->dataBuf.len = SendStream.str().length();
+
+		Send(CS.second);
+	}
+}
+void MainServer::BroadcastExcept(stringstream& SendStream, SOCKET Except)
+{
+	for (const auto& CS : ClientsSocketInfo)
+	{
+		if (CS.second->socket == Except)
+			continue;
+
+		CopyMemory(CS.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
+		CS.second->dataBuf.buf = CS.second->messageBuffer;
+		CS.second->dataBuf.len = SendStream.str().length();
+
+		Send(CS.second);
+	}
+}
+

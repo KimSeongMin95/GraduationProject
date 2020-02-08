@@ -30,6 +30,7 @@ struct stSOCKETINFO
 	char			messageBuffer[MAX_BUFFER];
 	int				recvBytes;
 	int				sendBytes;
+
 	string			IPv4Addr; // 클라이언트의 IP 주소
 };
 
