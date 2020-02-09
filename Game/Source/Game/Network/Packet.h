@@ -28,8 +28,8 @@ struct stInfoOfGame
 	string Title;
 	int Leader = 0; // 방장의 SocketID
 	int Stage = 1;
-	int MaxOfNum = 100;
 	int CurOfNum = 0;
+	int MaxOfNum = 100;
 
 	string IPv4OfLeader;
 	std::list<int> SocketIDOfPlayers; // 방장을 제외한 참가자들

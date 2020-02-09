@@ -116,8 +116,8 @@ void ClientSocket::RecvFindGames(stringstream& RecvStream)
 	RecvStream >> infoOfGame.Title;
 	RecvStream >> infoOfGame.Leader;
 	RecvStream >> infoOfGame.Stage;
-	RecvStream >> infoOfGame.MaxOfNum;
 	RecvStream >> infoOfGame.CurOfNum;
+	RecvStream >> infoOfGame.MaxOfNum;
 
 	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvFindGames] infoOfGame: %s %s %d %d %d %d"),
 		*FString(infoOfGame.State.c_str()), *FString(infoOfGame.Title.c_str()), infoOfGame.Leader,
@@ -198,8 +198,8 @@ void ClientSocket::RecvJoinWaitingRoom(stringstream& RecvStream)
 	RecvStream >> infoOfGame.Title;
 	RecvStream >> infoOfGame.Leader;
 	RecvStream >> infoOfGame.Stage;
-	RecvStream >> infoOfGame.MaxOfNum;
 	RecvStream >> infoOfGame.CurOfNum;
+	RecvStream >> infoOfGame.MaxOfNum;
 	RecvStream >> infoOfGame.IPv4OfLeader;
 	int socketIDOfPlayers;
 	while (RecvStream >> socketIDOfPlayers)
@@ -270,6 +270,16 @@ uint32 ClientSocket::Run()
 			case EPacketType::FIND_GAMES:
 			{
 				RecvFindGames(RecvStream);
+			}
+			break;
+			case EPacketType::MODIFY_WAITING_ROOM:
+			{
+				RecvModifyWaitingRoom(RecvStream);
+			}
+			break;
+			case EPacketType::JOIN_WAITING_ROOM:
+			{
+				RecvJoinWaitingRoom(RecvStream);
 			}
 			break;
 			default:

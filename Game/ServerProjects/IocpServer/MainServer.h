@@ -42,8 +42,9 @@ private:
 	static void ModifyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 	//// 어떤 플레이어가 대기방에 들어올 때
-	//static void JoinWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
-	//
+	static void JoinWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	
+
 	//// 어떤 플레이어가 진행중인 게임에 들어올 때
 	//static void JoinPlayingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 

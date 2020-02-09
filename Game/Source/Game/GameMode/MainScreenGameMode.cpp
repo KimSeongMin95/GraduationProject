@@ -267,6 +267,8 @@ void AMainScreenGameMode::_DeactivateWaitingRoomWidget()
 
 	if (WaitingRoomWidget->IsInViewport() == true)
 	{
+		DeleteWaitingRoom();
+
 		WaitingRoomWidget->RemoveFromViewport();
 	}
 }
@@ -380,6 +382,7 @@ void AMainScreenGameMode::_CreateWaitingRoom()
 
 	Socket->SendCreateWaitingRoom(FText::FromString(FString("Waiting")), FText::FromString(FString("Let's_go_together!")), 1, 100);
 
+	// 기본적으로 방장을 표시하기 위해
 	vecPlayers.at(0)->SetVisible(Socket->SocketID);
 
 	_ActivateWaitingRoomWidget();
@@ -398,6 +401,8 @@ void AMainScreenGameMode::SendJoinWaitingRoom(int SocketIDOfLeader)
 
 	if (StartButton)
 		StartButton->SetVisibility(ESlateVisibility::Hidden);
+
+	RevealWaitingRoom();
 
 	_ActivateWaitingRoomWidget();
 }
@@ -432,13 +437,20 @@ void AMainScreenGameMode::TimerOfRevealWaitingRoom()
 
 	stInfoOfGame infoOfGame;
 
-	if (Socket->GetRecvFindGames(infoOfGame))
+	if (Socket->GetRecvJoinWaitingRoom(infoOfGame))
 	{
 
-
+		InfoOfWaitingRoom->SetWaitingRoom(infoOfGame);
 
 
 		vecPlayers.at(0)->SetVisible(infoOfGame.Leader);
+
+		int idx = 1;
+		for (int socketID : infoOfGame.SocketIDOfPlayers)
+		{
+			vecPlayers.at(idx)->SetVisible(infoOfGame.Leader);
+			idx++;
+		}
 
 		GetWorldTimerManager().ClearTimer(thRevealWaitingRoom);
 	}
@@ -607,8 +619,8 @@ void AMainScreenGameMode::DeleteWaitingRoom()
 	for (auto& game : vecPlayers)
 		game->SetHidden();
 
-	//if (GetWorldTimerManager().IsTimerActive(thRevealOnlineGame))
-	//	GetWorldTimerManager().ClearTimer(thRevealOnlineGame);
+	if (GetWorldTimerManager().IsTimerActive(thRevealWaitingRoom))
+		GetWorldTimerManager().ClearTimer(thRevealWaitingRoom);
 }
 
 /*** AMainScreenGameMode : End ***/

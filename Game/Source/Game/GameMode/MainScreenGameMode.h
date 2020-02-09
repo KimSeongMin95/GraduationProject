@@ -319,6 +319,24 @@ public:
 		MaxOfNum = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfMaxOfNum")));
 	}
 
+	void SetWaitingRoom(stInfoOfGame& infoOfGame)
+	{
+		if (!State || !Title || !Leader || !Stage || !CurOfNum  || !MaxOfNum)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::SetWaitingRoom]if (!State || !Title || !Leader || !Stage || !CurOfNum  || !MaxOfNum)"));
+			return;
+		}
+
+		State->SetText(FText::FromString(FString(infoOfGame.State.c_str())));
+		FString title(infoOfGame.Title.c_str());
+		title.ReplaceCharInline('_', ' ');
+		Title->SetText(FText::FromString(title));
+		Leader->SetText(FText::FromString(FString::FromInt(infoOfGame.Leader)));
+		Stage->SetText(FText::FromString(FString::FromInt(infoOfGame.Stage)));
+		CurOfNum->SetText(FText::FromString(FString::FromInt(infoOfGame.CurOfNum)));
+		MaxOfNum->SetText(FText::FromString(FString::FromInt(infoOfGame.MaxOfNum)));
+	}
+
 	void SetIsReadOnly(bool bReadOnly)
 	{
 		if (!Title || !Stage || !MaxOfNum)
@@ -336,7 +354,7 @@ public:
 	{
 		if (!Title || !Stage || !MaxOfNum)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::SetIsReadOnly] if (!Title || !Stage || !MaxOfNum)"));
+			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::IsReadOnly] if (!Title || !Stage || !MaxOfNum)"));
 			return false;
 		}
 

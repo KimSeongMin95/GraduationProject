@@ -34,7 +34,8 @@ MainServer::MainServer()
 	fnProcess[EPacketType::CREATE_WAITING_ROOM].funcProcessPacket = CreateWaitingRoom;
 	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
 	fnProcess[EPacketType::MODIFY_WAITING_ROOM].funcProcessPacket = ModifyWaitingRoom;
-	//fnProcess[EPacketType::JOIN_WAITING_ROOM].funcProcessPacket = JoinWaitingRoom;
+	fnProcess[EPacketType::JOIN_WAITING_ROOM].funcProcessPacket = JoinWaitingRoom;
+	
 	//fnProcess[EPacketType::JOIN_PLAYING_GAME].funcProcessPacket = JoinPlayingGame;
 	//fnProcess[EPacketType::DESTROY_WAITING_ROOM].funcProcessPacket = DestroyWaitingRoom;
 	//fnProcess[EPacketType::EXIT_WAITING_ROOM].funcProcessPacket = ExitWaitingRoom;
@@ -265,7 +266,7 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket)
 	
 
 	/// 송신
-	map<int, stInfoOfGame> CopyOfGames;
+	map<SOCKET, stInfoOfGame> CopyOfGames;
 
 	EnterCriticalSection(&csGames);
 	CopyOfGames.insert(Games.begin(), Games.end());
@@ -281,8 +282,9 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket)
 		SendStream << game.second.Title << endl;
 		SendStream << game.second.Leader << endl;
 		SendStream << game.second.Stage << endl;
-		SendStream << game.second.MaxOfNum << endl;
 		SendStream << game.second.SocketIDOfPlayers.size() << endl;
+		SendStream << game.second.MaxOfNum << endl;
+
 
 		CopyMemory(pSocket->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
 		pSocket->dataBuf.buf = pSocket->messageBuffer;
@@ -335,6 +337,52 @@ void MainServer::ModifyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSock
 		Send(client);
 	}
 }
+
+
+void MainServer::JoinWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket)
+{
+	stInfoOfGame infoOfGame;
+
+	/// 수신
+	int socketIDOfLeader;
+	RecvStream >> socketIDOfLeader;
+
+	printf_s("[MainServer::JoinWaitingRoom] socketIDOfLeader: %d\n", socketIDOfLeader);
+
+	EnterCriticalSection(&csGames);
+	if (Games.find(socketIDOfLeader) != Games.end())
+		Games.at(socketIDOfLeader).SocketIDOfPlayers.push_back(pSocket->socket);
+	infoOfGame = Games.at(socketIDOfLeader);
+	LeaveCriticalSection(&csGames);
+
+
+	/// 송신
+	// JoinWaitingRoom을 호출한 플레이어에게
+	stringstream sendStream;
+	sendStream << EPacketType::JOIN_WAITING_ROOM << endl;
+	sendStream << infoOfGame.State << endl;
+	sendStream << infoOfGame.Title << endl;
+	sendStream << infoOfGame.Leader << endl;
+	sendStream << infoOfGame.Stage << endl;
+	sendStream << infoOfGame.SocketIDOfPlayers.size() << endl;
+	sendStream << infoOfGame.MaxOfNum << endl;
+	sendStream << infoOfGame.IPv4OfLeader << endl;
+	for (int SIDP : infoOfGame.SocketIDOfPlayers)
+		sendStream << SIDP << endl;
+
+	CopyMemory(pSocket->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+	pSocket->dataBuf.buf = pSocket->messageBuffer;
+	pSocket->dataBuf.len = sendStream.str().length();
+
+	Send(pSocket);
+
+	// 방장에게
+
+}
+
+
+
+
 
 void MainServer::Broadcast(stringstream& SendStream)
 {
