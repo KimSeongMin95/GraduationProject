@@ -214,31 +214,136 @@ public:
 	}
 	~CPlayerOfWaitingRoom()
 	{
-		/*if (WidgetTree && Player)
-			WidgetTree->RemoveWidget(Player);*/
+		//if (WidgetTree && Player)
+		//	WidgetTree->RemoveWidget(Player);
 	}
 
 	void InitEditableTextBox(int Num)
 	{
-		Player->MinimumDesiredWidth = 130.0f;
+		FMargin padding;
+		padding.Left = 10.0f;
+		padding.Top = 2.0f;
+		padding.Right = 10.0f;
+		padding.Bottom = 2.0f;
+		Player->WidgetStyle.SetPadding(padding);
+
+		Player->MinimumDesiredWidth = 150.0f;
 		Player->Justification = ETextJustify::Type::Center;
+
+		FSlateColor backgroundColor = FLinearColor(0.1f, 0.2f, 0.05f, 1.0f);
+		Player->WidgetStyle.SetBackgroundColor(backgroundColor);
 
 		Player->SetIsReadOnly(true);
 
 		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 32));
 
-		FMargin padding;
-		padding.Left = 10.0f;
-		padding.Right = 10.0f;
-		Player->WidgetStyle.SetPadding(padding);
+
 
 		if (class UUniformGridSlot* gridSlot = Cast<class UUniformGridSlot>(Player->Slot))
 		{
-			gridSlot->SetRow(Num / 11);
-			gridSlot->SetColumn(Num % 11);
+			gridSlot->SetRow(Num / 10);
+			gridSlot->SetColumn(Num % 10);
+		}
+
+		//Player->SetVisibility(ESlateVisibility::Hidden);
+	}
+	void SetVisible(int SocketID)
+	{
+		if (!Player)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("if (!Player)"));
+			return;
+		}
+
+		Player->SetText(FText::FromString(FString::FromInt(SocketID)));
+
+		Player->SetVisibility(ESlateVisibility::Visible);
+	}
+	void SetHidden()
+	{
+		if (!Player)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("if (!Player)"));
+			return;
 		}
 
 		Player->SetVisibility(ESlateVisibility::Hidden);
+	}
+	bool IsVisible()
+	{
+		if (!Player)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("if (!Player)"));
+			return false;
+		}
+
+		return Player->IsVisible();
+	}
+};
+
+class CInfoOfWaitingRoom
+{
+public:
+	/** EditableTextBox_InfoOfState */
+	class UEditableTextBox* State = nullptr;
+
+	/** EditableTextBox_InfoOfTitle */
+	class UEditableTextBox* Title = nullptr;
+
+	/** EditableTextBox_InfoOfLeader */
+	class UEditableTextBox* Leader = nullptr;
+
+	/** EditableTextBox_InfoOfStage */
+	class UEditableTextBox* Stage = nullptr;
+
+	/** EditableTextBox_InfoOfCurOfNum */
+	class UEditableTextBox* CurOfNum = nullptr;
+
+	/** EditableTextBox_InfoOfMaxOfNum */
+	class UEditableTextBox* MaxOfNum = nullptr;
+
+public:
+	CInfoOfWaitingRoom(class UWidgetTree* WidgetTree)
+	{
+		if (!WidgetTree)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::SetIsReadOnly] if (!WidgetTree)"));
+			return;
+		}
+
+		State = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfState")));
+		Title = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfTitle")));
+		Leader = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfLeader")));
+		Stage = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfStage")));
+		CurOfNum = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfCurOfNum")));
+		MaxOfNum = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfMaxOfNum")));
+	}
+
+	void SetIsReadOnly(bool bReadOnly)
+	{
+		if (!Title || !Stage || !MaxOfNum)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::SetIsReadOnly] if (!Title || !Stage || !MaxOfNum)"));
+			return;
+		}
+
+		Title->SetIsReadOnly(bReadOnly);
+		Stage->SetIsReadOnly(bReadOnly);
+		MaxOfNum->SetIsReadOnly(bReadOnly);
+	}
+
+	bool IsReadOnly()
+	{
+		if (!Title || !Stage || !MaxOfNum)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::SetIsReadOnly] if (!Title || !Stage || !MaxOfNum)"));
+			return false;
+		}
+
+		if (Title->IsReadOnly || Stage->IsReadOnly || MaxOfNum->IsReadOnly)
+			return true;
+
+		return false;
 	}
 };
 
@@ -300,18 +405,10 @@ private:
 		class UWidgetTree* WidgetTreeOfWRW = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** EditableTextBox_InfoOfTitle */
-		class UEditableTextBox* InfoOfTitle = nullptr;
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** EditableTextBox_InfoOfStage */
-		class UEditableTextBox* InfoOfStage = nullptr;
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** EditableTextBox_InfoOfNumOfMax */
-		class UEditableTextBox* InfoOfNumOfMax = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** Players를 표시할 WaitingRoomWidget의 UniformGridPanel */
 		class UUniformGridPanel* UniformGridPanelOfWRW = nullptr;
+
+	CInfoOfWaitingRoom* InfoOfWaitingRoom;
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** WaitingRoomWidget의 Start 버튼 */
@@ -402,7 +499,11 @@ public:
 		void SendJoinWaitingRoom(int SocketIDOfLeader);
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendJoinPlayingGame(int SocketIDOfLeader);
-
+	UFUNCTION(Category = "Widget")
+		void RevealWaitingRoom();
+	UFUNCTION(Category = "Timer")
+		void TimerOfRevealWaitingRoom();
+	FTimerHandle thRevealWaitingRoom;
 
 
 
@@ -421,8 +522,8 @@ public:
 	//	void PlayerJoined(const FString IPv4Addr, int SocketID, int Num);
 	//UFUNCTION(BlueprintCallable, Category = "Widget")
 	//	void PlayerLeaved(int SocketID);
-	//UFUNCTION(BlueprintCallable, Category = "Widget")
-	//	void DeleteWaitingRoom();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeleteWaitingRoom();
 
 /*** AMainScreenGameMode : End ***/
 };

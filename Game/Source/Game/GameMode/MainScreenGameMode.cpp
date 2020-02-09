@@ -119,9 +119,7 @@ void AMainScreenGameMode::InitWaitingRoomWidget()
 
 	if (WidgetTreeOfWRW)
 	{
-		InfoOfTitle = WidgetTreeOfWRW->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfTitle")));
-		InfoOfStage = WidgetTreeOfWRW->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfStage")));
-		InfoOfNumOfMax = WidgetTreeOfWRW->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfNumOfMax")));
+		InfoOfWaitingRoom = new CInfoOfWaitingRoom(WidgetTreeOfWRW);
 
 		UniformGridPanelOfWRW = WidgetTreeOfWRW->FindWidget<UUniformGridPanel>(FName(TEXT("UniformGridPanel")));
 		StartButton = WidgetTreeOfWRW->FindWidget<UButton>(FName(TEXT("Button_Start")));
@@ -269,8 +267,6 @@ void AMainScreenGameMode::_DeactivateWaitingRoomWidget()
 
 	if (WaitingRoomWidget->IsInViewport() == true)
 	{
-		DeleteWaitingRoom();
-
 		WaitingRoomWidget->RemoveFromViewport();
 	}
 }
@@ -298,9 +294,9 @@ void AMainScreenGameMode::RevealOnlineGame()
 }
 void AMainScreenGameMode::TimerOfRevealOnlineGame()
 {
-	if (!WidgetTreeOfOW || !ScrollBoxOfOW)
+	if (!WidgetTreeOfOW)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame] if (!WidgetTreeOfOW || !ScrollBoxOfOW)"));
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame] if (!WidgetTreeOfOW)"));
 		return;
 	}
 
@@ -374,19 +370,17 @@ void AMainScreenGameMode::CreateWaitingRoom()
 }
 void AMainScreenGameMode::_CreateWaitingRoom()
 {
-	// 임시
-	static int tempIdx2 = 0;
-	for (int i = 0; i < 15; i++)
-	{
-		PlayerJoined(FString("127.0.0.1"), tempIdx2, tempIdx2);
-		tempIdx2++;
-	}
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::CreateWaitingRoom]"));
+
+	if (InfoOfWaitingRoom)
+		InfoOfWaitingRoom->SetIsReadOnly(false);
 
 	if (StartButton)
 		StartButton->SetVisibility(ESlateVisibility::Visible);
 
 	Socket->SendCreateWaitingRoom(FText::FromString(FString("Waiting")), FText::FromString(FString("Let's_go_together!")), 1, 100);
 
+	vecPlayers.at(0)->SetVisible(Socket->SocketID);
 
 	_ActivateWaitingRoomWidget();
 }
@@ -399,12 +393,8 @@ void AMainScreenGameMode::SendJoinWaitingRoom(int SocketIDOfLeader)
 
 	Socket->SendJoinWaitingRoom(SocketIDOfLeader);
 
-	if (InfoOfTitle)
-		InfoOfTitle->SetIsReadOnly(true);
-	if (InfoOfStage)
-		InfoOfStage->SetIsReadOnly(true);
-	if (InfoOfNumOfMax)
-		InfoOfNumOfMax->SetIsReadOnly(true);
+	if (InfoOfWaitingRoom)
+		InfoOfWaitingRoom->SetIsReadOnly(true);
 
 	if (StartButton)
 		StartButton->SetVisibility(ESlateVisibility::Hidden);
@@ -421,6 +411,40 @@ void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 
 	UGameplayStatics::OpenLevel(this, "Online");
 }
+
+void AMainScreenGameMode::RevealWaitingRoom()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::RevealWaitingRoom]"));
+
+	if (GetWorldTimerManager().IsTimerActive(thRevealWaitingRoom))
+		GetWorldTimerManager().ClearTimer(thRevealWaitingRoom);
+	GetWorldTimerManager().SetTimer(thRevealWaitingRoom, this, &AMainScreenGameMode::TimerOfRevealWaitingRoom, 0.2f, true);
+}
+void AMainScreenGameMode::TimerOfRevealWaitingRoom()
+{
+	if (!WidgetTreeOfOW || !InfoOfWaitingRoom)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealWaitingRoom] if (!WidgetTreeOfOW || !InfoOfWaitingRoom)"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealWaitingRoom]"));
+
+	stInfoOfGame infoOfGame;
+
+	if (Socket->GetRecvFindGames(infoOfGame))
+	{
+
+
+
+
+		vecPlayers.at(0)->SetVisible(infoOfGame.Leader);
+
+		GetWorldTimerManager().ClearTimer(thRevealWaitingRoom);
+	}
+}
+
+
 //void AMainScreenGameMode::JoinOnlineGame(EOnlineGameState OnlineGameState)
 //{
 //	_JoinOnlineGame(OnlineGameState);
@@ -456,14 +480,18 @@ void AMainScreenGameMode::ModifyWaitingRoom()
 }
 void AMainScreenGameMode::_ModifyWaitingRoom()
 {
-	if (!InfoOfTitle || !InfoOfStage || !InfoOfNumOfMax)
+	if (!InfoOfWaitingRoom)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ModifyWaitingRoom] if (!InfoOfTitle || !InfoOfStage || !InfoOfNumOfMax)"));
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ModifyWaitingRoom] if (!InfoOfWaitingRoom)"));
 		return;
 	}
 
+	// readOnly 상태면 그냥 종료합니다.
+	if (InfoOfWaitingRoom->IsReadOnly() == true)
+		return;
 
-	FString title = InfoOfTitle->GetText().ToString();
+
+	FString title = InfoOfWaitingRoom->Title->GetText().ToString();
 	FString titleForSend = "Let's go together!";
 
 	if (title.Len() > 0)
@@ -477,35 +505,35 @@ void AMainScreenGameMode::_ModifyWaitingRoom()
 
 		titleForSend = title;
 	}
-	InfoOfTitle->SetText(FText::FromString(titleForSend));
+	InfoOfWaitingRoom->Title->SetText(FText::FromString(titleForSend));
 
 	titleForSend.ReplaceCharInline(' ', '_');
 
 
 	int stage = 1;
-	if (InfoOfStage->GetText().ToString().IsNumeric())
+	if (InfoOfWaitingRoom->Stage->GetText().ToString().IsNumeric())
 	{
-		stage = FCString::Atoi(*InfoOfStage->GetText().ToString());
+		stage = FCString::Atoi(*InfoOfWaitingRoom->Stage->GetText().ToString());
 
 		if (stage <= 0)
 			stage = 1;
 		else if (stage > 10)
 			stage = 10;
 	}
-	InfoOfStage->SetText(FText::FromString(FString::FromInt(stage)));
+	InfoOfWaitingRoom->Stage->SetText(FText::FromString(FString::FromInt(stage)));
 
 
 	int maxOfNum = 100;
-	if (InfoOfNumOfMax->GetText().ToString().IsNumeric())
+	if (InfoOfWaitingRoom->MaxOfNum->GetText().ToString().IsNumeric())
 	{
-		maxOfNum = FCString::Atoi(*InfoOfNumOfMax->GetText().ToString());
+		maxOfNum = FCString::Atoi(*InfoOfWaitingRoom->MaxOfNum->GetText().ToString());
 
 		if (maxOfNum <= 0)
 			maxOfNum = 1;
 		else if (maxOfNum > 100)
 			maxOfNum = 100;
 	}
-	InfoOfNumOfMax->SetText(FText::FromString(FString::FromInt(maxOfNum)));
+	InfoOfWaitingRoom->MaxOfNum->SetText(FText::FromString(FString::FromInt(maxOfNum)));
 
 
 	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ModifyWaitingRoom] %s %d %d"), *title, stage, maxOfNum);
@@ -523,9 +551,9 @@ void AMainScreenGameMode::CheckModifyWaitingRoom()
 }
 void AMainScreenGameMode::TimerOfCheckModifyWaitingRoom()
 {
-	if (!WidgetTreeOfWRW || !InfoOfTitle || !InfoOfStage || !InfoOfNumOfMax)
+	if (!WidgetTreeOfWRW || !InfoOfWaitingRoom)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfCheckModifyWaitingRoom] if (!WidgetTreeOfWRW || !InfoOfTitle || !InfoOfStage || !InfoOfNumOfMax)"));
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfCheckModifyWaitingRoom] if (!WidgetTreeOfWRW || !InfoOfWaitingRoom)"));
 		return;
 	}
 
@@ -538,9 +566,9 @@ void AMainScreenGameMode::TimerOfCheckModifyWaitingRoom()
 
 		FString title(infoOfGame.Title.c_str());
 		title.ReplaceCharInline('_', ' ');
-		InfoOfTitle->SetText(FText::FromString(title));
-		InfoOfStage->SetText(FText::FromString(FString::FromInt(infoOfGame.Stage)));
-		InfoOfNumOfMax->SetText(FText::FromString(FString::FromInt(infoOfGame.MaxOfNum)));
+		InfoOfWaitingRoom->Title->SetText(FText::FromString(title));
+		InfoOfWaitingRoom->Stage->SetText(FText::FromString(FString::FromInt(infoOfGame.Stage)));
+		InfoOfWaitingRoom->MaxOfNum->SetText(FText::FromString(FString::FromInt(infoOfGame.MaxOfNum)));
 
 	}
 }
@@ -571,16 +599,17 @@ void AMainScreenGameMode::TimerOfCheckModifyWaitingRoom()
 //
 //	Players.erase(SocketID);
 //}
-//void AMainScreenGameMode::DeleteWaitingRoom()
-//{
-//	for (auto& value : Players)
-//	{
-//		if (value.second)
-//			delete value.second;
-//	}
-//
-//	Players.clear();
-//}
+void AMainScreenGameMode::DeleteWaitingRoom()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeleteWaitingRoom]"));
+
+	// 보여지는 모든 참가자들을 숨깁니다.
+	for (auto& game : vecPlayers)
+		game->SetHidden();
+
+	//if (GetWorldTimerManager().IsTimerActive(thRevealOnlineGame))
+	//	GetWorldTimerManager().ClearTimer(thRevealOnlineGame);
+}
 
 /*** AMainScreenGameMode : End ***/
 

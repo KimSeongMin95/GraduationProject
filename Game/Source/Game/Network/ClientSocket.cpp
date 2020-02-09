@@ -15,6 +15,7 @@ ClientSocket::ClientSocket()
 {
 	InitializeCriticalSection(&csRecvFindGames);
 	InitializeCriticalSection(&csRecvModifyWaitingRoom);
+	InitializeCriticalSection(&csRecvJoinWaitingRoom);
 }
 
 ClientSocket::~ClientSocket()
@@ -27,6 +28,7 @@ ClientSocket::~ClientSocket()
 
 	DeleteCriticalSection(&csRecvFindGames);
 	DeleteCriticalSection(&csRecvModifyWaitingRoom);
+	DeleteCriticalSection(&csRecvJoinWaitingRoom);
 }
 
 bool ClientSocket::InitSocket()
@@ -207,11 +209,18 @@ void ClientSocket::RecvJoinWaitingRoom(stringstream& RecvStream)
 		*FString(infoOfGame.State.c_str()), *FString(infoOfGame.Title.c_str()), infoOfGame.Leader,
 		infoOfGame.Stage, infoOfGame.MaxOfNum, infoOfGame.CurOfNum);
 
-	EnterCriticalSection(&csRecvModifyWaitingRoom);
-	mRecvModifyWaitingRoom = infoOfGame;
-	LeaveCriticalSection(&csRecvModifyWaitingRoom);
+	EnterCriticalSection(&csRecvJoinWaitingRoom);
+	mRecvJoinWaitingRoom = infoOfGame;
+	LeaveCriticalSection(&csRecvJoinWaitingRoom);
 }
+bool ClientSocket::GetRecvJoinWaitingRoom(stInfoOfGame& InfoOfGame)
+{
+	EnterCriticalSection(&csRecvJoinWaitingRoom);
+	InfoOfGame = mRecvJoinWaitingRoom;
+	LeaveCriticalSection(&csRecvJoinWaitingRoom);
 
+	return true;
+}
 
 
 void ClientSocket::SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode)

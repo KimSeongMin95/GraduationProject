@@ -99,6 +99,9 @@ public:
 
 	void SendJoinWaitingRoom(int SocketIDOfLeader);
 	void RecvJoinWaitingRoom(stringstream& RecvStream);
+	stInfoOfGame mRecvJoinWaitingRoom;
+	CRITICAL_SECTION csRecvJoinWaitingRoom;
+	bool GetRecvJoinWaitingRoom(stInfoOfGame& InfoOfGame);
 	//////////////////////////////////////////////////////////////////////////	
 
 
@@ -126,11 +129,11 @@ public:
 		return &ins;
 	}
 
+	int		SocketID;					// 서버에서의 해당 클라이언트 소켓 ID
+
 private:
 	SOCKET	ServerSocket;				// 서버와 연결할 소켓	
 	char 	recvBuffer[MAX_BUFFER];		// 수신 버퍼 스트림	
 
 	class AMainScreenGameMode* MainScreenGameMode = nullptr;
-
-	int		SocketID;					// 서버에서의 해당 클라이언트 소켓 ID
 };
