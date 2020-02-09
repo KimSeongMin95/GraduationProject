@@ -223,13 +223,13 @@ void MainServer::AcceptPlayer(stringstream& RecvStream, stSOCKETINFO* pSocket)
 
 
 	/// 송신
-	stringstream SendStream;
-	SendStream << EPacketType::ACCEPT_PLAYER << endl;
-	SendStream << pSocket->socket << endl;
+	stringstream sendStream;
+	sendStream << EPacketType::ACCEPT_PLAYER << endl;
+	sendStream << pSocket->socket << endl;
 
-	CopyMemory(pSocket->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
+	CopyMemory(pSocket->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
 	pSocket->dataBuf.buf = pSocket->messageBuffer;
-	pSocket->dataBuf.len = SendStream.str().length();
+	pSocket->dataBuf.len = sendStream.str().length();
 
 	Send(pSocket);
 }
@@ -239,23 +239,23 @@ void MainServer::CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSock
 	printf_s("[MainServer::CreateWaitingRoom]\n");
 
 	/// 수신
-	stInfoOfGame InfoOfGame;
-	RecvStream >> InfoOfGame.State; // Waiting
-	RecvStream >> InfoOfGame.Title; // Let's_go_together!
-	InfoOfGame.Leader = (int)pSocket->socket;
-	RecvStream >> InfoOfGame.Stage; // 1
-	RecvStream >> InfoOfGame.MaxOfNum; // 100
-	InfoOfGame.IPv4OfLeader = pSocket->IPv4Addr;
+	stInfoOfGame infoOfGame;
+	RecvStream >> infoOfGame.State; // Waiting
+	RecvStream >> infoOfGame.Title; // Let's_go_together!
+	infoOfGame.Leader = (int)pSocket->socket;
+	RecvStream >> infoOfGame.Stage; // 1
+	RecvStream >> infoOfGame.MaxOfNum; // 100
+	infoOfGame.IPv4OfLeader = pSocket->IPv4Addr;
 
-	printf_s("[MainServer::CreateWaitingRoom] Client IP: %s\n", InfoOfGame.IPv4OfLeader.c_str());
+	printf_s("[MainServer::CreateWaitingRoom] Client IP: %s\n", infoOfGame.IPv4OfLeader.c_str());
 
 	EnterCriticalSection(&csGames);
-	Games[InfoOfGame.Leader] = InfoOfGame;
+	Games[(SOCKET)infoOfGame.Leader] = infoOfGame;
 	LeaveCriticalSection(&csGames);
 
 
 	/// 송신
-	// 없어도 될 듯.
+	
 }
 
 void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket)
@@ -266,29 +266,29 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket)
 	
 
 	/// 송신
-	map<SOCKET, stInfoOfGame> CopyOfGames;
+	map<SOCKET, stInfoOfGame> copyOfGames;
 
 	EnterCriticalSection(&csGames);
-	CopyOfGames.insert(Games.begin(), Games.end());
+	copyOfGames.insert(Games.begin(), Games.end());
 	LeaveCriticalSection(&csGames);
 
-	printf_s("[MainServer::FindGames] CopyOfGames.size(): %d\n", (int)CopyOfGames.size());
+	printf_s("[MainServer::FindGames] CopyOfGames.size(): %d\n", (int)copyOfGames.size());
 
-	for (const auto& game : CopyOfGames)
+	for (const auto& game : copyOfGames)
 	{
-		stringstream SendStream;
-		SendStream << EPacketType::FIND_GAMES << endl;
-		SendStream << game.second.State << endl;
-		SendStream << game.second.Title << endl;
-		SendStream << game.second.Leader << endl;
-		SendStream << game.second.Stage << endl;
-		SendStream << game.second.SocketIDOfPlayers.size() << endl;
-		SendStream << game.second.MaxOfNum << endl;
+		stringstream sendStream;
+		sendStream << EPacketType::FIND_GAMES << endl;
+		sendStream << game.second.State << endl;
+		sendStream << game.second.Title << endl;
+		sendStream << game.second.Leader << endl;
+		sendStream << game.second.Stage << endl;
+		sendStream << (game.second.SocketIDOfPlayers.size() + 1) << endl;
+		sendStream << game.second.MaxOfNum << endl;
 
 
-		CopyMemory(pSocket->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
+		CopyMemory(pSocket->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
 		pSocket->dataBuf.buf = pSocket->messageBuffer;
-		pSocket->dataBuf.len = SendStream.str().length();
+		pSocket->dataBuf.len = sendStream.str().length();
 
 		Send(pSocket);
 
@@ -315,20 +315,25 @@ void MainServer::ModifyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSock
 
 	printf_s("[MainServer::ModifyWaitingRoom] %s %d %d\n",
 		Games.at(pSocket->socket).Title.c_str(), Games.at(pSocket->socket).Stage, Games.at(pSocket->socket).MaxOfNum);
+	
+	std::list<int> copySocketIDOfPlayers = Games.at(pSocket->socket).SocketIDOfPlayers;
 	LeaveCriticalSection(&csGames);
 
 
 	/// 송신
-	// 같은 방에 있는 참가자들에게 송신
-	for (const auto& socketID : Games.at(pSocket->socket).SocketIDOfPlayers)
+	// 대기방 플레이어들(방장x)
+	stSOCKETINFO* client;
+	for (const auto& socketID : copySocketIDOfPlayers)
 	{
+		EnterCriticalSection(&csClientsSocket);
 		if (ClientsSocketInfo.find(socketID) == ClientsSocketInfo.end())
 		{
+			LeaveCriticalSection(&csClientsSocket);
 			printf_s("[MainServer::ModifyWaitingRoom] if (ClientsSocketInfo.find(socketID) == ClientsSocketInfo.end())\n");
 			continue;
 		}
-
-		stSOCKETINFO* client = ClientsSocketInfo.at(socketID);
+		client = ClientsSocketInfo.at(socketID);
+		LeaveCriticalSection(&csClientsSocket);
 
 		CopyMemory(client->messageBuffer, (CHAR*)RecvStream.str().c_str(), RecvStream.str().length());
 		client->dataBuf.buf = client->messageBuffer;
@@ -350,25 +355,33 @@ void MainServer::JoinWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket
 	printf_s("[MainServer::JoinWaitingRoom] socketIDOfLeader: %d\n", socketIDOfLeader);
 
 	EnterCriticalSection(&csGames);
-	if (Games.find(socketIDOfLeader) != Games.end())
+	if (Games.find(socketIDOfLeader) == Games.end())
+	{
+		LeaveCriticalSection(&csGames);
+		printf_s("[MainServer::JoinWaitingRoom] if (Games.find(socketIDOfLeader) == Games.end())\n");
+		return;
+	}
+
+	// 만약 방장과 새로 들어온 사람이 같다면 에러이므로 추가하지 않습니다.
+	if (socketIDOfLeader != (int)pSocket->socket)
 		Games.at(socketIDOfLeader).SocketIDOfPlayers.push_back(pSocket->socket);
+
 	infoOfGame = Games.at(socketIDOfLeader);
 	LeaveCriticalSection(&csGames);
 
 
 	/// 송신
-	// JoinWaitingRoom을 호출한 플레이어에게
 	stringstream sendStream;
 	sendStream << EPacketType::JOIN_WAITING_ROOM << endl;
 	sendStream << infoOfGame.State << endl;
 	sendStream << infoOfGame.Title << endl;
 	sendStream << infoOfGame.Leader << endl;
 	sendStream << infoOfGame.Stage << endl;
-	sendStream << infoOfGame.SocketIDOfPlayers.size() << endl;
+	sendStream << (infoOfGame.SocketIDOfPlayers.size() + 1) << endl;
 	sendStream << infoOfGame.MaxOfNum << endl;
 	sendStream << infoOfGame.IPv4OfLeader << endl;
-	for (int SIDP : infoOfGame.SocketIDOfPlayers)
-		sendStream << SIDP << endl;
+	for (int socketID : infoOfGame.SocketIDOfPlayers)
+		sendStream << socketID << endl;
 
 	CopyMemory(pSocket->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
 	pSocket->dataBuf.buf = pSocket->messageBuffer;
@@ -376,12 +389,56 @@ void MainServer::JoinWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket
 
 	Send(pSocket);
 
-	// 방장에게
 
+
+	sendStream.str(std::string()); // 초기화
+	sendStream << EPacketType::PLAYER_JOINED_WAITING_ROOM << endl;
+	sendStream << pSocket->socket << endl;
+
+
+	stSOCKETINFO* client;
+
+	/// 송신 to 방장
+	EnterCriticalSection(&csClientsSocket);
+	if (ClientsSocketInfo.find((SOCKET)infoOfGame.Leader) == ClientsSocketInfo.end())
+	{
+		LeaveCriticalSection(&csClientsSocket);
+		printf_s("[Error] [MainServer::JoinWaitingRoom] if (ClientsSocketInfo.find(socketID) == ClientsSocketInfo.end())\n");
+		return;
+	}
+	client = ClientsSocketInfo.at((SOCKET)infoOfGame.Leader);
+	LeaveCriticalSection(&csClientsSocket);
+
+	CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+	client->dataBuf.buf = client->messageBuffer;
+	client->dataBuf.len = sendStream.str().length();
+
+	Send(client);
+
+	/// 송신 to 대기방의 다른 플레이어들 (방장x)
+	for (const auto& socketID : infoOfGame.SocketIDOfPlayers)
+	{
+		// 수신받은 클라이언트는 제외
+		if (pSocket->socket == socketID)
+			continue;
+
+		EnterCriticalSection(&csClientsSocket);
+		if (ClientsSocketInfo.find(socketID) == ClientsSocketInfo.end())
+		{
+			LeaveCriticalSection(&csClientsSocket);
+			printf_s("[MainServer::JoinWaitingRoom] if (ClientsSocketInfo.find(socketID) == ClientsSocketInfo.end())\n");
+			continue;
+		}
+		client = ClientsSocketInfo.at(socketID);
+		LeaveCriticalSection(&csClientsSocket);
+
+		CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+		client->dataBuf.buf = client->messageBuffer;
+		client->dataBuf.len = sendStream.str().length();
+
+		Send(client);
+	}
 }
-
-
-
 
 
 void MainServer::Broadcast(stringstream& SendStream)

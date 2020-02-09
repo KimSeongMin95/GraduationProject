@@ -29,21 +29,17 @@ private:
 	static map<SOCKET, stInfoOfGame> Games; // <방장의 소켓 ID, 방 정보> 저장
 	static CRITICAL_SECTION csGames;
 
-	// 플레이어가 게임을 실행할 때
 	static void AcceptPlayer(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	// OnlineWidget에서 CreateWaitingRoom 버튼을 눌러 대기방을 생성할 때
 	static void CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	// MainScreenWidget에서 Online 버튼을 눌러 게임을 찾을 때
 	static void FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	// 방장이 대기방에서 Title이나 Stage나 MaxOfNum을 변경할 때
 	static void ModifyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	//// 어떤 플레이어가 대기방에 들어올 때
 	static void JoinWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 	
+
 
 	//// 어떤 플레이어가 진행중인 게임에 들어올 때
 	//static void JoinPlayingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);

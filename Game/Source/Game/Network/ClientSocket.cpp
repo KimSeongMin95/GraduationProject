@@ -16,6 +16,11 @@ ClientSocket::ClientSocket()
 	InitializeCriticalSection(&csRecvFindGames);
 	InitializeCriticalSection(&csRecvModifyWaitingRoom);
 	InitializeCriticalSection(&csRecvJoinWaitingRoom);
+	InitializeCriticalSection(&csRecvPlayerJoinedWaitingRoom);
+
+	// Get함수에서 return false를 할 수 있게
+	mRecvModifyWaitingRoom.Leader = -1;
+	mRecvJoinWaitingRoom.Leader = -1;
 }
 
 ClientSocket::~ClientSocket()
@@ -29,6 +34,7 @@ ClientSocket::~ClientSocket()
 	DeleteCriticalSection(&csRecvFindGames);
 	DeleteCriticalSection(&csRecvModifyWaitingRoom);
 	DeleteCriticalSection(&csRecvJoinWaitingRoom);
+	DeleteCriticalSection(&csRecvPlayerJoinedWaitingRoom);
 }
 
 bool ClientSocket::InitSocket()
@@ -79,10 +85,10 @@ void ClientSocket::CloseSocket()
 
 void ClientSocket::SendAcceptPlayer()
 {
-	stringstream SendStream;
-	SendStream << EPacketType::ACCEPT_PLAYER << endl;
+	stringstream sendStream;
+	sendStream << EPacketType::ACCEPT_PLAYER << endl;
 
-	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 }
 void ClientSocket::RecvAcceptPlayer(stringstream& RecvStream)
 {
@@ -131,7 +137,7 @@ void ClientSocket::RecvFindGames(stringstream& RecvStream)
 bool ClientSocket::GetRecvFindGames(stInfoOfGame& InfoOfGame)
 {
 	EnterCriticalSection(&csRecvFindGames);
-	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::GetRecvFindGames] 1 qRecvFindGames.size(): %d"), qRecvFindGames.size());
+	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::GetRecvFindGames] Start qRecvFindGames.size(): %d"), qRecvFindGames.size());
 	if (qRecvFindGames.size() == 0)
 	{
 		LeaveCriticalSection(&csRecvFindGames);
@@ -139,7 +145,7 @@ bool ClientSocket::GetRecvFindGames(stInfoOfGame& InfoOfGame)
 	}
 	InfoOfGame = qRecvFindGames.front();
 	qRecvFindGames.pop();
-	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::GetRecvFindGames] 2 qRecvFindGames.size(): %d"), qRecvFindGames.size());
+	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::GetRecvFindGames] End qRecvFindGames.size(): %d"), qRecvFindGames.size());
 	LeaveCriticalSection(&csRecvFindGames);
 
 	return true;
@@ -164,6 +170,9 @@ void ClientSocket::RecvModifyWaitingRoom(stringstream& RecvStream)
 	RecvStream >> infoOfGame.Stage;
 	RecvStream >> infoOfGame.MaxOfNum;
 
+	// For GetRecvModifyWaitingRoom(stInfoOfGame& InfoOfGame)
+	infoOfGame.Leader = 0;
+
 	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvModifyWaitingRoom] infoOfGame: %s %d %d"),
 		*FString(infoOfGame.Title.c_str()), infoOfGame.Stage, infoOfGame.MaxOfNum);
 
@@ -174,7 +183,13 @@ void ClientSocket::RecvModifyWaitingRoom(stringstream& RecvStream)
 bool ClientSocket::GetRecvModifyWaitingRoom(stInfoOfGame& InfoOfGame)
 {
 	EnterCriticalSection(&csRecvModifyWaitingRoom);
+	if (mRecvModifyWaitingRoom.Leader == -1)
+	{
+		LeaveCriticalSection(&csRecvModifyWaitingRoom);
+		return false;
+	}
 	InfoOfGame = mRecvModifyWaitingRoom;
+	mRecvModifyWaitingRoom.Leader = -1;
 	LeaveCriticalSection(&csRecvModifyWaitingRoom);
 
 	return true;
@@ -216,11 +231,54 @@ void ClientSocket::RecvJoinWaitingRoom(stringstream& RecvStream)
 bool ClientSocket::GetRecvJoinWaitingRoom(stInfoOfGame& InfoOfGame)
 {
 	EnterCriticalSection(&csRecvJoinWaitingRoom);
+	if (mRecvJoinWaitingRoom.Leader == -1)
+	{
+		LeaveCriticalSection(&csRecvJoinWaitingRoom);
+		return false;
+	}
 	InfoOfGame = mRecvJoinWaitingRoom;
+	mRecvJoinWaitingRoom.Leader = -1;
 	LeaveCriticalSection(&csRecvJoinWaitingRoom);
 
 	return true;
 }
+
+void ClientSocket::RecvPlayerJoinedWaitingRoom(stringstream& RecvStream)
+{
+	int socketID = -1;
+
+	RecvStream >> socketID;
+
+	// 받은 SocketID가 이 클라이언트의 SocketId와 같다면 에러이므로 무시합니다.
+	if (socketID == SocketID)
+		return;
+
+	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvPlayerJoinedWaitingRoom] socketID: %d"), socketID);
+
+	EnterCriticalSection(&csRecvPlayerJoinedWaitingRoom);
+	qRecvPlayerJoinedWaitingRoom.push(socketID);
+	LeaveCriticalSection(&csRecvPlayerJoinedWaitingRoom);
+}
+bool ClientSocket::GetRecvPlayerJoinedWaitingRoom(std::queue<int>& qSocketID)
+{
+	EnterCriticalSection(&csRecvPlayerJoinedWaitingRoom);
+	if (qRecvPlayerJoinedWaitingRoom.size() == 0)
+	{
+		LeaveCriticalSection(&csRecvPlayerJoinedWaitingRoom);
+		return false;
+	}
+	qSocketID = qRecvPlayerJoinedWaitingRoom;
+	while (qRecvPlayerJoinedWaitingRoom.empty() == false)
+		qRecvPlayerJoinedWaitingRoom.pop();
+	LeaveCriticalSection(&csRecvPlayerJoinedWaitingRoom);
+
+	return true;
+}
+
+
+
+
+
 
 
 void ClientSocket::SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode)
@@ -280,6 +338,11 @@ uint32 ClientSocket::Run()
 			case EPacketType::JOIN_WAITING_ROOM:
 			{
 				RecvJoinWaitingRoom(RecvStream);
+			}
+			break;
+			case EPacketType::PLAYER_JOINED_WAITING_ROOM:
+			{
+				RecvPlayerJoinedWaitingRoom(RecvStream);
 			}
 			break;
 			default:

@@ -12,6 +12,8 @@
 AMainScreenGameMode::AMainScreenGameMode()
 {
 	//DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
+
+
 }
 
 void AMainScreenGameMode::BeginPlay()
@@ -296,12 +298,6 @@ void AMainScreenGameMode::RevealOnlineGame()
 }
 void AMainScreenGameMode::TimerOfRevealOnlineGame()
 {
-	if (!WidgetTreeOfOW)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame] if (!WidgetTreeOfOW)"));
-		return;
-	}
-
 	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame]"));
 
 	stInfoOfGame infoOfGame;
@@ -332,6 +328,7 @@ void AMainScreenGameMode::TimerOfRevealOnlineGame()
 
 			(*iter)->Button->SocketID = infoOfGame.Leader;
 
+			// 버튼의 바인딩을 초기화합니다.
 			if ((*iter)->Button->CustomOnClicked.IsBound() == true)
 				(*iter)->Button->CustomOnClicked.Clear();
 
@@ -385,6 +382,9 @@ void AMainScreenGameMode::_CreateWaitingRoom()
 	// 기본적으로 방장을 표시하기 위해
 	vecPlayers.at(0)->SetVisible(Socket->SocketID);
 
+	// 추가로 들어오는 다른 플레이어들을 확인합니다.
+	RecvPlayerJoinedWaitingRoom();
+
 	_ActivateWaitingRoomWidget();
 }
 
@@ -427,9 +427,9 @@ void AMainScreenGameMode::RevealWaitingRoom()
 }
 void AMainScreenGameMode::TimerOfRevealWaitingRoom()
 {
-	if (!WidgetTreeOfOW || !InfoOfWaitingRoom)
+	if (!InfoOfWaitingRoom)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealWaitingRoom] if (!WidgetTreeOfOW || !InfoOfWaitingRoom)"));
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealWaitingRoom] if (!InfoOfWaitingRoom)"));
 		return;
 	}
 
@@ -448,42 +448,29 @@ void AMainScreenGameMode::TimerOfRevealWaitingRoom()
 		int idx = 1;
 		for (int socketID : infoOfGame.SocketIDOfPlayers)
 		{
-			vecPlayers.at(idx)->SetVisible(infoOfGame.Leader);
+			vecPlayers.at(idx)->SetVisible(socketID);
 			idx++;
 		}
+
+		// 만약, State가 Waiting일 때 Join 했는데 Playing으로 변경되었다면
+		if (infoOfGame.State._Equal("Playing"))
+		{
+			// 게임을 시작할 수 있게 Start 버튼을 표시합니다.
+			if (StartButton)
+				StartButton->SetVisibility(ESlateVisibility::Visible);
+		}
+
+		// 대기방 초기화가 끝났으므로, 방장이 대기방을 수정했는지를 확인합니다. 
+		CheckModifyWaitingRoom();
+
+		// 또한, 추가로 들어오는 다른 플레이어들을 확인합니다.
+		RecvPlayerJoinedWaitingRoom();
 
 		GetWorldTimerManager().ClearTimer(thRevealWaitingRoom);
 	}
 }
 
 
-//void AMainScreenGameMode::JoinOnlineGame(EOnlineGameState OnlineGameState)
-//{
-//	_JoinOnlineGame(OnlineGameState);
-//}
-//void AMainScreenGameMode::_JoinOnlineGame(EOnlineGameState OnlineGameState)
-//{
-//	switch (OnlineGameState)
-//	{
-//	case EOnlineGameState::Waiting:
-//	{
-//		if (StartButton)
-//			StartButton->SetVisibility(ESlateVisibility::Hidden);
-//
-//
-//		_ActivateWaitingRoomWidget();
-//
-//		break;
-//	}
-//	case EOnlineGameState::Playing:
-//	{
-//		// 서버 연결
-//		break;
-//	}
-//	default:
-//		break;
-//	}
-//}
 
 
 void AMainScreenGameMode::ModifyWaitingRoom()
@@ -563,9 +550,9 @@ void AMainScreenGameMode::CheckModifyWaitingRoom()
 }
 void AMainScreenGameMode::TimerOfCheckModifyWaitingRoom()
 {
-	if (!WidgetTreeOfWRW || !InfoOfWaitingRoom)
+	if (!InfoOfWaitingRoom)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfCheckModifyWaitingRoom] if (!WidgetTreeOfWRW || !InfoOfWaitingRoom)"));
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfCheckModifyWaitingRoom] if (!InfoOfWaitingRoom)"));
 		return;
 	}
 
@@ -582,6 +569,50 @@ void AMainScreenGameMode::TimerOfCheckModifyWaitingRoom()
 		InfoOfWaitingRoom->Stage->SetText(FText::FromString(FString::FromInt(infoOfGame.Stage)));
 		InfoOfWaitingRoom->MaxOfNum->SetText(FText::FromString(FString::FromInt(infoOfGame.MaxOfNum)));
 
+	}
+}
+
+
+void AMainScreenGameMode::RecvPlayerJoinedWaitingRoom()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::RecvPlayerJoinedWaitingRoom]"));
+
+	if (GetWorldTimerManager().IsTimerActive(thRecvPlayerJoinedWaitingRoom))
+		GetWorldTimerManager().ClearTimer(thRecvPlayerJoinedWaitingRoom);
+	GetWorldTimerManager().SetTimer(thRecvPlayerJoinedWaitingRoom, this, &AMainScreenGameMode::TimerOfRecvPlayerJoinedWaitingRoom, 0.5f, true);
+}
+void AMainScreenGameMode::TimerOfRecvPlayerJoinedWaitingRoom()
+{
+	if (!InfoOfWaitingRoom)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRecvPlayerJoinedWaitingRoom] if (!InfoOfWaitingRoom)"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRecvPlayerJoinedWaitingRoom]"));
+
+	std::queue<int> qSocketID;
+
+	if (Socket->GetRecvPlayerJoinedWaitingRoom(qSocketID))
+	{
+		// 숨겨져있는 첫번째 인덱스를 찾습니다.
+		int invisibleIdx;
+		for (invisibleIdx = 0; invisibleIdx < 100; invisibleIdx++)
+		{
+			if (vecPlayers.at(invisibleIdx)->IsVisible() == false)
+				break;
+		}
+
+
+		// 큐에 있는 다른 플레이어의 SocketID를 표시합니다.
+		while (qSocketID.empty() == false)
+		{
+			vecPlayers.at(invisibleIdx)->SetVisible(qSocketID.front());
+			qSocketID.pop();
+
+			// 현재 플레이어 숫자를 하나 증가시킵니다.
+			InfoOfWaitingRoom->SetCurOfNum(1);
+		}
 	}
 }
 
@@ -621,6 +652,12 @@ void AMainScreenGameMode::DeleteWaitingRoom()
 
 	if (GetWorldTimerManager().IsTimerActive(thRevealWaitingRoom))
 		GetWorldTimerManager().ClearTimer(thRevealWaitingRoom);
+
+	if (GetWorldTimerManager().IsTimerActive(thCheckModifyWaitingRoom))
+		GetWorldTimerManager().ClearTimer(thCheckModifyWaitingRoom);
+
+	if (GetWorldTimerManager().IsTimerActive(thRecvPlayerJoinedWaitingRoom))
+		GetWorldTimerManager().ClearTimer(thRecvPlayerJoinedWaitingRoom);
 }
 
 /*** AMainScreenGameMode : End ***/

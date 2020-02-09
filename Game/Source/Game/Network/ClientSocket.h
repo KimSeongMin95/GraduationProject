@@ -102,6 +102,11 @@ public:
 	stInfoOfGame mRecvJoinWaitingRoom;
 	CRITICAL_SECTION csRecvJoinWaitingRoom;
 	bool GetRecvJoinWaitingRoom(stInfoOfGame& InfoOfGame);
+
+	void RecvPlayerJoinedWaitingRoom(stringstream& RecvStream);
+	std::queue<int> qRecvPlayerJoinedWaitingRoom;
+	CRITICAL_SECTION csRecvPlayerJoinedWaitingRoom;
+	bool GetRecvPlayerJoinedWaitingRoom(std::queue<int>& qSocketID);
 	//////////////////////////////////////////////////////////////////////////	
 
 

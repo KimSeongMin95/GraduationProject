@@ -245,7 +245,7 @@ public:
 			gridSlot->SetColumn(Num % 10);
 		}
 
-		//Player->SetVisibility(ESlateVisibility::Hidden);
+		Player->SetVisibility(ESlateVisibility::Hidden);
 	}
 	void SetVisible(int SocketID)
 	{
@@ -317,6 +317,8 @@ public:
 		Stage = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfStage")));
 		CurOfNum = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfCurOfNum")));
 		MaxOfNum = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfMaxOfNum")));
+	
+		CurOfNum->SetText(FText::FromString(FString("1")));
 	}
 
 	void SetWaitingRoom(stInfoOfGame& infoOfGame)
@@ -335,6 +337,19 @@ public:
 		Stage->SetText(FText::FromString(FString::FromInt(infoOfGame.Stage)));
 		CurOfNum->SetText(FText::FromString(FString::FromInt(infoOfGame.CurOfNum)));
 		MaxOfNum->SetText(FText::FromString(FString::FromInt(infoOfGame.MaxOfNum)));
+	}
+
+	void SetCurOfNum(int Value)
+	{
+		if (!CurOfNum)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::IncreaseCurOfNum]if (!CurOfNum)"));
+			return;
+		}
+		FString TheString = CurOfNum->GetText().ToString();
+		int32 IntFromFString = FCString::Atoi(*TheString);
+		IntFromFString += Value;
+		CurOfNum->SetText(FText::FromString(FString::FromInt(IntFromFString)));
 	}
 
 	void SetIsReadOnly(bool bReadOnly)
@@ -511,8 +526,6 @@ public:
 	void _CreateWaitingRoom();
 
 
-
-
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendJoinWaitingRoom(int SocketIDOfLeader);
 	UFUNCTION(BlueprintCallable, Category = "Widget")
@@ -522,7 +535,6 @@ public:
 	UFUNCTION(Category = "Timer")
 		void TimerOfRevealWaitingRoom();
 	FTimerHandle thRevealWaitingRoom;
-
 
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
@@ -535,7 +547,13 @@ public:
 	FTimerHandle thCheckModifyWaitingRoom;
 
 
+	UFUNCTION(Category = "Widget")
+		void RecvPlayerJoinedWaitingRoom();
+	UFUNCTION(Category = "Timer")
+		void TimerOfRecvPlayerJoinedWaitingRoom();
+	FTimerHandle thRecvPlayerJoinedWaitingRoom;
 	
+
 	//UFUNCTION(BlueprintCallable, Category = "Widget")
 	//	void PlayerJoined(const FString IPv4Addr, int SocketID, int Num);
 	//UFUNCTION(BlueprintCallable, Category = "Widget")
