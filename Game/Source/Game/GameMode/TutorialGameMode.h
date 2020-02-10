@@ -3,7 +3,8 @@
 #pragma once
 
 /*** 언리얼엔진 헤더 선언 : Start ***/
-
+#include "Blueprint/UserWidget.h"
+#include "Blueprint/WidgetTree.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
@@ -32,9 +33,16 @@ public:
 
 /*** ATutorialGameMode : Start ***/
 private:
-	class APioneerManager* PioneerManager = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** ㅇㅇ */
+		class UUserWidget* TutorialWidget = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+		class APioneerManager* PioneerManager = nullptr;
 
 private:
+	void InitWidget(UWorld* const World, class UUserWidget** UserWidget, const FString ReferencePath, bool bAddToViewport);
+
 	/** APioneerManager 객체를 생성합니다. */
 	void SpawnPioneerManager(); 
 /*** ATutorialGameMode : End ***/

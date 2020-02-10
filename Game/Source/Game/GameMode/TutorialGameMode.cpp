@@ -24,6 +24,14 @@ void ATutorialGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::ATutorialGameMode() Failed: UWorld* const World = GetWorld();"));
+		return;
+	}
+
+	InitWidget(world, &TutorialWidget, "WidgetBlueprint'/Game/UMG/Tutorial.Tutorial_C'", true);
 }
 
 void ATutorialGameMode::StartPlay()
@@ -43,6 +51,22 @@ void ATutorialGameMode::Tick(float DeltaTime)
 
 
 /*** ATutorialGameMode : Start ***/
+void ATutorialGameMode::InitWidget(UWorld* const World, class UUserWidget** UserWidget, const FString ReferencePath, bool bAddToViewport)
+{
+	UClass* widget = LoadObject<UClass>(this, *ReferencePath);
+
+	if (widget == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ATutorialGameMode::InitWidget(): if (widget == nullptr)"));
+		return;
+	}
+
+	(*UserWidget) = CreateWidget(World, widget);
+
+	if ((*UserWidget) && bAddToViewport)
+		(*UserWidget)->AddToViewport();
+}
+
 void ATutorialGameMode::SpawnPioneerManager()
 {
 	UWorld* const world = GetWorld();

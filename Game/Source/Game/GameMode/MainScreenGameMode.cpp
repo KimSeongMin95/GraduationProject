@@ -27,7 +27,6 @@ void AMainScreenGameMode::BeginPlay()
 		return;
 	}
 
-
 	InitWidget(world, &MainScreenWidget, "WidgetBlueprint'/Game/UMG/MainScreen.MainScreen_C'", true);
 
 	InitWidget(world, &OnlineWidget, "WidgetBlueprint'/Game/UMG/Online/Online.Online_C'", false);
@@ -36,7 +35,8 @@ void AMainScreenGameMode::BeginPlay()
 	InitWidget(world, &WaitingRoomWidget, "WidgetBlueprint'/Game/UMG/Online/WaitingRoom.WaitingRoom_C'", false);
 	InitWaitingRoomWidget();
 
-	InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/Settings.Settings_C'", false);
+	//InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/Settings.Settings_C'", false);
+	InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/ExampleOfSettings/ExampleOfSettings.ExampleOfSettings_C'", false);
 
 
 
