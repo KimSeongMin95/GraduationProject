@@ -80,14 +80,44 @@ enum EPacketType
 	*/
 	PLAYER_JOINED_WAITING_ROOM,
 	
-	
 
-	JOIN_PLAYING_GAME,	  // 어떤 플레이어가 진행중인 게임에 들어올 때: 해당 게임의 플레이어들과 FIND_GAMES인 플레이어들에게 브로드캐스팅 해야 함.
+
+
+
+
+	// 구현중
+
+
+	/** 방장이 아닌 대기방인 플레이어가 대기방에서 나가면
+	Client:
+		Send [EXIT_WAITING_ROOM]: Exit한 대기방 나감 알림
+		Recv []: X
+	Server:
+		Recv [EXIT_WAITING_ROOM]: Games.SocketIDOfPlayers에 해당 클라이언트의 SocketID 삭제
+		Send [PLAYER_EXITED_WAITING_ROOM] to  대기방의 다른 플레이어들: 해당 클라이언트 SocketID
+	*/
+	EXIT_WAITING_ROOM,
+
+	/** 대기방의 플레이어가 나가면
+	Client:
+		Send []: X
+		Recv [PLAYER_EXITED_WAITING_ROOM]: 대기방에서 나간 다른 플레이어의 SocketID
+	Server:
+		Recv []: X
+		Send []: EXIT_WAITING_ROOM에서 송신
+	*/
+	PLAYER_EXITED_WAITING_ROOM,
+
+	
 	DESTROY_WAITING_ROOM, // 방장이 대기방을 종료할 때: FIND_GAMES와 방장을 제외한 대기방인 플레이어들에게 브로드캐스팅 해야 함.
-	EXIT_WAITING_ROOM,	  // 방장이 아닌 대기방인 플레이어가 대기방에서 나갈 때: FIND_GAMES와 대기방인 플레이어들에게 브로드캐스팅 해야 함.
 
 	START_WAITING_ROOM,   // 방장이 대기방에서 게임을 시작할 때: 방장을 제외한 대기방인 플레이어들에게 브로드캐스팅 해야 함.
-	EXIT_PLAYER,		  // 플레이어가 게임을 종료할 때: 
+
+	JOIN_PLAYING_GAME,	  // 어떤 플레이어가 진행중인 게임에 들어올 때: 해당 게임의 플레이어들과 FIND_GAMES인 플레이어들에게 브로드캐스팅 해야 함.
+
+	START_PLAYING_GAME, // 플레이중인 게임 시작하기
+
+	EXIT_GAME,		  // 플레이어가 게임을 종료할 때: 
 };
 
 struct stInfoOfGame

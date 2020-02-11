@@ -35,8 +35,7 @@ void AMainScreenGameMode::BeginPlay()
 	InitWidget(world, &WaitingRoomWidget, "WidgetBlueprint'/Game/UMG/Online/WaitingRoom.WaitingRoom_C'", false);
 	InitWaitingRoomWidget();
 
-	//InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/Settings.Settings_C'", false);
-	InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/ExampleOfSettings/ExampleOfSettings.ExampleOfSettings_C'", false);
+	InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/Settings/Settings.Settings_C'", false);
 
 
 
