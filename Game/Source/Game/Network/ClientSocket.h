@@ -107,6 +107,19 @@ public:
 	std::queue<int> qRecvPlayerJoinedWaitingRoom;
 	CRITICAL_SECTION csRecvPlayerJoinedWaitingRoom;
 	bool GetRecvPlayerJoinedWaitingRoom(std::queue<int>& qSocketID);
+
+	void SendExitWaitingRoom(int SocketIDOfLeader);
+
+	void RecvPlayerExitedWaitingRoom(stringstream& RecvStream);
+	std::queue<int> qRecvPlayerExitedWaitingRoom;
+	CRITICAL_SECTION csRecvPlayerExitedWaitingRoom;
+	bool GetRecvPlayerExitedWaitingRoom(std::queue<int>& qSocketID);
+
+	void SendCheckPlayerInWaitingRoom(int SocketIDOfLeader, std::queue<int>& qSocketID);
+	void RecvCheckPlayerInWaitingRoom(stringstream& RecvStream);
+	std::queue<int> qRecvCheckPlayerInWaitingRoom;
+	CRITICAL_SECTION csRecvCheckPlayerInWaitingRoom;
+	bool GetRecvCheckPlayerInWaitingRoom(std::queue<int>& qSocketID);
 	//////////////////////////////////////////////////////////////////////////	
 
 

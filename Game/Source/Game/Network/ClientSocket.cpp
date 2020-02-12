@@ -17,7 +17,9 @@ ClientSocket::ClientSocket()
 	InitializeCriticalSection(&csRecvModifyWaitingRoom);
 	InitializeCriticalSection(&csRecvJoinWaitingRoom);
 	InitializeCriticalSection(&csRecvPlayerJoinedWaitingRoom);
-
+	InitializeCriticalSection(&csRecvPlayerExitedWaitingRoom);
+	InitializeCriticalSection(&csRecvCheckPlayerInWaitingRoom);
+	
 	// Get함수에서 return false를 할 수 있게
 	mRecvModifyWaitingRoom.Leader = -1;
 	mRecvJoinWaitingRoom.Leader = -1;
@@ -35,6 +37,8 @@ ClientSocket::~ClientSocket()
 	DeleteCriticalSection(&csRecvModifyWaitingRoom);
 	DeleteCriticalSection(&csRecvJoinWaitingRoom);
 	DeleteCriticalSection(&csRecvPlayerJoinedWaitingRoom);
+	DeleteCriticalSection(&csRecvPlayerExitedWaitingRoom);
+	DeleteCriticalSection(&csRecvCheckPlayerInWaitingRoom);
 }
 
 bool ClientSocket::InitSocket()
@@ -218,7 +222,7 @@ void ClientSocket::RecvJoinWaitingRoom(stringstream& RecvStream)
 	RecvStream >> infoOfGame.IPv4OfLeader;
 	int socketIDOfPlayers;
 	while (RecvStream >> socketIDOfPlayers)
-		infoOfGame.SocketIDOfPlayers.push_back(socketIDOfPlayers);
+		infoOfGame.SocketIDOfPlayers.emplace(std::pair<int, bool>(socketIDOfPlayers, true));
 
 	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvJoinWaitingRoom] infoOfGame: %s %s %d %d %d %d"),
 		*FString(infoOfGame.State.c_str()), *FString(infoOfGame.Title.c_str()), infoOfGame.Leader,
@@ -250,7 +254,7 @@ void ClientSocket::RecvPlayerJoinedWaitingRoom(stringstream& RecvStream)
 	RecvStream >> socketID;
 
 	// 받은 SocketID가 이 클라이언트의 SocketId와 같다면 에러이므로 무시합니다.
-	if (socketID == SocketID)
+	if (socketID == SocketID || socketID == -1)
 		return;
 
 	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvPlayerJoinedWaitingRoom] socketID: %d"), socketID);
@@ -274,6 +278,118 @@ bool ClientSocket::GetRecvPlayerJoinedWaitingRoom(std::queue<int>& qSocketID)
 
 	return true;
 }
+
+
+void ClientSocket::SendExitWaitingRoom(int SocketIDOfLeader)
+{
+	stringstream SendStream;
+
+	// 나간 사람이 방장이 아니면
+	if (SocketID != SocketIDOfLeader)
+	{
+		SendStream << EPacketType::EXIT_WAITING_ROOM << endl;
+		SendStream << SocketIDOfLeader << endl;
+	}
+	// 방장이면
+	else
+	{
+		SendStream << EPacketType::DESTROY_WAITING_ROOM << endl;
+		SendStream << SocketIDOfLeader << endl;
+	}
+
+	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
+}
+
+
+void ClientSocket::RecvPlayerExitedWaitingRoom(stringstream& RecvStream)
+{
+	int socketID = -1;
+
+	RecvStream >> socketID;
+
+	// 받은 SocketID가 이 클라이언트의 SocketId와 같다면 에러이므로 무시합니다.
+	if (socketID == SocketID)
+		return;
+
+	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvPlayerExitedWaitingRoom] socketID: %d"), socketID);
+
+	EnterCriticalSection(&csRecvPlayerExitedWaitingRoom);
+	qRecvPlayerExitedWaitingRoom.push(socketID);
+	LeaveCriticalSection(&csRecvPlayerExitedWaitingRoom);
+}
+bool ClientSocket::GetRecvPlayerExitedWaitingRoom(std::queue<int>& qSocketID)
+{
+	EnterCriticalSection(&csRecvPlayerExitedWaitingRoom);
+	if (qRecvPlayerExitedWaitingRoom.size() == 0)
+	{
+		LeaveCriticalSection(&csRecvPlayerExitedWaitingRoom);
+		return false;
+	}
+	qSocketID = qRecvPlayerExitedWaitingRoom;
+	while (qRecvPlayerExitedWaitingRoom.empty() == false)
+		qRecvPlayerExitedWaitingRoom.pop();
+	LeaveCriticalSection(&csRecvPlayerExitedWaitingRoom);
+
+	return true;
+}
+
+
+
+
+
+
+void ClientSocket::SendCheckPlayerInWaitingRoom(int SocketIDOfLeader, std::queue<int>& qSocketID)
+{
+	stringstream sendStream;
+
+	sendStream << EPacketType::CHECK_PLAYER_IN_WAITING_ROOM << endl;
+	sendStream << SocketIDOfLeader << endl;
+	while (qSocketID.empty() == false)
+	{
+		sendStream << qSocketID.front() << endl;
+		qSocketID.pop();
+	}
+
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+}
+void ClientSocket::RecvCheckPlayerInWaitingRoom(stringstream& RecvStream)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvCheckPlayerInWaitingRoom]"));
+
+	int socketID = -1;
+	
+	std::queue<int> queue;
+	while (RecvStream >> socketID)
+		queue.push(socketID);
+
+	EnterCriticalSection(&csRecvCheckPlayerInWaitingRoom);
+	while (queue.empty() == false)
+	{
+		qRecvCheckPlayerInWaitingRoom.push(queue.front());
+		queue.pop();
+	}
+	LeaveCriticalSection(&csRecvCheckPlayerInWaitingRoom);
+}
+bool ClientSocket::GetRecvCheckPlayerInWaitingRoom(std::queue<int>& qSocketID)
+{
+	EnterCriticalSection(&csRecvCheckPlayerInWaitingRoom);
+	if (qRecvCheckPlayerInWaitingRoom.size() == 0)
+	{
+		LeaveCriticalSection(&csRecvCheckPlayerInWaitingRoom);
+		return false;
+	}
+	qSocketID = qRecvPlayerExitedWaitingRoom;
+	while (qRecvCheckPlayerInWaitingRoom.empty() == false)
+		qRecvCheckPlayerInWaitingRoom.pop();
+	LeaveCriticalSection(&csRecvCheckPlayerInWaitingRoom);
+
+	return true;
+}
+
+
+
+
 
 
 
@@ -345,6 +461,17 @@ uint32 ClientSocket::Run()
 				RecvPlayerJoinedWaitingRoom(RecvStream);
 			}
 			break;
+			case EPacketType::PLAYER_EXITED_WAITING_ROOM:
+			{
+				RecvPlayerExitedWaitingRoom(RecvStream);
+			}
+			break;
+			case EPacketType::CHECK_PLAYER_IN_WAITING_ROOM:
+			{
+				RecvCheckPlayerInWaitingRoom(RecvStream);
+			}
+			break;
+
 			default:
 				break;
 			}

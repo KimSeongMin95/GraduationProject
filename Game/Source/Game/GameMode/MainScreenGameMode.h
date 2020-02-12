@@ -255,6 +255,8 @@ public:
 			return;
 		}
 
+		this->SocketID = SocketID;
+
 		Player->SetText(FText::FromString(FString::FromInt(SocketID)));
 
 		Player->SetVisibility(ESlateVisibility::Visible);
@@ -266,6 +268,8 @@ public:
 			UE_LOG(LogTemp, Warning, TEXT("if (!Player)"));
 			return;
 		}
+
+		SocketID = -1;
 
 		Player->SetVisibility(ESlateVisibility::Hidden);
 	}
@@ -339,16 +343,20 @@ public:
 		MaxOfNum->SetText(FText::FromString(FString::FromInt(infoOfGame.MaxOfNum)));
 	}
 
-	void SetCurOfNum(int Value)
+	void SetCurOfNum(unsigned int Value)
 	{
 		if (!CurOfNum)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::IncreaseCurOfNum]if (!CurOfNum)"));
 			return;
 		}
+
+		if (Value < 0)
+			Value = 0;
+
 		FString TheString = CurOfNum->GetText().ToString();
-		int32 IntFromFString = FCString::Atoi(*TheString);
-		IntFromFString += Value;
+		//int32 IntFromFString = FCString::Atoi(*TheString);
+		int32 IntFromFString = Value;
 		CurOfNum->SetText(FText::FromString(FString::FromInt(IntFromFString)));
 	}
 
@@ -447,8 +455,10 @@ private:
 		/** WaitingRoomWidget의 Start 버튼 */
 		class UButton* StartButton = nullptr;
 
-	/** 대기방에서 플레이어를 표시하는 CPlayerOfWaitingRoom를 저장하는 std::map */
+	/** 대기방 플레이어를 담아두는 컨테이너 */
 	std::vector<CPlayerOfWaitingRoom*> vecPlayers;
+	/** 참가한 플레이어만 표시하는 위젯 (방장제외) */
+	std::map<int, CPlayerOfWaitingRoom*> mapPlayers;
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
@@ -459,6 +469,7 @@ private:
 
 	ClientSocket* Socket = nullptr;
 	bool bIsConnected;
+	int SocketIDOfLeader = -1;
 
 	
 private:
@@ -552,14 +563,21 @@ public:
 	UFUNCTION(Category = "Timer")
 		void TimerOfRecvPlayerJoinedWaitingRoom();
 	FTimerHandle thRecvPlayerJoinedWaitingRoom;
-	
 
-	//UFUNCTION(BlueprintCallable, Category = "Widget")
-	//	void PlayerJoined(const FString IPv4Addr, int SocketID, int Num);
-	//UFUNCTION(BlueprintCallable, Category = "Widget")
-	//	void PlayerLeaved(int SocketID);
+	UFUNCTION(Category = "Widget")
+		void RecvPlayerExitedWaitingRoom();
+	UFUNCTION(Category = "Timer")
+		void TimerOfRecvPlayerExitedWaitingRoom();
+	FTimerHandle thRecvPlayerExitedWaitingRoom;
+
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void DeleteWaitingRoom();
+
+	UFUNCTION(Category = "Widget")
+		void RecvCheckPlayerInWaitingRoom();
+	UFUNCTION(Category = "Timer")
+		void TimerOfRecvCheckPlayerInWaitingRoom();
+	FTimerHandle thRecvCheckPlayerInWaitingRoom;
 
 /*** AMainScreenGameMode : End ***/
 };

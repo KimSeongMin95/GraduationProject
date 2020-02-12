@@ -39,6 +39,11 @@ private:
 
 	static void JoinWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 	
+	static void ExitWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
+
+	static void CheckPlayerInWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
+
+
 
 
 	//// 어떤 플레이어가 진행중인 게임에 들어올 때
@@ -47,9 +52,7 @@ private:
 	//// 방장이 대기방을 종료할 때
 	//static void DestroyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	//// 방장이 아닌 대기방인 플레이어가 대기방에서 나갈 때
-	//static void ExitWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
-	//
+
 
 	//// 방장이 대기방에서 게임을 시작할 때
 	//static void StartWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);

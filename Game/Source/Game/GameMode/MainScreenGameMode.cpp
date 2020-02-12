@@ -268,6 +268,8 @@ void AMainScreenGameMode::_DeactivateWaitingRoomWidget()
 
 	if (WaitingRoomWidget->IsInViewport() == true)
 	{
+		Socket->SendExitWaitingRoom(SocketIDOfLeader);
+
 		DeleteWaitingRoom();
 
 		WaitingRoomWidget->RemoveFromViewport();
@@ -293,7 +295,7 @@ void AMainScreenGameMode::RevealOnlineGame()
 
 	if (GetWorldTimerManager().IsTimerActive(thRevealOnlineGame))
 		GetWorldTimerManager().ClearTimer(thRevealOnlineGame);
-	GetWorldTimerManager().SetTimer(thRevealOnlineGame, this, &AMainScreenGameMode::TimerOfRevealOnlineGame, 1.0f, true);
+	GetWorldTimerManager().SetTimer(thRevealOnlineGame, this, &AMainScreenGameMode::TimerOfRevealOnlineGame, 0.1f, true);
 }
 void AMainScreenGameMode::TimerOfRevealOnlineGame()
 {
@@ -376,6 +378,8 @@ void AMainScreenGameMode::_CreateWaitingRoom()
 	if (StartButton)
 		StartButton->SetVisibility(ESlateVisibility::Visible);
 
+	SocketIDOfLeader = Socket->SocketID;
+
 	Socket->SendCreateWaitingRoom(FText::FromString(FString("Waiting")), FText::FromString(FString("Let's_go_together!")), 1, 100);
 
 	// 기본적으로 방장을 표시하기 위해
@@ -383,6 +387,12 @@ void AMainScreenGameMode::_CreateWaitingRoom()
 
 	// 추가로 들어오는 다른 플레이어들을 확인합니다.
 	RecvPlayerJoinedWaitingRoom();
+
+	// 나가는 다른 플레이어들을 확인합니다.
+	RecvPlayerExitedWaitingRoom();
+
+	// 플레이어가 실제로 존재하는지 확인합니다.
+	RecvCheckPlayerInWaitingRoom();
 
 	_ActivateWaitingRoomWidget();
 }
@@ -392,6 +402,8 @@ void AMainScreenGameMode::SendJoinWaitingRoom(int SocketIDOfLeader)
 	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::SendJoinWaitingRoom] SocketID: %d"), SocketIDOfLeader);
 
 	_DeactivateOnlineWidget();
+
+	this->SocketIDOfLeader = SocketIDOfLeader;
 
 	Socket->SendJoinWaitingRoom(SocketIDOfLeader);
 
@@ -422,7 +434,7 @@ void AMainScreenGameMode::RevealWaitingRoom()
 
 	if (GetWorldTimerManager().IsTimerActive(thRevealWaitingRoom))
 		GetWorldTimerManager().ClearTimer(thRevealWaitingRoom);
-	GetWorldTimerManager().SetTimer(thRevealWaitingRoom, this, &AMainScreenGameMode::TimerOfRevealWaitingRoom, 0.2f, true);
+	GetWorldTimerManager().SetTimer(thRevealWaitingRoom, this, &AMainScreenGameMode::TimerOfRevealWaitingRoom, 0.1f, true);
 }
 void AMainScreenGameMode::TimerOfRevealWaitingRoom()
 {
@@ -442,12 +454,23 @@ void AMainScreenGameMode::TimerOfRevealWaitingRoom()
 		InfoOfWaitingRoom->SetWaitingRoom(infoOfGame);
 
 
+
+
+		// 보여지는 모든 참가자들을 숨깁니다.
+		for (auto& game : vecPlayers)
+			game->SetHidden();
+		mapPlayers.clear();
+
+
+
+
 		vecPlayers.at(0)->SetVisible(infoOfGame.Leader);
 
 		int idx = 1;
-		for (int socketID : infoOfGame.SocketIDOfPlayers)
+		for (auto& socketID : infoOfGame.SocketIDOfPlayers)
 		{
-			vecPlayers.at(idx)->SetVisible(socketID);
+			vecPlayers.at(idx)->SetVisible(socketID.first);
+			mapPlayers.emplace(std::pair<int, CPlayerOfWaitingRoom*>(socketID.first, vecPlayers.at(idx)));
 			idx++;
 		}
 
@@ -462,8 +485,14 @@ void AMainScreenGameMode::TimerOfRevealWaitingRoom()
 		// 대기방 초기화가 끝났으므로, 방장이 대기방을 수정했는지를 확인합니다. 
 		CheckModifyWaitingRoom();
 
-		// 또한, 추가로 들어오는 다른 플레이어들을 확인합니다.
+		// 추가로 들어오는 다른 플레이어들을 확인합니다.
 		RecvPlayerJoinedWaitingRoom();
+
+		// 나가는 다른 플레이어들을 확인합니다.
+		RecvPlayerExitedWaitingRoom();
+
+		// 플레이어가 실제로 존재하는지 확인합니다.
+		RecvCheckPlayerInWaitingRoom();
 
 		GetWorldTimerManager().ClearTimer(thRevealWaitingRoom);
 	}
@@ -545,7 +574,7 @@ void AMainScreenGameMode::CheckModifyWaitingRoom()
 
 	if (GetWorldTimerManager().IsTimerActive(thCheckModifyWaitingRoom))
 		GetWorldTimerManager().ClearTimer(thCheckModifyWaitingRoom);
-	GetWorldTimerManager().SetTimer(thCheckModifyWaitingRoom, this, &AMainScreenGameMode::TimerOfCheckModifyWaitingRoom, 1.0f, true);
+	GetWorldTimerManager().SetTimer(thCheckModifyWaitingRoom, this, &AMainScreenGameMode::TimerOfCheckModifyWaitingRoom, 0.5f, true);
 }
 void AMainScreenGameMode::TimerOfCheckModifyWaitingRoom()
 {
@@ -578,7 +607,7 @@ void AMainScreenGameMode::RecvPlayerJoinedWaitingRoom()
 
 	if (GetWorldTimerManager().IsTimerActive(thRecvPlayerJoinedWaitingRoom))
 		GetWorldTimerManager().ClearTimer(thRecvPlayerJoinedWaitingRoom);
-	GetWorldTimerManager().SetTimer(thRecvPlayerJoinedWaitingRoom, this, &AMainScreenGameMode::TimerOfRecvPlayerJoinedWaitingRoom, 0.5f, true);
+	GetWorldTimerManager().SetTimer(thRecvPlayerJoinedWaitingRoom, this, &AMainScreenGameMode::TimerOfRecvPlayerJoinedWaitingRoom, 0.1f, true);
 }
 void AMainScreenGameMode::TimerOfRecvPlayerJoinedWaitingRoom()
 {
@@ -607,40 +636,60 @@ void AMainScreenGameMode::TimerOfRecvPlayerJoinedWaitingRoom()
 		while (qSocketID.empty() == false)
 		{
 			vecPlayers.at(invisibleIdx)->SetVisible(qSocketID.front());
+			mapPlayers.emplace(std::pair<int, CPlayerOfWaitingRoom*>(qSocketID.front(), vecPlayers.at(invisibleIdx)));
 			qSocketID.pop();
+			
+			// 다시 숨겨져 있는 인덱스를 찾습니다.
+			for (invisibleIdx++; invisibleIdx < 100; invisibleIdx++)
+			{
+				if (vecPlayers.at(invisibleIdx)->IsVisible() == false)
+					break;
+			}
 
-			// 현재 플레이어 숫자를 하나 증가시킵니다.
-			InfoOfWaitingRoom->SetCurOfNum(1);
+			// 현재 플레이어들의 수를 적용합니다.
+			InfoOfWaitingRoom->SetCurOfNum(mapPlayers.size() + 1);
 		}
 	}
 }
 
+void AMainScreenGameMode::RecvPlayerExitedWaitingRoom()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::RecvPlayerExitedWaitingRoom]"));
 
+	if (GetWorldTimerManager().IsTimerActive(thRecvPlayerExitedWaitingRoom))
+		GetWorldTimerManager().ClearTimer(thRecvPlayerExitedWaitingRoom);
+	GetWorldTimerManager().SetTimer(thRecvPlayerExitedWaitingRoom, this, &AMainScreenGameMode::TimerOfRecvPlayerExitedWaitingRoom, 0.1f, true);
+}
+void AMainScreenGameMode::TimerOfRecvPlayerExitedWaitingRoom()
+{
+	if (!InfoOfWaitingRoom)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRecvPlayerExitedWaitingRoom] if (!InfoOfWaitingRoom)"));
+		return;
+	}
 
-//void AMainScreenGameMode::PlayerJoined(const FString IPv4Addr, int SocketID, int Num)
-//{
-//	if (!WidgetTreeOfWRW || !UniformGridPanelOfWRW)
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("if (!WidgetTreeOfWRW || !UniformGridPanelOfWRW)"));
-//		return;
-//	}
-//
-//	CPlayerOfWaitingRoom* cPlayerOfWaitingRoom = new CPlayerOfWaitingRoom(
-//		WidgetTreeOfWRW, UniformGridPanelOfWRW,
-//		IPv4Addr, SocketID, Num
-//	);
-//
-//	Players.insert(std::pair<int, CPlayerOfWaitingRoom*>(SocketID, cPlayerOfWaitingRoom));
-//
-//}
-//
-//void AMainScreenGameMode::PlayerLeaved(int SocketID)
-//{
-//	if (Players.at(SocketID))
-//		delete Players.at(SocketID);
-//
-//	Players.erase(SocketID);
-//}
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRecvPlayerExitedWaitingRoom]"));
+
+	std::queue<int> qSocketID;
+
+	if (Socket->GetRecvPlayerExitedWaitingRoom(qSocketID))
+	{
+		// 큐에 있는 다른 플레이어의 SocketID를 숨깁니다.
+		while (qSocketID.empty() == false)
+		{
+			if (mapPlayers.find(qSocketID.front()) == mapPlayers.end())
+				continue;
+
+			mapPlayers.at(qSocketID.front())->SetHidden();
+			mapPlayers.erase(qSocketID.front());
+			qSocketID.pop();
+
+			// 현재 플레이어들의 수를 적용합니다.
+			InfoOfWaitingRoom->SetCurOfNum(mapPlayers.size() + 1);
+		}
+	}
+}
+
 void AMainScreenGameMode::DeleteWaitingRoom()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeleteWaitingRoom]"));
@@ -648,6 +697,7 @@ void AMainScreenGameMode::DeleteWaitingRoom()
 	// 보여지는 모든 참가자들을 숨깁니다.
 	for (auto& game : vecPlayers)
 		game->SetHidden();
+	mapPlayers.clear();
 
 	if (GetWorldTimerManager().IsTimerActive(thRevealWaitingRoom))
 		GetWorldTimerManager().ClearTimer(thRevealWaitingRoom);
@@ -657,8 +707,63 @@ void AMainScreenGameMode::DeleteWaitingRoom()
 
 	if (GetWorldTimerManager().IsTimerActive(thRecvPlayerJoinedWaitingRoom))
 		GetWorldTimerManager().ClearTimer(thRecvPlayerJoinedWaitingRoom);
+
+	if (GetWorldTimerManager().IsTimerActive(thRecvPlayerExitedWaitingRoom))
+		GetWorldTimerManager().ClearTimer(thRecvPlayerExitedWaitingRoom);
+
+	if (GetWorldTimerManager().IsTimerActive(thRecvCheckPlayerInWaitingRoom))
+		GetWorldTimerManager().ClearTimer(thRecvCheckPlayerInWaitingRoom);
 }
 
+void AMainScreenGameMode::RecvCheckPlayerInWaitingRoom()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::RecvCheckPlayerInWaitingRoom]"));
+
+	if (GetWorldTimerManager().IsTimerActive(thRecvCheckPlayerInWaitingRoom))
+		GetWorldTimerManager().ClearTimer(thRecvCheckPlayerInWaitingRoom);
+	GetWorldTimerManager().SetTimer(thRecvCheckPlayerInWaitingRoom, this, &AMainScreenGameMode::TimerOfRecvCheckPlayerInWaitingRoom, 1.0f, true);
+}
+void AMainScreenGameMode::TimerOfRecvCheckPlayerInWaitingRoom()
+{
+	if (!InfoOfWaitingRoom)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRecvCheckPlayerInWaitingRoom] if (!InfoOfWaitingRoom)"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRecvCheckPlayerInWaitingRoom]"));
+
+	// 방장이 없으면 실행하지 않습니다.
+	if (vecPlayers.at(0)->IsVisible() == false)
+	{
+		GetWorldTimerManager().ClearTimer(thRecvCheckPlayerInWaitingRoom);
+		return;
+	}
+
+
+	std::queue<int> qSocketID;
+
+	for (auto& socketID : mapPlayers)
+		qSocketID.push(socketID.first);
+	
+	Socket->SendCheckPlayerInWaitingRoom(vecPlayers.at(0)->SocketID, qSocketID);
+
+	if (Socket->GetRecvCheckPlayerInWaitingRoom(qSocketID))
+	{
+		while (qSocketID.empty() == false)
+		{
+			if (mapPlayers.find(qSocketID.front()) == mapPlayers.end())
+				continue;
+
+			mapPlayers.at(qSocketID.front())->SetHidden();
+			mapPlayers.erase(qSocketID.front());
+			qSocketID.pop();
+
+			// 현재 플레이어들의 수를 적용합니다.
+			InfoOfWaitingRoom->SetCurOfNum(mapPlayers.size() + 1);
+		}
+	}
+}
 /*** AMainScreenGameMode : End ***/
 
 
