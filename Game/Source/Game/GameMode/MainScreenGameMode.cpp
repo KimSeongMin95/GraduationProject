@@ -27,32 +27,49 @@ void AMainScreenGameMode::BeginPlay()
 		return;
 	}
 
-	InitWidget(world, &MainScreenWidget, "WidgetBlueprint'/Game/UMG/MainScreen.MainScreen_C'", true);
+	//InitWidget(world, &MainScreenWidget, "WidgetBlueprint'/Game/UMG/MainScreen.MainScreen_C'", true);
 
+	MainScreenWidget = NewObject<UMainScreenWidget>(this);
+
+	//OnlineWidget = NewObject<UWidgetBase>(this);
+	//if (OnlineWidget == nullptr)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("OnlineWidget = NewObject<UWidgetBase>(this);"));
+	//	return;
+	//}
+	//else
+	//	UE_LOG(LogTemp, Warning, TEXT("GGGGGGGGGGGG"));
+	//OnlineWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/Online.Online_C'", false);
+
+	
 	InitWidget(world, &OnlineWidget, "WidgetBlueprint'/Game/UMG/Online/Online.Online_C'", false);
-	InitOnlineWidget();
-
-	InitWidget(world, &WaitingRoomWidget, "WidgetBlueprint'/Game/UMG/Online/WaitingRoom.WaitingRoom_C'", false);
-	InitWaitingRoomWidget();
+	//InitOnlineGameWidget();
 
 	InitWidget(world, &SettingsWidget, "WidgetBlueprint'/Game/UMG/Settings/Settings.Settings_C'", false);
 
+	InitWidget(world, &OnlineGameWidget, "WidgetBlueprint'/Game/UMG/Online/OnlineGame.OnlineGame_C'", false);
+
+	InitWidget(world, &WaitingRoomWidget, "WidgetBlueprint'/Game/UMG/Online/WaitingRoom.WaitingRoom_C'", false);
+	//InitWaitingRoomWidget();
 
 
-	Socket = ClientSocket::GetSingleton();
-	Socket->InitSocket();
-	bIsConnected = Socket->Connect("127.0.0.1", 8000);
-	if (bIsConnected)
-	{
-		Socket->SetMainScreenGameMode(this);
-		UE_LOG(LogClass, Log, TEXT("[AMainScreenGameMode::BeginPlay] IOCP Server connect success!"));
-	}
 
-	// Recv 스레드 시작
-	Socket->StartListen();
-	UE_LOG(LogClass, Log, TEXT("[AMainScreenGameMode::BeginPlay] BeginPlay End"));
 
-	Socket->SendAcceptPlayer();
+
+	//Socket = ClientSocket::GetSingleton();
+	//Socket->InitSocket();
+	//bIsConnected = Socket->Connect("127.0.0.1", 8000);
+	//if (bIsConnected)
+	//{
+	//	Socket->SetMainScreenGameMode(this);
+	//	UE_LOG(LogClass, Log, TEXT("[AMainScreenGameMode::BeginPlay] IOCP Server connect success!"));
+	//}
+
+	//// Recv 스레드 시작
+	//Socket->StartListen();
+	//UE_LOG(LogClass, Log, TEXT("[AMainScreenGameMode::BeginPlay] BeginPlay End"));
+
+	//Socket->SendAcceptPlayer();
 }
 
 void AMainScreenGameMode::StartPlay()
@@ -90,194 +107,52 @@ void AMainScreenGameMode::InitWidget(UWorld* const World, class UUserWidget** Us
 }
 
 
-void AMainScreenGameMode::InitOnlineWidget()
-{
-	if (!OnlineWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::InitOnlineWidget(): if (!OnlineWidget)"));
-		return;
-	}
-
-	WidgetTreeOfOW = OnlineWidget->WidgetTree;
-
-	if (WidgetTreeOfOW)
-		ScrollBoxOfOW = WidgetTreeOfOW->FindWidget<UScrollBox>(FName(TEXT("ScrollBox")));
-
-	for (int i{}; i < 100; i++)
-		vecOnlineGames.emplace_back(new CGameOfOnlineWidget(WidgetTreeOfOW, ScrollBoxOfOW));
-}
-
-void AMainScreenGameMode::InitWaitingRoomWidget()
-{
-	if (!WaitingRoomWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::InitWaitingRoomWidget(): if (!WaitingRoomWidget)"));
-		return;
-	}
-
-
-	WidgetTreeOfWRW = WaitingRoomWidget->WidgetTree;
-
-	if (WidgetTreeOfWRW)
-	{
-		InfoOfWaitingRoom = new CInfoOfWaitingRoom(WidgetTreeOfWRW);
-
-		UniformGridPanelOfWRW = WidgetTreeOfWRW->FindWidget<UUniformGridPanel>(FName(TEXT("UniformGridPanel")));
-		StartButton = WidgetTreeOfWRW->FindWidget<UButton>(FName(TEXT("Button_Start")));
-	}
-
-	for (int i{}; i < 100; i++)
-		vecPlayers.emplace_back(new CPlayerOfWaitingRoom(WidgetTreeOfWRW, UniformGridPanelOfWRW, i));
-}
-
-/////////////////////////////////////////////////
-// 위젯 활성화 / 비활성화
-/////////////////////////////////////////////////
-void AMainScreenGameMode::ActivateMainScreenWidget()
-{
-	_ActivateMainScreenWidget();
-}
-void AMainScreenGameMode::_ActivateMainScreenWidget()
-{
-	if (!MainScreenWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateMainScreenWidget] if (!MainScreenWidget)"));
-		return;
-	}
-
-	if (MainScreenWidget->IsInViewport() == false)
-		MainScreenWidget->AddToViewport();
-}
-void AMainScreenGameMode::DeactivateMainScreenWidget()
-{
-	_DeactivateMainScreenWidget();
-}
-void AMainScreenGameMode::_DeactivateMainScreenWidget()
-{
-	if (!MainScreenWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateMainScreenWidget] if (!MainScreenWidget)"));
-		return;
-	}
-
-	if (MainScreenWidget->IsInViewport() == true)
-		MainScreenWidget->RemoveFromViewport();
-}
-
-void AMainScreenGameMode::ActivateSettingsWidget()
-{
-	_ActivateSettingsWidget();
-}
-void AMainScreenGameMode::_ActivateSettingsWidget()
-{
-	if (!SettingsWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateSettingsWidget] if (!SettingsWidget)"));
-		return;
-	}
-
-	if (SettingsWidget->IsInViewport() == false)
-		SettingsWidget->AddToViewport();
-}
-void AMainScreenGameMode::DeactivateSettingsWidget()
-{
-	_DeactivateSettingsWidget();
-}
-void AMainScreenGameMode::_DeactivateSettingsWidget()
-{
-	if (!SettingsWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateSettingsWidget] if (!SettingsWidget)"));
-		return;
-	}
-
-	if (SettingsWidget->IsInViewport() == true)
-		SettingsWidget->RemoveFromViewport();
-}
-
-void AMainScreenGameMode::ActivateOnlineWidget()
-{
-	_ActivateOnlineWidget();
-}
-void AMainScreenGameMode::_ActivateOnlineWidget()
-{
-	if (!OnlineWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateOnlineWidget] if (!OnlineWidget)"));
-		return;
-	}
-
-	if (OnlineWidget->IsInViewport() == false)
-	{
-		Socket->SendFindGames();
-
-		RevealOnlineGame();
-
-		OnlineWidget->AddToViewport();
-	}
-}
-void AMainScreenGameMode::DeactivateOnlineWidget()
-{
-	_DeactivateOnlineWidget();
-}
-void AMainScreenGameMode::_DeactivateOnlineWidget()
-{
-	if (!OnlineWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateOnlineWidget] if (!OnlineWidget)"));
-		return;
-	}
-
-	if (OnlineWidget->IsInViewport() == true)
-	{
-		ConcealAllOnlineGames();
-
-		OnlineWidget->RemoveFromViewport();
-	}
-}
-
-//void AMainScreenGameMode::ActivateWaitingRoomWidget()
+//void AMainScreenGameMode::InitOnlineGameWidget()
 //{
-//	_ActivateWaitingRoomWidget();
+//	if (!OnlineGameWidget)
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::InitOnlineGameWidget(): if (!OnlineGameWidget)"));
+//		return;
+//	}
+//
+//	WidgetTreeOfOW = OnlineGameWidget->WidgetTree;
+//
+//	if (WidgetTreeOfOW)
+//		ScrollBoxOfOW = WidgetTreeOfOW->FindWidget<UScrollBox>(FName(TEXT("ScrollBox")));
+//
+//	for (int i{}; i < 100; i++)
+//		vecOnlineGames.emplace_back(new CGameOfOnlineWidget(WidgetTreeOfOW, ScrollBoxOfOW));
 //}
-void AMainScreenGameMode::_ActivateWaitingRoomWidget()
-{
-	if (!WaitingRoomWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateWaitingRoomWidget] if (!WaitingRoomWidget)"));
-		return;
-	}
+//
+//void AMainScreenGameMode::InitWaitingRoomWidget()
+//{
+//	if (!WaitingRoomWidget)
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::InitWaitingRoomWidget(): if (!WaitingRoomWidget)"));
+//		return;
+//	}
+//
+//
+//	WidgetTreeOfWRW = WaitingRoomWidget->WidgetTree;
+//
+//	if (WidgetTreeOfWRW)
+//	{
+//		InfoOfWaitingRoom = new CInfoOfWaitingRoom(WidgetTreeOfWRW);
+//
+//		UniformGridPanelOfWRW = WidgetTreeOfWRW->FindWidget<UUniformGridPanel>(FName(TEXT("UniformGridPanel")));
+//		StartButton = WidgetTreeOfWRW->FindWidget<UButton>(FName(TEXT("Button_Start")));
+//	}
+//
+//	for (int i{}; i < 100; i++)
+//		vecPlayers.emplace_back(new CPlayerOfWaitingRoom(WidgetTreeOfWRW, UniformGridPanelOfWRW, i));
+//}
 
-	// AddToViewport하기 전에 모든 작업을 완료해야 정상적으로 표시됩니다.
-	if (WaitingRoomWidget->IsInViewport() == false)
-	{
-		WaitingRoomWidget->AddToViewport();
-	}
-}
-void AMainScreenGameMode::DeactivateWaitingRoomWidget()
-{
-	_DeactivateWaitingRoomWidget();
-}
-void AMainScreenGameMode::_DeactivateWaitingRoomWidget()
-{
-	if (!WaitingRoomWidget)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateWaitingRoomWidget] if (!WaitingRoomWidget)"));
-		return;
-	}
 
-	if (WaitingRoomWidget->IsInViewport() == true)
-	{
-		Socket->SendExitWaitingRoom(SocketIDOfLeader);
 
-		DeleteWaitingRoom();
 
-		WaitingRoomWidget->RemoveFromViewport();
-	}
-}
 
 /////////////////////////////////////////////////
-// 
+// 튜토리얼 실행
 /////////////////////////////////////////////////
 void AMainScreenGameMode::PlayTutorial()
 {
@@ -287,6 +162,244 @@ void AMainScreenGameMode::_PlayTutorial()
 {
 	UGameplayStatics::OpenLevel(this, "Tutorial");
 }
+
+/////////////////////////////////////////////////
+// 위젯 활성화 / 비활성화
+/////////////////////////////////////////////////
+void AMainScreenGameMode::ActivateMainScreenWidget()
+{
+	if (!MainScreenWidget->GetUserWidget())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateMainScreenWidget] if (!MainScreenWidget)"));
+		return;
+	}
+
+	if (MainScreenWidget->GetUserWidget()->IsInViewport() == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateMainScreenWidget] if (MainScreenWidget->IsInViewport() == false)"));
+		return;
+	}
+
+	_ActivateMainScreenWidget();
+}
+void AMainScreenGameMode::_ActivateMainScreenWidget()
+{
+	MainScreenWidget->GetUserWidget()->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateMainScreenWidget()
+{
+	if (!MainScreenWidget->GetUserWidget())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateMainScreenWidget] if (!MainScreenWidget)"));
+		return;
+	}
+
+	if (MainScreenWidget->GetUserWidget()->IsInViewport() == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateMainScreenWidget] if (MainScreenWidget->IsInViewport() == true)"));
+		return;
+	}
+
+	_DeactivateMainScreenWidget();
+}
+void AMainScreenGameMode::_DeactivateMainScreenWidget()
+{
+	MainScreenWidget->GetUserWidget()->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateSettingsWidget()
+{
+	if (!SettingsWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateSettingsWidget] if (!SettingsWidget)"));
+		return;
+	}
+
+	if (SettingsWidget->IsInViewport() == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateSettingsWidget] if (SettingsWidget->IsInViewport() == false)"));
+		return;
+	}
+
+	_ActivateSettingsWidget();
+}
+void AMainScreenGameMode::_ActivateSettingsWidget()
+{
+	SettingsWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateSettingsWidget()
+{
+	if (!SettingsWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateSettingsWidget] if (!SettingsWidget)"));
+		return;
+	}
+
+	if (SettingsWidget->IsInViewport() == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateSettingsWidget] if (SettingsWidget->IsInViewport() == true)"));
+		return;
+	}
+
+	_DeactivateSettingsWidget();
+}
+void AMainScreenGameMode::_DeactivateSettingsWidget()
+{
+	SettingsWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateOnlineWidget()
+{
+	if (!OnlineWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateOnlineWidget] if (!OnlineWidget)"));
+		return;
+	}
+
+	if (OnlineWidget->IsInViewport() == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateOnlineWidget] if (OnlineWidget->IsInViewport() == false)"));
+		return;
+	}
+
+	_ActivateOnlineWidget();
+}
+void AMainScreenGameMode::_ActivateOnlineWidget()
+{
+	OnlineWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateOnlineWidget()
+{
+	if (!OnlineWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateOnlineWidget] if (!OnlineWidget)"));
+		return;
+	}
+
+	if (OnlineWidget->IsInViewport() == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateOnlineWidget] if (OnlineWidget->IsInViewport() == true)"));
+		return;
+	}
+
+	_DeactivateOnlineWidget();
+}
+void AMainScreenGameMode::_DeactivateOnlineWidget()
+{
+	OnlineWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateOnlineGameWidget()
+{
+	if (!OnlineGameWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateOnlineGameWidget] if (!OnlineGameWidget)"));
+		return;
+	}
+
+	if (OnlineGameWidget->IsInViewport() == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateOnlineGameWidget] if (OnlineGameWidget->IsInViewport() == false)"));
+		return;
+	}
+
+	_ActivateOnlineGameWidget();
+}
+void AMainScreenGameMode::_ActivateOnlineGameWidget()
+{
+	OnlineGameWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateOnlineGameWidget()
+{
+	if (!OnlineGameWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateOnlineGameWidget] if (!OnlineGameWidget)"));
+		return;
+	}
+
+	if (OnlineGameWidget->IsInViewport() == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateOnlineGameWidget] if (OnlineGameWidget->IsInViewport() == true)"));
+		return;
+	}
+
+	_DeactivateOnlineGameWidget();
+}
+void AMainScreenGameMode::_DeactivateOnlineGameWidget()
+{
+	OnlineGameWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateWaitingRoomWidget()
+{
+	if (!WaitingRoomWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateWaitingRoomWidget] if (!WaitingRoomWidget)"));
+		return;
+	}
+
+	if (WaitingRoomWidget->IsInViewport() == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ActivateWaitingRoomWidget] if (WaitingRoomWidget->IsInViewport() == false)"));
+		return;
+	}
+
+	_ActivateWaitingRoomWidget();
+}
+void AMainScreenGameMode::_ActivateWaitingRoomWidget()
+{
+	WaitingRoomWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateWaitingRoomWidget()
+{
+	if (!WaitingRoomWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateWaitingRoomWidget] if (!WaitingRoomWidget)"));
+		return;
+	}
+
+	if (WaitingRoomWidget->IsInViewport() == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::DeactivateWaitingRoomWidget] if (WaitingRoomWidget->IsInViewport() == true)"));
+		return;
+	}
+
+	_DeactivateWaitingRoomWidget();
+}
+void AMainScreenGameMode::_DeactivateWaitingRoomWidget()
+{
+	WaitingRoomWidget->RemoveFromViewport();
+}
+
+/////////////////////////////////////////////////
+// 게임종료
+/////////////////////////////////////////////////
+void AMainScreenGameMode::TerminateGame()
+{
+	_TerminateGame();
+}
+void AMainScreenGameMode::_TerminateGame()
+{
+
+
+
+
+	//// 주의: Selected Viewport일 때도 종료되는 함수
+	//FGenericPlatformMisc::RequestExit(false);
+}
+
+
+
+
+/////////////////////////////////////////////////
+// 
+/////////////////////////////////////////////////
+
+
+/*
+
+
+
 
 
 void AMainScreenGameMode::RevealOnlineGame()
@@ -764,6 +877,12 @@ void AMainScreenGameMode::TimerOfRecvCheckPlayerInWaitingRoom()
 		}
 	}
 }
+
+
+
+*/
+
+
 /*** AMainScreenGameMode : End ***/
 
 

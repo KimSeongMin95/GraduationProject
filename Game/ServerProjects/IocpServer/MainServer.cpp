@@ -15,14 +15,6 @@ unsigned int WINAPI CallWorkerThread(LPVOID p)
 	return 0;
 }
 
-//unsigned int WINAPI CallMonsterThread(LPVOID p)
-//{
-//	MainServer* pOverlappedEvent = (MainServer*)p;
-//	pOverlappedEvent->MonsterManagementThread();
-//
-//	return 0;
-//}
-
 
 MainServer::MainServer()
 {

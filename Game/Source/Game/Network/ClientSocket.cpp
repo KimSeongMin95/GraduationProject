@@ -415,11 +415,6 @@ uint32 ClientSocket::Run()
 	//// 초기 init 과정을 기다림
 	//FPlatformProcess::Sleep(0.03);
 
-	while (MainScreenGameMode == nullptr)
-	{
-		// 필수수인 MainScreenGameMode가 생성될 때 까지 기다립니다.
-	}
-
 	// recv while loop 시작
 	// StopTaskCounter 클래스 변수를 사용해 Thread Safety하게 해줌
 	while (StopTaskCounter.GetValue() == 0)

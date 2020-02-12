@@ -2,23 +2,16 @@
 
 #pragma once
 
+
+#include "Widgets/WidgetBase.h"
+#include "Widgets/MainScreenWidget.h"
+
 /*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Kismet/GameplayStatics.h" // For UGameplayStatics::OpenLevel(this, TransferLevelName);
 
-#include "Blueprint/UserWidget.h"
-#include "Blueprint/WidgetTree.h"
-
-#include "Components/CanvasPanel.h"
-#include "Components/ScrollBox.h"
-#include "MyButton.h" //#include "Components/Button.h"
-#include "Components/HorizontalBox.h"
-#include "Components/HorizontalBoxSlot.h"
-#include "Components/EditableTextBox.h"
-#include "Components/UniformGridPanel.h"
-#include "Components/UniformGridSlot.h"
-
 #include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
 /*** 언리얼엔진 헤더 선언 : End ***/
+
 
 #include <vector>
 
@@ -388,12 +381,12 @@ public:
 	}
 };
 
-UENUM()
-enum class EOnlineGameState : uint8
-{
-	Waiting = 0,
-	Playing = 1
-};
+//UENUM()
+//enum class EOnlineGameState : uint8
+//{
+//	Waiting = 0,
+//	Playing = 1
+//};
 
 UCLASS()
 class GAME_API AMainScreenGameMode : public AGameModeBase
@@ -418,52 +411,74 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 메인화면을 띄우는 HUD 객체 */
-		class UUserWidget* MainScreenWidget = nullptr;
+		//class UUserWidget* MainScreenWidget = nullptr;
+
+	class UMainScreenWidget* MainScreenWidget = nullptr;
+
+
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/**  */
+		class UUserWidget* OnlineWidget = nullptr;
+		//class UWidgetBase* OnlineWidget = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 설정창을 띄우는 HUD 객체 */
+		class UUserWidget* SettingsWidget = nullptr;
+
+
+
+
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 온라인창을 띄우는 HUD 객체 */
-		class UUserWidget* OnlineWidget = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** OnlineWidget의 WidgetTree */
-		class UWidgetTree* WidgetTreeOfOW = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** OnlineGames를 표시할 OnlineWidget의 ScrollBox */
-		class UScrollBox* ScrollBoxOfOW = nullptr;
-
-	/** 온라인 게임 위젯 */
-	std::vector<CGameOfOnlineWidget*> vecOnlineGames;
+		class UUserWidget* OnlineGameWidget = nullptr;
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** Online의 대기방 HUD 객체 */
 		class UUserWidget* WaitingRoomWidget = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** WaitingRoomWidget의 WidgetTree */
-		class UWidgetTree* WidgetTreeOfWRW = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** Players를 표시할 WaitingRoomWidget의 UniformGridPanel */
-		class UUniformGridPanel* UniformGridPanelOfWRW = nullptr;
-
-	CInfoOfWaitingRoom* InfoOfWaitingRoom;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** WaitingRoomWidget의 Start 버튼 */
-		class UButton* StartButton = nullptr;
-
-	/** 대기방 플레이어를 담아두는 컨테이너 */
-	std::vector<CPlayerOfWaitingRoom*> vecPlayers;
-	/** 참가한 플레이어만 표시하는 위젯 (방장제외) */
-	std::map<int, CPlayerOfWaitingRoom*> mapPlayers;
 
 
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 설정창을 띄우는 HUD 객체 */
-		class UUserWidget* SettingsWidget = nullptr;
+
+
+
+
+	//UPROPERTY(VisibleAnywhere, Category = "Widget")
+	//	/** OnlineGameWidget의 WidgetTree */
+	//	class UWidgetTree* WidgetTreeOfOGW = nullptr;
+
+	//UPROPERTY(VisibleAnywhere, Category = "Widget")
+	//	/** OnlineGames를 표시할 OnlineGameWidget의 ScrollBox */
+	//	class UScrollBox* ScrollBoxOfOGW = nullptr;
+
+	///** 온라인 게임 위젯 */
+	//std::vector<CGameOfOnlineWidget*> vecOnlineGames;
+
+
+
+
+	//UPROPERTY(VisibleAnywhere, Category = "Widget")
+	//	/** WaitingRoomWidget의 WidgetTree */
+	//	class UWidgetTree* WidgetTreeOfWRW = nullptr;
+
+	//UPROPERTY(VisibleAnywhere, Category = "Widget")
+	//	/** Players를 표시할 WaitingRoomWidget의 UniformGridPanel */
+	//	class UUniformGridPanel* UniformGridPanelOfWRW = nullptr;
+
+	//CInfoOfWaitingRoom* InfoOfWaitingRoom;
+
+	//UPROPERTY(VisibleAnywhere, Category = "Widget")
+	//	/** WaitingRoomWidget의 Start 버튼 */
+	//	class UButton* StartButton = nullptr;
+
+	///** 대기방 플레이어를 담아두는 컨테이너 */
+	//std::vector<CPlayerOfWaitingRoom*> vecPlayers;
+	///** 참가한 플레이어만 표시하는 위젯 (방장제외) */
+	//std::map<int, CPlayerOfWaitingRoom*> mapPlayers;
+
 
 
 
@@ -474,52 +489,58 @@ private:
 	
 private:
 	void InitWidget(UWorld* const World, class UUserWidget** UserWidget, const FString ReferencePath, bool bAddToViewport);
-	void InitOnlineWidget();
-	void InitWaitingRoomWidget();
+	//void InitOnlineGameWidget();
+	//void InitWaitingRoomWidget();
 
 public:
-	
+	/////////////////////////////////////////////////
+	// 튜토리얼 실행
+	/////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void PlayTutorial(); void _PlayTutorial();
+
 	/////////////////////////////////////////////////
 	// 위젯 활성화 / 비활성화
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateMainScreenWidget();
-	void _ActivateMainScreenWidget();
+		void ActivateMainScreenWidget(); void _ActivateMainScreenWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateMainScreenWidget();
-	void _DeactivateMainScreenWidget();
+		void DeactivateMainScreenWidget(); void _DeactivateMainScreenWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateSettingsWidget();
-	void _ActivateSettingsWidget();
+		void ActivateOnlineWidget(); void _ActivateOnlineWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateSettingsWidget();
-	void _DeactivateSettingsWidget();
+		void DeactivateOnlineWidget(); void _DeactivateOnlineWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateOnlineWidget();
-	void _ActivateOnlineWidget();
+		void ActivateSettingsWidget(); void _ActivateSettingsWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateOnlineWidget();
-	void _DeactivateOnlineWidget();
+		void DeactivateSettingsWidget(); void _DeactivateSettingsWidget();
 
-	//UFUNCTION(BlueprintCallable, Category = "Widget")
-	//	void ActivateWaitingRoomWidget();
-	void _ActivateWaitingRoomWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateWaitingRoomWidget();
-	void _DeactivateWaitingRoomWidget();
+		void ActivateOnlineGameWidget(); void _ActivateOnlineGameWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateOnlineGameWidget(); void _DeactivateOnlineGameWidget();
 
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateWaitingRoomWidget(); void _ActivateWaitingRoomWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateWaitingRoomWidget(); void _DeactivateWaitingRoomWidget();
+
+	/////////////////////////////////////////////////
+	// 게임종료
+	/////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void TerminateGame(); void _TerminateGame();
 
 	/////////////////////////////////////////////////
 	// 
 	/////////////////////////////////////////////////
 
+	/*
 
 
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void PlayTutorial();
-	void _PlayTutorial();
+
 
 
 	UFUNCTION(Category = "Widget")
@@ -578,7 +599,9 @@ public:
 	UFUNCTION(Category = "Timer")
 		void TimerOfRecvCheckPlayerInWaitingRoom();
 	FTimerHandle thRecvCheckPlayerInWaitingRoom;
-
+	
+	
+	*/
 /*** AMainScreenGameMode : End ***/
 };
 
