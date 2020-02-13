@@ -62,11 +62,11 @@ struct stSOCKETINFO
 /**
  * 서버와 접속 및 패킷 처리를 담당하는 클래스
  */
-class GAME_API ClientSocket : public FRunnable
+class GAME_API cClientSocket : public FRunnable
 {
 public:
-	ClientSocket();
-	virtual ~ClientSocket();
+	cClientSocket();
+	virtual ~cClientSocket();
 
 	// 소켓 등록 및 설정
 	bool InitSocket();
@@ -80,6 +80,10 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// 서버와 통신
 	//////////////////////////////////////////////////////////////////////////
+	void SendLogin(const FText ID);
+	void RecvLogin(stringstream& RecvStream);
+
+	/*
 	void SendAcceptPlayer();
 	void RecvAcceptPlayer(stringstream& RecvStream);
 
@@ -120,11 +124,13 @@ public:
 	std::queue<int> qRecvCheckPlayerInWaitingRoom;
 	CRITICAL_SECTION csRecvCheckPlayerInWaitingRoom;
 	bool GetRecvCheckPlayerInWaitingRoom(std::queue<int>& qSocketID);
+
+	*/
 	//////////////////////////////////////////////////////////////////////////	
 
 
 	// 
-	void SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode);
+	//void SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode);
 
 	// FRunnable Thread members	
 	FRunnableThread* Thread;
@@ -141,9 +147,9 @@ public:
 	void StopListen();
 
 	// 싱글턴 객체 가져오기
-	static ClientSocket* GetSingleton()
+	static cClientSocket* GetSingleton()
 	{
-		static ClientSocket ins;
+		static cClientSocket ins;
 		return &ins;
 	}
 
@@ -153,5 +159,6 @@ private:
 	SOCKET	ServerSocket;				// 서버와 연결할 소켓	
 	char 	recvBuffer[MAX_BUFFER];		// 수신 버퍼 스트림	
 
-	class AMainScreenGameMode* MainScreenGameMode = nullptr;
+public:
+	cInfoOfPlayer MyInfo;
 };

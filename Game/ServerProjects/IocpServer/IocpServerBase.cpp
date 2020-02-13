@@ -1,11 +1,17 @@
 #include "IocpServerBase.h"
 
 
+std::map<SOCKET, stSOCKETINFO*> IocpServerBase::Clients;
+CRITICAL_SECTION IocpServerBase::csClients;
+
+
 IocpServerBase::IocpServerBase()
 {
 	// 멤버 변수 초기화
 	bWorkerThread = true;
 	bAccept = true;
+
+	InitializeCriticalSection(&csClients);
 }
 
 IocpServerBase::~IocpServerBase()
@@ -27,6 +33,8 @@ IocpServerBase::~IocpServerBase()
 		delete[] hWorkerHandle;
 		hWorkerHandle = nullptr;
 	}
+
+	LeaveCriticalSection(&csClients);
 }
 
 bool IocpServerBase::Initialize()
@@ -119,7 +127,14 @@ void IocpServerBase::StartServer()
 
 		// char *inet_ntoa(struct in_addr adr); // 역으로 네트워크바이트순서로 된 정32비트 정수를 다시 문자열로 돌려주는 함수
 		SocketInfo->IPv4Addr = string(inet_ntoa(clientAddr.sin_addr));
-		printf_s("[IocpServerBase::StartServer] Client IP: %s\n", SocketInfo->IPv4Addr.c_str());
+		printf_s("[INFO] <IocpServerBase::StartServer()> Client's IP: %s\n", SocketInfo->IPv4Addr.c_str());
+
+		SocketInfo->Port = (int)ntohs(clientAddr.sin_port);
+		printf_s("[INFO] <IocpServerBase::StartServer()> Client's Port: %d\n", SocketInfo->Port);
+
+		EnterCriticalSection(&csClients);
+		Clients[clientSocket] = SocketInfo;
+		LeaveCriticalSection(&csClients);
 
 
 		hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (DWORD)SocketInfo, 0);

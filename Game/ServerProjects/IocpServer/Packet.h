@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <map>
+#include <sstream>
 
 using namespace std;
 
@@ -18,15 +19,15 @@ enum EPacketType
 
 
 
-	/** 플레이어가 게임을 실행하면 -> (추후에 변경) 플레이어가 MainScreenWidget에서 Online 버튼을 눌러 진입하면
+	/** 플레이어가 OnlineWidget에서 LOGIN 하면
 	Client:
-		Send [ACCEPT_PLAYER]: 접속 알림
-		Recv [ACCEPT_PLAYER]: 해당 클라이언트의 SocketID
+		Send [LOGIN]: MyInfo에 ID를 저장후 송신
+		Recv [LOGIN]: cInfoOfPlayer
 	Server:
-		Recv [ACCEPT_PLAYER]: O
-		Send [ACCEPT_PLAYER]: 해당 클라이언트의 SocketID
+		Recv [LOGIN]: 받은 cInfoOfPlayer에 IPv4Addr, SocketByServer, PortByServer를 저장하고 InfoOfClients에 삽입
+		Send [LOGIN]: cInfoOfPlayer
 	*/
-	ACCEPT_PLAYER,
+	LOGIN,
 
 	/** OnlineWidget에서 CreateWaitingRoom 버튼을 눌러 대기방을 생성하면
 	Client:
@@ -99,6 +100,7 @@ enum EPacketType
 	*/
 	PLAYER_EXITED_WAITING_ROOM,
 
+
 	/** 대기방에 들어오면 실제로 플레이어가 존재하는지 확인
 	Client:
 		Send [CHECK_PLAYER_IN_WAITING_ROOM]: SocketIDLeader와 mapPlayers의 모든 keyValue인 socketID
@@ -108,6 +110,7 @@ enum EPacketType
 		Send [CHECK_PLAYER_IN_WAITING_ROOM]: Games.at(socketIDOfLeader).SocketIDOfPlayers에 실제로 존재하지 않는 플레이어의 socketID들
 	*/
 	CHECK_PLAYER_IN_WAITING_ROOM,
+
 
 
 	DESTROY_WAITING_ROOM, // 방장이 대기방을 종료할 때: FIND_GAMES와 방장을 제외한 대기방인 플레이어들에게 브로드캐스팅 해야 함.
@@ -121,139 +124,147 @@ enum EPacketType
 	EXIT_GAME,		  // 플레이어가 게임을 종료할 때: 
 };
 
-struct stInfoOfGame
+class cInfoOfPlayer
 {
-	string State;
-	string Title;
-	int Leader = 0; // 방장의 SocketID
-	int Stage = 1;
-	int MaxOfNum = 100;
-	int CurOfNum = 0;
-
-	string IPv4OfLeader;
-	std::map<int, bool> SocketIDOfPlayers;
-};
-
-
-
-
-
-
-
-
-
-
-
-
-class cCharacter {
 public:
-	cCharacter();
-	~cCharacter();
+	string ID;
+	string IPv4Addr; // IP 번호
+	int SocketByServer; // Online에서 서버로부터 부여된 소켓 번호
+	int SocketByLeader; // Game에서 방장으로부터 부여된 소켓 번호
+	int PortByServer; // Online에서 서버로부터 부여된 소켓 번호
+	int PortByLeader; // Game에서 방장으로부터 부여된 소켓 번호
 
-	// 세션 아이디
-	int		SessionId;
-
-	// 위치
-	float	X;
-	float	Y;
-	float	Z;
-
-	// 회전값
-	float	Yaw;
-	float	Pitch;
-	float	Roll;
-
-	// 속도
-	float VX;
-	float VY;
-	float VZ;
-
-	// 속성
-	bool	IsAlive;
-	float	HealthValue;
-	bool	IsAttacking;
-
-	friend ostream& operator<<(ostream& stream, cCharacter& info)
+public:
+	cInfoOfPlayer()
 	{
-		stream << info.SessionId << endl;
-		stream << info.X << endl;
-		stream << info.Y << endl;
-		stream << info.Z << endl;
-		stream << info.VX << endl;
-		stream << info.VY << endl;
-		stream << info.VZ << endl;
-		stream << info.Yaw << endl;
-		stream << info.Pitch << endl;
-		stream << info.Roll << endl;
-		stream << info.IsAlive << endl;
-		stream << info.HealthValue << endl;
-		stream << info.IsAttacking << endl;
-
-		return stream;
+		ID = "NULL";
+		IPv4Addr = "127.0.0.1";
+		SocketByServer = -1;
+		SocketByLeader = -1;
+		PortByServer = 8000;
+		PortByLeader = 9000;
+	}
+	~cInfoOfPlayer()
+	{
 	}
 
-	friend istream& operator>>(istream& stream, cCharacter& info)
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfPlayer& Info)
 	{
-		stream >> info.SessionId;
-		stream >> info.X;
-		stream >> info.Y;
-		stream >> info.Z;
-		stream >> info.VX;
-		stream >> info.VY;
-		stream >> info.VZ;
-		stream >> info.Yaw;
-		stream >> info.Pitch;
-		stream >> info.Roll;
-		stream >> info.IsAlive;
-		stream >> info.HealthValue;
-		stream >> info.IsAttacking;
+		Stream << Info.ID << endl;
+		Stream << Info.IPv4Addr << endl;
+		Stream << Info.SocketByServer << endl;
+		Stream << Info.SocketByLeader << endl;
+		Stream << Info.PortByServer << endl;
+		Stream << Info.PortByLeader << endl;
 
-		return stream;
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfPlayer& Info)
+	{
+		Stream >> Info.ID;
+		Stream >> Info.IPv4Addr;
+		Stream >> Info.SocketByServer;
+		Stream >> Info.SocketByLeader;
+		Stream >> Info.PortByServer;
+		Stream >> Info.PortByLeader;
+
+		return Stream;
 	}
 };
 
-class cCharactersInfo
+class cInfoOfPlayers
 {
 public:
-	cCharactersInfo();
-	~cCharactersInfo();
+	std::map<int, cInfoOfPlayer> Players;
 
-	map<int, cCharacter> players;
+public:
+	cInfoOfPlayers() {}
+	~cInfoOfPlayers() {}
 
-	friend ostream& operator<<(ostream& stream, cCharactersInfo& info)
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfPlayers& Info)
 	{
-		stream << info.players.size() << endl;
-		for (auto& kvp : info.players)
+		Stream << Info.Players.size() << endl;
+		for (auto& kvp : Info.Players)
 		{
-			stream << kvp.first << endl;
-			stream << kvp.second << endl;
+			Stream << kvp.first << endl;
+			Stream << kvp.second << endl;
 		}
 
-		return stream;
+		return Stream;
 	}
 
-	friend istream& operator>>(istream& stream, cCharactersInfo& info)
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfPlayers& Info)
 	{
 		int nPlayers = 0;
-		int SessionId = 0;
-		cCharacter Player;
-		info.players.clear();
+		int socketID = 0;
+		cInfoOfPlayer Player;
 
-		stream >> nPlayers;
+		// 초기화
+		Info.Players.clear();
+
+		Stream >> nPlayers;
 		for (int i = 0; i < nPlayers; i++)
 		{
-			stream >> SessionId;
-			stream >> Player;
-			info.players[SessionId] = Player;
+			Stream >> socketID;
+			Stream >> Player;
+			Info.Players[socketID] = Player;
 		}
 
-		return stream;
+		return Stream;
 	}
 };
 
-class CommonClass
+
+class cInfoOfGame
 {
 public:
-	CommonClass();
-	~CommonClass();
+	string State;
+	string Title;
+	int Stage;
+	int nMax; // 최대 플레이어 수 제한
+
+	cInfoOfPlayer Leader; // 방장
+	cInfoOfPlayers Players; // 방장을 제외한 참가자들
+
+public:
+	cInfoOfGame()
+	{
+		State = "Waiting";
+		Title = "Let's go together!";
+		Stage = 1;
+		nMax = 100;
+	}
+	~cInfoOfGame() {}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfGame& Info)
+	{
+		Stream << Info.State << endl;
+		Stream << Info.Title << endl;
+		Stream << Info.Stage << endl;
+		Stream << Info.nMax << endl;
+		Stream << Info.Leader << endl;
+		Stream << Info.Players << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfGame& Info)
+	{
+		Stream >> Info.State;
+		Stream >> Info.Title;
+		Stream >> Info.Stage;
+		Stream >> Info.nMax;
+		Stream >> Info.Leader;
+		Stream >> Info.Players;
+
+		return Stream;
+	}
 };
+

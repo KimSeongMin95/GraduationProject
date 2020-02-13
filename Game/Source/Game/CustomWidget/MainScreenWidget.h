@@ -2,13 +2,12 @@
 
 #pragma once
 
+
 #include "CoreMinimal.h"
-#include "Widgets/WidgetBase.h"
+#include "CustomWidget/WidgetBase.h"
 #include "MainScreenWidget.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class GAME_API UMainScreenWidget : public UWidgetBase
 {
@@ -17,4 +16,9 @@ class GAME_API UMainScreenWidget : public UWidgetBase
 public:
 	UMainScreenWidget();
 	~UMainScreenWidget();
+
+public:
+	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;
+
+
 };

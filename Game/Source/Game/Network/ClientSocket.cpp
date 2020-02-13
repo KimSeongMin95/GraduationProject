@@ -8,24 +8,23 @@
 #include <algorithm>
 #include <string>
 
-#include "GameMode/MainScreenGameMode.h"
 
-ClientSocket::ClientSocket()
+cClientSocket::cClientSocket()
 	:StopTaskCounter(0)
 {
-	InitializeCriticalSection(&csRecvFindGames);
-	InitializeCriticalSection(&csRecvModifyWaitingRoom);
-	InitializeCriticalSection(&csRecvJoinWaitingRoom);
-	InitializeCriticalSection(&csRecvPlayerJoinedWaitingRoom);
-	InitializeCriticalSection(&csRecvPlayerExitedWaitingRoom);
-	InitializeCriticalSection(&csRecvCheckPlayerInWaitingRoom);
+	//InitializeCriticalSection(&csRecvFindGames);
+	//InitializeCriticalSection(&csRecvModifyWaitingRoom);
+	//InitializeCriticalSection(&csRecvJoinWaitingRoom);
+	//InitializeCriticalSection(&csRecvPlayerJoinedWaitingRoom);
+	//InitializeCriticalSection(&csRecvPlayerExitedWaitingRoom);
+	//InitializeCriticalSection(&csRecvCheckPlayerInWaitingRoom);
 	
-	// Get함수에서 return false를 할 수 있게
-	mRecvModifyWaitingRoom.Leader = -1;
-	mRecvJoinWaitingRoom.Leader = -1;
+	//// Get함수에서 return false를 할 수 있게
+	//mRecvModifyWaitingRoom.Leader = -1;
+	//mRecvJoinWaitingRoom.Leader = -1;
 }
 
-ClientSocket::~ClientSocket()
+cClientSocket::~cClientSocket()
 {
 	delete Thread;
 	Thread = nullptr;
@@ -33,15 +32,15 @@ ClientSocket::~ClientSocket()
 	closesocket(ServerSocket);
 	WSACleanup();
 
-	DeleteCriticalSection(&csRecvFindGames);
-	DeleteCriticalSection(&csRecvModifyWaitingRoom);
-	DeleteCriticalSection(&csRecvJoinWaitingRoom);
-	DeleteCriticalSection(&csRecvPlayerJoinedWaitingRoom);
-	DeleteCriticalSection(&csRecvPlayerExitedWaitingRoom);
-	DeleteCriticalSection(&csRecvCheckPlayerInWaitingRoom);
+	//DeleteCriticalSection(&csRecvFindGames);
+	//DeleteCriticalSection(&csRecvModifyWaitingRoom);
+	//DeleteCriticalSection(&csRecvJoinWaitingRoom);
+	//DeleteCriticalSection(&csRecvPlayerJoinedWaitingRoom);
+	//DeleteCriticalSection(&csRecvPlayerExitedWaitingRoom);
+	//DeleteCriticalSection(&csRecvCheckPlayerInWaitingRoom);
 }
 
-bool ClientSocket::InitSocket()
+bool cClientSocket::InitSocket()
 {
 	WSADATA wsaData;
 
@@ -61,7 +60,7 @@ bool ClientSocket::InitSocket()
 	return true;
 }
 
-bool ClientSocket::Connect(const char * pszIP, int nPort)
+bool cClientSocket::Connect(const char * pszIP, int nPort)
 {
 	// 접속할 서버 정보를 저장할 구조체
 	SOCKADDR_IN stServerAddr;
@@ -80,26 +79,56 @@ bool ClientSocket::Connect(const char * pszIP, int nPort)
 	return true;
 }
 
-void ClientSocket::CloseSocket()
+void cClientSocket::CloseSocket()
 {
 	closesocket(ServerSocket);
 	WSACleanup();
 }
 
 
-void ClientSocket::SendAcceptPlayer()
+void cClientSocket::SendLogin(const FText ID)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendLogin(...)>"));
+
+	if (!ID.IsEmpty())
+		MyInfo.ID = TCHAR_TO_UTF8(*ID.ToString());
+
+	UE_LOG(LogTemp, Warning, TEXT("MyInfo.ID: %s"), *FString(MyInfo.ID.c_str()));
+
+	stringstream sendStream;
+	sendStream << EPacketType::LOGIN << endl;
+	sendStream << MyInfo << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendLogin(...)>"));
+}
+void cClientSocket::RecvLogin(stringstream& RecvStream)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvLogin(...)>"));
+
+	RecvStream >> MyInfo;
+	UE_LOG(LogTemp, Warning, TEXT("MyInfo ID: %s, IPv4Addr: %s, socket: %d, port: %d"), 
+		*FString(MyInfo.ID.c_str()), *FString(MyInfo.IPv4Addr.c_str()), MyInfo.SocketByServer, MyInfo.PortByServer);
+
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvLogin(...)>"));
+}
+
+/*
+
+void cClientSocket::SendAcceptPlayer()
 {
 	stringstream sendStream;
 	sendStream << EPacketType::ACCEPT_PLAYER << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 }
-void ClientSocket::RecvAcceptPlayer(stringstream& RecvStream)
+void cClientSocket::RecvAcceptPlayer(stringstream& RecvStream)
 {
 	RecvStream >> SocketID;
 }
 
-void ClientSocket::SendCreateWaitingRoom(const FText State, const FText Title, int Stage, int MaxOfNum)
+void cClientSocket::SendCreateWaitingRoom(const FText State, const FText Title, int Stage, int MaxOfNum)
 {
 	stringstream SendStream;
 	SendStream << EPacketType::CREATE_WAITING_ROOM << endl;
@@ -111,14 +140,14 @@ void ClientSocket::SendCreateWaitingRoom(const FText State, const FText Title, i
 	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
 }
 
-void ClientSocket::SendFindGames()
+void cClientSocket::SendFindGames()
 {
 	stringstream SendStream;
 	SendStream << EPacketType::FIND_GAMES << endl;
 
 	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
 }
-void ClientSocket::RecvFindGames(stringstream& RecvStream)
+void cClientSocket::RecvFindGames(stringstream& RecvStream)
 {
 	stInfoOfGame infoOfGame;
 
@@ -129,7 +158,7 @@ void ClientSocket::RecvFindGames(stringstream& RecvStream)
 	RecvStream >> infoOfGame.CurOfNum;
 	RecvStream >> infoOfGame.MaxOfNum;
 
-	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvFindGames] infoOfGame: %s %s %d %d %d %d"),
+	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::RecvFindGames] infoOfGame: %s %s %d %d %d %d"),
 		*FString(infoOfGame.State.c_str()), *FString(infoOfGame.Title.c_str()), infoOfGame.Leader,
 		infoOfGame.Stage, infoOfGame.MaxOfNum, infoOfGame.CurOfNum);
 
@@ -138,10 +167,10 @@ void ClientSocket::RecvFindGames(stringstream& RecvStream)
 	LeaveCriticalSection(&csRecvFindGames);
 }
 
-bool ClientSocket::GetRecvFindGames(stInfoOfGame& InfoOfGame)
+bool cClientSocket::GetRecvFindGames(stInfoOfGame& InfoOfGame)
 {
 	EnterCriticalSection(&csRecvFindGames);
-	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::GetRecvFindGames] Start qRecvFindGames.size(): %d"), qRecvFindGames.size());
+	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::GetRecvFindGames] Start qRecvFindGames.size(): %d"), qRecvFindGames.size());
 	if (qRecvFindGames.size() == 0)
 	{
 		LeaveCriticalSection(&csRecvFindGames);
@@ -149,13 +178,13 @@ bool ClientSocket::GetRecvFindGames(stInfoOfGame& InfoOfGame)
 	}
 	InfoOfGame = qRecvFindGames.front();
 	qRecvFindGames.pop();
-	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::GetRecvFindGames] End qRecvFindGames.size(): %d"), qRecvFindGames.size());
+	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::GetRecvFindGames] End qRecvFindGames.size(): %d"), qRecvFindGames.size());
 	LeaveCriticalSection(&csRecvFindGames);
 
 	return true;
 }
 
-void ClientSocket::SendModifyWaitingRoom(const FString Title, int Stage, int MaxOfNum)
+void cClientSocket::SendModifyWaitingRoom(const FString Title, int Stage, int MaxOfNum)
 {
 	stringstream SendStream;
 
@@ -166,7 +195,7 @@ void ClientSocket::SendModifyWaitingRoom(const FString Title, int Stage, int Max
 
 	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
 }
-void ClientSocket::RecvModifyWaitingRoom(stringstream& RecvStream)
+void cClientSocket::RecvModifyWaitingRoom(stringstream& RecvStream)
 {
 	stInfoOfGame infoOfGame;
 
@@ -177,14 +206,14 @@ void ClientSocket::RecvModifyWaitingRoom(stringstream& RecvStream)
 	// For GetRecvModifyWaitingRoom(stInfoOfGame& InfoOfGame)
 	infoOfGame.Leader = 0;
 
-	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvModifyWaitingRoom] infoOfGame: %s %d %d"),
+	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::RecvModifyWaitingRoom] infoOfGame: %s %d %d"),
 		*FString(infoOfGame.Title.c_str()), infoOfGame.Stage, infoOfGame.MaxOfNum);
 
 	EnterCriticalSection(&csRecvModifyWaitingRoom);
 	mRecvModifyWaitingRoom = infoOfGame;
 	LeaveCriticalSection(&csRecvModifyWaitingRoom);
 }
-bool ClientSocket::GetRecvModifyWaitingRoom(stInfoOfGame& InfoOfGame)
+bool cClientSocket::GetRecvModifyWaitingRoom(stInfoOfGame& InfoOfGame)
 {
 	EnterCriticalSection(&csRecvModifyWaitingRoom);
 	if (mRecvModifyWaitingRoom.Leader == -1)
@@ -200,7 +229,7 @@ bool ClientSocket::GetRecvModifyWaitingRoom(stInfoOfGame& InfoOfGame)
 }
 
 
-void ClientSocket::SendJoinWaitingRoom(int SocketIDOfLeader)
+void cClientSocket::SendJoinWaitingRoom(int SocketIDOfLeader)
 {
 	stringstream SendStream;
 
@@ -209,7 +238,7 @@ void ClientSocket::SendJoinWaitingRoom(int SocketIDOfLeader)
 
 	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
 }
-void ClientSocket::RecvJoinWaitingRoom(stringstream& RecvStream)
+void cClientSocket::RecvJoinWaitingRoom(stringstream& RecvStream)
 {
 	stInfoOfGame infoOfGame;
 
@@ -224,7 +253,7 @@ void ClientSocket::RecvJoinWaitingRoom(stringstream& RecvStream)
 	while (RecvStream >> socketIDOfPlayers)
 		infoOfGame.SocketIDOfPlayers.emplace(std::pair<int, bool>(socketIDOfPlayers, true));
 
-	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvJoinWaitingRoom] infoOfGame: %s %s %d %d %d %d"),
+	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::RecvJoinWaitingRoom] infoOfGame: %s %s %d %d %d %d"),
 		*FString(infoOfGame.State.c_str()), *FString(infoOfGame.Title.c_str()), infoOfGame.Leader,
 		infoOfGame.Stage, infoOfGame.MaxOfNum, infoOfGame.CurOfNum);
 
@@ -232,7 +261,7 @@ void ClientSocket::RecvJoinWaitingRoom(stringstream& RecvStream)
 	mRecvJoinWaitingRoom = infoOfGame;
 	LeaveCriticalSection(&csRecvJoinWaitingRoom);
 }
-bool ClientSocket::GetRecvJoinWaitingRoom(stInfoOfGame& InfoOfGame)
+bool cClientSocket::GetRecvJoinWaitingRoom(stInfoOfGame& InfoOfGame)
 {
 	EnterCriticalSection(&csRecvJoinWaitingRoom);
 	if (mRecvJoinWaitingRoom.Leader == -1)
@@ -247,7 +276,7 @@ bool ClientSocket::GetRecvJoinWaitingRoom(stInfoOfGame& InfoOfGame)
 	return true;
 }
 
-void ClientSocket::RecvPlayerJoinedWaitingRoom(stringstream& RecvStream)
+void cClientSocket::RecvPlayerJoinedWaitingRoom(stringstream& RecvStream)
 {
 	int socketID = -1;
 
@@ -257,13 +286,13 @@ void ClientSocket::RecvPlayerJoinedWaitingRoom(stringstream& RecvStream)
 	if (socketID == SocketID || socketID == -1)
 		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvPlayerJoinedWaitingRoom] socketID: %d"), socketID);
+	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::RecvPlayerJoinedWaitingRoom] socketID: %d"), socketID);
 
 	EnterCriticalSection(&csRecvPlayerJoinedWaitingRoom);
 	qRecvPlayerJoinedWaitingRoom.push(socketID);
 	LeaveCriticalSection(&csRecvPlayerJoinedWaitingRoom);
 }
-bool ClientSocket::GetRecvPlayerJoinedWaitingRoom(std::queue<int>& qSocketID)
+bool cClientSocket::GetRecvPlayerJoinedWaitingRoom(std::queue<int>& qSocketID)
 {
 	EnterCriticalSection(&csRecvPlayerJoinedWaitingRoom);
 	if (qRecvPlayerJoinedWaitingRoom.size() == 0)
@@ -280,7 +309,7 @@ bool ClientSocket::GetRecvPlayerJoinedWaitingRoom(std::queue<int>& qSocketID)
 }
 
 
-void ClientSocket::SendExitWaitingRoom(int SocketIDOfLeader)
+void cClientSocket::SendExitWaitingRoom(int SocketIDOfLeader)
 {
 	stringstream SendStream;
 
@@ -301,7 +330,7 @@ void ClientSocket::SendExitWaitingRoom(int SocketIDOfLeader)
 }
 
 
-void ClientSocket::RecvPlayerExitedWaitingRoom(stringstream& RecvStream)
+void cClientSocket::RecvPlayerExitedWaitingRoom(stringstream& RecvStream)
 {
 	int socketID = -1;
 
@@ -311,13 +340,13 @@ void ClientSocket::RecvPlayerExitedWaitingRoom(stringstream& RecvStream)
 	if (socketID == SocketID)
 		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvPlayerExitedWaitingRoom] socketID: %d"), socketID);
+	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::RecvPlayerExitedWaitingRoom] socketID: %d"), socketID);
 
 	EnterCriticalSection(&csRecvPlayerExitedWaitingRoom);
 	qRecvPlayerExitedWaitingRoom.push(socketID);
 	LeaveCriticalSection(&csRecvPlayerExitedWaitingRoom);
 }
-bool ClientSocket::GetRecvPlayerExitedWaitingRoom(std::queue<int>& qSocketID)
+bool cClientSocket::GetRecvPlayerExitedWaitingRoom(std::queue<int>& qSocketID)
 {
 	EnterCriticalSection(&csRecvPlayerExitedWaitingRoom);
 	if (qRecvPlayerExitedWaitingRoom.size() == 0)
@@ -338,7 +367,7 @@ bool ClientSocket::GetRecvPlayerExitedWaitingRoom(std::queue<int>& qSocketID)
 
 
 
-void ClientSocket::SendCheckPlayerInWaitingRoom(int SocketIDOfLeader, std::queue<int>& qSocketID)
+void cClientSocket::SendCheckPlayerInWaitingRoom(int SocketIDOfLeader, std::queue<int>& qSocketID)
 {
 	stringstream sendStream;
 
@@ -353,9 +382,9 @@ void ClientSocket::SendCheckPlayerInWaitingRoom(int SocketIDOfLeader, std::queue
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 }
-void ClientSocket::RecvCheckPlayerInWaitingRoom(stringstream& RecvStream)
+void cClientSocket::RecvCheckPlayerInWaitingRoom(stringstream& RecvStream)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[ClientSocket::RecvCheckPlayerInWaitingRoom]"));
+	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::RecvCheckPlayerInWaitingRoom]"));
 
 	int socketID = -1;
 	
@@ -371,7 +400,7 @@ void ClientSocket::RecvCheckPlayerInWaitingRoom(stringstream& RecvStream)
 	}
 	LeaveCriticalSection(&csRecvCheckPlayerInWaitingRoom);
 }
-bool ClientSocket::GetRecvCheckPlayerInWaitingRoom(std::queue<int>& qSocketID)
+bool cClientSocket::GetRecvCheckPlayerInWaitingRoom(std::queue<int>& qSocketID)
 {
 	EnterCriticalSection(&csRecvCheckPlayerInWaitingRoom);
 	if (qRecvCheckPlayerInWaitingRoom.size() == 0)
@@ -388,6 +417,7 @@ bool ClientSocket::GetRecvCheckPlayerInWaitingRoom(std::queue<int>& qSocketID)
 }
 
 
+*/
 
 
 
@@ -396,21 +426,20 @@ bool ClientSocket::GetRecvCheckPlayerInWaitingRoom(std::queue<int>& qSocketID)
 
 
 
+//void cClientSocket::SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode)
+//{
+//	if (pMainScreenGameMode)
+//	{
+//		MainScreenGameMode = pMainScreenGameMode;
+//	}
+//}
 
-void ClientSocket::SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode)
-{
-	if (pMainScreenGameMode)
-	{
-		MainScreenGameMode = pMainScreenGameMode;
-	}
-}
-
-bool ClientSocket::Init()
+bool cClientSocket::Init()
 {
 	return true;
 }
 
-uint32 ClientSocket::Run()
+uint32 cClientSocket::Run()
 {
 	//// 초기 init 과정을 기다림
 	//FPlatformProcess::Sleep(0.03);
@@ -431,41 +460,41 @@ uint32 ClientSocket::Run()
 
 			switch (PacketType)
 			{
-			case EPacketType::ACCEPT_PLAYER:
+			case EPacketType::LOGIN:
 			{
-				RecvAcceptPlayer(RecvStream);
+				RecvLogin(RecvStream);
 			}
 			break;
-			case EPacketType::FIND_GAMES:
-			{
-				RecvFindGames(RecvStream);
-			}
-			break;
-			case EPacketType::MODIFY_WAITING_ROOM:
-			{
-				RecvModifyWaitingRoom(RecvStream);
-			}
-			break;
-			case EPacketType::JOIN_WAITING_ROOM:
-			{
-				RecvJoinWaitingRoom(RecvStream);
-			}
-			break;
-			case EPacketType::PLAYER_JOINED_WAITING_ROOM:
-			{
-				RecvPlayerJoinedWaitingRoom(RecvStream);
-			}
-			break;
-			case EPacketType::PLAYER_EXITED_WAITING_ROOM:
-			{
-				RecvPlayerExitedWaitingRoom(RecvStream);
-			}
-			break;
-			case EPacketType::CHECK_PLAYER_IN_WAITING_ROOM:
-			{
-				RecvCheckPlayerInWaitingRoom(RecvStream);
-			}
-			break;
+			//case EPacketType::FIND_GAMES:
+			//{
+			//	RecvFindGames(RecvStream);
+			//}
+			//break;
+			//case EPacketType::MODIFY_WAITING_ROOM:
+			//{
+			//	RecvModifyWaitingRoom(RecvStream);
+			//}
+			//break;
+			//case EPacketType::JOIN_WAITING_ROOM:
+			//{
+			//	RecvJoinWaitingRoom(RecvStream);
+			//}
+			//break;
+			//case EPacketType::PLAYER_JOINED_WAITING_ROOM:
+			//{
+			//	RecvPlayerJoinedWaitingRoom(RecvStream);
+			//}
+			//break;
+			//case EPacketType::PLAYER_EXITED_WAITING_ROOM:
+			//{
+			//	RecvPlayerExitedWaitingRoom(RecvStream);
+			//}
+			//break;
+			//case EPacketType::CHECK_PLAYER_IN_WAITING_ROOM:
+			//{
+			//	RecvCheckPlayerInWaitingRoom(RecvStream);
+			//}
+			//break;
 
 			default:
 				break;
@@ -475,29 +504,29 @@ uint32 ClientSocket::Run()
 	return 0;
 }
 
-void ClientSocket::Stop()
+void cClientSocket::Stop()
 {
 	// thread safety 변수를 조작해 while loop 가 돌지 못하게 함
 	StopTaskCounter.Increment();
 }
 
-void ClientSocket::Exit()
+void cClientSocket::Exit()
 {
 
 }
 
-bool ClientSocket::StartListen()
+bool cClientSocket::StartListen()
 {
 	if (Thread != nullptr) 
 		return false;
 
 	// 스레드 시작
-	Thread = FRunnableThread::Create(this, TEXT("ClientSocket"), 0, TPri_BelowNormal);
+	Thread = FRunnableThread::Create(this, TEXT("cClientSocket"), 0, TPri_BelowNormal);
 
 	return (Thread != nullptr);
 }
 
-void ClientSocket::StopListen()
+void cClientSocket::StopListen()
 {
 	// 스레드 종료
 	Stop();

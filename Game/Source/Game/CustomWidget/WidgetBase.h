@@ -32,17 +32,24 @@ public:
 	~UWidgetBase();
 
 private:
+
+
+protected:
 	class UUserWidget* UserWidget = nullptr;
 	class UWidgetTree* WidgetTree = nullptr;
 
 public:
 
 
+private:
+
+
 protected:
-	void InitWidget(const FString ReferencePath, bool bAddToViewport);
+	
 
 public:
+	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport);
+
 	class UUserWidget* GetUserWidget() { return UserWidget; }
 	class UWidgetTree* GetWidgetTree() { return WidgetTree; }
-
 };

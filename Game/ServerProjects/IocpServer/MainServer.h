@@ -4,6 +4,18 @@
 
 class MainServer : public IocpServerBase
 {
+private:
+	FuncProcess	fnProcess[100];	// 패킷 처리 구조체
+
+	// Login한 클라이언트의 InfoOfPlayer 저장
+	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
+	static CRITICAL_SECTION csInfoOfClients;
+
+	// CreateGame한 클라이언트의 cInfoOfGame 저장
+	static std::map<SOCKET, cInfoOfGame> InfoOfGames;
+	static CRITICAL_SECTION csInfoOfGames;
+
+
 public:
 	MainServer();
 	virtual ~MainServer();
@@ -20,17 +32,16 @@ public:
 	// 클라이언트에게 송신
 	static void Send(stSOCKETINFO* pSocket);
 
+
 private:
-	FuncProcess				fnProcess[100];	// 패킷 처리 구조체
-
-	static map<SOCKET, stSOCKETINFO*> ClientsSocketInfo; // <클라이언트 소켓 ID, 소켓> 저장
-	static CRITICAL_SECTION csClientsSocket;
-
-	static map<SOCKET, stInfoOfGame> Games; // <방장의 소켓 ID, 방 정보> 저장
-	static CRITICAL_SECTION csGames;
-
-	static void AcceptPlayer(stringstream& RecvStream, stSOCKETINFO* pSocket);
-
+	/////////////////////////////////////
+	// 패킷 처리 함수
+	/////////////////////////////////////
+	static void Login(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	
+	
+	
+	/*
 	static void CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 	static void FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket);
@@ -43,7 +54,7 @@ private:
 
 	static void CheckPlayerInWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-
+	*/
 
 
 	//// 어떤 플레이어가 진행중인 게임에 들어올 때

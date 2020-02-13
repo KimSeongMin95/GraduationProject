@@ -1,11 +1,10 @@
 #include "MainServer.h"
 
-// static 변수 초기화
-map<SOCKET, stSOCKETINFO*>	MainServer::ClientsSocketInfo;
-CRITICAL_SECTION	MainServer::csClientsSocket;
+std::map<SOCKET, cInfoOfPlayer> MainServer::InfoOfClients;
+CRITICAL_SECTION MainServer::csInfoOfClients;
 
-map<SOCKET, stInfoOfGame>  MainServer::Games;
-CRITICAL_SECTION		MainServer::csGames;
+std::map<SOCKET, cInfoOfGame> MainServer::InfoOfGames;
+CRITICAL_SECTION MainServer::csInfoOfGames;
 
 unsigned int WINAPI CallWorkerThread(LPVOID p)
 {
@@ -18,17 +17,19 @@ unsigned int WINAPI CallWorkerThread(LPVOID p)
 
 MainServer::MainServer()
 {
-	InitializeCriticalSection(&csClientsSocket);
-	InitializeCriticalSection(&csGames);
+	InitializeCriticalSection(&csInfoOfClients);
+	InitializeCriticalSection(&csInfoOfGames);
 
 	// 패킷 함수 포인터에 함수 지정
-	fnProcess[EPacketType::ACCEPT_PLAYER].funcProcessPacket = AcceptPlayer;
-	fnProcess[EPacketType::CREATE_WAITING_ROOM].funcProcessPacket = CreateWaitingRoom;
-	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
-	fnProcess[EPacketType::MODIFY_WAITING_ROOM].funcProcessPacket = ModifyWaitingRoom;
-	fnProcess[EPacketType::JOIN_WAITING_ROOM].funcProcessPacket = JoinWaitingRoom;
-	fnProcess[EPacketType::EXIT_WAITING_ROOM].funcProcessPacket = ExitWaitingRoom;
-	fnProcess[EPacketType::CHECK_PLAYER_IN_WAITING_ROOM].funcProcessPacket = CheckPlayerInWaitingRoom;
+	fnProcess[EPacketType::LOGIN].funcProcessPacket = Login;
+
+
+	//fnProcess[EPacketType::CREATE_WAITING_ROOM].funcProcessPacket = CreateWaitingRoom;
+	//fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
+	//fnProcess[EPacketType::MODIFY_WAITING_ROOM].funcProcessPacket = ModifyWaitingRoom;
+	//fnProcess[EPacketType::JOIN_WAITING_ROOM].funcProcessPacket = JoinWaitingRoom;
+	//fnProcess[EPacketType::EXIT_WAITING_ROOM].funcProcessPacket = ExitWaitingRoom;
+	//fnProcess[EPacketType::CHECK_PLAYER_IN_WAITING_ROOM].funcProcessPacket = CheckPlayerInWaitingRoom;
 	
 	
 	
@@ -57,8 +58,8 @@ MainServer::~MainServer()
 		hWorkerHandle = NULL;
 	}
 
-	DeleteCriticalSection(&csClientsSocket);
-	DeleteCriticalSection(&csGames);
+	DeleteCriticalSection(&csInfoOfClients);
+	DeleteCriticalSection(&csInfoOfGames);
 }
 
 
@@ -144,6 +145,7 @@ void MainServer::WorkerThread()
 
 		if (recvBytes == 0)
 		{
+			printf_s("[INFO] socket(%d) 접속 끊김 if (recvBytes == 0)\n", (int)pSocketInfo->socket);
 			closesocket(pSocketInfo->socket);
 			free(pSocketInfo);
 			continue;
@@ -204,6 +206,48 @@ void MainServer::Send(stSOCKETINFO* pSocket)
 		printf_s("[ERROR] WSASend 실패 : %d\n", WSAGetLastError());
 	}
 }
+
+/////////////////////////////////////
+// 패킷 처리 함수
+/////////////////////////////////////
+void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocket)
+{
+	printf_s("[Recv] <MainServer::Login(...)>\n");
+
+	/// 수신
+	cInfoOfPlayer infoOfPlayer;
+	RecvStream >> infoOfPlayer;
+	infoOfPlayer.IPv4Addr = pSocket->IPv4Addr;
+	infoOfPlayer.SocketByServer = (int)pSocket->socket;
+	infoOfPlayer.PortByServer = pSocket->Port;
+
+
+	EnterCriticalSection(&csInfoOfClients);
+	InfoOfClients[pSocket->socket] = infoOfPlayer;
+	LeaveCriticalSection(&csInfoOfClients);
+
+	printf_s("ID: %s, IPv4Addr: %s, socket: %d, port: %d\n", 
+		infoOfPlayer.ID.c_str(), infoOfPlayer.IPv4Addr.c_str(), infoOfPlayer.SocketByServer, infoOfPlayer.PortByServer);
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::LOGIN << endl;
+	sendStream << infoOfPlayer << endl;
+
+	CopyMemory(pSocket->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+	pSocket->dataBuf.buf = pSocket->messageBuffer;
+	pSocket->dataBuf.len = sendStream.str().length();
+
+	Send(pSocket);
+
+	printf_s("[Send] <MainServer::Login(...)>\n");
+}
+
+
+/*
+
+
 
 void MainServer::AcceptPlayer(stringstream& RecvStream, stSOCKETINFO* pSocket)
 {
@@ -557,30 +601,32 @@ void MainServer::CheckPlayerInWaitingRoom(stringstream& RecvStream, stSOCKETINFO
 	printf_s("[MainServer::CheckPlayerInWaitingRoom] Send(pSocket): %I64d\n", pSocket->socket);
 }
 
+*/
+
 
 void MainServer::Broadcast(stringstream& SendStream)
 {
-	for (const auto& CS : ClientsSocketInfo)
+	for (const auto& kvp : Clients)
 	{
-		CopyMemory(CS.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
-		CS.second->dataBuf.buf = CS.second->messageBuffer;
-		CS.second->dataBuf.len = SendStream.str().length();
+		CopyMemory(kvp.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
+		kvp.second->dataBuf.buf = kvp.second->messageBuffer;
+		kvp.second->dataBuf.len = SendStream.str().length();
 
-		Send(CS.second);
+		Send(kvp.second);
 	}
 }
 void MainServer::BroadcastExcept(stringstream& SendStream, SOCKET Except)
 {
-	for (const auto& CS : ClientsSocketInfo)
+	for (const auto& kvp : Clients)
 	{
-		if (CS.second->socket == Except)
+		if (kvp.second->socket == Except)
 			continue;
 
-		CopyMemory(CS.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
-		CS.second->dataBuf.buf = CS.second->messageBuffer;
-		CS.second->dataBuf.len = SendStream.str().length();
+		CopyMemory(kvp.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
+		kvp.second->dataBuf.buf = kvp.second->messageBuffer;
+		kvp.second->dataBuf.len = SendStream.str().length();
 
-		Send(CS.second);
+		Send(kvp.second);
 	}
 }
 

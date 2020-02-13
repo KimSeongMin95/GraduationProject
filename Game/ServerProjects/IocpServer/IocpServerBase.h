@@ -32,19 +32,8 @@ struct stSOCKETINFO
 	int				sendBytes;
 
 	string			IPv4Addr; // 클라이언트의 IP 주소
+	int				Port;	  // 클라이언트의 Port 주소
 };
-
-/* stringstream의 이해
-
-	(수신)
-		RecvStream >>
-
-
-	(송신)
-		SendStream << EPacketType::SYNC_MONSTER << endl;
-		SendStream << MonstersInfo << endl;
-*/
-
 
 // 패킷 처리 함수 포인터
 struct FuncProcess
@@ -59,6 +48,20 @@ struct FuncProcess
 
 class IocpServerBase
 {
+protected:
+	stSOCKETINFO* SocketInfo;		// 소켓 정보
+	SOCKET			ListenSocket;	// 서버 리슨 소켓
+	HANDLE			hIOCP;			// IOCP 객체 핸들
+	bool			bAccept;		// 요청 동작 플래그
+	bool			bWorkerThread;	// 작업 스레드 동작 플래그
+	HANDLE* hWorkerHandle;	// 작업 스레드 핸들		
+	int				nThreadCnt;		// 작업 스레드 개수
+
+public:
+	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장
+	static std::map<SOCKET, stSOCKETINFO*> Clients;
+	static CRITICAL_SECTION csClients;
+
 public:
 	IocpServerBase();
 	virtual ~IocpServerBase();
@@ -81,12 +84,5 @@ public:
 	// 클라이언트 수신 대기
 	virtual void Recv(stSOCKETINFO* pSocket);
 
-protected:
-	stSOCKETINFO*	SocketInfo;		// 소켓 정보
-	SOCKET			ListenSocket;	// 서버 리슨 소켓
-	HANDLE			hIOCP;			// IOCP 객체 핸들
-	bool			bAccept;		// 요청 동작 플래그
-	bool			bWorkerThread;	// 작업 스레드 동작 플래그
-	HANDLE*			hWorkerHandle;	// 작업 스레드 핸들		
-	int				nThreadCnt;		// 작업 스레드 개수
+	//
 };
