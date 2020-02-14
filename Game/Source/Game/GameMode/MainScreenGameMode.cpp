@@ -30,25 +30,25 @@ void AMainScreenGameMode::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[ERROR] <AMainScreenGameMode::BeginPlay()> if (!world)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::BeginPlay()> if (!world)"));
 		return;
 	}
 
 	Socket = cClientSocket::GetSingleton();
 
-	MainScreenWidget = NewObject<UMainScreenWidget>(this);
+	MainScreenWidget = NewObject<UMainScreenWidget>(this, FName("MainScreenWidget"));
 	MainScreenWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/MainScreen.MainScreen_C'", true);
 
-	OnlineWidget = NewObject<UOnlineWidget>(this);
+	OnlineWidget = NewObject<UOnlineWidget>(this, FName("OnlineWidget"));
 	OnlineWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/Online.Online_C'", false);
 
-	SettingsWidget = NewObject<USettingsWidget>(this);
+	SettingsWidget = NewObject<USettingsWidget>(this, FName("SettingsWidget"));
 	SettingsWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Settings/Settings.Settings_C'", false);
 
-	OnlineGameWidget = NewObject<UOnlineGameWidget>(this);
+	OnlineGameWidget = NewObject<UOnlineGameWidget>(this, FName("OnlineGameWidget"));
 	OnlineGameWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/OnlineGame.OnlineGame_C'", false);
 
-	WaitingGameWidget = NewObject<UWaitingGameWidget>(this);
+	WaitingGameWidget = NewObject<UWaitingGameWidget>(this, FName("WaitingGameWidget"));
 	WaitingGameWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/WaitingGame.WaitingGame_C'", false);
 }
 
@@ -75,12 +75,9 @@ void AMainScreenGameMode::Tick(float DeltaTime)
 /////////////////////////////////////////////////
 void AMainScreenGameMode::PlayTutorial()
 {
-	_PlayTutorial();
-}
-void AMainScreenGameMode::_PlayTutorial()
-{
 	UGameplayStatics::OpenLevel(this, "Tutorial");
 }
+
 
 /////////////////////////////////////////////////
 // 위젯 활성화 / 비활성화
@@ -90,262 +87,114 @@ void AMainScreenGameMode::ActivateMainScreenWidget()
 {
 	if (!MainScreenWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateMainScreenWidget()> if (!MainScreenWidget)"));
-		return;
-	}
-	if (!MainScreenWidget->GetUserWidget())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateMainScreenWidget()> if (!MainScreenWidget->GetUserWidget())"));
-		return;
-	}
-	if (MainScreenWidget->GetUserWidget()->IsInViewport() == true)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateMainScreenWidget()> if (MainScreenWidget->IsInViewport() == true)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateMainScreenWidget()> if (!MainScreenWidget)"));
 		return;
 	}
 
-	_ActivateMainScreenWidget();
-}
-void AMainScreenGameMode::_ActivateMainScreenWidget()
-{
-	MainScreenWidget->GetUserWidget()->AddToViewport();
+	MainScreenWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateMainScreenWidget()
 {
 	if (!MainScreenWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateMainScreenWidget()> if (!MainScreenWidget)"));
-		return;
-	}
-	if (!MainScreenWidget->GetUserWidget())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateMainScreenWidget()> if (!MainScreenWidget->GetUserWidget())"));
-		return;
-	}
-	if (MainScreenWidget->GetUserWidget()->IsInViewport() == false)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateMainScreenWidget()> if (MainScreenWidget->IsInViewport() == false)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateMainScreenWidget()> if (!MainScreenWidget)"));
 		return;
 	}
 
-	_DeactivateMainScreenWidget();
-}
-void AMainScreenGameMode::_DeactivateMainScreenWidget()
-{
-	MainScreenWidget->GetUserWidget()->RemoveFromViewport();
+	MainScreenWidget->RemoveFromViewport();
 }
 
-//
 void AMainScreenGameMode::ActivateOnlineWidget()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineWidget()> if (!OnlineWidget)"));
-		return;
-	}
-	if (!OnlineWidget->GetUserWidget())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineWidget()> if (!OnlineWidget->GetUserWidget())"));
-		return;
-	}
-	if (OnlineWidget->GetUserWidget()->IsInViewport() == true)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineWidget()> if (OnlineWidget->IsInViewport() == true)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineWidget()> if (!OnlineWidget)"));
 		return;
 	}
 
-	_ActivateOnlineWidget();
-}
-void AMainScreenGameMode::_ActivateOnlineWidget()
-{
-	OnlineWidget->GetUserWidget()->AddToViewport();
+	OnlineWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateOnlineWidget()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineWidget()> if (!OnlineWidget)"));
-		return;
-	}
-	if (!OnlineWidget->GetUserWidget())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineWidget()> if (!OnlineWidget->GetUserWidget())"));
-		return;
-	}
-	if (OnlineWidget->GetUserWidget()->IsInViewport() == false)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineWidget()> if (OnlineWidget->IsInViewport() == false)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineWidget()> if (!OnlineWidget)"));
 		return;
 	}
 
-	_DeactivateOnlineWidget();
-}
-void AMainScreenGameMode::_DeactivateOnlineWidget()
-{
-	OnlineWidget->GetUserWidget()->RemoveFromViewport();
+	OnlineWidget->RemoveFromViewport();
 }
 
-//
 void AMainScreenGameMode::ActivateSettingsWidget()
 {
 	if (!SettingsWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateSettingsWidget()> if (!SettingsWidget)"));
-		return;
-	}
-	if (!SettingsWidget->GetUserWidget())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateSettingsWidget()> if (!SettingsWidget->GetUserWidget())"));
-		return;
-	}
-	if (SettingsWidget->GetUserWidget()->IsInViewport() == true)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateSettingsWidget()> if (SettingsWidget->IsInViewport() == true)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateSettingsWidget()> if (!SettingsWidget)"));
 		return;
 	}
 
-	_ActivateSettingsWidget();
-}
-void AMainScreenGameMode::_ActivateSettingsWidget()
-{
-	SettingsWidget->GetUserWidget()->AddToViewport();
+	SettingsWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateSettingsWidget()
 {
 	if (!SettingsWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateSettingsWidget()> if (!SettingsWidget)"));
-		return;
-	}
-	if (!SettingsWidget->GetUserWidget())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateSettingsWidget()> if (!SettingsWidget->GetUserWidget())"));
-		return;
-	}
-	if (SettingsWidget->GetUserWidget()->IsInViewport() == false)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateSettingsWidget()> if (SettingsWidget->IsInViewport() == false)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateSettingsWidget()> if (!SettingsWidget)"));
 		return;
 	}
 
-	_DeactivateSettingsWidget();
-}
-void AMainScreenGameMode::_DeactivateSettingsWidget()
-{
-	SettingsWidget->GetUserWidget()->RemoveFromViewport();
+	SettingsWidget->RemoveFromViewport();
 }
 
-//
 void AMainScreenGameMode::ActivateOnlineGameWidget()
 {
 	if (!OnlineGameWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineGameWidget()> if (!OnlineGameWidget)"));
-		return;
-	}
-	if (!OnlineGameWidget->GetUserWidget())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineGameWidget()> if (!OnlineGameWidget->GetUserWidget())"));
-		return;
-	}
-	if (OnlineGameWidget->GetUserWidget()->IsInViewport() == true)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineGameWidget()> if (OnlineGameWidget->IsInViewport() == true)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineGameWidget()> if (!OnlineGameWidget)"));
 		return;
 	}
 
-	_ActivateOnlineGameWidget();
-}
-void AMainScreenGameMode::_ActivateOnlineGameWidget()
-{
-	OnlineGameWidget->GetUserWidget()->AddToViewport();
+	OnlineGameWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateOnlineGameWidget()
 {
 	if (!OnlineGameWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineGameWidget()> if (!OnlineGameWidget)"));
-		return;
-	}
-	if (!OnlineGameWidget->GetUserWidget())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineGameWidget()> if (!OnlineGameWidget->GetUserWidget())"));
-		return;
-	}
-	if (OnlineGameWidget->GetUserWidget()->IsInViewport() == false)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineGameWidget()> if (OnlineGameWidget->IsInViewport() == false)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineGameWidget()> if (!OnlineGameWidget)"));
 		return;
 	}
 
-	_DeactivateOnlineGameWidget();
-}
-void AMainScreenGameMode::_DeactivateOnlineGameWidget()
-{
-	OnlineGameWidget->GetUserWidget()->RemoveFromViewport();
+	if (Socket)
+		Socket->CloseSocket();
+
+	OnlineGameWidget->RemoveFromViewport();
 }
 
-//
 void AMainScreenGameMode::ActivateWaitingGameWidget()
 {
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateWaitingGameWidget()> if (!WaitingGameWidget)"));
-		return;
-	}
-	if (!WaitingGameWidget->GetUserWidget())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateWaitingGameWidget()> if (!WaitingGameWidget->GetUserWidget())"));
-		return;
-	}
-	if (WaitingGameWidget->GetUserWidget()->IsInViewport() == true)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::ActivateWaitingGameWidget()> if (WaitingGameWidget->IsInViewport() == true)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateWaitingGameWidget()> if (!WaitingGameWidget)"));
 		return;
 	}
 
-	_ActivateWaitingGameWidget();
-}
-void AMainScreenGameMode::_ActivateWaitingGameWidget()
-{
-	WaitingGameWidget->GetUserWidget()->AddToViewport();
+	WaitingGameWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateWaitingGameWidget()
 {
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateWaitingGameWidget()> if (!WaitingGameWidget)"));
-		return;
-	}
-	if (!WaitingGameWidget->GetUserWidget())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateWaitingGameWidget()> if (!WaitingGameWidget->GetUserWidget())"));
-		return;
-	}
-	if (WaitingGameWidget->GetUserWidget()->IsInViewport() == false)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[Error] <AMainScreenGameMode::DeactivateWaitingGameWidget()> if (WaitingGameWidget->IsInViewport() == false)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateWaitingGameWidget()> if (!WaitingGameWidget)"));
 		return;
 	}
 
-	_DeactivateWaitingGameWidget();
+	WaitingGameWidget->RemoveFromViewport();
 }
-void AMainScreenGameMode::_DeactivateWaitingGameWidget()
-{
-	WaitingGameWidget->GetUserWidget()->RemoveFromViewport();
-}
+
 
 /////////////////////////////////////////////////
 // 변환 함수
 /////////////////////////////////////////////////
-const char* AMainScreenGameMode::FTextToCStr(class UEditableTextBox* EditableTextBox)
-{
-	if (EditableTextBox == nullptr)
-		return "nullptr";
-
-	return TCHAR_TO_UTF8(*EditableTextBox->GetText().ToString());
-}
-
 int AMainScreenGameMode::FTextToInt(class UEditableTextBox* EditableTextBox)
 {
 	if (EditableTextBox == nullptr)
@@ -355,7 +204,7 @@ int AMainScreenGameMode::FTextToInt(class UEditableTextBox* EditableTextBox)
 	if (EditableTextBox->GetText().IsNumeric() == false)
 		return -1;
 
-	return FCString::Atoi(*EditableTextBox->GetText().ToString());
+	return (int)FCString::Atoi(*EditableTextBox->GetText().ToString());
 }
 
 
@@ -364,19 +213,9 @@ int AMainScreenGameMode::FTextToInt(class UEditableTextBox* EditableTextBox)
 /////////////////////////////////////////////////
 void AMainScreenGameMode::TerminateGame()
 {
-	_TerminateGame();
-}
-void AMainScreenGameMode::_TerminateGame()
-{
-
-
-
-
 	//// 주의: Selected Viewport일 때도 종료되는 함수
-	//FGenericPlatformMisc::RequestExit(false);
+//FGenericPlatformMisc::RequestExit(false);
 }
-
-
 
 
 /////////////////////////////////////////////////
@@ -395,41 +234,49 @@ void AMainScreenGameMode::CheckTextOfPort()
 
 void AMainScreenGameMode::SendLogin()
 {
-	_SendLogin();
-}
-void AMainScreenGameMode::_SendLogin()
-{
-	UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()>"));
-
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogClass, Warning, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!OnlineWidget)"));
+		UE_LOG(LogClass, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!OnlineWidget)"));
 		return;
 	}
 
-	
+	if (!Socket)
+	{
+		UE_LOG(LogClass, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!Socket)"));
+		return;
+	}
+
+	UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()>"));
+
 
 	Socket->InitSocket();
 	UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> Socket->InitSocket();"));
 
-	//bIsConnected = Socket->Connect(FTextToCStr(OnlineWidget->GetIPv4()), FTextToInt(OnlineWidget->GetIPv4()));
-	bIsConnected = Socket->Connect("127.0.0.1", 8000);
+	//bIsConnected = Socket->Connect("127.0.0.1", 8000);
+	bIsConnected = Socket->Connect(TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
 
 	if (!bIsConnected)
 	{
-		UE_LOG(LogClass, Warning, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
+		UE_LOG(LogClass, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
+		UE_LOG(LogClass, Error, TEXT("IPv4: %s, Port: %s"), 
+			*OnlineWidget->GetIPv4()->GetText().ToString(), *OnlineWidget->GetPort()->GetText().ToString());
 		return;
 	}
 
 	UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> IOCP Server connect success!"));
-	
+
 	// Recv 스레드 시작
-	Socket->StartListen();
-	UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> Socket->StartListen();"));
+	if (Socket->StartListen())
+		UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> Socket->StartListen();"));
 
 	Socket->SendLogin(OnlineWidget->GetID()->GetText());
-	UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> Socket->SendLogin(...);"));
+
+
+	DeactivateOnlineWidget();
+	ActivateOnlineGameWidget();
 }
+
+
 
 
 /*

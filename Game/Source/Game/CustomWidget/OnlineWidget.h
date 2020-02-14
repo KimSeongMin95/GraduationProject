@@ -17,10 +17,14 @@ public:
 	~UOnlineWidget();
 
 protected:
-	class UEditableTextBox* ID = nullptr;
-	class UEditableTextBox* PW = nullptr;
-	class UEditableTextBox* IPv4 = nullptr;
-	class UEditableTextBox* Port = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* ID = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* PW = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* IPv4 = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* Port = nullptr;
 
 public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;

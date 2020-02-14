@@ -6,7 +6,7 @@
 UMainScreenWidget::UMainScreenWidget()
 {
 	
-
+	
 }
 
 UMainScreenWidget::~UMainScreenWidget()
@@ -22,7 +22,7 @@ bool UMainScreenWidget::InitWidget(UWorld* const World, const FString ReferenceP
 
 	if (WidgetTree == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[ERROR] <UMainScreenWidget::InitWidget()> if (WidgetTree == nullptr)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <UMainScreenWidget::InitWidget()> if (WidgetTree == nullptr)"));
 		return false;
 	}
 

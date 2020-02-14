@@ -22,16 +22,12 @@ bool UOnlineGameWidget::InitWidget(UWorld* const World, const FString ReferenceP
 
 	if (WidgetTree == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[ERROR] <UOnlineGameWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <UOnlineGameWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
 		return false;
 	}
 
+
 	ScrollBox = WidgetTree->FindWidget<UScrollBox>(FName(TEXT("ScrollBox_Games")));
-	if (ScrollBox == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[ERROR] <UOnlineGameWidget::InitWidget(...)> if (ScrollBox == nullptr)"));
-		return false;
-	}
 
 	return true;
 }

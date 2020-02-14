@@ -17,8 +17,10 @@ public:
 	~UWaitingGameWidget();
 
 protected:
-	class UUniformGridPanel* UniformGridPanel = nullptr;
-	class UButton* StartButton = nullptr;
+	UPROPERTY()
+		class UUniformGridPanel* UniformGridPanel = nullptr;
+	UPROPERTY()
+		class UButton* StartButton = nullptr;
 
 public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;

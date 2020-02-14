@@ -35,8 +35,10 @@ private:
 
 
 protected:
-	class UUserWidget* UserWidget = nullptr;
-	class UWidgetTree* WidgetTree = nullptr;
+	UPROPERTY()
+		class UUserWidget* UserWidget = nullptr;
+	UPROPERTY()
+		class UWidgetTree* WidgetTree = nullptr;
 
 public:
 
@@ -52,4 +54,8 @@ public:
 
 	class UUserWidget* GetUserWidget() { return UserWidget; }
 	class UWidgetTree* GetWidgetTree() { return WidgetTree; }
+
+	void AddToViewport();
+	void RemoveFromViewport();
+
 };

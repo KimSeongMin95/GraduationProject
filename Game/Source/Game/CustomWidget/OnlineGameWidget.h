@@ -18,7 +18,8 @@ public:
 	~UOnlineGameWidget();
 
 protected:
-	class UScrollBox* ScrollBox = nullptr;
+	UPROPERTY()
+		class UScrollBox* ScrollBox = nullptr;
 
 public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;

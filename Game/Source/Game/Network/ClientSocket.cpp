@@ -26,11 +26,7 @@ cClientSocket::cClientSocket()
 
 cClientSocket::~cClientSocket()
 {
-	delete Thread;
-	Thread = nullptr;
-
-	closesocket(ServerSocket);
-	WSACleanup();
+	CloseSocket();
 
 	//DeleteCriticalSection(&csRecvFindGames);
 	//DeleteCriticalSection(&csRecvModifyWaitingRoom);
@@ -90,6 +86,7 @@ void cClientSocket::SendLogin(const FText ID)
 {
 	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendLogin(...)>"));
 
+	// ID가 비어있지 않으면 대입
 	if (!ID.IsEmpty())
 		MyInfo.ID = TCHAR_TO_UTF8(*ID.ToString());
 
@@ -530,9 +527,12 @@ void cClientSocket::StopListen()
 {
 	// 스레드 종료
 	Stop();
-	Thread->WaitForCompletion();
-	Thread->Kill();
-	delete Thread;
-	Thread = nullptr;
+	if (Thread)
+	{
+		Thread->WaitForCompletion();
+		Thread->Kill();
+		delete Thread;
+		Thread = nullptr;
+	}
 	StopTaskCounter.Reset();
 }

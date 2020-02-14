@@ -80,41 +80,41 @@ public:
 	// 튜토리얼 실행
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void PlayTutorial(); void _PlayTutorial();
+		void PlayTutorial();
 
 	/////////////////////////////////////////////////
 	// 위젯 활성화 / 비활성화
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateMainScreenWidget(); void _ActivateMainScreenWidget();
+		void ActivateMainScreenWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateMainScreenWidget(); void _DeactivateMainScreenWidget();
+		void DeactivateMainScreenWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateOnlineWidget(); void _ActivateOnlineWidget();
+		void ActivateOnlineWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateOnlineWidget(); void _DeactivateOnlineWidget();
+		void DeactivateOnlineWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateSettingsWidget(); void _ActivateSettingsWidget();
+		void ActivateSettingsWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateSettingsWidget(); void _DeactivateSettingsWidget();
+		void DeactivateSettingsWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateOnlineGameWidget(); void _ActivateOnlineGameWidget();
+		void ActivateOnlineGameWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateOnlineGameWidget(); void _DeactivateOnlineGameWidget();
+		void DeactivateOnlineGameWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateWaitingGameWidget(); void _ActivateWaitingGameWidget();
+		void ActivateWaitingGameWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateWaitingGameWidget(); void _DeactivateWaitingGameWidget();
+		void DeactivateWaitingGameWidget();
 
 	/////////////////////////////////////////////////
 	// 게임종료
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void TerminateGame(); void _TerminateGame();
+		void TerminateGame();
 
 	/////////////////////////////////////////////////
 	// 
@@ -124,7 +124,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void CheckTextOfPort();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void SendLogin(); void _SendLogin();
+		void SendLogin();
 
 
 

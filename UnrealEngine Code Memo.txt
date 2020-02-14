@@ -453,11 +453,51 @@
         FString : 일반적인 문자열을 관리합니다.
         FText : 다국어를 지원하는 기능이 들어가 있습니다. UI 시스템에서 사용하는 기본 문자열입니다.
 
-        TCHAR_TO_ANSI(str)
-        TCHAR_TO_OEM(str)
-        ANSI_TO_TCHAR(str)
-        TCHAR_TO_UTF8(str)
-        UTF8_TO_TCHAR(str)
+    - FText, FString, FName, string, int, float 간 변환
+        // 
+            TCHAR == TCHAR
+            ANSI == cstring(const char*)
+            UTF8 == string
+
+            TCHAR_TO_OEM(str)
+            ANSI_TO_TCHAR(str)
+            UTF8_TO_TCHAR(str)
+
+        // FText to FString
+            FText.ToString();
+
+        // FString to TCHAR
+            *FString;
+
+        // FText to TCHAR
+            *FText.ToString();
+        
+        // TCHAR to string
+            TCHAR_TO_UTF8(TCHAR);
+
+        // TCHAR to cstring(const char*)
+            TCHAR_TO_ANSI(TCHAR)
+
+        // string to cstring(const char*)
+            string.c_str();
+
+        // FString to FText
+            FText::FromString(FStirng);
+
+        // string to FString
+            FString HappyString(string.c_str());
+
+        // FString to string
+            string MyStdString(TCHAR_TO_UTF8(*FString));
+
+        // FString to Numbers
+            int32 MyShinyNewInt = FCString::Atoi(*FString);
+            float MyShinyNewFloat = FCString::Atof(*FString);
+
+        // Numbers to FString
+            FString NewString = FString::FromInt(5);
+            FString VeryCleanString = FString::SanitizeFloat(10.5f);
+
 
 [Github]
     - 사용법
@@ -509,9 +549,10 @@
         (Git Bash) git gc --aggressive --prune=now
 
 
-
-
-
+[가비지 콜렉터 (GC)]
+    -- UserWidget = CreateWidget(World, widget);에서 UserWidget이 UPROPERTY() 매크로로 선언되지 않고 naked 포인터 변수면 레퍼런싱되지 않아 가비지 컬렉팅이 되므로 UPROPERTY() 매크로를 선언해줘야 함.
+    -- UObject를 상속받은 객체는 UPROPERTY() 로 선언을 해줘야 레퍼런싱 체크를 하는 목록에 등록되여 GC에 의해 해제되는것을 막을수 있고, GC를 몇초에 한번씩 돌릴것인가 셋팅할수 있음.
+    -- GC에 의해 해제되지 않는 루트셋에 추가하는 방법을 통해서 해제되지 않도록 할수도 있음.
 
 
 
