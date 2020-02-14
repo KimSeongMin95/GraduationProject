@@ -28,25 +28,18 @@ enum EPacketType
 	*/
 	LOGIN,
 
-
-
-
-
-
-
-
-
-
-
-	/** OnlineWidget에서 CreateWaitingRoom 버튼을 눌러 대기방을 생성하면
+	/** OnlineGameWidget에서 (Create Game)버튼을 눌러 대기방을 생성하면
 	Client:
-		Send [CREATE_WAITING_ROOM]: 생성한 대기방의 기본 정보
+		Send [CREATE_GAME]: MyInfoOfGame.Leader에 MyInfo를 저장하고 송신
 		Recv []: X
 	Server:
-		Recv [CREATE_WAITING_ROOM]: Games[InfoOfGame.Leader] = InfoOfGame;로 대기방 정보를 저장
+		Recv [CREATE_GAME]: 받은 cInfoOfGame를 InfoOfGames에 삽입
 		Send []: X
 	*/
-	CREATE_WAITING_ROOM,
+	CREATE_GAME,
+
+
+
 
 	/** 플레이어가 MainScreenWidget에서 Online 버튼을 눌러 진입하면
 	Client:
@@ -57,6 +50,10 @@ enum EPacketType
 		Send [FIND_GAMES]: 모든 대기방들의 정보
 	*/
 	FIND_GAMES,
+
+
+
+
 
 	/** 방장이 대기방에서 Title이나 Stage나 MaxOfNum을 수정하면
 	Client:
@@ -147,11 +144,11 @@ public:
 	cInfoOfPlayer()
 	{
 		ID = "NULL";
-		IPv4Addr = "127.0.0.1";
+		IPv4Addr = "NULL";
 		SocketByServer = -1;
 		SocketByLeader = -1;
-		PortByServer = 8000;
-		PortByLeader = 9000;
+		PortByServer = -1;
+		PortByLeader = -1;
 	}
 	~cInfoOfPlayer()
 	{
@@ -244,7 +241,7 @@ public:
 	cInfoOfGame() 
 	{
 		State = "Waiting";
-		Title = "Let's go together!";
+		Title = "Let's_go_together!";
 		Stage = 1;
 		nMax = 100;
 	}

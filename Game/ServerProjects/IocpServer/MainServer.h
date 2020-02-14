@@ -29,17 +29,26 @@ public:
 	// 작업 스레드
 	virtual void WorkerThread() override;
 
+	// 클라이언트 접속 종료
+	virtual void CloseSocket(stSOCKETINFO* pSocketInfo) override;
+
 	// 클라이언트에게 송신
-	static void Send(stSOCKETINFO* pSocket);
+	static void Send(stSOCKETINFO* pSocketInfo);
 
 
 private:
 	/////////////////////////////////////
 	// 패킷 처리 함수
 	/////////////////////////////////////
-	static void Login(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	static void Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
 	
-	
+	static void CreateGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
+
+
+
+
+
+
 	
 	/*
 	static void CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);

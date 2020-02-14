@@ -22,6 +22,7 @@ MainServer::MainServer()
 
 	// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::LOGIN].funcProcessPacket = Login;
+	fnProcess[EPacketType::CREATE_GAME].funcProcessPacket = CreateGame;
 
 
 	//fnProcess[EPacketType::CREATE_WAITING_ROOM].funcProcessPacket = CreateWaitingRoom;
@@ -136,8 +137,7 @@ void MainServer::WorkerThread()
 		if (!bResult && recvBytes == 0)
 		{
 			printf_s("[INFO] socket(%d) 접속 끊김\n", (int)pSocketInfo->socket);
-			closesocket(pSocketInfo->socket);
-			free(pSocketInfo);
+			CloseSocket(pSocketInfo);
 			continue;
 		}
 
@@ -146,8 +146,7 @@ void MainServer::WorkerThread()
 		if (recvBytes == 0)
 		{
 			printf_s("[INFO] socket(%d) 접속 끊김 if (recvBytes == 0)\n", (int)pSocketInfo->socket);
-			closesocket(pSocketInfo->socket);
-			free(pSocketInfo);
+			CloseSocket(pSocketInfo);
 			continue;
 		}
 
@@ -186,14 +185,34 @@ void MainServer::WorkerThread()
 	}
 }
 
-void MainServer::Send(stSOCKETINFO* pSocket)
+void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Start] <MainServer::CloseSocket(...)>\n");
+
+	EnterCriticalSection(&csInfoOfClients);
+	printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
+	InfoOfClients.erase(pSocketInfo->socket);
+	printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
+	LeaveCriticalSection(&csInfoOfClients);
+
+	EnterCriticalSection(&csInfoOfGames);
+	printf_s("\t InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
+	InfoOfGames.erase(pSocketInfo->socket);
+	printf_s("\t InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
+	LeaveCriticalSection(&csInfoOfGames);
+
+	// free(pSocketInfo); 때문에 제일 마지막에 실행
+	IocpServerBase::CloseSocket(pSocketInfo);
+}
+
+void MainServer::Send(stSOCKETINFO* pSocketInfo)
 {
 	DWORD	sendBytes;
 	DWORD	dwFlags = 0;
 
 	int nResult = WSASend(
-		pSocket->socket,
-		&(pSocket->dataBuf),
+		pSocketInfo->socket,
+		&(pSocketInfo->dataBuf),
 		1,
 		&sendBytes,
 		dwFlags,
@@ -210,24 +229,22 @@ void MainServer::Send(stSOCKETINFO* pSocket)
 /////////////////////////////////////
 // 패킷 처리 함수
 /////////////////////////////////////
-void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocket)
+void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 {
-	printf_s("[Recv] <MainServer::Login(...)>\n");
+	printf_s("[Recv by %d] <MainServer::Login(...)>\n", (int)pSocketInfo->socket);
 
 	/// 수신
 	cInfoOfPlayer infoOfPlayer;
 	RecvStream >> infoOfPlayer;
-	infoOfPlayer.IPv4Addr = pSocket->IPv4Addr;
-	infoOfPlayer.SocketByServer = (int)pSocket->socket;
-	infoOfPlayer.PortByServer = pSocket->Port;
-
+	infoOfPlayer.IPv4Addr = pSocketInfo->IPv4Addr;
+	infoOfPlayer.SocketByServer = (int)pSocketInfo->socket;
+	infoOfPlayer.PortByServer = pSocketInfo->Port;
 
 	EnterCriticalSection(&csInfoOfClients);
-	InfoOfClients[pSocket->socket] = infoOfPlayer;
+	InfoOfClients[pSocketInfo->socket] = infoOfPlayer;
 	LeaveCriticalSection(&csInfoOfClients);
 
-	printf_s("ID: %s, IPv4Addr: %s, socket: %d, port: %d\n", 
-		infoOfPlayer.ID.c_str(), infoOfPlayer.IPv4Addr.c_str(), infoOfPlayer.SocketByServer, infoOfPlayer.PortByServer);
+	infoOfPlayer.PrintInfo("    ");
 
 
 	/// 송신
@@ -235,43 +252,37 @@ void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocket)
 	sendStream << EPacketType::LOGIN << endl;
 	sendStream << infoOfPlayer << endl;
 
-	CopyMemory(pSocket->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-	pSocket->dataBuf.buf = pSocket->messageBuffer;
-	pSocket->dataBuf.len = sendStream.str().length();
+	CopyMemory(pSocketInfo->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
+	pSocketInfo->dataBuf.len = sendStream.str().length();
 
-	Send(pSocket);
-
-	printf_s("[Send] <MainServer::Login(...)>\n");
+	Send(pSocketInfo);    
+	printf_s("[Send to %d] <MainServer::Login(...)>\n", (int)pSocketInfo->socket);
 }
+
+void MainServer::CreateGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Recv by %d] <MainServer::CreateGame(...)>\n", (int)pSocketInfo->socket);
+
+	/// 수신
+	cInfoOfGame infoOfGame;
+	RecvStream >> infoOfGame;
+
+	infoOfGame.PrintInfo("    ", "    ");
+
+	EnterCriticalSection(&csInfoOfGames);
+	printf_s("    InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
+	InfoOfGames[pSocketInfo->socket] = infoOfGame;
+	printf_s("    InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
+	LeaveCriticalSection(&csInfoOfGames);
+
+	printf_s("[End] <MainServer::CreateGame(...)>\n");
+}
+
 
 
 /*
 
-
-
-void MainServer::AcceptPlayer(stringstream& RecvStream, stSOCKETINFO* pSocket)
-{
-	printf_s("[MainServer::AcceptPlayer]\n");
-
-	/// 수신
-	EnterCriticalSection(&csClientsSocket);
-	ClientsSocketInfo[pSocket->socket] = pSocket;
-	LeaveCriticalSection(&csClientsSocket);
-
-	printf_s("[MainServer::AcceptPlayer] (int)pSocket->socket: %I64d\n", pSocket->socket);
-
-
-	/// 송신
-	stringstream sendStream;
-	sendStream << EPacketType::ACCEPT_PLAYER << endl;
-	sendStream << pSocket->socket << endl;
-
-	CopyMemory(pSocket->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-	pSocket->dataBuf.buf = pSocket->messageBuffer;
-	pSocket->dataBuf.len = sendStream.str().length();
-
-	Send(pSocket);
-}
 
 void MainServer::CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket)
 {

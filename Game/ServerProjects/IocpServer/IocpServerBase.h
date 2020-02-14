@@ -39,7 +39,7 @@ struct stSOCKETINFO
 struct FuncProcess
 {
 	// RecvStream은 수신한 정보, pSocket은 Overlapped I/O 작업이 발생한 IOCP 소켓 구조체 정보
-	void(*funcProcessPacket)(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	void(*funcProcessPacket)(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
 	FuncProcess()
 	{
 		funcProcessPacket = nullptr;
@@ -49,12 +49,12 @@ struct FuncProcess
 class IocpServerBase
 {
 protected:
-	stSOCKETINFO* SocketInfo;		// 소켓 정보
+	stSOCKETINFO*	SocketInfo;		// 소켓 정보
 	SOCKET			ListenSocket;	// 서버 리슨 소켓
 	HANDLE			hIOCP;			// IOCP 객체 핸들
 	bool			bAccept;		// 요청 동작 플래그
 	bool			bWorkerThread;	// 작업 스레드 동작 플래그
-	HANDLE* hWorkerHandle;	// 작업 스레드 핸들		
+	HANDLE*			hWorkerHandle;	// 작업 스레드 핸들		
 	int				nThreadCnt;		// 작업 스레드 개수
 
 public:
@@ -78,11 +78,12 @@ public:
 	// 작업 스레드
 	virtual void WorkerThread();
 
+	// 클라이언트 접속 종료
+	virtual void CloseSocket(stSOCKETINFO* pSocketInfo);
+
 	// 클라이언트에게 송신
-	virtual void Send(stSOCKETINFO* pSocket);
+	virtual void Send(stSOCKETINFO* pSocketInfo);
 
 	// 클라이언트 수신 대기
-	virtual void Recv(stSOCKETINFO* pSocket);
-
-	//
+	virtual void Recv(stSOCKETINFO* pSocketInfo);
 };

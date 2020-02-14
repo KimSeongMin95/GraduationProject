@@ -111,6 +111,26 @@ void cClientSocket::RecvLogin(stringstream& RecvStream)
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvLogin(...)>"));
 }
 
+void cClientSocket::SendCreateGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendCreateGame()>"));
+
+	cInfoOfGame infoOfGame;
+	infoOfGame.Leader = MyInfo;
+
+	stringstream sendStream;
+	sendStream << EPacketType::CREATE_GAME << endl;
+	sendStream << infoOfGame << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendCreateGame()>"));
+}
+
+
+
+
+
 /*
 
 void cClientSocket::SendAcceptPlayer()

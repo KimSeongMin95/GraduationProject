@@ -166,17 +166,31 @@ bool IocpServerBase::CreateWorkerThread()
 
 void IocpServerBase::WorkerThread()
 {
-
+	//
 }
 
-void IocpServerBase::Send(stSOCKETINFO* pSocket)
+void IocpServerBase::CloseSocket(stSOCKETINFO* pSocketInfo)
+{
+	EnterCriticalSection(&csClients);
+	printf_s("\t Clients.size(): %d\n", (int)Clients.size());
+	Clients.erase(pSocketInfo->socket);
+	printf_s("\t Clients.size(): %d\n", (int)Clients.size());
+	LeaveCriticalSection(&csClients);
+
+	closesocket(pSocketInfo->socket);
+	free(pSocketInfo);
+
+	printf_s("[End] <MainServer::CloseSocket(...)>\n");
+}
+
+void IocpServerBase::Send(stSOCKETINFO* pSocketInfo)
 {
 	//DWORD	sendBytes;
 	//DWORD	dwFlags = 0;
 
 	//int nResult = WSASend(
-	//	pSocket->socket,
-	//	&(pSocket->dataBuf),
+	//	pSocketInfo->socket,
+	//	&(pSocketInfo->dataBuf),
 	//	1,
 	//	&sendBytes,
 	//	dwFlags,
@@ -190,27 +204,27 @@ void IocpServerBase::Send(stSOCKETINFO* pSocket)
 	//}
 }
 
-void IocpServerBase::Recv(stSOCKETINFO* pSocket)
+void IocpServerBase::Recv(stSOCKETINFO* pSocketInfo)
 {
 	// DWORD	sendBytes;
 	DWORD	dwFlags = 0;
 
 	// stSOCKETINFO 데이터 초기화
-	ZeroMemory(&(pSocket->overlapped), sizeof(OVERLAPPED));
-	ZeroMemory(pSocket->messageBuffer, MAX_BUFFER);
-	pSocket->dataBuf.len = MAX_BUFFER;
-	pSocket->dataBuf.buf = pSocket->messageBuffer;
-	pSocket->recvBytes = 0;
-	pSocket->sendBytes = 0;
+	ZeroMemory(&(pSocketInfo->overlapped), sizeof(OVERLAPPED));
+	ZeroMemory(pSocketInfo->messageBuffer, MAX_BUFFER);
+	pSocketInfo->dataBuf.len = MAX_BUFFER;
+	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
+	pSocketInfo->recvBytes = 0;
+	pSocketInfo->sendBytes = 0;
 
 	// 클라이언트로부터 다시 응답을 받기 위해 WSARecv 를 호출해줌
 	int nResult = WSARecv(
-		pSocket->socket,
-		&(pSocket->dataBuf),
+		pSocketInfo->socket,
+		&(pSocketInfo->dataBuf),
 		1,
-		(LPDWORD)& pSocket,
+		(LPDWORD)& pSocketInfo,
 		&dwFlags,
-		(LPWSAOVERLAPPED)& (pSocket->overlapped),
+		(LPWSAOVERLAPPED)& (pSocketInfo->overlapped),
 		NULL
 	);
 
@@ -219,3 +233,4 @@ void IocpServerBase::Recv(stSOCKETINFO* pSocket)
 		printf_s("[ERROR] WSARecv 실패 : %d", WSAGetLastError());
 	}
 }
+

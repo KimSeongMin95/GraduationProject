@@ -112,6 +112,10 @@ void AMainScreenGameMode::ActivateOnlineWidget()
 		return;
 	}
 
+	// OnlineWidget에 들어왔다는 것은 서버에 접속하려는 것이므로 소켓이 이미 열려 있다면 닫음
+	if (Socket)
+		Socket->CloseSocket();
+
 	OnlineWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateOnlineWidget()
@@ -163,9 +167,6 @@ void AMainScreenGameMode::DeactivateOnlineGameWidget()
 		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineGameWidget()> if (!OnlineGameWidget)"));
 		return;
 	}
-
-	if (Socket)
-		Socket->CloseSocket();
 
 	OnlineGameWidget->RemoveFromViewport();
 }
@@ -263,6 +264,7 @@ void AMainScreenGameMode::SendLogin()
 		return;
 	}
 
+
 	UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> IOCP Server connect success!"));
 
 	// Recv 스레드 시작
@@ -275,7 +277,19 @@ void AMainScreenGameMode::SendLogin()
 	DeactivateOnlineWidget();
 	ActivateOnlineGameWidget();
 }
+void AMainScreenGameMode::SendCreateGame()
+{
+	if (!Socket)
+	{
+		UE_LOG(LogClass, Error, TEXT("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!Socket)"));
+		return;
+	}
 
+	Socket->SendCreateGame();
+
+	DeactivateOnlineGameWidget();
+	ActivateWaitingGameWidget();
+}
 
 
 

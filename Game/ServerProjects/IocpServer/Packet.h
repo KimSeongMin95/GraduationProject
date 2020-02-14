@@ -29,15 +29,18 @@ enum EPacketType
 	*/
 	LOGIN,
 
-	/** OnlineWidget에서 CreateWaitingRoom 버튼을 눌러 대기방을 생성하면
+	/** OnlineGameWidget에서 (Create Game)버튼을 눌러 대기방을 생성하면
 	Client:
-		Send [CREATE_WAITING_ROOM]: 생성한 대기방의 기본 정보
+		Send [CREATE_GAME]: MyInfoOfGame.Leader에 MyInfo를 저장하고 송신
 		Recv []: X
 	Server:
-		Recv [CREATE_WAITING_ROOM]: Games[InfoOfGame.Leader] = InfoOfGame;로 대기방 정보를 저장
+		Recv [CREATE_GAME]: 받은 cInfoOfGame를 InfoOfGames에 삽입
 		Send []: X
 	*/
-	CREATE_WAITING_ROOM,
+	CREATE_GAME,
+
+
+
 
 	/** 플레이어가 MainScreenWidget에서 Online 버튼을 눌러 진입하면
 	Client:
@@ -138,11 +141,11 @@ public:
 	cInfoOfPlayer()
 	{
 		ID = "NULL";
-		IPv4Addr = "127.0.0.1";
+		IPv4Addr = "NULL";
 		SocketByServer = -1;
 		SocketByLeader = -1;
-		PortByServer = 8000;
-		PortByLeader = 9000;
+		PortByServer = -1;
+		PortByLeader = -1;
 	}
 	~cInfoOfPlayer()
 	{
@@ -172,6 +175,13 @@ public:
 		Stream >> Info.PortByLeader;
 
 		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const char* Space = "", const char* Space2 = "")
+	{
+		printf_s("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByServer: %d, SocketByLeader: %d, PortByServer: %d, PortByLeader: %d\n", 
+			Space, Space2, ID.c_str(), IPv4Addr.c_str(), SocketByServer, SocketByLeader, PortByServer, PortByLeader);
 	}
 };
 
@@ -217,6 +227,16 @@ public:
 
 		return Stream;
 	}
+
+	// Log
+	void PrintInfo(const char* Space = "", const char* Space2 = "")
+	{
+		for (auto& kvp : Players)
+		{
+			printf_s("%s%skey: %d, ", Space, Space2, kvp.first);
+			kvp.second.PrintInfo();
+		}
+	}
 };
 
 
@@ -235,7 +255,7 @@ public:
 	cInfoOfGame()
 	{
 		State = "Waiting";
-		Title = "Let's go together!";
+		Title = "Let's_go_together!";
 		Stage = 1;
 		nMax = 100;
 	}
@@ -265,6 +285,16 @@ public:
 		Stream >> Info.Players;
 
 		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const char* Space = "", const char* Space2 = "")
+	{
+		printf_s("%s<cInfoOfGame> Start\n", Space);
+		printf_s("%s%sState: %s, Title: %s, Stage: %d, nMax: %d\n", Space, Space2, State.c_str(), Title.c_str(), Stage, nMax);
+		Leader.PrintInfo(Space, Space2);
+		Players.PrintInfo(Space, Space2);
+		printf_s("%s<cInfoOfGame> End\n", Space);
 	}
 };
 

@@ -123,9 +123,11 @@ public:
 		void CheckTextOfID();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void CheckTextOfPort();
+
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendLogin();
-
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void SendCreateGame();
 
 
 	/*

@@ -83,9 +83,10 @@ public:
 	void SendLogin(const FText ID);
 	void RecvLogin(stringstream& RecvStream);
 
+	void SendCreateGame();
+
 	/*
-	void SendAcceptPlayer();
-	void RecvAcceptPlayer(stringstream& RecvStream);
+
 
 	void SendCreateWaitingRoom(const FText State, const FText Title, int Stage, int MaxOfNum);
 
@@ -158,5 +159,6 @@ private:
 	char 	recvBuffer[MAX_BUFFER];		// 수신 버퍼 스트림	
 
 public:
-	cInfoOfPlayer MyInfo;
+	class cInfoOfPlayer MyInfo;
+	class cInfoOfGame MyInfoOfGame;
 };
