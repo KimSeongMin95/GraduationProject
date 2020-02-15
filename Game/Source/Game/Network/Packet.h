@@ -179,6 +179,13 @@ public:
 
 		return Stream;
 	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T(""), const TCHAR* Space2 = _T(""))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByServer: %d, SocketByLeader: %d, PortByServer: %d, PortByLeader: %d"),
+			Space, Space2, ANSI_TO_TCHAR(ID.c_str()), ANSI_TO_TCHAR(IPv4Addr.c_str()), SocketByServer, SocketByLeader, PortByServer, PortByLeader);
+	}
 };
 
 class GAME_API cInfoOfPlayers
@@ -222,6 +229,16 @@ public:
 		}
 
 		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T(""), const TCHAR* Space2 = _T(""))
+	{
+		for (auto& kvp : Players)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s%skey: %d"), Space, Space2, kvp.first);
+			kvp.second.PrintInfo(Space, Space2);
+		}
 	}
 };
 
@@ -271,6 +288,16 @@ public:
 		Stream >> Info.Players;
 
 		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T(""), const TCHAR* Space2 = _T(""))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s<cInfoOfGame> Start"), Space);
+		UE_LOG(LogTemp, Warning, TEXT("%s%sState: %s, Title: %s, Stage: %d, nMax: %d"), Space, Space2, ANSI_TO_TCHAR(State.c_str()), ANSI_TO_TCHAR(Title.c_str()), Stage, nMax);
+		Leader.PrintInfo(Space, Space2);
+		Players.PrintInfo(Space, Space2);
+		UE_LOG(LogTemp, Warning, TEXT("%s<cInfoOfGame> End"), Space);
 	}
 };
 

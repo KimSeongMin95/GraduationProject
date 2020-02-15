@@ -237,39 +237,39 @@ void AMainScreenGameMode::SendLogin()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogClass, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!OnlineWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!OnlineWidget)"));
 		return;
 	}
 
 	if (!Socket)
 	{
-		UE_LOG(LogClass, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!Socket)"));
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!Socket)"));
 		return;
 	}
 
-	UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()>"));
+	UE_LOG(LogTemp, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()>"));
 
 
 	Socket->InitSocket();
-	UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> Socket->InitSocket();"));
+	UE_LOG(LogTemp, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> Socket->InitSocket();"));
 
 	//bIsConnected = Socket->Connect("127.0.0.1", 8000);
 	bIsConnected = Socket->Connect(TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
 
 	if (!bIsConnected)
 	{
-		UE_LOG(LogClass, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
-		UE_LOG(LogClass, Error, TEXT("IPv4: %s, Port: %s"), 
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
+		UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port: %s"), 
 			*OnlineWidget->GetIPv4()->GetText().ToString(), *OnlineWidget->GetPort()->GetText().ToString());
 		return;
 	}
 
 
-	UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> IOCP Server connect success!"));
+	UE_LOG(LogTemp, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> IOCP Server connect success!"));
 
 	// Recv 스레드 시작
 	if (Socket->StartListen())
-		UE_LOG(LogClass, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> Socket->StartListen();"));
+		UE_LOG(LogTemp, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> Socket->StartListen();"));
 
 	Socket->SendLogin(OnlineWidget->GetID()->GetText());
 
@@ -281,7 +281,7 @@ void AMainScreenGameMode::SendCreateGame()
 {
 	if (!Socket)
 	{
-		UE_LOG(LogClass, Error, TEXT("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!Socket)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!Socket)"));
 		return;
 	}
 

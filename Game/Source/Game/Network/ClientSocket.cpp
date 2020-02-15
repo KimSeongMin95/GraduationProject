@@ -90,7 +90,7 @@ void cClientSocket::SendLogin(const FText ID)
 	if (!ID.IsEmpty())
 		MyInfo.ID = TCHAR_TO_UTF8(*ID.ToString());
 
-	UE_LOG(LogTemp, Warning, TEXT("MyInfo.ID: %s"), *FString(MyInfo.ID.c_str()));
+	MyInfo.PrintInfo(_T("    "));
 
 	stringstream sendStream;
 	sendStream << EPacketType::LOGIN << endl;
@@ -105,8 +105,7 @@ void cClientSocket::RecvLogin(stringstream& RecvStream)
 	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvLogin(...)>"));
 
 	RecvStream >> MyInfo;
-	UE_LOG(LogTemp, Warning, TEXT("MyInfo ID: %s, IPv4Addr: %s, socket: %d, port: %d"), 
-		*FString(MyInfo.ID.c_str()), *FString(MyInfo.IPv4Addr.c_str()), MyInfo.SocketByServer, MyInfo.PortByServer);
+	MyInfo.PrintInfo(_T("    "));
 
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvLogin(...)>"));
 }
@@ -117,6 +116,8 @@ void cClientSocket::SendCreateGame()
 
 	cInfoOfGame infoOfGame;
 	infoOfGame.Leader = MyInfo;
+
+	infoOfGame.PrintInfo(_T("    "), _T("    "));
 
 	stringstream sendStream;
 	sendStream << EPacketType::CREATE_GAME << endl;
