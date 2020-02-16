@@ -360,6 +360,8 @@ void AMainScreenGameMode::_SendCreateGame()
 		return;
 	}
 
+	OnlineState = EOnlineState::LeaderOfWaitingGame;
+
 	Socket->SendCreateGame();
 
 	DeactivateOnlineGameWidget();
@@ -408,13 +410,13 @@ void AMainScreenGameMode::RecvFindGames()
 
 		// 버튼에 함수를 바인딩
 		if (copiedQueue.front().State._Equal("Waiting"))
-			button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinWaitingRoom);
+			button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinWaitingGame);
 		else if (copiedQueue.front().State._Equal("Playing"))
 			button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinPlayingGame);
 		else
 			UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> else"));
 
-
+		UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvFindGames()> copiedQueue.pop()"));
 		copiedQueue.pop();
 	}
 }
@@ -439,11 +441,13 @@ void AMainScreenGameMode::_RefreshFindGames()
 	SendFindGames();
 }
 
-void AMainScreenGameMode::SendJoinWaitingRoom(int SocketIDOfLeader)
+void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinWaitingRoom(...)> SocketID: %d"), SocketIDOfLeader);
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinWaitingGame(...)> SocketID: %d"), SocketIDOfLeader);
 
-	//Socket->SendJoinWaitingRoom(SocketIDOfLeader);
+	OnlineState = EOnlineState::PlayerOfWaitingGame;
+
+	Socket->SendJoinWaitingGame(SocketIDOfLeader);
 
 	/*if (InfoOfWaitingRoom)
 		InfoOfWaitingRoom->SetIsReadOnly(true);
@@ -458,11 +462,45 @@ void AMainScreenGameMode::SendJoinWaitingRoom(int SocketIDOfLeader)
 	DeactivateOnlineGameWidget();
 	ActivateWaitingGameWidget();
 }
+void AMainScreenGameMode::RecvJoinWaitingGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvJoinWaitingGame(...)>"));
+
+	if (!Socket)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvJoinWaitingGame()> if (!Socket)"));
+		return;
+	}
+
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvJoinWaitingGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	if (Socket->tsqJoinWaitingGame.empty())
+		return;
+
+	std::queue<cInfoOfGame> copiedQueue = Socket->tsqJoinWaitingGame.copy();
+	Socket->tsqJoinWaitingGame.clear();
+
+
+
+	// 대기방 업데이트
+	while (copiedQueue.empty() == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvJoinWaitingGame()> copiedQueue.pop()"));
+		copiedQueue.pop();
+	}
+}
+
 void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 {
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinPlayingGame(...)> SocketID: %d"), SocketIDOfLeader);
 
 	DeactivateOnlineGameWidget();
+
+	OnlineState = EOnlineState::PlayerOfPlayingGame;
 
 	// Socket->SendJoinPlayingGame(SocketIDOfLeader);
 
@@ -502,12 +540,12 @@ void AMainScreenGameMode::TimerOfTest()
 	break;
 	case EOnlineState::LeaderOfWaitingGame:
 	{
-
+		RecvJoinWaitingGame();
 	}
 	break;
 	case EOnlineState::PlayerOfWaitingGame:
 	{
-
+		RecvJoinWaitingGame();
 	}
 	break;
 	case EOnlineState::PlayerOfPlayingGame:

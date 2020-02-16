@@ -24,9 +24,8 @@ MainServer::MainServer()
 	fnProcess[EPacketType::LOGIN].funcProcessPacket = Login;
 	fnProcess[EPacketType::CREATE_GAME].funcProcessPacket = CreateGame;
 	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
+	fnProcess[EPacketType::JOIN_WAITING_GAME].funcProcessPacket = JoinWaitingGame;
 
-
-	//fnProcess[EPacketType::JOIN_WAITING_ROOM].funcProcessPacket = JoinWaitingRoom;
 	//fnProcess[EPacketType::EXIT_WAITING_ROOM].funcProcessPacket = ExitWaitingRoom;
 	//fnProcess[EPacketType::CHECK_PLAYER_IN_WAITING_ROOM].funcProcessPacket = CheckPlayerInWaitingRoom;
 	
@@ -279,7 +278,6 @@ void MainServer::CreateGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	printf_s("[End] <MainServer::CreateGame(...)>\n\n");
 }
 
-
 void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 {
 	printf_s("[Recv by %d] <MainServer::FindGames(...)>\n", (int)pSocketInfo->socket);
@@ -308,46 +306,82 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	printf_s("[Send to %d] <MainServer::FindGames(...)>\n\n", (int)pSocketInfo->socket);
 }
 
-/*
-
-
-void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket)
+void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 {
-	printf_s("[MainServer::FindGames]\n");
+	printf_s("[Recv by %d] <MainServer::JoinWaitingGame(...)>\n", (int)pSocketInfo->socket);
 
 	/// 수신
+	int socketIDOfLeader;
+	cInfoOfPlayer infoOfPlayer;
+	cInfoOfGame infoOfGame;
+
+	RecvStream >> socketIDOfLeader;
+	RecvStream >> infoOfPlayer;
+
+	EnterCriticalSection(&csInfoOfGames);
+	if (InfoOfGames.find((SOCKET)socketIDOfLeader) == InfoOfGames.end())
+	{
+		/// 송신 - 에러
+		LeaveCriticalSection(&csInfoOfGames);
+		return;
+	}
+	InfoOfGames.at((SOCKET)socketIDOfLeader).Players.Add((int)pSocketInfo->socket, infoOfPlayer);
+	infoOfGame = InfoOfGames.at((SOCKET)socketIDOfLeader);
+	LeaveCriticalSection(&csInfoOfGames);
+	
+	infoOfGame.PrintInfo();
+
+
+	/// 송신 to 방장
+	stringstream sendStream;
+	sendStream << EPacketType::JOIN_WAITING_GAME << endl;
+	sendStream << infoOfGame << endl;
+
+	stSOCKETINFO* client = nullptr;
+
+	EnterCriticalSection(&csClients);
+	if (Clients.find((SOCKET)socketIDOfLeader) != Clients.end())
+		client = Clients.at((SOCKET)socketIDOfLeader);
+	LeaveCriticalSection(&csClients);
+
+	if (client)
+	{
+		CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+		client->dataBuf.buf = client->messageBuffer;
+		client->dataBuf.len = sendStream.str().length();
+
+		Send(client);
+
+		printf_s("[Send to %d] <MainServer::JoinWaitingGame(...)>\n", (int)client->socket);
+	}
 	
 
-	/// 송신
-	map<SOCKET, stInfoOfGame> copyOfGames;
-
-	EnterCriticalSection(&csGames);
-	copyOfGames.insert(Games.begin(), Games.end());
-	LeaveCriticalSection(&csGames);
-
-	printf_s("[MainServer::FindGames] CopyOfGames.size(): %d\n", (int)copyOfGames.size());
-
-	for (const auto& game : copyOfGames)
+	/// 송신 to 대기방의 플레이어들 (해당 클라이언트 포함)
+	for (const auto& kvp : infoOfGame.Players.Players)
 	{
-		stringstream sendStream;
-		sendStream << EPacketType::FIND_GAMES << endl;
-		sendStream << game.second.State << endl;
-		sendStream << game.second.Title << endl;
-		sendStream << game.second.Leader << endl;
-		sendStream << game.second.Stage << endl;
-		sendStream << (game.second.SocketIDOfPlayers.size() + 1) << endl;
-		sendStream << game.second.MaxOfNum << endl;
+		client = nullptr;
+		EnterCriticalSection(&csClients);
+		if (Clients.find((SOCKET)kvp.first) != Clients.end())
+			client = Clients.at((SOCKET)kvp.first);
+		LeaveCriticalSection(&csClients);
 
+		if (client)
+		{
+			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+			client->dataBuf.buf = client->messageBuffer;
+			client->dataBuf.len = sendStream.str().length();
 
-		CopyMemory(pSocket->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-		pSocket->dataBuf.buf = pSocket->messageBuffer;
-		pSocket->dataBuf.len = sendStream.str().length();
+			Send(client);
 
-		Send(pSocket);
-
-		printf_s("[MainServer::FindGames] Send(pSocket): %I64d\n", pSocket->socket);
+			printf_s("[Send to %d] <MainServer::JoinWaitingGame(...)>\n", (int)client->socket);
+		}
 	}
+
+	printf_s("\n");
 }
+
+/*
+
 
 void MainServer::ModifyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket)
 {

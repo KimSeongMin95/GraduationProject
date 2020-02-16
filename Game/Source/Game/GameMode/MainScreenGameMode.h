@@ -148,7 +148,10 @@ public:
 		void RefreshFindGames(); void _RefreshFindGames();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void SendJoinWaitingRoom(int SocketIDOfLeader);
+		void SendJoinWaitingGame(int SocketIDOfLeader);
+	UFUNCTION(Category = "Widget")
+		void RecvJoinWaitingGame();
+
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendJoinPlayingGame(int SocketIDOfLeader);
 

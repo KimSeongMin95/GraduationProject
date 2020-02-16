@@ -53,14 +53,17 @@ enum EPacketType
 
 	/** 플레이어가 Join 버튼으로 대기방에 들어가면
 	Client:
-		Send [JOIN_WAITING_ROOM]: Join한 대기방 Leader의 SocketID와 MyInfo
-		Recv [JOIN_WAITING_ROOM]: Join한 대기방 cInfoOfGame
+		Send [JOIN_WAITING_GAME]: Join한 대기방 Leader의 SocketID와 MyInfo
+		Recv [JOIN_WAITING_GAME]: Join한 대기방 cInfoOfGame
 	Server:
-		Recv [JOIN_WAITING_ROOM]: InfoOfGames의 Players에 해당 클라이언트 삽입
-		Send [JOIN_WAITING_ROOM]: 해당 대기방의 cInfoOfGame
-		Send [PLAYER_JOINED_WAITING_ROOM] to 대기방의 다른 플레이어들: 해당 클라이언트 SocketID
+		Recv [JOIN_WAITING_GAME]: InfoOfGames의 Players에 해당 클라이언트 삽입
+		Send [JOIN_WAITING_GAME] to 방장: 해당 대기방의 cInfoOfGame
+		Send [JOIN_WAITING_GAME] to 플레이어들(해당 클라이언트 포함): 해당 대기방의 cInfoOfGame
 	*/
-	JOIN_WAITING_ROOM,
+	JOIN_WAITING_GAME,
+
+
+
 
 
 
@@ -76,15 +79,7 @@ enum EPacketType
 
 
 
-	/** 다른 플레이어가 플레이어의 대기방에 들어오면
-	Client:
-		Send []: X
-		Recv [PLAYER_JOINED_WAITING_ROOM]: 대기방에 진입한 다른 플레이어의 SocketID
-	Server:
-		Recv []: X
-		Send []: JOIN_WAITING_ROOM에서 송신
-	*/
-	PLAYER_JOINED_WAITING_ROOM,
+
 	
 	/** 방장이 아닌 대기방인 플레이어가 대기방에서 나가면
 	Client:
@@ -96,15 +91,6 @@ enum EPacketType
 	*/
 	EXIT_WAITING_ROOM,
 
-	/** 대기방의 플레이어가 나가면
-	Client:
-		Send []: X
-		Recv [PLAYER_EXITED_WAITING_ROOM]: 대기방에서 나간 다른 플레이어의 SocketID
-	Server:
-		Recv []: X
-		Send []: EXIT_WAITING_ROOM에서 송신
-	*/
-	PLAYER_EXITED_WAITING_ROOM,
 
 
 	/** 대기방에 들어오면 실제로 플레이어가 존재하는지 확인
@@ -244,6 +230,11 @@ public:
 	size_t Size()
 	{
 		return Players.size();
+	}
+
+	void Add(int SocketID, cInfoOfPlayer InfoOfPlayer)
+	{
+		Players[SocketID] = InfoOfPlayer;
 	}
 };
 

@@ -48,19 +48,17 @@ private:
 
 	static void FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
 
+	static void JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 
 
 
 	
 	/*
-	static void CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	static void FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 	static void ModifyWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	static void JoinWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 	
 	static void ExitWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket);
 

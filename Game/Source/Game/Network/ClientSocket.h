@@ -212,7 +212,9 @@ public:
 	void RecvFindGames(stringstream& RecvStream);
 	cThreadSafeQueue<cInfoOfGame> tsqFindGames;
 
-
+	void SendJoinWaitingGame(int SocketIDOfLeader);
+	void RecvJoinWaitingGame(stringstream& RecvStream);
+	cThreadSafeQueue<cInfoOfGame> tsqJoinWaitingGame;
 
 
 	/*
