@@ -38,16 +38,13 @@ enum EPacketType
 	*/
 	CREATE_GAME,
 
-
-
-
-	/** 플레이어가 MainScreenWidget에서 Online 버튼을 눌러 진입하면
+	/** 플레이어가 OnlineWidget에서 로그인하여 OnlineGameWidget으로 진입하면
 	Client:
-		Send [FIND_GAMES]: 대기방 정보 요구
-		Recv [FIND_GAMES]: 모든 대기방들의 정보
+		Send [FIND_GAMES]: O
+		Recv [FIND_GAMES]: InfoOfGames의 모든 cInfoOfGame
 	Server:
 		Recv []: X
-		Send [FIND_GAMES]: 모든 대기방들의 정보
+		Send [FIND_GAMES]: InfoOfGames의 모든 cInfoOfGame
 	*/
 	FIND_GAMES,
 
@@ -181,7 +178,7 @@ public:
 	}
 
 	// Log
-	void PrintInfo(const TCHAR* Space = _T(""), const TCHAR* Space2 = _T(""))
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByServer: %d, SocketByLeader: %d, PortByServer: %d, PortByLeader: %d"),
 			Space, Space2, ANSI_TO_TCHAR(ID.c_str()), ANSI_TO_TCHAR(IPv4Addr.c_str()), SocketByServer, SocketByLeader, PortByServer, PortByLeader);
@@ -232,7 +229,7 @@ public:
 	}
 
 	// Log
-	void PrintInfo(const TCHAR* Space = _T(""), const TCHAR* Space2 = _T(""))
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
 		for (auto& kvp : Players)
 		{
@@ -291,7 +288,7 @@ public:
 	}
 
 	// Log
-	void PrintInfo(const TCHAR* Space = _T(""), const TCHAR* Space2 = _T(""))
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T("    "))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s<cInfoOfGame> Start"), Space);
 		UE_LOG(LogTemp, Warning, TEXT("%s%sState: %s, Title: %s, Stage: %d, nMax: %d"), Space, Space2, ANSI_TO_TCHAR(State.c_str()), ANSI_TO_TCHAR(Title.c_str()), Stage, nMax);

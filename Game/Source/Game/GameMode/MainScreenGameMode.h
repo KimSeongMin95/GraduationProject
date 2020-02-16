@@ -67,12 +67,12 @@ private:
 		/**  */
 		class UWaitingGameWidget* WaitingGameWidget = nullptr;
 
+	float Timer;
 
 private:
 	/////////////////////////////////////////////////
 	// 변환 함수
 	/////////////////////////////////////////////////
-	const char* FTextToCStr(class UEditableTextBox* EditableTextBox);
 	int FTextToInt(class UEditableTextBox* EditableTextBox);
 
 public:
@@ -86,50 +86,60 @@ public:
 	// 위젯 활성화 / 비활성화
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateMainScreenWidget();
+		void ActivateMainScreenWidget(); void _ActivateMainScreenWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateMainScreenWidget();
+		void DeactivateMainScreenWidget(); void _DeactivateMainScreenWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateOnlineWidget();
+		void ActivateOnlineWidget(); void _ActivateOnlineWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateOnlineWidget();
+		void DeactivateOnlineWidget(); void _DeactivateOnlineWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateSettingsWidget();
+		void ActivateSettingsWidget(); void _ActivateSettingsWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateSettingsWidget();
+		void DeactivateSettingsWidget(); void _DeactivateSettingsWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateOnlineGameWidget();
+		void ActivateOnlineGameWidget(); void _ActivateOnlineGameWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateOnlineGameWidget();
+		void DeactivateOnlineGameWidget(); void _DeactivateOnlineGameWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateWaitingGameWidget();
+		void ActivateWaitingGameWidget(); void _ActivateWaitingGameWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateWaitingGameWidget();
+		void DeactivateWaitingGameWidget(); void _DeactivateWaitingGameWidget();
 
 	/////////////////////////////////////////////////
 	// 게임종료
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void TerminateGame();
+		void TerminateGame(); void _TerminateGame();
 
 	/////////////////////////////////////////////////
 	// 
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void CheckTextOfID();
+		void CheckTextOfID(); void _CheckTextOfID();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void CheckTextOfPort();
+		void CheckTextOfPort(); void _CheckTextOfPort();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void SendLogin();
+		void SendLogin(); void _SendLogin();
+
+	UFUNCTION(Category = "Widget")
+		/** ActivateOnlineWidget은 서버에 접속하려는 것이므로, 소켓이 열려 있다면 닫음. */
+		void CloseSocket();
+
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void SendCreateGame();
+		void SendCreateGame(); void _SendCreateGame();
 
-
+	UFUNCTION(Category = "Widget")
+		void SendFindGames();
+	UFUNCTION(Category = "Widget")
+		void RecvFindGames();
+	UFUNCTION(Category = "Widget")
+		void ClearFindGames();
 	/*
 
 

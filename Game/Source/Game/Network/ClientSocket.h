@@ -59,12 +59,124 @@ struct stSOCKETINFO
 	int				sendBytes;
 };
 
+
+template <typename T>
+class GAME_API cThreadSafeQueue
+{
+private:
+	std::queue<T> q;
+	CRITICAL_SECTION cs;
+
+public:
+	cThreadSafeQueue() { InitializeCriticalSection(&cs); }
+	~cThreadSafeQueue() { DeleteCriticalSection(&cs); }
+
+	bool empty()
+	{
+		EnterCriticalSection(&cs);
+		bool result = q.empty();
+		LeaveCriticalSection(&cs);
+		return result;
+	}
+
+	void push(T element)
+	{
+		EnterCriticalSection(&cs);
+		q.push(element);
+		LeaveCriticalSection(&cs);
+	}
+
+	T front()
+	{
+		EnterCriticalSection(&cs);
+		T result = q.front();
+		LeaveCriticalSection(&cs);
+		return result;
+	}
+
+	void pop()
+	{
+		EnterCriticalSection(&cs);
+		q.pop();
+		LeaveCriticalSection(&cs);
+	}
+
+	T front_pop()
+	{
+		EnterCriticalSection(&cs);
+		T result = q.front();
+		q.pop();
+		LeaveCriticalSection(&cs);
+		return result;
+	}
+
+	T back()
+	{
+		EnterCriticalSection(&cs);
+		T result = q.back();
+		LeaveCriticalSection(&cs);
+		return result;
+	}
+
+	void clear()
+	{
+		EnterCriticalSection(&cs);
+		while (q.empty() == false)
+			q.pop();
+		LeaveCriticalSection(&cs);
+	}
+
+	size_t size()
+	{
+		EnterCriticalSection(&cs);
+		size_t result = q.size();
+		LeaveCriticalSection(&cs);
+		return result;
+	}
+
+	std::queue<T> copy()
+	{
+		EnterCriticalSection(&cs);
+		std::queue<T> copyQ = q;
+		LeaveCriticalSection(&cs);
+		return copyQ;
+	}
+};
+
+
 /**
  * 서버와 접속 및 패킷 처리를 담당하는 클래스
  */
 class GAME_API cClientSocket : public FRunnable
 {
+private:
+	SOCKET	ServerSocket;				// 서버와 연결할 소켓	
+	char 	recvBuffer[MAX_BUFFER];		// 수신 버퍼 스트림	
+
+	// FRunnable Thread members	
+	FRunnableThread* Thread;
+	FThreadSafeCounter StopTaskCounter;
+
+
+	class cInfoOfPlayer MyInfo;
+	CRITICAL_SECTION csMyInfo;
+
+	class cInfoOfGame MyInfoOfGame;
+	CRITICAL_SECTION csMyInfoOfGame;
+
+protected:
+	/////////////////////////////////////
+	// FRunnable override 함수
+	/////////////////////////////////////
+	virtual bool Init();
+	virtual uint32 Run();
+	virtual void Stop();
+	virtual void Exit();
+
 public:
+	/////////////////////////////////////
+	// cClientSocket
+	/////////////////////////////////////
 	cClientSocket();
 	virtual ~cClientSocket();
 
@@ -77,23 +189,35 @@ public:
 	// 소켓 종료
 	void CloseSocket();
 
-	//////////////////////////////////////////////////////////////////////////
+	// 스레드 시작 및 종료
+	bool StartListen();
+	void StopListen();
+
+	// 싱글턴 객체 가져오기
+	static cClientSocket* GetSingleton()
+	{
+		static cClientSocket ins;
+		return &ins;
+	}
+
+	/////////////////////////////////////
 	// 서버와 통신
-	//////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////
 	void SendLogin(const FText ID);
 	void RecvLogin(stringstream& RecvStream);
 
 	void SendCreateGame();
 
+	void SendFindGames();
+	void RecvFindGames(stringstream& RecvStream);
+	cThreadSafeQueue<cInfoOfGame> tsqFindGames;
+
+
+
+
 	/*
 
 
-	void SendCreateWaitingRoom(const FText State, const FText Title, int Stage, int MaxOfNum);
-
-	void SendFindGames();
-	void RecvFindGames(stringstream& RecvStream);
-	std::queue<stInfoOfGame> qRecvFindGames;
-	CRITICAL_SECTION csRecvFindGames;
 	bool GetRecvFindGames(stInfoOfGame& InfoOfGame);
 
 	void SendModifyWaitingRoom(const FString Title, int Stage, int MaxOfNum);
@@ -127,38 +251,13 @@ public:
 	bool GetRecvCheckPlayerInWaitingRoom(std::queue<int>& qSocketID);
 
 	*/
-	//////////////////////////////////////////////////////////////////////////	
 
+	/////////////////////////////////////
+	// Set-Get
+	/////////////////////////////////////
+	void SetMyInfo(cInfoOfPlayer& InfoOfPlayer);
+	cInfoOfPlayer CopyMyInfo();
 
-	// 
-	//void SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode);
-
-	// FRunnable Thread members	
-	FRunnableThread* Thread;
-	FThreadSafeCounter StopTaskCounter;
-
-	// FRunnable override 함수
-	virtual bool Init();
-	virtual uint32 Run();
-	virtual void Stop();
-	virtual void Exit();
-
-	// 스레드 시작 및 종료
-	bool StartListen();
-	void StopListen();
-
-	// 싱글턴 객체 가져오기
-	static cClientSocket* GetSingleton()
-	{
-		static cClientSocket ins;
-		return &ins;
-	}
-
-private:
-	SOCKET	ServerSocket;				// 서버와 연결할 소켓	
-	char 	recvBuffer[MAX_BUFFER];		// 수신 버퍼 스트림	
-
-public:
-	class cInfoOfPlayer MyInfo;
-	class cInfoOfGame MyInfoOfGame;
+	void SetMyInfoOfGame(cInfoOfGame& InfoOfGame);
+	cInfoOfGame CopyMyInfoOfGame();
 };

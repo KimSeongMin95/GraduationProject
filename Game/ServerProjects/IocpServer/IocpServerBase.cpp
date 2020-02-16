@@ -4,7 +4,6 @@
 std::map<SOCKET, stSOCKETINFO*> IocpServerBase::Clients;
 CRITICAL_SECTION IocpServerBase::csClients;
 
-
 IocpServerBase::IocpServerBase()
 {
 	// 멤버 변수 초기화
@@ -34,7 +33,7 @@ IocpServerBase::~IocpServerBase()
 		hWorkerHandle = nullptr;
 	}
 
-	LeaveCriticalSection(&csClients);
+	DeleteCriticalSection(&csClients);
 }
 
 bool IocpServerBase::Initialize()
@@ -152,7 +151,7 @@ void IocpServerBase::StartServer()
 
 		if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 		{
-			printf_s("[ERROR] IO Pending 실패 : %d", WSAGetLastError());
+			printf_s("[ERROR] IO Pending 실패 : %d\n", WSAGetLastError());
 			return;
 		}
 	}
@@ -171,16 +170,22 @@ void IocpServerBase::WorkerThread()
 
 void IocpServerBase::CloseSocket(stSOCKETINFO* pSocketInfo)
 {
+	printf_s("[Start] <IocpServerBase::CloseSocket(...)>\n");
+
 	EnterCriticalSection(&csClients);
 	printf_s("\t Clients.size(): %d\n", (int)Clients.size());
 	Clients.erase(pSocketInfo->socket);
 	printf_s("\t Clients.size(): %d\n", (int)Clients.size());
 	LeaveCriticalSection(&csClients);
 
+	if (pSocketInfo == nullptr)
+		return;
+
 	closesocket(pSocketInfo->socket);
 	free(pSocketInfo);
+	pSocketInfo = nullptr;
 
-	printf_s("[End] <MainServer::CloseSocket(...)>\n");
+	printf_s("[End] <IocpServerBase::CloseSocket(...)>\n");
 }
 
 void IocpServerBase::Send(stSOCKETINFO* pSocketInfo)
@@ -230,7 +235,7 @@ void IocpServerBase::Recv(stSOCKETINFO* pSocketInfo)
 
 	if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 	{
-		printf_s("[ERROR] WSARecv 실패 : %d", WSAGetLastError());
+		printf_s("[ERROR] WSARecv 실패 : %d\n", WSAGetLastError());
 	}
 }
 

@@ -9,35 +9,113 @@
 #include <string>
 
 
+/////////////////////////////////////
+// FRunnable override 함수
+/////////////////////////////////////
+bool cClientSocket::Init()
+{
+	return true;
+}
+
+uint32 cClientSocket::Run()
+{
+	//// 초기 init 과정을 기다림
+	//FPlatformProcess::Sleep(0.03);
+
+	// recv while loop 시작
+	// StopTaskCounter 클래스 변수를 사용해 Thread Safety하게 해줌
+	while (StopTaskCounter.GetValue() == 0)
+	{
+		stringstream RecvStream;
+		int PacketType;
+		int nRecvLen = recv(ServerSocket, (CHAR*)&recvBuffer, MAX_BUFFER, 0);
+
+		if (nRecvLen > 0)
+		{
+			// 패킷 처리
+			RecvStream << recvBuffer;
+			RecvStream >> PacketType;
+
+			switch (PacketType)
+			{
+			case EPacketType::LOGIN:
+			{
+				RecvLogin(RecvStream);
+			}
+			break;
+			case EPacketType::FIND_GAMES:
+			{
+				RecvFindGames(RecvStream);
+			}
+			break;
+			//case EPacketType::MODIFY_WAITING_ROOM:
+			//{
+			//	RecvModifyWaitingRoom(RecvStream);
+			//}
+			//break;
+			//case EPacketType::JOIN_WAITING_ROOM:
+			//{
+			//	RecvJoinWaitingRoom(RecvStream);
+			//}
+			//break;
+			//case EPacketType::PLAYER_JOINED_WAITING_ROOM:
+			//{
+			//	RecvPlayerJoinedWaitingRoom(RecvStream);
+			//}
+			//break;
+			//case EPacketType::PLAYER_EXITED_WAITING_ROOM:
+			//{
+			//	RecvPlayerExitedWaitingRoom(RecvStream);
+			//}
+			//break;
+			//case EPacketType::CHECK_PLAYER_IN_WAITING_ROOM:
+			//{
+			//	RecvCheckPlayerInWaitingRoom(RecvStream);
+			//}
+			//break;
+
+			default:
+				break;
+			}
+		}
+	}
+	return 0;
+}
+
+void cClientSocket::Stop()
+{
+	// thread safety 변수를 조작해 while loop 가 돌지 못하게 함
+	StopTaskCounter.Increment();
+}
+
+void cClientSocket::Exit()
+{
+
+}
+
+
+/////////////////////////////////////
+// cClientSocket
+/////////////////////////////////////
 cClientSocket::cClientSocket()
 	:StopTaskCounter(0)
 {
-	//InitializeCriticalSection(&csRecvFindGames);
-	//InitializeCriticalSection(&csRecvModifyWaitingRoom);
-	//InitializeCriticalSection(&csRecvJoinWaitingRoom);
-	//InitializeCriticalSection(&csRecvPlayerJoinedWaitingRoom);
-	//InitializeCriticalSection(&csRecvPlayerExitedWaitingRoom);
-	//InitializeCriticalSection(&csRecvCheckPlayerInWaitingRoom);
-	
-	//// Get함수에서 return false를 할 수 있게
-	//mRecvModifyWaitingRoom.Leader = -1;
-	//mRecvJoinWaitingRoom.Leader = -1;
+	InitializeCriticalSection(&csMyInfo);
+	InitializeCriticalSection(&csMyInfoOfGame);
 }
 
 cClientSocket::~cClientSocket()
 {
 	CloseSocket();
 
-	//DeleteCriticalSection(&csRecvFindGames);
-	//DeleteCriticalSection(&csRecvModifyWaitingRoom);
-	//DeleteCriticalSection(&csRecvJoinWaitingRoom);
-	//DeleteCriticalSection(&csRecvPlayerJoinedWaitingRoom);
-	//DeleteCriticalSection(&csRecvPlayerExitedWaitingRoom);
-	//DeleteCriticalSection(&csRecvCheckPlayerInWaitingRoom);
+	DeleteCriticalSection(&csMyInfo);
+	DeleteCriticalSection(&csMyInfoOfGame);
 }
 
 bool cClientSocket::InitSocket()
 {
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::InitSocket()>"));
+
 	WSADATA wsaData;
 
 	// 윈속 버전을 2.2로 초기화
@@ -58,6 +136,8 @@ bool cClientSocket::InitSocket()
 
 bool cClientSocket::Connect(const char * pszIP, int nPort)
 {
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::Connect(...)>"));
+
 	// 접속할 서버 정보를 저장할 구조체
 	SOCKADDR_IN stServerAddr;
 
@@ -77,24 +157,60 @@ bool cClientSocket::Connect(const char * pszIP, int nPort)
 
 void cClientSocket::CloseSocket()
 {
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::CloseSocket()>"));
+
 	closesocket(ServerSocket);
 	WSACleanup();
 }
 
+bool cClientSocket::StartListen()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StartListen()>"));
 
+	if (Thread != nullptr)
+		return false;
+
+	// 스레드 시작
+	Thread = FRunnableThread::Create(this, TEXT("cClientSocket"), 0, TPri_BelowNormal);
+
+	return (Thread != nullptr);
+}
+
+void cClientSocket::StopListen()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StopListen()>"));
+
+	// 스레드 종료
+	Stop();
+	if (Thread)
+	{
+		Thread->WaitForCompletion();
+		Thread->Kill();
+		delete Thread;
+		Thread = nullptr;
+	}
+	StopTaskCounter.Reset();
+}
+
+
+/////////////////////////////////////
+// 서버와 통신
+/////////////////////////////////////
 void cClientSocket::SendLogin(const FText ID)
 {
 	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendLogin(...)>"));
 
+	cInfoOfPlayer infoOfPlayer;
+
 	// ID가 비어있지 않으면 대입
 	if (!ID.IsEmpty())
-		MyInfo.ID = TCHAR_TO_UTF8(*ID.ToString());
+		infoOfPlayer.ID = TCHAR_TO_UTF8(*ID.ToString());
 
-	MyInfo.PrintInfo(_T("    "));
+	infoOfPlayer.PrintInfo();
 
 	stringstream sendStream;
 	sendStream << EPacketType::LOGIN << endl;
-	sendStream << MyInfo << endl;
+	sendStream << infoOfPlayer << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
@@ -104,8 +220,10 @@ void cClientSocket::RecvLogin(stringstream& RecvStream)
 {
 	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvLogin(...)>"));
 
+	EnterCriticalSection(&csMyInfo);
 	RecvStream >> MyInfo;
-	MyInfo.PrintInfo(_T("    "));
+	MyInfo.PrintInfo();
+	LeaveCriticalSection(&csMyInfo);
 
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvLogin(...)>"));
 }
@@ -115,9 +233,11 @@ void cClientSocket::SendCreateGame()
 	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendCreateGame()>"));
 
 	cInfoOfGame infoOfGame;
-	infoOfGame.Leader = MyInfo;
 
-	infoOfGame.PrintInfo(_T("    "), _T("    "));
+	infoOfGame.Leader = CopyMyInfo();
+
+	SetMyInfoOfGame(infoOfGame);
+	CopyMyInfoOfGame().PrintInfo();
 
 	stringstream sendStream;
 	sendStream << EPacketType::CREATE_GAME << endl;
@@ -128,62 +248,33 @@ void cClientSocket::SendCreateGame()
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendCreateGame()>"));
 }
 
-
-
-
-
-/*
-
-void cClientSocket::SendAcceptPlayer()
-{
-	stringstream sendStream;
-	sendStream << EPacketType::ACCEPT_PLAYER << endl;
-
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
-}
-void cClientSocket::RecvAcceptPlayer(stringstream& RecvStream)
-{
-	RecvStream >> SocketID;
-}
-
-void cClientSocket::SendCreateWaitingRoom(const FText State, const FText Title, int Stage, int MaxOfNum)
-{
-	stringstream SendStream;
-	SendStream << EPacketType::CREATE_WAITING_ROOM << endl;
-	SendStream << TCHAR_TO_UTF8(*State.ToString()) << endl;
-	SendStream << TCHAR_TO_UTF8(*Title.ToString()) << endl;
-	SendStream << Stage << endl;
-	SendStream << MaxOfNum << endl;
-
-	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
-}
-
 void cClientSocket::SendFindGames()
 {
-	stringstream SendStream;
-	SendStream << EPacketType::FIND_GAMES << endl;
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendFindGames()>"));
 
-	send(ServerSocket, (CHAR*)SendStream.str().c_str(), SendStream.str().length(), 0);
+	stringstream sendStream;
+	sendStream << EPacketType::FIND_GAMES << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendFindGames()>"));
 }
 void cClientSocket::RecvFindGames(stringstream& RecvStream)
 {
-	stInfoOfGame infoOfGame;
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvFindGames(...)>"));
 
-	RecvStream >> infoOfGame.State;
-	RecvStream >> infoOfGame.Title;
-	RecvStream >> infoOfGame.Leader;
-	RecvStream >> infoOfGame.Stage;
-	RecvStream >> infoOfGame.CurOfNum;
-	RecvStream >> infoOfGame.MaxOfNum;
+	cInfoOfGame infoOfGame;
 
-	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::RecvFindGames] infoOfGame: %s %s %d %d %d %d"),
-		*FString(infoOfGame.State.c_str()), *FString(infoOfGame.Title.c_str()), infoOfGame.Leader,
-		infoOfGame.Stage, infoOfGame.MaxOfNum, infoOfGame.CurOfNum);
+	while (RecvStream >> infoOfGame)
+	{
+		tsqFindGames.push(infoOfGame);
+		tsqFindGames.back().PrintInfo();
+	}
 
-	EnterCriticalSection(&csRecvFindGames);
-	qRecvFindGames.push(infoOfGame);
-	LeaveCriticalSection(&csRecvFindGames);
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvFindGames(...)>"));
 }
+                  
+/*
 
 bool cClientSocket::GetRecvFindGames(stInfoOfGame& InfoOfGame)
 {
@@ -439,121 +530,40 @@ bool cClientSocket::GetRecvCheckPlayerInWaitingRoom(std::queue<int>& qSocketID)
 
 
 
-
-
-
-
-
-//void cClientSocket::SetMainScreenGameMode(class AMainScreenGameMode* pMainScreenGameMode)
-//{
-//	if (pMainScreenGameMode)
-//	{
-//		MainScreenGameMode = pMainScreenGameMode;
-//	}
-//}
-
-bool cClientSocket::Init()
+/////////////////////////////////////
+// Set-Get
+/////////////////////////////////////
+void cClientSocket::SetMyInfo(cInfoOfPlayer& InfoOfPlayer)
 {
-	return true;
+	EnterCriticalSection(&csMyInfo);
+	MyInfo = InfoOfPlayer;
+	LeaveCriticalSection(&csMyInfo);
+}
+cInfoOfPlayer cClientSocket::CopyMyInfo()
+{
+	cInfoOfPlayer infoOfPlayer;
+
+	EnterCriticalSection(&csMyInfo);
+	infoOfPlayer = MyInfo;
+	LeaveCriticalSection(&csMyInfo);
+
+	return infoOfPlayer;
 }
 
-uint32 cClientSocket::Run()
+void cClientSocket::SetMyInfoOfGame(cInfoOfGame& InfoOfGame)
 {
-	//// 초기 init 과정을 기다림
-	//FPlatformProcess::Sleep(0.03);
+	EnterCriticalSection(&csMyInfoOfGame);
+	MyInfoOfGame = InfoOfGame;
+	LeaveCriticalSection(&csMyInfoOfGame);
+}
+cInfoOfGame cClientSocket::CopyMyInfoOfGame()
+{
+	cInfoOfGame infoOfGame;
 
-	// recv while loop 시작
-	// StopTaskCounter 클래스 변수를 사용해 Thread Safety하게 해줌
-	while (StopTaskCounter.GetValue() == 0)
-	{
-		stringstream RecvStream;
-		int PacketType;
-		int nRecvLen = recv(ServerSocket, (CHAR*)&recvBuffer, MAX_BUFFER, 0);
+	EnterCriticalSection(&csMyInfoOfGame);
+	infoOfGame = MyInfoOfGame;
+	LeaveCriticalSection(&csMyInfoOfGame);
 
-		if (nRecvLen > 0)
-		{
-			// 패킷 처리
-			RecvStream << recvBuffer;
-			RecvStream >> PacketType;
-
-			switch (PacketType)
-			{
-			case EPacketType::LOGIN:
-			{
-				RecvLogin(RecvStream);
-			}
-			break;
-			//case EPacketType::FIND_GAMES:
-			//{
-			//	RecvFindGames(RecvStream);
-			//}
-			//break;
-			//case EPacketType::MODIFY_WAITING_ROOM:
-			//{
-			//	RecvModifyWaitingRoom(RecvStream);
-			//}
-			//break;
-			//case EPacketType::JOIN_WAITING_ROOM:
-			//{
-			//	RecvJoinWaitingRoom(RecvStream);
-			//}
-			//break;
-			//case EPacketType::PLAYER_JOINED_WAITING_ROOM:
-			//{
-			//	RecvPlayerJoinedWaitingRoom(RecvStream);
-			//}
-			//break;
-			//case EPacketType::PLAYER_EXITED_WAITING_ROOM:
-			//{
-			//	RecvPlayerExitedWaitingRoom(RecvStream);
-			//}
-			//break;
-			//case EPacketType::CHECK_PLAYER_IN_WAITING_ROOM:
-			//{
-			//	RecvCheckPlayerInWaitingRoom(RecvStream);
-			//}
-			//break;
-
-			default:
-				break;
-			}
-		}
-	}
-	return 0;
+	return infoOfGame;
 }
 
-void cClientSocket::Stop()
-{
-	// thread safety 변수를 조작해 while loop 가 돌지 못하게 함
-	StopTaskCounter.Increment();
-}
-
-void cClientSocket::Exit()
-{
-
-}
-
-bool cClientSocket::StartListen()
-{
-	if (Thread != nullptr) 
-		return false;
-
-	// 스레드 시작
-	Thread = FRunnableThread::Create(this, TEXT("cClientSocket"), 0, TPri_BelowNormal);
-
-	return (Thread != nullptr);
-}
-
-void cClientSocket::StopListen()
-{
-	// 스레드 종료
-	Stop();
-	if (Thread)
-	{
-		Thread->WaitForCompletion();
-		Thread->Kill();
-		delete Thread;
-		Thread = nullptr;
-	}
-	StopTaskCounter.Reset();
-}

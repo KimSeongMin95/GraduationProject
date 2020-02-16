@@ -35,6 +35,19 @@ struct stSOCKETINFO
 	int				Port;	  // 클라이언트의 Port 주소
 };
 
+//// 쓰면 간단해지나 Custom이므로 유효성을 보장할 수 없으므로 아주 나중에 사용해볼 것.
+//template <typename T>
+//class cThreadSafeMap
+//{
+//private:
+//	std::map<SOCKET, T> m;
+//	CRITICAL_SECTION cs;
+//
+//public:
+//	cThreadSafeMap() { InitializeCriticalSection(&cs); }
+//	~cThreadSafeMap() { DeleteCriticalSection(&cs); }
+//};
+
 // 패킷 처리 함수 포인터
 struct FuncProcess
 {

@@ -20,7 +20,7 @@ AMainScreenGameMode::AMainScreenGameMode()
 {
 	//DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
 
-
+	Timer = 0.0f;
 }
 
 void AMainScreenGameMode::BeginPlay()
@@ -65,6 +65,15 @@ void AMainScreenGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+
+
+	Timer += DeltaTime;
+	if (Timer < 1.0f)
+		return;
+	Timer = 0.0f;
+
+	RecvFindGames();
 }
 /*** Basic Function : End ***/
 
@@ -85,6 +94,10 @@ void AMainScreenGameMode::PlayTutorial()
 //
 void AMainScreenGameMode::ActivateMainScreenWidget()
 {
+	_ActivateMainScreenWidget();
+}
+void AMainScreenGameMode::_ActivateMainScreenWidget()
+{
 	if (!MainScreenWidget)
 	{
 		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateMainScreenWidget()> if (!MainScreenWidget)"));
@@ -94,6 +107,10 @@ void AMainScreenGameMode::ActivateMainScreenWidget()
 	MainScreenWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateMainScreenWidget()
+{
+	_DeactivateMainScreenWidget();
+}
+void AMainScreenGameMode::_DeactivateMainScreenWidget()
 {
 	if (!MainScreenWidget)
 	{
@@ -106,19 +123,25 @@ void AMainScreenGameMode::DeactivateMainScreenWidget()
 
 void AMainScreenGameMode::ActivateOnlineWidget()
 {
+	_ActivateOnlineWidget();
+}
+void AMainScreenGameMode::_ActivateOnlineWidget()
+{
 	if (!OnlineWidget)
 	{
 		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineWidget()> if (!OnlineWidget)"));
 		return;
 	}
 
-	// OnlineWidget에 들어왔다는 것은 서버에 접속하려는 것이므로 소켓이 이미 열려 있다면 닫음
-	if (Socket)
-		Socket->CloseSocket();
+	CloseSocket();
 
 	OnlineWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateOnlineWidget()
+{
+	_DeactivateOnlineWidget();
+}
+void AMainScreenGameMode::_DeactivateOnlineWidget()
 {
 	if (!OnlineWidget)
 	{
@@ -131,6 +154,10 @@ void AMainScreenGameMode::DeactivateOnlineWidget()
 
 void AMainScreenGameMode::ActivateSettingsWidget()
 {
+	_ActivateSettingsWidget();
+}
+void AMainScreenGameMode::_ActivateSettingsWidget()
+{
 	if (!SettingsWidget)
 	{
 		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateSettingsWidget()> if (!SettingsWidget)"));
@@ -140,6 +167,10 @@ void AMainScreenGameMode::ActivateSettingsWidget()
 	SettingsWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateSettingsWidget()
+{
+	_DeactivateSettingsWidget();
+}
+void AMainScreenGameMode::_DeactivateSettingsWidget()
 {
 	if (!SettingsWidget)
 	{
@@ -152,15 +183,25 @@ void AMainScreenGameMode::DeactivateSettingsWidget()
 
 void AMainScreenGameMode::ActivateOnlineGameWidget()
 {
+	_ActivateOnlineGameWidget();
+}
+void AMainScreenGameMode::_ActivateOnlineGameWidget()
+{
 	if (!OnlineGameWidget)
 	{
 		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineGameWidget()> if (!OnlineGameWidget)"));
 		return;
 	}
 
+	SendFindGames();
+
 	OnlineGameWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateOnlineGameWidget()
+{
+	_DeactivateOnlineGameWidget();
+}
+void AMainScreenGameMode::_DeactivateOnlineGameWidget()
 {
 	if (!OnlineGameWidget)
 	{
@@ -168,10 +209,16 @@ void AMainScreenGameMode::DeactivateOnlineGameWidget()
 		return;
 	}
 
+	ClearFindGames();
+
 	OnlineGameWidget->RemoveFromViewport();
 }
 
 void AMainScreenGameMode::ActivateWaitingGameWidget()
+{
+	_ActivateWaitingGameWidget();
+}
+void AMainScreenGameMode::_ActivateWaitingGameWidget()
 {
 	if (!WaitingGameWidget)
 	{
@@ -182,6 +229,10 @@ void AMainScreenGameMode::ActivateWaitingGameWidget()
 	WaitingGameWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateWaitingGameWidget()
+{
+	_DeactivateWaitingGameWidget();
+}
+void AMainScreenGameMode::_DeactivateWaitingGameWidget()
 {
 	if (!WaitingGameWidget)
 	{
@@ -214,8 +265,12 @@ int AMainScreenGameMode::FTextToInt(class UEditableTextBox* EditableTextBox)
 /////////////////////////////////////////////////
 void AMainScreenGameMode::TerminateGame()
 {
+	_TerminateGame();
+}
+void AMainScreenGameMode::_TerminateGame()
+{
 	//// 주의: Selected Viewport일 때도 종료되는 함수
-//FGenericPlatformMisc::RequestExit(false);
+	//FGenericPlatformMisc::RequestExit(false);
 }
 
 
@@ -224,16 +279,28 @@ void AMainScreenGameMode::TerminateGame()
 /////////////////////////////////////////////////
 void AMainScreenGameMode::CheckTextOfID()
 {
+	_CheckTextOfID();
+}
+void AMainScreenGameMode::_CheckTextOfID()
+{
 	if (!OnlineWidget) return;
 	OnlineWidget->CheckTextOfID();
 }
 void AMainScreenGameMode::CheckTextOfPort()
+{
+	_CheckTextOfPort();
+}
+void AMainScreenGameMode::_CheckTextOfPort()
 {
 	if (!OnlineWidget) return;
 	OnlineWidget->CheckTextOfPort();
 }
 
 void AMainScreenGameMode::SendLogin()
+{
+	_SendLogin();
+}
+void AMainScreenGameMode::_SendLogin()
 {
 	if (!OnlineWidget)
 	{
@@ -247,11 +314,7 @@ void AMainScreenGameMode::SendLogin()
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()>"));
-
-
 	Socket->InitSocket();
-	UE_LOG(LogTemp, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> Socket->InitSocket();"));
 
 	//bIsConnected = Socket->Connect("127.0.0.1", 8000);
 	bIsConnected = Socket->Connect(TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
@@ -264,12 +327,10 @@ void AMainScreenGameMode::SendLogin()
 		return;
 	}
 
-
-	UE_LOG(LogTemp, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> IOCP Server connect success!"));
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendLogin()> IOCP Server connect success!"));
 
 	// Recv 스레드 시작
-	if (Socket->StartListen())
-		UE_LOG(LogTemp, Warning, TEXT("[Info] <AMainScreenGameMode::SendLogin()> Socket->StartListen();"));
+	Socket->StartListen();
 
 	Socket->SendLogin(OnlineWidget->GetID()->GetText());
 
@@ -277,7 +338,23 @@ void AMainScreenGameMode::SendLogin()
 	DeactivateOnlineWidget();
 	ActivateOnlineGameWidget();
 }
+
+void AMainScreenGameMode::CloseSocket()
+{
+	if (!Socket)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::CloseSocket()> if (!Socket)"));
+		return;
+	}
+
+	Socket->CloseSocket();
+}
+
 void AMainScreenGameMode::SendCreateGame()
+{
+	_SendCreateGame();
+}
+void AMainScreenGameMode::_SendCreateGame()
 {
 	if (!Socket)
 	{
@@ -291,7 +368,37 @@ void AMainScreenGameMode::SendCreateGame()
 	ActivateWaitingGameWidget();
 }
 
+void AMainScreenGameMode::SendFindGames()
+{
+	if (!Socket)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendFindGames()> if (!Socket)"));
+		return;
+	}
 
+	Socket->SendFindGames();
+}
+
+void AMainScreenGameMode::RecvFindGames()
+{
+	if (!Socket)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> if (!Socket)"));
+		return;
+	}
+
+	if (Socket->tsqFindGames.empty())
+		return;
+
+	std::queue<cInfoOfGame> copiedQueue = Socket->tsqFindGames.copy();
+	Socket->tsqFindGames.clear();
+
+	// OnlineGameWidget에서 방 보이게 하기
+}
+void AMainScreenGameMode::ClearFindGames()
+{
+	// 보여진 방 초기화
+}
 
 /*
 

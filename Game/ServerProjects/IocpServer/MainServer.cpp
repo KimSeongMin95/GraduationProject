@@ -23,11 +23,9 @@ MainServer::MainServer()
 	// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::LOGIN].funcProcessPacket = Login;
 	fnProcess[EPacketType::CREATE_GAME].funcProcessPacket = CreateGame;
+	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
 
 
-	//fnProcess[EPacketType::CREATE_WAITING_ROOM].funcProcessPacket = CreateWaitingRoom;
-	//fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
-	//fnProcess[EPacketType::MODIFY_WAITING_ROOM].funcProcessPacket = ModifyWaitingRoom;
 	//fnProcess[EPacketType::JOIN_WAITING_ROOM].funcProcessPacket = JoinWaitingRoom;
 	//fnProcess[EPacketType::EXIT_WAITING_ROOM].funcProcessPacket = ExitWaitingRoom;
 	//fnProcess[EPacketType::CHECK_PLAYER_IN_WAITING_ROOM].funcProcessPacket = CheckPlayerInWaitingRoom;
@@ -201,8 +199,9 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	printf_s("\t InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
 	LeaveCriticalSection(&csInfoOfGames);
 
-	// free(pSocketInfo); 때문에 제일 마지막에 실행
 	IocpServerBase::CloseSocket(pSocketInfo);
+
+	printf_s("[End] <MainServer::CloseSocket(...)>\n");
 }
 
 void MainServer::Send(stSOCKETINFO* pSocketInfo)
@@ -244,7 +243,7 @@ void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	InfoOfClients[pSocketInfo->socket] = infoOfPlayer;
 	LeaveCriticalSection(&csInfoOfClients);
 
-	infoOfPlayer.PrintInfo("    ");
+	infoOfPlayer.PrintInfo();
 
 
 	/// 송신
@@ -257,6 +256,7 @@ void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	pSocketInfo->dataBuf.len = sendStream.str().length();
 
 	Send(pSocketInfo);    
+
 	printf_s("[Send to %d] <MainServer::Login(...)>\n", (int)pSocketInfo->socket);
 }
 
@@ -268,7 +268,7 @@ void MainServer::CreateGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	cInfoOfGame infoOfGame;
 	RecvStream >> infoOfGame;
 
-	infoOfGame.PrintInfo("    ", "    ");
+	infoOfGame.PrintInfo();
 
 	EnterCriticalSection(&csInfoOfGames);
 	printf_s("    InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
@@ -280,33 +280,36 @@ void MainServer::CreateGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 }
 
 
-
-/*
-
-
-void MainServer::CreateWaitingRoom(stringstream& RecvStream, stSOCKETINFO* pSocket)
+void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 {
-	printf_s("[MainServer::CreateWaitingRoom]\n");
+	printf_s("[Recv by %d] <MainServer::FindGames(...)>\n", (int)pSocketInfo->socket);
 
 	/// 수신
-	stInfoOfGame infoOfGame;
-	RecvStream >> infoOfGame.State; // Waiting
-	RecvStream >> infoOfGame.Title; // Let's_go_together!
-	infoOfGame.Leader = (int)pSocket->socket;
-	RecvStream >> infoOfGame.Stage; // 1
-	RecvStream >> infoOfGame.MaxOfNum; // 100
-	infoOfGame.IPv4OfLeader = pSocket->IPv4Addr;
-
-	printf_s("[MainServer::CreateWaitingRoom] Client IP: %s\n", infoOfGame.IPv4OfLeader.c_str());
-
-	EnterCriticalSection(&csGames);
-	Games[(SOCKET)infoOfGame.Leader] = infoOfGame;
-	LeaveCriticalSection(&csGames);
 
 
 	/// 송신
-	
+	stringstream sendStream;
+	sendStream << EPacketType::FIND_GAMES << endl;
+
+	EnterCriticalSection(&csInfoOfGames);
+	for (auto& kvp : InfoOfGames)
+	{
+		sendStream << kvp.second << endl;
+		kvp.second.PrintInfo();
+	}
+	LeaveCriticalSection(&csInfoOfGames);
+
+	CopyMemory(pSocketInfo->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
+	pSocketInfo->dataBuf.len = sendStream.str().length();
+
+	Send(pSocketInfo);
+
+	printf_s("[Send to %d] <MainServer::FindGames(...)>\n", (int)pSocketInfo->socket);
 }
+
+/*
+
 
 void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocket)
 {

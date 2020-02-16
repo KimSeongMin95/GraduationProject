@@ -39,9 +39,6 @@ enum EPacketType
 	*/
 	CREATE_GAME,
 
-
-
-
 	/** 플레이어가 MainScreenWidget에서 Online 버튼을 눌러 진입하면
 	Client:
 		Send [FIND_GAMES]: 대기방 정보 요구
@@ -51,6 +48,9 @@ enum EPacketType
 		Send [FIND_GAMES]: 모든 대기방들의 정보
 	*/
 	FIND_GAMES,
+
+
+
 
 	/** 방장이 대기방에서 Title이나 Stage나 MaxOfNum을 수정하면
 	Client:
@@ -178,7 +178,7 @@ public:
 	}
 
 	// Log
-	void PrintInfo(const char* Space = "", const char* Space2 = "")
+	void PrintInfo(const char* Space = "    ", const char* Space2 = "")
 	{
 		printf_s("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByServer: %d, SocketByLeader: %d, PortByServer: %d, PortByLeader: %d\n", 
 			Space, Space2, ID.c_str(), IPv4Addr.c_str(), SocketByServer, SocketByLeader, PortByServer, PortByLeader);
@@ -229,7 +229,7 @@ public:
 	}
 
 	// Log
-	void PrintInfo(const char* Space = "", const char* Space2 = "")
+	void PrintInfo(const char* Space = "    ", const char* Space2 = "")
 	{
 		for (auto& kvp : Players)
 		{
@@ -288,7 +288,7 @@ public:
 	}
 
 	// Log
-	void PrintInfo(const char* Space = "", const char* Space2 = "")
+	void PrintInfo(const char* Space = "    ", const char* Space2 = "    ")
 	{
 		printf_s("%s<cInfoOfGame> Start\n", Space);
 		printf_s("%s%sState: %s, Title: %s, Stage: %d, nMax: %d\n", Space, Space2, State.c_str(), Title.c_str(), Stage, nMax);

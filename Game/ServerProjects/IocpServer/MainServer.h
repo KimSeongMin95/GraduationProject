@@ -7,6 +7,8 @@ class MainServer : public IocpServerBase
 private:
 	FuncProcess	fnProcess[100];	// 패킷 처리 구조체
 
+
+
 	// Login한 클라이언트의 InfoOfPlayer 저장
 	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
 	static CRITICAL_SECTION csInfoOfClients;
@@ -44,6 +46,7 @@ private:
 	
 	static void CreateGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
 
+	static void FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
 
 
 
