@@ -400,12 +400,11 @@ void AMainScreenGameMode::RecvFindGames()
 	// 방 보이게 하기
 	while (copiedQueue.empty() == false)
 	{
-		UMyButton* button = OnlineGameWidget->Reveal(copiedQueue.front());
-		if (!button)
-		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> if (!button)"));
-			return;
-		}
+		OnlineGameWidget->RevealGame(copiedQueue.front());
+		
+		UMyButton* button = OnlineGameWidget->BindButton(copiedQueue.front());
+		if (button == nullptr)
+			continue;
 
 		// 버튼에 함수를 바인딩
 		if (copiedQueue.front().State._Equal("Waiting"))
@@ -430,7 +429,15 @@ void AMainScreenGameMode::ClearFindGames()
 	// 보여진 방 초기화
 	OnlineGameWidget->Clear();
 }
-
+void AMainScreenGameMode::RefreshFindGames()
+{
+	_RefreshFindGames();
+}
+void AMainScreenGameMode::_RefreshFindGames()
+{
+	ClearFindGames();
+	SendFindGames();
+}
 
 void AMainScreenGameMode::SendJoinWaitingRoom(int SocketIDOfLeader)
 {
@@ -531,81 +538,6 @@ void AMainScreenGameMode::TimerOfTest()
 
 
 /*
-
-
-
-void AMainScreenGameMode::RevealOnlineGame()
-{
-	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::RevealOnlineGame]"));
-
-	if (GetWorldTimerManager().IsTimerActive(thRevealOnlineGame))
-		GetWorldTimerManager().ClearTimer(thRevealOnlineGame);
-	GetWorldTimerManager().SetTimer(thRevealOnlineGame, this, &AMainScreenGameMode::TimerOfRevealOnlineGame, 0.1f, true);
-}
-void AMainScreenGameMode::TimerOfRevealOnlineGame()
-{
-	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame]"));
-
-	stInfoOfGame infoOfGame;
-
-	// 비어있는 부분을 발견할 때까지 iter를 증가시킵니다.
-	auto iter = vecOnlineGames.begin();
-	for (; iter != vecOnlineGames.end(); iter++)
-	{
-		// 이미 사용하고 있으면 건너뜁니다.
-		if ((*iter)->IsVisible())
-			continue;
-		else
-			break;
-	}
-
-	// 큐가 빌 때까지 계속 가져옵니다.
-	while (Socket->GetRecvFindGames(infoOfGame))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame] infoOfGame: %s %s %d %d %d %d"),
-			*FString(infoOfGame.State.c_str()), *FString(infoOfGame.Title.c_str()), infoOfGame.Leader,
-			infoOfGame.Stage, infoOfGame.MaxOfNum, infoOfGame.CurOfNum);
-
-		for (; iter != vecOnlineGames.end(); iter++)
-		{
-			// 이미 사용하고 있으면 건너뜁니다.
-			if ((*iter)->IsVisible())
-				continue;
-
-			(*iter)->Button->SocketID = infoOfGame.Leader;
-
-			// 버튼의 바인딩을 초기화합니다.
-			if ((*iter)->Button->CustomOnClicked.IsBound() == true)
-				(*iter)->Button->CustomOnClicked.Clear();
-
-			if (infoOfGame.State._Equal("Waiting"))
-				(*iter)->Button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinWaitingRoom);
-			else if (infoOfGame.State._Equal("Playing"))
-				(*iter)->Button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinPlayingGame);
-			else
-				UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::TimerOfRevealOnlineGame] else"));
-			
-
-			(*iter)->SetVisible(infoOfGame);
-			break;
-		}
-	}
-}
-void AMainScreenGameMode::ConcealOnlineGame(int SocketID)
-{
-	// 
-}
-void AMainScreenGameMode::ConcealAllOnlineGames()
-{
-	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::ConcealAllOnlineGames]"));
-
-	// 보여지는 모든 게임방들을 숨깁니다.
-	for (auto& game : vecOnlineGames)
-		game->SetHidden();
-
-	if (GetWorldTimerManager().IsTimerActive(thRevealOnlineGame))
-		GetWorldTimerManager().ClearTimer(thRevealOnlineGame);
-}
 
 
 void AMainScreenGameMode::CreateWaitingRoom()

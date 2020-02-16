@@ -33,10 +33,13 @@ public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;
 
 	std::vector<class cOnlineGameWidget*> vecOnlineGameWidget;
+	std::map<int, int> mapOnlineGameWidget; // <LeaderÀÇ SocketID, vecOnlineGameWidgetÀÇ ÀÎµ¦½º>
+
 	int RevealableIndex;
 
 	void Clear();
-	UMyButton* Reveal(cInfoOfGame& InfoOfGame);
+	void RevealGame(cInfoOfGame& InfoOfGame);
+	UMyButton* BindButton(cInfoOfGame& InfoOfGame);
 };
 
 
@@ -64,7 +67,11 @@ public:
 
 
 		Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
-		if (!Line) return;
+		if (!Line)
+		{
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::cOnlineGameWidget(...)> if (!Line)"));
+			return;
+		}
 		ScrollBox->AddChild(Line);
 
 		// ±âº»ÀûÀ¸·Î ¼û±è »óÅÂ
@@ -78,7 +85,11 @@ public:
 
 
 		Button = WidgetTree->ConstructWidget<UMyButton>(UMyButton::StaticClass());
-		if (!Button) return;
+		if (!Button)
+		{
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::cOnlineGameWidget(...)> if (!Button)"));
+			return;
+		}
 		Line->AddChild(Button);
 
 
@@ -118,7 +129,7 @@ public:
 		*EditableTextBox = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
 		if (!*EditableTextBox)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGame::ConstructEditableTextBox()> if (!*EditableTextBox)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox)"));
 			return;
 		}
 		Line->AddChild(*EditableTextBox);
@@ -157,7 +168,7 @@ public:
 	{
 		if (!State || !Title || !Leader || !Stage || !Numbers || !Button)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGame::SetVisible(...)> if (!State || !Title || !Leader || !Stage || !Numbers || !Button)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::SetVisible(...)> if (!State || !Title || !Leader || !Stage || !Numbers || !Button)"));
 			return;
 		}
 
@@ -179,7 +190,7 @@ public:
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGame::SetVisible(...)> if (!Line)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::SetVisible(...)> if (!Line)"));
 			return;
 		}
 
@@ -192,7 +203,7 @@ public:
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGame::SetVisible(...)> if (!Line)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::SetVisible()> if (!Line)"));
 			return false;
 		}
 

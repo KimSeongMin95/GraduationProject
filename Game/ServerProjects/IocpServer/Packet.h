@@ -52,16 +52,6 @@ enum EPacketType
 
 
 
-	/** 방장이 대기방에서 Title이나 Stage나 MaxOfNum을 수정하면
-	Client:
-		Send [MODIFY_WAITING_ROOM]: Title, Stage, MaxOfNum
-		Recv [MODIFY_WAITING_ROOM]: Title, Stage, MaxOfNum
-	Server:
-		Recv [MODIFY_WAITING_ROOM]: Games에 Title, Stage, MaxOfNum 적용
-		Send [MODIFY_WAITING_ROOM] to 대기방 플레이어들(방장x): Title, Stage, MaxOfNum
-	*/
-	MODIFY_WAITING_ROOM,
-
 	/** 플레이어가 Join 버튼으로 대기방에 들어가면
 	Client:
 		Send [JOIN_WAITING_ROOM]: Join한 대기방 진입 알림
@@ -72,6 +62,20 @@ enum EPacketType
 		Send [PLAYER_JOINED_WAITING_ROOM] to 대기방의 다른 플레이어들: 해당 클라이언트 SocketID
 	*/
 	JOIN_WAITING_ROOM,
+
+
+
+	/** 방장이 대기방에서 Title이나 Stage나 MaxOfNum을 수정하면
+	Client:
+		Send [MODIFY_WAITING_ROOM]: Title, Stage, MaxOfNum
+		Recv [MODIFY_WAITING_ROOM]: Title, Stage, MaxOfNum
+	Server:
+		Recv [MODIFY_WAITING_ROOM]: Games에 Title, Stage, MaxOfNum 적용
+		Send [MODIFY_WAITING_ROOM] to 대기방 플레이어들(방장x): Title, Stage, MaxOfNum
+	*/
+	MODIFY_WAITING_ROOM,
+
+
 
 	/** 다른 플레이어가 플레이어의 대기방에 들어오면
 	Client:

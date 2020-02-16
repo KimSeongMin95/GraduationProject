@@ -35,33 +35,66 @@ bool UOnlineGameWidget::InitWidget(UWorld* const World, const FString ReferenceP
 	return true;
 }
 
-UMyButton* UOnlineGameWidget::Reveal(cInfoOfGame& InfoOfGame)
+void UOnlineGameWidget::RevealGame(cInfoOfGame& InfoOfGame)
 {
-	for (int i = RevealableIndex; i < vecOnlineGameWidget.size(); i++)
+	// 게임 방장의 소켓 번호
+	int socketID = InfoOfGame.Leader.SocketByServer;
+
+	// 이미 존재하면 정보만 바꿉니다.
+	if (mapOnlineGameWidget.find(socketID) != mapOnlineGameWidget.end())
 	{
-		if (vecOnlineGameWidget.at(i)->IsVisible() == false)
-		{
-			RevealableIndex = i + 1;
+		int idx = mapOnlineGameWidget.at(socketID);
+		vecOnlineGameWidget.at(idx)->SetText(InfoOfGame);
 
-			vecOnlineGameWidget.at(i)->SetText(InfoOfGame);
-			vecOnlineGameWidget.at(i)->SetVisible(true);		
-
-			UMyButton* button = vecOnlineGameWidget.at(i)->GetButton();
-			if (!button)
-				return nullptr;
-
-			button->SocketID = InfoOfGame.Leader.SocketByServer;
-
-			// 버튼의 바인딩을 초기화합니다.
-			if (button->CustomOnClicked.IsBound() == true)
-				button->CustomOnClicked.Clear();
-
-			return button;
-		}
+		return;
 	}
 
-	return nullptr;
+	// 새로운 게임
+	for (int i = RevealableIndex; i < vecOnlineGameWidget.size(); i++)
+	{
+		// 아직 숨겨져 있다면
+		if (vecOnlineGameWidget.at(i)->IsVisible() == false)
+		{
+			vecOnlineGameWidget.at(i)->SetText(InfoOfGame);
+			vecOnlineGameWidget.at(i)->SetVisible(true);
+
+			mapOnlineGameWidget.emplace(std::pair<int, int>(socketID, i));
+
+			RevealableIndex = i + 1;
+
+			return;
+		}
+	}
 }
+
+UMyButton* UOnlineGameWidget::BindButton(cInfoOfGame& InfoOfGame)
+{
+	// 게임 방장의 소켓 번호
+	int socketID = InfoOfGame.Leader.SocketByServer;
+
+	if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UOnlineGameWidget::BindButton(...)> if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())"));
+		return nullptr;
+	}
+
+	int idx = mapOnlineGameWidget.at(socketID);
+
+	// 먼저 버튼이 nullptr이 아닌지 확인합니다.
+	UMyButton* button = vecOnlineGameWidget.at(idx)->GetButton();
+	if (button == nullptr)
+		return nullptr;
+
+	// 바인딩된 함수에서 매개변수로 사용할 값을 저장합니다.
+	button->SocketID = socketID;
+
+	// 미리 버튼의 바인딩을 초기화합니다.
+	if (button->CustomOnClicked.IsBound() == true)
+		button->CustomOnClicked.Clear();
+
+	return button;
+}
+
 void UOnlineGameWidget::Clear()
 {
 	for (auto& ogw : vecOnlineGameWidget)
@@ -69,5 +102,6 @@ void UOnlineGameWidget::Clear()
 		if (ogw->IsVisible())
 			ogw->SetVisible(false);
 	}
+	mapOnlineGameWidget.clear();
 	RevealableIndex = 0;
 }

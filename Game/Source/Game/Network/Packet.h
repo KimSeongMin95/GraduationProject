@@ -18,6 +18,9 @@ enum EPacketType
 		Send [EPacketType]: 
 	*/
 
+
+
+
 	/** 플레이어가 OnlineWidget에서 LOGIN 하면 
 	Client:
 		Send [LOGIN]: MyInfo에 ID를 저장후 송신
@@ -48,7 +51,16 @@ enum EPacketType
 	*/
 	FIND_GAMES,
 
-
+	/** 플레이어가 Join 버튼으로 대기방에 들어가면
+	Client:
+		Send [JOIN_WAITING_ROOM]: Join한 대기방 Leader의 SocketID와 MyInfo
+		Recv [JOIN_WAITING_ROOM]: Join한 대기방 cInfoOfGame
+	Server:
+		Recv [JOIN_WAITING_ROOM]: InfoOfGames의 Players에 해당 클라이언트 삽입
+		Send [JOIN_WAITING_ROOM]: 해당 대기방의 cInfoOfGame
+		Send [PLAYER_JOINED_WAITING_ROOM] to 대기방의 다른 플레이어들: 해당 클라이언트 SocketID
+	*/
+	JOIN_WAITING_ROOM,
 
 
 
@@ -62,16 +74,7 @@ enum EPacketType
 	*/
 	MODIFY_WAITING_ROOM,
 
-	/** 플레이어가 Join 버튼으로 대기방에 들어가면
-	Client:
-		Send [JOIN_WAITING_ROOM]: Join한 대기방 진입 알림
-		Recv [JOIN_WAITING_ROOM]: Join한 대기방의 모든 정보
-	Server:
-		Recv [JOIN_WAITING_ROOM]: Games.SocketIDOfPlayers에 해당 클라이언트의 SocketID 추가
-		Send [JOIN_WAITING_ROOM]: 해당 대기방의 모든 정보
-		Send [PLAYER_JOINED_WAITING_ROOM] to 대기방의 다른 플레이어들: 해당 클라이언트 SocketID
-	*/
-	JOIN_WAITING_ROOM,
+
 
 	/** 다른 플레이어가 플레이어의 대기방에 들어오면
 	Client:

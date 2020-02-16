@@ -276,23 +276,6 @@ void cClientSocket::RecvFindGames(stringstream& RecvStream)
                   
 /*
 
-bool cClientSocket::GetRecvFindGames(stInfoOfGame& InfoOfGame)
-{
-	EnterCriticalSection(&csRecvFindGames);
-	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::GetRecvFindGames] Start qRecvFindGames.size(): %d"), qRecvFindGames.size());
-	if (qRecvFindGames.size() == 0)
-	{
-		LeaveCriticalSection(&csRecvFindGames);
-		return false;
-	}
-	InfoOfGame = qRecvFindGames.front();
-	qRecvFindGames.pop();
-	UE_LOG(LogTemp, Warning, TEXT("[cClientSocket::GetRecvFindGames] End qRecvFindGames.size(): %d"), qRecvFindGames.size());
-	LeaveCriticalSection(&csRecvFindGames);
-
-	return true;
-}
-
 void cClientSocket::SendModifyWaitingRoom(const FString Title, int Stage, int MaxOfNum)
 {
 	stringstream SendStream;
