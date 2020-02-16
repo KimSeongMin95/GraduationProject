@@ -16,12 +16,17 @@
 #include "MainScreenGameMode.generated.h"
 
 
-//UENUM()
-//enum class EOnlineGameState : uint8
-//{
-//	Waiting = 0,
-//	Playing = 1
-//};
+UENUM()
+enum class EOnlineState : uint8
+{
+	Idle,
+	Online,
+	OnlineGame,
+	LeaderOfWaitingGame,
+	PlayerOfWaitingGame,
+	PlayerOfPlayingGame,
+	Playing
+};
 
 UCLASS()
 class GAME_API AMainScreenGameMode : public AGameModeBase
@@ -67,7 +72,6 @@ private:
 		/**  */
 		class UWaitingGameWidget* WaitingGameWidget = nullptr;
 
-	float Timer;
 
 private:
 	/////////////////////////////////////////////////
@@ -140,31 +144,27 @@ public:
 		void RecvFindGames();
 	UFUNCTION(Category = "Widget")
 		void ClearFindGames();
-	/*
-
-
-
-
-
-	UFUNCTION(Category = "Widget")
-		void RevealOnlineGame();
-	UFUNCTION(Category = "Timer")
-		void TimerOfRevealOnlineGame();
-	FTimerHandle thRevealOnlineGame;
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ConcealOnlineGame(int SocketID);
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ConcealAllOnlineGames();
-
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void CreateWaitingRoom();
-	void _CreateWaitingRoom();
-
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendJoinWaitingRoom(int SocketIDOfLeader);
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendJoinPlayingGame(int SocketIDOfLeader);
+
+	EOnlineState OnlineState;
+	UFUNCTION(Category = "Widget")
+		void Test();
+	UFUNCTION(Category = "Timer")
+		void TimerOfTest();
+	FTimerHandle thTest;
+
+	/*
+
+
+
+
+	
+
+
 	UFUNCTION(Category = "Widget")
 		void RevealWaitingRoom();
 	UFUNCTION(Category = "Timer")

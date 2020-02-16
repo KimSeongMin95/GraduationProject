@@ -201,7 +201,7 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 
 	IocpServerBase::CloseSocket(pSocketInfo);
 
-	printf_s("[End] <MainServer::CloseSocket(...)>\n");
+	printf_s("[End] <MainServer::CloseSocket(...)>\n\n");
 }
 
 void MainServer::Send(stSOCKETINFO* pSocketInfo)
@@ -257,7 +257,7 @@ void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 
 	Send(pSocketInfo);    
 
-	printf_s("[Send to %d] <MainServer::Login(...)>\n", (int)pSocketInfo->socket);
+	printf_s("[Send to %d] <MainServer::Login(...)>\n\n", (int)pSocketInfo->socket);
 }
 
 void MainServer::CreateGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
@@ -276,7 +276,7 @@ void MainServer::CreateGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	printf_s("    InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
 	LeaveCriticalSection(&csInfoOfGames);
 
-	printf_s("[End] <MainServer::CreateGame(...)>\n");
+	printf_s("[End] <MainServer::CreateGame(...)>\n\n");
 }
 
 
@@ -305,7 +305,7 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 
 	Send(pSocketInfo);
 
-	printf_s("[Send to %d] <MainServer::FindGames(...)>\n", (int)pSocketInfo->socket);
+	printf_s("[Send to %d] <MainServer::FindGames(...)>\n\n", (int)pSocketInfo->socket);
 }
 
 /*

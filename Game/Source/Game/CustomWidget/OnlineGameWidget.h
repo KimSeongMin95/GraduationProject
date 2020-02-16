@@ -2,11 +2,19 @@
 
 #pragma once
 
+#include <vector>
+
+/*** 언리얼엔진 헤더 선언 : Start ***/
+
+/*** 언리얼엔진 헤더 선언 : End ***/
+
+
 #include "CoreMinimal.h"
 #include "CustomWidget/WidgetBase.h"
 #include "OnlineGameWidget.generated.h"
 
 
+class cOnlineGameWidget;
 
 UCLASS()
 class GAME_API UOnlineGameWidget : public UWidgetBase
@@ -24,27 +32,33 @@ protected:
 public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;
 
+	std::vector<class cOnlineGameWidget*> vecOnlineGameWidget;
+	int RevealableIndex;
 
+	void Clear();
+	UMyButton* Reveal(cInfoOfGame& InfoOfGame);
 };
 
-/*
-class COnlineGameWidget
+
+class GAME_API cOnlineGameWidget
 {
-public:
+private:
 	class UHorizontalBox* Line = nullptr;
+
 	class UEditableTextBox* State = nullptr;
 	class UEditableTextBox* Title = nullptr;
 	class UEditableTextBox* Leader = nullptr;
 	class UEditableTextBox* Stage = nullptr;
 	class UEditableTextBox* Numbers = nullptr;
+
 	class UMyButton* Button = nullptr;
 
 public:
-	COnlineGameWidget(class UWidgetTree* WidgetTree, class UScrollBox* ScrollBox)
+	cOnlineGameWidget(class UWidgetTree* WidgetTree, class UScrollBox* ScrollBox)
 	{
 		if (!WidgetTree || !ScrollBox)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("if (!WidgetTree || !ScrollBox)"));
+			UE_LOG(LogTemp, Error, TEXT("if (!WidgetTree || !ScrollBox)"));
 			return;
 		}
 
@@ -56,25 +70,11 @@ public:
 		// 기본적으로 숨김 상태
 		Line->SetVisibility(ESlateVisibility::Hidden);
 
-		State = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
-		if (!State) return;
-		Line->AddChild(State);
-
-		Title = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
-		if (!Title) return;
-		Line->AddChild(Title);
-
-		Leader = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
-		if (!Leader) return;
-		Line->AddChild(Leader);
-
-		Stage = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
-		if (!Stage) return;
-		Line->AddChild(Stage);
-
-		Numbers = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
-		if (!Numbers) return;
-		Line->AddChild(Numbers);
+		ConstructEditableTextBox(WidgetTree, &State);
+		ConstructEditableTextBox(WidgetTree, &Title);
+		ConstructEditableTextBox(WidgetTree, &Leader);
+		ConstructEditableTextBox(WidgetTree, &Stage);
+		ConstructEditableTextBox(WidgetTree, &Numbers);
 
 
 		Button = WidgetTree->ConstructWidget<UMyButton>(UMyButton::StaticClass());
@@ -83,8 +83,8 @@ public:
 
 
 		InitEditableTextBox(State, 160.0f, ETextJustify::Type::Center);
-		InitEditableTextBox(Title, 700.0f, ETextJustify::Type::Left);
-		InitEditableTextBox(Leader, 160.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(Title, 650.0f, ETextJustify::Type::Left);
+		InitEditableTextBox(Leader, 210.0f, ETextJustify::Type::Center);
 		InitEditableTextBox(Stage, 160.0f, ETextJustify::Type::Center);
 		InitEditableTextBox(Numbers, 190.0f, ETextJustify::Type::Center);
 
@@ -107,11 +107,22 @@ public:
 		Button->WidgetStyle.SetHovered(slateBrush);
 	};
 
-	~COnlineGameWidget()
+	~cOnlineGameWidget()
 	{
 		//if (WidgetTree && Line)
 		//	WidgetTree->RemoveWidget(Line);
 	};
+
+	void ConstructEditableTextBox(class UWidgetTree* WidgetTree, class UEditableTextBox** EditableTextBox)
+	{
+		*EditableTextBox = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
+		if (!*EditableTextBox)
+		{
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGame::ConstructEditableTextBox()> if (!*EditableTextBox)"));
+			return;
+		}
+		Line->AddChild(*EditableTextBox);
+	}
 
 	void InitEditableTextBox(
 		class UEditableTextBox* EditableTextBox,
@@ -142,47 +153,51 @@ public:
 		EditableTextBox->WidgetStyle.SetBackgroundColor(backgroundColor);
 	}
 
-
-	void SetVisible(const stInfoOfGame& InfoOfGame)
+	void SetText(cInfoOfGame& InfoOfGame)
 	{
-		if (!Line || !State || !Title || !Leader || !Stage || !Numbers || !Button)
+		if (!State || !Title || !Leader || !Stage || !Numbers || !Button)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("if (!State || !Title || !Leader || !Stage || !Numbers || !Line)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGame::SetVisible(...)> if (!State || !Title || !Leader || !Stage || !Numbers || !Button)"));
 			return;
 		}
 
 		State->SetText(FText::FromString(FString(InfoOfGame.State.c_str())));
+
 		FString title(InfoOfGame.Title.c_str());
 		title.ReplaceCharInline('_', ' ');
 		Title->SetText(FText::FromString(title));
-		Leader->SetText(FText::FromString(FString::FromInt(InfoOfGame.Leader)));
+
+		Leader->SetText(FText::FromString(FString(InfoOfGame.Leader.ID.c_str())));
+
 		Stage->SetText(FText::FromString(FString::FromInt(InfoOfGame.Stage)));
 
-		FString tNumbers = FString::FromInt(InfoOfGame.CurOfNum) + " / " + FString::FromInt(InfoOfGame.MaxOfNum);
+		FString tNumbers = FString::FromInt(InfoOfGame.Players.Size() + 1) + " / " + FString::FromInt(InfoOfGame.nMax);
 		Numbers->SetText(FText::FromString(tNumbers));
-
-		Line->SetVisibility(ESlateVisibility::Visible);
 	}
-	void SetHidden()
+
+	void SetVisible(bool bVisible)
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("if (!Line)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGame::SetVisible(...)> if (!Line)"));
 			return;
 		}
 
-		Line->SetVisibility(ESlateVisibility::Hidden);
+		if (bVisible)
+			Line->SetVisibility(ESlateVisibility::Visible);
+		else
+			Line->SetVisibility(ESlateVisibility::Hidden);
 	}
 	bool IsVisible()
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("if (!Line)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGame::SetVisible(...)> if (!Line)"));
 			return false;
 		}
 
 		return Line->IsVisible();
 	}
-};
 
-*/
+	UMyButton* GetButton() { return Button; }
+};

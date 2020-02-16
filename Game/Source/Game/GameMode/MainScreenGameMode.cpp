@@ -20,7 +20,7 @@ AMainScreenGameMode::AMainScreenGameMode()
 {
 	//DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
 
-	Timer = 0.0f;
+	OnlineState = EOnlineState::Idle;
 }
 
 void AMainScreenGameMode::BeginPlay()
@@ -66,14 +66,6 @@ void AMainScreenGameMode::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-
-
-	Timer += DeltaTime;
-	if (Timer < 1.0f)
-		return;
-	Timer = 0.0f;
-
-	RecvFindGames();
 }
 /*** Basic Function : End ***/
 
@@ -104,6 +96,8 @@ void AMainScreenGameMode::_ActivateMainScreenWidget()
 		return;
 	}
 
+	OnlineState = EOnlineState::Idle;
+
 	MainScreenWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateMainScreenWidget()
@@ -132,6 +126,8 @@ void AMainScreenGameMode::_ActivateOnlineWidget()
 		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineWidget()> if (!OnlineWidget)"));
 		return;
 	}
+
+	OnlineState = EOnlineState::Online;
 
 	CloseSocket();
 
@@ -193,7 +189,10 @@ void AMainScreenGameMode::_ActivateOnlineGameWidget()
 		return;
 	}
 
+	OnlineState = EOnlineState::OnlineGame;
+
 	SendFindGames();
+	Test();
 
 	OnlineGameWidget->AddToViewport();
 }
@@ -334,7 +333,6 @@ void AMainScreenGameMode::_SendLogin()
 
 	Socket->SendLogin(OnlineWidget->GetID()->GetText());
 
-
 	DeactivateOnlineWidget();
 	ActivateOnlineGameWidget();
 }
@@ -387,22 +385,152 @@ void AMainScreenGameMode::RecvFindGames()
 		return;
 	}
 
+	if (!OnlineGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> if (!OnlineGameWidget)"));
+		return;
+	}
+
 	if (Socket->tsqFindGames.empty())
 		return;
 
 	std::queue<cInfoOfGame> copiedQueue = Socket->tsqFindGames.copy();
 	Socket->tsqFindGames.clear();
 
-	// OnlineGameWidget에서 방 보이게 하기
+	// 방 보이게 하기
+	while (copiedQueue.empty() == false)
+	{
+		UMyButton* button = OnlineGameWidget->Reveal(copiedQueue.front());
+		if (!button)
+		{
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> if (!button)"));
+			return;
+		}
+
+		// 버튼에 함수를 바인딩
+		if (copiedQueue.front().State._Equal("Waiting"))
+			button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinWaitingRoom);
+		else if (copiedQueue.front().State._Equal("Playing"))
+			button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinPlayingGame);
+		else
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> else"));
+
+
+		copiedQueue.pop();
+	}
 }
 void AMainScreenGameMode::ClearFindGames()
 {
+	if (!OnlineGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearFindGames()> if (!OnlineGameWidget)"));
+		return;
+	}
+
 	// 보여진 방 초기화
+	OnlineGameWidget->Clear();
 }
 
+
+void AMainScreenGameMode::SendJoinWaitingRoom(int SocketIDOfLeader)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinWaitingRoom(...)> SocketID: %d"), SocketIDOfLeader);
+
+	//Socket->SendJoinWaitingRoom(SocketIDOfLeader);
+
+	/*if (InfoOfWaitingRoom)
+		InfoOfWaitingRoom->SetIsReadOnly(true);
+
+	this->SocketIDOfLeader = SocketIDOfLeader;
+
+	if (StartButton)
+		StartButton->SetVisibility(ESlateVisibility::Hidden);
+
+	RevealWaitingRoom();*/
+
+	DeactivateOnlineGameWidget();
+	ActivateWaitingGameWidget();
+}
+void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinPlayingGame(...)> SocketID: %d"), SocketIDOfLeader);
+
+	DeactivateOnlineGameWidget();
+
+	// Socket->SendJoinPlayingGame(SocketIDOfLeader);
+
+	UGameplayStatics::OpenLevel(this, "Online");
+}
+
+
+
+void AMainScreenGameMode::Test()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::Test]"));
+
+	if (GetWorldTimerManager().IsTimerActive(thTest))
+		GetWorldTimerManager().ClearTimer(thTest);
+	GetWorldTimerManager().SetTimer(thTest, this, &AMainScreenGameMode::TimerOfTest, 0.5f, true);
+}
+void AMainScreenGameMode::TimerOfTest()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfTest()>"));
+
+	switch (OnlineState)
+	{
+	case EOnlineState::Idle:
+	{
+
+	}
+	break;
+	case EOnlineState::Online:
+	{
+
+	}
+	break;
+	case EOnlineState::OnlineGame:
+	{
+		RecvFindGames();
+	}
+	break;
+	case EOnlineState::LeaderOfWaitingGame:
+	{
+
+	}
+	break;
+	case EOnlineState::PlayerOfWaitingGame:
+	{
+
+	}
+	break;
+	case EOnlineState::PlayerOfPlayingGame:
+	{
+
+	}
+	break;
+	case EOnlineState::Playing:
+	{
+
+	}
+	break;
+	default:
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfTest()> switch (OnlineState) default:"));
+	}
+	break;
+	}
+}
+
+
+
+
+
+
+
+
+
+
 /*
-
-
 
 
 
@@ -514,36 +642,7 @@ void AMainScreenGameMode::_CreateWaitingRoom()
 	_ActivateWaitingRoomWidget();
 }
 
-void AMainScreenGameMode::SendJoinWaitingRoom(int SocketIDOfLeader)
-{
-	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::SendJoinWaitingRoom] SocketID: %d"), SocketIDOfLeader);
 
-	_DeactivateOnlineWidget();
-
-	this->SocketIDOfLeader = SocketIDOfLeader;
-
-	Socket->SendJoinWaitingRoom(SocketIDOfLeader);
-
-	if (InfoOfWaitingRoom)
-		InfoOfWaitingRoom->SetIsReadOnly(true);
-
-	if (StartButton)
-		StartButton->SetVisibility(ESlateVisibility::Hidden);
-
-	RevealWaitingRoom();
-
-	_ActivateWaitingRoomWidget();
-}
-void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
-{
-	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::SendJoinPlayingGame] SocketID: %d"), SocketIDOfLeader);
-
-	_DeactivateOnlineWidget();
-
-	// Socket->SendJoinPlayingGame(SocketIDOfLeader);
-
-	UGameplayStatics::OpenLevel(this, "Online");
-}
 
 void AMainScreenGameMode::RevealWaitingRoom()
 {

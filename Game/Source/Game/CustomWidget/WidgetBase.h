@@ -3,6 +3,8 @@
 #pragma once
 
 
+#include "Network/Packet.h"
+
 /*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetTree.h"

@@ -129,7 +129,7 @@ void IocpServerBase::StartServer()
 		printf_s("[INFO] <IocpServerBase::StartServer()> Client's IP: %s\n", SocketInfo->IPv4Addr.c_str());
 
 		SocketInfo->Port = (int)ntohs(clientAddr.sin_port);
-		printf_s("[INFO] <IocpServerBase::StartServer()> Client's Port: %d\n", SocketInfo->Port);
+		printf_s("[INFO] <IocpServerBase::StartServer()> Client's Port: %d\n\n", SocketInfo->Port);
 
 		EnterCriticalSection(&csClients);
 		Clients[clientSocket] = SocketInfo;

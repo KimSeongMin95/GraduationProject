@@ -237,6 +237,11 @@ public:
 			kvp.second.PrintInfo(Space, Space2);
 		}
 	}
+
+	size_t Size()
+	{
+		return Players.size();
+	}
 };
 
 
