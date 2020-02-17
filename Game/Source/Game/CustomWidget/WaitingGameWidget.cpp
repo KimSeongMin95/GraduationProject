@@ -5,7 +5,7 @@
 
 UWaitingGameWidget::UWaitingGameWidget()
 {
-	
+	bIsLeader = false;
 
 }
 
@@ -26,9 +26,145 @@ bool UWaitingGameWidget::InitWidget(UWorld* const World, const FString Reference
 		return false;
 	}
 
+	State = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_State")));
+	Title = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Title")));
+	Leader = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Leader")));
+	Stage = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Stage")));
+	Players = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Players")));
+	Maximum = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Maximum")));
 
 	UniformGridPanel = WidgetTree->FindWidget<UUniformGridPanel>(FName(TEXT("UniformGridPanel_Players")));
+	
 	StartButton = WidgetTree->FindWidget<UButton>(FName(TEXT("Button_Start")));	
 
+	for (int i = 0; i < 100; i++)
+		vecWaitingGameWidget.emplace_back(new cWaitingGameWidget(WidgetTree, UniformGridPanel, i));
+
 	return true;
+}
+
+
+void UWaitingGameWidget::SetText(cInfoOfGame& InfoOfGame)
+{
+	if (!State || !Title || !Leader || !Stage || !Players || !Maximum)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::SetText(...)> if (!State || !Title || !Leader || !Stage || !Players || !Maximum)"));
+		return;
+	}
+
+	State->SetText(FText::FromString(FString(InfoOfGame.State.c_str())));
+
+	Leader->SetText(FText::FromString(FString(InfoOfGame.Leader.ID.c_str())));
+
+	Players->SetText(FText::FromString(FString::FromInt(InfoOfGame.Players.Size() + 1)));
+
+	// 방장이 아니면 적용
+	if (bIsLeader == false)
+	{
+		FString title(InfoOfGame.Title.c_str());
+		title.ReplaceCharInline('_', ' ');
+		Title->SetText(FText::FromString(title));
+
+		Stage->SetText(FText::FromString(FString::FromInt(InfoOfGame.Stage)));
+
+		Maximum->SetText(FText::FromString(FString::FromInt(InfoOfGame.nMax)));
+	}
+}
+
+void UWaitingGameWidget::SetLeader(bool bLeader)
+{
+	bIsLeader = bLeader;
+	
+	if (bLeader == true)
+		SetIsReadOnly(false);
+	else
+		SetIsReadOnly(true);
+}
+
+void UWaitingGameWidget::SetIsReadOnly(bool bReadOnly)
+{
+	if (!Title || !Stage || !Maximum)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::SetIsReadOnly(...)> if (!Title || !Stage || !Maximum)"));
+		return;
+	}
+
+	Title->SetIsReadOnly(bReadOnly);
+	Stage->SetIsReadOnly(bReadOnly);
+	Maximum->SetIsReadOnly(bReadOnly);
+}
+
+void UWaitingGameWidget::SetButtonVisibility(bool bVisible)
+{
+	if (!StartButton)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::SetButtonVisibility(...)> if (!StartButton)"));
+		return;
+	}
+
+	if (bVisible)
+		StartButton->SetVisibility(ESlateVisibility::Visible);
+	else
+		StartButton->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UWaitingGameWidget::ShowLeader(cInfoOfPlayer CopiedMyInfo)
+{
+	vecWaitingGameWidget.at(0)->SetText(CopiedMyInfo.SocketByServer);
+	vecWaitingGameWidget.at(0)->SetVisible(true);
+}
+
+void UWaitingGameWidget::RevealGame(cInfoOfGame& InfoOfGame)
+{
+	SetText(InfoOfGame);
+
+	// 먼저 초기화
+	for (auto& wgw : vecWaitingGameWidget)
+	{
+		if (wgw->IsVisible())
+			wgw->SetVisible(false);
+	}
+
+	// 새로 적용
+	ShowLeader(InfoOfGame.Leader);
+
+	int idx = 1;
+
+	for (auto& kvp : InfoOfGame.Players.Players)
+	{
+		for (int i = idx; i < vecWaitingGameWidget.size(); i++)
+		{
+			if (vecWaitingGameWidget.at(i)->IsVisible() == true)
+				continue;
+
+			vecWaitingGameWidget.at(i)->SetText(kvp.first);
+			vecWaitingGameWidget.at(i)->SetVisible(true);
+
+			idx = i + 1;
+
+			break;
+		}
+	}
+}
+
+void UWaitingGameWidget::Clear()
+{
+	if (!State || !Title || !Leader || !Stage || !Players || !Maximum)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::Clear()> if (!State || !Title || !Leader || !Stage || !Players || !Maximum)"));
+		return;
+	}
+
+	State->SetText(FText::FromString(FString("Waiting")));
+	Title->SetText(FText::FromString(FString("Let's go together!")));
+	Leader->SetText(FText::FromString(FString("ID")));
+	Players->SetText(FText::FromString(FString("1")));
+	Stage->SetText(FText::FromString(FString("1")));
+	Maximum->SetText(FText::FromString(FString("100")));
+
+	for (auto& wgw : vecWaitingGameWidget)
+	{
+		if (wgw->IsVisible())
+			wgw->SetVisible(false);
+	}
 }

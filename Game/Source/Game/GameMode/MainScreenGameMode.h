@@ -151,9 +151,14 @@ public:
 		void SendJoinWaitingGame(int SocketIDOfLeader);
 	UFUNCTION(Category = "Widget")
 		void RecvJoinWaitingGame();
+	UFUNCTION(Category = "Widget")
+		void ClearJoinWaitingGame();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendJoinPlayingGame(int SocketIDOfLeader);
+
+
+
 
 	EOnlineState OnlineState;
 	UFUNCTION(Category = "Widget")

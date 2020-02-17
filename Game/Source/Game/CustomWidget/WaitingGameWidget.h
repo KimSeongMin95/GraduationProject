@@ -2,6 +2,13 @@
 
 #pragma once
 
+#include <vector>
+#include <map>
+
+/*** 언리얼엔진 헤더 선언 : Start ***/
+
+/*** 언리얼엔진 헤더 선언 : End ***/
+
 #include "CoreMinimal.h"
 #include "CustomWidget/WidgetBase.h"
 #include "WaitingGameWidget.generated.h"
@@ -18,43 +25,77 @@ public:
 
 protected:
 	UPROPERTY()
+		class UEditableTextBox* State = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* Title = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* Leader = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* Stage = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* Players = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* Maximum = nullptr;
+
+	UPROPERTY()
 		class UUniformGridPanel* UniformGridPanel = nullptr;
+
 	UPROPERTY()
 		class UButton* StartButton = nullptr;
 
+	bool bIsLeader;
+
+public:
+	std::vector<class cWaitingGameWidget*> vecWaitingGameWidget;
+
 public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;
+
+
+	void SetText(cInfoOfGame& InfoOfGame);
+	void SetLeader(bool bLeader);
+	void SetIsReadOnly(bool bReadOnly);
+	void SetButtonVisibility(bool bVisible);
+
+	void ShowLeader(cInfoOfPlayer CopiedMyInfo);
+
+	void RevealGame(cInfoOfGame& InfoOfGame);
+	void Clear();
 
 };
 
 
 
-/*
-
-class CPlayerOfWaitingRoom
+class cWaitingGameWidget
 {
 public:
 	class UEditableTextBox* Player = nullptr;
-	int SocketID = 0;
-	//int Num = 0; // Column[0, 10], Row[0, N]
+	
+	// Column[0, 10], Row[0, N]
 
 public:
-	CPlayerOfWaitingRoom(
+	cWaitingGameWidget(
 		class UWidgetTree* WidgetTree, class UUniformGridPanel* UniformGridPanel, int Num)
 	{
 		if (!WidgetTree || !UniformGridPanel)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("if (!WidgetTree || !WaitingRoom)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cWaitingGameWidget::cWaitingGameWidget(...)> if (!WidgetTree || !UniformGridPanel)"));
 			return;
 		}
 
 		Player = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
-		if (!Player) return;
+		if (!Player)
+		{
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cWaitingGameWidget::cWaitingGameWidget(...)> if (!Player)"));
+			return;
+		}
 		UniformGridPanel->AddChild(Player);
+
+		Player->SetVisibility(ESlateVisibility::Hidden);
 
 		InitEditableTextBox(Num);
 	}
-	~CPlayerOfWaitingRoom()
+	~cWaitingGameWidget()
 	{
 		//if (WidgetTree && Player)
 		//	WidgetTree->RemoveWidget(Player);
@@ -79,151 +120,43 @@ public:
 
 		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 32));
 
-
-
 		if (class UUniformGridSlot* gridSlot = Cast<class UUniformGridSlot>(Player->Slot))
 		{
-			gridSlot->SetRow(Num / 10);
-			gridSlot->SetColumn(Num % 10);
+			gridSlot->SetRow(Num / 5);
+			gridSlot->SetColumn(Num % 5);
 		}
-
-		Player->SetVisibility(ESlateVisibility::Hidden);
 	}
-	void SetVisible(int SocketID)
+	void SetText(int SocketID)
 	{
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("if (!Player)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cWaitingGameWidget::SetVisible(...)> if (!Player)"));
 			return;
 		}
-
-		this->SocketID = SocketID;
 
 		Player->SetText(FText::FromString(FString::FromInt(SocketID)));
-
-		Player->SetVisibility(ESlateVisibility::Visible);
 	}
-	void SetHidden()
+	void SetVisible(bool bVisible)
 	{
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("if (!Player)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cWaitingGameWidget::SetVisible(...)> if (!Player)"));
 			return;
 		}
 
-		SocketID = -1;
-
-		Player->SetVisibility(ESlateVisibility::Hidden);
+		if (bVisible)
+			Player->SetVisibility(ESlateVisibility::Visible);
+		else
+			Player->SetVisibility(ESlateVisibility::Hidden);
 	}
 	bool IsVisible()
 	{
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("if (!Player)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cWaitingGameWidget::IsVisible()> if (!Player)"));
 			return false;
 		}
 
 		return Player->IsVisible();
 	}
 };
-
-class CInfoOfWaitingRoom
-{
-public:
-	class UEditableTextBox* State = nullptr;
-
-	class UEditableTextBox* Title = nullptr;
-
-	class UEditableTextBox* Leader = nullptr;
-
-	class UEditableTextBox* Stage = nullptr;
-
-	class UEditableTextBox* CurOfNum = nullptr;
-
-	class UEditableTextBox* MaxOfNum = nullptr;
-
-public:
-	CInfoOfWaitingRoom(class UWidgetTree* WidgetTree)
-	{
-		if (!WidgetTree)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::SetIsReadOnly] if (!WidgetTree)"));
-			return;
-		}
-
-		State = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfState")));
-		Title = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfTitle")));
-		Leader = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfLeader")));
-		Stage = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfStage")));
-		CurOfNum = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfCurOfNum")));
-		MaxOfNum = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_InfoOfMaxOfNum")));
-
-		CurOfNum->SetText(FText::FromString(FString("1")));
-	}
-
-	void SetWaitingRoom(stInfoOfGame& infoOfGame)
-	{
-		if (!State || !Title || !Leader || !Stage || !CurOfNum || !MaxOfNum)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::SetWaitingRoom]if (!State || !Title || !Leader || !Stage || !CurOfNum  || !MaxOfNum)"));
-			return;
-		}
-
-		State->SetText(FText::FromString(FString(infoOfGame.State.c_str())));
-		FString title(infoOfGame.Title.c_str());
-		title.ReplaceCharInline('_', ' ');
-		Title->SetText(FText::FromString(title));
-		Leader->SetText(FText::FromString(FString::FromInt(infoOfGame.Leader)));
-		Stage->SetText(FText::FromString(FString::FromInt(infoOfGame.Stage)));
-		CurOfNum->SetText(FText::FromString(FString::FromInt(infoOfGame.CurOfNum)));
-		MaxOfNum->SetText(FText::FromString(FString::FromInt(infoOfGame.MaxOfNum)));
-	}
-
-	void SetCurOfNum(unsigned int Value)
-	{
-		if (!CurOfNum)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::IncreaseCurOfNum]if (!CurOfNum)"));
-			return;
-		}
-
-		if (Value < 0)
-			Value = 0;
-
-		FString TheString = CurOfNum->GetText().ToString();
-		//int32 IntFromFString = FCString::Atoi(*TheString);
-		int32 IntFromFString = Value;
-		CurOfNum->SetText(FText::FromString(FString::FromInt(IntFromFString)));
-	}
-
-	void SetIsReadOnly(bool bReadOnly)
-	{
-		if (!Title || !Stage || !MaxOfNum)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::SetIsReadOnly] if (!Title || !Stage || !MaxOfNum)"));
-			return;
-		}
-
-		Title->SetIsReadOnly(bReadOnly);
-		Stage->SetIsReadOnly(bReadOnly);
-		MaxOfNum->SetIsReadOnly(bReadOnly);
-	}
-
-	bool IsReadOnly()
-	{
-		if (!Title || !Stage || !MaxOfNum)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("[CInfoOfWaitingRoom::IsReadOnly] if (!Title || !Stage || !MaxOfNum)"));
-			return false;
-		}
-
-		if (Title->IsReadOnly || Stage->IsReadOnly || MaxOfNum->IsReadOnly)
-			return true;
-
-		return false;
-	}
-};
-
-
-
-*/

@@ -3,6 +3,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 
 /*** 언리얼엔진 헤더 선언 : Start ***/
 
@@ -30,15 +31,17 @@ protected:
 		class UScrollBox* ScrollBox = nullptr;
 
 public:
-	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;
-
 	std::vector<class cOnlineGameWidget*> vecOnlineGameWidget;
 	std::map<int, int> mapOnlineGameWidget; // <Leader의 SocketID, vecOnlineGameWidget의 인덱스>
 
 	int RevealableIndex;
 
-	void Clear();
+public:
+	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;
+
 	void RevealGame(cInfoOfGame& InfoOfGame);
+	void Clear();
+
 	UMyButton* BindButton(cInfoOfGame& InfoOfGame);
 };
 
@@ -52,7 +55,7 @@ private:
 	class UEditableTextBox* Title = nullptr;
 	class UEditableTextBox* Leader = nullptr;
 	class UEditableTextBox* Stage = nullptr;
-	class UEditableTextBox* Numbers = nullptr;
+	class UEditableTextBox* Players = nullptr;
 
 	class UMyButton* Button = nullptr;
 
@@ -61,7 +64,7 @@ public:
 	{
 		if (!WidgetTree || !ScrollBox)
 		{
-			UE_LOG(LogTemp, Error, TEXT("if (!WidgetTree || !ScrollBox)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::cOnlineGameWidget(...)> if (!WidgetTree || !ScrollBox)"));
 			return;
 		}
 
@@ -81,7 +84,7 @@ public:
 		ConstructEditableTextBox(WidgetTree, &Title);
 		ConstructEditableTextBox(WidgetTree, &Leader);
 		ConstructEditableTextBox(WidgetTree, &Stage);
-		ConstructEditableTextBox(WidgetTree, &Numbers);
+		ConstructEditableTextBox(WidgetTree, &Players);
 
 
 		Button = WidgetTree->ConstructWidget<UMyButton>(UMyButton::StaticClass());
@@ -97,7 +100,7 @@ public:
 		InitEditableTextBox(Title, 650.0f, ETextJustify::Type::Left);
 		InitEditableTextBox(Leader, 210.0f, ETextJustify::Type::Center);
 		InitEditableTextBox(Stage, 160.0f, ETextJustify::Type::Center);
-		InitEditableTextBox(Numbers, 190.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(Players, 160.0f, ETextJustify::Type::Center);
 
 
 		if (class UHorizontalBoxSlot* HorSlot = Cast<class UHorizontalBoxSlot>(Button->Slot))
@@ -166,9 +169,9 @@ public:
 
 	void SetText(cInfoOfGame& InfoOfGame)
 	{
-		if (!State || !Title || !Leader || !Stage || !Numbers || !Button)
+		if (!State || !Title || !Leader || !Stage || !Players || !Button)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::SetVisible(...)> if (!State || !Title || !Leader || !Stage || !Numbers || !Button)"));
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::SetText(...)> if (!State || !Title || !Leader || !Stage || !Players || !Button)"));
 			return;
 		}
 
@@ -182,8 +185,8 @@ public:
 
 		Stage->SetText(FText::FromString(FString::FromInt(InfoOfGame.Stage)));
 
-		FString tNumbers = FString::FromInt(InfoOfGame.Players.Size() + 1) + " / " + FString::FromInt(InfoOfGame.nMax);
-		Numbers->SetText(FText::FromString(tNumbers));
+		FString tPlayers = FString::FromInt(InfoOfGame.Players.Size() + 1) + " / " + FString::FromInt(InfoOfGame.nMax);
+		Players->SetText(FText::FromString(tPlayers));
 	}
 
 	void SetVisible(bool bVisible)

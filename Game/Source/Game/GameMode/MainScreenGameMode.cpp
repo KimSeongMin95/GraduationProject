@@ -239,6 +239,8 @@ void AMainScreenGameMode::_DeactivateWaitingGameWidget()
 		return;
 	}
 
+	ClearJoinWaitingGame();
+
 	WaitingGameWidget->RemoveFromViewport();
 }
 
@@ -360,6 +362,16 @@ void AMainScreenGameMode::_SendCreateGame()
 		return;
 	}
 
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendJoinWaitingGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	WaitingGameWidget->SetLeader(true);
+	WaitingGameWidget->SetButtonVisibility(true);
+	WaitingGameWidget->ShowLeader(Socket->CopyMyInfo());
+
 	OnlineState = EOnlineState::LeaderOfWaitingGame;
 
 	Socket->SendCreateGame();
@@ -449,15 +461,15 @@ void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 
 	Socket->SendJoinWaitingGame(SocketIDOfLeader);
 
-	/*if (InfoOfWaitingRoom)
-		InfoOfWaitingRoom->SetIsReadOnly(true);
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendJoinWaitingGame()> if (!WaitingGameWidget)"));
+		return;
+	}
 
-	this->SocketIDOfLeader = SocketIDOfLeader;
+	WaitingGameWidget->SetLeader(false);
+	WaitingGameWidget->SetButtonVisibility(false);
 
-	if (StartButton)
-		StartButton->SetVisibility(ESlateVisibility::Hidden);
-
-	RevealWaitingRoom();*/
 
 	DeactivateOnlineGameWidget();
 	ActivateWaitingGameWidget();
@@ -484,14 +496,25 @@ void AMainScreenGameMode::RecvJoinWaitingGame()
 	std::queue<cInfoOfGame> copiedQueue = Socket->tsqJoinWaitingGame.copy();
 	Socket->tsqJoinWaitingGame.clear();
 
-
-
 	// 대기방 업데이트
 	while (copiedQueue.empty() == false)
 	{
+		WaitingGameWidget->RevealGame(copiedQueue.front());
+
 		UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvJoinWaitingGame()> copiedQueue.pop()"));
 		copiedQueue.pop();
 	}
+}
+void AMainScreenGameMode::ClearJoinWaitingGame()
+{
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearJoinWaitingGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	// 대기방 초기화
+	WaitingGameWidget->Clear();
 }
 
 void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
