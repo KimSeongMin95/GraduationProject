@@ -45,6 +45,9 @@ protected:
 
 	bool bIsLeader;
 
+	UPROPERTY()
+		class UEditableTextBox* Destroyed = nullptr;
+
 public:
 	std::vector<class cWaitingGameWidget*> vecWaitingGameWidget;
 
@@ -55,13 +58,15 @@ public:
 	void SetText(cInfoOfGame& InfoOfGame);
 	void SetLeader(bool bLeader);
 	void SetIsReadOnly(bool bReadOnly);
-	void SetButtonVisibility(bool bVisible);
+	void SetStartButtonVisibility(bool bVisible);
 
 	void ShowLeader(cInfoOfPlayer CopiedMyInfo);
 
 	void RevealGame(cInfoOfGame& InfoOfGame);
 	void Clear();
 
+	bool IsLeader();
+	void SetDestroyedVisibility(bool bVisible);
 };
 
 
@@ -104,13 +109,13 @@ public:
 	void InitEditableTextBox(int Num)
 	{
 		FMargin padding;
-		padding.Left = 10.0f;
-		padding.Top = 2.0f;
+		padding.Left = 15.0f;
+		padding.Top = 10.0f;
 		padding.Right = 10.0f;
-		padding.Bottom = 2.0f;
+		padding.Bottom = 10.0f;
 		Player->WidgetStyle.SetPadding(padding);
 
-		Player->MinimumDesiredWidth = 150.0f;
+		Player->MinimumDesiredWidth = 300.0f;
 		Player->Justification = ETextJustify::Type::Center;
 
 		FSlateColor backgroundColor = FLinearColor(0.1f, 0.2f, 0.05f, 1.0f);
@@ -118,7 +123,7 @@ public:
 
 		Player->SetIsReadOnly(true);
 
-		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 32));
+		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 42));
 
 		if (class UUniformGridSlot* gridSlot = Cast<class UUniformGridSlot>(Player->Slot))
 		{
@@ -126,7 +131,7 @@ public:
 			gridSlot->SetColumn(Num % 5);
 		}
 	}
-	void SetText(int SocketID)
+	void SetText(const cInfoOfPlayer InfoOfPlayer)
 	{
 		if (!Player)
 		{
@@ -134,7 +139,7 @@ public:
 			return;
 		}
 
-		Player->SetText(FText::FromString(FString::FromInt(SocketID)));
+		Player->SetText(FText::FromString(FString(InfoOfPlayer.ID.c_str())));
 	}
 	void SetVisible(bool bVisible)
 	{

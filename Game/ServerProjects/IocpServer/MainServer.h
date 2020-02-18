@@ -50,6 +50,7 @@ private:
 
 	static void JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
+	static void DestroyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 
 

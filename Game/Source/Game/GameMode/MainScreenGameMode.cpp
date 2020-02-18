@@ -239,6 +239,9 @@ void AMainScreenGameMode::_DeactivateWaitingGameWidget()
 		return;
 	}
 
+	// ClearJoinWaitingGame보다 먼저 실행해야 합니다.
+	SendDestroyWaitingGame();
+
 	ClearJoinWaitingGame();
 
 	WaitingGameWidget->RemoveFromViewport();
@@ -369,7 +372,7 @@ void AMainScreenGameMode::_SendCreateGame()
 	}
 
 	WaitingGameWidget->SetLeader(true);
-	WaitingGameWidget->SetButtonVisibility(true);
+	WaitingGameWidget->SetStartButtonVisibility(true);
 	WaitingGameWidget->ShowLeader(Socket->CopyMyInfo());
 
 	OnlineState = EOnlineState::LeaderOfWaitingGame;
@@ -468,7 +471,7 @@ void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 	}
 
 	WaitingGameWidget->SetLeader(false);
-	WaitingGameWidget->SetButtonVisibility(false);
+	WaitingGameWidget->SetStartButtonVisibility(false);
 
 
 	DeactivateOnlineGameWidget();
@@ -476,7 +479,7 @@ void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 }
 void AMainScreenGameMode::RecvJoinWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvJoinWaitingGame(...)>"));
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvJoinWaitingGame()>"));
 
 	if (!Socket)
 	{
@@ -530,6 +533,53 @@ void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 	UGameplayStatics::OpenLevel(this, "Online");
 }
 
+void AMainScreenGameMode::SendDestroyWaitingGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendDestroyWaitingGame()>"));
+
+	if (!Socket)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyWaitingGame()> if (!Socket)"));
+		return;
+	}
+
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyWaitingGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	// 방장이 나간 것이라면 대기방 종료를 알립니다.
+	if (WaitingGameWidget->IsLeader())
+		Socket->SendDestroyWaitingGame();
+}
+
+void AMainScreenGameMode::RecvDestroyWaitingGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvDestroyWaitingGame()>"));
+
+	if (!Socket)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvDestroyWaitingGame()> if (!Socket)"));
+		return;
+	}
+
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvDestroyWaitingGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	if (Socket->tsqDestroyWaitingGame.empty())
+		return;
+
+	std::queue<bool> copiedQueue = Socket->tsqDestroyWaitingGame.copy();
+	Socket->tsqDestroyWaitingGame.clear();
+
+	// 가장 최신에 받은 것만 처리합니다.
+	WaitingGameWidget->SetDestroyedVisibility(copiedQueue.back());
+}
+
 
 
 void AMainScreenGameMode::Test()
@@ -569,6 +619,7 @@ void AMainScreenGameMode::TimerOfTest()
 	case EOnlineState::PlayerOfWaitingGame:
 	{
 		RecvJoinWaitingGame();
+		RecvDestroyWaitingGame();
 	}
 	break;
 	case EOnlineState::PlayerOfPlayingGame:

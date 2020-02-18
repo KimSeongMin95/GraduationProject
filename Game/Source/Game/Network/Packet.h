@@ -63,7 +63,28 @@ enum EPacketType
 	JOIN_WAITING_GAME,
 
 
+	/** 방장이 대기방에서 Back 버튼을 눌러 대기방을 종료하면
+	Client:
+		Send [DESTROY_WAITING_ROOM]: O
+		Recv [DESTROY_WAITING_ROOM]: 대기방 종료 알림에 뒤로가기 버튼 활성화
+	Server:
+		Recv [DESTROY_WAITING_ROOM] by 방장: InfoOfGames.erase(pSocketInfo->socket);
+		Send [DESTROY_WAITING_ROOM] to 플레이어들(방장 제외): O
+	*/
+	DESTROY_WAITING_ROOM,
 
+
+
+
+	/** 방장이 아닌 대기방인 플레이어가 대기방에서 나가면
+	Client:
+		Send [EXIT_WAITING_ROOM]: Exit한 대기방 나감 알림
+		Recv []: X
+	Server:
+		Recv [EXIT_WAITING_ROOM]: Games.SocketIDOfPlayers에 해당 클라이언트의 SocketID 삭제
+		Send [PLAYER_EXITED_WAITING_ROOM] to 대기방의 다른 플레이어들: 해당 클라이언트 SocketID
+	*/
+	EXIT_WAITING_ROOM,
 
 
 
@@ -81,31 +102,8 @@ enum EPacketType
 
 
 	
-	/** 방장이 아닌 대기방인 플레이어가 대기방에서 나가면
-	Client:
-		Send [EXIT_WAITING_ROOM]: Exit한 대기방 나감 알림
-		Recv []: X
-	Server:
-		Recv [EXIT_WAITING_ROOM]: Games.SocketIDOfPlayers에 해당 클라이언트의 SocketID 삭제
-		Send [PLAYER_EXITED_WAITING_ROOM] to 대기방의 다른 플레이어들: 해당 클라이언트 SocketID
-	*/
-	EXIT_WAITING_ROOM,
-
-
-
-	/** 대기방에 들어오면 실제로 플레이어가 존재하는지 확인
-	Client:
-		Send [CHECK_PLAYER_IN_WAITING_ROOM]: SocketIDLeader와 mapPlayers의 모든 keyValue인 socketID
-		Recv [CHECK_PLAYER_IN_WAITING_ROOM]: 실제로 존재하지 않는 플레이어의 socketID들
-	Server:
-		Recv [CHECK_PLAYER_IN_WAITING_ROOM]: SocketIDLeader와 mapPlayers의 모든 keyValue인 socketID
-		Send [CHECK_PLAYER_IN_WAITING_ROOM]: Games.at(socketIDOfLeader).SocketIDOfPlayers에 실제로 존재하지 않는 플레이어의 socketID들
-	*/
-	CHECK_PLAYER_IN_WAITING_ROOM,
-
 
 	
-	DESTROY_WAITING_ROOM, // 방장이 대기방을 종료할 때: FIND_GAMES와 방장을 제외한 대기방인 플레이어들에게 브로드캐스팅 해야 함.
 
 	START_WAITING_ROOM,   // 방장이 대기방에서 게임을 시작할 때: 방장을 제외한 대기방인 플레이어들에게 브로드캐스팅 해야 함.
 

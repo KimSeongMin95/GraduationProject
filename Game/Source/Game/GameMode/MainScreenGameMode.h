@@ -157,8 +157,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendJoinPlayingGame(int SocketIDOfLeader);
 
-
-
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void SendDestroyWaitingGame();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void RecvDestroyWaitingGame();
 
 	EOnlineState OnlineState;
 	UFUNCTION(Category = "Widget")

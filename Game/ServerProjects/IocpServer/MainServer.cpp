@@ -25,17 +25,8 @@ MainServer::MainServer()
 	fnProcess[EPacketType::CREATE_GAME].funcProcessPacket = CreateGame;
 	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
 	fnProcess[EPacketType::JOIN_WAITING_GAME].funcProcessPacket = JoinWaitingGame;
+	fnProcess[EPacketType::DESTROY_WAITING_ROOM].funcProcessPacket = DestroyWaitingGame;
 
-	//fnProcess[EPacketType::EXIT_WAITING_ROOM].funcProcessPacket = ExitWaitingRoom;
-	//fnProcess[EPacketType::CHECK_PLAYER_IN_WAITING_ROOM].funcProcessPacket = CheckPlayerInWaitingRoom;
-	
-	
-	
-	
-	//fnProcess[EPacketType::DESTROY_WAITING_ROOM].funcProcessPacket = DestroyWaitingRoom;
-
-	//fnProcess[EPacketType::START_WAITING_ROOM].funcProcessPacket = StartWaitingRoom;
-	//fnProcess[EPacketType::EXIT_PLAYER].funcProcessPacket = ExitPlayer;
 }
 
 MainServer::~MainServer()
@@ -205,6 +196,8 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 
 void MainServer::Send(stSOCKETINFO* pSocketInfo)
 {
+	//printf_s("<MainServer::Send(...)> : %s\n", pSocketInfo->dataBuf.buf);
+
 	DWORD	sendBytes;
 	DWORD	dwFlags = 0;
 
@@ -290,6 +283,7 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	sendStream << EPacketType::FIND_GAMES << endl;
 
 	EnterCriticalSection(&csInfoOfGames);
+	printf_s("    InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
 	for (auto& kvp : InfoOfGames)
 	{
 		sendStream << kvp.second << endl;
@@ -321,7 +315,7 @@ void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 	EnterCriticalSection(&csInfoOfGames);
 	if (InfoOfGames.find((SOCKET)socketIDOfLeader) == InfoOfGames.end())
 	{
-		/// 송신 - 에러
+		/// 수신 - 에러
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
@@ -377,6 +371,56 @@ void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 		}
 	}
 
+	printf_s("\n");
+}
+
+
+void MainServer::DestroyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Recv by %d] <MainServer::DestroyWaitingGame(...)>\n", (int)pSocketInfo->socket);
+
+	/// 수신 by 방장
+	cInfoOfPlayers players;
+
+	EnterCriticalSection(&csInfoOfGames);
+	if (InfoOfGames.find(pSocketInfo->socket) == InfoOfGames.end())
+	{
+		/// 송신 - 에러
+		LeaveCriticalSection(&csInfoOfGames);
+		return;
+	}
+	players = InfoOfGames.at(pSocketInfo->socket).Players;
+	printf_s("    InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
+	InfoOfGames.erase(pSocketInfo->socket);
+	printf_s("    InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
+	LeaveCriticalSection(&csInfoOfGames);
+
+
+	/// 송신 to 플레이어들(방장 제외)
+	stringstream sendStream;
+	sendStream << EPacketType::DESTROY_WAITING_ROOM << endl;
+
+	stSOCKETINFO* client = nullptr;
+
+	for (auto& kvp : players.Players)
+	{
+		client = nullptr;
+		EnterCriticalSection(&csClients);
+		if (Clients.find((SOCKET)kvp.first) != Clients.end())
+			client = Clients.at((SOCKET)kvp.first);
+		LeaveCriticalSection(&csClients);
+
+		if (client)
+		{
+			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+			client->dataBuf.buf = client->messageBuffer;
+			client->dataBuf.len = sendStream.str().length();
+
+			Send(client);
+
+			printf_s("[Send to %d] <MainServer::DestroyWaitingGame(...)>\n", (int)client->socket);
+		}
+	}
 	printf_s("\n");
 }
 

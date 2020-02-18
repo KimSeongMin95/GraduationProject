@@ -27,14 +27,38 @@ uint32 cClientSocket::Run()
 	while (StopTaskCounter.GetValue() == 0)
 	{
 		stringstream RecvStream;
+
+		//// 수신 받은 값 확인하는 용도
+		//FString temp1(recvBuffer);
+		//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] before recvBuffer: %s"), *temp1);
+
 		int PacketType;
 		int nRecvLen = recv(ServerSocket, (CHAR*)&recvBuffer, MAX_BUFFER, 0);
 
+		//// 수신 받은 값 확인하는 용도
+		//FString temp2(recvBuffer);
+		//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] after recvBuffer: %s"), *temp2);
+
 		if (nRecvLen > 0)
 		{
+			
+
+			//// 수신 받은 값 확인하는 용도
+			//FString temp3(RecvStream.str().c_str());
+			//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] before RecvStream: %s"), *temp3);
+
 			// 패킷 처리
 			RecvStream << recvBuffer;
 			RecvStream >> PacketType;
+
+			/////////////////////////////
+			// 필수!!!!: recvBuffer 초기화
+			/////////////////////////////
+			memset(recvBuffer, 0, MAX_BUFFER);
+
+			//// 수신 받은 값 확인하는 용도
+			//FString temp4(RecvStream.str().c_str());
+			//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] after RecvStream: %s"), *temp4);
 
 			switch (PacketType)
 			{
@@ -53,30 +77,18 @@ uint32 cClientSocket::Run()
 				RecvJoinWaitingGame(RecvStream);
 			}
 			break;
-			//case EPacketType::MODIFY_WAITING_ROOM:
-			//{
-			//	RecvModifyWaitingRoom(RecvStream);
-			//}
-			//break;
+			case EPacketType::DESTROY_WAITING_ROOM:
+			{
+				RecvDestroyWaitingGame(RecvStream);
+			}
+			break;
 
-			//case EPacketType::PLAYER_JOINED_WAITING_ROOM:
-			//{
-			//	RecvPlayerJoinedWaitingRoom(RecvStream);
-			//}
-			//break;
-			//case EPacketType::PLAYER_EXITED_WAITING_ROOM:
-			//{
-			//	RecvPlayerExitedWaitingRoom(RecvStream);
-			//}
-			//break;
-			//case EPacketType::CHECK_PLAYER_IN_WAITING_ROOM:
-			//{
-			//	RecvCheckPlayerInWaitingRoom(RecvStream);
-			//}
-			//break;
 
 			default:
-				break;
+			{
+				UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::Run()> undefined packet type."));
+			}
+			break;
 			}
 		}
 	}
@@ -269,7 +281,6 @@ void cClientSocket::RecvFindGames(stringstream& RecvStream)
 	while (RecvStream >> infoOfGame)
 	{
 		infoOfGame.PrintInfo();
-
 		tsqFindGames.push(infoOfGame);
 	}
 
@@ -278,7 +289,7 @@ void cClientSocket::RecvFindGames(stringstream& RecvStream)
      
 void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendJoinWaitingGame()>"));
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendJoinWaitingGame(...)>"));
 
 	UE_LOG(LogTemp, Warning, TEXT("    SocketIDOfLeader: %d"), SocketIDOfLeader);
 
@@ -291,7 +302,7 @@ void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendJoinWaitingGame()>"));
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendJoinWaitingGame(...)>"));
 }
 void cClientSocket::RecvJoinWaitingGame(stringstream& RecvStream)
 {
@@ -306,6 +317,26 @@ void cClientSocket::RecvJoinWaitingGame(stringstream& RecvStream)
 	tsqJoinWaitingGame.push(infoOfGame);
 
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvJoinWaitingGame(...)>"));
+}
+
+void cClientSocket::SendDestroyWaitingGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendDestroyWaitingGame()>"));
+
+	stringstream sendStream;
+	sendStream << EPacketType::DESTROY_WAITING_ROOM << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendDestroyWaitingGame()>"));
+}
+void cClientSocket::RecvDestroyWaitingGame(stringstream& RecvStream)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvDestroyWaitingGame(...)>"));
+
+	tsqDestroyWaitingGame.push(true);
+
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvDestroyWaitingGame(...)>"));
 }
 
 

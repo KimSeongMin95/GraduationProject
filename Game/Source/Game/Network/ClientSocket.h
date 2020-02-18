@@ -216,7 +216,9 @@ public:
 	void RecvJoinWaitingGame(stringstream& RecvStream);
 	cThreadSafeQueue<cInfoOfGame> tsqJoinWaitingGame;
 
-
+	void SendDestroyWaitingGame();
+	void RecvDestroyWaitingGame(stringstream& RecvStream);
+	cThreadSafeQueue<bool> tsqDestroyWaitingGame;
 	/*
 
 

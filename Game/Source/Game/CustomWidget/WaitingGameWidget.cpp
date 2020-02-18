@@ -40,6 +40,8 @@ bool UWaitingGameWidget::InitWidget(UWorld* const World, const FString Reference
 	for (int i = 0; i < 100; i++)
 		vecWaitingGameWidget.emplace_back(new cWaitingGameWidget(WidgetTree, UniformGridPanel, i));
 
+	Destroyed = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Destroyed")));
+
 	return true;
 }
 
@@ -94,7 +96,7 @@ void UWaitingGameWidget::SetIsReadOnly(bool bReadOnly)
 	Maximum->SetIsReadOnly(bReadOnly);
 }
 
-void UWaitingGameWidget::SetButtonVisibility(bool bVisible)
+void UWaitingGameWidget::SetStartButtonVisibility(bool bVisible)
 {
 	if (!StartButton)
 	{
@@ -110,7 +112,7 @@ void UWaitingGameWidget::SetButtonVisibility(bool bVisible)
 
 void UWaitingGameWidget::ShowLeader(cInfoOfPlayer CopiedMyInfo)
 {
-	vecWaitingGameWidget.at(0)->SetText(CopiedMyInfo.SocketByServer);
+	vecWaitingGameWidget.at(0)->SetText(CopiedMyInfo);
 	vecWaitingGameWidget.at(0)->SetVisible(true);
 }
 
@@ -137,7 +139,7 @@ void UWaitingGameWidget::RevealGame(cInfoOfGame& InfoOfGame)
 			if (vecWaitingGameWidget.at(i)->IsVisible() == true)
 				continue;
 
-			vecWaitingGameWidget.at(i)->SetText(kvp.first);
+			vecWaitingGameWidget.at(i)->SetText(kvp.second);
 			vecWaitingGameWidget.at(i)->SetVisible(true);
 
 			idx = i + 1;
@@ -155,6 +157,8 @@ void UWaitingGameWidget::Clear()
 		return;
 	}
 
+	bIsLeader = false;
+
 	State->SetText(FText::FromString(FString("Waiting")));
 	Title->SetText(FText::FromString(FString("Let's go together!")));
 	Leader->SetText(FText::FromString(FString("ID")));
@@ -167,4 +171,25 @@ void UWaitingGameWidget::Clear()
 		if (wgw->IsVisible())
 			wgw->SetVisible(false);
 	}
+
+	SetDestroyedVisibility(false);
+}
+
+bool UWaitingGameWidget::IsLeader()
+{
+	return bIsLeader;
+}
+
+void UWaitingGameWidget::SetDestroyedVisibility(bool bVisible)
+{
+	if (!Destroyed)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::SetDestroyedVisibility(...)> if (!Destroyed)"));
+		return;
+	}
+
+	if (bVisible)
+		Destroyed->SetVisibility(ESlateVisibility::Visible);
+	else
+		Destroyed->SetVisibility(ESlateVisibility::Hidden);
 }
