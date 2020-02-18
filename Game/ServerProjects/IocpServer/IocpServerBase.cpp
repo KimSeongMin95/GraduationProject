@@ -172,6 +172,7 @@ void IocpServerBase::CloseSocket(stSOCKETINFO* pSocketInfo)
 {
 	printf_s("[Start] <IocpServerBase::CloseSocket(...)>\n");
 
+	/// Clients에서 제거
 	EnterCriticalSection(&csClients);
 	printf_s("\t Clients.size(): %d\n", (int)Clients.size());
 	Clients.erase(pSocketInfo->socket);

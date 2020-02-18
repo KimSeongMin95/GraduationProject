@@ -77,12 +77,16 @@ uint32 cClientSocket::Run()
 				RecvWaitingGame(RecvStream);
 			}
 			break;
-			case EPacketType::DESTROY_WAITING_ROOM:
+			case EPacketType::DESTROY_WAITING_GAME:
 			{
 				RecvDestroyWaitingGame(RecvStream);
 			}
 			break;
-
+			case EPacketType::MODIFY_WAITING_GAME:
+			{
+				RecvModifyWaitingGame(RecvStream);
+			}
+			break;
 
 			default:
 			{
@@ -331,7 +335,7 @@ void cClientSocket::SendDestroyWaitingGame()
 	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendDestroyWaitingGame()>"));
 
 	stringstream sendStream;
-	sendStream << EPacketType::DESTROY_WAITING_ROOM << endl;
+	sendStream << EPacketType::DESTROY_WAITING_GAME << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
@@ -356,12 +360,9 @@ void cClientSocket::SendExitWaitingGame(int SocketIDOfLeader)
 
 	UE_LOG(LogTemp, Warning, TEXT("    SocketIDOfLeader: %d"), SocketIDOfLeader);
 
-	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
-
 	stringstream sendStream;
-	sendStream << EPacketType::EXIT_WAITING_ROOM << endl;
+	sendStream << EPacketType::EXIT_WAITING_GAME << endl;
 	sendStream << SocketIDOfLeader << endl;
-	sendStream << infoOfPlayer << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
@@ -369,6 +370,47 @@ void cClientSocket::SendExitWaitingGame(int SocketIDOfLeader)
 
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendExitWaitingGame(...)>"));
 }
+
+
+void cClientSocket::SendModifyWaitingGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendModifyWaitingGame()>"));
+
+	cInfoOfGame infoOfGame = CopyMyInfoOfGame();
+	infoOfGame.PrintInfo();
+
+	stringstream sendStream;
+	sendStream << EPacketType::MODIFY_WAITING_GAME << endl;
+	sendStream << infoOfGame << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendModifyWaitingGame()>"));
+}
+void cClientSocket::RecvModifyWaitingGame(stringstream& RecvStream)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvModifyWaitingGame(...)>"));
+
+	cInfoOfGame infoOfGame;
+
+	RecvStream >> infoOfGame;
+
+	infoOfGame.PrintInfo();
+
+	SetMyInfoOfGame(infoOfGame);
+
+	tsqModifyWaitingGame.push(infoOfGame);
+
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvModifyWaitingGame(...)>"));
+}
+
+
+
+
+
+
+
+
 /*
 
 void cClientSocket::SendModifyWaitingRoom(const FString Title, int Stage, int MaxOfNum)

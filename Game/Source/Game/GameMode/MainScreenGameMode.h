@@ -65,6 +65,10 @@ private:
 		class USettingsWidget* SettingsWidget = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 개발자 정보 */
+		class UDeveloperWidget* DeveloperWidget = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/**  */
 		class UOnlineGameWidget* OnlineGameWidget = nullptr;
 
@@ -103,6 +107,11 @@ public:
 		void ActivateSettingsWidget(); void _ActivateSettingsWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void DeactivateSettingsWidget(); void _DeactivateSettingsWidget();
+
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateDeveloperWidget(); void _ActivateDeveloperWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateDeveloperWidget(); void _DeactivateDeveloperWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void ActivateOnlineGameWidget(); void _ActivateOnlineGameWidget();
@@ -163,7 +172,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void RecvDestroyWaitingGame();
 
-
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void CheckModifyWaitingGame(); void _CheckModifyWaitingGame();
+	UFUNCTION(Category = "Widget")
+		void SendModifyWaitingGame();
+	UFUNCTION(Category = "Widget")
+		void RecvModifyWaitingGame();
 
 
 	EOnlineState OnlineState;

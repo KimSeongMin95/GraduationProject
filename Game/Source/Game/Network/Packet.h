@@ -73,7 +73,7 @@ enum EPacketType
 		Recv [DESTROY_WAITING_ROOM] by 방장: InfoOfGames.erase(pSocketInfo->socket);
 		Send [DESTROY_WAITING_ROOM] to 플레이어들(방장 제외): O
 	*/
-	DESTROY_WAITING_ROOM,
+	DESTROY_WAITING_GAME,
 
 	/** 방장이 아닌 대기방인 플레이어가 대기방에서 나가면
 	Client:
@@ -84,19 +84,17 @@ enum EPacketType
 		Send [WAITING_GAME] to 방장: 해당 대기방의 cInfoOfGame
 		Send [WAITING_GAME] to 플레이어들(해당 클라이언트 미포함): 해당 대기방의 cInfoOfGame
 	*/
-	EXIT_WAITING_ROOM,
+	EXIT_WAITING_GAME,
 
-
-
-	/** 방장이 대기방에서 Title이나 Stage나 MaxOfNum을 수정하면
+	/** 방장이 대기방에서 Title이나 Stage나 Maximum을 수정하면
 	Client:
-		Send [MODIFY_WAITING_ROOM]: Title, Stage, MaxOfNum
-		Recv [MODIFY_WAITING_ROOM]: Title, Stage, MaxOfNum
+		Send [MODIFY_WAITING_GAME]: MyInfoOfGame(Title, Stage, Maximum)
+		Recv [MODIFY_WAITING_GAME]: cInfoOfGame(Title, Stage, Maximum)
 	Server:
-		Recv [MODIFY_WAITING_ROOM]: Games에 Title, Stage, MaxOfNum 적용
-		Send [MODIFY_WAITING_ROOM] to 대기방 플레이어들(방장x): Title, Stage, MaxOfNum
+		Recv [MODIFY_WAITING_GAME]: InfoOfGames에 cInfoOfGame(Title, Stage, Maximum) 적용
+		Send [MODIFY_WAITING_GAME] to 플레이어들(방장 제외): cInfoOfGame(Title, Stage, Maximum)
 	*/
-	MODIFY_WAITING_ROOM,
+	MODIFY_WAITING_GAME,
 
 
 

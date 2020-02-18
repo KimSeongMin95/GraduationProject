@@ -67,8 +67,14 @@ public:
 
 	bool IsLeader();
 	void SetDestroyedVisibility(bool bVisible);
-};
 
+	void CheckTextOfTitle();
+	void CheckTextOfStage();
+	void CheckTextOfMaximum();
+
+	cInfoOfGame GetModifiedInfo(cInfoOfGame CopiedMyInfoOfGame);
+	void SetModifiedInfo(cInfoOfGame& InfoOfGame);
+};
 
 
 class cWaitingGameWidget

@@ -193,3 +193,108 @@ void UWaitingGameWidget::SetDestroyedVisibility(bool bVisible)
 	else
 		Destroyed->SetVisibility(ESlateVisibility::Hidden);
 }
+
+
+void UWaitingGameWidget::CheckTextOfTitle()
+{
+	if (Title == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::CheckTextOfTitle()> if (Title == nullptr)"));
+		return;
+	}
+
+	FString textOfTitle = Title->GetText().ToString();
+
+	// 텍스트가 쓰여지지 않았다면 실행하지 않습니다.
+	if (textOfTitle.Len() == 0)
+	{
+		Title->SetText(FText::FromString(FString("NULL")));
+		return;
+	}
+
+	// 텍스트가 20개를 넘어가면 20개까지 지웁니다.
+	while (textOfTitle.Len() > 20)
+		textOfTitle.RemoveAt(textOfTitle.Len() - 1);
+
+	// 공백을 '_' 문자로 치환합니다.
+	textOfTitle.ReplaceCharInline(' ', '_');
+
+	Title->SetText(FText::FromString(textOfTitle));
+}
+
+void UWaitingGameWidget::CheckTextOfStage()
+{
+	if (Stage == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::CheckTextOfStage()> if (Stage == nullptr)"));
+		return;
+	}
+
+	int stage = 1;
+	if (Stage->GetText().IsNumeric())
+	{
+		stage = FCString::Atoi(*Stage->GetText().ToString());
+
+		if (stage <= 0)
+			stage = 1;
+		else if (stage > 10)
+			stage = 10;
+	}
+	Stage->SetText(FText::FromString(FString::FromInt(stage)));
+}
+
+void UWaitingGameWidget::CheckTextOfMaximum()
+{
+	if (Maximum == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::CheckTextOfMaximum()> if (Maximum == nullptr)"));
+		return;
+	}
+
+	int max = 100;
+	if (Maximum->GetText().IsNumeric())
+	{
+		max = FCString::Atoi(*Maximum->GetText().ToString());
+
+		if (max <= 0)
+			max = 1;
+		else if (max > 100)
+			max = 100;
+	}
+	Maximum->SetText(FText::FromString(FString::FromInt(max)));
+}
+
+cInfoOfGame UWaitingGameWidget::GetModifiedInfo(cInfoOfGame CopiedMyInfoOfGame)
+{
+	cInfoOfGame infoOfGame = CopiedMyInfoOfGame;
+
+	if (!Title || !Stage || !Maximum)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::GetModifiedInfo()> if (!Title || !Stage || !Maximum)"));
+		return infoOfGame;
+	}
+
+	infoOfGame.Title = TCHAR_TO_UTF8(*Title->GetText().ToString());
+	infoOfGame.Stage = FCString::Atoi(*Stage->GetText().ToString());
+	infoOfGame.nMax = FCString::Atoi(*Maximum->GetText().ToString());
+
+	return infoOfGame;
+}
+
+void UWaitingGameWidget::SetModifiedInfo(cInfoOfGame& InfoOfGame)
+{
+	if (!Title || !Stage || !Maximum)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::SetModifiedInfo()> if (!Title || !Stage || !Maximum)"));
+		return;
+	}
+
+	FString title(InfoOfGame.Title.c_str());
+	title.ReplaceCharInline('_', ' ');
+	Title->SetText(FText::FromString(title));
+
+	Stage->SetText(FText::FromString(FString::FromInt(InfoOfGame.Stage)));
+
+	Maximum->SetText(FText::FromString(FString::FromInt(InfoOfGame.nMax)));
+
+}

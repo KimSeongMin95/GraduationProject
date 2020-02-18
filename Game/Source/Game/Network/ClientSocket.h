@@ -222,6 +222,10 @@ public:
 	cThreadSafeQueue<bool> tsqDestroyWaitingGame;
 
 	void SendExitWaitingGame(int SocketIDOfLeader);
+
+	void SendModifyWaitingGame();
+	void RecvModifyWaitingGame(stringstream& RecvStream);
+	cThreadSafeQueue<cInfoOfGame> tsqModifyWaitingGame;
 	/*
 
 
