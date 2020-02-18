@@ -43,6 +43,8 @@ public:
 	void Clear();
 
 	UMyButton* BindButton(cInfoOfGame& InfoOfGame);
+
+	bool Empty();
 };
 
 

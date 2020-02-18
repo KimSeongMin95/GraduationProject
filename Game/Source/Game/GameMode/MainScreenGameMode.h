@@ -149,25 +149,32 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendJoinWaitingGame(int SocketIDOfLeader);
+
 	UFUNCTION(Category = "Widget")
-		void RecvJoinWaitingGame();
+		void RecvWaitingGame();
 	UFUNCTION(Category = "Widget")
-		void ClearJoinWaitingGame();
+		void ClearWaitingGame();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendJoinPlayingGame(int SocketIDOfLeader);
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void SendDestroyWaitingGame();
+		void SendDestroyOrExitWaitingGame();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void RecvDestroyWaitingGame();
 
+
+
+
 	EOnlineState OnlineState;
+
 	UFUNCTION(Category = "Widget")
-		void Test();
+		void RecvAndApply();
 	UFUNCTION(Category = "Timer")
-		void TimerOfTest();
-	FTimerHandle thTest;
+		void TimerOfRecvAndApply();
+	FTimerHandle thRecvAndApply;
+
+
 
 	/*
 

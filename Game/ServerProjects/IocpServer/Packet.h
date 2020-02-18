@@ -49,6 +49,8 @@ enum EPacketType
 	*/
 	FIND_GAMES,
 
+	WAITING_GAME,
+
 	/** 플레이어가 Join 버튼으로 대기방에 들어가면
 	Client:
 		Send [JOIN_WAITING_ROOM]: Join한 대기방 Leader의 SocketID와 MyInfo
@@ -75,14 +77,14 @@ enum EPacketType
 
 
 
-
 	/** 방장이 아닌 대기방인 플레이어가 대기방에서 나가면
 	Client:
-		Send [EXIT_WAITING_ROOM]: Exit한 대기방 나감 알림
-		Recv []: X
+		Send [EXIT_WAITING_ROOM]: Exit한 대기방 Leader의 SocketID와 MyInfo
+		Recv [WAITING_GAME]: Exit한 대기방 cInfoOfGame
 	Server:
-		Recv [EXIT_WAITING_ROOM]: Games.SocketIDOfPlayers에 해당 클라이언트의 SocketID 삭제
-		Send [PLAYER_EXITED_WAITING_ROOM] to 대기방의 다른 플레이어들: 해당 클라이언트 SocketID
+		Recv [EXIT_WAITING_ROOM]: InfoOfGames의 Players에 해당 클라이언트 제거
+		Send [WAITING_GAME] to 방장: 해당 대기방의 cInfoOfGame
+		Send [WAITING_GAME] to 플레이어들(해당 클라이언트 미포함): 해당 대기방의 cInfoOfGame
 	*/
 	EXIT_WAITING_ROOM,
 
@@ -240,6 +242,11 @@ public:
 	void Add(int SocketID, cInfoOfPlayer InfoOfPlayer)
 	{
 		Players[SocketID] = InfoOfPlayer;
+	}
+
+	void Remove(int SocketID)
+	{
+		Players.erase(SocketID);
 	}
 };
 

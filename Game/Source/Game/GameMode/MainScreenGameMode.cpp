@@ -192,7 +192,8 @@ void AMainScreenGameMode::_ActivateOnlineGameWidget()
 	OnlineState = EOnlineState::OnlineGame;
 
 	SendFindGames();
-	Test();
+
+	RecvAndApply();
 
 	OnlineGameWidget->AddToViewport();
 }
@@ -240,9 +241,9 @@ void AMainScreenGameMode::_DeactivateWaitingGameWidget()
 	}
 
 	// ClearJoinWaitingGame보다 먼저 실행해야 합니다.
-	SendDestroyWaitingGame();
+	SendDestroyOrExitWaitingGame();
 
-	ClearJoinWaitingGame();
+	ClearWaitingGame();
 
 	WaitingGameWidget->RemoveFromViewport();
 }
@@ -367,7 +368,7 @@ void AMainScreenGameMode::_SendCreateGame()
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendJoinWaitingGame()> if (!WaitingGameWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -408,8 +409,15 @@ void AMainScreenGameMode::RecvFindGames()
 		return;
 	}
 
+	// Recv한게 없으면 그냥 함수를 종료합니다.
 	if (Socket->tsqFindGames.empty())
+	{
+		// 현재 모든 방이 안보일 경우 보내달라고 요청합니다.
+		if (OnlineGameWidget->Empty())
+			Socket->SendFindGames();
+
 		return;
+	}
 
 	std::queue<cInfoOfGame> copiedQueue = Socket->tsqFindGames.copy();
 	Socket->tsqFindGames.clear();
@@ -477,44 +485,52 @@ void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 	DeactivateOnlineGameWidget();
 	ActivateWaitingGameWidget();
 }
-void AMainScreenGameMode::RecvJoinWaitingGame()
+void AMainScreenGameMode::RecvWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvJoinWaitingGame()>"));
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvWaitingGame()>"));
 
 	if (!Socket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvJoinWaitingGame()> if (!Socket)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvWaitingGame()> if (!Socket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvJoinWaitingGame()> if (!WaitingGameWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
-	if (Socket->tsqJoinWaitingGame.empty())
+	if (Socket->tsqWaitingGame.empty())
 		return;
 
-	std::queue<cInfoOfGame> copiedQueue = Socket->tsqJoinWaitingGame.copy();
-	Socket->tsqJoinWaitingGame.clear();
+	std::queue<cInfoOfGame> copiedQueue = Socket->tsqWaitingGame.copy();
+	Socket->tsqWaitingGame.clear();
 
 	// 대기방 업데이트
 	while (copiedQueue.empty() == false)
 	{
 		WaitingGameWidget->RevealGame(copiedQueue.front());
 
-		UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvJoinWaitingGame()> copiedQueue.pop()"));
+		UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvWaitingGame()> copiedQueue.pop()"));
 		copiedQueue.pop();
 	}
 }
-void AMainScreenGameMode::ClearJoinWaitingGame()
+void AMainScreenGameMode::ClearWaitingGame()
 {
-	if (!WaitingGameWidget)
+	if (!Socket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearJoinWaitingGame()> if (!WaitingGameWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearWaitingGame()> if (!Socket)"));
 		return;
 	}
+
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearWaitingGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	Socket->tsqDestroyWaitingGame.clear();
 
 	// 대기방 초기화
 	WaitingGameWidget->Clear();
@@ -533,25 +549,32 @@ void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 	UGameplayStatics::OpenLevel(this, "Online");
 }
 
-void AMainScreenGameMode::SendDestroyWaitingGame()
+void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendDestroyWaitingGame()>"));
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()>"));
 
 	if (!Socket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyWaitingGame()> if (!Socket)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!Socket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyWaitingGame()> if (!WaitingGameWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
 	// 방장이 나간 것이라면 대기방 종료를 알립니다.
 	if (WaitingGameWidget->IsLeader())
+	{
 		Socket->SendDestroyWaitingGame();
+	}
+	else // 플레이어가 나간 것이라면
+	{
+		int socketIDOfLeader = Socket->CopyMyInfoOfGame().Leader.SocketByServer;
+		Socket->SendExitWaitingGame(socketIDOfLeader);
+	}
 }
 
 void AMainScreenGameMode::RecvDestroyWaitingGame()
@@ -582,17 +605,17 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 
 
 
-void AMainScreenGameMode::Test()
+void AMainScreenGameMode::RecvAndApply()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[AMainScreenGameMode::Test]"));
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvAndApply()>"));
 
-	if (GetWorldTimerManager().IsTimerActive(thTest))
-		GetWorldTimerManager().ClearTimer(thTest);
-	GetWorldTimerManager().SetTimer(thTest, this, &AMainScreenGameMode::TimerOfTest, 0.5f, true);
+	if (GetWorldTimerManager().IsTimerActive(thRecvAndApply))
+		GetWorldTimerManager().ClearTimer(thRecvAndApply);
+	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AMainScreenGameMode::TimerOfRecvAndApply, 0.1f, true);
 }
-void AMainScreenGameMode::TimerOfTest()
+void AMainScreenGameMode::TimerOfRecvAndApply()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfTest()>"));
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfRecvAndApply()>"));
 
 	switch (OnlineState)
 	{
@@ -613,12 +636,12 @@ void AMainScreenGameMode::TimerOfTest()
 	break;
 	case EOnlineState::LeaderOfWaitingGame:
 	{
-		RecvJoinWaitingGame();
+		RecvWaitingGame();
 	}
 	break;
 	case EOnlineState::PlayerOfWaitingGame:
 	{
-		RecvJoinWaitingGame();
+		RecvWaitingGame();
 		RecvDestroyWaitingGame();
 	}
 	break;
@@ -634,7 +657,7 @@ void AMainScreenGameMode::TimerOfTest()
 	break;
 	default:
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfTest()> switch (OnlineState) default:"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfRecvAndApply()> switch (OnlineState) default:"));
 	}
 	break;
 	}

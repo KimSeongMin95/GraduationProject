@@ -105,3 +105,8 @@ void UOnlineGameWidget::Clear()
 	mapOnlineGameWidget.clear();
 	RevealableIndex = 0;
 }
+
+bool UOnlineGameWidget::Empty()
+{
+	return mapOnlineGameWidget.empty();
+}

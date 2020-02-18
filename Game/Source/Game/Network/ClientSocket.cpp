@@ -72,9 +72,9 @@ uint32 cClientSocket::Run()
 				RecvFindGames(RecvStream);
 			}
 			break;
-			case EPacketType::JOIN_WAITING_GAME:
+			case EPacketType::WAITING_GAME:
 			{
-				RecvJoinWaitingGame(RecvStream);
+				RecvWaitingGame(RecvStream);
 			}
 			break;
 			case EPacketType::DESTROY_WAITING_ROOM:
@@ -233,10 +233,13 @@ void cClientSocket::RecvLogin(stringstream& RecvStream)
 {
 	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvLogin(...)>"));
 
-	EnterCriticalSection(&csMyInfo);
-	RecvStream >> MyInfo;
-	MyInfo.PrintInfo();
-	LeaveCriticalSection(&csMyInfo);
+	cInfoOfPlayer infoOfPlayer;
+
+	RecvStream >> infoOfPlayer;
+
+	infoOfPlayer.PrintInfo();
+
+	SetMyInfo(infoOfPlayer);
 
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvLogin(...)>"));
 }
@@ -249,8 +252,9 @@ void cClientSocket::SendCreateGame()
 
 	infoOfGame.Leader = CopyMyInfo();
 
+	infoOfGame.PrintInfo();
+
 	SetMyInfoOfGame(infoOfGame);
-	CopyMyInfoOfGame().PrintInfo();
 
 	stringstream sendStream;
 	sendStream << EPacketType::CREATE_GAME << endl;
@@ -304,7 +308,8 @@ void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
 
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendJoinWaitingGame(...)>"));
 }
-void cClientSocket::RecvJoinWaitingGame(stringstream& RecvStream)
+
+void cClientSocket::RecvWaitingGame(stringstream& RecvStream)
 {
 	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvJoinWaitingGame(...)>"));
 
@@ -314,7 +319,9 @@ void cClientSocket::RecvJoinWaitingGame(stringstream& RecvStream)
 
 	infoOfGame.PrintInfo();
 
-	tsqJoinWaitingGame.push(infoOfGame);
+	SetMyInfoOfGame(infoOfGame);
+	
+	tsqWaitingGame.push(infoOfGame);
 
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvJoinWaitingGame(...)>"));
 }
@@ -328,6 +335,8 @@ void cClientSocket::SendDestroyWaitingGame()
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
+	InitMyInfoOfGame();
+
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendDestroyWaitingGame()>"));
 }
 void cClientSocket::RecvDestroyWaitingGame(stringstream& RecvStream)
@@ -336,10 +345,30 @@ void cClientSocket::RecvDestroyWaitingGame(stringstream& RecvStream)
 
 	tsqDestroyWaitingGame.push(true);
 
+	InitMyInfoOfGame();
+
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvDestroyWaitingGame(...)>"));
 }
 
+void cClientSocket::SendExitWaitingGame(int SocketIDOfLeader)
+{
+	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendExitWaitingGame(...)>"));
 
+	UE_LOG(LogTemp, Warning, TEXT("    SocketIDOfLeader: %d"), SocketIDOfLeader);
+
+	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
+
+	stringstream sendStream;
+	sendStream << EPacketType::EXIT_WAITING_ROOM << endl;
+	sendStream << SocketIDOfLeader << endl;
+	sendStream << infoOfPlayer << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+	InitMyInfoOfGame();
+
+	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendExitWaitingGame(...)>"));
+}
 /*
 
 void cClientSocket::SendModifyWaitingRoom(const FString Title, int Stage, int MaxOfNum)
@@ -598,6 +627,12 @@ cInfoOfPlayer cClientSocket::CopyMyInfo()
 
 	return infoOfPlayer;
 }
+void cClientSocket::InitMyInfo()
+{
+	EnterCriticalSection(&csMyInfo);
+	MyInfo = cInfoOfPlayer();
+	LeaveCriticalSection(&csMyInfo);
+}
 
 void cClientSocket::SetMyInfoOfGame(cInfoOfGame& InfoOfGame)
 {
@@ -615,4 +650,9 @@ cInfoOfGame cClientSocket::CopyMyInfoOfGame()
 
 	return infoOfGame;
 }
-
+void cClientSocket::InitMyInfoOfGame()
+{
+	EnterCriticalSection(&csMyInfoOfGame);
+	MyInfoOfGame = cInfoOfGame();
+	LeaveCriticalSection(&csMyInfoOfGame);
+}

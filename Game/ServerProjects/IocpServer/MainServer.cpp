@@ -26,7 +26,7 @@ MainServer::MainServer()
 	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
 	fnProcess[EPacketType::JOIN_WAITING_GAME].funcProcessPacket = JoinWaitingGame;
 	fnProcess[EPacketType::DESTROY_WAITING_ROOM].funcProcessPacket = DestroyWaitingGame;
-
+	fnProcess[EPacketType::EXIT_WAITING_ROOM].funcProcessPacket = ExitWaitingGame;
 }
 
 MainServer::~MainServer()
@@ -328,7 +328,7 @@ void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 
 	/// 송신 to 방장
 	stringstream sendStream;
-	sendStream << EPacketType::JOIN_WAITING_GAME << endl;
+	sendStream << EPacketType::WAITING_GAME << endl;
 	sendStream << infoOfGame << endl;
 
 	stSOCKETINFO* client = nullptr;
@@ -421,6 +421,80 @@ void MainServer::DestroyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSoc
 			printf_s("[Send to %d] <MainServer::DestroyWaitingGame(...)>\n", (int)client->socket);
 		}
 	}
+	printf_s("\n");
+}
+
+void MainServer::ExitWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Recv by %d] <MainServer::ExitWaitingGame(...)>\n", (int)pSocketInfo->socket);
+
+	/// 수신
+	int socketIDOfLeader;
+	cInfoOfPlayer infoOfPlayer;
+	cInfoOfGame infoOfGame;
+
+	RecvStream >> socketIDOfLeader;
+	RecvStream >> infoOfPlayer;
+
+	EnterCriticalSection(&csInfoOfGames);
+	if (InfoOfGames.find((SOCKET)socketIDOfLeader) == InfoOfGames.end())
+	{
+		/// 수신 - 에러
+		LeaveCriticalSection(&csInfoOfGames);
+		return;
+	}
+	InfoOfGames.at((SOCKET)socketIDOfLeader).Players.Remove((int)pSocketInfo->socket);
+	infoOfGame = InfoOfGames.at((SOCKET)socketIDOfLeader);
+	LeaveCriticalSection(&csInfoOfGames);
+
+	infoOfGame.PrintInfo();
+
+
+	/// 송신 to 방장
+	stringstream sendStream;
+	sendStream << EPacketType::WAITING_GAME << endl;
+	sendStream << infoOfGame << endl;
+
+	stSOCKETINFO* client = nullptr;
+
+	EnterCriticalSection(&csClients);
+	if (Clients.find((SOCKET)socketIDOfLeader) != Clients.end())
+		client = Clients.at((SOCKET)socketIDOfLeader);
+	LeaveCriticalSection(&csClients);
+
+	if (client)
+	{
+		CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+		client->dataBuf.buf = client->messageBuffer;
+		client->dataBuf.len = sendStream.str().length();
+
+		Send(client);
+
+		printf_s("[Send to %d] <MainServer::ExitWaitingGame(...)>\n", (int)client->socket);
+	}
+
+
+	/// 송신 to 대기방의 플레이어들 (해당 클라이언트 포함)
+	for (const auto& kvp : infoOfGame.Players.Players)
+	{
+		client = nullptr;
+		EnterCriticalSection(&csClients);
+		if (Clients.find((SOCKET)kvp.first) != Clients.end())
+			client = Clients.at((SOCKET)kvp.first);
+		LeaveCriticalSection(&csClients);
+
+		if (client)
+		{
+			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+			client->dataBuf.buf = client->messageBuffer;
+			client->dataBuf.len = sendStream.str().length();
+
+			Send(client);
+
+			printf_s("[Send to %d] <MainServer::ExitWaitingGame(...)>\n", (int)client->socket);
+		}
+	}
+
 	printf_s("\n");
 }
 

@@ -213,12 +213,15 @@ public:
 	cThreadSafeQueue<cInfoOfGame> tsqFindGames;
 
 	void SendJoinWaitingGame(int SocketIDOfLeader);
-	void RecvJoinWaitingGame(stringstream& RecvStream);
-	cThreadSafeQueue<cInfoOfGame> tsqJoinWaitingGame;
+
+	void RecvWaitingGame(stringstream& RecvStream);
+	cThreadSafeQueue<cInfoOfGame> tsqWaitingGame;
 
 	void SendDestroyWaitingGame();
 	void RecvDestroyWaitingGame(stringstream& RecvStream);
 	cThreadSafeQueue<bool> tsqDestroyWaitingGame;
+
+	void SendExitWaitingGame(int SocketIDOfLeader);
 	/*
 
 
@@ -261,7 +264,9 @@ public:
 	/////////////////////////////////////
 	void SetMyInfo(cInfoOfPlayer& InfoOfPlayer);
 	cInfoOfPlayer CopyMyInfo();
+	void InitMyInfo();
 
 	void SetMyInfoOfGame(cInfoOfGame& InfoOfGame);
 	cInfoOfGame CopyMyInfoOfGame();
+	void InitMyInfoOfGame();
 };

@@ -52,6 +52,7 @@ private:
 
 	static void DestroyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
+	static void ExitWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 
 	
