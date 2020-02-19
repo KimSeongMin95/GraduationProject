@@ -713,6 +713,105 @@ void AMainScreenGameMode::RecvModifyWaitingGame()
 	WaitingGameWidget->SetModifiedInfo(copiedQueue.back());
 }
 
+void AMainScreenGameMode::SendStartWaitingGame()
+{
+	_SendStartWaitingGame();
+}
+void AMainScreenGameMode::_SendStartWaitingGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::_SendStartWaitingGame()>"));
+
+	if (!Socket)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::_SendStartWaitingGame()> if (!Socket)"));
+		return;
+	}
+
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::_SendStartWaitingGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	Socket->SendStartWaitingGame();
+
+	WaitingGameWidget->SetStartButtonVisibility(false);
+
+	WaitingGameWidget->SetTextOfCount(5);
+	WaitingGameWidget->SetCountVisibility(true);
+
+	CountStartedGame();
+}
+void AMainScreenGameMode::RecvStartWaitingGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvStartWaitingGame()>"));
+
+	if (!Socket)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvStartWaitingGame()> if (!Socket)"));
+		return;
+	}
+
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvStartWaitingGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	if (Socket->tsqStartWaitingGame.empty())
+		return;
+
+	Socket->tsqStartWaitingGame.clear();
+
+	WaitingGameWidget->SetTextOfCount(5);
+	WaitingGameWidget->SetCountVisibility(true);
+
+	CountStartedGame();
+}
+
+void AMainScreenGameMode::CountStartedGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::CountStartedGame()>"));
+
+	Count = 5;
+
+	if (GetWorldTimerManager().IsTimerActive(thCountStartedGame))
+		GetWorldTimerManager().ClearTimer(thCountStartedGame);
+	GetWorldTimerManager().SetTimer(thCountStartedGame, this, &AMainScreenGameMode::TimerOfCountStartedGame, 1.0f, true);
+}
+void AMainScreenGameMode::TimerOfCountStartedGame()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfCountStartedGame()>"));
+
+	if (!Socket)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfCountStartedGame()> if (!Socket)"));
+		return;
+	}
+
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfCountStartedGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	Count--;
+	if (Count <= 0)
+	{
+		if (GetWorldTimerManager().IsTimerActive(thCountStartedGame))
+			GetWorldTimerManager().ClearTimer(thCountStartedGame);
+		StartOnlineGame();
+		return;
+	}
+
+	WaitingGameWidget->SetTextOfCount(Count);
+}
+void AMainScreenGameMode::StartOnlineGame()
+{
+	UGameplayStatics::OpenLevel(this, "Online");
+}
+
+
 void AMainScreenGameMode::RecvAndApply()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvAndApply()>"));
@@ -752,6 +851,7 @@ void AMainScreenGameMode::TimerOfRecvAndApply()
 		RecvWaitingGame();
 		RecvModifyWaitingGame();
 		RecvDestroyWaitingGame();
+		RecvStartWaitingGame();
 	}
 	break;
 	case EOnlineState::PlayerOfPlayingGame:

@@ -28,6 +28,7 @@ MainServer::MainServer()
 	fnProcess[EPacketType::DESTROY_WAITING_GAME].funcProcessPacket = DestroyWaitingGame;
 	fnProcess[EPacketType::EXIT_WAITING_GAME].funcProcessPacket = ExitWaitingGame;
 	fnProcess[EPacketType::MODIFY_WAITING_GAME].funcProcessPacket = ModifyWaitingGame;
+	fnProcess[EPacketType::START_WAITING_GAME].funcProcessPacket = StartyWaitingGame;
 }
 
 MainServer::~MainServer()
@@ -628,6 +629,57 @@ void MainServer::ModifyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSock
 	printf_s("\n");
 }
 
+void MainServer::StartyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Recv by %d] <MainServer::StartyWaitingGame(...)>\n", (int)pSocketInfo->socket);
+
+	/// 수신
+	cInfoOfGame infoOfGame;
+
+	EnterCriticalSection(&csInfoOfGames);
+	if (InfoOfGames.find(pSocketInfo->socket) == InfoOfGames.end())
+	{
+		/// 수신 - 에러
+		printf_s("[ERROR] <MainServer::StartyWaitingGame(...)> if (InfoOfGames.find(pSocketInfo->socket) == InfoOfGames.end()) \n");
+		LeaveCriticalSection(&csInfoOfGames);
+		return;
+	}
+
+	// 송신을 위해 다시 복사
+	InfoOfGames.at(pSocketInfo->socket).State = string("Playing");
+	infoOfGame = InfoOfGames.at(pSocketInfo->socket);
+	LeaveCriticalSection(&csInfoOfGames);
+
+
+	/// 송신 to 플레이어들(방장 제외)
+	stringstream sendStream;
+	sendStream << EPacketType::START_WAITING_GAME << endl;
+
+	stSOCKETINFO* client = nullptr;
+
+	for (const auto& kvp : infoOfGame.Players.Players)
+	{
+		client = nullptr;
+
+		EnterCriticalSection(&csClients);
+		if (Clients.find((SOCKET)kvp.first) != Clients.end())
+			client = Clients.at((SOCKET)kvp.first);
+		LeaveCriticalSection(&csClients);
+
+		if (client)
+		{
+			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+			client->dataBuf.buf = client->messageBuffer;
+			client->dataBuf.len = sendStream.str().length();
+
+			Send(client);
+
+			printf_s("[Send to %d] <MainServer::StartyWaitingGame(...)>\n", (int)client->socket);
+		}
+	}
+
+	printf_s("\n");
+}
 
 
 

@@ -48,6 +48,9 @@ protected:
 	UPROPERTY()
 		class UEditableTextBox* Destroyed = nullptr;
 
+	UPROPERTY()
+		class UEditableTextBox* Count = nullptr;
+
 public:
 	std::vector<class cWaitingGameWidget*> vecWaitingGameWidget;
 
@@ -74,6 +77,9 @@ public:
 
 	cInfoOfGame GetModifiedInfo(cInfoOfGame CopiedMyInfoOfGame);
 	void SetModifiedInfo(cInfoOfGame& InfoOfGame);
+
+	void SetTextOfCount(int num);
+	void SetCountVisibility(bool bVisible);
 };
 
 

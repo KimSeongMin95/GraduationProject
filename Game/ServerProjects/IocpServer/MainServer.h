@@ -56,6 +56,7 @@ private:
 
 	static void ModifyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
+	static void StartyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 
 

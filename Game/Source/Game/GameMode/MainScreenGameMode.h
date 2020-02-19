@@ -179,6 +179,18 @@ public:
 	UFUNCTION(Category = "Widget")
 		void RecvModifyWaitingGame();
 
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void SendStartWaitingGame(); void _SendStartWaitingGame();
+	UFUNCTION(Category = "Widget")
+		void RecvStartWaitingGame();
+	UFUNCTION(Category = "Widget")
+		void CountStartedGame();
+	UFUNCTION(Category = "Widget")
+		void TimerOfCountStartedGame();
+	FTimerHandle thCountStartedGame;
+	int Count;
+	UFUNCTION(Category = "Widget")
+		void StartOnlineGame();
 
 	EOnlineState OnlineState;
 

@@ -42,6 +42,8 @@ bool UWaitingGameWidget::InitWidget(UWorld* const World, const FString Reference
 
 	Destroyed = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Destroyed")));
 
+	Count = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Count")));
+
 	return true;
 }
 
@@ -173,6 +175,9 @@ void UWaitingGameWidget::Clear()
 	}
 
 	SetDestroyedVisibility(false);
+
+	SetTextOfCount(5);
+	SetCountVisibility(false);
 }
 
 bool UWaitingGameWidget::IsLeader()
@@ -294,4 +299,28 @@ void UWaitingGameWidget::SetModifiedInfo(cInfoOfGame& InfoOfGame)
 
 	Maximum->SetText(FText::FromString(FString::FromInt(InfoOfGame.nMax)));
 
+}
+
+void UWaitingGameWidget::SetTextOfCount(int num)
+{
+	if (!Count)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::SetTextOfCount(...)> if (!Count)"));
+		return;
+	}
+
+	Count->SetText(FText::FromString(FString::FromInt(num)));
+}
+void UWaitingGameWidget::SetCountVisibility(bool bVisible)
+{
+	if (!Count)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::SetCountVisibility(...)> if (!Count)"));
+		return;
+	}
+
+	if (bVisible)
+		Count->SetVisibility(ESlateVisibility::Visible);
+	else
+		Count->SetVisibility(ESlateVisibility::Hidden);
 }

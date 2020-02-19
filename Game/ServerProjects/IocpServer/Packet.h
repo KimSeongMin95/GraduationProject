@@ -94,15 +94,24 @@ enum EPacketType
 	*/
 	MODIFY_WAITING_GAME,
 
+	/** 방장이 대기방에서 게임을 시작하면
+	Client:
+		Send [START_WAITING_GAME]: O
+		Recv [START_WAITING_GAME]: O
+	Server:
+		Recv [START_WAITING_GAME] by 방장: O
+		Send [START_WAITING_GAME] to 플레이어들(방장 제외): O
+	*/
+	START_WAITING_GAME,
 
 
-	START_WAITING_ROOM,   // 방장이 대기방에서 게임을 시작할 때: 방장을 제외한 대기방인 플레이어들에게 브로드캐스팅 해야 함.
+
 
 	JOIN_PLAYING_GAME,	  // 어떤 플레이어가 진행중인 게임에 들어올 때: 해당 게임의 플레이어들과 FIND_GAMES인 플레이어들에게 브로드캐스팅 해야 함.
 
 	START_PLAYING_GAME, // 플레이중인 게임 시작하기
 
-	EXIT_GAME,		  // 플레이어가 게임을 종료할 때: 
+	EXIT_PLAYING_GAME,	// 플레이어가 진행중인 게임을 종료할 때: 
 };
 
 

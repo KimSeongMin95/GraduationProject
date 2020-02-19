@@ -226,6 +226,10 @@ public:
 	void SendModifyWaitingGame();
 	void RecvModifyWaitingGame(stringstream& RecvStream);
 	cThreadSafeQueue<cInfoOfGame> tsqModifyWaitingGame;
+
+	void SendStartWaitingGame();
+	void RecvStartWaitingGame(stringstream& RecvStream);
+	cThreadSafeQueue<bool> tsqStartWaitingGame;
 	/*
 
 
