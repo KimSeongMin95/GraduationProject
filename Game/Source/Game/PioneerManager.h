@@ -2,6 +2,7 @@
 
 #pragma once
 
+
 /*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Engine/World.h"
 #include "Components/SceneComponent.h"
@@ -14,9 +15,11 @@
 #include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PioneerManager.generated.h"
+
 
 UENUM()
 enum class ESwitchState : int8
@@ -51,22 +54,21 @@ private:
 		/** RootComponent */
 		class USceneComponent* SceneComp = nullptr;
 
+	/////////////////////////////////////////
+	// 카메라
+	/////////////////////////////////////////
 	UPROPERTY(EditAnywhere, Category = Camera)
 		/** 월드 전체를 바라보는 카메라입니다. */
 		class AWorldViewCameraActor* WorldViewCamera = nullptr; 
-
 	UPROPERTY(EditAnywhere, Category = Camera)
 		/** 현재 개척자의 카메라입니다. */
 		class AWorldViewCameraActor* CameraOfCurrentPioneer = nullptr; 
-
 	UPROPERTY(EditAnywhere, Category = Camera)
 		/** 현재 개척자의 월드뷰 카메라입니다. */
 		class AWorldViewCameraActor* WorldViewCameraOfCurrentPioneer = nullptr; 
-
 	UPROPERTY(EditAnywhere, Category = Camera)
 		/** 다음 개척자의 월드뷰 카메라입니다. */
 		class AWorldViewCameraActor* WorldViewCameraOfNextPioneer = nullptr; 
-
 	UPROPERTY(EditAnywhere, Category = Camera)
 		/** 다음 개척자의 카메라입니다. */
 		class AWorldViewCameraActor* CameraOfNextPioneer = nullptr; 
@@ -91,6 +93,12 @@ public:
 		TArray<APioneer*> Pioneers;
 
 private:
+	/** 카메라 객체 생성 */
+	void SpawnWorldViewCameraActor(class AWorldViewCameraActor** WorldViewCameraActor, FTransform Transform);
+
+	/////////////////////////////////////////
+	// ViewTarget과 Possess 변환
+	/////////////////////////////////////////
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
 		void SwitchViewTarget(AActor* Actor, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); /** 다른 폰의 카메라로 변경하는 함수입니다. */
 	
@@ -110,7 +118,12 @@ private:
 		/** TargetViewActor인 APioneer 객체를 Possess() 합니다. */
 		void PossessPioneer(APioneer* Pioneer); 
 
+	void SwitchTick();
+
 public:
+	/////////////////////////////////////////
+	// public
+	/////////////////////////////////////////
 	class APioneer* GetPioneerBySocketID(int SocketID);
 
 	/** APioneer 객체를 생성합니다. */

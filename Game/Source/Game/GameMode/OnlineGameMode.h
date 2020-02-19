@@ -2,10 +2,17 @@
 
 #pragma once
 
+
 /*** 언리얼엔진 헤더 선언 : Start ***/
 #include "UObject/ConstructorHelpers.h"
+
 #include "Engine.h"
+
+#include "Kismet/GameplayStatics.h" // For UGameplayStatics::OpenLevel(this, TransferLevelName);
+
+#include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
 /*** 언리얼엔진 헤더 선언 : End ***/
+
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
@@ -29,9 +36,48 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
+/*** AMainScreenGameMode : Start ***/
+private:
+	//class cClientSocket* ClientSocket = nullptr;
+
+	//class cServerSocketInGame* ServerSocketInGame = nullptr;
+	//class cClientSocketInGame* ClientSocketInGame = nullptr;
+
+
+	//UPROPERTY(VisibleAnywhere, Category = "Widget")
+	//	/** 게임 UI */
+	//	class UInGameWidget* InGameWidget = nullptr;
+	
+	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
+		class APioneerController* PioneerController = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
+		class APioneerManager* PioneerManager = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
+		class ASpaceShip* SpaceShip = nullptr;
+
+protected:
+
+
 public:
-	class APioneerManager* PioneerManager = nullptr;
-	void SpawnPioneerManager(); /** APioneerManager 객체를 생성합니다. */
+
+
+private:
+	void FindPioneerController();
+
+	void SpawnPioneerManager(); 
+	void SpawnSpaceShip(class ASpaceShip** SpaceShip, FTransform Transform);
+	
+
+protected:
+
+
+
+public:
+	
+	
 
 	static const float CellSize;
+/*** AMainScreenGameMode : End ***/
 };

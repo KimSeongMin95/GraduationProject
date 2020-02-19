@@ -6,6 +6,7 @@
 #include "Controller/PioneerController.h"
 #include "Character/Pioneer.h"
 #include "PioneerManager.h"
+#include "SpaceShip/SpaceShip.h"
 #include "MyHUD.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
@@ -38,6 +39,8 @@ AOnlineGameMode::AOnlineGameMode()
 	// use our custom PlayerController class
 	PlayerControllerClass = APioneerController::StaticClass();
 
+	
+
 	///*** 블루프린트를 이용한 방법 : Start ***/
 	//// set default pawn class to our Blueprinted character
 	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDownCPP/Blueprints/TopDownCharacter"));
@@ -64,15 +67,21 @@ void AOnlineGameMode::StartPlay()
 {
 	Super::StartPlay();
 
-	///*** Temporary code : Start ***/
-	//if (GEngine)
-	//{
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("B477004 KimSeongMin's 3D RTS Game"));
-	//}
-	///*** Temporary code : End ***/
 
-	// APioneerManager 객체를 생성합니다.
+	FindPioneerController();
+
 	SpawnPioneerManager();
+
+	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(-8064.093f, -7581.192f, 20000.0f)));
+
+
+	if (PioneerController && SpaceShip)
+	{
+		SpaceShip->SetPioneerManager(PioneerManager);
+
+		PioneerController->SetViewTargetWithBlend(SpaceShip);
+		UE_LOG(LogTemp, Warning, TEXT("[INFO] <AOnlineGameMode::StartPlay()> PioneerController->SetViewTargetWithBlend(SpaceShip);"));
+	}
 }
 
 void AOnlineGameMode::Tick(float DeltaTime)
@@ -83,13 +92,27 @@ void AOnlineGameMode::Tick(float DeltaTime)
 /*** Basic Function : End ***/
 
 
-/** APioneerManager 객체를 생성합니다. */
+/*** AMainScreenGameMode : Start ***/
+void AOnlineGameMode::FindPioneerController()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::FindPioneerController()> if (!world)"));
+		return;
+	}
+
+	// UWorld에서 APioneerController를 찾습니다.
+	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
+		PioneerController = *ActorItr;
+}
+
 void AOnlineGameMode::SpawnPioneerManager()
 {
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const world = GetWorld();"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::SpawnPioneerManager()> if (!world)"));
 		return;
 	}
 
@@ -103,3 +126,26 @@ void AOnlineGameMode::SpawnPioneerManager()
 
 	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 }
+
+void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** SpaceShip, FTransform Transform)
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::SpawnSpaceShip(...)> if (!world)"));
+		return;
+	}
+
+	FTransform myTrans = Transform;
+
+	FActorSpawnParameters SpawnParams;
+	//SpawnParams.Name = TEXT("Name"); // Name을 설정합니다. World Outliner에 표기되는 Label과는 다릅니다.
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	*SpaceShip = world->SpawnActor<ASpaceShip>(ASpaceShip::StaticClass(), myTrans, SpawnParams);
+
+}
+
+/*** AMainScreenGameMode : End ***/

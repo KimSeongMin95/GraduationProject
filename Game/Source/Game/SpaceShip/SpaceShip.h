@@ -2,6 +2,7 @@
 
 #pragma once
 
+
 /*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Engine/World.h"
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
@@ -24,9 +25,11 @@
 #include "Camera/CameraComponent.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SpaceShip.generated.h"
+
 
 UENUM()
 enum class ESpaceShipState : int8
@@ -51,8 +54,6 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-
-
 /*** Basic Function : End ***/
 
 
@@ -95,11 +96,15 @@ private:
 		class UParticleSystemComponent* EngineParticleSystem2 = nullptr;
 
 
+
+
+	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
+		class APioneerController* PioneerController = nullptr;
+
 	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
 		class APioneerManager* PioneerManager = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
-		class APioneerController* PioneerCtrl = nullptr;
+
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "ASpaceShip")
@@ -142,12 +147,13 @@ protected:
 	void InitSpringArmComp(float TargetArmLength = 2500.0f, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 	void InitEngineParticleSystem(class UParticleSystemComponent* ParticleSystemComponent, const TCHAR* ReferencePath, bool bAutoActivate = false, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
-	void FindPioneerManager();
-	void FindPioneerCtrl();
-
-	void SetViewTargetToThisSpaceShip();
-
 public:
+	//void SetPioneerController(class APioneerController* PioneerController);
+	void SetPioneerManager(class APioneerManager* PioneerManager);
+
+	///////////////////////
+	// 작동
+	///////////////////////
 	UFUNCTION(Category = "ASpaceShip")
 		void Flying();
 

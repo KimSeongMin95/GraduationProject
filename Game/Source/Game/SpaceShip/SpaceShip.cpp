@@ -110,12 +110,6 @@ void ASpaceShip::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FindPioneerManager();
-
-	FindPioneerCtrl();
-
-	SetViewTargetToThisSpaceShip();
-
 	Flying();
 }
 
@@ -246,63 +240,14 @@ void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* Partic
 	}
 }
 
+//void ASpaceShip::SetPioneerController(class APioneerController* PioneerController)
+//{
+//	this->PioneerController = PioneerController;
+//}
 
-void ASpaceShip::FindPioneerManager()
+void ASpaceShip::SetPioneerManager(class APioneerManager* PioneerManager)
 {
-	// 이미 찾았으면 종료
-	if (PioneerManager)
-		return;
-
-	UWorld* const world = GetWorld();
-	if (!world)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-		return;
-	}
-
-	// UWorld에서 APioneerManager를 찾습니다.
-	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
-	{
-		PioneerManager = *ActorItr;
-	}
-}
-
-void ASpaceShip::FindPioneerCtrl()
-{
-	// 이미 찾았으면 종료
-	if (PioneerCtrl)
-		return;
-
-	UWorld* const world = GetWorld();
-	if (!world)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-		return;
-	}
-
-	// UWorld에서 APioneerController를 찾습니다.
-	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
-	{
-		PioneerCtrl = *ActorItr;
-	}
-}
-
-void ASpaceShip::SetViewTargetToThisSpaceShip()
-{
-	// PioneerManager와 PioneerCtrl 둘 다 존재하면 (게임이 어느정도 진행 된 상태)
-	if (PioneerManager && PioneerCtrl)
-	{
-		// 게임상에 Pioneer가 하나도 없을때만 SpaceShip의 카메라로 전환
-		if (PioneerManager->Pioneers.Num() == 0)
-			PioneerCtrl->SetViewTargetWithBlend(this);
-
-	}
-	// PioneerManager는 없고 PioneerCtrl만 존재하면 (개임이 시작될 때)
-	else if (PioneerCtrl)
-	{
-		if (!PioneerCtrl->GetPawn())
-			PioneerCtrl->SetViewTargetWithBlend(this);
-	}
+	this->PioneerManager = PioneerManager;
 }
 
 void ASpaceShip::Flying()
@@ -378,8 +323,6 @@ void ASpaceShip::Landing()
 
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
-
-		FindPioneerManager();
 
 		if (PioneerManager)
 			GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::Spawning, 0.5f, true, 1.0f);

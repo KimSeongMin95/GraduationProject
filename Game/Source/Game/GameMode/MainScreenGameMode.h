@@ -49,7 +49,7 @@ public:
 
 /*** AMainScreenGameMode : Start ***/
 private:
-	class cClientSocket* Socket = nullptr;
+	class cClientSocket* ClientSocket = nullptr;
 	bool bIsConnected;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
@@ -76,7 +76,9 @@ private:
 		/**  */
 		class UWaitingGameWidget* WaitingGameWidget = nullptr;
 
+	EOnlineState OnlineState;
 
+	int Count;
 private:
 	/////////////////////////////////////////////////
 	// 변환 함수
@@ -188,11 +190,9 @@ public:
 	UFUNCTION(Category = "Widget")
 		void TimerOfCountStartedGame();
 	FTimerHandle thCountStartedGame;
-	int Count;
+
 	UFUNCTION(Category = "Widget")
 		void StartOnlineGame();
-
-	EOnlineState OnlineState;
 
 	UFUNCTION(Category = "Widget")
 		void RecvAndApply();
