@@ -216,9 +216,6 @@ void UWaitingGameWidget::CheckTextOfTitle()
 	while (textOfTitle.Len() > 20)
 		textOfTitle.RemoveAt(textOfTitle.Len() - 1);
 
-	// 공백을 '_' 문자로 치환합니다.
-	textOfTitle.ReplaceCharInline(' ', '_');
-
 	Title->SetText(FText::FromString(textOfTitle));
 }
 

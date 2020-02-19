@@ -105,6 +105,8 @@ enum EPacketType
 	EXIT_GAME,		  // 플레이어가 게임을 종료할 때: 
 };
 
+
+
 class cInfoOfPlayer
 {
 public:
@@ -134,8 +136,8 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfPlayer& Info)
 	{
-		Stream << Info.ID << endl;
-		Stream << Info.IPv4Addr << endl;
+		Stream << ReplaceCharInString(Info.ID, ' ', '_') << endl;
+		Stream << ReplaceCharInString(Info.IPv4Addr, ' ', '_') << endl;
 		Stream << Info.SocketByServer << endl;
 		Stream << Info.SocketByLeader << endl;
 		Stream << Info.PortByServer << endl;
@@ -149,7 +151,9 @@ public:
 	friend istream& operator>>(istream& Stream, cInfoOfPlayer& Info)
 	{
 		Stream >> Info.ID;
+		Info.ID = ReplaceCharInString(Info.ID, '_', ' ');
 		Stream >> Info.IPv4Addr;
+		Info.IPv4Addr = ReplaceCharInString(Info.IPv4Addr, '_', ' ');
 		Stream >> Info.SocketByServer;
 		Stream >> Info.SocketByLeader;
 		Stream >> Info.PortByServer;
@@ -164,6 +168,18 @@ public:
 	{
 		printf_s("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByServer: %d, SocketByLeader: %d, PortByServer: %d, PortByLeader: %d, SocketByServerOfLeader: %d\n", 
 			Space, Space2, ID.c_str(), IPv4Addr.c_str(), SocketByServer, SocketByLeader, PortByServer, PortByLeader, SocketByServerOfLeader);
+	}
+
+	// Convert
+	static string ReplaceCharInString(string str, char before, char after)
+	{
+		string result = str;
+		for (int i = 0; i < result.size(); i++)
+		{
+			if (result.at(i) == before)
+				result.at(i) = after;
+		}
+		return result;
 	}
 };
 
@@ -261,8 +277,8 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfGame& Info)
 	{
-		Stream << Info.State << endl;
-		Stream << Info.Title << endl;
+		Stream << ReplaceCharInString(Info.State, ' ', '_') << endl;
+		Stream << ReplaceCharInString(Info.Title, ' ', '_') << endl;
 		Stream << Info.Stage << endl;
 		Stream << Info.nMax << endl;
 		Stream << Info.Leader << endl;
@@ -275,7 +291,9 @@ public:
 	friend istream& operator>>(istream& Stream, cInfoOfGame& Info)
 	{
 		Stream >> Info.State;
+		Info.State = ReplaceCharInString(Info.State, '_', ' ');
 		Stream >> Info.Title;
+		Info.Title = ReplaceCharInString(Info.Title, '_', ' ');
 		Stream >> Info.Stage;
 		Stream >> Info.nMax;
 		Stream >> Info.Leader;
@@ -292,6 +310,18 @@ public:
 		Leader.PrintInfo(Space, Space2);
 		Players.PrintInfo(Space, Space2);
 		printf_s("%s<cInfoOfGame> End\n", Space);
+	}
+
+	// Convert
+	static string ReplaceCharInString(string str, char before, char after)
+	{
+		string result = str;
+		for (int i = 0; i < result.size(); i++)
+		{
+			if (result.at(i) == before)
+				result.at(i) = after;
+		}
+		return result;
 	}
 };
 

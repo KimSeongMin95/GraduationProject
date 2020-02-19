@@ -141,8 +141,8 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfPlayer& Info)
 	{
-		Stream << Info.ID << endl;
-		Stream << Info.IPv4Addr << endl;
+		Stream << ReplaceCharInString(Info.ID, ' ', '_') << endl;
+		Stream << ReplaceCharInString(Info.IPv4Addr, ' ', '_') << endl;
 		Stream << Info.SocketByServer << endl;
 		Stream << Info.SocketByLeader << endl;
 		Stream << Info.PortByServer << endl;
@@ -156,7 +156,9 @@ public:
 	friend istream& operator>>(istream& Stream, cInfoOfPlayer& Info)
 	{
 		Stream >> Info.ID;
+		Info.ID = ReplaceCharInString(Info.ID, '_', ' ');
 		Stream >> Info.IPv4Addr;
+		Info.IPv4Addr = ReplaceCharInString(Info.IPv4Addr, '_', ' ');
 		Stream >> Info.SocketByServer;
 		Stream >> Info.SocketByLeader;
 		Stream >> Info.PortByServer;
@@ -171,6 +173,18 @@ public:
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByServer: %d, SocketByLeader: %d, PortByServer: %d, PortByLeader: %d, SocketByServerOfLeader: %d"),
 			Space, Space2, ANSI_TO_TCHAR(ID.c_str()), ANSI_TO_TCHAR(IPv4Addr.c_str()), SocketByServer, SocketByLeader, PortByServer, PortByLeader, SocketByServerOfLeader);
+	}
+
+	// Convert
+	static string ReplaceCharInString(string str, char before, char after)
+	{
+		string result = str;
+		for (int i = 0; i < result.size(); i++)
+		{
+			if (result.at(i) == before)
+				result.at(i) = after;
+		}
+		return result;
 	}
 };
 
@@ -268,8 +282,8 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfGame& Info)
 	{
-		Stream << Info.State << endl;
-		Stream << Info.Title << endl;
+		Stream << ReplaceCharInString(Info.State, ' ', '_') << endl;
+		Stream << ReplaceCharInString(Info.Title, ' ', '_') << endl;
 		Stream << Info.Stage << endl;
 		Stream << Info.nMax << endl;
 		Stream << Info.Leader << endl;
@@ -282,7 +296,9 @@ public:
 	friend istream& operator>>(istream& Stream, cInfoOfGame& Info)
 	{
 		Stream >> Info.State;
+		Info.State = ReplaceCharInString(Info.State, '_', ' ');
 		Stream >> Info.Title;
+		Info.Title = ReplaceCharInString(Info.Title, '_', ' ');
 		Stream >> Info.Stage;
 		Stream >> Info.nMax;
 		Stream >> Info.Leader;
@@ -299,6 +315,18 @@ public:
 		Leader.PrintInfo(Space, Space2);
 		Players.PrintInfo(Space, Space2);
 		UE_LOG(LogTemp, Warning, TEXT("%s<cInfoOfGame> End"), Space);
+	}
+
+	// Convert
+	static string ReplaceCharInString(string str, char before, char after)
+	{
+		string result = str;
+		for (int i = 0; i < result.size(); i++)
+		{
+			if (result.at(i) == before)
+				result.at(i) = after;
+		}
+		return result;
 	}
 };
 

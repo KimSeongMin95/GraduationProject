@@ -48,12 +48,14 @@ void UOnlineWidget::CheckTextOfID()
 	if (textOfID.Len() == 0)
 		return;
 
+	// 공백을 지웁니다.
+	int foundIdx;
+	while (textOfID.FindChar(_T(' '), foundIdx) == true)
+		textOfID.RemoveAt(foundIdx);
+
 	// 텍스트가 8개를 넘어가면 하나를 지웁니다.
 	while (textOfID.Len() > 8)
 		textOfID.RemoveAt(textOfID.Len() - 1);
-
-	// 공백을 '_' 문자로 치환합니다.
-	textOfID.ReplaceCharInline(' ', '_');
 
 	ID->SetText(FText::FromString(textOfID));
 }
