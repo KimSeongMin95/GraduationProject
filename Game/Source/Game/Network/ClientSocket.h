@@ -221,7 +221,7 @@ public:
 	void RecvDestroyWaitingGame(stringstream& RecvStream);
 	cThreadSafeQueue<bool> tsqDestroyWaitingGame;
 
-	void SendExitWaitingGame(int SocketIDOfLeader);
+	void SendExitWaitingGame();
 
 	void SendModifyWaitingGame();
 	void RecvModifyWaitingGame(stringstream& RecvStream);

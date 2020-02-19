@@ -302,6 +302,8 @@ void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
 	UE_LOG(LogTemp, Warning, TEXT("    SocketIDOfLeader: %d"), SocketIDOfLeader);
 
 	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
+	infoOfPlayer.SocketByServerOfLeader = SocketIDOfLeader;
+	SetMyInfo(infoOfPlayer);
 
 	stringstream sendStream;
 	sendStream << EPacketType::JOIN_WAITING_GAME << endl;
@@ -349,22 +351,31 @@ void cClientSocket::RecvDestroyWaitingGame(stringstream& RecvStream)
 
 	tsqDestroyWaitingGame.push(true);
 
+
+	// MyInfo의 SocketByServerOfLeader 초기화
+	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
+	infoOfPlayer.SocketByServerOfLeader = 0;
+	SetMyInfo(infoOfPlayer);
+
 	InitMyInfoOfGame();
 
 	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvDestroyWaitingGame(...)>"));
 }
 
-void cClientSocket::SendExitWaitingGame(int SocketIDOfLeader)
+void cClientSocket::SendExitWaitingGame()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendExitWaitingGame(...)>"));
 
-	UE_LOG(LogTemp, Warning, TEXT("    SocketIDOfLeader: %d"), SocketIDOfLeader);
-
 	stringstream sendStream;
 	sendStream << EPacketType::EXIT_WAITING_GAME << endl;
-	sendStream << SocketIDOfLeader << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+
+	// MyInfo의 SocketByServerOfLeader 초기화
+	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
+	infoOfPlayer.SocketByServerOfLeader = 0;
+	SetMyInfo(infoOfPlayer);
 
 	InitMyInfoOfGame();
 

@@ -608,14 +608,9 @@ void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 
 	// 방장이 나간 것이라면 대기방 종료를 알립니다.
 	if (WaitingGameWidget->IsLeader())
-	{
 		Socket->SendDestroyWaitingGame();
-	}
 	else // 플레이어가 나간 것이라면
-	{
-		int socketIDOfLeader = Socket->CopyMyInfoOfGame().Leader.SocketByServer;
-		Socket->SendExitWaitingGame(socketIDOfLeader);
-	}
+		Socket->SendExitWaitingGame();
 }
 
 void AMainScreenGameMode::RecvDestroyWaitingGame()

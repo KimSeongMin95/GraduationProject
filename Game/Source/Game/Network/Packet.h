@@ -121,16 +121,18 @@ public:
 	int SocketByLeader; // Game에서 방장으로부터 부여된 소켓 번호
 	int PortByServer; // Online에서 서버로부터 부여된 소켓 번호
 	int PortByLeader; // Game에서 방장으로부터 부여된 소켓 번호
+	int SocketByServerOfLeader; // 서버로부터 부여된 게임 방장의 소켓 번호
 
 public:
 	cInfoOfPlayer()
 	{
 		ID = "NULL";
 		IPv4Addr = "NULL";
-		SocketByServer = -1;
-		SocketByLeader = -1;
-		PortByServer = -1;
-		PortByLeader = -1;
+		SocketByServer = 0;
+		SocketByLeader = 0;
+		PortByServer = 0;
+		PortByLeader = 0;
+		SocketByServerOfLeader = 0;
 	}
 	~cInfoOfPlayer()
 	{
@@ -145,6 +147,7 @@ public:
 		Stream << Info.SocketByLeader << endl;
 		Stream << Info.PortByServer << endl;
 		Stream << Info.PortByLeader << endl;
+		Stream << Info.SocketByServerOfLeader << endl;
 
 		return Stream;
 	}
@@ -158,6 +161,7 @@ public:
 		Stream >> Info.SocketByLeader;
 		Stream >> Info.PortByServer;
 		Stream >> Info.PortByLeader;
+		Stream >> Info.SocketByServerOfLeader;
 
 		return Stream;
 	}
@@ -165,8 +169,8 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByServer: %d, SocketByLeader: %d, PortByServer: %d, PortByLeader: %d"),
-			Space, Space2, ANSI_TO_TCHAR(ID.c_str()), ANSI_TO_TCHAR(IPv4Addr.c_str()), SocketByServer, SocketByLeader, PortByServer, PortByLeader);
+		UE_LOG(LogTemp, Warning, TEXT("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByServer: %d, SocketByLeader: %d, PortByServer: %d, PortByLeader: %d, SocketByServerOfLeader: %d"),
+			Space, Space2, ANSI_TO_TCHAR(ID.c_str()), ANSI_TO_TCHAR(IPv4Addr.c_str()), SocketByServer, SocketByLeader, PortByServer, PortByLeader, SocketByServerOfLeader);
 	}
 };
 
