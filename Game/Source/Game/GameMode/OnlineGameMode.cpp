@@ -8,6 +8,8 @@
 #include "PioneerManager.h"
 #include "SpaceShip/SpaceShip.h"
 #include "MyHUD.h"
+
+#include "Network/ServerSocketInGame.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 const float AOnlineGameMode::CellSize = 64.0f;
@@ -63,6 +65,10 @@ void AOnlineGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+
+	if (ServerSocketInGame)
+		ServerSocketInGame->Initialize();
 }
 
 void AOnlineGameMode::StartPlay()
@@ -93,6 +99,13 @@ void AOnlineGameMode::Tick(float DeltaTime)
 	//////////////
 	//// 임시
 	//////////////
+	temp += DeltaTime;
+	if (temp > 5.0f)
+	{
+		if (ServerSocketInGame)
+			ServerSocketInGame->CloseServer();
+		UGameplayStatics::OpenLevel(this, "MainScreen");
+	}
 	//if (SpaceShip)
 	//{
 	//	if (SpaceShip->State == ESpaceShipState::Landed)
@@ -142,7 +155,7 @@ void AOnlineGameMode::SpawnPioneerManager()
 	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 }
 
-void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** SpaceShip, FTransform Transform)
+void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform)
 {
 	UWorld* const world = GetWorld();
 	if (!world)
@@ -159,7 +172,7 @@ void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** SpaceShip, FTransform Tr
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	*SpaceShip = world->SpawnActor<ASpaceShip>(ASpaceShip::StaticClass(), myTrans, SpawnParams);
+	*pSpaceShip = world->SpawnActor<ASpaceShip>(ASpaceShip::StaticClass(), myTrans, SpawnParams);
 
 }
 

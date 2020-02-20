@@ -260,9 +260,9 @@ void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* Partic
 //////////////////////////
 // OnlineGameMode에서 호출
 //////////////////////////
-void ASpaceShip::SetPioneerManager(class APioneerManager* PioneerManager)
+void ASpaceShip::SetPioneerManager(class APioneerManager* pPioneerManager)
 {
-	this->PioneerManager = PioneerManager;
+	this->PioneerManager = pPioneerManager;
 }
 
 void ASpaceShip::Flying()

@@ -296,9 +296,9 @@ void APioneerManager::SwitchTick()
 /////////////////////////////////////////
 // public
 /////////////////////////////////////////
-void APioneerManager::SetPioneerController(class APioneerController* PioneerController)
+void APioneerManager::SetPioneerController(class APioneerController* pPioneerController)
 {
-	this->PioneerController = PioneerController;
+	this->PioneerController = pPioneerController;
 }
 
 APioneer* APioneerManager::GetPioneerBySocketID(int SocketID)

@@ -4,10 +4,6 @@
 #include "Runtime/Core/Public/GenericPlatform/GenericPlatformAffinity.h"
 #include "Runtime/Core/Public/HAL/RunnableThread.h"
 
-#include <sstream>
-#include <algorithm>
-#include <string>
-
 
 /////////////////////////////////////
 // FRunnable override 함수
@@ -95,7 +91,7 @@ uint32 cClientSocket::Run()
 
 			default:
 			{
-				UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::Run()> undefined packet type."));
+				
 			}
 			break;
 			}
@@ -143,6 +139,7 @@ bool cClientSocket::InitSocket()
 	// 윈속 버전을 2.2로 초기화
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
 	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)"));
 		return false;
 	}
 
@@ -150,6 +147,7 @@ bool cClientSocket::InitSocket()
 	ServerSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (ServerSocket == INVALID_SOCKET) 
 	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)"));
 		return false;
 	}
 
@@ -171,6 +169,7 @@ bool cClientSocket::Connect(const char * pszIP, int nPort)
 
 	if (connect(ServerSocket, (sockaddr*)&stServerAddr, sizeof(sockaddr)) == SOCKET_ERROR)
 	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::Connect(...)> if (connect(...) == SOCKET_ERROR)"));
 		return false;
 	}
 

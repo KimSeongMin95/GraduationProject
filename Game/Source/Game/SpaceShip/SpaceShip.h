@@ -158,7 +158,7 @@ public:
 	//////////////////////////
 	// OnlineGameMode에서 호출
 	//////////////////////////
-	void SetPioneerManager(class APioneerManager* PioneerManager);
+	void SetPioneerManager(class APioneerManager* pPioneerManager);
 
 	UFUNCTION(Category = "ASpaceShip")
 		void StartLanding();

@@ -49,6 +49,7 @@ public:
 
 /*** AMainScreenGameMode : Start ***/
 private:
+
 	class cClientSocket* ClientSocket = nullptr;
 	bool bIsConnected;
 	

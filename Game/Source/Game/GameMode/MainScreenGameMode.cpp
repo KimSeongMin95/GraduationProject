@@ -6,6 +6,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Network/ClientSocket.h"
+#include "Network/ServerSocketInGame.h"
 
 #include "CustomWidget/MainScreenWidget.h"
 #include "CustomWidget/OnlineWidget.h"
@@ -33,7 +34,7 @@ void AMainScreenGameMode::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::BeginPlay()> if (!world)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::BeginPlay()> if (!world)"));
 		return;
 	}
 
@@ -98,7 +99,7 @@ void AMainScreenGameMode::_ActivateMainScreenWidget()
 {
 	if (!MainScreenWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateMainScreenWidget()> if (!MainScreenWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateMainScreenWidget()> if (!MainScreenWidget)"));
 		return;
 	}
 
@@ -114,7 +115,7 @@ void AMainScreenGameMode::_DeactivateMainScreenWidget()
 {
 	if (!MainScreenWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateMainScreenWidget()> if (!MainScreenWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateMainScreenWidget()> if (!MainScreenWidget)"));
 		return;
 	}
 
@@ -129,7 +130,7 @@ void AMainScreenGameMode::_ActivateOnlineWidget()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineWidget()> if (!OnlineWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateOnlineWidget()> if (!OnlineWidget)"));
 		return;
 	}
 
@@ -147,7 +148,7 @@ void AMainScreenGameMode::_DeactivateOnlineWidget()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineWidget()> if (!OnlineWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateOnlineWidget()> if (!OnlineWidget)"));
 		return;
 	}
 
@@ -162,7 +163,7 @@ void AMainScreenGameMode::_ActivateSettingsWidget()
 {
 	if (!SettingsWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateSettingsWidget()> if (!SettingsWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateSettingsWidget()> if (!SettingsWidget)"));
 		return;
 	}
 
@@ -176,7 +177,7 @@ void AMainScreenGameMode::_DeactivateSettingsWidget()
 {
 	if (!SettingsWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateSettingsWidget()> if (!SettingsWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateSettingsWidget()> if (!SettingsWidget)"));
 		return;
 	}
 
@@ -191,7 +192,7 @@ void AMainScreenGameMode::_ActivateDeveloperWidget()
 {
 	if (!DeveloperWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateDeveloperWidget()> if (!DeveloperWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateDeveloperWidget()> if (!DeveloperWidget)"));
 		return;
 	}
 
@@ -205,7 +206,7 @@ void AMainScreenGameMode::_DeactivateDeveloperWidget()
 {
 	if (!DeveloperWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateDeveloperWidget()> if (!DeveloperWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateDeveloperWidget()> if (!DeveloperWidget)"));
 		return;
 	}
 
@@ -220,7 +221,7 @@ void AMainScreenGameMode::_ActivateOnlineGameWidget()
 {
 	if (!OnlineGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateOnlineGameWidget()> if (!OnlineGameWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateOnlineGameWidget()> if (!OnlineGameWidget)"));
 		return;
 	}
 
@@ -240,7 +241,7 @@ void AMainScreenGameMode::_DeactivateOnlineGameWidget()
 {
 	if (!OnlineGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateOnlineGameWidget()> if (!OnlineGameWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateOnlineGameWidget()> if (!OnlineGameWidget)"));
 		return;
 	}
 
@@ -257,7 +258,7 @@ void AMainScreenGameMode::_ActivateWaitingGameWidget()
 {
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::ActivateWaitingGameWidget()> if (!WaitingGameWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateWaitingGameWidget()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -271,7 +272,7 @@ void AMainScreenGameMode::_DeactivateWaitingGameWidget()
 {
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::DeactivateWaitingGameWidget()> if (!WaitingGameWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateWaitingGameWidget()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -325,7 +326,7 @@ void AMainScreenGameMode::_CheckTextOfID()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::CheckTextOfID()> if (!OnlineWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CheckTextOfID()> if (!OnlineWidget)"));
 		return;
 	}
 	OnlineWidget->CheckTextOfID();
@@ -338,7 +339,7 @@ void AMainScreenGameMode::_CheckTextOfPort()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::CheckTextOfPort()> if (!OnlineWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CheckTextOfPort()> if (!OnlineWidget)"));
 		return;
 	}
 	OnlineWidget->CheckTextOfPort();
@@ -352,13 +353,13 @@ void AMainScreenGameMode::_SendLogin()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!OnlineWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendLogin()> if (!OnlineWidget)"));
 		return;
 	}
 
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!ClientSocket)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendLogin()> if (!ClientSocket)"));
 		return;
 	}
 
@@ -369,7 +370,7 @@ void AMainScreenGameMode::_SendLogin()
 
 	if (!bIsConnected)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
 		UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port: %s"), 
 			*OnlineWidget->GetIPv4()->GetText().ToString(), *OnlineWidget->GetPort()->GetText().ToString());
 		return;
@@ -390,7 +391,7 @@ void AMainScreenGameMode::CloseSocket()
 {
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::CloseSocket()> if (!ClientSocket)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CloseSocket()> if (!ClientSocket)"));
 		return;
 	}
 

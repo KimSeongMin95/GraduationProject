@@ -208,7 +208,7 @@ protected:
 		virtual void OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
-	FORCEINLINE void SetPioneerManager(APioneerManager* PioneerManager) { this->PioneerManager = PioneerManager; }
+	FORCEINLINE void SetPioneerManager(class APioneerManager* pPioneerManager) { this->PioneerManager = pPioneerManager; }
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetTopDownCamera() const { return TopDownCameraComponent; }

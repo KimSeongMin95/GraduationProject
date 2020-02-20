@@ -113,6 +113,7 @@ void MainServer::WorkerThread()
 
 	while (bWorkerThread)
 	{
+		//printf_s("[INFO] before GetQueuedCompletionStatus(...)\n");
 		/**
 		 * 이 함수로 인해 쓰레드들은 WaitingThread Queue 에 대기상태로 들어가게 됨
 		 * 완료된 Overlapped I/O 작업이 발생하면 IOCP Queue 에서 완료된 작업을 가져와 뒷처리를 함
@@ -123,6 +124,7 @@ void MainServer::WorkerThread()
 			(LPOVERLAPPED*)& pSocketInfo,	// overlapped I/O 객체
 			INFINITE						// 대기할 시간
 		);
+		//printf_s("[INFO] after GetQueuedCompletionStatus(...)\n");
 
 		// 비정상 접속 끊김은 GetQueuedCompletionStatus가 FALSE를 리턴하고 수신바이트 크기가 0입니다.
 		if (!bResult && recvBytes == 0)
@@ -179,6 +181,12 @@ void MainServer::WorkerThread()
 
 void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 {
+	if (pSocketInfo == nullptr)
+	{
+		printf_s("[ERROR] <MainServer::CloseSocket(...)>if (pSocketInfo == nullptr)\n");
+		return;
+	}
+
 	printf_s("[Start] <MainServer::CloseSocket(...)>\n");
 
 	//temp.str("");

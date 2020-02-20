@@ -39,8 +39,7 @@ public:
 /*** AMainScreenGameMode : Start ***/
 private:
 	//class cClientSocket* ClientSocket = nullptr;
-
-	//class cServerSocketInGame* ServerSocketInGame = nullptr;
+	class cServerSocketInGame* ServerSocketInGame = nullptr;
 	//class cClientSocketInGame* ClientSocketInGame = nullptr;
 
 
@@ -58,7 +57,7 @@ private:
 		class ASpaceShip* SpaceShip = nullptr;
 
 protected:
-
+	float temp = 0.0f;
 
 public:
 
@@ -67,7 +66,7 @@ private:
 	void FindPioneerController();
 
 	void SpawnPioneerManager(); 
-	void SpawnSpaceShip(class ASpaceShip** SpaceShip, FTransform Transform);
+	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
 	
 
 protected:

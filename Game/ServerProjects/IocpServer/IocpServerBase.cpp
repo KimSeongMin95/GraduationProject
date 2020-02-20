@@ -136,7 +136,9 @@ void IocpServerBase::StartServer()
 		LeaveCriticalSection(&csClients);
 
 
-		hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (DWORD)SocketInfo, 0);
+		// 원본은 DWORD로 캐스팅
+		//hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (DWORD)SocketInfo, 0);
+		hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (ULONG_PTR)SocketInfo, 0);
 
 		// 중첩 소켓을 지정하고 완료시 실행될 함수를 넘겨줌
 		int nResult = WSARecv(
@@ -170,6 +172,12 @@ void IocpServerBase::WorkerThread()
 
 void IocpServerBase::CloseSocket(stSOCKETINFO* pSocketInfo)
 {
+	if (pSocketInfo == nullptr)
+	{
+		printf_s("[ERROR] <IocpServerBase::CloseSocket(...)>if (pSocketInfo == nullptr)\n");
+		return;
+	}
+
 	printf_s("[Start] <IocpServerBase::CloseSocket(...)>\n");
 
 	/// Clients에서 제거
@@ -178,9 +186,6 @@ void IocpServerBase::CloseSocket(stSOCKETINFO* pSocketInfo)
 	Clients.erase(pSocketInfo->socket);
 	printf_s("\t Clients.size(): %d\n", (int)Clients.size());
 	LeaveCriticalSection(&csClients);
-
-	if (pSocketInfo == nullptr)
-		return;
 
 	closesocket(pSocketInfo->socket);
 	free(pSocketInfo);
