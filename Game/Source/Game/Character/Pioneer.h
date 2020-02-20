@@ -177,7 +177,6 @@ private:
 
 
 protected:
-	void InitPioneerManager();
 	void InitSkeletalAnimation();
 	void InitCamera();
 	void InitCursor();
@@ -209,7 +208,7 @@ protected:
 		virtual void OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
-	FORCEINLINE void SetPioneerManager(APioneerManager* OtherPioneerManager) { PioneerManager = OtherPioneerManager; }
+	FORCEINLINE void SetPioneerManager(APioneerManager* PioneerManager) { this->PioneerManager = PioneerManager; }
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetTopDownCamera() const { return TopDownCameraComponent; }

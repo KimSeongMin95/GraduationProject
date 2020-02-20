@@ -34,10 +34,13 @@
 UENUM()
 enum class ESpaceShipState : int8
 {
-	Flying = 0,
-	Landing = 1,
-	Spawning = 2,
-	TakingOff = 3
+	Flying,
+	Flied,
+	Landing,
+	Landed,
+	Spawning,
+	Spawned,
+	TakingOff
 };
 
 UCLASS()
@@ -96,19 +99,14 @@ private:
 		class UParticleSystemComponent* EngineParticleSystem2 = nullptr;
 
 
-
-
-	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
-		class APioneerController* PioneerController = nullptr;
-
 	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
 		class APioneerManager* PioneerManager = nullptr;
-
-
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "ASpaceShip")
 		ESpaceShipState State;
+
+	FTimerHandle TimerHandle;
 
 	UPROPERTY(EditAnywhere, Category = "Pioneer")
 		int PioneerNum; /** Spawn할 Pioneer 개수 */
@@ -124,21 +122,30 @@ public:
 	UPROPERTY(EditAnywhere, Category = "ASpaceShip")
 		float LandingHeight; /** 착륙하는 땅까지의 높이 */
 
-
 	UPROPERTY(VisibleAnywhere, Category = "Rotation")
 		bool bRotateTargetRotation;
 
 	UPROPERTY(VisibleAnywhere, Category = "Rotation")
 		FRotator TargetRotation; /** 목표하는 회전값 */
 
-	FTimerHandle TimerHandle;
-
 	bool bPlayalbeLandingAnim; /** 착륙 애니메이션 플래그 */
 	bool bOnOffEngines; /** 엔진 점화 플래그 */
 
+private:
+	///////////////////////
+	// 작동
+	///////////////////////
+	UFUNCTION(Category = "ASpaceShip")
+		void Flying();
+	UFUNCTION(Category = "ASpaceShip")
+		void Landing();
+	UFUNCTION(Category = "ASpaceShip")
+		void Spawning();
+	UFUNCTION(Category = "ASpaceShip")
+		void TakingOff();
+
 protected:
 	void InitPhysicsBox(FVector BoxExtent = FVector::ZeroVector, FVector Location = FVector::ZeroVector);
-	void InitSpawnPioneer(int NumOfSpawn = 8, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 	void InitStaticMesh(const TCHAR* ReferencePath, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 	void InitSkeletalMesh(const TCHAR* ReferencePath, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 	void InitSkeleton(const TCHAR* ReferencePath);
@@ -148,24 +155,21 @@ protected:
 	void InitEngineParticleSystem(class UParticleSystemComponent* ParticleSystemComponent, const TCHAR* ReferencePath, bool bAutoActivate = false, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
 public:
-	//void SetPioneerController(class APioneerController* PioneerController);
+	//////////////////////////
+	// OnlineGameMode에서 호출
+	//////////////////////////
 	void SetPioneerManager(class APioneerManager* PioneerManager);
 
-	///////////////////////
-	// 작동
-	///////////////////////
 	UFUNCTION(Category = "ASpaceShip")
-		void Flying();
-
+		void StartLanding();
 	UFUNCTION(Category = "ASpaceShip")
-		void Landing();
-
+		void StartSpawning(int NumOfSpawn = 8);
 	UFUNCTION(Category = "ASpaceShip")
-		void Spawning();
+		void StartTakingOff();
 
-	UFUNCTION(Category = "ASpaceShip")
-		void TakingOff();
-
+	//////////////////////////
+	// Helper 함수들
+	//////////////////////////
 	/** 바닥을 향해 수직으로 Ray를 쏴서 거리를 계산 */
 	float CalculateDistanceToLand();
 

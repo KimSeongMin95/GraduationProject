@@ -75,7 +75,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		/** Pioneer 전용 컨트롤러 입니다. */
-		class APioneerController* PioneerCtrl = nullptr; 
+		class APioneerController* PioneerController = nullptr;
 
 	ESwitchState SwitchState;
 
@@ -90,11 +90,14 @@ private:
 public:
 	UPROPERTY(EditAnywhere, Category = "PioneerManager")
 		/** APioneer 객체들을 관리할 TArray입니다. */
-		TArray<APioneer*> Pioneers;
+		TArray<class APioneer*> Pioneers;
 
 private:
 	/** 카메라 객체 생성 */
 	void SpawnWorldViewCameraActor(class AWorldViewCameraActor** WorldViewCameraActor, FTransform Transform);
+	
+	/** UWorld에서 APioneer를 찾고 TArray에 추가합니다. */
+	void FindPioneersInWorld();
 
 	/////////////////////////////////////////
 	// ViewTarget과 Possess 변환
@@ -116,7 +119,7 @@ private:
 
 	UFUNCTION() // FTimerDelegate.BindUFunction( , FName("함수이름"), ...);에서 함수 이름을 찾기위해 무조건 UFUNCTION()을 해줘야 합니다.
 		/** TargetViewActor인 APioneer 객체를 Possess() 합니다. */
-		void PossessPioneer(APioneer* Pioneer); 
+		void PossessPioneer(class APioneer* Pioneer);
 
 	void SwitchTick();
 
@@ -124,6 +127,8 @@ public:
 	/////////////////////////////////////////
 	// public
 	/////////////////////////////////////////
+	void SetPioneerController(class APioneerController* PioneerController);
+
 	class APioneer* GetPioneerBySocketID(int SocketID);
 
 	/** APioneer 객체를 생성합니다. */
@@ -131,7 +136,7 @@ public:
 
 	/** 다른 폰으로 변경하는 함수입니다.
 	순서: FindTargetViewActor -> SwitchNext -> SwitchFinish -> PossessPioneer */
-	void SwitchOtherPioneer(APioneer* CurrentPioneer, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); // bLockOutgoing: 보간 도중에 나가는 뷰타겟을 업데이트하지 않음.
+	void SwitchOtherPioneer(class APioneer* CurrentPioneer, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); // bLockOutgoing: 보간 도중에 나가는 뷰타겟을 업데이트하지 않음.
 
 
 /*** APioneerManager : End ***/

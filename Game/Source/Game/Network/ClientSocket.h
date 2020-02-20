@@ -230,42 +230,14 @@ public:
 	void SendStartWaitingGame();
 	void RecvStartWaitingGame(stringstream& RecvStream);
 	cThreadSafeQueue<bool> tsqStartWaitingGame;
-	/*
 
 
-	bool GetRecvFindGames(stInfoOfGame& InfoOfGame);
+	/////////////////////////////////////
+	// OnlineGameMode
+	/////////////////////////////////////
 
-	void SendModifyWaitingRoom(const FString Title, int Stage, int MaxOfNum);
-	void RecvModifyWaitingRoom(stringstream& RecvStream);
-	stInfoOfGame mRecvModifyWaitingRoom;
-	CRITICAL_SECTION csRecvModifyWaitingRoom;
-	bool GetRecvModifyWaitingRoom(stInfoOfGame& InfoOfGame);
 
-	void SendJoinWaitingRoom(int SocketIDOfLeader);
-	void RecvJoinWaitingRoom(stringstream& RecvStream);
-	stInfoOfGame mRecvJoinWaitingRoom;
-	CRITICAL_SECTION csRecvJoinWaitingRoom;
-	bool GetRecvJoinWaitingRoom(stInfoOfGame& InfoOfGame);
 
-	void RecvPlayerJoinedWaitingRoom(stringstream& RecvStream);
-	std::queue<int> qRecvPlayerJoinedWaitingRoom;
-	CRITICAL_SECTION csRecvPlayerJoinedWaitingRoom;
-	bool GetRecvPlayerJoinedWaitingRoom(std::queue<int>& qSocketID);
-
-	void SendExitWaitingRoom(int SocketIDOfLeader);
-
-	void RecvPlayerExitedWaitingRoom(stringstream& RecvStream);
-	std::queue<int> qRecvPlayerExitedWaitingRoom;
-	CRITICAL_SECTION csRecvPlayerExitedWaitingRoom;
-	bool GetRecvPlayerExitedWaitingRoom(std::queue<int>& qSocketID);
-
-	void SendCheckPlayerInWaitingRoom(int SocketIDOfLeader, std::queue<int>& qSocketID);
-	void RecvCheckPlayerInWaitingRoom(stringstream& RecvStream);
-	std::queue<int> qRecvCheckPlayerInWaitingRoom;
-	CRITICAL_SECTION csRecvCheckPlayerInWaitingRoom;
-	bool GetRecvCheckPlayerInWaitingRoom(std::queue<int>& qSocketID);
-
-	*/
 
 	/////////////////////////////////////
 	// Set-Get

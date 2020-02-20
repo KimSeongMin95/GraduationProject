@@ -26,13 +26,6 @@ void APioneerManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UWorld* const world = GetWorld();
-	if (!world)
-	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::BeginPlay()> if (!world)"));
-		return;
-	}
-
 	// 카메라들을 생성합니다.
 	SpawnWorldViewCameraActor(&WorldViewCamera, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 20000.0f)));
 	SpawnWorldViewCameraActor(&CameraOfCurrentPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 5000.0f)));
@@ -40,23 +33,8 @@ void APioneerManager::BeginPlay()
 	SpawnWorldViewCameraActor(&WorldViewCameraOfNextPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 5000.0f)));
 	SpawnWorldViewCameraActor(&CameraOfNextPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 5000.0f)));
 
-	// UWorld에서 APioneerController를 찾습니다.
-	if (!PioneerCtrl)
-	{
-		for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
-		{
-			PioneerCtrl = *ActorItr;
-		}
-	}
-
 	// UWorld에서 APioneer를 찾고 TArray에 추가합니다.
-	for (TActorIterator<APioneer> ActorItr(world); ActorItr; ++ActorItr)
-	{
-		if (Pioneers.Contains(*ActorItr) == false) // 이미 추가되어있지 않다면
-			Pioneers.Add(*ActorItr);
-
-		ActorItr->SetPioneerManager(this);
-	}
+	FindPioneersInWorld();
 }
 
 void APioneerManager::Tick(float DeltaTime)
@@ -93,6 +71,23 @@ void APioneerManager::SpawnWorldViewCameraActor(class AWorldViewCameraActor** Wo
 		(*WorldViewCameraActor)->GetCameraComponent()->bConstrainAspectRatio = false;
 }
 
+void APioneerManager::FindPioneersInWorld()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::FindPioneersInWorld()> if (!world)"));
+		return;
+	}
+
+	for (TActorIterator<APioneer> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		if (Pioneers.Contains(*ActorItr) == false) // 이미 추가되어있지 않다면
+			Pioneers.Add(*ActorItr);
+
+		ActorItr->SetPioneerManager(this);
+	}
+}
 
 /////////////////////////////////////////
 // ViewTarget과 Possess 변환
@@ -105,13 +100,13 @@ void APioneerManager::SwitchViewTarget(AActor* Actor, float BlendTime, EViewTarg
 		return;
 	}
 	
-	if (!PioneerCtrl)
+	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchViewTarget(...)> if (!PioneerCtrl)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchViewTarget(...)> if (!PioneerController)"));
 		return;
 	}
 
-	PioneerCtrl->SetViewTargetWithBlend(Actor, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+	PioneerController->SetViewTargetWithBlend(Actor, BlendTime, blendFunc, BlendExp, bLockOutgoing);
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SwitchViewTarget(...)> %s, BlendTime: %f"), *Actor->GetName(), BlendTime);
 }
 
@@ -142,10 +137,14 @@ void APioneerManager::FindTargetViewActor(float BlendTime, EViewTargetBlendFunct
 
 		FVector location = TargetViewActor->GetActorLocation();
 		location.Z = 5000.0f;
-		WorldViewCameraOfNextPioneer->SetActorLocation(location);
 
-		SwitchViewTarget(WorldViewCameraOfNextPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
-
+		if (WorldViewCameraOfNextPioneer)
+		{
+			WorldViewCameraOfNextPioneer->SetActorLocation(location);
+			SwitchViewTarget(WorldViewCameraOfNextPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+		}
+		else
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::FindTargetViewActor(...)> if (!WorldViewCameraOfNextPioneer)"));
 
 		GetWorldTimerManager().ClearTimer(TimerHandleOfFindTargetViewActor);
 
@@ -175,8 +174,17 @@ void APioneerManager::SwitchNext(float BlendTime, EViewTargetBlendFunction blend
 
 			// FindTargetViewActor의 WorldViewCameraOfNextPioneer -> WorldViewCameraOfNextPioneer 전환 문제를 해결하기 위해,
 			// WorldViewCameraOfNextPioneer의 위치를 WorldViewCameraOfCurrentPioneer에 복사하고 먼저 WorldViewCameraOfCurrentPioneer로 전환
-			WorldViewCameraOfCurrentPioneer->SetActorTransform(WorldViewCameraOfNextPioneer->GetActorTransform());
-			PioneerCtrl->SetViewTarget(WorldViewCameraOfCurrentPioneer);
+			if (WorldViewCameraOfCurrentPioneer && WorldViewCameraOfNextPioneer)
+			{
+				WorldViewCameraOfCurrentPioneer->SetActorTransform(WorldViewCameraOfNextPioneer->GetActorTransform());
+
+				if (PioneerController)
+					PioneerController->SetViewTarget(WorldViewCameraOfCurrentPioneer);
+				else
+					UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchNext(...)> if (WorldViewCameraOfCurrentPioneer && WorldViewCameraOfNextPioneer) && if (!PioneerController)"));
+			}
+			else
+				UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchNext(...)> if (!WorldViewCameraOfCurrentPioneer || !WorldViewCameraOfNextPioneer)"));
 
 			FTimerDelegate timerDel;
 			timerDel.BindUFunction(this, FName("FindTargetViewActor"), BlendTime, blendFunc, BlendExp, bLockOutgoing); // 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
@@ -188,13 +196,13 @@ void APioneerManager::SwitchNext(float BlendTime, EViewTargetBlendFunction blend
 		pioneer->CopyTopDownCameraTo(CameraOfCurrentPioneer);
 	}
 
-	if (!PioneerCtrl)
+	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchNext(...)> if (!PioneerCtrl)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchNext(...)> if (!PioneerController)"));
 		return;
 	}
 
-	PioneerCtrl->SetViewTargetWithBlend(CameraOfNextPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+	PioneerController->SetViewTargetWithBlend(CameraOfNextPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SwitchNext(...)> %s, BlendTime: %f"), *CameraOfNextPioneer->GetName(), BlendTime);
 
 	FTimerDelegate timerDel;
@@ -220,8 +228,13 @@ void APioneerManager::SwitchFinish(float BlendTime, EViewTargetBlendFunction ble
 		{
 			// FindTargetViewActor의 WorldViewCameraOfNextPioneer -> WorldViewCameraOfNextPioneer 전환 문제를 해결하기 위해,
 			// WorldViewCameraOfNextPioneer의 위치를 WorldViewCameraOfCurrentPioneer에 복사하고 먼저 WorldViewCameraOfCurrentPioneer로 전환
-			WorldViewCameraOfCurrentPioneer->SetActorTransform(WorldViewCameraOfNextPioneer->GetActorTransform());
-			SwitchViewTarget(WorldViewCameraOfCurrentPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+			if (WorldViewCameraOfCurrentPioneer && WorldViewCameraOfNextPioneer)
+			{
+				WorldViewCameraOfCurrentPioneer->SetActorTransform(WorldViewCameraOfNextPioneer->GetActorTransform());
+				SwitchViewTarget(WorldViewCameraOfCurrentPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+			}
+			else
+				UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchFinish(...)> if (!WorldViewCameraOfCurrentPioneer || !WorldViewCameraOfNextPioneer)"));
 
 			UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SwitchFinish(...)> if (pioneer->bDying || pioneer->IsActorBeingDestroyed())"));
 
@@ -238,7 +251,7 @@ void APioneerManager::SwitchFinish(float BlendTime, EViewTargetBlendFunction ble
 
 }
 
-void APioneerManager::PossessPioneer(APioneer* Pioneer)
+void APioneerManager::PossessPioneer(class APioneer* Pioneer)
 {
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::PossessPioneer(...)>"));
 
@@ -248,20 +261,20 @@ void APioneerManager::PossessPioneer(APioneer* Pioneer)
 	// TargetViewActor는 다시 초기화합니다.
 	TargetViewActor = nullptr;
 
-	// PioneerCtrl가 존재하는지 확인합니다.
-	if (!PioneerCtrl)
+	// PioneerController가 존재하는지 확인합니다.
+	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::PossessPioneer(...)> if (!PioneerCtrl)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::PossessPioneer(...)> if (!PioneerController)"));
 			return;
 	}
 
-	// PioneerCtrl가 Pawn을 소유하고 있으면 소멸시킵니다.
-	if (PioneerCtrl->GetPawn())
-		PioneerCtrl->GetPawn()->Destroy();
+	// PioneerController가 Pawn을 소유하고 있으면 소멸시킵니다.
+	if (PioneerController->GetPawn())
+		PioneerController->GetPawn()->Destroy();
 
-	PioneerCtrl->Possess(Pioneer);
+	PioneerController->Possess(Pioneer);
 
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::PossessPioneer(...)> PioneerCtrl->Possess(Pioneer);"));
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::PossessPioneer(...)> PioneerController->Possess(Pioneer);"));
 }
 
 void APioneerManager::SwitchTick()
@@ -283,10 +296,18 @@ void APioneerManager::SwitchTick()
 /////////////////////////////////////////
 // public
 /////////////////////////////////////////
+void APioneerManager::SetPioneerController(class APioneerController* PioneerController)
+{
+	this->PioneerController = PioneerController;
+}
+
 APioneer* APioneerManager::GetPioneerBySocketID(int SocketID)
 {
 	for (auto& pioneer : Pioneers)
 	{
+		if (!pioneer)
+			continue;
+
 		if (pioneer->SocketID == SocketID)
 			return pioneer;
 	}
@@ -327,10 +348,19 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	///** Actor will fail to spawn. */
 	//DontSpawnIfColliding					UMETA(DisplayName = "Do Not Spawn"),
 
-	World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
+	APioneer* pioneer = World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
+
+	if (!pioneer)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SpawnPioneer(...)> if (!pioneer)"));
+		return;
+	}
+
+	pioneer->SetPioneerManager(this);
+	Pioneers.Add(pioneer);
 }
 
-void APioneerManager::SwitchOtherPioneer(APioneer* CurrentPioneer, float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
+void APioneerManager::SwitchOtherPioneer(class APioneer* CurrentPioneer, float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
 {
 	//enum EViewTargetBlendFunction
 	//{
@@ -363,9 +393,9 @@ void APioneerManager::SwitchOtherPioneer(APioneer* CurrentPioneer, float BlendTi
 		return;
 	}
 
-	if (!PioneerCtrl)
+	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchOtherPioneer(...)> if (!PioneerCtrl)"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchOtherPioneer(...)> if (!PioneerController)"));
 		return;
 	}
 
@@ -374,13 +404,19 @@ void APioneerManager::SwitchOtherPioneer(APioneer* CurrentPioneer, float BlendTi
 		if (CurrentPioneer->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)
 			return;
 
-		PioneerCtrl->SetViewTargetWithBlend(CameraOfCurrentPioneer);
+		PioneerController->SetViewTargetWithBlend(CameraOfCurrentPioneer);
 
 		FVector location = CurrentPioneer->GetActorLocation();
 		location.Z = 5000.0f;
-		WorldViewCameraOfCurrentPioneer->SetActorLocation(location);
 
-		SwitchViewTarget(WorldViewCameraOfCurrentPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+		if (WorldViewCameraOfCurrentPioneer)
+		{
+			WorldViewCameraOfCurrentPioneer->SetActorLocation(location);
+			SwitchViewTarget(WorldViewCameraOfCurrentPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+		}
+		else
+			UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchOtherPioneer(...)> if (!WorldViewCameraOfCurrentPioneer)"));
+
 		SwitchState = ESwitchState::Current;
 
 		FTimerDelegate timerDel;

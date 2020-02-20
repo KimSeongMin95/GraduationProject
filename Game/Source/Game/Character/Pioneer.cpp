@@ -50,8 +50,6 @@ APioneer::APioneer()
 
 	InitCharacterMovement();
 
-	InitPioneerManager();
-
 	InitSkeletalAnimation();
 	
 	InitCamera();
@@ -66,6 +64,7 @@ APioneer::APioneer()
 
 	InitItem();
 
+	SocketID = -1;
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
 	//BaseLookUpRate = 45.0f;
@@ -386,6 +385,12 @@ void APioneer::RunBehaviorTree()
 /*** APioneer : Start ***/
 void APioneer::SetCameraBoomSettings()
 {
+	if (!CameraBoom)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneer::SetCameraBoomSettings()> if (!CameraBoom)"));
+		return;
+	}
+
 	// 개척민 현재 위치를 찾습니다.
 	FVector rootComponentLocation = RootComponent->GetComponentLocation();
 
@@ -491,31 +496,6 @@ void APioneer::SetCursorToWorld()
 
 }
 
-
-void APioneer::InitPioneerManager()
-{
-	SocketID = -1; // -1은 AI를 뜻합니다.
-
-
-	UWorld* const world = GetWorld();
-	if (!world)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::FindPioneerManager: !world"));
-		return;
-	}
-
-	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
-	{
-		PioneerManager = *ActorItr;
-	}
-
-	// 추가
-	if (PioneerManager)
-	{
-		if (PioneerManager->Pioneers.Contains(this) == false)
-			PioneerManager->Pioneers.Add(this);
-	}
-}
 
 void APioneer::InitSkeletalAnimation()
 {
@@ -881,7 +861,7 @@ void APioneer::DestroyCharacter()
 		PioneerManager->SwitchOtherPioneer(this, 1.0f);
 	}
 	else
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::DestroyCharacter: if (PioneerManager) else"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneer::DestroyCharacter()> if (!PioneerManager)"));
 
 
 	// 여기서 Destroy()하는 대신에 PioneerManager의 PossessPioneer()에서 Destroy를 대신 함.
@@ -893,13 +873,13 @@ bool APioneer::CopyTopDownCameraTo(AActor* CameraToBeCopied)
 {
 	if (!TopDownCameraComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("!APioneer::CopyTopDownCameraToPioneerManager: !TopDownCameraComponent"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneer::CopyTopDownCameraTo()> if (!TopDownCameraComponent)"));
 		return false;
 	}
 
 	if (!CameraToBeCopied)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("!APioneer::CopyTopDownCameraToPioneerManager: !CameraToBeCopied"));
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneer::CopyTopDownCameraTo()> if (!CameraToBeCopied)"));
 		return false;
 	}
 

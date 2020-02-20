@@ -5,7 +5,6 @@
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "PioneerManager.h"
 #include "Character/Pioneer.h"
-#include "Controller/PioneerController.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -39,8 +38,8 @@ ASpaceShip::ASpaceShip()
 
 	PioneerSpawnPoint = CreateDefaultSubobject<UArrowComponent>("PioneerSpawnPoint");
 	PioneerSpawnPoint->SetupAttachment(RootComponent);
-
-	InitSpawnPioneer(5, FRotator(0.0f, 180.0f, 0.0f), FVector(-777.02f, 329.26f, -150.0f));
+	PioneerSpawnPoint->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+	PioneerSpawnPoint->SetRelativeLocation(FVector(-777.02f, 329.26f, -150.0f));
 
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
@@ -128,23 +127,25 @@ void ASpaceShip::Tick(float DeltaTime)
 /*** ASpaceShip : Start ***/
 void ASpaceShip::InitPhysicsBox(FVector BoxExtent /*= FVector::ZeroVector*/, FVector Location /*= FVector::ZeroVector*/)
 {
+	if (!PhysicsBox)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::InitPhysicsBox(...)> if (!PhysicsBox)"));
+		return;
+	}
+
 	PhysicsBox->SetBoxExtent(BoxExtent);
 
 	PhysicsBox->SetRelativeLocation(Location);
 }
 
-void ASpaceShip::InitSpawnPioneer(int NumOfSpawn /*= 8*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
-{
-	PioneerNum = NumOfSpawn;
-	countPioneerNum = 0;
-
-	PioneerSpawnPoint->SetRelativeRotation(Rotation);
-	PioneerSpawnPoint->SetRelativeLocation(Location);
-}
-
 void ASpaceShip::InitStaticMesh(const TCHAR* ReferencePath, FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
 {
-	
+	if (!StaticMesh)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::InitStaticMesh(...)> if (!StaticMesh)"));
+		return;
+	}
+
 	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(ReferencePath);
 	if (staticMeshAsset.Succeeded())
 	{
@@ -160,6 +161,12 @@ void ASpaceShip::InitStaticMesh(const TCHAR* ReferencePath, FVector Scale /*= FV
 
 void ASpaceShip::InitSkeletalMesh(const TCHAR* ReferencePath, FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
 {
+	if (!SkeletalMesh)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::InitSkeletalMesh(...)> if (!SkeletalMesh)"));
+		return;
+	}
+
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(ReferencePath);
 	if (skeletalMeshAsset.Succeeded())
 	{
@@ -187,9 +194,6 @@ void ASpaceShip::InitSkeleton(const TCHAR* ReferencePath)
 
 void ASpaceShip::InitPhysicsAsset(const TCHAR* ReferencePath)
 {
-	if (!SkeletalMesh)
-		return;
-
 	// PhysicsAsset을 가져옵니다.
 	ConstructorHelpers::FObjectFinder<UPhysicsAsset> physicsAsset(ReferencePath);
 	if (physicsAsset.Succeeded())
@@ -201,7 +205,10 @@ void ASpaceShip::InitPhysicsAsset(const TCHAR* ReferencePath)
 void ASpaceShip::InitAnimSequence(const TCHAR* ReferencePath, bool bIsLooping /*= false*/, bool bIsPlaying /*= false*/, float Position /*= 0.0f*/, float PlayRate /*= 1.0f*/)
 {
 	if (!SkeletalMesh || !Skeleton)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::InitAnimSequence(...)> if (!SkeletalMesh || !Skeleton)"));
 		return;
+	}
 
 	// AnimInstance를 사용하지 않고 간단하게 애니메이션을 재생하려면 AnimSequence를 가져와서 Skeleton에 적용합니다.
 	ConstructorHelpers::FObjectFinder<UAnimSequence> animSequenceAsset(ReferencePath);
@@ -216,6 +223,12 @@ void ASpaceShip::InitAnimSequence(const TCHAR* ReferencePath, bool bIsLooping /*
 
 void ASpaceShip::InitSpringArmComp(float TargetArmLength /*= 2500.0f*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
 {
+	if (!SpringArmComp)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::InitSpringArmComp(...)> if (!SpringArmComp)"));
+		return;
+	}
+
 	SpringArmComp->TargetArmLength = TargetArmLength; // 해당 간격으로 카메라가 Arm을 따라다닙니다.
 
 	SpringArmComp->SetRelativeRotation(Rotation);
@@ -226,7 +239,10 @@ void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* Partic
 	FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
 {
 	if (!ParticleSystemComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::InitEngineParticleSystem(...)> if (!ParticleSystemComponent)"));
 		return;
+	}
 
 	ConstructorHelpers::FObjectFinder<UParticleSystem> particleSystemAsset(ReferencePath);
 	if (particleSystemAsset.Succeeded())
@@ -240,11 +256,10 @@ void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* Partic
 	}
 }
 
-//void ASpaceShip::SetPioneerController(class APioneerController* PioneerController)
-//{
-//	this->PioneerController = PioneerController;
-//}
 
+//////////////////////////
+// OnlineGameMode에서 호출
+//////////////////////////
 void ASpaceShip::SetPioneerManager(class APioneerManager* PioneerManager)
 {
 	this->PioneerManager = PioneerManager;
@@ -254,6 +269,23 @@ void ASpaceShip::Flying()
 {
 	State = ESpaceShipState::Flying;
 
+	if (!PhysicsBox || !PioneerSpawnPoint || !StaticMesh || !SkeletalMesh || !Skeleton || !AnimSequence || !SpringArmComp || !CameraComp || !EngineParticleSystem || !EngineParticleSystem2)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::Flying()> nullptr"));
+		return;
+	}
+
+	if (true)
+	{
+		State = ESpaceShipState::Flied;
+
+		StartLanding();
+	}
+}
+
+void ASpaceShip::StartLanding()
+{
+	State = ESpaceShipState::Landing;
 
 	Acceleration = FVector(0.0f, 0.0f, 0.0f);
 
@@ -265,15 +297,10 @@ void ASpaceShip::Flying()
 
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 		GetWorldTimerManager().ClearTimer(TimerHandle);
-
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::Landing, 0.0166f, true);
 }
-
-
 void ASpaceShip::Landing()
 {
-	State = ESpaceShipState::Landing;
-
 	float dist = CalculateDistanceToLand();
 	dist -= LandingHeight;
 
@@ -321,21 +348,39 @@ void ASpaceShip::Landing()
 		bOnOffEngines = true;
 		OnOffEngines();
 
+		State = ESpaceShipState::Landed;
+
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
 
-		if (PioneerManager)
-			GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::Spawning, 0.5f, true, 1.0f);
-		else
-			GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::TakingOff, 0.0166f, true, 4.0f);
-
-		return;
+		//// OnlineGameMode에서 실행
+		//StartSpawning();
 	}
 }
 
-void ASpaceShip::Spawning()
+void ASpaceShip::StartSpawning(int NumOfSpawn /*= 8*/)
 {
 	State = ESpaceShipState::Spawning;
+
+	PioneerNum = NumOfSpawn;
+	countPioneerNum = 0;
+
+	if (GetWorldTimerManager().IsTimerActive(TimerHandle))
+		GetWorldTimerManager().ClearTimer(TimerHandle);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::Spawning, 0.5f, true, 1.0f);
+}
+void ASpaceShip::Spawning()
+{
+	if (!PioneerManager)
+	{
+		State = ESpaceShipState::Landed;
+
+		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
+			GetWorldTimerManager().ClearTimer(TimerHandle);
+
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::Spawning()> if (!PioneerManager)"));
+		return;
+	}
 
 	// 개척자를 PioneerSpawnPoint 위치에 생성합니다.
 	PioneerManager->SpawnPioneer(PioneerSpawnPoint->GetComponentToWorld());
@@ -343,37 +388,46 @@ void ASpaceShip::Spawning()
 
 	if (countPioneerNum >= PioneerNum)
 	{
-		// 카메라를 개척자로 전환합니다.
-		PioneerManager->SwitchOtherPioneer(nullptr, 1.0f);
-
-		// 상승할 수 있도록 가속도를 높입니다.
-		Acceleration = FVector(0.0f, 0.0f, Gravity + 75.0f);
-
-		SetScaleOfEngineParticleSystem(0.0075f);
-
-		// 엔진을 점화합니다.
-		bOnOffEngines = true;
-		OnOffEngines();
-
-		// 이륙 애니메이션을 실행합니다.
-		PlayTakingOffAnimation(false, true, 0.0f, 3.0f);
+		State = ESpaceShipState::Spawned;
 
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
 
-		GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::TakingOff, 1.0f, true, 4.0f);
+		//// OnlineGameMode에서 실행
+		//StartTakingOff();
 	}
 }
 
-void ASpaceShip::TakingOff()
+void ASpaceShip::StartTakingOff()
 {
 	State = ESpaceShipState::TakingOff;
 
-	// Physics를 킵니다.
-	PhysicsBox->SetSimulatePhysics(true);
-	
-	SetScaleOfEngineParticleSystem(0.015f);
+	// 상승할 수 있도록 가속도를 높입니다.
+	Acceleration = FVector(0.0f, 0.0f, Gravity + 75.0f);
 
+	SetScaleOfEngineParticleSystem(0.0075f);
+
+	// 엔진을 점화합니다.
+	bOnOffEngines = true;
+	OnOffEngines();
+
+	// 이륙 애니메이션을 실행합니다.
+	PlayTakingOffAnimation(false, true, 0.0f, 3.0f);
+
+	if (GetWorldTimerManager().IsTimerActive(TimerHandle))
+		GetWorldTimerManager().ClearTimer(TimerHandle);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::TakingOff, 0.0166f, true, 4.0f);
+}
+void ASpaceShip::TakingOff()
+{
+	// Physics를 킵니다.
+	if (PhysicsBox->IsSimulatingPhysics() == false)
+	{
+		PhysicsBox->SetSimulatePhysics(true);
+
+		SetScaleOfEngineParticleSystem(0.015f);
+	}
+	
 	float dist = CalculateDistanceToLand();
 
 	if (25000.0f <= dist)
@@ -385,10 +439,13 @@ void ASpaceShip::TakingOff()
 	}
 }
 
+//////////////////////////
+// Helper 함수들
+//////////////////////////
 float ASpaceShip::CalculateDistanceToLand()
 {
 	// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
-	if (UWorld* World = GetWorld())
+	if (UWorld* world = GetWorld())
 	{
 		FVector WorldOrigin = GetActorLocation(); // 시작 위치
 		FVector WorldDirection = FVector::DownVector; // 방향
@@ -396,7 +453,7 @@ float ASpaceShip::CalculateDistanceToLand()
 		FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
 
 		TArray<FHitResult> hitResults; // 결과를 저장
-		World->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
+		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
 
 		int temp = 0;
 
@@ -451,7 +508,10 @@ void ASpaceShip::OnOffEngines()
 		bOnOffEngines = false;
 
 	if (!EngineParticleSystem || !EngineParticleSystem2)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::OnOffEngines()> if (!EngineParticleSystem || !EngineParticleSystem2)"));
 		return;
+	}
 
 	EngineParticleSystem->ToggleActive();
 	EngineParticleSystem2->ToggleActive();
@@ -460,7 +520,10 @@ void ASpaceShip::OnOffEngines()
 void ASpaceShip::SetScaleOfEngineParticleSystem(float Scale /*= 0.015f*/)
 {
 	if (!EngineParticleSystem || !EngineParticleSystem2)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::SetScaleOfEngineParticleSystem(...)> if (!EngineParticleSystem || !EngineParticleSystem2)"));
 		return;
+	}
 
 	EngineParticleSystem->SetRelativeScale3D(FVector(Scale));
 	EngineParticleSystem2->SetRelativeScale3D(FVector(Scale));
@@ -475,7 +538,10 @@ void ASpaceShip::PlayLandingAnimation(bool bIsLooping /*= false*/, bool bIsPlayi
 		bPlayalbeLandingAnim = false;
 
 	if (!SkeletalMesh)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::PlayLandingAnimation(...)> if (!SkeletalMesh)"));
 		return;
+	}
 
 	//SkeletalMesh->OverrideAnimationData(AnimSequence, bIsLooping, bIsPlaying, Position, PlayRate);
 	//SkeletalMesh->PlayAnimation(AnimSequence, false);
@@ -485,7 +551,11 @@ void ASpaceShip::PlayLandingAnimation(bool bIsLooping /*= false*/, bool bIsPlayi
 void ASpaceShip::PlayTakingOffAnimation(bool bIsLooping /*= false*/, bool bIsPlaying /*= true*/, float Position /*= 0.0f*/, float PlayRate /*= 1.0f*/)
 {
 	if (!SkeletalMesh)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::PlayLandingAnimation(...)> if (!SkeletalMesh)"));
 		return;
+	}
+
 
 	SkeletalMesh->OverrideAnimationData(AnimSequence, bIsLooping, bIsPlaying, Position, PlayRate);
 	SkeletalMesh->PlayAnimation(AnimSequence, false);
@@ -493,7 +563,13 @@ void ASpaceShip::PlayTakingOffAnimation(bool bIsLooping /*= false*/, bool bIsPla
 
 void ASpaceShip::RotateTargetRotation(float DeltaTime)
 {
-	if (!SpringArmComp || !bRotateTargetRotation)
+	if (!SpringArmComp)
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::RotateTargetRotation(...)> if (!SpringArmComp)"));
+		return;
+	}
+
+	if (!bRotateTargetRotation)
 		return;
 
 	FRotator CurrentRotation = SpringArmComp->RelativeRotation; // Normalized

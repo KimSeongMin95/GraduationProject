@@ -19,6 +19,8 @@
 /*** Basic Function : Start ***/
 AMainScreenGameMode::AMainScreenGameMode()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	//DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
 
 	OnlineState = EOnlineState::Idle;

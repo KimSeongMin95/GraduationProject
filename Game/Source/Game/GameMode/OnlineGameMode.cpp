@@ -15,6 +15,8 @@ const float AOnlineGameMode::CellSize = 64.0f;
 /*** Basic Function : Start ***/
 AOnlineGameMode::AOnlineGameMode()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	/***** 필수! 꼭 읽어주세요. : Start *****/
 	/*
 	Edit -> Project Settings -> Project -> Maps & Modes -> Default Modes에서
@@ -74,13 +76,13 @@ void AOnlineGameMode::StartPlay()
 
 	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(-8064.093f, -7581.192f, 20000.0f)));
 
+	SpaceShip->SetPioneerManager(PioneerManager);
 
-	if (PioneerController && SpaceShip)
+	if (PioneerController)
 	{
-		SpaceShip->SetPioneerManager(PioneerManager);
+		PioneerManager->SetPioneerController(PioneerController);
 
 		PioneerController->SetViewTargetWithBlend(SpaceShip);
-		UE_LOG(LogTemp, Warning, TEXT("[INFO] <AOnlineGameMode::StartPlay()> PioneerController->SetViewTargetWithBlend(SpaceShip);"));
 	}
 }
 
@@ -88,6 +90,19 @@ void AOnlineGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	//////////////
+	//// 임시
+	//////////////
+	//if (SpaceShip)
+	//{
+	//	if (SpaceShip->State == ESpaceShipState::Landed)
+	//		SpaceShip->StartSpawning(5);
+	//	else if (SpaceShip->State == ESpaceShipState::Spawned)
+	//	{
+	//		PioneerManager->SwitchOtherPioneer(nullptr, 2.0f);
+	//		SpaceShip->StartTakingOff();
+	//	}
+	//}
 }
 /*** Basic Function : End ***/
 
