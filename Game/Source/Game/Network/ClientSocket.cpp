@@ -118,6 +118,8 @@ void cClientSocket::Exit()
 cClientSocket::cClientSocket()
 	:StopTaskCounter(0)
 {
+	bIsConnected = false;
+
 	InitializeCriticalSection(&csMyInfo);
 	InitializeCriticalSection(&csMyInfoOfGame);
 }
@@ -173,12 +175,16 @@ bool cClientSocket::Connect(const char * pszIP, int nPort)
 		return false;
 	}
 
+	bIsConnected = true;
+
 	return true;
 }
 
 void cClientSocket::CloseSocket()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::CloseSocket()>"));
+
+	bIsConnected = false;
 
 	closesocket(ServerSocket);
 	WSACleanup();
@@ -306,7 +312,7 @@ void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
 	UE_LOG(LogTemp, Warning, TEXT("    SocketIDOfLeader: %d"), SocketIDOfLeader);
 
 	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
-	infoOfPlayer.SocketByServerOfLeader = SocketIDOfLeader;
+	infoOfPlayer.LeaderSocketByMainServer = SocketIDOfLeader;
 	SetMyInfo(infoOfPlayer);
 
 	stringstream sendStream;
@@ -358,7 +364,7 @@ void cClientSocket::RecvDestroyWaitingGame(stringstream& RecvStream)
 
 	// MyInfo의 SocketByServerOfLeader 초기화
 	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
-	infoOfPlayer.SocketByServerOfLeader = 0;
+	infoOfPlayer.LeaderSocketByMainServer = 0;
 	SetMyInfo(infoOfPlayer);
 
 	InitMyInfoOfGame();
@@ -378,7 +384,7 @@ void cClientSocket::SendExitWaitingGame()
 
 	// MyInfo의 SocketByServerOfLeader 초기화
 	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
-	infoOfPlayer.SocketByServerOfLeader = 0;
+	infoOfPlayer.LeaderSocketByMainServer = 0;
 	SetMyInfo(infoOfPlayer);
 
 	InitMyInfoOfGame();

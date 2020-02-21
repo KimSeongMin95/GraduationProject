@@ -28,7 +28,7 @@ MainServer::MainServer()
 	fnProcess[EPacketType::DESTROY_WAITING_GAME].funcProcessPacket = DestroyWaitingGame;
 	fnProcess[EPacketType::EXIT_WAITING_GAME].funcProcessPacket = ExitWaitingGame;
 	fnProcess[EPacketType::MODIFY_WAITING_GAME].funcProcessPacket = ModifyWaitingGame;
-	fnProcess[EPacketType::START_WAITING_GAME].funcProcessPacket = StartyWaitingGame;
+	fnProcess[EPacketType::START_WAITING_GAME].funcProcessPacket = StartWaitingGame;
 }
 
 MainServer::~MainServer()
@@ -209,7 +209,7 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	/// 아래의 InfoOfGames에서 제거에서 사용할 socketIDOfLeader를 획득합니다.
 	EnterCriticalSection(&csInfoOfClients);
 	if (InfoOfClients.find(pSocketInfo->socket) != InfoOfClients.end())
-		socketIDOfLeader = InfoOfClients.at(pSocketInfo->socket).SocketByServerOfLeader;
+		socketIDOfLeader = InfoOfClients.at(pSocketInfo->socket).LeaderSocketByMainServer;
 
 	/// 네트워크 연결을 종료한 클라이언트의 정보를 제거합니다.
 	printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
@@ -280,8 +280,8 @@ void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	cInfoOfPlayer infoOfPlayer;
 	RecvStream >> infoOfPlayer;
 	infoOfPlayer.IPv4Addr = pSocketInfo->IPv4Addr;
-	infoOfPlayer.SocketByServer = (int)pSocketInfo->socket;
-	infoOfPlayer.PortByServer = pSocketInfo->Port;
+	infoOfPlayer.SocketByMainServer = (int)pSocketInfo->socket;
+	infoOfPlayer.PortOfMainClient = pSocketInfo->Port;
 
 	EnterCriticalSection(&csInfoOfClients);
 	InfoOfClients[pSocketInfo->socket] = infoOfPlayer;
@@ -507,9 +507,9 @@ void MainServer::ExitWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 
 	EnterCriticalSection(&csInfoOfClients);
 	if (InfoOfClients.find(pSocketInfo->socket) != InfoOfClients.end())
-		socketIDOfLeader = InfoOfClients.at(pSocketInfo->socket).SocketByServerOfLeader;
+		socketIDOfLeader = InfoOfClients.at(pSocketInfo->socket).LeaderSocketByMainServer;
 
-	InfoOfClients.at(pSocketInfo->socket).SocketByServerOfLeader = 0;
+	InfoOfClients.at(pSocketInfo->socket).LeaderSocketByMainServer = 0;
 	LeaveCriticalSection(&csInfoOfClients);
 
 
@@ -637,9 +637,9 @@ void MainServer::ModifyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSock
 	printf_s("\n");
 }
 
-void MainServer::StartyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+void MainServer::StartWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 {
-	printf_s("[Recv by %d] <MainServer::StartyWaitingGame(...)>\n", (int)pSocketInfo->socket);
+	printf_s("[Recv by %d] <MainServer::StartWaitingGame(...)>\n", (int)pSocketInfo->socket);
 
 	/// 수신
 	cInfoOfGame infoOfGame;
@@ -648,7 +648,7 @@ void MainServer::StartyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSock
 	if (InfoOfGames.find(pSocketInfo->socket) == InfoOfGames.end())
 	{
 		/// 수신 - 에러
-		printf_s("[ERROR] <MainServer::StartyWaitingGame(...)> if (InfoOfGames.find(pSocketInfo->socket) == InfoOfGames.end()) \n");
+		printf_s("[ERROR] <MainServer::StartWaitingGame(...)> if (InfoOfGames.find(pSocketInfo->socket) == InfoOfGames.end()) \n");
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
@@ -682,7 +682,7 @@ void MainServer::StartyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSock
 
 			Send(client);
 
-			printf_s("[Send to %d] <MainServer::StartyWaitingGame(...)>\n", (int)client->socket);
+			printf_s("[Send to %d] <MainServer::StartWaitingGame(...)>\n", (int)client->socket);
 		}
 	}
 

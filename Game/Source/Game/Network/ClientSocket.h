@@ -10,7 +10,7 @@
 
 
 /**
- * 서버와 접속 및 패킷 처리를 담당하는 클래스
+ * 메인 서버와 접속 및 패킷 처리를 담당하는 클래스 (메인 클라이언트)
  */
 class GAME_API cClientSocket : public FRunnable
 {
@@ -22,6 +22,7 @@ private:
 	FRunnableThread* Thread;
 	FThreadSafeCounter StopTaskCounter;
 
+	bool bIsConnected;
 
 	class cInfoOfPlayer MyInfo;
 	CRITICAL_SECTION csMyInfo;
@@ -64,6 +65,9 @@ public:
 		static cClientSocket ins;
 		return &ins;
 	}
+
+	void SetConnected(bool bConnected) { bIsConnected = bConnected; }
+	bool IsConnected() { return bIsConnected; }
 
 	/////////////////////////////////////
 	// 서버와 통신

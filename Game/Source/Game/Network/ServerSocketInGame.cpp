@@ -23,6 +23,8 @@ unsigned int WINAPI CallWorkerThread(LPVOID p)
 
 cServerSocketInGame::cServerSocketInGame()
 {
+	bIsServerOn = false;
+
 	// 스레드 구동가능
 	bAccept = true;
 	bWorkerThread = true;
@@ -111,6 +113,8 @@ bool cServerSocketInGame::Initialize()
 	}
 	ResumeThread(hMainHandle);
 
+	bIsServerOn = true;
+
 	return true;
 }
 
@@ -192,6 +196,8 @@ void cServerSocketInGame::StartServer()
 
 void cServerSocketInGame::CloseServer()
 {
+	bIsServerOn = false;
+
 	// 작동중인 스레드를 강제로 종료
 	// 주의: 메모리누수가 발생합니다.
 	TerminateThread(hMainHandle, NULL);

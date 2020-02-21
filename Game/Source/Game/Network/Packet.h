@@ -259,22 +259,27 @@ class GAME_API cInfoOfPlayer
 public:
 	string ID;
 	string IPv4Addr; // IP 번호
-	int SocketByServer; // Online에서 서버로부터 부여된 소켓 번호
-	int SocketByLeader; // Game에서 방장으로부터 부여된 소켓 번호
-	int PortByServer; // Online에서 서버로부터 부여된 소켓 번호
-	int PortByLeader; // Game에서 방장으로부터 부여된 소켓 번호
-	int SocketByServerOfLeader; // 서버로부터 부여된 게임 방장의 소켓 번호
+
+	int SocketByMainServer; // 메인 서버로부터 부여된 클라이언트의 소켓 번호
+	int SocketByGameServer; // 게임 서버를 구동하는 방장으로부터 부여된 소켓 번호
+
+	int PortOfMainClient; // 메인 클라이언트가 메인 서버와 연결된 포트 번호
+	int PortOfGameServer; // 방장으로부터 구동된 게임 서버의 포트 번호
+	int PortOfGameClient; // 게임 클라이언트가 게임 서버와 연결된 포트 번호
+
+	int LeaderSocketByMainServer; // 메인 서버로부터 부여된 방장의 소켓 번호
 
 public:
 	cInfoOfPlayer()
 	{
 		ID = "NULL";
 		IPv4Addr = "NULL";
-		SocketByServer = 0;
-		SocketByLeader = 0;
-		PortByServer = 0;
-		PortByLeader = 0;
-		SocketByServerOfLeader = 0;
+		SocketByMainServer = 0;
+		SocketByGameServer = 0;
+		PortOfMainClient = 0;
+		PortOfGameServer = 0;
+		PortOfGameClient = 0;
+		LeaderSocketByMainServer = 0;
 	}
 	~cInfoOfPlayer()
 	{
@@ -285,11 +290,12 @@ public:
 	{
 		Stream << ReplaceCharInString(Info.ID, ' ', '_') << endl;
 		Stream << ReplaceCharInString(Info.IPv4Addr, ' ', '_') << endl;
-		Stream << Info.SocketByServer << endl;
-		Stream << Info.SocketByLeader << endl;
-		Stream << Info.PortByServer << endl;
-		Stream << Info.PortByLeader << endl;
-		Stream << Info.SocketByServerOfLeader << endl;
+		Stream << Info.SocketByMainServer << endl;
+		Stream << Info.SocketByGameServer << endl;
+		Stream << Info.PortOfMainClient << endl;
+		Stream << Info.PortOfGameServer << endl;
+		Stream << Info.PortOfGameClient << endl;
+		Stream << Info.LeaderSocketByMainServer << endl;
 
 		return Stream;
 	}
@@ -301,11 +307,12 @@ public:
 		Info.ID = ReplaceCharInString(Info.ID, '_', ' ');
 		Stream >> Info.IPv4Addr;
 		Info.IPv4Addr = ReplaceCharInString(Info.IPv4Addr, '_', ' ');
-		Stream >> Info.SocketByServer;
-		Stream >> Info.SocketByLeader;
-		Stream >> Info.PortByServer;
-		Stream >> Info.PortByLeader;
-		Stream >> Info.SocketByServerOfLeader;
+		Stream >> Info.SocketByMainServer;
+		Stream >> Info.SocketByGameServer;
+		Stream >> Info.PortOfMainClient;
+		Stream >> Info.PortOfGameServer;
+		Stream >> Info.PortOfGameClient;
+		Stream >> Info.LeaderSocketByMainServer;
 
 		return Stream;
 	}
@@ -313,8 +320,8 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByServer: %d, SocketByLeader: %d, PortByServer: %d, PortByLeader: %d, SocketByServerOfLeader: %d"),
-			Space, Space2, ANSI_TO_TCHAR(ID.c_str()), ANSI_TO_TCHAR(IPv4Addr.c_str()), SocketByServer, SocketByLeader, PortByServer, PortByLeader, SocketByServerOfLeader);
+		UE_LOG(LogTemp, Warning, TEXT("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByMainServer: %d, SocketByGameServer: %d, PortOfMainClient: %d, PortOfGameServer: %d, PortOfGameClient: %d, LeaderSocketByMainServer: %d"),
+			Space, Space2, ANSI_TO_TCHAR(ID.c_str()), ANSI_TO_TCHAR(IPv4Addr.c_str()), SocketByMainServer, SocketByGameServer, PortOfMainClient, PortOfGameServer, PortOfGameClient, LeaderSocketByMainServer);
 	}
 
 	// Convert

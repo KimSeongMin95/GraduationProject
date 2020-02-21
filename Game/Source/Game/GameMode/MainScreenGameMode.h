@@ -49,9 +49,10 @@ public:
 
 /*** AMainScreenGameMode : Start ***/
 private:
-
 	class cClientSocket* ClientSocket = nullptr;
-	bool bIsConnected;
+
+	class cServerSocketInGame* ServerSocketInGame = nullptr;
+	class cClientSocketInGame* ClientSocketInGame = nullptr;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 메인화면 */

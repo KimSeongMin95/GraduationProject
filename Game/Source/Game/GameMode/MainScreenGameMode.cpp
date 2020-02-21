@@ -6,7 +6,9 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Network/ClientSocket.h"
+
 #include "Network/ServerSocketInGame.h"
+#include "Network/ClientSocketInGame.h"
 
 #include "CustomWidget/MainScreenWidget.h"
 #include "CustomWidget/OnlineWidget.h"
@@ -39,6 +41,9 @@ void AMainScreenGameMode::BeginPlay()
 	}
 
 	ClientSocket = cClientSocket::GetSingleton();
+
+	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 
 	MainScreenWidget = NewObject<UMainScreenWidget>(this, FName("MainScreenWidget"));
 	MainScreenWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/MainScreen.MainScreen_C'", true);
@@ -366,7 +371,7 @@ void AMainScreenGameMode::_SendLogin()
 	ClientSocket->InitSocket();
 
 	//bIsConnected = ClientSocket->Connect("127.0.0.1", 8000);
-	bIsConnected = ClientSocket->Connect(TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
+	bool bIsConnected = ClientSocket->Connect(TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
 
 	if (!bIsConnected)
 	{
@@ -780,6 +785,33 @@ void AMainScreenGameMode::CountStartedGame()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::CountStartedGame()>"));
 
+	// 방장이면
+	if (WaitingGameWidget->IsLeader())
+	{
+		if (ServerSocketInGame)
+		{
+			ServerSocketInGame->Initialize();
+
+			if (ServerSocketInGame->IsServerOn())
+			{
+				// 게임 서버 정보를 메인 서버로 전송
+			}
+		}
+	}
+	// 참가자면
+	else
+	{
+		// 
+		if (ClientSocketInGame)
+		{
+			if (ClientSocketInGame->IsConnected())
+				ClientSocketInGame->CloseSocket();
+		}
+
+		
+	}
+
+
 	Count = 5;
 
 	if (GetWorldTimerManager().IsTimerActive(thCountStartedGame))
@@ -790,17 +822,16 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 {
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfCountStartedGame()>"));
 
-	if (!ClientSocket)
-	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfCountStartedGame()> if (!ClientSocket)"));
-		return;
-	}
-
 	if (!WaitingGameWidget)
 	{
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfCountStartedGame()> if (!WaitingGameWidget)"));
 		return;
 	}
+
+
+	// 게임 클라이언트가 게임 서버 정보를 메인 서버로부터 요청하고 얻으면 접속 시도
+
+
 
 	Count--;
 	if (Count <= 0)

@@ -19,10 +19,15 @@ struct FuncProcess
 	}
 };
 
+/**
+ * 게임 클라이언트와 접속 및 패킷 처리를 담당하는 클래스 (게임 서버)
+ */
 class GAME_API cServerSocketInGame
 {
 private:
 	FuncProcess	fnProcess[100];	// 패킷 처리 구조체
+
+	bool bIsServerOn;
 
 protected:
 	stSOCKETINFO*	SocketInfo = nullptr;	// 소켓 정보
@@ -78,6 +83,8 @@ public:
 		return &ins;
 	}
 
+	void SetServerOn(bool bServerOn) { bIsServerOn = bServerOn; }
+	bool IsServerOn() { return bIsServerOn; }
 	////////////////////////
 	// 통신
 	////////////////////////

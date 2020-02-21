@@ -65,10 +65,10 @@ void AOnlineGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	//ServerSocketInGame = cServerSocketInGame::GetSingleton();
 
-	if (ServerSocketInGame)
-		ServerSocketInGame->Initialize();
+	//if (ServerSocketInGame)
+	//	ServerSocketInGame->Initialize();
 }
 
 void AOnlineGameMode::StartPlay()
@@ -99,13 +99,14 @@ void AOnlineGameMode::Tick(float DeltaTime)
 	//////////////
 	//// юс╫ц
 	//////////////
-	temp += DeltaTime;
-	if (temp > 5.0f)
-	{
-		if (ServerSocketInGame)
-			ServerSocketInGame->CloseServer();
-		UGameplayStatics::OpenLevel(this, "MainScreen");
-	}
+	//temp += DeltaTime;
+	//if (temp > 5.0f)
+	//{
+	//	if (ServerSocketInGame)
+	//		ServerSocketInGame->CloseServer();
+	//	UGameplayStatics::OpenLevel(this, "MainScreen");
+	//}
+
 	//if (SpaceShip)
 	//{
 	//	if (SpaceShip->State == ESpaceShipState::Landed)

@@ -38,7 +38,7 @@ bool UOnlineGameWidget::InitWidget(UWorld* const World, const FString ReferenceP
 void UOnlineGameWidget::RevealGame(cInfoOfGame& InfoOfGame)
 {
 	// 게임 방장의 소켓 번호
-	int socketID = InfoOfGame.Leader.SocketByServer;
+	int socketID = InfoOfGame.Leader.SocketByMainServer;
 
 	// 이미 존재하면 정보만 바꿉니다.
 	if (mapOnlineGameWidget.find(socketID) != mapOnlineGameWidget.end())
@@ -70,7 +70,7 @@ void UOnlineGameWidget::RevealGame(cInfoOfGame& InfoOfGame)
 UMyButton* UOnlineGameWidget::BindButton(cInfoOfGame& InfoOfGame)
 {
 	// 게임 방장의 소켓 번호
-	int socketID = InfoOfGame.Leader.SocketByServer;
+	int socketID = InfoOfGame.Leader.SocketByMainServer;
 
 	if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())
 	{
