@@ -29,6 +29,8 @@ MainServer::MainServer()
 	fnProcess[EPacketType::EXIT_WAITING_GAME].funcProcessPacket = ExitWaitingGame;
 	fnProcess[EPacketType::MODIFY_WAITING_GAME].funcProcessPacket = ModifyWaitingGame;
 	fnProcess[EPacketType::START_WAITING_GAME].funcProcessPacket = StartWaitingGame;
+	fnProcess[EPacketType::ACTIVATE_GAME_SERVER].funcProcessPacket = ActivateGameServer;
+	fnProcess[EPacketType::REQUEST_INFO_OF_GAME_SERVER].funcProcessPacket = RequestInfoOfGameServer;
 }
 
 MainServer::~MainServer()
@@ -201,15 +203,15 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 
 	/*********************************************************************************/
 
-	int socketIDOfLeader = 0;
+	int leaderSocketByMainServer = 0;
 
 	///////////////////////////
 	// InfoOfClients에서 제거
 	///////////////////////////
-	/// 아래의 InfoOfGames에서 제거에서 사용할 socketIDOfLeader를 획득합니다.
+	/// 아래의 InfoOfGames에서 제거에서 사용할 leaderSocketByMainServer를 획득합니다.
 	EnterCriticalSection(&csInfoOfClients);
 	if (InfoOfClients.find(pSocketInfo->socket) != InfoOfClients.end())
-		socketIDOfLeader = InfoOfClients.at(pSocketInfo->socket).LeaderSocketByMainServer;
+		leaderSocketByMainServer = InfoOfClients.at(pSocketInfo->socket).LeaderSocketByMainServer;
 
 	/// 네트워크 연결을 종료한 클라이언트의 정보를 제거합니다.
 	printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
@@ -230,8 +232,8 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	}
 
 	/// 네트워크 연결을 종료한 클라이언트가 소속된 게임방을 찾아서 Players에서 제거합니다.
-	if (InfoOfGames.find((SOCKET)socketIDOfLeader) != InfoOfGames.end())
-		InfoOfGames.at((SOCKET)socketIDOfLeader).Players.Remove((int)pSocketInfo->socket);
+	if (InfoOfGames.find((SOCKET)leaderSocketByMainServer) != InfoOfGames.end())
+		InfoOfGames.at((SOCKET)leaderSocketByMainServer).Players.Remove((int)pSocketInfo->socket);
 	//// 위와 동일하지만 성능이 떨어지므로 사용하지 않습니다.
 	//for (auto& kvp : InfoOfGames)
 	//{
@@ -357,11 +359,11 @@ void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 	printf_s("[Recv by %d] <MainServer::JoinWaitingGame(...)>\n", (int)pSocketInfo->socket);
 
 	/// 수신
-	int socketIDOfLeader;
+	int leaderSocketByMainServer;
 	cInfoOfPlayer infoOfPlayer;
 	cInfoOfGame infoOfGame;
 
-	RecvStream >> socketIDOfLeader;
+	RecvStream >> leaderSocketByMainServer;
 	RecvStream >> infoOfPlayer;
 
 	// 클라이언트 정보 적용
@@ -380,15 +382,15 @@ void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 
 	// 게임방 정보 적용
 	EnterCriticalSection(&csInfoOfGames);
-	if (InfoOfGames.find((SOCKET)socketIDOfLeader) == InfoOfGames.end())
+	if (InfoOfGames.find((SOCKET)leaderSocketByMainServer) == InfoOfGames.end())
 	{
 		/// 수신 - 에러
-		printf_s("[ERROR] <MainServer::JoinWaitingGame(...)> if (InfoOfGames.find((SOCKET)socketIDOfLeader) == InfoOfGames.end()) \n");
+		printf_s("[ERROR] <MainServer::JoinWaitingGame(...)> if (InfoOfGames.find((SOCKET)leaderSocketByMainServer) == InfoOfGames.end()) \n");
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
-	InfoOfGames.at((SOCKET)socketIDOfLeader).Players.Add((int)pSocketInfo->socket, infoOfPlayer);
-	infoOfGame = InfoOfGames.at((SOCKET)socketIDOfLeader);
+	InfoOfGames.at((SOCKET)leaderSocketByMainServer).Players.Add((int)pSocketInfo->socket, infoOfPlayer);
+	infoOfGame = InfoOfGames.at((SOCKET)leaderSocketByMainServer);
 	LeaveCriticalSection(&csInfoOfGames);
 	
 	infoOfGame.PrintInfo();
@@ -402,8 +404,8 @@ void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 	stSOCKETINFO* client = nullptr;
 
 	EnterCriticalSection(&csClients);
-	if (Clients.find((SOCKET)socketIDOfLeader) != Clients.end())
-		client = Clients.at((SOCKET)socketIDOfLeader);
+	if (Clients.find((SOCKET)leaderSocketByMainServer) != Clients.end())
+		client = Clients.at((SOCKET)leaderSocketByMainServer);
 	LeaveCriticalSection(&csClients);
 
 	if (client)
@@ -450,6 +452,23 @@ void MainServer::DestroyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSoc
 
 	/// 수신 by 방장
 	cInfoOfPlayers players;
+
+
+	EnterCriticalSection(&csInfoOfClients);
+	if (InfoOfClients.find(pSocketInfo->socket) == InfoOfClients.end())
+	{
+		/// 송신 - 에러
+		printf_s("[ERROR] <MainServer::DestroyWaitingGame(...)> if (InfoOfClients.find(pSocketInfo->socket) == InfoOfClients.end()) \n");
+		LeaveCriticalSection(&csInfoOfClients);
+		return;
+	}
+
+	InfoOfClients.at(pSocketInfo->socket).SocketByGameServer = 0;
+	InfoOfClients.at(pSocketInfo->socket).PortOfGameServer = 0;
+	InfoOfClients.at(pSocketInfo->socket).PortOfGameClient = 0;
+	InfoOfClients.at(pSocketInfo->socket).LeaderSocketByMainServer = 0;
+	LeaveCriticalSection(&csInfoOfClients);
+
 
 	EnterCriticalSection(&csInfoOfGames);
 	if (InfoOfGames.find(pSocketInfo->socket) == InfoOfGames.end())
@@ -501,31 +520,42 @@ void MainServer::ExitWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 	printf_s("[Recv by %d] <MainServer::ExitWaitingGame(...)>\n", (int)pSocketInfo->socket);
 
 	/// 수신
-	int socketIDOfLeader = 0;
+	int leaderSocketByMainServer = 0;
 	cInfoOfGame infoOfGame;
 
 
 	EnterCriticalSection(&csInfoOfClients);
-	if (InfoOfClients.find(pSocketInfo->socket) != InfoOfClients.end())
-		socketIDOfLeader = InfoOfClients.at(pSocketInfo->socket).LeaderSocketByMainServer;
+	if (InfoOfClients.find(pSocketInfo->socket) == InfoOfClients.end())
+	{
+		/// 수신 - 에러
+		printf_s("[ERROR] <MainServer::ExitWaitingGame(...)> if (InfoOfClients.find(pSocketInfo->socket) == InfoOfClients.end()) \n");
+		LeaveCriticalSection(&csInfoOfClients);
+		return;
+	}
 
+	leaderSocketByMainServer = InfoOfClients.at(pSocketInfo->socket).LeaderSocketByMainServer;
+
+	InfoOfClients.at(pSocketInfo->socket).SocketByGameServer = 0;
+	InfoOfClients.at(pSocketInfo->socket).PortOfGameServer = 0;
+	InfoOfClients.at(pSocketInfo->socket).PortOfGameClient = 0;
 	InfoOfClients.at(pSocketInfo->socket).LeaderSocketByMainServer = 0;
+	
 	LeaveCriticalSection(&csInfoOfClients);
 
 
 	EnterCriticalSection(&csInfoOfGames);
-	if (InfoOfGames.find((SOCKET)socketIDOfLeader) == InfoOfGames.end())
+	if (InfoOfGames.find((SOCKET)leaderSocketByMainServer) == InfoOfGames.end())
 	{
 		/// 수신 - 에러
-		printf_s("[ERROR] <MainServer::ExitWaitingGame(...)> if (InfoOfGames.find((SOCKET)socketIDOfLeader) == InfoOfGames.end()) \n");
+		printf_s("[ERROR] <MainServer::ExitWaitingGame(...)> if (InfoOfGames.find((SOCKET)leaderSocketByMainServer) == InfoOfGames.end()) \n");
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
-	printf_s("\t Players.Size(): %d", (int)InfoOfGames.at((SOCKET)socketIDOfLeader).Players.Size());
-	InfoOfGames.at((SOCKET)socketIDOfLeader).Players.Remove((int)pSocketInfo->socket);
-	printf_s("\t Players.Size(): %d", (int)InfoOfGames.at((SOCKET)socketIDOfLeader).Players.Size());
+	printf_s("\t Players.Size(): %d", (int)InfoOfGames.at((SOCKET)leaderSocketByMainServer).Players.Size());
+	InfoOfGames.at((SOCKET)leaderSocketByMainServer).Players.Remove((int)pSocketInfo->socket);
+	printf_s("\t Players.Size(): %d", (int)InfoOfGames.at((SOCKET)leaderSocketByMainServer).Players.Size());
 
-	infoOfGame = InfoOfGames.at((SOCKET)socketIDOfLeader);
+	infoOfGame = InfoOfGames.at((SOCKET)leaderSocketByMainServer);
 	LeaveCriticalSection(&csInfoOfGames);
 
 	infoOfGame.PrintInfo();
@@ -539,8 +569,8 @@ void MainServer::ExitWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 	stSOCKETINFO* client = nullptr;
 
 	EnterCriticalSection(&csClients);
-	if (Clients.find((SOCKET)socketIDOfLeader) != Clients.end())
-		client = Clients.at((SOCKET)socketIDOfLeader);
+	if (Clients.find((SOCKET)leaderSocketByMainServer) != Clients.end())
+		client = Clients.at((SOCKET)leaderSocketByMainServer);
 	LeaveCriticalSection(&csClients);
 
 	if (client)
@@ -656,7 +686,6 @@ void MainServer::StartWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocke
 	}
 
 	// 송신을 위해 다시 복사
-	InfoOfGames.at(pSocketInfo->socket).State = string("Playing");
 	infoOfGame = InfoOfGames.at(pSocketInfo->socket);
 	LeaveCriticalSection(&csInfoOfGames);
 
@@ -689,6 +718,92 @@ void MainServer::StartWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocke
 	}
 
 	printf_s("\n");
+}
+
+
+
+
+void MainServer::ActivateGameServer(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Recv by %d] <MainServer::ActivateGameServer(...)>\n", (int)pSocketInfo->socket);
+
+	/// 수신
+	cInfoOfPlayer infoOfPlayer;
+
+	RecvStream >> infoOfPlayer;
+
+	infoOfPlayer.PrintInfo();
+
+	EnterCriticalSection(&csInfoOfClients);
+	if (InfoOfClients.find(pSocketInfo->socket) == InfoOfClients.end())
+	{
+		/// 수신 - 에러
+		printf_s("[ERROR] <MainServer::ActivateGameServer(...)> if (InfoOfClients.find(pSocketInfo->socket) == InfoOfClients.end()) \n");
+		LeaveCriticalSection(&csInfoOfClients);
+		return;
+	}
+	InfoOfClients.at(pSocketInfo->socket) = infoOfPlayer;
+	LeaveCriticalSection(&csInfoOfClients);
+
+	EnterCriticalSection(&csInfoOfGames);
+	if (InfoOfGames.find(pSocketInfo->socket) == InfoOfGames.end())
+	{
+		/// 수신 - 에러
+		printf_s("[ERROR] <MainServer::ActivateGameServer(...)> if (InfoOfGames.find(pSocketInfo->socket) == InfoOfGames.end()) \n");
+		LeaveCriticalSection(&csInfoOfGames);
+		return;
+	}
+	InfoOfGames.at(pSocketInfo->socket).State = string("Playing");
+	InfoOfGames.at(pSocketInfo->socket).Leader = infoOfPlayer;
+	LeaveCriticalSection(&csInfoOfGames);
+
+	/// 송신 X
+}
+
+void MainServer::RequestInfoOfGameServer(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Recv by %d] <MainServer::RequestInfoOfGameServer(...)>\n", (int)pSocketInfo->socket);
+
+	/// 수신
+	cInfoOfPlayer infoOfPlayer;
+	int leaderSocketByMainServer;
+
+	RecvStream >> leaderSocketByMainServer;
+
+	printf_s("\t <MainServer::RequestInfoOfGameServer(...)> leaderSocketByMainServer: %d\n", leaderSocketByMainServer);
+
+	EnterCriticalSection(&csInfoOfClients);
+	if (InfoOfClients.find((SOCKET)leaderSocketByMainServer) == InfoOfClients.end())
+	{
+		/// 수신 - 에러
+		printf_s("[ERROR] <MainServer::RequestInfoOfGameServer(...)> if (InfoOfClients.find((SOCKET)leaderSocketByMainServer) == InfoOfClients.end()) \n");
+		LeaveCriticalSection(&csInfoOfClients);
+		return;
+	}
+	infoOfPlayer = InfoOfClients.at((SOCKET)leaderSocketByMainServer);
+	LeaveCriticalSection(&csInfoOfClients);
+
+	infoOfPlayer.PrintInfo();
+
+	// 아직 게임 서버가 구동되지 않았다면 송신하지 않습니다.
+	if (infoOfPlayer.PortOfGameServer <= 0)
+	{
+		printf_s("[ERROR] <MainServer::RequestInfoOfGameServer(...)> if (infoOfPlayer.PortOfGameServer <= 0) \n");
+		return;
+	}
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::REQUEST_INFO_OF_GAME_SERVER << endl;
+	sendStream << infoOfPlayer << endl;
+
+	CopyMemory(pSocketInfo->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
+	pSocketInfo->dataBuf.len = sendStream.str().length();
+
+	Send(pSocketInfo);
+
+	printf_s("[Send to %d] <MainServer::RequestInfoOfGameServer(...)>\n", (int)pSocketInfo->socket);
 }
 
 

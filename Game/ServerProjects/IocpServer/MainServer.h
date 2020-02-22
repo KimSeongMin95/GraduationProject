@@ -39,9 +39,9 @@ public:
 
 
 private:
-	/////////////////////////////////////
-	// 패킷 처리 함수
-	/////////////////////////////////////
+	///////////////////////////////////////////
+	// Main Server / Main Clients
+	///////////////////////////////////////////
 	static void Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
 	
 	static void CreateGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
@@ -57,6 +57,13 @@ private:
 	static void ModifyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 	static void StartWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
+
+	///////////////////////////////////////////
+	// Game Server / Game Clients
+	///////////////////////////////////////////
+	static void ActivateGameServer(stringstream& RecvStream, stSOCKETINFO* pSocket);
+
+	static void RequestInfoOfGameServer(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 
 

@@ -162,7 +162,9 @@ enum EPacketType
 	*/
 
 
-
+	///////////////////////////////////////////
+	// Main Server / Main Clients
+	///////////////////////////////////////////
 
 	/** 플레이어가 OnlineWidget에서 LOGIN 하면 
 	Client:
@@ -194,6 +196,7 @@ enum EPacketType
 	*/
 	FIND_GAMES,
 
+	/** 대기방 정보 변경시 */
 	WAITING_GAME, 
 
 	/** 플레이어가 Join 버튼으로 대기방에 들어가면
@@ -206,7 +209,6 @@ enum EPacketType
 		Send [WAITING_GAME] to 플레이어들(해당 클라이언트 포함): 해당 대기방의 cInfoOfGame
 	*/
 	JOIN_WAITING_GAME,
-
 
 	/** 방장이 대기방에서 Back 버튼을 눌러 대기방을 종료하면
 	Client:
@@ -244,12 +246,35 @@ enum EPacketType
 		Send [START_WAITING_GAME]: O
 		Recv [START_WAITING_GAME]: O
 	Server:
-		Recv [START_WAITING_GAME] by 방장:
-		Send [START_WAITING_GAME] to 플레이어들(방장 제외): 
+		Recv [START_WAITING_GAME] by 방장: O
+		Send [START_WAITING_GAME] to 플레이어들(방장 제외): O
 	*/
 	START_WAITING_GAME,
 
 
+	///////////////////////////////////////////
+	// Game Server / Game Clients
+	///////////////////////////////////////////
+
+	/** 방장이 대기방에서 게임을 시작하고 CountStartedGame()에서 게임 서버 초기화에 성공하면
+	Client:
+		Send [ACTIVATE_GAME_SERVER]: MyInfo에 PortOfGameServer를 저장하고 MyInfo를 전송
+		Recv []: X
+	Server:
+		Recv [ACTIVATE_GAME_SERVER] by 방장: 수신한 cInfoOfPlayer를 InfoOfClients와 InfoOfGames의 Leader에 적용
+		Send []: X
+	*/
+	ACTIVATE_GAME_SERVER,
+
+	/** 참가자가 게임 클라이언트를 게임 서버와 연결시키기 위해 게임 서버 정보를 요청
+	Client:
+		Send [REQUEST_INFO_OF_GAME_SERVER]: MyInfo의 LeaderSocketByMainServer
+		Recv [REQUEST_INFO_OF_GAME_SERVER]: cInfoOfPlayer를 받고 IPv4Addr와 PortOfGameServer를 획득
+	Server:
+		Recv [REQUEST_INFO_OF_GAME_SERVER]: LeaderSocketByMainServer
+		Send [REQUEST_INFO_OF_GAME_SERVER]: cInfoOfPlayer infoOfPlayer = InfoOfClients.at((SOCKET)leaderSocketByMainServer);하고 infoOfPlayer 전송
+	*/
+	REQUEST_INFO_OF_GAME_SERVER,
 
 
 	JOIN_PLAYING_GAME,	  // 어떤 플레이어가 진행중인 게임에 들어올 때: 해당 게임의 플레이어들과 FIND_GAMES인 플레이어들에게 브로드캐스팅 해야 함.

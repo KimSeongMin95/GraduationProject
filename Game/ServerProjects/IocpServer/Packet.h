@@ -61,6 +61,9 @@ enum EPacketType
 	*/
 
 
+	///////////////////////////////////////////
+	// Main Server / Main Clients
+	///////////////////////////////////////////
 
 	/** 플레이어가 OnlineWidget에서 LOGIN 하면
 	Client:
@@ -92,6 +95,7 @@ enum EPacketType
 	*/
 	FIND_GAMES,
 
+	/** 대기방 정보 변경시 */
 	WAITING_GAME,
 
 	/** 플레이어가 Join 버튼으로 대기방에 들어가면
@@ -147,6 +151,30 @@ enum EPacketType
 	*/
 	START_WAITING_GAME,
 
+
+	///////////////////////////////////////////
+	// Game Server / Game Clients
+	///////////////////////////////////////////
+
+	/** 방장이 대기방에서 게임을 시작하고 CountStartedGame()에서 게임 서버 초기화에 성공하면
+	Client:
+		Send [ACTIVATE_GAME_SERVER]: MyInfo에 PortOfGameServer를 저장하고 MyInfo를 전송
+		Recv []: X
+	Server:
+		Recv [ACTIVATE_GAME_SERVER] by 방장: 수신한 cInfoOfPlayer를 InfoOfClients와 InfoOfGames의 Leader에 적용
+		Send []: X
+	*/
+	ACTIVATE_GAME_SERVER,
+
+	/** 참가자가 게임 클라이언트를 게임 서버와 연결시키기 위해 게임 서버 정보를 요청
+	Client:
+		Send [REQUEST_INFO_OF_GAME_SERVER]: MyInfo의 LeaderSocketByMainServer
+		Recv [REQUEST_INFO_OF_GAME_SERVER]: cInfoOfPlayer를 받고 IPv4Addr와 PortOfGameServer를 획득
+	Server:
+		Recv [REQUEST_INFO_OF_GAME_SERVER]: LeaderSocketByMainServer
+		Send [REQUEST_INFO_OF_GAME_SERVER]: cInfoOfPlayer infoOfPlayer = InfoOfClients.at((SOCKET)leaderSocketByMainServer);하고 infoOfPlayer 전송
+	*/
+	REQUEST_INFO_OF_GAME_SERVER,
 
 
 

@@ -199,6 +199,12 @@ public:
 		void StartOnlineGame();
 
 	UFUNCTION(Category = "Widget")
+		void GameClientConnectGameServer();
+
+	UFUNCTION(Category = "Widget")
+		void ClearAllRecvedQueue();
+
+	UFUNCTION(Category = "Widget")
 		void RecvAndApply();
 	UFUNCTION(Category = "Timer")
 		void TimerOfRecvAndApply();

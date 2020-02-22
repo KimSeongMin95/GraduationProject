@@ -92,7 +92,7 @@ cClientSocketInGame::~cClientSocketInGame()
 
 bool cClientSocketInGame::InitSocket()
 {
-	printf_s("\n\n/********** cClientSocket **********/\n");
+	printf_s("\n\n/********** cClientSocketInGame **********/\n");
 	printf_s("[INFO] <cClientSocketInGame::InitSocket()>\n");
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::InitSocket()>"));
 

@@ -69,9 +69,9 @@ public:
 	void SetConnected(bool bConnected) { bIsConnected = bConnected; }
 	bool IsConnected() { return bIsConnected; }
 
-	/////////////////////////////////////
-	// 서버와 통신
-	/////////////////////////////////////
+	///////////////////////////////////////////
+	// Main Server / Main Clients
+	///////////////////////////////////////////
 	void SendLogin(const FText ID);
 	void RecvLogin(stringstream& RecvStream);
 
@@ -99,6 +99,16 @@ public:
 	void SendStartWaitingGame();
 	void RecvStartWaitingGame(stringstream& RecvStream);
 	cThreadSafeQueue<bool> tsqStartWaitingGame;
+
+
+	///////////////////////////////////////////
+	// Game Server / Game Clients
+	///////////////////////////////////////////
+	void SendActivateGameServer(int PortOfGameServer);
+
+	void SendRequestInfoOfGameServer();
+	void RecvRequestInfoOfGameServer(stringstream& RecvStream);
+	cThreadSafeQueue<cInfoOfPlayer> tsqRequestInfoOfGameServer;
 
 
 	/////////////////////////////////////

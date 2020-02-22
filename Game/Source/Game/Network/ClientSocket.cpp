@@ -88,7 +88,11 @@ uint32 cClientSocket::Run()
 				RecvStartWaitingGame(RecvStream);
 			}
 			break;
-
+			case EPacketType::REQUEST_INFO_OF_GAME_SERVER:
+			{
+				RecvRequestInfoOfGameServer(RecvStream);
+			}
+			break;
 			default:
 			{
 				
@@ -491,8 +495,60 @@ void cClientSocket::RecvStartWaitingGame(stringstream& RecvStream)
 	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvStartWaitingGame(...)>"));
 }
 
+void cClientSocket::SendActivateGameServer(int PortOfGameServer)
+{
+	printf_s("[Start] <cClientSocket::SendActivateGameServer(...)\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendActivateGameServer(...)>"));
 
+	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
+	infoOfPlayer.PortOfGameServer = PortOfGameServer;
+	SetMyInfo(infoOfPlayer);
 
+	infoOfPlayer.PrintInfo();
+
+	stringstream sendStream;
+	sendStream << EPacketType::ACTIVATE_GAME_SERVER << endl;
+	sendStream << infoOfPlayer << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+	printf_s("[End] <cClientSocket::SendActivateGameServer(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendActivateGameServer(...)>"));
+}
+
+void cClientSocket::SendRequestInfoOfGameServer()
+{
+	printf_s("[Start] <cClientSocket::SendRequestInfoOfGameServer()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendRequestInfoOfGameServer()>"));
+
+	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
+	infoOfPlayer.PrintInfo();
+
+	stringstream sendStream;
+	sendStream << EPacketType::REQUEST_INFO_OF_GAME_SERVER << endl;
+	sendStream << infoOfPlayer.LeaderSocketByMainServer << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+	printf_s("[End] <cClientSocket::SendRequestInfoOfGameServer()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendRequestInfoOfGameServer()>"));
+}
+void cClientSocket::RecvRequestInfoOfGameServer(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocket::RecvRequestInfoOfGameServer(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvRequestInfoOfGameServer(...)>"));
+
+	cInfoOfPlayer infoOfPlayer;
+
+	RecvStream >> infoOfPlayer;
+
+	infoOfPlayer.PrintInfo();
+
+	tsqRequestInfoOfGameServer.push(infoOfPlayer);
+
+	printf_s("[End] <cClientSocket::RecvRequestInfoOfGameServer(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvRequestInfoOfGameServer(...)>"));
+}
 
 
 

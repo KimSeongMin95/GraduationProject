@@ -6,8 +6,6 @@
 
 #include "Packet.h"
 
-#define SERVER_PORT		9000
-
 // 패킷 처리 함수 포인터
 struct FuncProcess
 {
@@ -27,6 +25,7 @@ class GAME_API cServerSocketInGame
 private:
 	FuncProcess	fnProcess[100];	// 패킷 처리 구조체
 
+	int ServerPort;
 	bool bIsServerOn;
 
 protected:
@@ -85,6 +84,7 @@ public:
 
 	void SetServerOn(bool bServerOn) { bIsServerOn = bServerOn; }
 	bool IsServerOn() { return bIsServerOn; }
+	int GetServerPort() { return ServerPort; }
 	////////////////////////
 	// 통신
 	////////////////////////

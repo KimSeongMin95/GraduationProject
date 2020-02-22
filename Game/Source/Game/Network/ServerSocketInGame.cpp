@@ -23,6 +23,7 @@ unsigned int WINAPI CallWorkerThread(LPVOID p)
 
 cServerSocketInGame::cServerSocketInGame()
 {
+	ServerPort = 9000;
 	bIsServerOn = false;
 
 	// 스레드 구동가능
@@ -46,7 +47,7 @@ cServerSocketInGame::~cServerSocketInGame()
 
 bool cServerSocketInGame::Initialize()
 {
-	/// 안정성을 보장하기 위하여, 작동주인 서버를 닫아줍니다.
+	/// 안정성을 보장하기 위하여, 작동중인 서버를 닫아줍니다.
 	CloseServer();
 
 	printf_s("\n\n/********** cServerSocketInGame **********/\n");
@@ -73,7 +74,7 @@ bool cServerSocketInGame::Initialize()
 	// 서버 정보 설정
 	SOCKADDR_IN serverAddr;
 	serverAddr.sin_family = PF_INET;
-	serverAddr.sin_port = htons(SERVER_PORT);
+	serverAddr.sin_port = htons(ServerPort);
 	serverAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 
 	// 소켓 설정
@@ -112,7 +113,7 @@ bool cServerSocketInGame::Initialize()
 	ResumeThread(hMainHandle);
 
 	bIsServerOn = true;
-
+	
 	return true;
 }
 
@@ -206,6 +207,9 @@ void cServerSocketInGame::CloseServer()
 {
 	bIsServerOn = false;
 
+	// PostQueuedCompletionStatus로 GetQueuedCompletionStatus에서 빠져나오게 하여 종료시키는 방법?
+
+
 	// 작동중인 스레드를 강제로 종료
 	// 주의: 메모리누수가 발생합니다.
 	TerminateThread(hMainHandle, NULL);
@@ -213,13 +217,24 @@ void cServerSocketInGame::CloseServer()
 		TerminateThread(hWorkerHandle[i], NULL);
 	nThreadCnt = 0; // 주의!: 무조건 다시 0으로 초기화해줘야 handled exception이 발생하지 않습니다.
 
-	// 다 사용한 객체를 삭제
-	if (SocketInfo)
+	closesocket(ListenSocket);
+	WSACleanup();
+
+	//// 다 사용한 객체를 삭제
+	//if (SocketInfo)
+	//{
+	//	// 배열 할당 해제
+	//	delete[] SocketInfo;
+	//	SocketInfo = nullptr;
+	//}
+	EnterCriticalSection(&csGameClients);
+	for (auto& kvp : GameClients)
 	{
-		// 배열 할당 해제
-		delete[] SocketInfo;
-		SocketInfo = nullptr;
+		if (kvp.second)
+			delete kvp.second;
 	}
+	GameClients.clear();
+	LeaveCriticalSection(&csGameClients);
 
 	if (hWorkerHandle)
 	{
@@ -227,9 +242,6 @@ void cServerSocketInGame::CloseServer()
 		delete[] hWorkerHandle;
 		hWorkerHandle = nullptr;
 	}
-
-	closesocket(ListenSocket);
-	WSACleanup();
 }
 
 bool cServerSocketInGame::CreateWorkerThread()
@@ -306,12 +318,6 @@ void cServerSocketInGame::WorkerThread()
 			continue;
 		}
 
-		if (!pSocketInfo)
-		{
-			printf_s("[ERROR] <cServerSocketInGame::WorkerThread()> if (!pSocketInfo)\n");
-			continue;
-		}
-
 		pSocketInfo->dataBuf.len = recvBytes;
 
 		// 정상 접속 끊김은 GetQueuedCompletionStatus가 TRUE를 리턴하고 수신바이트 크기가 0입니다.
@@ -358,7 +364,7 @@ void cServerSocketInGame::CloseSocket(stSOCKETINFO* pSocketInfo)
 		return;
 	}
 
-	printf_s("[INFO] <cServerSocketInGame::CloseSocket(...)>\n");
+	printf_s("[Start] <cServerSocketInGame::CloseSocket(...)>\n");
 
 	/// Clients에서 제거
 	EnterCriticalSection(&csGameClients);
@@ -368,8 +374,17 @@ void cServerSocketInGame::CloseSocket(stSOCKETINFO* pSocketInfo)
 	LeaveCriticalSection(&csGameClients);
 
 	closesocket(pSocketInfo->socket);
-	free(pSocketInfo);
+	printf_s("[End] <cServerSocketInGame::CloseSocket(...)> closesocket(pSocketInfo->socket);\n");
+
+	// 중단점 예외처리하는 문제로 인해 free 대신에 if (pSocketInfo) 검사 후, delete 사용
+	//free(pSocketInfo);
+	if (pSocketInfo)
+		delete pSocketInfo;
+	printf_s("[End] <cServerSocketInGame::CloseSocket(...)> if (pSocketInfo) delete pSocketInfo;\n");
+
 	pSocketInfo = nullptr;
+
+	printf_s("[End] <cServerSocketInGame::CloseSocket(...)>\n");
 }
 
 void cServerSocketInGame::Send(stSOCKETINFO* pSocketInfo)
