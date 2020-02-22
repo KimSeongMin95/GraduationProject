@@ -1,52 +1,8 @@
 #pragma once
 
-// 멀티바이트 집합 사용시 define
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-
-// winsock2 사용을 위해 아래 코멘트 추가
-#pragma comment(lib, "ws2_32.lib")
-
-#include <WinSock2.h>
-#include <iostream>
-#include <process.h>
-#include <sstream>
-#include <algorithm>
-#include <string>
-
 #include "Packet.h"
 
 using namespace std;
-
-#define	MAX_BUFFER		4096
-#define SERVER_PORT		8000
-#define MAX_CLIENTS		1000
-
-// IOCP 소켓 구조체
-struct stSOCKETINFO
-{
-	WSAOVERLAPPED	overlapped;
-	WSABUF			dataBuf;
-	SOCKET			socket;
-	char			messageBuffer[MAX_BUFFER];
-	int				recvBytes;
-	int				sendBytes;
-
-	string			IPv4Addr; // 클라이언트의 IP 주소
-	int				Port;	  // 클라이언트의 Port 주소
-};
-
-//// 쓰면 간단해지나 Custom이므로 유효성을 보장할 수 없으므로 아주 나중에 사용해볼 것.
-//template <typename T>
-//class cThreadSafeMap
-//{
-//private:
-//	std::map<SOCKET, T> m;
-//	CRITICAL_SECTION cs;
-//
-//public:
-//	cThreadSafeMap() { InitializeCriticalSection(&cs); }
-//	~cThreadSafeMap() { DeleteCriticalSection(&cs); }
-//};
 
 // 패킷 처리 함수 포인터
 struct FuncProcess

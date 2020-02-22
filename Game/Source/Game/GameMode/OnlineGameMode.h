@@ -38,9 +38,10 @@ public:
 
 /*** AMainScreenGameMode : Start ***/
 private:
-	//class cClientSocket* ClientSocket = nullptr;
+	class cClientSocket* ClientSocket = nullptr;
+
 	class cServerSocketInGame* ServerSocketInGame = nullptr;
-	//class cClientSocketInGame* ClientSocketInGame = nullptr;
+	class cClientSocketInGame* ClientSocketInGame = nullptr;
 
 
 	//UPROPERTY(VisibleAnywhere, Category = "Widget")

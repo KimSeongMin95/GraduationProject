@@ -16,6 +16,7 @@ bool UWidgetBase::InitWidget(UWorld* const World, const FString ReferencePath, b
 {
 	if (!World)
 	{
+		printf_s("[Error] <UWidgetBase::InitWidget(...)> if (!World)\n");
 		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::InitWidget(...)> if (!World)"));
 		return false;
 	}
@@ -23,6 +24,7 @@ bool UWidgetBase::InitWidget(UWorld* const World, const FString ReferencePath, b
 	UClass* widget = LoadObject<UClass>(this, *ReferencePath);
 	if (!widget)
 	{
+		printf_s("[Error] <UWidgetBase::InitWidget(...)> if (!widget)\n");
 		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::InitWidget(...)> if (!widget)"));
 		return false;
 	}
@@ -31,6 +33,7 @@ bool UWidgetBase::InitWidget(UWorld* const World, const FString ReferencePath, b
 
 	if (!UserWidget)
 	{
+		printf_s("[Error] <UWidgetBase::InitWidget(...)> if (!UserWidget)\n");
 		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::InitWidget(...)> if (!UserWidget)"));
 		return false;
 	}
@@ -47,6 +50,7 @@ void UWidgetBase::AddToViewport()
 {
 	if (!UserWidget)
 	{
+		printf_s("[Error] <UWidgetBase::AddToViewport()> if (!UserWidget)\n");
 		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::AddToViewport()> if (!UserWidget)"));
 		return;
 	}
@@ -59,6 +63,7 @@ void UWidgetBase::RemoveFromViewport()
 {
 	if (!UserWidget)
 	{
+		printf_s("[Error] <UWidgetBase::RemoveFromViewport()> if (!UserWidget)\n");
 		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::RemoveFromViewport()> if (!UserWidget)"));
 		return;
 	}

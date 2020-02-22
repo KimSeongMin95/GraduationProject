@@ -27,6 +27,10 @@ AMainScreenGameMode::AMainScreenGameMode()
 	//DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
 
 	OnlineState = EOnlineState::Idle;
+
+	// 콘솔
+	//CustomLog::FreeConsole();
+	CustomLog::AllocConsole();
 }
 
 void AMainScreenGameMode::BeginPlay()
@@ -36,7 +40,8 @@ void AMainScreenGameMode::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::BeginPlay()> if (!world)"));
+		printf_s("[ERROR] <AMainScreenGameMode::BeginPlay()> if (!world)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::BeginPlay()> if (!world)"));
 		return;
 	}
 
@@ -104,7 +109,8 @@ void AMainScreenGameMode::_ActivateMainScreenWidget()
 {
 	if (!MainScreenWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateMainScreenWidget()> if (!MainScreenWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::ActivateMainScreenWidget()> if (!MainScreenWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateMainScreenWidget()> if (!MainScreenWidget)"));
 		return;
 	}
 
@@ -120,7 +126,8 @@ void AMainScreenGameMode::_DeactivateMainScreenWidget()
 {
 	if (!MainScreenWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateMainScreenWidget()> if (!MainScreenWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::DeactivateMainScreenWidget()> if (!MainScreenWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateMainScreenWidget()> if (!MainScreenWidget)"));
 		return;
 	}
 
@@ -135,11 +142,14 @@ void AMainScreenGameMode::_ActivateOnlineWidget()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateOnlineWidget()> if (!OnlineWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::ActivateOnlineWidget()> if (!OnlineWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateOnlineWidget()> if (!OnlineWidget)"));
 		return;
 	}
 
 	OnlineState = EOnlineState::Online;
+
+	ClearTimerOfRecvAndApply();
 
 	CloseSocket();
 
@@ -153,7 +163,8 @@ void AMainScreenGameMode::_DeactivateOnlineWidget()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateOnlineWidget()> if (!OnlineWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::DeactivateOnlineWidget()> if (!OnlineWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateOnlineWidget()> if (!OnlineWidget)"));
 		return;
 	}
 
@@ -168,7 +179,8 @@ void AMainScreenGameMode::_ActivateSettingsWidget()
 {
 	if (!SettingsWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateSettingsWidget()> if (!SettingsWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::ActivateSettingsWidget()> if (!SettingsWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateSettingsWidget()> if (!SettingsWidget)"));
 		return;
 	}
 
@@ -182,7 +194,8 @@ void AMainScreenGameMode::_DeactivateSettingsWidget()
 {
 	if (!SettingsWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateSettingsWidget()> if (!SettingsWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::DeactivateSettingsWidget()> if (!SettingsWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateSettingsWidget()> if (!SettingsWidget)"));
 		return;
 	}
 
@@ -197,7 +210,8 @@ void AMainScreenGameMode::_ActivateDeveloperWidget()
 {
 	if (!DeveloperWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateDeveloperWidget()> if (!DeveloperWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::ActivateDeveloperWidget()> if (!DeveloperWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateDeveloperWidget()> if (!DeveloperWidget)"));
 		return;
 	}
 
@@ -211,7 +225,8 @@ void AMainScreenGameMode::_DeactivateDeveloperWidget()
 {
 	if (!DeveloperWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateDeveloperWidget()> if (!DeveloperWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::DeactivateDeveloperWidget()> if (!DeveloperWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateDeveloperWidget()> if (!DeveloperWidget)"));
 		return;
 	}
 
@@ -226,7 +241,8 @@ void AMainScreenGameMode::_ActivateOnlineGameWidget()
 {
 	if (!OnlineGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateOnlineGameWidget()> if (!OnlineGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::ActivateOnlineGameWidget()> if (!OnlineGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateOnlineGameWidget()> if (!OnlineGameWidget)"));
 		return;
 	}
 
@@ -246,7 +262,8 @@ void AMainScreenGameMode::_DeactivateOnlineGameWidget()
 {
 	if (!OnlineGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateOnlineGameWidget()> if (!OnlineGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::DeactivateOnlineGameWidget()> if (!OnlineGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateOnlineGameWidget()> if (!OnlineGameWidget)"));
 		return;
 	}
 
@@ -263,7 +280,8 @@ void AMainScreenGameMode::_ActivateWaitingGameWidget()
 {
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateWaitingGameWidget()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::ActivateWaitingGameWidget()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ActivateWaitingGameWidget()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -277,7 +295,8 @@ void AMainScreenGameMode::_DeactivateWaitingGameWidget()
 {
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateWaitingGameWidget()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::DeactivateWaitingGameWidget()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::DeactivateWaitingGameWidget()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -331,7 +350,8 @@ void AMainScreenGameMode::_CheckTextOfID()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CheckTextOfID()> if (!OnlineWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::CheckTextOfID()> if (!OnlineWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CheckTextOfID()> if (!OnlineWidget)"));
 		return;
 	}
 	OnlineWidget->CheckTextOfID();
@@ -344,7 +364,8 @@ void AMainScreenGameMode::_CheckTextOfPort()
 {
 	if (!OnlineWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CheckTextOfPort()> if (!OnlineWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::CheckTextOfPort()> if (!OnlineWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CheckTextOfPort()> if (!OnlineWidget)"));
 		return;
 	}
 	OnlineWidget->CheckTextOfPort();
@@ -358,12 +379,14 @@ void AMainScreenGameMode::_SendLogin()
 {
 	if (!OnlineWidget)
 	{
+		printf_s("[ERROR] <AMainScreenGameMode::SendLogin()> if (!OnlineWidget)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendLogin()> if (!OnlineWidget)"));
 		return;
 	}
 
 	if (!ClientSocket)
 	{
+		printf_s("[ERROR] <AMainScreenGameMode::SendLogin()> if (!ClientSocket)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendLogin()> if (!ClientSocket)"));
 		return;
 	}
@@ -375,13 +398,15 @@ void AMainScreenGameMode::_SendLogin()
 
 	if (!bIsConnected)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
-		UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port: %s"), 
-			*OnlineWidget->GetIPv4()->GetText().ToString(), *OnlineWidget->GetPort()->GetText().ToString());
+		printf_s("[ERROR] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
+		printf_s("IPv4: %s, Port: %d\n", TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
+		//UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port: %s"), *OnlineWidget->GetIPv4()->GetText().ToString(), *OnlineWidget->GetPort()->GetText().ToString());
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendLogin()> IOCP Server connect success!"));
+	printf_s("[INFO] <AMainScreenGameMode::SendLogin()> IOCP Server connect success!\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendLogin()> IOCP Server connect success!"));
 
 	// Recv 스레드 시작
 	ClientSocket->StartListen();
@@ -396,7 +421,8 @@ void AMainScreenGameMode::CloseSocket()
 {
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CloseSocket()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::CloseSocket()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CloseSocket()> if (!ClientSocket)"));
 		return;
 	}
 
@@ -411,13 +437,15 @@ void AMainScreenGameMode::_SendCreateGame()
 {
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!ClientSocket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -437,7 +465,8 @@ void AMainScreenGameMode::SendFindGames()
 {
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendFindGames()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::SendFindGames()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendFindGames()> if (!ClientSocket)"));
 		return;
 	}
 
@@ -448,13 +477,15 @@ void AMainScreenGameMode::RecvFindGames()
 {
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::RecvFindGames()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> if (!ClientSocket)"));
 		return;
 	}
 
 	if (!OnlineGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> if (!OnlineGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::RecvFindGames()> if (!OnlineGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> if (!OnlineGameWidget)"));
 		return;
 	}
 
@@ -486,9 +517,14 @@ void AMainScreenGameMode::RecvFindGames()
 		else if (copiedQueue.front().State._Equal("Playing"))
 			button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinPlayingGame);
 		else
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> else"));
+		{
+			printf_s("[ERROR] <AMainScreenGameMode::RecvFindGames()> else\n");
+			//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvFindGames()> else"));
+		}
 
-		UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvFindGames()> copiedQueue.pop()"));
+		printf_s("[INFO] <AMainScreenGameMode::RecvFindGames()> copiedQueue.pop()\n");
+		//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvFindGames()> copiedQueue.pop()"));
+
 		copiedQueue.pop();
 	}
 }
@@ -496,7 +532,8 @@ void AMainScreenGameMode::ClearFindGames()
 {
 	if (!OnlineGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearFindGames()> if (!OnlineGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::ClearFindGames()> if (!OnlineGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearFindGames()> if (!OnlineGameWidget)"));
 		return;
 	}
 
@@ -515,7 +552,8 @@ void AMainScreenGameMode::_RefreshFindGames()
 
 void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinWaitingGame(...)> SocketID: %d"), SocketIDOfLeader);
+	printf_s("[INFO] <AMainScreenGameMode::SendJoinWaitingGame(...)> SocketID: %d\n", SocketIDOfLeader);
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinWaitingGame(...)> SocketID: %d"), SocketIDOfLeader);
 
 	OnlineState = EOnlineState::PlayerOfWaitingGame;
 
@@ -523,7 +561,8 @@ void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendJoinWaitingGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::SendJoinWaitingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendJoinWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -536,17 +575,20 @@ void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 }
 void AMainScreenGameMode::RecvWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvWaitingGame()>"));
+	printf_s("[INFO] <AMainScreenGameMode::RecvWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvWaitingGame()>"));
 
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvWaitingGame()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::RecvWaitingGame()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvWaitingGame()> if (!ClientSocket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvWaitingGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::RecvWaitingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -561,7 +603,8 @@ void AMainScreenGameMode::RecvWaitingGame()
 	{
 		WaitingGameWidget->RevealGame(copiedQueue.front());
 
-		UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvWaitingGame()> copiedQueue.pop()"));
+		printf_s("[INFO] <AMainScreenGameMode::RecvWaitingGame()> copiedQueue.pop()\n");
+		//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvWaitingGame()> copiedQueue.pop()"));
 		copiedQueue.pop();
 	}
 }
@@ -569,13 +612,15 @@ void AMainScreenGameMode::ClearWaitingGame()
 {
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearWaitingGame()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::ClearWaitingGame()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearWaitingGame()> if (!ClientSocket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearWaitingGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::ClearWaitingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::ClearWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -587,7 +632,8 @@ void AMainScreenGameMode::ClearWaitingGame()
 
 void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinPlayingGame(...)> SocketID: %d"), SocketIDOfLeader);
+	printf_s("[INFO] <AMainScreenGameMode::SendJoinPlayingGame(...)> SocketID: %d\n", SocketIDOfLeader);
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinPlayingGame(...)> SocketID: %d"), SocketIDOfLeader);
 
 	DeactivateOnlineGameWidget();
 
@@ -600,17 +646,20 @@ void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 
 void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()>"));
+	printf_s("[INFO] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()>"));
 
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!ClientSocket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -619,21 +668,27 @@ void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 		ClientSocket->SendDestroyWaitingGame();
 	else // 플레이어가 나간 것이라면
 		ClientSocket->SendExitWaitingGame();
+
+	// 게임 시작 카운트 다운을 세는 타이머를 종료합니다.
+	ClearTimerOfCountStartedGame();
 }
 
 void AMainScreenGameMode::RecvDestroyWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvDestroyWaitingGame()>"));
+	printf_s("[INFO] <AMainScreenGameMode::RecvDestroyWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvDestroyWaitingGame()>"));
 
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvDestroyWaitingGame()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::RecvDestroyWaitingGame()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvDestroyWaitingGame()> if (!ClientSocket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvDestroyWaitingGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::RecvDestroyWaitingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvDestroyWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -645,6 +700,9 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 
 	// 가장 최신에 받은 것만 처리합니다.
 	WaitingGameWidget->SetDestroyedVisibility(copiedQueue.back());
+
+	// 게임 시작 카운트 다운을 세는 타이머를 종료합니다.
+	ClearTimerOfCountStartedGame();
 }
 
 
@@ -658,7 +716,8 @@ void AMainScreenGameMode::_CheckModifyWaitingGame()
 {
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::CheckModifyWaitingGame()> if (!WaitingGameWidget)"));
+		printf_s("[Error] <AMainScreenGameMode::CheckModifyWaitingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[Error] <AMainScreenGameMode::CheckModifyWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 	WaitingGameWidget->CheckTextOfTitle();
@@ -670,17 +729,20 @@ void AMainScreenGameMode::_CheckModifyWaitingGame()
 
 void AMainScreenGameMode::SendModifyWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendModifyWaitingGame()>"));
+	printf_s("[INFO] <AMainScreenGameMode::SendModifyWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendModifyWaitingGame()>"));
 
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendModifyWaitingGame()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::SendModifyWaitingGame()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendModifyWaitingGame()> if (!ClientSocket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendModifyWaitingGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::SendModifyWaitingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendModifyWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -697,17 +759,20 @@ void AMainScreenGameMode::SendModifyWaitingGame()
 }
 void AMainScreenGameMode::RecvModifyWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvModifyWaitingGame()>"));
+	printf_s("[INFO] <AMainScreenGameMode::RecvModifyWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvModifyWaitingGame()>"));
 
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvModifyWaitingGame()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::RecvModifyWaitingGame()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvModifyWaitingGame()> if (!ClientSocket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvModifyWaitingGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::RecvModifyWaitingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvModifyWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -727,17 +792,20 @@ void AMainScreenGameMode::SendStartWaitingGame()
 }
 void AMainScreenGameMode::_SendStartWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::_SendStartWaitingGame()>"));
+	printf_s("[INFO] <AMainScreenGameMode::_SendStartWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::_SendStartWaitingGame()>"));
 
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::_SendStartWaitingGame()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::_SendStartWaitingGame()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::_SendStartWaitingGame()> if (!ClientSocket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::_SendStartWaitingGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::_SendStartWaitingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::_SendStartWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -754,17 +822,20 @@ void AMainScreenGameMode::_SendStartWaitingGame()
 }
 void AMainScreenGameMode::RecvStartWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvStartWaitingGame()>"));
+	printf_s("[INFO] <AMainScreenGameMode::RecvStartWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvStartWaitingGame()>"));
 
 	if (!ClientSocket)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvStartWaitingGame()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::RecvStartWaitingGame()> if (!ClientSocket)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvStartWaitingGame()> if (!ClientSocket)"));
 		return;
 	}
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvStartWaitingGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::RecvStartWaitingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::RecvStartWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -783,11 +854,15 @@ void AMainScreenGameMode::RecvStartWaitingGame()
 
 void AMainScreenGameMode::CountStartedGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::CountStartedGame()>"));
+	printf_s("[INFO] <AMainScreenGameMode::CountStartedGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::CountStartedGame()>"));
 
 	// 방장이면
 	if (WaitingGameWidget->IsLeader())
 	{
+		printf_s("[INFO] <AMainScreenGameMode::CountStartedGame()> if (WaitingGameWidget->IsLeader())\n");
+		//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::CountStartedGame()> if (WaitingGameWidget->IsLeader())"));
+
 		if (ServerSocketInGame)
 		{
 			ServerSocketInGame->Initialize();
@@ -801,6 +876,9 @@ void AMainScreenGameMode::CountStartedGame()
 	// 참가자면
 	else
 	{
+		printf_s("[INFO] <AMainScreenGameMode::CountStartedGame()> if (WaitingGameWidget->IsLeader()) else \n");
+		//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::CountStartedGame()> if (WaitingGameWidget->IsLeader()) else"));
+
 		// 
 		if (ClientSocketInGame)
 		{
@@ -814,17 +892,18 @@ void AMainScreenGameMode::CountStartedGame()
 
 	Count = 5;
 
-	if (GetWorldTimerManager().IsTimerActive(thCountStartedGame))
-		GetWorldTimerManager().ClearTimer(thCountStartedGame);
+	ClearTimerOfCountStartedGame();
 	GetWorldTimerManager().SetTimer(thCountStartedGame, this, &AMainScreenGameMode::TimerOfCountStartedGame, 1.0f, true);
 }
 void AMainScreenGameMode::TimerOfCountStartedGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfCountStartedGame()>"));
+	printf_s("[INFO] <AMainScreenGameMode::TimerOfCountStartedGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfCountStartedGame()>"));
 
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfCountStartedGame()> if (!WaitingGameWidget)"));
+		printf_s("[ERROR] <AMainScreenGameMode::TimerOfCountStartedGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfCountStartedGame()> if (!WaitingGameWidget)"));
 		return;
 	}
 
@@ -836,14 +915,24 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 	Count--;
 	if (Count <= 0)
 	{
-		if (GetWorldTimerManager().IsTimerActive(thCountStartedGame))
-			GetWorldTimerManager().ClearTimer(thCountStartedGame);
+		ClearTimerOfCountStartedGame();
+
 		StartOnlineGame();
 		return;
 	}
 
 	WaitingGameWidget->SetTextOfCount(Count);
 }
+void AMainScreenGameMode::ClearTimerOfCountStartedGame()
+{
+	printf_s("[INFO] <AMainScreenGameMode::ClearTimerOfCountStartedGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::ClearTimerOfCountStartedGame()>"));
+
+	if (GetWorldTimerManager().IsTimerActive(thCountStartedGame))
+		GetWorldTimerManager().ClearTimer(thCountStartedGame);
+}
+
+
 void AMainScreenGameMode::StartOnlineGame()
 {
 	UGameplayStatics::OpenLevel(this, "Online");
@@ -852,15 +941,16 @@ void AMainScreenGameMode::StartOnlineGame()
 
 void AMainScreenGameMode::RecvAndApply()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvAndApply()>"));
+	printf_s("[INFO] <AMainScreenGameMode::RecvAndApply()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvAndApply()>"));
 
-	if (GetWorldTimerManager().IsTimerActive(thRecvAndApply))
-		GetWorldTimerManager().ClearTimer(thRecvAndApply);
+	ClearTimerOfRecvAndApply();
 	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AMainScreenGameMode::TimerOfRecvAndApply, 0.1f, true);
 }
 void AMainScreenGameMode::TimerOfRecvAndApply()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfRecvAndApply()>"));
+	printf_s("[INFO] <AMainScreenGameMode::TimerOfRecvAndApply()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfRecvAndApply()>"));
 
 	switch (OnlineState)
 	{
@@ -904,12 +994,20 @@ void AMainScreenGameMode::TimerOfRecvAndApply()
 	break;
 	default:
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfRecvAndApply()> switch (OnlineState) default:"));
+		printf_s("[ERROR] <AMainScreenGameMode::TimerOfRecvAndApply()> switch (OnlineState) default:\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfRecvAndApply()> switch (OnlineState) default:"));
 	}
 	break;
 	}
 }
+void AMainScreenGameMode::ClearTimerOfRecvAndApply()
+{
+	printf_s("[INFO] <AMainScreenGameMode::ClearTimerOfRecvAndApply()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::ClearTimerOfRecvAndApply()>"));
 
+	if (GetWorldTimerManager().IsTimerActive(thRecvAndApply))
+		GetWorldTimerManager().ClearTimer(thRecvAndApply);
+}
 /*** AMainScreenGameMode : End ***/
 
 

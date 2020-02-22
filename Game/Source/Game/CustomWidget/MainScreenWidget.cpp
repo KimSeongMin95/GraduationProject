@@ -22,6 +22,7 @@ bool UMainScreenWidget::InitWidget(UWorld* const World, const FString ReferenceP
 
 	if (WidgetTree == nullptr)
 	{
+		printf_s("[Error] <UMainScreenWidget::InitWidget()> if (WidgetTree == nullptr)\n");
 		UE_LOG(LogTemp, Error, TEXT("[Error] <UMainScreenWidget::InitWidget()> if (WidgetTree == nullptr)"));
 		return false;
 	}

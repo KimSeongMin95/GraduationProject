@@ -45,8 +45,8 @@ protected:
 
 public:
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장
-	std::map<SOCKET, stSOCKETINFO*> Clients;
-	CRITICAL_SECTION csClients;
+	std::map<SOCKET, stSOCKETINFO*> GameClients;
+	CRITICAL_SECTION csGameClients;
 
 public:
 	cServerSocketInGame();
@@ -91,13 +91,4 @@ public:
 
 
 
-
-
-/*** Console for log : Start ***/
-private:
-	FILE* fp_console = nullptr;
-
-	void AllocMyConsole();
-	void FreeMyConsole();
-/*** Console for log : End ***/
 };

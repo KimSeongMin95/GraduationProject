@@ -21,6 +21,7 @@ bool UOnlineWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 
 	if (WidgetTree == nullptr)
 	{
+		printf_s("[Error] <UOnlineWidget::InitWidget(...)> if (WidgetTree == nullptr)\n");
 		UE_LOG(LogTemp, Error, TEXT("[Error] <UOnlineWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
 		return false;
 	}
@@ -38,6 +39,7 @@ void UOnlineWidget::CheckTextOfID()
 {
 	if (ID == nullptr)
 	{
+		printf_s("[ERROR] <UOnlineWidget::CheckTextOfID()> if (ID == nullptr)\n");
 		UE_LOG(LogTemp, Warning, TEXT("[ERROR] <UOnlineWidget::CheckTextOfID()> if (ID == nullptr)"));
 		return;
 	}
@@ -64,6 +66,7 @@ void UOnlineWidget::CheckTextOfPort()
 {
 	if (Port == nullptr)
 	{
+		printf_s("[ERROR] <UOnlineWidget::CheckTextOfPort()> if (Port == nullptr)\n");
 		UE_LOG(LogTemp, Warning, TEXT("[ERROR] <UOnlineWidget::CheckTextOfPort()> if (Port == nullptr)"));
 		return;
 	}

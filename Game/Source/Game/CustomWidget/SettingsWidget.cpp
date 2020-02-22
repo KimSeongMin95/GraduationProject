@@ -21,6 +21,7 @@ bool USettingsWidget::InitWidget(UWorld* const World, const FString ReferencePat
 
 	if (WidgetTree == nullptr)
 	{
+		printf_s("[Error] <USettingsWidget::InitWidget(...)> if (WidgetTree == nullptr)\n");
 		UE_LOG(LogTemp, Error, TEXT("[Error] <USettingsWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
 		return false;
 	}

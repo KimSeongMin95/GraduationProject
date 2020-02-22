@@ -589,6 +589,8 @@ void MainServer::ModifyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSock
 	cInfoOfGame infoOfGame;
 	RecvStream >> infoOfGame;
 
+	infoOfGame.PrintInfo();
+
 	EnterCriticalSection(&csInfoOfGames);
 	if (InfoOfGames.find(pSocketInfo->socket) == InfoOfGames.end())
 	{

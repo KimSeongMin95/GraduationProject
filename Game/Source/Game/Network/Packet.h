@@ -15,6 +15,8 @@
 #include "AllowWindowsPlatformTypes.h"
 #include "prewindowsapi.h"
 
+//printf_s("ししししししし\n");
+
 
 /*** 制亀酔綜 伯希 識情 : Start ***/
 #pragma comment(lib, "ws2_32.lib") // winsock2 紫遂聖 是背 蓄亜
@@ -55,6 +57,9 @@ struct stSOCKETINFO
 	char			messageBuffer[MAX_BUFFER];
 	int				recvBytes;
 	int				sendBytes;
+
+	string			IPv4Addr; // 惟績 適虞戚情闘税 IP 爽社
+	int				Port;	  // 惟績 適虞戚情闘税 Port 爽社
 };
 
 
@@ -320,8 +325,8 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByMainServer: %d, SocketByGameServer: %d, PortOfMainClient: %d, PortOfGameServer: %d, PortOfGameClient: %d, LeaderSocketByMainServer: %d"),
-			Space, Space2, ANSI_TO_TCHAR(ID.c_str()), ANSI_TO_TCHAR(IPv4Addr.c_str()), SocketByMainServer, SocketByGameServer, PortOfMainClient, PortOfGameServer, PortOfGameClient, LeaderSocketByMainServer);
+		printf_s("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByMainServer: %d, SocketByGameServer: %d, PortOfMainClient: %d, PortOfGameServer: %d, PortOfGameClient: %d, LeaderSocketByMainServer: %d\n", TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID.c_str(), IPv4Addr.c_str(), SocketByMainServer, SocketByGameServer, PortOfMainClient, PortOfGameServer, PortOfGameClient, LeaderSocketByMainServer);
+		//UE_LOG(LogTemp, Warning, TEXT("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByMainServer: %d, SocketByGameServer: %d, PortOfMainClient: %d, PortOfGameServer: %d, PortOfGameClient: %d, LeaderSocketByMainServer: %d"), Space, Space2, ANSI_TO_TCHAR(ID.c_str()), ANSI_TO_TCHAR(IPv4Addr.c_str()), SocketByMainServer, SocketByGameServer, PortOfMainClient, PortOfGameServer, PortOfGameClient, LeaderSocketByMainServer);
 	}
 
 	// Convert
@@ -385,7 +390,8 @@ public:
 	{
 		for (auto& kvp : Players)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s%skey: %d"), Space, Space2, kvp.first);
+			printf_s("%s%skey: %d, ", TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), kvp.first);
+			//UE_LOG(LogTemp, Warning, TEXT("%s%skey: %d"), Space, Space2, kvp.first);
 			kvp.second.PrintInfo(Space, Space2);
 		}
 	}
@@ -459,11 +465,15 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T("    "))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s<cInfoOfGame> Start"), Space);
-		UE_LOG(LogTemp, Warning, TEXT("%s%sState: %s, Title: %s, Stage: %d, nMax: %d"), Space, Space2, ANSI_TO_TCHAR(State.c_str()), ANSI_TO_TCHAR(Title.c_str()), Stage, nMax);
+		printf_s("%s<cInfoOfGame> Start\n", TCHAR_TO_ANSI(Space));
+		//UE_LOG(LogTemp, Warning, TEXT("%s<cInfoOfGame> Start"), Space);
+		printf_s("%s%sState: %s, Title: %s, Stage: %d, nMax: %d\n", TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), State.c_str(), Title.c_str(), Stage, nMax);
+		//UE_LOG(LogTemp, Warning, TEXT("%s%sState: %s, Title: %s, Stage: %d, nMax: %d"), Space, Space2, ANSI_TO_TCHAR(State.c_str()), ANSI_TO_TCHAR(Title.c_str()), Stage, nMax);
 		Leader.PrintInfo(Space, Space2);
 		Players.PrintInfo(Space, Space2);
-		UE_LOG(LogTemp, Warning, TEXT("%s<cInfoOfGame> End"), Space);
+		//UE_LOG(LogTemp, Warning, TEXT("%s<cInfoOfGame> End"), Space);
+		printf_s("%s<cInfoOfGame> End\n", TCHAR_TO_ANSI(Space));
+
 	}
 
 	// Convert
@@ -479,3 +489,35 @@ public:
 	}
 };
 
+/*** Console for log : Start ***/
+class CustomLog
+{
+private:
+	static FILE* fp_console;
+
+public:
+	static void AllocConsole()
+	{
+		// 戚耕 拝雁鞠嬢 赤生檎 嬬車聖 希 拝雁馬走 省柔艦陥.
+		if (fp_console)
+			return;
+
+		if (::AllocConsole())
+		{
+			freopen_s(&fp_console, "CONOUT$", "w", stdout);
+		}
+	}
+
+	static void FreeConsole()
+	{
+		// 戚耕 拝雁鞠嬢 赤聖 凶幻 社瑚獣典艦陥.
+		if (fp_console)
+		{
+			fclose(fp_console);
+			::FreeConsole();
+		}
+	}
+	/*** Console for log : End ***/
+};
+
+FILE* CustomLog::fp_console = nullptr;

@@ -21,6 +21,7 @@ bool UDeveloperWidget::InitWidget(UWorld* const World, const FString ReferencePa
 
 	if (WidgetTree == nullptr)
 	{
+		printf_s("[Error] <UDeveloperWidget::InitWidget(...)> if (WidgetTree == nullptr)\n");
 		UE_LOG(LogTemp, Error, TEXT("[Error] <UDeveloperWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
 		return false;
 	}

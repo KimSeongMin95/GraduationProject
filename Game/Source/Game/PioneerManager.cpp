@@ -52,6 +52,7 @@ void APioneerManager::SpawnWorldViewCameraActor(class AWorldViewCameraActor** Wo
 	UWorld* const World = GetWorld();
 	if (!World)
 	{
+		printf_s("[ERROR] <APioneerManager::SpawnWorldViewCameraActor(...)> if (!World)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SpawnWorldViewCameraActor(...)> if (!World)"));
 		return;
 	}
@@ -76,6 +77,7 @@ void APioneerManager::FindPioneersInWorld()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
+		printf_s("[ERROR] <APioneerManager::FindPioneersInWorld()> if (!world)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::FindPioneersInWorld()> if (!world)"));
 		return;
 	}
@@ -96,22 +98,26 @@ void APioneerManager::SwitchViewTarget(AActor* Actor, float BlendTime, EViewTarg
 {
 	if (!Actor)
 	{
+		printf_s("[ERROR] <APioneerManager::SwitchViewTarget(...)> if (!Actor)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchViewTarget(...)> if (!Actor)"));
 		return;
 	}
 	
 	if (!PioneerController)
 	{
+		printf_s("[ERROR] <APioneerManager::SwitchViewTarget(...)> if (!PioneerController)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchViewTarget(...)> if (!PioneerController)"));
 		return;
 	}
-
+	
 	PioneerController->SetViewTargetWithBlend(Actor, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+	printf_s("[INFO] <APioneerManager::SwitchViewTarget(...)> %s, BlendTime: %f\n", TCHAR_TO_ANSI(*Actor->GetName()), BlendTime);
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SwitchViewTarget(...)> %s, BlendTime: %f"), *Actor->GetName(), BlendTime);
 }
 
 void APioneerManager::FindTargetViewActor(float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
 {
+	printf_s("[INFO] <APioneerManager::FindTargetViewActor(...)>\n");
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::FindTargetViewActor(...)>"));
 	SwitchState = ESwitchState::FindTargetViewActor;
 
@@ -133,6 +139,7 @@ void APioneerManager::FindTargetViewActor(float BlendTime, EViewTargetBlendFunct
 	// 전환할 APioneer를 찾으면
 	if (TargetViewActor)
 	{
+		printf_s("[INFO] <APioneerManager::FindTargetViewActor(...)> if (TargetViewActor)\n");
 		UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::FindTargetViewActor(...)> if (TargetViewActor)"));
 
 		FVector location = TargetViewActor->GetActorLocation();
@@ -144,7 +151,10 @@ void APioneerManager::FindTargetViewActor(float BlendTime, EViewTargetBlendFunct
 			SwitchViewTarget(WorldViewCameraOfNextPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
 		}
 		else
+		{
+			printf_s("[ERROR] <APioneerManager::FindTargetViewActor(...)> if (!WorldViewCameraOfNextPioneer)\n");
 			UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::FindTargetViewActor(...)> if (!WorldViewCameraOfNextPioneer)"));
+		}
 
 		GetWorldTimerManager().ClearTimer(TimerHandleOfFindTargetViewActor);
 
@@ -156,12 +166,16 @@ void APioneerManager::FindTargetViewActor(float BlendTime, EViewTargetBlendFunct
 
 void APioneerManager::SwitchNext(float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
 {
+	printf_s("[INFO] <APioneerManager::SwitchNext(...)>\n");
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SwitchNext(...)>"));
+
 	SwitchState = ESwitchState::Next;
 
 	if (!TargetViewActor)
 	{
-		SwitchState = ESwitchState::Switchable;
+		SwitchState = ESwitchState::Switchable; 
+
+		printf_s("[ERROR] <APioneerManager::SwitchNext(...)> if (!TargetViewActor)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchNext(...)> if (!TargetViewActor)"));
 		return;
 	}
@@ -170,6 +184,7 @@ void APioneerManager::SwitchNext(float BlendTime, EViewTargetBlendFunction blend
 	{
 		if (pioneer->bDying || pioneer->IsActorBeingDestroyed())
 		{
+			printf_s("[INFO] <APioneerManager::SwitchNext(...)> if (pioneer->bDying || pioneer->IsActorBeingDestroyed())\n");
 			UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SwitchNext(...)> if (pioneer->bDying || pioneer->IsActorBeingDestroyed())"));
 
 			// FindTargetViewActor의 WorldViewCameraOfNextPioneer -> WorldViewCameraOfNextPioneer 전환 문제를 해결하기 위해,
@@ -181,10 +196,16 @@ void APioneerManager::SwitchNext(float BlendTime, EViewTargetBlendFunction blend
 				if (PioneerController)
 					PioneerController->SetViewTarget(WorldViewCameraOfCurrentPioneer);
 				else
+				{
+					printf_s("[ERROR] <APioneerManager::SwitchNext(...)> if (WorldViewCameraOfCurrentPioneer && WorldViewCameraOfNextPioneer) && if (!PioneerController)\n");
 					UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchNext(...)> if (WorldViewCameraOfCurrentPioneer && WorldViewCameraOfNextPioneer) && if (!PioneerController)"));
+				}
 			}
 			else
+			{
+				printf_s("[ERROR] <APioneerManager::SwitchNext(...)> if (!WorldViewCameraOfCurrentPioneer || !WorldViewCameraOfNextPioneer)\n");
 				UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchNext(...)> if (!WorldViewCameraOfCurrentPioneer || !WorldViewCameraOfNextPioneer)"));
+			}
 
 			FTimerDelegate timerDel;
 			timerDel.BindUFunction(this, FName("FindTargetViewActor"), BlendTime, blendFunc, BlendExp, bLockOutgoing); // 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
@@ -198,11 +219,13 @@ void APioneerManager::SwitchNext(float BlendTime, EViewTargetBlendFunction blend
 
 	if (!PioneerController)
 	{
+		printf_s("[ERROR] <APioneerManager::SwitchNext(...)> if (!PioneerController)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchNext(...)> if (!PioneerController)"));
 		return;
 	}
 
 	PioneerController->SetViewTargetWithBlend(CameraOfNextPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
+	printf_s("[INFO] <APioneerManager::SwitchNext(...)> %s, BlendTime: %f\n", TCHAR_TO_ANSI(*CameraOfNextPioneer->GetName()), BlendTime);
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SwitchNext(...)> %s, BlendTime: %f"), *CameraOfNextPioneer->GetName(), BlendTime);
 
 	FTimerDelegate timerDel;
@@ -212,12 +235,16 @@ void APioneerManager::SwitchNext(float BlendTime, EViewTargetBlendFunction blend
 
 void APioneerManager::SwitchFinish(float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
 {
+	printf_s("[INFO] <APioneerManager::SwitchFinish(...)>\n");
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SwitchFinish(...)>"));
+
 	SwitchState = ESwitchState::Finish;
 
 	if (!TargetViewActor)
 	{
 		SwitchState = ESwitchState::Switchable;
+
+		printf_s("[ERROR] <APioneerManager::SwitchFinish(...)> if (!TargetViewActor)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchFinish(...)> if (!TargetViewActor)"));
 		return;
 	}
@@ -234,8 +261,11 @@ void APioneerManager::SwitchFinish(float BlendTime, EViewTargetBlendFunction ble
 				SwitchViewTarget(WorldViewCameraOfCurrentPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
 			}
 			else
+			{
+				printf_s("[ERROR] <APioneerManager::SwitchFinish(...)> if (!WorldViewCameraOfCurrentPioneer || !WorldViewCameraOfNextPioneer)\n");
 				UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchFinish(...)> if (!WorldViewCameraOfCurrentPioneer || !WorldViewCameraOfNextPioneer)"));
-
+			}
+			printf_s("[INFO] <APioneerManager::SwitchFinish(...)> if (pioneer->bDying || pioneer->IsActorBeingDestroyed())\n");
 			UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SwitchFinish(...)> if (pioneer->bDying || pioneer->IsActorBeingDestroyed())"));
 
 			FTimerDelegate timerDel;
@@ -253,6 +283,7 @@ void APioneerManager::SwitchFinish(float BlendTime, EViewTargetBlendFunction ble
 
 void APioneerManager::PossessPioneer(class APioneer* Pioneer)
 {
+	printf_s("[INFO] <APioneerManager::PossessPioneer(...)>\n");
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::PossessPioneer(...)>"));
 
 	// 플레이어가 조종하는 개척자를 저장합니다.
@@ -264,8 +295,9 @@ void APioneerManager::PossessPioneer(class APioneer* Pioneer)
 	// PioneerController가 존재하는지 확인합니다.
 	if (!PioneerController)
 	{
+		printf_s("[ERROR] <APioneerManager::PossessPioneer(...)> if (!PioneerController)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::PossessPioneer(...)> if (!PioneerController)"));
-			return;
+		return;
 	}
 
 	// PioneerController가 Pawn을 소유하고 있으면 소멸시킵니다.
@@ -274,6 +306,7 @@ void APioneerManager::PossessPioneer(class APioneer* Pioneer)
 
 	PioneerController->Possess(Pioneer);
 
+	printf_s("[INFO] <APioneerManager::PossessPioneer(...)> PioneerController->Possess(Pioneer);\n");
 	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::PossessPioneer(...)> PioneerController->Possess(Pioneer);"));
 }
 
@@ -298,6 +331,9 @@ void APioneerManager::SwitchTick()
 /////////////////////////////////////////
 void APioneerManager::SetPioneerController(class APioneerController* pPioneerController)
 {
+	printf_s("[INFO] <APioneerManager::SetPioneerController()>\n");
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SetPioneerController()>"));
+
 	this->PioneerController = pPioneerController;
 }
 
@@ -320,6 +356,7 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	UWorld* const World = GetWorld();
 	if (!World)
 	{
+		printf_s("[ERROR] <APioneerManager::SpawnPioneer(...)> if (!World)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SpawnPioneer(...)> if (!World)"));
 		return;
 	}
@@ -352,6 +389,7 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 
 	if (!pioneer)
 	{
+		printf_s("[ERROR] <APioneerManager::SpawnPioneer(...)> if (!pioneer)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SpawnPioneer(...)> if (!pioneer)"));
 		return;
 	}
@@ -389,12 +427,14 @@ void APioneerManager::SwitchOtherPioneer(class APioneer* CurrentPioneer, float B
 
 	if (SwitchState != ESwitchState::Switchable)
 	{
+		printf_s("[ERROR] <APioneerManager::SwitchOtherPioneer(...)> if (SwitchState != ESwitchState::Switchable)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchOtherPioneer(...)> if (SwitchState != ESwitchState::Switchable)"));
 		return;
 	}
 
 	if (!PioneerController)
 	{
+		printf_s("[ERROR] <APioneerManager::SwitchOtherPioneer(...)> if (!PioneerController)\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchOtherPioneer(...)> if (!PioneerController)"));
 		return;
 	}
@@ -415,7 +455,10 @@ void APioneerManager::SwitchOtherPioneer(class APioneer* CurrentPioneer, float B
 			SwitchViewTarget(WorldViewCameraOfCurrentPioneer, BlendTime, blendFunc, BlendExp, bLockOutgoing);
 		}
 		else
+		{
+			printf_s("[ERROR] <APioneerManager::SwitchOtherPioneer(...)> if (!WorldViewCameraOfCurrentPioneer)\n");
 			UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SwitchOtherPioneer(...)> if (!WorldViewCameraOfCurrentPioneer)"));
+		}
 
 		SwitchState = ESwitchState::Current;
 
@@ -425,6 +468,7 @@ void APioneerManager::SwitchOtherPioneer(class APioneer* CurrentPioneer, float B
 	}
 	else
 	{
+		printf_s("[INFO] <APioneerManager::SwitchOtherPioneer(...)> else\n");
 		UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SwitchOtherPioneer(...)> else"));
 
 		FTimerDelegate timerDel;

@@ -30,7 +30,7 @@ cServerSocketInGame::cServerSocketInGame()
 	bWorkerThread = true;
 	nThreadCnt = 0;
 
-	InitializeCriticalSection(&csClients);
+	InitializeCriticalSection(&csGameClients);
 
 	//// 패킷 함수 포인터에 함수 지정
 	//fnProcess[EPacketType::LOGIN].funcProcessPacket = Login;
@@ -41,7 +41,7 @@ cServerSocketInGame::~cServerSocketInGame()
 	// 서버 종료는 여기서 처리
 	CloseServer();
 
-	DeleteCriticalSection(&csClients);
+	DeleteCriticalSection(&csGameClients);
 }
 
 bool cServerSocketInGame::Initialize()
@@ -49,9 +49,7 @@ bool cServerSocketInGame::Initialize()
 	/// 안정성을 보장하기 위하여, 작동주인 서버를 닫아줍니다.
 	CloseServer();
 
-	// 콘솔을 새로 만듭니다.
-	AllocMyConsole();
-
+	printf_s("\n\n/********** cServerSocketInGame **********/\n");
 	printf_s("[INFO] <cServerSocketInGame::Initialize()>\n");
 
 	WSADATA wsaData;
@@ -164,12 +162,22 @@ void cServerSocketInGame::StartServer()
 		SocketInfo->dataBuf.buf = SocketInfo->messageBuffer;
 		flags = 0;
 
+		
+		//SocketInfo->IPv4Addr = string(inet_ntoa(clientAddr.sin_addr)); // 역으로 네트워크바이트순서로 된 정32비트 정수를 다시 문자열로 돌려주는 함수
+		char bufOfIPv4Addr[32] = { 0, };
+		inet_ntop(AF_INET, &clientAddr.sin_addr, bufOfIPv4Addr, sizeof(bufOfIPv4Addr));
+		SocketInfo->IPv4Addr = string(bufOfIPv4Addr);
+		printf_s("[INFO] <cServerSocketInGame::StartServer()> Game Client's IP: %s\n", SocketInfo->IPv4Addr.c_str());
 
-		EnterCriticalSection(&csClients);
-		printf_s("[[INFO] <cServerSocketInGame::StartServer()> Clients.size(): %d\n", (int)Clients.size());
-		Clients[clientSocket] = SocketInfo;
-		printf_s("[[INFO] <cServerSocketInGame::StartServer()> Clients.size(): %d\n", (int)Clients.size());
-		LeaveCriticalSection(&csClients);
+		SocketInfo->Port = (int)ntohs(clientAddr.sin_port);
+		printf_s("[INFO] <cServerSocketInGame::StartServer()> Game Client's Port: %d\n\n", SocketInfo->Port);
+
+
+		EnterCriticalSection(&csGameClients);
+		printf_s("[[INFO] <cServerSocketInGame::StartServer()> GameClients.size(): %d\n", (int)GameClients.size());
+		GameClients[clientSocket] = SocketInfo;
+		printf_s("[[INFO] <cServerSocketInGame::StartServer()> GameClients.size(): %d\n", (int)GameClients.size());
+		LeaveCriticalSection(&csGameClients);
 
 
 		hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (ULONG_PTR)SocketInfo, 0);
@@ -222,8 +230,6 @@ void cServerSocketInGame::CloseServer()
 
 	closesocket(ListenSocket);
 	WSACleanup();
-
-	FreeMyConsole();
 }
 
 bool cServerSocketInGame::CreateWorkerThread()
@@ -355,11 +361,11 @@ void cServerSocketInGame::CloseSocket(stSOCKETINFO* pSocketInfo)
 	printf_s("[INFO] <cServerSocketInGame::CloseSocket(...)>\n");
 
 	/// Clients에서 제거
-	EnterCriticalSection(&csClients);
-	printf_s("[[INFO] <cServerSocketInGame::CloseSocket(...)> Clients.size(): %d\n", (int)Clients.size());
-	Clients.erase(pSocketInfo->socket);
-	printf_s("[[INFO] <cServerSocketInGame::CloseSocket(...)> Clients.size(): %d\n", (int)Clients.size());	
-	LeaveCriticalSection(&csClients);
+	EnterCriticalSection(&csGameClients);
+	printf_s("[[INFO] <cServerSocketInGame::CloseSocket(...)> GameClients.size(): %d\n", (int)GameClients.size());
+	GameClients.erase(pSocketInfo->socket);
+	printf_s("[[INFO] <cServerSocketInGame::CloseSocket(...)> GameClients.size(): %d\n", (int)GameClients.size());
+	LeaveCriticalSection(&csGameClients);
 
 	closesocket(pSocketInfo->socket);
 	free(pSocketInfo);
@@ -417,29 +423,3 @@ void cServerSocketInGame::Recv(stSOCKETINFO* pSocketInfo)
 	}
 }
 
-
-
-
-
-
-
-
-
-
-/*** Console for log : Start ***/
-void cServerSocketInGame::AllocMyConsole()
-{
-	if (AllocConsole())
-	{
-		freopen_s(&fp_console, "CONOUT$", "w", stdout);
-		printf_s("/*** Console Allocated ***/\n");
-	}
-}
-
-void cServerSocketInGame::FreeMyConsole()
-{
-	if (fp_console)
-		fclose(fp_console);
-	FreeConsole();
-}
-/*** Console for log : End ***/

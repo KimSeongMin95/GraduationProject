@@ -134,14 +134,17 @@ cClientSocket::~cClientSocket()
 
 bool cClientSocket::InitSocket()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::InitSocket()>"));
+	printf_s("\n\n/********** cClientSocket **********/\n");
+	printf_s("[INFO] <cClientSocket::InitSocket()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::InitSocket()>"));
 
 	WSADATA wsaData;
 
 	// 윈속 버전을 2.2로 초기화
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)"));
+		printf_s("[ERROR] <cClientSocket::InitSocket()> if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)"));
 		return false;
 	}
 
@@ -149,7 +152,8 @@ bool cClientSocket::InitSocket()
 	ServerSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (ServerSocket == INVALID_SOCKET) 
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)"));
+		printf_s("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)"));
 		return false;
 	}
 
@@ -158,7 +162,8 @@ bool cClientSocket::InitSocket()
 
 bool cClientSocket::Connect(const char * pszIP, int nPort)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::Connect(...)>"));
+	printf_s("[INFO] <cClientSocket::Connect(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::Connect(...)>"));
 
 	// 접속할 서버 정보를 저장할 구조체
 	SOCKADDR_IN stServerAddr;
@@ -171,7 +176,8 @@ bool cClientSocket::Connect(const char * pszIP, int nPort)
 
 	if (connect(ServerSocket, (sockaddr*)&stServerAddr, sizeof(sockaddr)) == SOCKET_ERROR)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::Connect(...)> if (connect(...) == SOCKET_ERROR)"));
+		printf_s("[ERROR] <cClientSocket::Connect(...)> if (connect(...) == SOCKET_ERROR)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::Connect(...)> if (connect(...) == SOCKET_ERROR)"));
 		return false;
 	}
 
@@ -182,7 +188,8 @@ bool cClientSocket::Connect(const char * pszIP, int nPort)
 
 void cClientSocket::CloseSocket()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::CloseSocket()>"));
+	printf_s("[INFO] <cClientSocket::CloseSocket()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::CloseSocket()>"));
 
 	bIsConnected = false;
 
@@ -192,7 +199,8 @@ void cClientSocket::CloseSocket()
 
 bool cClientSocket::StartListen()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StartListen()>"));
+	printf_s("[INFO] <cClientSocket::StartListen()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StartListen()>"));
 
 	if (Thread != nullptr)
 		return false;
@@ -205,7 +213,8 @@ bool cClientSocket::StartListen()
 
 void cClientSocket::StopListen()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StopListen()>"));
+	printf_s("[INFO] <cClientSocket::StopListen()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StopListen()>"));
 
 	// 스레드 종료
 	Stop();
@@ -225,7 +234,8 @@ void cClientSocket::StopListen()
 /////////////////////////////////////
 void cClientSocket::SendLogin(const FText ID)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendLogin(...)>"));
+	printf_s("[Start] <cClientSocket::SendLogin(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendLogin(...)>"));
 
 	cInfoOfPlayer infoOfPlayer;
 
@@ -241,11 +251,13 @@ void cClientSocket::SendLogin(const FText ID)
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendLogin(...)>"));
+	printf_s("[End] <cClientSocket::SendLogin(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendLogin(...)>"));
 }
 void cClientSocket::RecvLogin(stringstream& RecvStream)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvLogin(...)>"));
+	printf_s("[Start] <cClientSocket::RecvLogin(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvLogin(...)>"));
 
 	cInfoOfPlayer infoOfPlayer;
 
@@ -255,12 +267,14 @@ void cClientSocket::RecvLogin(stringstream& RecvStream)
 
 	SetMyInfo(infoOfPlayer);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvLogin(...)>"));
+	printf_s("[End] <cClientSocket::RecvLogin(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvLogin(...)>"));
 }
 
 void cClientSocket::SendCreateGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendCreateGame()>"));
+	printf_s("[Start] <cClientSocket::SendCreateGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendCreateGame()>"));
 
 	cInfoOfGame infoOfGame;
 
@@ -276,23 +290,27 @@ void cClientSocket::SendCreateGame()
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendCreateGame()>"));
+	printf_s("[End] <cClientSocket::SendCreateGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendCreateGame()>"));
 }
 
 void cClientSocket::SendFindGames()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendFindGames()>"));
+	printf_s("[Start] <cClientSocket::SendFindGames()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendFindGames()>"));
 
 	stringstream sendStream;
 	sendStream << EPacketType::FIND_GAMES << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendFindGames()>"));
+	printf_s("[End] <cClientSocket::SendFindGames()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendFindGames()>"));
 }
 void cClientSocket::RecvFindGames(stringstream& RecvStream)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvFindGames(...)>"));
+	printf_s("[Start] <cClientSocket::RecvFindGames(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvFindGames(...)>"));
 
 	cInfoOfGame infoOfGame;
 
@@ -302,14 +320,17 @@ void cClientSocket::RecvFindGames(stringstream& RecvStream)
 		tsqFindGames.push(infoOfGame);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvFindGames(...)>"));
+	printf_s("[End] <cClientSocket::RecvFindGames(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvFindGames(...)>"));
 }
      
 void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendJoinWaitingGame(...)>"));
+	printf_s("[Start] <cClientSocket::SendJoinWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendJoinWaitingGame(...)>"));
 
-	UE_LOG(LogTemp, Warning, TEXT("    SocketIDOfLeader: %d"), SocketIDOfLeader);
+	printf_s("\t SocketIDOfLeader: %d\n", SocketIDOfLeader);
+	//UE_LOG(LogTemp, Warning, TEXT("    SocketIDOfLeader: %d"), SocketIDOfLeader);
 
 	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
 	infoOfPlayer.LeaderSocketByMainServer = SocketIDOfLeader;
@@ -322,12 +343,14 @@ void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendJoinWaitingGame(...)>"));
+	printf_s("[End] <cClientSocket::SendJoinWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendJoinWaitingGame(...)>"));
 }
 
 void cClientSocket::RecvWaitingGame(stringstream& RecvStream)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvJoinWaitingGame(...)>"));
+	printf_s("[Start] <cClientSocket::RecvJoinWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvJoinWaitingGame(...)>"));
 
 	cInfoOfGame infoOfGame;
 
@@ -339,12 +362,14 @@ void cClientSocket::RecvWaitingGame(stringstream& RecvStream)
 	
 	tsqWaitingGame.push(infoOfGame);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvJoinWaitingGame(...)>"));
+	printf_s("[End] <cClientSocket::RecvJoinWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvJoinWaitingGame(...)>"));
 }
 
 void cClientSocket::SendDestroyWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendDestroyWaitingGame()>"));
+	printf_s("[Start] <cClientSocket::SendDestroyWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendDestroyWaitingGame()>"));
 
 	stringstream sendStream;
 	sendStream << EPacketType::DESTROY_WAITING_GAME << endl;
@@ -353,11 +378,13 @@ void cClientSocket::SendDestroyWaitingGame()
 
 	InitMyInfoOfGame();
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendDestroyWaitingGame()>"));
+	printf_s("[End] <cClientSocket::SendDestroyWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendDestroyWaitingGame()>"));
 }
 void cClientSocket::RecvDestroyWaitingGame(stringstream& RecvStream)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvDestroyWaitingGame(...)>"));
+	printf_s("[Start] <cClientSocket::RecvDestroyWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvDestroyWaitingGame(...)>"));
 
 	tsqDestroyWaitingGame.push(true);
 
@@ -369,12 +396,14 @@ void cClientSocket::RecvDestroyWaitingGame(stringstream& RecvStream)
 
 	InitMyInfoOfGame();
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvDestroyWaitingGame(...)>"));
+	printf_s("[End] <cClientSocket::RecvDestroyWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvDestroyWaitingGame(...)>"));
 }
 
 void cClientSocket::SendExitWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendExitWaitingGame(...)>"));
+	printf_s("[Start] <cClientSocket::SendExitWaitingGame(...)\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendExitWaitingGame(...)>"));
 
 	stringstream sendStream;
 	sendStream << EPacketType::EXIT_WAITING_GAME << endl;
@@ -389,13 +418,15 @@ void cClientSocket::SendExitWaitingGame()
 
 	InitMyInfoOfGame();
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendExitWaitingGame(...)>"));
+	printf_s("[End] <cClientSocket::SendExitWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendExitWaitingGame(...)>"));
 }
 
 
 void cClientSocket::SendModifyWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendModifyWaitingGame()>"));
+	printf_s("[Start] <cClientSocket::SendModifyWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendModifyWaitingGame()>"));
 
 	cInfoOfGame infoOfGame = CopyMyInfoOfGame();
 	infoOfGame.PrintInfo();
@@ -406,11 +437,13 @@ void cClientSocket::SendModifyWaitingGame()
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendModifyWaitingGame()>"));
+	printf_s("[End] <cClientSocket::SendModifyWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendModifyWaitingGame()>"));
 }
 void cClientSocket::RecvModifyWaitingGame(stringstream& RecvStream)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvModifyWaitingGame(...)>"));
+	printf_s("[Start] <cClientSocket::RecvModifyWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvModifyWaitingGame(...)>"));
 
 	cInfoOfGame infoOfGame;
 
@@ -422,12 +455,14 @@ void cClientSocket::RecvModifyWaitingGame(stringstream& RecvStream)
 
 	tsqModifyWaitingGame.push(infoOfGame);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvModifyWaitingGame(...)>"));
+	printf_s("[End] <cClientSocket::RecvModifyWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvModifyWaitingGame(...)>"));
 }
 
 void cClientSocket::SendStartWaitingGame()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendStartWaitingGame()>"));
+	printf_s("[Start] <cClientSocket::SendStartWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendStartWaitingGame()>"));
 
 	stringstream sendStream;
 	sendStream << EPacketType::START_WAITING_GAME << endl;
@@ -438,11 +473,13 @@ void cClientSocket::SendStartWaitingGame()
 	infoOfGame.State = string("Playing");
 	SetMyInfoOfGame(infoOfGame);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendStartWaitingGame()>"));
+	printf_s("[End] <cClientSocket::SendStartWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendStartWaitingGame()>"));
 }
 void cClientSocket::RecvStartWaitingGame(stringstream& RecvStream)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvStartWaitingGame(...)>"));
+	printf_s("[Start] <cClientSocket::RecvStartWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvStartWaitingGame(...)>"));
 
 	tsqStartWaitingGame.push(true);
 
@@ -450,7 +487,8 @@ void cClientSocket::RecvStartWaitingGame(stringstream& RecvStream)
 	infoOfGame.State = string("Playing");
 	SetMyInfoOfGame(infoOfGame);
 
-	UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvStartWaitingGame(...)>"));
+	printf_s("[End] <cClientSocket::RecvStartWaitingGame(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvStartWaitingGame(...)>"));
 }
 
 

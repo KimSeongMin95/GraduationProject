@@ -22,6 +22,7 @@ bool UOnlineGameWidget::InitWidget(UWorld* const World, const FString ReferenceP
 
 	if (WidgetTree == nullptr)
 	{
+		printf_s("[Error] <UOnlineGameWidget::InitWidget(...)> if (WidgetTree == nullptr)\n");
 		UE_LOG(LogTemp, Error, TEXT("[Error] <UOnlineGameWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
 		return false;
 	}
@@ -74,6 +75,7 @@ UMyButton* UOnlineGameWidget::BindButton(cInfoOfGame& InfoOfGame)
 
 	if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())
 	{
+		printf_s("[ERROR] <UOnlineGameWidget::BindButton(...)> if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UOnlineGameWidget::BindButton(...)> if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())"));
 		return nullptr;
 	}

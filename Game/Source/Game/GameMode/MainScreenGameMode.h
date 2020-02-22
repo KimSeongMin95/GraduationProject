@@ -189,8 +189,10 @@ public:
 		void RecvStartWaitingGame();
 	UFUNCTION(Category = "Widget")
 		void CountStartedGame();
-	UFUNCTION(Category = "Widget")
+	UFUNCTION(Category = "Timer")
 		void TimerOfCountStartedGame();
+	UFUNCTION(Category = "Timer")
+		void ClearTimerOfCountStartedGame();
 	FTimerHandle thCountStartedGame;
 
 	UFUNCTION(Category = "Widget")
@@ -200,6 +202,8 @@ public:
 		void RecvAndApply();
 	UFUNCTION(Category = "Timer")
 		void TimerOfRecvAndApply();
+	UFUNCTION(Category = "Timer")
+		void ClearTimerOfRecvAndApply();
 	FTimerHandle thRecvAndApply;
 
 

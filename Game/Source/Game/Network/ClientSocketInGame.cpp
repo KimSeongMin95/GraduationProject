@@ -24,25 +24,11 @@ uint32 cClientSocketInGame::Run()
 	{
 		stringstream RecvStream;
 
-		//// 수신 받은 값 확인하는 용도
-		//FString temp1(recvBuffer);
-		//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] before recvBuffer: %s"), *temp1);
-
 		int PacketType;
 		int nRecvLen = recv(ServerSocket, (CHAR*)&recvBuffer, MAX_BUFFER, 0);
 
-		//// 수신 받은 값 확인하는 용도
-		//FString temp2(recvBuffer);
-		//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] after recvBuffer: %s"), *temp2);
-
 		if (nRecvLen > 0)
 		{
-
-
-			//// 수신 받은 값 확인하는 용도
-			//FString temp3(RecvStream.str().c_str());
-			//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] before RecvStream: %s"), *temp3);
-
 			// 패킷 처리
 			RecvStream << recvBuffer;
 			RecvStream >> PacketType;
@@ -51,10 +37,6 @@ uint32 cClientSocketInGame::Run()
 			// 필수!!!!: recvBuffer 초기화
 			/////////////////////////////
 			memset(recvBuffer, 0, MAX_BUFFER);
-
-			//// 수신 받은 값 확인하는 용도
-			//FString temp4(RecvStream.str().c_str());
-			//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] after RecvStream: %s"), *temp4);
 
 			//switch (PacketType)
 			//{
@@ -110,14 +92,17 @@ cClientSocketInGame::~cClientSocketInGame()
 
 bool cClientSocketInGame::InitSocket()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::InitSocket()>"));
+	printf_s("\n\n/********** cClientSocket **********/\n");
+	printf_s("[INFO] <cClientSocketInGame::InitSocket()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::InitSocket()>"));
 
 	WSADATA wsaData;
 
 	// 윈속 버전을 2.2로 초기화
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocketInGame::InitSocket()> if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)"));
+		printf_s("[ERROR] <cClientSocketInGame::InitSocket()> if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocketInGame::InitSocket()> if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)"));
 		return false;
 	}
 
@@ -125,7 +110,8 @@ bool cClientSocketInGame::InitSocket()
 	ServerSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (ServerSocket == INVALID_SOCKET)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocketInGame::InitSocket()> if (ServerSocket == INVALID_SOCKET)"));
+		printf_s("[ERROR] <cClientSocketInGame::InitSocket()> if (ServerSocket == INVALID_SOCKET)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocketInGame::InitSocket()> if (ServerSocket == INVALID_SOCKET)"));
 		return false;
 	}
 
@@ -134,7 +120,8 @@ bool cClientSocketInGame::InitSocket()
 
 bool cClientSocketInGame::Connect(const char * pszIP, int nPort)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::Connect(...)>"));
+	printf_s("[INFO] <cClientSocketInGame::Connect(...)>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::Connect(...)>"));
 
 	// 접속할 서버 정보를 저장할 구조체
 	SOCKADDR_IN stServerAddr;
@@ -147,7 +134,8 @@ bool cClientSocketInGame::Connect(const char * pszIP, int nPort)
 
 	if (connect(ServerSocket, (sockaddr*)&stServerAddr, sizeof(sockaddr)) == SOCKET_ERROR)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocketInGame::Connect(...)> if (connect(...) == SOCKET_ERROR)"));
+		printf_s("[ERROR] <cClientSocketInGame::Connect(...)> if (connect(...) == SOCKET_ERROR)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocketInGame::Connect(...)> if (connect(...) == SOCKET_ERROR)"));
 		return false;
 	}
 
@@ -158,7 +146,8 @@ bool cClientSocketInGame::Connect(const char * pszIP, int nPort)
 
 void cClientSocketInGame::CloseSocket()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::CloseSocket()>"));
+	printf_s("[INFO] <cClientSocketInGame::CloseSocket()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::CloseSocket()>"));
 
 	bIsConnected = false;
 
@@ -168,7 +157,8 @@ void cClientSocketInGame::CloseSocket()
 
 bool cClientSocketInGame::StartListen()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::StartListen()>"));
+	printf_s("[INFO] <cClientSocketInGame::StartListen()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::StartListen()>"));
 
 	if (Thread != nullptr)
 		return false;
@@ -181,7 +171,8 @@ bool cClientSocketInGame::StartListen()
 
 void cClientSocketInGame::StopListen()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::StopListen()>"));
+	printf_s("[INFO] <cClientSocketInGame::StopListen()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocketInGame::StopListen()>"));
 
 	// 스레드 종료
 	Stop();

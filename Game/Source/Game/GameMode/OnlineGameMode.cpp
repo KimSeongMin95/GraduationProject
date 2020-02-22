@@ -3,13 +3,16 @@
 #include "OnlineGameMode.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Network/ClientSocket.h"
+
+#include "Network/ServerSocketInGame.h"
+#include "Network/ClientSocketInGame.h"
+
 #include "Controller/PioneerController.h"
 #include "Character/Pioneer.h"
 #include "PioneerManager.h"
 #include "SpaceShip/SpaceShip.h"
 #include "MyHUD.h"
-
-#include "Network/ServerSocketInGame.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 const float AOnlineGameMode::CellSize = 64.0f;
@@ -59,16 +62,23 @@ AOnlineGameMode::AOnlineGameMode()
 	//// Default로 비활성화되어있는 Tick()을 활성화 합니다.
 	//PrimaryActorTick.SetTickFunctionEnable(true);
 	//PrimaryActorTick.bStartWithTickEnabled = true;
+
+
+
+	// 콘솔
+	//CustomLog::FreeConsole();
+	CustomLog::AllocConsole();
 }
 
 void AOnlineGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	ClientSocket = cClientSocket::GetSingleton();
 
-	//if (ServerSocketInGame)
-	//	ServerSocketInGame->Initialize();
+	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	ClientSocketInGame = cClientSocketInGame::GetSingleton();
+
 }
 
 void AOnlineGameMode::StartPlay()
@@ -99,24 +109,24 @@ void AOnlineGameMode::Tick(float DeltaTime)
 	//////////////
 	//// 임시
 	//////////////
-	//temp += DeltaTime;
-	//if (temp > 5.0f)
-	//{
-	//	if (ServerSocketInGame)
-	//		ServerSocketInGame->CloseServer();
-	//	UGameplayStatics::OpenLevel(this, "MainScreen");
-	//}
+	temp += DeltaTime;
+	if (temp > 30.0f)
+	{
+		if (ServerSocketInGame)
+			ServerSocketInGame->CloseServer();
+		UGameplayStatics::OpenLevel(this, "MainScreen");
+	}
 
-	//if (SpaceShip)
-	//{
-	//	if (SpaceShip->State == ESpaceShipState::Landed)
-	//		SpaceShip->StartSpawning(5);
-	//	else if (SpaceShip->State == ESpaceShipState::Spawned)
-	//	{
-	//		PioneerManager->SwitchOtherPioneer(nullptr, 2.0f);
-	//		SpaceShip->StartTakingOff();
-	//	}
-	//}
+	if (SpaceShip)
+	{
+		if (SpaceShip->State == ESpaceShipState::Landed)
+			SpaceShip->StartSpawning(5);
+		else if (SpaceShip->State == ESpaceShipState::Spawned)
+		{
+			PioneerManager->SwitchOtherPioneer(nullptr, 2.0f);
+			SpaceShip->StartTakingOff();
+		}
+	}
 }
 /*** Basic Function : End ***/
 
@@ -127,13 +137,18 @@ void AOnlineGameMode::FindPioneerController()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::FindPioneerController()> if (!world)"));
+		printf_s("[ERROR] <AOnlineGameMode::FindPioneerController()> if (!world)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::FindPioneerController()> if (!world)"));
 		return;
 	}
 
 	// UWorld에서 APioneerController를 찾습니다.
 	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		printf_s("[INFO] <AOnlineGameMode::FindPioneerController()> found APioneerController\n");
+		//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AOnlineGameMode::FindPioneerController()> found APioneerController"));
 		PioneerController = *ActorItr;
+	}
 }
 
 void AOnlineGameMode::SpawnPioneerManager()
@@ -141,7 +156,8 @@ void AOnlineGameMode::SpawnPioneerManager()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::SpawnPioneerManager()> if (!world)"));
+		printf_s("[ERROR] <AOnlineGameMode::SpawnPioneerManager()> if (!world)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::SpawnPioneerManager()> if (!world)"));
 		return;
 	}
 
@@ -161,7 +177,8 @@ void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform T
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::SpawnSpaceShip(...)> if (!world)"));
+		printf_s("[ERROR] <AOnlineGameMode::SpawnSpaceShip(...)> if (!world)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::SpawnSpaceShip(...)> if (!world)"));
 		return;
 	}
 
