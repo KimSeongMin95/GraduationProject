@@ -18,13 +18,13 @@ struct FuncProcess
 class IocpServerBase
 {
 protected:
-	stSOCKETINFO*	SocketInfo;		// 소켓 정보
+	stSOCKETINFO*	SocketInfo;		// 소켓 정보, 동적할당하고 Clients에 넘겨주는 용도
 	SOCKET			ListenSocket;	// 서버 리슨 소켓
 	HANDLE			hIOCP;			// IOCP 객체 핸들
 	bool			bAccept;		// 요청 동작 플래그
 	bool			bWorkerThread;	// 작업 스레드 동작 플래그
 	HANDLE*			hWorkerHandle;	// 작업 스레드 핸들		
-	int				nThreadCnt;		// 작업 스레드 개수
+	DWORD				nThreadCnt;		// 작업 스레드 개수
 
 public:
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장

@@ -38,7 +38,7 @@ protected:
 
 	bool			bWorkerThread;			// 작업 스레드 동작 플래그 (워커 스레드)
 	HANDLE*			hWorkerHandle = nullptr;// 작업 스레드 핸들		
-	int				nThreadCnt;				// 작업 스레드 개수
+	DWORD			nThreadCnt;				// 작업 스레드 개수
 
 	
 

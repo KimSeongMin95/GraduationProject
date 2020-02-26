@@ -207,41 +207,106 @@ void cServerSocketInGame::CloseServer()
 {
 	bIsServerOn = false;
 
-	// PostQueuedCompletionStatus로 GetQueuedCompletionStatus에서 빠져나오게 하여 종료시키는 방법?
 
 
-	// 작동중인 스레드를 강제로 종료
-	// 주의: 메모리누수가 발생합니다.
-	TerminateThread(hMainHandle, NULL);
-	for (int i = 0; i < nThreadCnt; i++)
-		TerminateThread(hWorkerHandle[i], NULL);
-	nThreadCnt = 0; // 주의!: 무조건 다시 0으로 초기화해줘야 handled exception이 발생하지 않습니다.
+	printf_s("[START] <cServerSocketInGame::CloseServer()>");
 
-	closesocket(ListenSocket);
-	WSACleanup();
+	if (hIOCP)
+	{
+		// Worker 스레드들을 강제 종료하도록 한다. 
+		for (DWORD i = 0; i < nThreadCnt; i++)
+		{
+			PostQueuedCompletionStatus(hIOCP, 0, 0, NULL);
 
-	//// 다 사용한 객체를 삭제
-	//if (SocketInfo)
-	//{
-	//	// 배열 할당 해제
-	//	delete[] SocketInfo;
-	//	SocketInfo = nullptr;
-	//}
+			printf_s("\t PostQueuedCompletionStatus(...) nThreadCnt: %d, i: %d\n", (int)nThreadCnt, (int)i);
+		}
+	}
+
+	// 모든 스레드가 실행을 중지했는지 확인한다.
+	if (WaitForMultipleObjects(nThreadCnt, hWorkerHandle, true, 3000) != WAIT_OBJECT_0)
+	{
+		printf_s("\t WaitForMultipleObjects(...) failed: %d\n", (int)GetLastError());
+	}
+	else
+	{
+		for (DWORD i = 0; i < nThreadCnt; i++) // 스레드 핸들을 모두 닫는다.
+		{
+			if (hWorkerHandle[i] != INVALID_HANDLE_VALUE)
+			{
+				CloseHandle(hWorkerHandle[i]);
+
+				printf_s("\t CloseHandle(...) nThreadCnt: %d, i: %d\n", (int)nThreadCnt, (int)i);
+			}
+			hWorkerHandle[i] = INVALID_HANDLE_VALUE;
+		}
+	}
+
+	// 스레드 핸들 할당해제
+	if (hWorkerHandle)
+	{
+		delete[] hWorkerHandle;
+		hWorkerHandle = nullptr;
+
+		nThreadCnt = 0;
+
+		printf_s("\t if (hWorkerHandle) delete[] hWorkerHandle; nThreadCnt: %d\n", (int)nThreadCnt);
+	}
+
+	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 해제
 	EnterCriticalSection(&csGameClients);
 	for (auto& kvp : GameClients)
 	{
 		if (kvp.second)
+		{
+			// 소켓을 제거한다.
+			if (kvp.second->socket != INVALID_SOCKET)
+			{
+				closesocket(kvp.second->socket);
+				kvp.second->socket = INVALID_SOCKET;
+
+				printf_s("\t if (kvp.second->socket != INVALID_SOCKET) closesocket(kvp.second->socket);\n");
+			}
+
 			delete kvp.second;
+
+			printf_s("\t for (auto& kvp : Clients) if (kvp.second) delete kvp.second;\n");
+		}
 	}
 	GameClients.clear();
 	LeaveCriticalSection(&csGameClients);
 
-	if (hWorkerHandle)
+	// IOCP를 제거한다.  
+	if (hIOCP)
 	{
-		// 배열 할당 해제
-		delete[] hWorkerHandle;
-		hWorkerHandle = nullptr;
+		CloseHandle(hIOCP);
+		hIOCP = NULL;
+
+		printf_s("\t if (hIOCP) CloseHandle(hIOCP);\n");
 	}
+
+	// 대기 소켓을 제거한다.
+	if (ListenSocket != INVALID_SOCKET)
+	{
+		closesocket(ListenSocket);
+		ListenSocket = INVALID_SOCKET;
+
+		printf_s("\t if (ListenSocket != INVALID_SOCKET) closesocket(ListenSocket);\n");
+	}
+
+	// 메인 스레드 종료 확인
+	WaitForSingleObject(hMainHandle, 3000);
+	if (hMainHandle != INVALID_HANDLE_VALUE)
+	{
+		CloseHandle(hMainHandle);
+
+		printf_s("\t CloseHandle(hMainHandle)\n");
+	}
+	hMainHandle = INVALID_HANDLE_VALUE;
+
+	// winsock 라이브러리를 해제한다.
+	WSACleanup();
+
+	printf_s("[END] <cServerSocketInGame::CloseServer()>");
 }
 
 bool cServerSocketInGame::CreateWorkerThread()
@@ -261,7 +326,7 @@ bool cServerSocketInGame::CreateWorkerThread()
 	hWorkerHandle = new HANDLE[nThreadCnt];
 
 	// thread 생성
-	for (int i = 0; i < nThreadCnt; i++)
+	for (DWORD i = 0; i < nThreadCnt; i++)
 	{
 		hWorkerHandle[i] = (HANDLE*)_beginthreadex(
 			NULL, 0, &CallWorkerThread, this, CREATE_SUSPENDED, &threadId
@@ -309,6 +374,13 @@ void cServerSocketInGame::WorkerThread()
 			INFINITE						// 대기할 시간
 		);
 		printf_s("[INFO] <cServerSocketInGame::WorkerThread()> after GetQueuedCompletionStatus(...)\n");
+
+		// PostQueuedCompletionStatus(...)로 종료
+		if (pCompletionKey == 0)
+		{
+			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> if (pCompletionKey == 0)\n");
+			return;
+		}
 
 		// 비정상 접속 끊김은 GetQueuedCompletionStatus가 FALSE를 리턴하고 수신바이트 크기가 0입니다.
 		if (!bResult && recvBytes == 0)
@@ -366,23 +438,29 @@ void cServerSocketInGame::CloseSocket(stSOCKETINFO* pSocketInfo)
 
 	printf_s("[Start] <cServerSocketInGame::CloseSocket(...)>\n");
 
-	/// Clients에서 제거
+
+	///////////////////////////
+	// Clients에서 제거
+	///////////////////////////
 	EnterCriticalSection(&csGameClients);
 	printf_s("[[INFO] <cServerSocketInGame::CloseSocket(...)> GameClients.size(): %d\n", (int)GameClients.size());
 	GameClients.erase(pSocketInfo->socket);
 	printf_s("[[INFO] <cServerSocketInGame::CloseSocket(...)> GameClients.size(): %d\n", (int)GameClients.size());
 	LeaveCriticalSection(&csGameClients);
 
-	closesocket(pSocketInfo->socket);
-	printf_s("[End] <cServerSocketInGame::CloseSocket(...)> closesocket(pSocketInfo->socket);\n");
 
-	// 중단점 예외처리하는 문제로 인해 free 대신에 if (pSocketInfo) 검사 후, delete 사용
-	//free(pSocketInfo);
-	if (pSocketInfo)
-		delete pSocketInfo;
-	printf_s("[End] <cServerSocketInGame::CloseSocket(...)> if (pSocketInfo) delete pSocketInfo;\n");
-
+	///////////////////////////
+	// closesocket
+	///////////////////////////
+	if (pSocketInfo->socket != INVALID_SOCKET)
+	{
+		closesocket(pSocketInfo->socket);
+		pSocketInfo->socket = INVALID_SOCKET;
+	}
+	delete pSocketInfo; // 중단점 예외처리하는 문제로 인해 free 대신에 if (pSocketInfo) 검사 후, delete 사용
 	pSocketInfo = nullptr;
+	closesocket(pSocketInfo->socket);
+
 
 	printf_s("[End] <cServerSocketInGame::CloseSocket(...)>\n");
 }

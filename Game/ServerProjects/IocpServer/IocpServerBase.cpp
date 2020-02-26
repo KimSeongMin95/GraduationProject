@@ -9,31 +9,11 @@ IocpServerBase::IocpServerBase()
 	// 멤버 변수 초기화
 	bWorkerThread = true;
 	bAccept = true;
-
-	InitializeCriticalSection(&csClients);
 }
 
 IocpServerBase::~IocpServerBase()
 {
-	// winsock 의 사용을 끝낸다
-	WSACleanup();
 
-	// 다 사용한 객체를 삭제
-	if (SocketInfo)
-	{
-		// 배열 할당 해제
-		delete[] SocketInfo;
-		SocketInfo = nullptr;
-	}
-
-	if (hWorkerHandle)
-	{
-		// 배열 할당 해제
-		delete[] hWorkerHandle;
-		hWorkerHandle = nullptr;
-	}
-
-	DeleteCriticalSection(&csClients);
 }
 
 bool IocpServerBase::Initialize()
@@ -68,6 +48,7 @@ bool IocpServerBase::Initialize()
 	{
 		printf_s("[ERROR] bind 실패\n");
 		closesocket(ListenSocket);
+		ListenSocket = INVALID_SOCKET;
 		WSACleanup();
 		return false;
 	}
@@ -77,6 +58,7 @@ bool IocpServerBase::Initialize()
 	{
 		printf_s("[ERROR] listen 실패\n");
 		closesocket(ListenSocket);
+		ListenSocket = INVALID_SOCKET;
 		WSACleanup();
 		return false;
 	}
@@ -131,6 +113,7 @@ void IocpServerBase::StartServer()
 		SocketInfo->Port = (int)ntohs(clientAddr.sin_port);
 		printf_s("[INFO] <IocpServerBase::StartServer()> Client's Port: %d\n\n", SocketInfo->Port);
 
+		// 동적할당한 소켓 정보를 저장
 		EnterCriticalSection(&csClients);
 		Clients[clientSocket] = SocketInfo;
 		LeaveCriticalSection(&csClients);
@@ -172,26 +155,7 @@ void IocpServerBase::WorkerThread()
 
 void IocpServerBase::CloseSocket(stSOCKETINFO* pSocketInfo)
 {
-	if (pSocketInfo == nullptr)
-	{
-		printf_s("[ERROR] <IocpServerBase::CloseSocket(...)>if (pSocketInfo == nullptr)\n");
-		return;
-	}
-
-	printf_s("[Start] <IocpServerBase::CloseSocket(...)>\n");
-
-	/// Clients에서 제거
-	EnterCriticalSection(&csClients);
-	printf_s("\t Clients.size(): %d\n", (int)Clients.size());
-	Clients.erase(pSocketInfo->socket);
-	printf_s("\t Clients.size(): %d\n", (int)Clients.size());
-	LeaveCriticalSection(&csClients);
-
-	closesocket(pSocketInfo->socket);
-	free(pSocketInfo);
-	pSocketInfo = nullptr;
-
-	printf_s("[End] <IocpServerBase::CloseSocket(...)>\n");
+	//
 }
 
 void IocpServerBase::Send(stSOCKETINFO* pSocketInfo)
