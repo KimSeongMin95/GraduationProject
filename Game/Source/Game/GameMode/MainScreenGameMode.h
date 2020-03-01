@@ -145,7 +145,6 @@ public:
 		void SendLogin(); void _SendLogin();
 
 	UFUNCTION(Category = "Widget")
-		/** ActivateOnlineWidget은 서버에 접속하려는 것이므로, 소켓이 열려 있다면 닫음. */
 		void CloseSocket();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")

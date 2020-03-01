@@ -8,7 +8,6 @@ private:
 	FuncProcess	fnProcess[100];	// 패킷 처리 구조체
 
 
-
 	// Login한 클라이언트의 InfoOfPlayer 저장
 	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
 	static CRITICAL_SECTION csInfoOfClients;
@@ -16,7 +15,6 @@ private:
 	// CreateGame한 클라이언트의 cInfoOfGame 저장
 	static std::map<SOCKET, cInfoOfGame> InfoOfGames;
 	static CRITICAL_SECTION csInfoOfGames;
-
 
 public:
 	MainServer();

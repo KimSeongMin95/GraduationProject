@@ -120,12 +120,29 @@ void cClientSocket::Exit()
 // cClientSocket
 /////////////////////////////////////
 cClientSocket::cClientSocket()
-	:StopTaskCounter(0)
 {
+	printf_s("[START] <cClientSocket::cClientSocket()>\n");
+
+	ServerSocket = NULL;
+	//memset(recvBuffer, 0, MAX_BUFFER);
+
+	Thread = nullptr;
+	StopTaskCounter.Reset();
+
+	bIsInitialized = false;
 	bIsConnected = false;
 
 	InitializeCriticalSection(&csMyInfo);
+	EnterCriticalSection(&csMyInfo);
+	MyInfo = cInfoOfPlayer();
+	LeaveCriticalSection(&csMyInfo);
+
 	InitializeCriticalSection(&csMyInfoOfGame);
+	EnterCriticalSection(&csMyInfoOfGame);
+	MyInfoOfGame = cInfoOfGame();
+	LeaveCriticalSection(&csMyInfoOfGame);
+
+	printf_s("[END] <cClientSocket::cClientSocket()>\n");
 }
 
 cClientSocket::~cClientSocket()
@@ -138,6 +155,15 @@ cClientSocket::~cClientSocket()
 
 bool cClientSocket::InitSocket()
 {
+	/// 안정성을 보장하기 위하여, 작동중인 소켓을 닫아줍니다.
+	CloseSocket();
+
+	if (bIsInitialized == true)
+	{
+		printf_s("[INFO] <cClientSocket::InitSocket()> if (bIsInitialized == true)\n");
+		return true;
+	}
+
 	printf_s("\n\n/********** cClientSocket **********/\n");
 	printf_s("[INFO] <cClientSocket::InitSocket()>\n");
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::InitSocket()>"));
@@ -158,14 +184,31 @@ bool cClientSocket::InitSocket()
 	{
 		printf_s("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)\n");
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)"));
+		
+		WSACleanup();
+		
 		return false;
 	}
+
+	bIsInitialized = true;
 
 	return true;
 }
 
 bool cClientSocket::Connect(const char * pszIP, int nPort)
 {
+	if (bIsInitialized == false)
+	{
+		printf_s("[INFO] <cClientSocket::Connect(...)> if (bIsInitialized == false)\n");
+		return false;
+	}
+
+	if (bIsConnected == true)
+	{
+		printf_s("[INFO] <cClientSocket::Connect(...)> if (bIsConnected == true)\n");
+		return true;
+	}
+
 	printf_s("[INFO] <cClientSocket::Connect(...)>\n");
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::Connect(...)>"));
 
@@ -192,13 +235,49 @@ bool cClientSocket::Connect(const char * pszIP, int nPort)
 
 void cClientSocket::CloseSocket()
 {
-	printf_s("[INFO] <cClientSocket::CloseSocket()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::CloseSocket()>"));
+	printf_s("[START] <cClientSocket::CloseSocket()>\n");
 
+	if (bIsInitialized == false)
+	{
+		printf_s("[END] <cClientSocket::CloseSocket()> if (bIsInitialized == false)\n");
+		return;
+	}
+	bIsInitialized = false;
+
+	if (ServerSocket != NULL && ServerSocket != INVALID_SOCKET)
+	{
+		closesocket(ServerSocket);
+		ServerSocket = NULL;
+
+		printf_s("\t closesocket(ServerSocket);\n");
+	}
+
+	WSACleanup();
+
+	if (bIsConnected == false)
+	{
+		printf_s("[END] <cClientSocket::CloseSocket()> if (bIsConnected == false)\n");
+		return;
+	}
 	bIsConnected = false;
 
-	closesocket(ServerSocket);
-	WSACleanup();
+	////////////////////
+	// 멤버변수들 초기화
+	////////////////////
+	InitMyInfo();
+	InitMyInfoOfGame();
+
+	tsqFindGames.clear();
+	tsqWaitingGame.clear();
+	tsqDestroyWaitingGame.clear();
+	tsqModifyWaitingGame.clear();
+	tsqStartWaitingGame.clear();
+	tsqRequestInfoOfGameServer.clear();
+
+	// 스레드 정지
+	StopListen();
+
+	printf_s("[END] <cClientSocket::CloseSocket()>\n");
 }
 
 bool cClientSocket::StartListen()
@@ -206,8 +285,8 @@ bool cClientSocket::StartListen()
 	printf_s("[INFO] <cClientSocket::StartListen()>\n");
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StartListen()>"));
 
-	if (Thread != nullptr)
-		return false;
+	if (Thread)
+		return true;
 
 	// 스레드 시작
 	Thread = FRunnableThread::Create(this, TEXT("cClientSocket"), 0, TPri_BelowNormal);
@@ -217,19 +296,23 @@ bool cClientSocket::StartListen()
 
 void cClientSocket::StopListen()
 {
-	printf_s("[INFO] <cClientSocket::StopListen()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StopListen()>"));
+	printf_s("[START] <cClientSocket::StopListen()>\n");
 
 	// 스레드 종료
 	Stop();
+
 	if (Thread)
 	{
 		Thread->WaitForCompletion();
 		Thread->Kill();
 		delete Thread;
 		Thread = nullptr;
+
+		printf_s("\t Thread->WaitForCompletion(); Thread->Kill(); delete Thread;\n");
 	}
 	StopTaskCounter.Reset();
+
+	printf_s("[END] <cClientSocket::StopListen()>\n");
 }
 
 

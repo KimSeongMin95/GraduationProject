@@ -19,9 +19,10 @@ private:
 	char 	recvBuffer[MAX_BUFFER];		// 수신 버퍼 스트림	
 
 	// FRunnable Thread members	
-	FRunnableThread* Thread;
+	FRunnableThread* Thread = nullptr;
 	FThreadSafeCounter StopTaskCounter;
 
+	bool bIsInitialized;
 	bool bIsConnected;
 
 	class cInfoOfPlayer MyInfo;
@@ -66,7 +67,7 @@ public:
 		return &ins;
 	}
 
-	void SetConnected(bool bConnected) { bIsConnected = bConnected; }
+	bool IsInitialized() { return bIsInitialized; }
 	bool IsConnected() { return bIsConnected; }
 
 	///////////////////////////////////////////

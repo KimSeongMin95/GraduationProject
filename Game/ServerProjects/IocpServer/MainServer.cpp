@@ -17,21 +17,28 @@ unsigned int WINAPI CallWorkerThread(LPVOID p)
 
 MainServer::MainServer()
 {
-	InitializeCriticalSection(&csClients);
 	InitializeCriticalSection(&csInfoOfClients);
+	EnterCriticalSection(&csInfoOfClients);
+	InfoOfClients.clear();
+	LeaveCriticalSection(&csInfoOfClients);
+
 	InitializeCriticalSection(&csInfoOfGames);
+	EnterCriticalSection(&csInfoOfGames);
+	InfoOfGames.clear();
+	LeaveCriticalSection(&csInfoOfGames);
+
 
 	// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::LOGIN].funcProcessPacket = Login;
-	fnProcess[EPacketType::CREATE_GAME].funcProcessPacket = CreateGame;
-	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
-	fnProcess[EPacketType::JOIN_WAITING_GAME].funcProcessPacket = JoinWaitingGame;
-	fnProcess[EPacketType::DESTROY_WAITING_GAME].funcProcessPacket = DestroyWaitingGame;
-	fnProcess[EPacketType::EXIT_WAITING_GAME].funcProcessPacket = ExitWaitingGame;
-	fnProcess[EPacketType::MODIFY_WAITING_GAME].funcProcessPacket = ModifyWaitingGame;
-	fnProcess[EPacketType::START_WAITING_GAME].funcProcessPacket = StartWaitingGame;
-	fnProcess[EPacketType::ACTIVATE_GAME_SERVER].funcProcessPacket = ActivateGameServer;
-	fnProcess[EPacketType::REQUEST_INFO_OF_GAME_SERVER].funcProcessPacket = RequestInfoOfGameServer;
+	//fnProcess[EPacketType::CREATE_GAME].funcProcessPacket = CreateGame;
+	//fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
+	//fnProcess[EPacketType::JOIN_WAITING_GAME].funcProcessPacket = JoinWaitingGame;
+	//fnProcess[EPacketType::DESTROY_WAITING_GAME].funcProcessPacket = DestroyWaitingGame;
+	//fnProcess[EPacketType::EXIT_WAITING_GAME].funcProcessPacket = ExitWaitingGame;
+	//fnProcess[EPacketType::MODIFY_WAITING_GAME].funcProcessPacket = ModifyWaitingGame;
+	//fnProcess[EPacketType::START_WAITING_GAME].funcProcessPacket = StartWaitingGame;
+	//fnProcess[EPacketType::ACTIVATE_GAME_SERVER].funcProcessPacket = ActivateGameServer;
+	//fnProcess[EPacketType::REQUEST_INFO_OF_GAME_SERVER].funcProcessPacket = RequestInfoOfGameServer;
 }
 
 MainServer::~MainServer()
@@ -49,23 +56,37 @@ MainServer::~MainServer()
 		}
 	}
 
-	// 모든 스레드가 실행을 중지했는지 확인한다.
-	if (WaitForMultipleObjects(nThreadCnt, hWorkerHandle, TRUE, 1000) != WAIT_OBJECT_0)
+	if (nThreadCnt > 0)
 	{
-		printf_s("\t WaitForMultipleObjects(...) failed: %d\n", GetLastError());
-	}
-	else
-	{
-		for (DWORD i = 0; i < nThreadCnt; i++) // 스레드 핸들을 모두 닫는다.
-		{
-			if (hWorkerHandle[i] != INVALID_HANDLE_VALUE)
-			{
-				CloseHandle(hWorkerHandle[i]);
+		// 모든 스레드가 실행을 중지했는지 확인한다.
+		DWORD result = WaitForMultipleObjects(nThreadCnt, hWorkerHandle, true, 5000);
 
-				printf_s("\t CloseHandle(...) nThreadCnt: %d, i: %d\n", (int)nThreadCnt, (int)i);
+		// 모든 스레드가 중지되었다면 == 기다리던 모든 Event들이 signal이 된 경우
+		if (result == WAIT_OBJECT_0)
+		{
+			for (DWORD i = 0; i < nThreadCnt; i++) // 스레드 핸들을 모두 닫는다.
+			{
+				if (hWorkerHandle[i] != INVALID_HANDLE_VALUE)
+				{
+					CloseHandle(hWorkerHandle[i]);
+
+					printf_s("\t CloseHandle(...) nThreadCnt: %d, i: %d\n", (int)nThreadCnt, (int)i);
+				}
+				hWorkerHandle[i] = INVALID_HANDLE_VALUE;
 			}
-			hWorkerHandle[i] = INVALID_HANDLE_VALUE;
 		}
+		else if (result == WAIT_TIMEOUT)
+		{
+			printf_s("\t WaitForMultipleObjects(...) result: WAIT_TIMEOUT\n");
+		}
+		else
+		{
+			printf_s("\t WaitForMultipleObjects(...) failed: %d\n", (int)GetLastError());
+		}
+
+		nThreadCnt = 0;
+
+		printf_s("\t nThreadCnt: %d\n", (int)nThreadCnt);
 	}
 
 	// 스레드 핸들 할당해제
@@ -74,9 +95,7 @@ MainServer::~MainServer()
 		delete[] hWorkerHandle;
 		hWorkerHandle = nullptr;
 
-		nThreadCnt = 0;
-
-		printf_s("\t if (hWorkerHandle) delete[] hWorkerHandle; nThreadCnt: %d\n", (int)nThreadCnt);
+		printf_s("\t delete[] hWorkerHandle;\n");
 	}
 
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 해제
@@ -86,12 +105,12 @@ MainServer::~MainServer()
 		if (kvp.second)
 		{
 			// 소켓을 제거한다.
-			if (kvp.second->socket != INVALID_SOCKET)
+			if (kvp.second->socket != NULL && kvp.second->socket != INVALID_SOCKET)
 			{
 				closesocket(kvp.second->socket);
-				kvp.second->socket = INVALID_SOCKET;
+				kvp.second->socket = NULL;
 
-				printf_s("\t if (kvp.second->socket != INVALID_SOCKET) closesocket(kvp.second->socket);\n");
+				printf_s("\t closesocket(kvp.second->socket);\n");
 			}
 
 			delete kvp.second;
@@ -108,20 +127,19 @@ MainServer::~MainServer()
 		CloseHandle(hIOCP);
 		hIOCP = NULL;
 
-		printf_s("\t if (hIOCP) CloseHandle(hIOCP);\n");
+		printf_s("\t CloseHandle(hIOCP);\n");
 	}
 
 	// 대기 소켓을 제거한다.
-	if (ListenSocket != INVALID_SOCKET)
+	if (ListenSocket != NULL && ListenSocket != INVALID_SOCKET)
 	{
 		closesocket(ListenSocket);
-		ListenSocket = INVALID_SOCKET;
+		ListenSocket = NULL;
 
 		printf_s("\t if (ListenSocket != INVALID_SOCKET) closesocket(ListenSocket);\n");
 	}
 
 	// 크리티컬 섹션들을 제거한다.
-	DeleteCriticalSection(&csClients);
 	DeleteCriticalSection(&csInfoOfClients);
 	DeleteCriticalSection(&csInfoOfGames);
 
@@ -145,7 +163,7 @@ bool MainServer::CreateWorkerThread()
 	// 시스템 정보 가져옴
 	SYSTEM_INFO sysInfo;
 	GetSystemInfo(&sysInfo);
-	printf_s("[INFO] CPU 갯수 : %d\n", sysInfo.dwNumberOfProcessors);
+	printf_s("[INFO] <MainServer::CreateWorkerThread()> CPU 갯수 : %d\n", sysInfo.dwNumberOfProcessors);
 
 	// 적절한 작업 스레드의 갯수는 (CPU * 2) + 1
 	nThreadCnt = sysInfo.dwNumberOfProcessors * 2;
@@ -162,14 +180,14 @@ bool MainServer::CreateWorkerThread()
 		);
 		if (hWorkerHandle[i] == NULL)
 		{
-			printf_s("[ERROR] Worker Thread 생성 실패\n");
+			printf_s("[ERROR] <MainServer::CreateWorkerThread()> Worker Thread 생성 실패\n");
 			return false;
 		}
 		ResumeThread(hWorkerHandle[i]);
 
 		threadCount++;
 	}
-	printf_s("[INFO] Worker %d Threads 시작...\n", threadCount);
+	printf_s("[INFO] <MainServer::CreateWorkerThread()> Worker %d Threads 시작...\n", threadCount);
 
 	return true;
 }
@@ -214,20 +232,20 @@ void MainServer::WorkerThread()
 		// 비정상 접속 끊김은 GetQueuedCompletionStatus가 FALSE를 리턴하고 수신바이트 크기가 0입니다.
 		if (!bResult && recvBytes == 0)
 		{
-			printf_s("[INFO] socket(%d) 접속 끊김\n", (int)pSocketInfo->socket);
+			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> socket(%d) 접속 끊김\n", (int)pSocketInfo->socket);
+			CloseSocket(pSocketInfo);
+			continue;
+		}
+
+		// 정상 접속 끊김은 GetQueuedCompletionStatus가 TRUE를 리턴하고 수신바이트 크기가 0입니다.
+		if (recvBytes == 0)
+		{
+			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> socket(%d) 접속 끊김 if (recvBytes == 0)\n", (int)pSocketInfo->socket);
 			CloseSocket(pSocketInfo);
 			continue;
 		}
 
 		pSocketInfo->dataBuf.len = recvBytes;
-
-		// 정상 접속 끊김은 GetQueuedCompletionStatus가 TRUE를 리턴하고 수신바이트 크기가 0입니다.
-		if (recvBytes == 0)
-		{
-			printf_s("[INFO] socket(%d) 접속 끊김 if (recvBytes == 0)\n", (int)pSocketInfo->socket);
-			CloseSocket(pSocketInfo);
-			continue;
-		}
 
 		try
 		{
@@ -251,12 +269,12 @@ void MainServer::WorkerThread()
 			}
 			else
 			{
-				printf_s("[ERROR] 정의 되지 않은 패킷 : %d\n", PacketType);
+				printf_s("[ERROR] <MainServer::WorkerThread()> 정의 되지 않은 패킷 : %d\n", PacketType);
 			}
 		}
 		catch (const std::exception& e)
 		{
-			printf_s("[ERROR] 알 수 없는 예외 발생 : %s\n", e.what());
+			printf_s("[ERROR] <MainServer::WorkerThread()> 알 수 없는 예외 발생 : %s\n", e.what());
 		}
 
 		// 클라이언트 대기
@@ -266,9 +284,9 @@ void MainServer::WorkerThread()
 
 void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 {
-	if (pSocketInfo == nullptr)
+	if (!pSocketInfo)
 	{
-		printf_s("[ERROR] <MainServer::CloseSocket(...)>if (pSocketInfo == nullptr)\n");
+		printf_s("[ERROR] <MainServer::CloseSocket(...)> if (!pSocketInfo)\n");
 		return;
 	}
 
@@ -281,8 +299,8 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	///////////////////////////
 	// 해당 클라이언트의 네트워크 접속 종료를 다른 클라이언트들에게 알려줍니다.
 	///////////////////////////
-	ExitWaitingGame(temp, pSocketInfo);
-	DestroyWaitingGame(temp, pSocketInfo);
+	//ExitWaitingGame(temp, pSocketInfo);
+	//DestroyWaitingGame(temp, pSocketInfo);
 
 	/*********************************************************************************/
 
@@ -294,12 +312,18 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	/// 아래의 InfoOfGames에서 제거에서 사용할 leaderSocketByMainServer를 획득합니다.
 	EnterCriticalSection(&csInfoOfClients);
 	if (InfoOfClients.find(pSocketInfo->socket) != InfoOfClients.end())
+	{
 		leaderSocketByMainServer = InfoOfClients.at(pSocketInfo->socket).LeaderSocketByMainServer;
 
-	/// 네트워크 연결을 종료한 클라이언트의 정보를 제거합니다.
-	printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
-	InfoOfClients.erase(pSocketInfo->socket);
-	printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
+		/// 네트워크 연결을 종료한 클라이언트의 정보를 제거합니다.
+		printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
+		InfoOfClients.erase(pSocketInfo->socket);
+		printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
+	}
+	else
+	{
+		printf_s("[ERROR] <MainServer::CloseSocket(...)> InfoOfClients can't find pSocketInfo->socket\n");
+	}
 	LeaveCriticalSection(&csInfoOfClients);
 
 
@@ -314,6 +338,10 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 		InfoOfGames.erase(pSocketInfo->socket);
 		printf_s("\t InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
 	}
+	else
+	{
+		printf_s("[ERROR] <MainServer::CloseSocket(...)> InfoOfGames can't find pSocketInfo->socket\n");
+	}
 
 	/// 네트워크 연결을 종료한 클라이언트가 소속된 게임방을 찾아서 Players에서 제거합니다.
 	if (InfoOfGames.find((SOCKET)leaderSocketByMainServer) != InfoOfGames.end())
@@ -325,19 +353,26 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	// Clients에서 제거
 	///////////////////////////
 	EnterCriticalSection(&csClients);
-	printf_s("\t Clients.size(): %d\n", (int)Clients.size());
-	Clients.erase(pSocketInfo->socket);
-	printf_s("\t Clients.size(): %d\n", (int)Clients.size());
+	if (Clients.find(pSocketInfo->socket) != Clients.end())
+	{
+		printf_s("\t Clients.size(): %d\n", (int)Clients.size());
+		Clients.erase(pSocketInfo->socket);
+		printf_s("\t Clients.size(): %d\n", (int)Clients.size());
+	}
+	else
+	{
+		printf_s("[ERROR] <MainServer::CloseSocket(...)> Clients can't find pSocketInfo->socket\n");
+	}
 	LeaveCriticalSection(&csClients);
 
 
 	///////////////////////////
 	// closesocket
 	///////////////////////////
-	if (pSocketInfo->socket != INVALID_SOCKET)
+	if (pSocketInfo->socket != NULL && pSocketInfo->socket != INVALID_SOCKET)
 	{
 		closesocket(pSocketInfo->socket);
-		pSocketInfo->socket = INVALID_SOCKET;
+		pSocketInfo->socket = NULL;
 	}
 	delete pSocketInfo;
 	pSocketInfo = nullptr;
@@ -365,7 +400,7 @@ void MainServer::Send(stSOCKETINFO* pSocketInfo)
 
 	if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 	{
-		printf_s("[ERROR] WSASend 실패 : %d\n", WSAGetLastError());
+		printf_s("[ERROR] <MainServer::Send(...)> WSASend 실패 : %d\n", WSAGetLastError());
 	}
 }
 

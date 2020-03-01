@@ -31,6 +31,7 @@ AMainScreenGameMode::AMainScreenGameMode()
 	// 콘솔
 	//CustomLog::FreeConsole();
 	CustomLog::AllocConsole();
+
 }
 
 void AMainScreenGameMode::BeginPlay()
@@ -46,8 +47,11 @@ void AMainScreenGameMode::BeginPlay()
 	}
 
 	ClientSocket = cClientSocket::GetSingleton();
-
+	if (ClientSocket)
+		ClientSocket->CloseSocket();
 	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	if (ServerSocketInGame)
+		ServerSocketInGame->CloseServer();
 	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 
 	MainScreenWidget = NewObject<UMainScreenWidget>(this, FName("MainScreenWidget"));
@@ -149,9 +153,9 @@ void AMainScreenGameMode::_ActivateOnlineWidget()
 
 	OnlineState = EOnlineState::Online;
 
-	ClearTimerOfRecvAndApply();
-
 	CloseSocket();
+
+	ClearTimerOfRecvAndApply();
 
 	OnlineWidget->AddToViewport();
 }
@@ -394,25 +398,39 @@ void AMainScreenGameMode::_SendLogin()
 		return;
 	}
 
-	ClientSocket->InitSocket();
-
-	//bIsConnected = ClientSocket->Connect("127.0.0.1", 8000);
-	bool bIsConnected = ClientSocket->Connect(TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
-
-	if (!bIsConnected)
+	// 아직 초기화되지 않았다면
+	if (ClientSocket->IsInitialized() == false)
 	{
-		printf_s("[ERROR] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)\n");
-		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
-		printf_s("IPv4: %s, Port: %d\n", TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
-		//UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port: %s"), *OnlineWidget->GetIPv4()->GetText().ToString(), *OnlineWidget->GetPort()->GetText().ToString());
-		return;
+		if (ClientSocket->InitSocket() == false)
+		{
+			printf_s("[ERROR] <AMainScreenGameMode::SendLogin()> if (ClientSocket->InitSocket() == false)\n");
+			return;
+		}
+	}
+
+	// 아직 메인서버에 연결되지 않았다면
+	if (ClientSocket->IsConnected() == false)
+	{
+		//ClientSocket->Connect("127.0.0.1", 8000);
+		if (ClientSocket->Connect(TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort())) == false)
+		{
+			printf_s("[ERROR] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)\n");
+			//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
+			printf_s("IPv4: %s, Port: %d\n", TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
+			//UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port: %s"), *OnlineWidget->GetIPv4()->GetText().ToString(), *OnlineWidget->GetPort()->GetText().ToString());
+	
+			return;
+		}
 	}
 
 	printf_s("[INFO] <AMainScreenGameMode::SendLogin()> IOCP Main Server connect success!\n");
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendLogin()> IOCP Main Server connect success!"));
 
-	// Recv 스레드 시작
-	ClientSocket->StartListen();
+	if (ClientSocket->StartListen() == false)
+	{
+		printf_s("[ERROR] <AMainScreenGameMode::SendLogin()> if (ClientSocket->StartListen() == false)\n");
+		return;
+	}
 
 	ClientSocket->SendLogin(OnlineWidget->GetID()->GetText());
 
@@ -422,10 +440,9 @@ void AMainScreenGameMode::_SendLogin()
 
 void AMainScreenGameMode::CloseSocket()
 {
-	if (!ClientSocket || !ClientSocketInGame)
+	if (!ClientSocket)
 	{
-		printf_s("[ERROR] <AMainScreenGameMode::CloseSocket()> if (!ClientSocket || !ClientSocketInGame)\n");
-		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CloseSocket()> if (!ClientSocket || !ClientSocketInGame)"));
+		printf_s("[ERROR] <AMainScreenGameMode::CloseSocket()> if (!ClientSocket)\n");
 		return;
 	}
 
@@ -671,8 +688,7 @@ void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 	{
 		ClientSocket->SendDestroyWaitingGame();
 
-		if (ServerSocketInGame->IsServerOn())
-			ServerSocketInGame->CloseServer();
+		ServerSocketInGame->CloseServer();
 	}
 	else // 플레이어가 나간 것이라면
 	{

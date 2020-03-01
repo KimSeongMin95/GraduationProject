@@ -48,6 +48,9 @@ public:
 	CRITICAL_SECTION csGameClients;
 
 public:
+	////////////////////////
+	// 기본
+	////////////////////////
 	cServerSocketInGame();
 	~cServerSocketInGame();
 
@@ -82,9 +85,12 @@ public:
 		return &ins;
 	}
 
-	void SetServerOn(bool bServerOn) { bIsServerOn = bServerOn; }
+	////////////////////////
+	// 확인
+	////////////////////////
 	bool IsServerOn() { return bIsServerOn; }
 	int GetServerPort() { return ServerPort; }
+
 	////////////////////////
 	// 통신
 	////////////////////////

@@ -6,14 +6,29 @@ CRITICAL_SECTION IocpServerBase::csClients;
 
 IocpServerBase::IocpServerBase()
 {
+	///////////////////
 	// 멤버 변수 초기화
-	bWorkerThread = true;
+	///////////////////
+	SocketInfo = nullptr;
+	ListenSocket = NULL;
+	hIOCP = NULL;
+
 	bAccept = true;
+
+	bWorkerThread = true;
+	hWorkerHandle = nullptr;
+	nThreadCnt = 0;
+
+	InitializeCriticalSection(&csClients);
+	EnterCriticalSection(&csClients);
+	Clients.clear();
+	LeaveCriticalSection(&csClients);
 }
 
 IocpServerBase::~IocpServerBase()
 {
-
+	// 크리티컬 섹션들을 제거한다.
+	DeleteCriticalSection(&csClients);
 }
 
 bool IocpServerBase::Initialize()
@@ -82,7 +97,7 @@ void IocpServerBase::StartServer()
 	if (!CreateWorkerThread()) 
 		return;
 
-	printf_s("[INFO] 서버 시작...\n");
+	printf_s("[INFO] <IocpServerBase::StartServer()> 서버 시작...\n");
 
 	// 클라이언트 접속을 받음
 	while (bAccept)
@@ -91,11 +106,12 @@ void IocpServerBase::StartServer()
 	
 		if (clientSocket == INVALID_SOCKET)
 		{
-			printf_s("[ERROR] WSAAccept 실패\n");
+			printf_s("[ERROR] <IocpServerBase::StartServer()> WSAAccept 실패\n");
+			// closesocket(ListenSocket); 하면 여기서 종료됩니다.
 			return;
 		}
 		else
-			printf_s("[INFO] WSAAccept 성공, SocketID: %d\n", int(clientSocket));
+			printf_s("[INFO] <IocpServerBase::StartServer()> WSAAccept 성공, SocketID: %d\n", int(clientSocket));
 
 		SocketInfo = new stSOCKETINFO();
 		SocketInfo->socket = clientSocket;
@@ -136,7 +152,7 @@ void IocpServerBase::StartServer()
 
 		if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 		{
-			printf_s("[ERROR] IO Pending 실패 : %d\n", WSAGetLastError());
+			printf_s("[ERROR] <IocpServerBase::StartServer()> IO Pending 실패 : %d\n", WSAGetLastError());
 			return;
 		}
 	}
@@ -160,29 +176,13 @@ void IocpServerBase::CloseSocket(stSOCKETINFO* pSocketInfo)
 
 void IocpServerBase::Send(stSOCKETINFO* pSocketInfo)
 {
-	//DWORD	sendBytes;
-	//DWORD	dwFlags = 0;
-
-	//int nResult = WSASend(
-	//	pSocketInfo->socket,
-	//	&(pSocketInfo->dataBuf),
-	//	1,
-	//	&sendBytes,
-	//	dwFlags,
-	//	NULL,
-	//	NULL
-	//);
-
-	//if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
-	//{
-	//	printf_s("[ERROR] WSASend 실패 : %d", WSAGetLastError());
-	//}
+	//
 }
 
 void IocpServerBase::Recv(stSOCKETINFO* pSocketInfo)
 {
-	// DWORD	sendBytes;
-	DWORD	dwFlags = 0;
+	// DWORD sendBytes;
+	DWORD dwFlags = 0;
 
 	// stSOCKETINFO 데이터 초기화
 	ZeroMemory(&(pSocketInfo->overlapped), sizeof(OVERLAPPED));
