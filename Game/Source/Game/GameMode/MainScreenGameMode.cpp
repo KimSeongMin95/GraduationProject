@@ -53,6 +53,8 @@ void AMainScreenGameMode::BeginPlay()
 	if (ServerSocketInGame)
 		ServerSocketInGame->CloseServer();
 	ClientSocketInGame = cClientSocketInGame::GetSingleton();
+	if (ClientSocketInGame)
+		ClientSocketInGame->CloseSocket();
 
 	MainScreenWidget = NewObject<UMainScreenWidget>(this, FName("MainScreenWidget"));
 	MainScreenWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/MainScreen.MainScreen_C'", true);
@@ -694,8 +696,7 @@ void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 	{
 		ClientSocket->SendExitWaitingGame();
 
-		if (ClientSocketInGame->IsConnected())
-			ClientSocketInGame->CloseSocket();
+		ClientSocketInGame->CloseSocket();
 	}
 
 	// 게임 시작 카운트 다운을 세는 타이머를 종료합니다.
@@ -739,8 +740,7 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 	// 게임 시작 카운트 다운을 세는 타이머를 종료합니다.
 	ClearTimerOfCountStartedGame();
 
-	if (ClientSocketInGame->IsConnected())
-		ClientSocketInGame->CloseSocket();
+	ClientSocketInGame->CloseSocket();
 }
 
 
@@ -1023,8 +1023,8 @@ void AMainScreenGameMode::GameClientConnectGameServer()
 		return;
 	}
 
-	// 이미 연결된 경우 더이상 진행하지 않습니다.
-	if (ClientSocketInGame->IsConnected())
+	// 
+	if (ClientSocketInGame->IsClientSocketOn())
 		return;
 
 	// 요청을 보냅니다.
@@ -1038,23 +1038,42 @@ void AMainScreenGameMode::GameClientConnectGameServer()
 
 	printf_s("\t\t GOGOGOGOGOGGO!!!!!!!!!GOGOGOGGO!!! \n");
 
-	ClientSocketInGame->InitSocket();
 
-	bool bIsConnected = ClientSocketInGame->Connect(infoOfPlayer.IPv4Addr.c_str(), infoOfPlayer.PortOfGameServer);
-
-	if (!bIsConnected)
+	// 아직 초기화되지 않았다면
+	if (ClientSocketInGame->IsInitialized() == false)
 	{
-		printf_s("[ERROR] <AMainScreenGameMode::GameClientConnectGameServer()> if (!bIsConnected)\n");
-		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::GameClientConnectGameServer()> if (!bIsConnected)"));
-		printf_s("IPv4: %s, Port: %d\n", infoOfPlayer.IPv4Addr.c_str(), infoOfPlayer.PortOfGameServer);
-		return;
+		if (ClientSocketInGame->InitSocket() == false)
+		{
+			printf_s("[ERROR] <AMainScreenGameMode::GameClientConnectGameServer()> if (ClientSocketInGame->InitSocket() == false)\n");
+			return;
+		}
 	}
 
+	// 아직 게임서버에 연결되지 않았다면
+	if (ClientSocketInGame->IsConnected() == false)
+	{
+		if (ClientSocketInGame->Connect(infoOfPlayer.IPv4Addr.c_str(), infoOfPlayer.PortOfGameServer) == false)
+		{
+			printf_s("[ERROR] <AMainScreenGameMode::GameClientConnectGameServer()> if (!bIsConnected)\n");
+			//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::GameClientConnectGameServer()> if (!bIsConnected)"));
+			printf_s("IPv4: %s, Port: %d\n", infoOfPlayer.IPv4Addr.c_str(), infoOfPlayer.PortOfGameServer);
+
+			return;
+		}
+	}
 	printf_s("[INFO] <AMainScreenGameMode::GameClientConnectGameServer()> IOCP Game Server connect success!\n");
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::GameClientConnectGameServer()> IOCP Game Server connect success!"));
 
-	// Recv 스레드 시작
-	ClientSocketInGame->StartListen();
+	// 아직 Recv 스레드가 구동되지 않았다면
+	if (ClientSocketInGame->IsClientSocketOn() == false)
+	{
+		if (ClientSocketInGame->BeginMainThread() == false)
+		{
+			printf_s("[ERROR] <AMainScreenGameMode::SendLogin()> if (ClientSocket->StartListen() == false)\n");
+			return;
+		}
+	}
+	printf_s("[INFO] <AMainScreenGameMode::GameClientConnectGameServer()> cClientSocketInGame is on\n");
 }
 
 void AMainScreenGameMode::ClearAllRecvedQueue()

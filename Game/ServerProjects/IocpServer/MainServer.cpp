@@ -30,15 +30,15 @@ MainServer::MainServer()
 
 	// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::LOGIN].funcProcessPacket = Login;
-	//fnProcess[EPacketType::CREATE_GAME].funcProcessPacket = CreateGame;
-	//fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
-	//fnProcess[EPacketType::JOIN_WAITING_GAME].funcProcessPacket = JoinWaitingGame;
-	//fnProcess[EPacketType::DESTROY_WAITING_GAME].funcProcessPacket = DestroyWaitingGame;
-	//fnProcess[EPacketType::EXIT_WAITING_GAME].funcProcessPacket = ExitWaitingGame;
-	//fnProcess[EPacketType::MODIFY_WAITING_GAME].funcProcessPacket = ModifyWaitingGame;
-	//fnProcess[EPacketType::START_WAITING_GAME].funcProcessPacket = StartWaitingGame;
-	//fnProcess[EPacketType::ACTIVATE_GAME_SERVER].funcProcessPacket = ActivateGameServer;
-	//fnProcess[EPacketType::REQUEST_INFO_OF_GAME_SERVER].funcProcessPacket = RequestInfoOfGameServer;
+	fnProcess[EPacketType::CREATE_GAME].funcProcessPacket = CreateGame;
+	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
+	fnProcess[EPacketType::JOIN_WAITING_GAME].funcProcessPacket = JoinWaitingGame;
+	fnProcess[EPacketType::DESTROY_WAITING_GAME].funcProcessPacket = DestroyWaitingGame;
+	fnProcess[EPacketType::EXIT_WAITING_GAME].funcProcessPacket = ExitWaitingGame;
+	fnProcess[EPacketType::MODIFY_WAITING_GAME].funcProcessPacket = ModifyWaitingGame;
+	fnProcess[EPacketType::START_WAITING_GAME].funcProcessPacket = StartWaitingGame;
+	fnProcess[EPacketType::ACTIVATE_GAME_SERVER].funcProcessPacket = ActivateGameServer;
+	fnProcess[EPacketType::REQUEST_INFO_OF_GAME_SERVER].funcProcessPacket = RequestInfoOfGameServer;
 }
 
 MainServer::~MainServer()
@@ -299,8 +299,8 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	///////////////////////////
 	// 해당 클라이언트의 네트워크 접속 종료를 다른 클라이언트들에게 알려줍니다.
 	///////////////////////////
-	//ExitWaitingGame(temp, pSocketInfo);
-	//DestroyWaitingGame(temp, pSocketInfo);
+	ExitWaitingGame(temp, pSocketInfo);
+	DestroyWaitingGame(temp, pSocketInfo);
 
 	/*********************************************************************************/
 

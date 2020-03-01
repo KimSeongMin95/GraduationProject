@@ -182,11 +182,10 @@ bool cClientSocket::InitSocket()
 	ServerSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (ServerSocket == INVALID_SOCKET) 
 	{
+		WSACleanup();
+
 		printf_s("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)\n");
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)"));
-		
-		WSACleanup();
-		
 		return false;
 	}
 
@@ -274,7 +273,7 @@ void cClientSocket::CloseSocket()
 	tsqStartWaitingGame.clear();
 	tsqRequestInfoOfGameServer.clear();
 
-	// 스레드 정지
+	// 스레드 종료
 	StopListen();
 
 	printf_s("[END] <cClientSocket::CloseSocket()>\n");

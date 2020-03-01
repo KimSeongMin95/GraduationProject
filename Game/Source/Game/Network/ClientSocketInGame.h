@@ -5,40 +5,35 @@
 
 #include "CoreMinimal.h"
 
-#include "Runtime/Core/Public/HAL/Runnable.h"
-
 #include "Packet.h"
+
 
 /**
  * 게임 서버와 접속 및 패킷 처리를 담당하는 클래스 (게임 클라이언트)
  */
-class GAME_API cClientSocketInGame : public FRunnable 
+class GAME_API cClientSocketInGame
 {
 private:
-	SOCKET	ServerSocket;				// 서버와 연결할 소켓	
-	char 	recvBuffer[MAX_BUFFER];		// 수신 버퍼 스트림	
+	SOCKET	ServerSocket;			// 서버와 연결할 소켓	
+	char 	recvBuffer[MAX_BUFFER];	// 수신 버퍼 스트림	
 
-	// FRunnable Thread members	
-	FRunnableThread* Thread;
-	FThreadSafeCounter StopTaskCounter;
+	bool	bAccept;				// 요청 동작 플래그 (메인 스레드)
+	CRITICAL_SECTION csAccept;		// 크리티컬 섹션
+	HANDLE	hMainHandle;			// 메인 스레드 핸들	
 
+	bool bIsInitialized;
 	bool bIsConnected;
+	bool bIsClientSocketOn;
 
 protected:
-	/////////////////////////////////////
-	// FRunnable override 함수
-	/////////////////////////////////////
-	virtual bool Init();
-	virtual uint32 Run();
-	virtual void Stop();
-	virtual void Exit();
+	
 
 public:
 	/////////////////////////////////////
 	// cClientSocket
 	/////////////////////////////////////
 	cClientSocketInGame();
-	virtual ~cClientSocketInGame();
+	~cClientSocketInGame();
 
 	// 소켓 등록 및 설정
 	bool InitSocket();
@@ -50,8 +45,9 @@ public:
 	void CloseSocket();
 
 	// 스레드 시작 및 종료
-	bool StartListen();
-	void StopListen();
+	bool BeginMainThread();
+	void RunMainThread();
+
 
 	// 싱글턴 객체 가져오기
 	static cClientSocketInGame* GetSingleton()
@@ -60,8 +56,10 @@ public:
 		return &ins;
 	}
 
-	void SetConnected(bool bConnected) { bIsConnected = bConnected; }
+	bool IsInitialized() { return bIsInitialized; }
 	bool IsConnected() { return bIsConnected; }
+	bool IsClientSocketOn() { return bIsClientSocketOn; }
+
 	/////////////////////////////////////
 	// 서버와 통신
 	/////////////////////////////////////

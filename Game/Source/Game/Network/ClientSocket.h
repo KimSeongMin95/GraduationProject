@@ -45,7 +45,7 @@ public:
 	// cClientSocket
 	/////////////////////////////////////
 	cClientSocket();
-	virtual ~cClientSocket();
+	~cClientSocket();
 
 	// 소켓 등록 및 설정
 	bool InitSocket();

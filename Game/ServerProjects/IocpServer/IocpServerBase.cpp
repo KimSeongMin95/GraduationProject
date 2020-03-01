@@ -47,6 +47,8 @@ bool IocpServerBase::Initialize()
 
 	if (ListenSocket == INVALID_SOCKET)
 	{
+		WSACleanup();
+
 		printf_s("[ERROR] 소켓 생성 실패\n");
 		return false;
 	}
@@ -61,20 +63,22 @@ bool IocpServerBase::Initialize()
 	// boost bind 와 구별짓기 위해 ::bind 사용
 	if (::bind(ListenSocket, (struct sockaddr*) & serverAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
-		printf_s("[ERROR] bind 실패\n");
 		closesocket(ListenSocket);
-		ListenSocket = INVALID_SOCKET;
+		ListenSocket = NULL;
 		WSACleanup();
+
+		printf_s("[ERROR] bind 실패\n");
 		return false;
 	}
 
 	// 수신 대기열 생성
 	if (listen(ListenSocket, 5) == SOCKET_ERROR)
 	{
-		printf_s("[ERROR] listen 실패\n");
 		closesocket(ListenSocket);
-		ListenSocket = INVALID_SOCKET;
+		ListenSocket = NULL;
 		WSACleanup();
+
+		printf_s("[ERROR] listen 실패\n");
 		return false;
 	}
 

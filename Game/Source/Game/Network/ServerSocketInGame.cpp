@@ -87,6 +87,8 @@ bool cServerSocketInGame::Initialize()
 
 	if (ListenSocket == INVALID_SOCKET)
 	{
+		WSACleanup();
+
 		printf_s("[ERROR] <cServerSocketInGame::Initialize()> if (ListenSocket == INVALID_SOCKET)\n");
 		return false;
 	}
@@ -101,18 +103,22 @@ bool cServerSocketInGame::Initialize()
 	// boost bind 와 구별짓기 위해 ::bind 사용
 	if (::bind(ListenSocket, (struct sockaddr*) & serverAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
-		printf_s("[ERROR] <cServerSocketInGame::Initialize()> if (bind(...) == SOCKET_ERROR)\n");
 		closesocket(ListenSocket);
+		ListenSocket = NULL;
 		WSACleanup();
+
+		printf_s("[ERROR] <cServerSocketInGame::Initialize()> if (bind(...) == SOCKET_ERROR)\n");
 		return false;
 	}
 
 	// 수신 대기열 생성
 	if (listen(ListenSocket, 5) == SOCKET_ERROR)
 	{
-		printf_s("[ERROR] <cServerSocketInGame::Initialize()> if (listen(ListenSocket, 5) == SOCKET_ERROR)\n");
 		closesocket(ListenSocket);
+		ListenSocket = NULL;
 		WSACleanup();
+
+		printf_s("[ERROR] <cServerSocketInGame::Initialize()> if (listen(ListenSocket, 5) == SOCKET_ERROR)\n");
 		return false;
 	}
 
@@ -127,11 +133,17 @@ bool cServerSocketInGame::Initialize()
 	hMainHandle = (HANDLE*)_beginthreadex(NULL, 0, &CallMainThread, this, CREATE_SUSPENDED, &threadId);
 	if (hMainHandle == NULL)
 	{
+		closesocket(ListenSocket);
+		ListenSocket = NULL;
+		WSACleanup();
+
 		printf_s("[ERROR] <cServerSocketInGame::Initialize()> if (hMainHandle == NULL)\n");
 		return false;
 	}
 	ResumeThread(hMainHandle);
 	
+	bIsServerOn = true;
+
 	return true;
 }
 
@@ -155,8 +167,6 @@ void cServerSocketInGame::StartServer()
 	}
 
 	printf_s("[INFO] <cServerSocketInGame::StartServer()> Server started.\n");
-
-	bIsServerOn = true;
 
 	// 클라이언트 접속을 받음
 	while (bAccept)
