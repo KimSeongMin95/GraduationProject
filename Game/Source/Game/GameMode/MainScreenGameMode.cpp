@@ -162,7 +162,9 @@ void AMainScreenGameMode::_ActivateOnlineWidget()
 
 	OnlineState = EOnlineState::Online;
 
-	CloseSocket();
+	AMainScreenGameMode::CloseClientSocket();
+
+	ClearAllRecvedQueue();
 
 	ClearTimerOfRecvAndApply();
 
@@ -260,11 +262,13 @@ void AMainScreenGameMode::_ActivateOnlineGameWidget()
 		return;
 	}
 
+
 	OnlineState = EOnlineState::OnlineGame;
 
 	SendFindGames();
 
 	RecvAndApply();
+
 
 	OnlineGameWidget->AddToViewport();
 }
@@ -281,7 +285,9 @@ void AMainScreenGameMode::_DeactivateOnlineGameWidget()
 		return;
 	}
 
+
 	ClearFindGames();
+
 
 	OnlineGameWidget->RemoveFromViewport();
 }
@@ -299,9 +305,6 @@ void AMainScreenGameMode::_ActivateWaitingGameWidget()
 		return;
 	}
 
-	// 대기방 들어가기 전에 큐를 초기화해줍니다.
-	ClearAllRecvedQueue();
-
 	WaitingGameWidget->AddToViewport();
 }
 void AMainScreenGameMode::DeactivateWaitingGameWidget()
@@ -317,10 +320,12 @@ void AMainScreenGameMode::_DeactivateWaitingGameWidget()
 		return;
 	}
 
-	// ClearJoinWaitingGame보다 먼저 실행해야 합니다.
+
+	// ClearWaitingGame보다 먼저 실행해야 합니다.
 	SendDestroyOrExitWaitingGame();
 
 	ClearWaitingGame();
+
 
 	WaitingGameWidget->RemoveFromViewport();
 }
@@ -426,7 +431,7 @@ void AMainScreenGameMode::_SendLogin()
 		{
 			printf_s("[ERROR] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)\n");
 			//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendLogin()> if (!bIsConnected)"));
-			printf_s("IPv4: %s, Port: %d\n", TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
+			printf_s("[ERROR] IPv4: %s, Port: %d\n", TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort()));
 			//UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port: %s"), *OnlineWidget->GetIPv4()->GetText().ToString(), *OnlineWidget->GetPort()->GetText().ToString());
 	
 			return;
@@ -448,11 +453,11 @@ void AMainScreenGameMode::_SendLogin()
 	ActivateOnlineGameWidget();
 }
 
-void AMainScreenGameMode::CloseSocket()
+void AMainScreenGameMode::CloseClientSocket()
 {
 	if (!ClientSocket)
 	{
-		printf_s("[ERROR] <AMainScreenGameMode::CloseSocket()> if (!ClientSocket)\n");
+		printf_s("[ERROR] <AMainScreenGameMode::CloseClientSocket()> if (!ClientSocket)\n");
 		return;
 	}
 
@@ -465,6 +470,9 @@ void AMainScreenGameMode::SendCreateGame()
 }
 void AMainScreenGameMode::_SendCreateGame()
 {
+	printf_s("[START] <AMainScreenGameMode::SendCreateGame()>\n");
+
+
 	if (!ClientSocket)
 	{
 		printf_s("[ERROR] <AMainScreenGameMode::SendCreateGame()> if (!ClientSocket)\n");
@@ -479,16 +487,23 @@ void AMainScreenGameMode::_SendCreateGame()
 		return;
 	}
 
+	OnlineState = EOnlineState::LeaderOfWaitingGame;
+
+	// 게임방 들어가기 전에 큐를 초기화해줍니다.
+	ClearAllRecvedQueue();
+
+	DeactivateOnlineGameWidget();
+
 	WaitingGameWidget->SetLeader(true);
 	WaitingGameWidget->SetStartButtonVisibility(true);
 	WaitingGameWidget->ShowLeader(ClientSocket->CopyMyInfo());
-
-	OnlineState = EOnlineState::LeaderOfWaitingGame;
+	
+	ActivateWaitingGameWidget();
 
 	ClientSocket->SendCreateGame();
 
-	DeactivateOnlineGameWidget();
-	ActivateWaitingGameWidget();
+
+	printf_s("[END] <AMainScreenGameMode::SendCreateGame()>\n");
 }
 
 void AMainScreenGameMode::SendFindGames()
@@ -528,6 +543,11 @@ void AMainScreenGameMode::RecvFindGames()
 
 		return;
 	}
+
+	printf_s("[INFO] <AMainScreenGameMode::RecvFindGames()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvFindGames()>"));
+
+	/***********************************************************************/
 
 	std::queue<cInfoOfGame> copiedQueue = ClientSocket->tsqFindGames.copy();
 	ClientSocket->tsqFindGames.clear();
@@ -585,10 +605,6 @@ void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 	printf_s("[INFO] <AMainScreenGameMode::SendJoinWaitingGame(...)> SocketID: %d\n", SocketIDOfLeader);
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinWaitingGame(...)> SocketID: %d"), SocketIDOfLeader);
 
-	OnlineState = EOnlineState::PlayerOfWaitingGame;
-
-	ClientSocket->SendJoinWaitingGame(SocketIDOfLeader);
-
 	if (!WaitingGameWidget)
 	{
 		printf_s("[ERROR] <AMainScreenGameMode::SendJoinWaitingGame()> if (!WaitingGameWidget)\n");
@@ -596,18 +612,22 @@ void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 		return;
 	}
 
+	OnlineState = EOnlineState::PlayerOfWaitingGame;
+
+	// 게임방 들어가기 전에 큐를 초기화해줍니다.
+	ClearAllRecvedQueue();
+
+	DeactivateOnlineGameWidget();
+
 	WaitingGameWidget->SetLeader(false);
 	WaitingGameWidget->SetStartButtonVisibility(false);
 
-
-	DeactivateOnlineGameWidget();
 	ActivateWaitingGameWidget();
+
+	ClientSocket->SendJoinWaitingGame(SocketIDOfLeader);
 }
 void AMainScreenGameMode::RecvWaitingGame()
 {
-	//printf_s("[INFO] <AMainScreenGameMode::RecvWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvWaitingGame()>"));
-
 	if (!ClientSocket)
 	{
 		printf_s("[ERROR] <AMainScreenGameMode::RecvWaitingGame()> if (!ClientSocket)\n");
@@ -625,6 +645,11 @@ void AMainScreenGameMode::RecvWaitingGame()
 	if (ClientSocket->tsqWaitingGame.empty())
 		return;
 
+	printf_s("[INFO] <AMainScreenGameMode::RecvWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvWaitingGame()>"));
+
+	/***********************************************************************/
+
 	std::queue<cInfoOfGame> copiedQueue = ClientSocket->tsqWaitingGame.copy();
 	ClientSocket->tsqWaitingGame.clear();
 
@@ -633,9 +658,10 @@ void AMainScreenGameMode::RecvWaitingGame()
 	{
 		WaitingGameWidget->RevealGame(copiedQueue.front());
 
+		copiedQueue.pop();
+
 		printf_s("[INFO] <AMainScreenGameMode::RecvWaitingGame()> copiedQueue.pop()\n");
 		//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvWaitingGame()> copiedQueue.pop()"));
-		copiedQueue.pop();
 	}
 }
 void AMainScreenGameMode::ClearWaitingGame()
@@ -654,7 +680,12 @@ void AMainScreenGameMode::ClearWaitingGame()
 		return;
 	}
 
+	// RecvedQueue를 초기화해줍니다.
+	ClientSocket->tsqWaitingGame.clear();
 	ClientSocket->tsqDestroyWaitingGame.clear();
+	ClientSocket->tsqModifyWaitingGame.clear();
+	ClientSocket->tsqStartWaitingGame.clear();
+	ClientSocket->tsqRequestInfoOfGameServer.clear();
 
 	// 대기방 초기화
 	WaitingGameWidget->Clear();
@@ -676,13 +707,14 @@ void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 
 void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 {
-	printf_s("[INFO] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()>"));
+	printf_s("[START] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[START] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()>"));
 
-	if (!ClientSocket)
+
+	if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)
 	{
-		printf_s("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!ClientSocket)\n");
-		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!ClientSocket)"));
+		printf_s("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)"));
 		return;
 	}
 
@@ -692,6 +724,10 @@ void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!WaitingGameWidget)"));
 		return;
 	}
+
+
+	// 게임 시작 카운트 다운을 세는 타이머를 종료합니다.
+	ClearTimerOfCountStartedGame();
 
 	// 방장이 나간 것이라면 대기방 종료를 알립니다.
 	if (WaitingGameWidget->IsLeader())
@@ -707,18 +743,12 @@ void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 		ClientSocketInGame->CloseSocket();
 	}
 
-	// 게임 시작 카운트 다운을 세는 타이머를 종료합니다.
-	ClearTimerOfCountStartedGame();
 
-
-
+	printf_s("[END] <AMainScreenGameMode::SendDestroyOrExitWaitingGame()>\n");
 }
 
 void AMainScreenGameMode::RecvDestroyWaitingGame()
 {
-	//printf_s("[INFO] <AMainScreenGameMode::RecvDestroyWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvDestroyWaitingGame()>"));
-
 	if (!ClientSocket)
 	{
 		printf_s("[ERROR] <AMainScreenGameMode::RecvDestroyWaitingGame()> if (!ClientSocket)\n");
@@ -736,6 +766,11 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 	if (ClientSocket->tsqDestroyWaitingGame.empty())
 		return;
 
+	printf_s("[INFO] <AMainScreenGameMode::RecvDestroyWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvDestroyWaitingGame()>"));
+
+	/***********************************************************************/
+
 	std::queue<bool> copiedQueue = ClientSocket->tsqDestroyWaitingGame.copy();
 	ClientSocket->tsqDestroyWaitingGame.clear();
 
@@ -750,8 +785,6 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 
 	ClientSocketInGame->CloseSocket();
 }
-
-
 
 void AMainScreenGameMode::CheckModifyWaitingGame()
 {
@@ -774,9 +807,6 @@ void AMainScreenGameMode::_CheckModifyWaitingGame()
 
 void AMainScreenGameMode::SendModifyWaitingGame()
 {
-	printf_s("[INFO] <AMainScreenGameMode::SendModifyWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendModifyWaitingGame()>"));
-
 	if (!ClientSocket)
 	{
 		printf_s("[ERROR] <AMainScreenGameMode::SendModifyWaitingGame()> if (!ClientSocket)\n");
@@ -791,6 +821,10 @@ void AMainScreenGameMode::SendModifyWaitingGame()
 		return;
 	}
 
+	printf_s("[INFO] <AMainScreenGameMode::SendModifyWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendModifyWaitingGame()>"));
+
+
 	// 먼저 속한 게임방 정보를 복사
 	cInfoOfGame copied = ClientSocket->CopyMyInfoOfGame();
 
@@ -804,9 +838,6 @@ void AMainScreenGameMode::SendModifyWaitingGame()
 }
 void AMainScreenGameMode::RecvModifyWaitingGame()
 {
-	//printf_s("[INFO] <AMainScreenGameMode::RecvModifyWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvModifyWaitingGame()>"));
-
 	if (!ClientSocket)
 	{
 		printf_s("[ERROR] <AMainScreenGameMode::RecvModifyWaitingGame()> if (!ClientSocket)\n");
@@ -823,6 +854,11 @@ void AMainScreenGameMode::RecvModifyWaitingGame()
 
 	if (ClientSocket->tsqModifyWaitingGame.empty())
 		return;
+
+	printf_s("[INFO] <AMainScreenGameMode::RecvModifyWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvModifyWaitingGame()>"));
+
+	/***********************************************************************/
 
 	std::queue<cInfoOfGame> copiedQueue = ClientSocket->tsqModifyWaitingGame.copy();
 	ClientSocket->tsqModifyWaitingGame.clear();
@@ -841,9 +877,6 @@ void AMainScreenGameMode::SendStartWaitingGame()
 }
 void AMainScreenGameMode::_SendStartWaitingGame()
 {
-	printf_s("[INFO] <AMainScreenGameMode::_SendStartWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::_SendStartWaitingGame()>"));
-
 	if (!ClientSocket)
 	{
 		printf_s("[ERROR] <AMainScreenGameMode::_SendStartWaitingGame()> if (!ClientSocket)\n");
@@ -858,10 +891,13 @@ void AMainScreenGameMode::_SendStartWaitingGame()
 		return;
 	}
 
+	printf_s("[INFO] <AMainScreenGameMode::_SendStartWaitingGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::_SendStartWaitingGame()>"));
+
+
 	ClientSocket->SendStartWaitingGame();
 
 	WaitingGameWidget->SetStartButtonVisibility(false);
-
 	WaitingGameWidget->SetTextOfCount(5);
 	WaitingGameWidget->SetCountVisibility(true);
 
@@ -886,10 +922,12 @@ void AMainScreenGameMode::RecvStartWaitingGame()
 	if (ClientSocket->tsqStartWaitingGame.empty())
 		return;
 
-	ClientSocket->tsqStartWaitingGame.clear();
-
 	printf_s("[INFO] <AMainScreenGameMode::RecvStartWaitingGame()>\n");
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvStartWaitingGame()>"));
+
+	/***********************************************************************/
+
+	ClientSocket->tsqStartWaitingGame.clear();
 
 	WaitingGameWidget->SetTextOfCount(5);
 	WaitingGameWidget->SetCountVisibility(true);
@@ -899,9 +937,6 @@ void AMainScreenGameMode::RecvStartWaitingGame()
 
 void AMainScreenGameMode::CountStartedGame()
 {
-	printf_s("[INFO] <AMainScreenGameMode::CountStartedGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::CountStartedGame()>"));
-
 	if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)
 	{
 		printf_s("[ERROR] <AMainScreenGameMode::CountStartedGame()> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)\n");
@@ -915,6 +950,9 @@ void AMainScreenGameMode::CountStartedGame()
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::CountStartedGame()> if (!WaitingGameWidget)"));
 		return;
 	}
+
+	printf_s("[INFO] <AMainScreenGameMode::CountStartedGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::CountStartedGame()>"));
 
 
 	// 방장이면
@@ -952,9 +990,6 @@ void AMainScreenGameMode::CountStartedGame()
 }
 void AMainScreenGameMode::TimerOfCountStartedGame()
 {
-	printf_s("[INFO] <AMainScreenGameMode::TimerOfCountStartedGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfCountStartedGame()>"));
-
 	if (!ClientSocket || !ServerSocketInGame)
 	{
 		printf_s("[ERROR] <AMainScreenGameMode::TimerOfCountStartedGame()> if (!ClientSocket || !ServerSocketInGame )\n");
@@ -968,6 +1003,9 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::TimerOfCountStartedGame()> if (!WaitingGameWidget)"));
 		return;
 	}
+
+	printf_s("[INFO] <AMainScreenGameMode::TimerOfCountStartedGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfCountStartedGame()>"));
 
 
 	// 방장이고 아직 게임서버가 구동되지 않았다면
@@ -986,7 +1024,7 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 			}
 		}
 	}
-	else // 참가면
+	else // 참가자면
 	{
 		// 게임 클라이언트가 게임 서버 정보를 메인 서버로부터 요청하고 얻으면 접속 시도
 		GameClientConnectGameServer();
@@ -1022,8 +1060,6 @@ void AMainScreenGameMode::StartOnlineGame()
 
 void AMainScreenGameMode::GameClientConnectGameServer()
 {
-	printf_s("[INFO] <AMainScreenGameMode::GameClientConnectGameServer()>\n");
-
 	if (!ClientSocket || !ClientSocketInGame)
 	{
 		printf_s("[ERROR] <AMainScreenGameMode::GameClientConnectGameServer()> if (!ClientSocket || !ClientSocketInGame)\n");
@@ -1031,7 +1067,10 @@ void AMainScreenGameMode::GameClientConnectGameServer()
 		return;
 	}
 
-	// 
+	printf_s("[INFO] <AMainScreenGameMode::GameClientConnectGameServer()>\n");
+
+
+	// 이미 연결되었으면 함수를 더이상 실행하지 않습니다.
 	if (ClientSocketInGame->IsClientSocketOn())
 		return;
 
@@ -1041,11 +1080,9 @@ void AMainScreenGameMode::GameClientConnectGameServer()
 	if (ClientSocket->tsqRequestInfoOfGameServer.empty())
 		return;
 
+
 	cInfoOfPlayer infoOfPlayer = ClientSocket->tsqRequestInfoOfGameServer.back();
 	ClientSocket->tsqRequestInfoOfGameServer.clear();
-
-	printf_s("\t\t GOGOGOGOGOGGO!!!!!!!!!GOGOGOGGO!!! \n");
-
 
 	// 아직 초기화되지 않았다면
 	if (ClientSocketInGame->IsInitialized() == false)
@@ -1101,7 +1138,6 @@ void AMainScreenGameMode::ClearAllRecvedQueue()
 	ClientSocket->tsqDestroyWaitingGame.clear();
 	ClientSocket->tsqModifyWaitingGame.clear();
 	ClientSocket->tsqStartWaitingGame.clear();
-
 	ClientSocket->tsqRequestInfoOfGameServer.clear();
 }
 

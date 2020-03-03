@@ -64,15 +64,15 @@ struct stSOCKETINFO
 
 
 template <typename T>
-class GAME_API cThreadSafeQueue
+class GAME_API cThreadSafetyQueue
 {
 private:
 	std::queue<T> q;
 	CRITICAL_SECTION cs;
 
 public:
-	cThreadSafeQueue() { InitializeCriticalSection(&cs); }
-	~cThreadSafeQueue() { DeleteCriticalSection(&cs); }
+	cThreadSafetyQueue() { InitializeCriticalSection(&cs); }
+	~cThreadSafetyQueue() { DeleteCriticalSection(&cs); }
 
 	bool empty()
 	{

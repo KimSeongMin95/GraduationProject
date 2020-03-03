@@ -80,26 +80,26 @@ public:
 
 	void SendFindGames();
 	void RecvFindGames(stringstream& RecvStream);
-	cThreadSafeQueue<cInfoOfGame> tsqFindGames;
+	cThreadSafetyQueue<cInfoOfGame> tsqFindGames;
 
 	void SendJoinWaitingGame(int SocketIDOfLeader);
 
 	void RecvWaitingGame(stringstream& RecvStream);
-	cThreadSafeQueue<cInfoOfGame> tsqWaitingGame;
+	cThreadSafetyQueue<cInfoOfGame> tsqWaitingGame;
 
 	void SendDestroyWaitingGame();
 	void RecvDestroyWaitingGame(stringstream& RecvStream);
-	cThreadSafeQueue<bool> tsqDestroyWaitingGame;
+	cThreadSafetyQueue<bool> tsqDestroyWaitingGame;
 
 	void SendExitWaitingGame();
 
 	void SendModifyWaitingGame();
 	void RecvModifyWaitingGame(stringstream& RecvStream);
-	cThreadSafeQueue<cInfoOfGame> tsqModifyWaitingGame;
+	cThreadSafetyQueue<cInfoOfGame> tsqModifyWaitingGame;
 
 	void SendStartWaitingGame();
 	void RecvStartWaitingGame(stringstream& RecvStream);
-	cThreadSafeQueue<bool> tsqStartWaitingGame;
+	cThreadSafetyQueue<bool> tsqStartWaitingGame;
 
 
 	///////////////////////////////////////////
@@ -109,7 +109,7 @@ public:
 
 	void SendRequestInfoOfGameServer();
 	void RecvRequestInfoOfGameServer(stringstream& RecvStream);
-	cThreadSafeQueue<cInfoOfPlayer> tsqRequestInfoOfGameServer;
+	cThreadSafetyQueue<cInfoOfPlayer> tsqRequestInfoOfGameServer;
 
 
 	/////////////////////////////////////

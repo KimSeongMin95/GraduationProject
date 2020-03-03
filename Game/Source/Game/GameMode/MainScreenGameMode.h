@@ -145,7 +145,7 @@ public:
 		void SendLogin(); void _SendLogin();
 
 	UFUNCTION(Category = "Widget")
-		void CloseSocket();
+		void CloseClientSocket();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendCreateGame(); void _SendCreateGame();
@@ -212,55 +212,6 @@ public:
 	FTimerHandle thRecvAndApply;
 
 
-
-	/*
-
-
-
-
-	
-
-
-	UFUNCTION(Category = "Widget")
-		void RevealWaitingRoom();
-	UFUNCTION(Category = "Timer")
-		void TimerOfRevealWaitingRoom();
-	FTimerHandle thRevealWaitingRoom;
-
-
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ModifyWaitingRoom();
-	void _ModifyWaitingRoom();
-	UFUNCTION(Category = "Widget")
-		void CheckModifyWaitingRoom();
-	UFUNCTION(Category = "Timer")
-		void TimerOfCheckModifyWaitingRoom();
-	FTimerHandle thCheckModifyWaitingRoom;
-
-
-	UFUNCTION(Category = "Widget")
-		void RecvPlayerJoinedWaitingRoom();
-	UFUNCTION(Category = "Timer")
-		void TimerOfRecvPlayerJoinedWaitingRoom();
-	FTimerHandle thRecvPlayerJoinedWaitingRoom;
-
-	UFUNCTION(Category = "Widget")
-		void RecvPlayerExitedWaitingRoom();
-	UFUNCTION(Category = "Timer")
-		void TimerOfRecvPlayerExitedWaitingRoom();
-	FTimerHandle thRecvPlayerExitedWaitingRoom;
-
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeleteWaitingRoom();
-
-	UFUNCTION(Category = "Widget")
-		void RecvCheckPlayerInWaitingRoom();
-	UFUNCTION(Category = "Timer")
-		void TimerOfRecvCheckPlayerInWaitingRoom();
-	FTimerHandle thRecvCheckPlayerInWaitingRoom;
-	
-	
-	*/
 /*** AMainScreenGameMode : End ***/
 };
 
