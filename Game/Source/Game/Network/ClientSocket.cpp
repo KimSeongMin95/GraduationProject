@@ -321,7 +321,7 @@ void cClientSocket::StopListen()
 void cClientSocket::SendLogin(const FText ID)
 {
 	printf_s("[Start] <cClientSocket::SendLogin(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendLogin(...)>"));
+
 
 	cInfoOfPlayer infoOfPlayer;
 
@@ -329,44 +329,42 @@ void cClientSocket::SendLogin(const FText ID)
 	if (!ID.IsEmpty())
 		infoOfPlayer.ID = TCHAR_TO_UTF8(*ID.ToString());
 
-	infoOfPlayer.PrintInfo();
-
 	stringstream sendStream;
 	sendStream << EPacketType::LOGIN << endl;
 	sendStream << infoOfPlayer << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
+	infoOfPlayer.PrintInfo();
+
+
 	printf_s("[End] <cClientSocket::SendLogin(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendLogin(...)>"));
 }
 void cClientSocket::RecvLogin(stringstream& RecvStream)
 {
 	printf_s("[Start] <cClientSocket::RecvLogin(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvLogin(...)>"));
+
 
 	cInfoOfPlayer infoOfPlayer;
 
 	RecvStream >> infoOfPlayer;
 
-	infoOfPlayer.PrintInfo();
-
 	SetMyInfo(infoOfPlayer);
 
+	infoOfPlayer.PrintInfo();
+
+
 	printf_s("[End] <cClientSocket::RecvLogin(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvLogin(...)>"));
 }
 
 void cClientSocket::SendCreateGame()
 {
 	printf_s("[Start] <cClientSocket::SendCreateGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendCreateGame()>"));
+
 
 	cInfoOfGame infoOfGame;
 
 	infoOfGame.Leader = CopyMyInfo();
-
-	infoOfGame.PrintInfo();
 
 	SetMyInfoOfGame(infoOfGame);
 
@@ -376,47 +374,47 @@ void cClientSocket::SendCreateGame()
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
+	infoOfGame.PrintInfo();
+
+
 	printf_s("[End] <cClientSocket::SendCreateGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendCreateGame()>"));
 }
 
 void cClientSocket::SendFindGames()
 {
 	printf_s("[Start] <cClientSocket::SendFindGames()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendFindGames()>"));
+
 
 	stringstream sendStream;
 	sendStream << EPacketType::FIND_GAMES << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
+
 	printf_s("[End] <cClientSocket::SendFindGames()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendFindGames()>"));
 }
 void cClientSocket::RecvFindGames(stringstream& RecvStream)
 {
 	printf_s("[Start] <cClientSocket::RecvFindGames(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvFindGames(...)>"));
+
 
 	cInfoOfGame infoOfGame;
 
 	while (RecvStream >> infoOfGame)
 	{
-		infoOfGame.PrintInfo();
 		tsqFindGames.push(infoOfGame);
+		infoOfGame.PrintInfo();
 	}
 
+
 	printf_s("[End] <cClientSocket::RecvFindGames(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvFindGames(...)>"));
 }
      
 void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
 {
 	printf_s("[Start] <cClientSocket::SendJoinWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendJoinWaitingGame(...)>"));
-
 	printf_s("\t SocketIDOfLeader: %d\n", SocketIDOfLeader);
-	//UE_LOG(LogTemp, Warning, TEXT("    SocketIDOfLeader: %d"), SocketIDOfLeader);
+
 
 	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
 	infoOfPlayer.LeaderSocketByMainServer = SocketIDOfLeader;
@@ -424,72 +422,91 @@ void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
 
 	stringstream sendStream;
 	sendStream << EPacketType::JOIN_WAITING_GAME << endl;
-	sendStream << SocketIDOfLeader << endl;
 	sendStream << infoOfPlayer << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
+
 	printf_s("[End] <cClientSocket::SendJoinWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendJoinWaitingGame(...)>"));
 }
 
 void cClientSocket::RecvWaitingGame(stringstream& RecvStream)
 {
 	printf_s("[Start] <cClientSocket::RecvJoinWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvJoinWaitingGame(...)>"));
+
 
 	cInfoOfGame infoOfGame;
 
 	RecvStream >> infoOfGame;
 
-	infoOfGame.PrintInfo();
-
 	SetMyInfoOfGame(infoOfGame);
 	
 	tsqWaitingGame.push(infoOfGame);
 
+	infoOfGame.PrintInfo();
+
+
 	printf_s("[End] <cClientSocket::RecvJoinWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvJoinWaitingGame(...)>"));
 }
 
 void cClientSocket::SendDestroyWaitingGame()
 {
 	printf_s("[Start] <cClientSocket::SendDestroyWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendDestroyWaitingGame()>"));
+
+
+	// MyInfo의 특정 멤버변수들 초기화
+	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
+	infoOfPlayer.SocketByGameServer = 0;
+	infoOfPlayer.PortOfGameServer = 0;
+	infoOfPlayer.PortOfGameClient = 0;
+	infoOfPlayer.LeaderSocketByMainServer = 0;
+	SetMyInfo(infoOfPlayer);
+
+	InitMyInfoOfGame();
 
 	stringstream sendStream;
 	sendStream << EPacketType::DESTROY_WAITING_GAME << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
-	InitMyInfoOfGame();
 
 	printf_s("[End] <cClientSocket::SendDestroyWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendDestroyWaitingGame()>"));
 }
 void cClientSocket::RecvDestroyWaitingGame(stringstream& RecvStream)
 {
 	printf_s("[Start] <cClientSocket::RecvDestroyWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvDestroyWaitingGame(...)>"));
-
-	tsqDestroyWaitingGame.push(true);
 
 
-	// MyInfo의 SocketByServerOfLeader 초기화
+	// MyInfo의 특정 멤버변수들 초기화
 	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
+	infoOfPlayer.SocketByGameServer = 0;
+	infoOfPlayer.PortOfGameServer = 0;
+	infoOfPlayer.PortOfGameClient = 0;
 	infoOfPlayer.LeaderSocketByMainServer = 0;
 	SetMyInfo(infoOfPlayer);
 
 	InitMyInfoOfGame();
 
+	tsqDestroyWaitingGame.push(true);
+
+
 	printf_s("[End] <cClientSocket::RecvDestroyWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvDestroyWaitingGame(...)>"));
 }
 
 void cClientSocket::SendExitWaitingGame()
 {
 	printf_s("[Start] <cClientSocket::SendExitWaitingGame(...)\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendExitWaitingGame(...)>"));
+
+
+	// MyInfo의 특정 멤버변수들 초기화
+	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
+	infoOfPlayer.SocketByGameServer = 0;
+	infoOfPlayer.PortOfGameServer = 0;
+	infoOfPlayer.PortOfGameClient = 0;
+	infoOfPlayer.LeaderSocketByMainServer = 0;
+	SetMyInfo(infoOfPlayer);
+
+	InitMyInfoOfGame();
 
 	stringstream sendStream;
 	sendStream << EPacketType::EXIT_WAITING_GAME << endl;
@@ -497,139 +514,130 @@ void cClientSocket::SendExitWaitingGame()
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
 
-	// MyInfo의 SocketByServerOfLeader 초기화
-	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
-	infoOfPlayer.LeaderSocketByMainServer = 0;
-	SetMyInfo(infoOfPlayer);
-
-	InitMyInfoOfGame();
-
 	printf_s("[End] <cClientSocket::SendExitWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendExitWaitingGame(...)>"));
 }
 
 
 void cClientSocket::SendModifyWaitingGame()
 {
 	printf_s("[Start] <cClientSocket::SendModifyWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendModifyWaitingGame()>"));
+
 
 	cInfoOfGame infoOfGame = CopyMyInfoOfGame();
-	infoOfGame.PrintInfo();
-
+	
 	stringstream sendStream;
 	sendStream << EPacketType::MODIFY_WAITING_GAME << endl;
 	sendStream << infoOfGame << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
+	infoOfGame.PrintInfo();
+
+
 	printf_s("[End] <cClientSocket::SendModifyWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendModifyWaitingGame()>"));
 }
 void cClientSocket::RecvModifyWaitingGame(stringstream& RecvStream)
 {
 	printf_s("[Start] <cClientSocket::RecvModifyWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvModifyWaitingGame(...)>"));
+
 
 	cInfoOfGame infoOfGame;
 
 	RecvStream >> infoOfGame;
 
-	infoOfGame.PrintInfo();
-
 	SetMyInfoOfGame(infoOfGame);
 
 	tsqModifyWaitingGame.push(infoOfGame);
 
+	infoOfGame.PrintInfo();
+
+
 	printf_s("[End] <cClientSocket::RecvModifyWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvModifyWaitingGame(...)>"));
 }
 
 void cClientSocket::SendStartWaitingGame()
 {
 	printf_s("[Start] <cClientSocket::SendStartWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendStartWaitingGame()>"));
+
 
 	stringstream sendStream;
 	sendStream << EPacketType::START_WAITING_GAME << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
-	cInfoOfGame infoOfGame = CopyMyInfoOfGame();
-	infoOfGame.State = string("Playing");
-	SetMyInfoOfGame(infoOfGame);
 
 	printf_s("[End] <cClientSocket::SendStartWaitingGame()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendStartWaitingGame()>"));
 }
 void cClientSocket::RecvStartWaitingGame(stringstream& RecvStream)
 {
 	printf_s("[Start] <cClientSocket::RecvStartWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvStartWaitingGame(...)>"));
+	
 
 	tsqStartWaitingGame.push(true);
 
-	cInfoOfGame infoOfGame = CopyMyInfoOfGame();
-	infoOfGame.State = string("Playing");
-	SetMyInfoOfGame(infoOfGame);
 
 	printf_s("[End] <cClientSocket::RecvStartWaitingGame(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvStartWaitingGame(...)>"));
 }
 
 void cClientSocket::SendActivateGameServer(int PortOfGameServer)
 {
 	printf_s("[Start] <cClientSocket::SendActivateGameServer(...)\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendActivateGameServer(...)>"));
 
-	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
-	infoOfPlayer.PortOfGameServer = PortOfGameServer;
-	SetMyInfo(infoOfPlayer);
 
-	infoOfPlayer.PrintInfo();
+	cInfoOfPlayer infoOfLeader = CopyMyInfo();
+	infoOfLeader.PortOfGameServer = PortOfGameServer;
+	SetMyInfo(infoOfLeader);
+
+	cInfoOfGame infoOfGame = CopyMyInfoOfGame();
+	infoOfGame.State = string("Playing");
+	infoOfGame.Leader = infoOfLeader;
+	SetMyInfoOfGame(infoOfGame);
 
 	stringstream sendStream;
 	sendStream << EPacketType::ACTIVATE_GAME_SERVER << endl;
-	sendStream << infoOfPlayer << endl;
+	sendStream << infoOfLeader << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	
+	infoOfLeader.PrintInfo();
+
 
 	printf_s("[End] <cClientSocket::SendActivateGameServer(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendActivateGameServer(...)>"));
 }
 
 void cClientSocket::SendRequestInfoOfGameServer()
 {
 	printf_s("[Start] <cClientSocket::SendRequestInfoOfGameServer()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::SendRequestInfoOfGameServer()>"));
 
-	cInfoOfPlayer infoOfPlayer = CopyMyInfo();
-	infoOfPlayer.PrintInfo();
 
 	stringstream sendStream;
 	sendStream << EPacketType::REQUEST_INFO_OF_GAME_SERVER << endl;
-	sendStream << infoOfPlayer.LeaderSocketByMainServer << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
 
+
 	printf_s("[End] <cClientSocket::SendRequestInfoOfGameServer()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::SendRequestInfoOfGameServer()>"));
 }
 void cClientSocket::RecvRequestInfoOfGameServer(stringstream& RecvStream)
 {
 	printf_s("[Start] <cClientSocket::RecvRequestInfoOfGameServer(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[Start] <cClientSocket::RecvRequestInfoOfGameServer(...)>"));
 
-	cInfoOfPlayer infoOfPlayer;
 
-	RecvStream >> infoOfPlayer;
+	cInfoOfPlayer infoOfLeader;
 
-	infoOfPlayer.PrintInfo();
+	RecvStream >> infoOfLeader;
 
-	tsqRequestInfoOfGameServer.push(infoOfPlayer);
+	cInfoOfGame infoOfGame = CopyMyInfoOfGame();
+	infoOfGame.State = string("Playing");
+	infoOfGame.Leader = infoOfLeader;
+	SetMyInfoOfGame(infoOfGame);
+
+	tsqRequestInfoOfGameServer.push(infoOfLeader);
+
+	infoOfLeader.PrintInfo();
+
 
 	printf_s("[End] <cClientSocket::RecvRequestInfoOfGameServer(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[End] <cClientSocket::RecvRequestInfoOfGameServer(...)>"));
 }
 
 

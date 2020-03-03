@@ -38,6 +38,20 @@ void AMainScreenGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	ClientSocket = cClientSocket::GetSingleton();
+	if (ClientSocket)
+		ClientSocket->CloseSocket();
+
+	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	if (ServerSocketInGame)
+		ServerSocketInGame->CloseServer();
+
+	ClientSocketInGame = cClientSocketInGame::GetSingleton();
+	if (ClientSocketInGame)
+		ClientSocketInGame->CloseSocket();
+
+
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
@@ -45,16 +59,6 @@ void AMainScreenGameMode::BeginPlay()
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::BeginPlay()> if (!world)"));
 		return;
 	}
-
-	ClientSocket = cClientSocket::GetSingleton();
-	if (ClientSocket)
-		ClientSocket->CloseSocket();
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-	if (ServerSocketInGame)
-		ServerSocketInGame->CloseServer();
-	ClientSocketInGame = cClientSocketInGame::GetSingleton();
-	if (ClientSocketInGame)
-		ClientSocketInGame->CloseSocket();
 
 	MainScreenWidget = NewObject<UMainScreenWidget>(this, FName("MainScreenWidget"));
 	MainScreenWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/MainScreen.MainScreen_C'", true);
@@ -120,7 +124,9 @@ void AMainScreenGameMode::_ActivateMainScreenWidget()
 		return;
 	}
 
+
 	OnlineState = EOnlineState::Idle;
+
 
 	MainScreenWidget->AddToViewport();
 }
@@ -153,11 +159,13 @@ void AMainScreenGameMode::_ActivateOnlineWidget()
 		return;
 	}
 
+
 	OnlineState = EOnlineState::Online;
 
 	CloseSocket();
 
 	ClearTimerOfRecvAndApply();
+
 
 	OnlineWidget->AddToViewport();
 }
