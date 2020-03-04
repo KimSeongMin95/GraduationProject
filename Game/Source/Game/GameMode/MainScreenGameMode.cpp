@@ -495,7 +495,9 @@ void AMainScreenGameMode::_SendCreateGame()
 	DeactivateOnlineGameWidget();
 
 	WaitingGameWidget->SetLeader(true);
+	WaitingGameWidget->SetBackButtonVisibility(true);
 	WaitingGameWidget->SetStartButtonVisibility(true);
+	WaitingGameWidget->SetJoinButtonVisibility(false);
 	WaitingGameWidget->ShowLeader(ClientSocket->CopyMyInfo());
 	
 	ActivateWaitingGameWidget();
@@ -620,11 +622,13 @@ void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 	DeactivateOnlineGameWidget();
 
 	WaitingGameWidget->SetLeader(false);
+	WaitingGameWidget->SetBackButtonVisibility(true);
 	WaitingGameWidget->SetStartButtonVisibility(false);
+	WaitingGameWidget->SetJoinButtonVisibility(false);
 
 	ActivateWaitingGameWidget();
 
-	ClientSocket->SendJoinWaitingGame(SocketIDOfLeader);
+	ClientSocket->SendJoinOnlineGame(SocketIDOfLeader);
 }
 void AMainScreenGameMode::RecvWaitingGame()
 {
@@ -652,6 +656,20 @@ void AMainScreenGameMode::RecvWaitingGame()
 
 	std::queue<cInfoOfGame> copiedQueue = ClientSocket->tsqWaitingGame.copy();
 	ClientSocket->tsqWaitingGame.clear();
+
+	// 게임방이 시작 카운트다운 중일때 새로 들어온 사람을 위해 Join 버튼을 활성화 시킵니다.
+	if (OnlineState == EOnlineState::PlayerOfWaitingGame)
+	{
+		if (copiedQueue.back().State == string("Playing"))
+		{
+			// Join 버튼을 눌렀는데 다시 활성화되지 않도록 OnlineState를 Counting으로 변경합니다.
+			OnlineState = EOnlineState::Counting;
+
+			WaitingGameWidget->SetJoinButtonVisibility(true);
+
+			printf_s("[INFO] <AMainScreenGameMode::RecvWaitingGame()> WaitingGameWidget->SetJoinButtonVisibility(false);\n");
+		}
+	}
 
 	// 대기방 업데이트
 	while (copiedQueue.empty() == false)
@@ -696,13 +714,29 @@ void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 	printf_s("[INFO] <AMainScreenGameMode::SendJoinPlayingGame(...)> SocketID: %d\n", SocketIDOfLeader);
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::SendJoinPlayingGame(...)> SocketID: %d"), SocketIDOfLeader);
 
-	DeactivateOnlineGameWidget();
+	if (!WaitingGameWidget)
+	{
+		printf_s("[ERROR] <AMainScreenGameMode::SendJoinPlayingGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::SendJoinPlayingGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
 
 	OnlineState = EOnlineState::PlayerOfPlayingGame;
 
-	// ClientSocket->SendJoinPlayingGame(SocketIDOfLeader);
+	// 게임방 들어가기 전에 큐를 초기화해줍니다.
+	ClearAllRecvedQueue();
 
-	UGameplayStatics::OpenLevel(this, "Online");
+	DeactivateOnlineGameWidget();
+
+	WaitingGameWidget->SetLeader(false);
+	WaitingGameWidget->SetBackButtonVisibility(true);
+	WaitingGameWidget->SetStartButtonVisibility(false);
+	WaitingGameWidget->SetJoinButtonVisibility(true);
+
+	ActivateWaitingGameWidget();
+
+	ClientSocket->SendJoinOnlineGame(SocketIDOfLeader);
 }
 
 void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
@@ -771,11 +805,17 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 
 	/***********************************************************************/
 
+	OnlineState = EOnlineState::Idle;
+
 	std::queue<bool> copiedQueue = ClientSocket->tsqDestroyWaitingGame.copy();
 	ClientSocket->tsqDestroyWaitingGame.clear();
 
 	// 가장 최신에 받은 것만 처리합니다.
 	WaitingGameWidget->SetDestroyedVisibility(copiedQueue.back());
+
+	WaitingGameWidget->SetBackButtonVisibility(true);
+	WaitingGameWidget->SetStartButtonVisibility(false);
+	WaitingGameWidget->SetJoinButtonVisibility(false);
 
 	printf_s("[INFO] <AMainScreenGameMode::RecvDestroyWaitingGame()> copiedQueue.back()\n");
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvDestroyWaitingGame()> copiedQueue.back()"));
@@ -894,6 +934,7 @@ void AMainScreenGameMode::_SendStartWaitingGame()
 	printf_s("[INFO] <AMainScreenGameMode::_SendStartWaitingGame()>\n");
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::_SendStartWaitingGame()>"));
 
+	/***********************************************************************/
 
 	ClientSocket->SendStartWaitingGame();
 
@@ -927,8 +968,35 @@ void AMainScreenGameMode::RecvStartWaitingGame()
 
 	/***********************************************************************/
 
+	OnlineState = EOnlineState::Counting;
+
 	ClientSocket->tsqStartWaitingGame.clear();
 
+	WaitingGameWidget->SetTextOfCount(5);
+	WaitingGameWidget->SetCountVisibility(true);
+	WaitingGameWidget->SetStartButtonVisibility(false);
+	WaitingGameWidget->SetJoinButtonVisibility(false);
+
+	CountStartedGame();
+}
+void AMainScreenGameMode::JoinStartedGame()
+{
+	_JoinStartedGame();
+}
+void AMainScreenGameMode::_JoinStartedGame()
+{
+	if (!WaitingGameWidget)
+	{
+		printf_s("[ERROR] <AMainScreenGameMode::_JoinStartedGame()> if (!WaitingGameWidget)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::_JoinStartedGame()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	printf_s("[INFO] <AMainScreenGameMode::_JoinStartedGame()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::_JoinStartedGame()>"));
+
+	WaitingGameWidget->SetStartButtonVisibility(false);
+	WaitingGameWidget->SetJoinButtonVisibility(false);
 	WaitingGameWidget->SetTextOfCount(5);
 	WaitingGameWidget->SetCountVisibility(true);
 
@@ -1031,7 +1099,16 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 	}
 
 	Count--;
-	if (Count <= 0)
+
+	if (Count == 1)
+	{
+		// 게임서버나 게임클라이언트가 정상적으로 연결되었다면 Back 버튼을 숨깁니다.
+		if (ServerSocketInGame->IsServerOn() == true || ClientSocketInGame->IsClientSocketOn() == true)
+		{
+			WaitingGameWidget->SetBackButtonVisibility(false);
+		}
+	}
+	else if (Count <= 0)
 	{
 		ClearTimerOfCountStartedGame();
 
@@ -1147,7 +1224,7 @@ void AMainScreenGameMode::RecvAndApply()
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvAndApply()>"));
 
 	ClearTimerOfRecvAndApply();
-	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AMainScreenGameMode::TimerOfRecvAndApply, 0.5f, true);
+	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AMainScreenGameMode::TimerOfRecvAndApply, 0.1f, true);
 }
 void AMainScreenGameMode::TimerOfRecvAndApply()
 {
@@ -1184,9 +1261,17 @@ void AMainScreenGameMode::TimerOfRecvAndApply()
 		RecvStartWaitingGame();
 	}
 	break;
+	case EOnlineState::Counting:
+	{
+		RecvWaitingGame();
+		RecvModifyWaitingGame();
+		RecvDestroyWaitingGame();
+	}
+	break;
 	case EOnlineState::PlayerOfPlayingGame:
 	{
-
+		RecvWaitingGame();
+		RecvDestroyWaitingGame();
 	}
 	break;
 	case EOnlineState::Playing:

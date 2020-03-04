@@ -41,7 +41,12 @@ protected:
 		class UUniformGridPanel* UniformGridPanel = nullptr;
 
 	UPROPERTY()
+		class UButton* BackButton = nullptr;
+	UPROPERTY()
 		class UButton* StartButton = nullptr;
+	UPROPERTY()
+		class UButton* JoinButton = nullptr;
+
 
 	bool bIsLeader;
 
@@ -61,7 +66,11 @@ public:
 	void SetText(cInfoOfGame& InfoOfGame);
 	void SetLeader(bool bLeader);
 	void SetIsReadOnly(bool bReadOnly);
+
+	void SetBackButtonVisibility(bool bVisible);
 	void SetStartButtonVisibility(bool bVisible);
+	void SetJoinButtonVisibility(bool bVisible);
+
 
 	void ShowLeader(cInfoOfPlayer CopiedMyInfo);
 

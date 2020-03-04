@@ -24,6 +24,7 @@ enum class EOnlineState : uint8
 	OnlineGame,
 	LeaderOfWaitingGame,
 	PlayerOfWaitingGame,
+	Counting,
 	PlayerOfPlayingGame,
 	Playing
 };
@@ -186,6 +187,9 @@ public:
 		void SendStartWaitingGame(); void _SendStartWaitingGame();
 	UFUNCTION(Category = "Widget")
 		void RecvStartWaitingGame();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void JoinStartedGame(); void _JoinStartedGame();
+
 	UFUNCTION(Category = "Widget")
 		void CountStartedGame();
 	UFUNCTION(Category = "Timer")

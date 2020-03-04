@@ -32,7 +32,7 @@ MainServer::MainServer()
 	fnProcess[EPacketType::LOGIN].funcProcessPacket = Login;
 	fnProcess[EPacketType::CREATE_GAME].funcProcessPacket = CreateGame;
 	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
-	fnProcess[EPacketType::JOIN_WAITING_GAME].funcProcessPacket = JoinWaitingGame;
+	fnProcess[EPacketType::JOIN_ONLINE_GAME].funcProcessPacket = JoinOnlineGame;
 	fnProcess[EPacketType::DESTROY_WAITING_GAME].funcProcessPacket = DestroyWaitingGame;
 	fnProcess[EPacketType::EXIT_WAITING_GAME].funcProcessPacket = ExitWaitingGame;
 	fnProcess[EPacketType::MODIFY_WAITING_GAME].funcProcessPacket = ModifyWaitingGame;
@@ -495,9 +495,9 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	printf_s("[Send to %d] <MainServer::FindGames(...)>\n\n", (int)pSocketInfo->socket);
 }
 
-void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+void MainServer::JoinOnlineGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 {
-	printf_s("[Recv by %d] <MainServer::JoinWaitingGame(...)>\n", (int)pSocketInfo->socket);
+	printf_s("[Recv by %d] <MainServer::JoinOnlineGame(...)>\n", (int)pSocketInfo->socket);
 
 
 	/// 수신
@@ -512,7 +512,7 @@ void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 	if (InfoOfClients.find(pSocketInfo->socket) == InfoOfClients.end())
 	{
 		/// 수신 - 에러
-		printf_s("[ERROR] <MainServer::JoinWaitingGame(...)> if (InfoOfClients.find(pSocketInfo->socket) == InfoOfClients.end()) \n");
+		printf_s("[ERROR] <MainServer::JoinOnlineGame(...)> if (InfoOfClients.find(pSocketInfo->socket) == InfoOfClients.end()) \n");
 		LeaveCriticalSection(&csInfoOfClients);
 		return;
 	}
@@ -525,7 +525,7 @@ void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 	if (InfoOfGames.find(leaderSocket) == InfoOfGames.end())
 	{
 		/// 수신 - 에러
-		printf_s("[ERROR] <MainServer::JoinWaitingGame(...)> if (InfoOfGames.find(leaderSocket) == InfoOfGames.end()) \n");
+		printf_s("[ERROR] <MainServer::JoinOnlineGame(...)> if (InfoOfGames.find(leaderSocket) == InfoOfGames.end()) \n");
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
@@ -556,7 +556,7 @@ void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 
 		Send(client);
 
-		printf_s("[Send to %d] <MainServer::JoinWaitingGame(...)>\n", (int)client->socket);
+		printf_s("[Send to %d] <MainServer::JoinOnlineGame(...)>\n", (int)client->socket);
 	}
 	
 
@@ -578,7 +578,7 @@ void MainServer::JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 
 			Send(client);
 
-			printf_s("[Send to %d] <MainServer::JoinWaitingGame(...)>\n", (int)client->socket);
+			printf_s("[Send to %d] <MainServer::JoinOnlineGame(...)>\n", (int)client->socket);
 		}
 	}
 
@@ -909,15 +909,60 @@ void MainServer::ActivateGameServer(stringstream& RecvStream, stSOCKETINFO* pSoc
 	}
 	InfoOfGames.at(pSocketInfo->socket).State = string("Playing");
 	InfoOfGames.at(pSocketInfo->socket).Leader.PortOfGameServer = infoOfPlayer.PortOfGameServer;
+	cInfoOfGame infoOfGame = InfoOfGames.at(pSocketInfo->socket);
 	LeaveCriticalSection(&csInfoOfGames);
 
 	infoOfPlayer.PrintInfo();
 
 
-	/// 송신 X
+	/// 송신 to 방장
+	stringstream sendStream;
+	sendStream << EPacketType::WAITING_GAME << endl;
+	sendStream << infoOfGame << endl;
+
+	stSOCKETINFO* client = nullptr;
+
+	EnterCriticalSection(&csClients);
+	if (Clients.find(pSocketInfo->socket) != Clients.end())
+		client = Clients.at(pSocketInfo->socket);
+	LeaveCriticalSection(&csClients);
+
+	if (client)
+	{
+		CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+		client->dataBuf.buf = client->messageBuffer;
+		client->dataBuf.len = sendStream.str().length();
+
+		Send(client);
+
+		printf_s("[Send to %d] <MainServer::ActivateGameServer(...)>\n", (int)client->socket);
+	}
 
 
-	printf_s("[End] <MainServer::ActivateGameServer(...)>\n\n");
+	/// 송신 to 대기방의 플레이어들 (해당 클라이언트 포함)
+	for (const auto& kvp : infoOfGame.Players.Players)
+	{
+		client = nullptr;
+
+		EnterCriticalSection(&csClients);
+		if (Clients.find((SOCKET)kvp.first) != Clients.end())
+			client = Clients.at((SOCKET)kvp.first);
+		LeaveCriticalSection(&csClients);
+
+		if (client)
+		{
+			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+			client->dataBuf.buf = client->messageBuffer;
+			client->dataBuf.len = sendStream.str().length();
+
+			Send(client);
+
+			printf_s("[Send to %d] <MainServer::ActivateGameServer(...)>\n", (int)client->socket);
+		}
+	}
+
+
+	printf_s("\n");
 }
 
 void MainServer::RequestInfoOfGameServer(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)

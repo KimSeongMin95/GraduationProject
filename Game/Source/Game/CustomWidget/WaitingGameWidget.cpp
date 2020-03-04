@@ -36,7 +36,9 @@ bool UWaitingGameWidget::InitWidget(UWorld* const World, const FString Reference
 
 	UniformGridPanel = WidgetTree->FindWidget<UUniformGridPanel>(FName(TEXT("UniformGridPanel_Players")));
 	
+	BackButton = WidgetTree->FindWidget<UButton>(FName(TEXT("Button_Back")));
 	StartButton = WidgetTree->FindWidget<UButton>(FName(TEXT("Button_Start")));	
+	JoinButton = WidgetTree->FindWidget<UButton>(FName(TEXT("Button_Join")));
 
 	for (int i = 0; i < 100; i++)
 		vecWaitingGameWidget.emplace_back(new cWaitingGameWidget(WidgetTree, UniformGridPanel, i));
@@ -101,6 +103,20 @@ void UWaitingGameWidget::SetIsReadOnly(bool bReadOnly)
 	Maximum->SetIsReadOnly(bReadOnly);
 }
 
+void UWaitingGameWidget::SetBackButtonVisibility(bool bVisible)
+{
+	if (!BackButton)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetBackButtonVisibility(...)> if (!BackButton)\n");
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::SetBackButtonVisibility(...)> if (!BackButton)"));
+		return;
+	}
+
+	if (bVisible)
+		BackButton->SetVisibility(ESlateVisibility::Visible);
+	else
+		BackButton->SetVisibility(ESlateVisibility::Hidden);
+}
 void UWaitingGameWidget::SetStartButtonVisibility(bool bVisible)
 {
 	if (!StartButton)
@@ -114,6 +130,20 @@ void UWaitingGameWidget::SetStartButtonVisibility(bool bVisible)
 		StartButton->SetVisibility(ESlateVisibility::Visible);
 	else
 		StartButton->SetVisibility(ESlateVisibility::Hidden);
+}
+void UWaitingGameWidget::SetJoinButtonVisibility(bool bVisible)
+{
+	if (!JoinButton)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetJoinButtonVisibility(...)> if (!JoinButton)\n");
+		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UWaitingGameWidget::SetJoinButtonVisibility(...)> if (!JoinButton)"));
+		return;
+	}
+
+	if (bVisible)
+		JoinButton->SetVisibility(ESlateVisibility::Visible);
+	else
+		JoinButton->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UWaitingGameWidget::ShowLeader(cInfoOfPlayer CopiedMyInfo)

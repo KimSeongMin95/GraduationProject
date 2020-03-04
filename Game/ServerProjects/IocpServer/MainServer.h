@@ -46,7 +46,7 @@ private:
 
 	static void FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
 
-	static void JoinWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	static void JoinOnlineGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 	static void DestroyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket);
 

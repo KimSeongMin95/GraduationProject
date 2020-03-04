@@ -110,7 +110,7 @@ void AOnlineGameMode::Tick(float DeltaTime)
 	//// юс╫ц
 	//////////////
 	temp += DeltaTime;
-	if (temp > 10.0f)
+	if (temp > 30.0f)
 	{
 		if (ServerSocketInGame)
 			ServerSocketInGame->CloseServer();

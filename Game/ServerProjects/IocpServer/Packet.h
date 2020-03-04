@@ -98,16 +98,16 @@ enum EPacketType
 	/** 대기방 정보 변경시 */
 	WAITING_GAME,
 
-	/** 플레이어가 Join 버튼으로 대기방에 들어가면
+	/** 플레이어가 Join 버튼으로 게임방에 들어가면
 	Main Client:
-		Send [JOIN_WAITING_ROOM]: Join한 대기방 Leader의 SocketID를 대입한 MyInfo
+		Send [JOIN_ONLINE_GAME]: Join한 게임방 Leader의 SocketID를 대입한 MyInfo
 		Recv [WAITING_GAME]: 받은 cInfoOfGame을 MyInfoOfGame에 대입
 	Main Server:
-		Recv [JOIN_WAITING_ROOM]: InfoOfClients에 LeaderSocketByMainServer를 대입하고 InfoOfGames의 Players에 해당 클라이언트 삽입
-		Send [WAITING_GAME] to 방장: 해당 대기방의 cInfoOfGame
-		Send [WAITING_GAME] to 대기방의 다른 플레이어들: 해당 대기방의 cInfoOfGame
+		Recv [JOIN_ONLINE_GAME]: InfoOfClients에 LeaderSocketByMainServer를 대입하고 InfoOfGames의 Players에 해당 클라이언트 삽입
+		Send [WAITING_GAME] to 방장: 해당 게임방의 cInfoOfGame
+		Send [WAITING_GAME] to 게임방의 다른 플레이어들: 해당 게임방의 cInfoOfGame
 	*/
-	JOIN_WAITING_GAME,
+	JOIN_ONLINE_GAME,
 
 	/** 방장이 대기방에서 Back 버튼을 눌러 대기방을 종료하면
 	Main Client:
@@ -154,10 +154,11 @@ enum EPacketType
 	/** 방장이 대기방에서 게임을 시작하고 CountStartedGame()에서 게임 서버 초기화에 성공하면
 	Main Client:
 		Send [ACTIVATE_GAME_SERVER]: MyInfo에 PortOfGameServer를 저장하고 MyInfo를 전송, MyInfoOfGame.State = string("Playing");
-		Recv []: X
+		Recv [WAITING_GAME]: 대기방 cInfoOfGame
 	Main Server:
 		Recv [ACTIVATE_GAME_SERVER] by 방장: 수신한 cInfoOfPlayer를 InfoOfClients와 InfoOfGames의 Leader에 적용
-		Send []: X
+		Send [WAITING_GAME] to 방장: 해당 대기방의 cInfoOfGame
+		Send [WAITING_GAME] to 플레이어들: 해당 대기방의 cInfoOfGame
 	*/
 	ACTIVATE_GAME_SERVER,
 
@@ -171,12 +172,6 @@ enum EPacketType
 	*/
 	REQUEST_INFO_OF_GAME_SERVER,
 
-
-	JOIN_PLAYING_GAME,	// 어떤 플레이어가 진행중인 게임에 들어올 때: 해당 게임의 플레이어들과 FIND_GAMES인 플레이어들에게 브로드캐스팅 해야 함.
-
-	START_PLAYING_GAME, // 플레이중인 게임 시작하기
-
-	EXIT_PLAYING_GAME,	// 플레이어가 진행중인 게임을 종료할 때: 
 
 	///////////////////////////////////////////
 	// Game Server / Game Clients

@@ -410,7 +410,7 @@ void cClientSocket::RecvFindGames(stringstream& RecvStream)
 	printf_s("[End] <cClientSocket::RecvFindGames(...)>\n");
 }
      
-void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
+void cClientSocket::SendJoinOnlineGame(int SocketIDOfLeader)
 {
 	printf_s("[Start] <cClientSocket::SendJoinWaitingGame(...)>\n");
 	printf_s("\t SocketIDOfLeader: %d\n", SocketIDOfLeader);
@@ -421,7 +421,7 @@ void cClientSocket::SendJoinWaitingGame(int SocketIDOfLeader)
 	SetMyInfo(infoOfPlayer);
 
 	stringstream sendStream;
-	sendStream << EPacketType::JOIN_WAITING_GAME << endl;
+	sendStream << EPacketType::JOIN_ONLINE_GAME << endl;
 	sendStream << infoOfPlayer << endl;
 
 	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
