@@ -8,11 +8,14 @@
 #include "Network/ServerSocketInGame.h"
 #include "Network/ClientSocketInGame.h"
 
+#include "CustomWidget/InGameWidget.h"
+#include "CustomWidget/InGameMenuBarWidget.h"
+#include "CustomWidget/InGameScoreBoardWidget.h"
+
 #include "Controller/PioneerController.h"
 #include "Character/Pioneer.h"
 #include "PioneerManager.h"
 #include "SpaceShip/SpaceShip.h"
-#include "MyHUD.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 const float AOnlineGameMode::CellSize = 64.0f;
@@ -29,7 +32,6 @@ AOnlineGameMode::AOnlineGameMode()
 	PioneerController = nullptr;
 	PioneerManager = nullptr;
 	SpaceShip = nullptr;
-	temp = 0.0f;
 
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -86,11 +88,29 @@ void AOnlineGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 	ClientSocket = cClientSocket::GetSingleton();
 
 	ServerSocketInGame = cServerSocketInGame::GetSingleton();
 	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 
+
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::BeginPlay()> if (!world)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::BeginPlay()> if (!world)"));
+		return;
+	}
+
+	InGameWidget = NewObject<UInGameWidget>(this, FName("InGameWidget"));
+	InGameWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGame.InGame_C'", true);
+
+	InGameMenuBarWidget = NewObject<UInGameMenuBarWidget>(this, FName("InGameMenuBarWidget"));
+	InGameMenuBarWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameMenuBar.InGameMenuBar_C'", false);
+
+	InGameScoreBoardWidget = NewObject<UInGameScoreBoardWidget>(this, FName("InGameScoreBoardWidget"));
+	InGameScoreBoardWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameScoreBoard.InGameScoreBoard_C'", false);
 }
 
 void AOnlineGameMode::StartPlay()
@@ -118,17 +138,9 @@ void AOnlineGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	//////////////
-	//// 임시
-	//////////////
-	//temp += DeltaTime;
-	//if (temp > 30.0f)
-	//{
-	//	if (ServerSocketInGame)
-	//		ServerSocketInGame->CloseServer();
-	//	UGameplayStatics::OpenLevel(this, "MainScreen");
-	//}
-
+	////////////
+	// 임시
+	////////////
 	if (SpaceShip)
 	{
 		if (SpaceShip->State == ESpaceShipState::Landed)
@@ -143,7 +155,98 @@ void AOnlineGameMode::Tick(float DeltaTime)
 /*** Basic Function : End ***/
 
 
-/*** AMainScreenGameMode : Start ***/
+/*** AOnlineGameMode : Start ***/
+/////////////////////////////////////////////////
+// 위젯 활성화 / 비활성화
+/////////////////////////////////////////////////
+void AOnlineGameMode::ActivateInGameWidget()
+{
+	_ActivateInGameWidget();
+}
+void AOnlineGameMode::_ActivateInGameWidget()
+{
+	if (!InGameWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameWidget()> if (!InGameWidget)\n");
+		return;
+	}
+
+	InGameWidget->AddToViewport();
+}
+void AOnlineGameMode::DeactivateInGameWidget()
+{
+	_DeactivateInGameWidget();
+}
+void AOnlineGameMode::_DeactivateInGameWidget()
+{
+	if (!InGameWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameWidget()> if (!InGameWidget)\n");
+		return;
+	}
+
+	InGameWidget->RemoveFromViewport();
+}
+
+void AOnlineGameMode::ActivateInGameMenuBarWidget()
+{
+	_ActivateInGameMenuBarWidget();
+}
+void AOnlineGameMode::_ActivateInGameMenuBarWidget()
+{
+	if (!InGameMenuBarWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameMenuBarWidget()> if (!InGameMenuBarWidget)\n");
+		return;
+	}
+
+	InGameMenuBarWidget->AddToViewport();
+}
+void AOnlineGameMode::DeactivateInGameMenuBarWidget()
+{
+	_DeactivateInGameMenuBarWidget();
+}
+void AOnlineGameMode::_DeactivateInGameMenuBarWidget()
+{
+	if (!InGameMenuBarWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameMenuBarWidget()> if (!InGameMenuBarWidget)\n");
+		return;
+	}
+
+	InGameMenuBarWidget->RemoveFromViewport();
+}
+
+void AOnlineGameMode::ActivateInGameScoreBoardWidget()
+{
+	_ActivateInGameScoreBoardWidget();
+}
+void AOnlineGameMode::_ActivateInGameScoreBoardWidget()
+{
+	if (!InGameScoreBoardWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
+		return;
+	}
+
+	InGameScoreBoardWidget->AddToViewport();
+}
+void AOnlineGameMode::DeactivateInGameScoreBoardWidget()
+{
+	_DeactivateInGameScoreBoardWidget();
+}
+void AOnlineGameMode::_DeactivateInGameScoreBoardWidget()
+{
+	if (!InGameScoreBoardWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
+		return;
+	}
+
+	InGameScoreBoardWidget->RemoveFromViewport();
+}
+
+
 void AOnlineGameMode::FindPioneerController()
 {
 	UWorld* const world = GetWorld();
@@ -206,4 +309,4 @@ void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform T
 
 }
 
-/*** AMainScreenGameMode : End ***/
+/*** AOnlineGameMode : End ***/

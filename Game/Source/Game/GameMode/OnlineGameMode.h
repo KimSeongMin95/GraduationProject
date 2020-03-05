@@ -36,17 +36,22 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-/*** AMainScreenGameMode : Start ***/
+/*** AOnlineGameMode : Start ***/
 private:
 	class cClientSocket* ClientSocket = nullptr;
 
 	class cServerSocketInGame* ServerSocketInGame = nullptr;
 	class cClientSocketInGame* ClientSocketInGame = nullptr;
 
-
-	//UPROPERTY(VisibleAnywhere, Category = "Widget")
-	//	/** 게임 UI */
-	//	class UInGameWidget* InGameWidget = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 인게임 UI */
+		class UInGameWidget* InGameWidget = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 인게임 메뉴바 */
+		class UInGameMenuBarWidget* InGameMenuBarWidget = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 인게임 플레이어들의 상황판 */
+		class UInGameScoreBoardWidget* InGameScoreBoardWidget = nullptr;
 	
 	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
 		class APioneerController* PioneerController = nullptr;
@@ -58,10 +63,26 @@ private:
 		class ASpaceShip* SpaceShip = nullptr;
 
 protected:
-	float temp = 0.0f;
+
 
 public:
+	/////////////////////////////////////////////////
+	// 위젯 활성화 / 비활성화
+	/////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateInGameWidget(); void _ActivateInGameWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateInGameWidget(); void _DeactivateInGameWidget();
 
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateInGameMenuBarWidget(); void _ActivateInGameMenuBarWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateInGameMenuBarWidget(); void _DeactivateInGameMenuBarWidget();
+
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateInGameScoreBoardWidget(); void _ActivateInGameScoreBoardWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateInGameScoreBoardWidget(); void _DeactivateInGameScoreBoardWidget();
 
 private:
 	void FindPioneerController();
@@ -79,5 +100,5 @@ public:
 	
 
 	static const float CellSize;
-/*** AMainScreenGameMode : End ***/
+/*** AOnlineGameMode : End ***/
 };

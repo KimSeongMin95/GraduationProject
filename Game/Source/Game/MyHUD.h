@@ -17,29 +17,29 @@ class GAME_API AMyHUD : public AHUD
 {
 	GENERATED_BODY()
 	
-public:
-	AMyHUD();
-
-	/** Primary draw call for the HUD */
-	virtual void DrawHUD() override;
-
-private:
-	class UTextureRenderTarget2D* MinimapUI;
-	float MinimapSize;
-
-	class UTexture2D* MainUI;
-
-	class UTexture2D* IconPioneerUI;
-	class UTexture2D* IconMineralUI;
-	class UTexture2D* IconOrganicUI;
-	class UTexture2D* IconEnergyUI;
-
-public:
-	class UFont* IconPioneerFont;
-	class UFont* IconMineralFont;
-	class UFont* IconOrganicFont;
-	class UFont* IconEnergyFont;
-
-	class APioneerManager* PioneerManager = nullptr;
-	const FString PioneerText;
+//public:
+//	AMyHUD();
+//
+//	/** Primary draw call for the HUD */
+//	virtual void DrawHUD() override;
+//
+//private:
+//	class UTextureRenderTarget2D* MinimapUI;
+//	float MinimapSize;
+//
+//	class UTexture2D* MainUI;
+//
+//	class UTexture2D* IconPioneerUI;
+//	class UTexture2D* IconMineralUI;
+//	class UTexture2D* IconOrganicUI;
+//	class UTexture2D* IconEnergyUI;
+//
+//public:
+//	class UFont* IconPioneerFont;
+//	class UFont* IconMineralFont;
+//	class UFont* IconOrganicFont;
+//	class UFont* IconEnergyFont;
+//
+//	class APioneerManager* PioneerManager = nullptr;
+//	const FString PioneerText;
 };
