@@ -13,9 +13,12 @@
 /*** AnimInstance Basic Function : Start ***/
 UBaseCharacterAnimInstance::UBaseCharacterAnimInstance()
 {
+	BaseCharacter = nullptr;
+
 	Speed = 0.0f;
 	bIsMoving = false;
 	Direction = 0.0f;
+	bDying = false;
 
 	CharacterAI = 0;
 }

@@ -6,8 +6,13 @@
 
 UOnlineGameWidget::UOnlineGameWidget()
 {
+	///////////
+	// √ ±‚»≠
+	///////////
+	ScrollBox = nullptr;
+	vecOnlineGameWidget.clear();
+	mapOnlineGameWidget.clear();
 	RevealableIndex = 0;
-
 }
 
 UOnlineGameWidget::~UOnlineGameWidget()

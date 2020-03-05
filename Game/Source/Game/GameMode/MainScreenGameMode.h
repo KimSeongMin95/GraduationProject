@@ -202,6 +202,8 @@ public:
 		void StartOnlineGame();
 
 	UFUNCTION(Category = "Widget")
+		void StartGameServer();
+	UFUNCTION(Category = "Widget")
 		void GameClientConnectGameServer();
 
 	UFUNCTION(Category = "Widget")

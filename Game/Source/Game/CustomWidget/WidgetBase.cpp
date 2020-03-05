@@ -5,6 +5,11 @@
 
 UWidgetBase::UWidgetBase()
 {
+	///////////
+	// √ ±‚»≠
+	///////////	
+	UserWidget = nullptr;
+	WidgetTree = nullptr;
 }
 
 UWidgetBase::~UWidgetBase()

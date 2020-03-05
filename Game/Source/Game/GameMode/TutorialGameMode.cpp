@@ -13,6 +13,15 @@
 /*** Basic Function : Start ***/
 ATutorialGameMode::ATutorialGameMode()
 {
+	///////////
+	// √ ±‚»≠
+	///////////
+	TutorialWidget = nullptr;
+	PioneerManager = nullptr;
+
+
+	PrimaryActorTick.bCanEverTick = true;
+
 	HUDClass = AMyHUD::StaticClass();
 
 	PlayerControllerClass = APioneerController::StaticClass();

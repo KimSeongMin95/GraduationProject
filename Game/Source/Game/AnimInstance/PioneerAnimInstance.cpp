@@ -12,7 +12,12 @@
 /*** AnimInstance Basic Function : Start ***/
 UPioneerAnimInstance::UPioneerAnimInstance()
 {
+	Pioneer = nullptr;
 
+	bHasPistolType = false;
+	bHasRifleType = false;
+	bHasLauncherType = false;
+	bFired = false;
 }
 
 void UPioneerAnimInstance::NativeInitializeAnimation()

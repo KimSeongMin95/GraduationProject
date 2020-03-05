@@ -5,8 +5,23 @@
 
 UWaitingGameWidget::UWaitingGameWidget()
 {
+	///////////
+	// √ ±‚»≠
+	///////////	
+	State = nullptr;
+	Title = nullptr;
+	Leader = nullptr;
+	Stage = nullptr;
+	Players = nullptr;
+	Maximum = nullptr;
+	UniformGridPanel = nullptr;
+	BackButton = nullptr;
+	StartButton = nullptr;
+	JoinButton = nullptr;
 	bIsLeader = false;
-
+	Destroyed = nullptr;
+	Count = nullptr;
+	vecWaitingGameWidget.clear();
 }
 
 UWaitingGameWidget::~UWaitingGameWidget()

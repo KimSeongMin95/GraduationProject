@@ -99,9 +99,28 @@ bool cServerSocketInGame::Initialize()
 	serverAddr.sin_port = htons(ServerPort);
 	serverAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 
-	// 소켓 설정
-	// boost bind 와 구별짓기 위해 ::bind 사용
-	if (::bind(ListenSocket, (struct sockaddr*) & serverAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
+
+	// ServerPort를 유동적으로 변경하여 빈 소켓포트를 찾습니다.
+	bool bIsbound = false;
+	for (int i = 0; i < 10; i++)
+	{
+		// 소켓 설정
+		// boost bind 와 구별짓기 위해 ::bind 사용
+		if (::bind(ListenSocket, (struct sockaddr*) & serverAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
+		{
+			ServerPort++;
+			serverAddr.sin_port = htons(ServerPort);
+			continue;
+		}
+		else
+		{
+			bIsbound = true;
+			printf_s("[INFO] <cServerSocketInGame::Initialize()> bind success! ServerPort: %d\n", ServerPort);
+			break;
+		}
+	}
+
+	if (bIsbound == false)
 	{
 		closesocket(ListenSocket);
 		ListenSocket = NULL;
@@ -110,6 +129,18 @@ bool cServerSocketInGame::Initialize()
 		printf_s("[ERROR] <cServerSocketInGame::Initialize()> if (bind(...) == SOCKET_ERROR)\n");
 		return false;
 	}
+
+	//// 소켓 설정
+	//// boost bind 와 구별짓기 위해 ::bind 사용
+	//if (::bind(ListenSocket, (struct sockaddr*) & serverAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
+	//{
+	//	closesocket(ListenSocket);
+	//	ListenSocket = NULL;
+	//	WSACleanup();
+
+	//	printf_s("[ERROR] <cServerSocketInGame::Initialize()> if (bind(...) == SOCKET_ERROR)\n");
+	//	return false;
+	//}
 
 	// 수신 대기열 생성
 	if (listen(ListenSocket, 5) == SOCKET_ERROR)
@@ -235,6 +266,8 @@ void cServerSocketInGame::StartServer()
 
 void cServerSocketInGame::CloseServer()
 {
+	ServerPort = 9000;
+
 	if (bIsServerOn == false)
 	{
 		printf_s("[INFO] <cServerSocketInGame::CloseServer()> if (bIsServerOn == false)\n");

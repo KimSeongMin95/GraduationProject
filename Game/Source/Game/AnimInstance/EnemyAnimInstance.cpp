@@ -12,6 +12,8 @@
 /*** AnimInstance Basic Function : Start ***/
 UEnemyAnimInstance::UEnemyAnimInstance()
 {
+	Enemy = nullptr;
+
 	/// FSM
 	bIdle = true;
 	bTracing = false;

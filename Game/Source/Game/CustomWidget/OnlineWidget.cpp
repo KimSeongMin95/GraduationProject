@@ -5,8 +5,13 @@
 
 UOnlineWidget::UOnlineWidget()
 {
-	
-
+	///////////
+	// √ ±‚»≠
+	///////////	
+	ID = nullptr;
+	PW = nullptr;
+	IPv4 = nullptr;
+	Port = nullptr;
 }
 
 UOnlineWidget::~UOnlineWidget()

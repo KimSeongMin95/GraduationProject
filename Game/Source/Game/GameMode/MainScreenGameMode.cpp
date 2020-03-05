@@ -28,6 +28,8 @@ AMainScreenGameMode::AMainScreenGameMode()
 
 	OnlineState = EOnlineState::Idle;
 
+	Count = 5;
+
 	// 콘솔
 	//CustomLog::FreeConsole();
 	CustomLog::AllocConsole();
@@ -1026,25 +1028,10 @@ void AMainScreenGameMode::CountStartedGame()
 	// 방장이면
 	if (WaitingGameWidget->IsLeader())
 	{
-		printf_s("[INFO] <AMainScreenGameMode::CountStartedGame()> if (WaitingGameWidget->IsLeader())\n");
-		//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::CountStartedGame()> if (WaitingGameWidget->IsLeader())"));
-
-		ServerSocketInGame->Initialize();
-
-		// 구동 성공시
-		if (ServerSocketInGame->IsServerOn())
-		{
-			// 게임 서버 정보를 메인 서버로 전송
-			int GameServerPort = ServerSocketInGame->GetServerPort();
-			ClientSocket->SendActivateGameServer(GameServerPort);
-		}
+		StartGameServer();
 	}
-	// 참가자면
-	else
+	else // 참가자면
 	{
-		printf_s("[INFO] <AMainScreenGameMode::CountStartedGame()> if (WaitingGameWidget->IsLeader()) else \n");
-		//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::CountStartedGame()> if (WaitingGameWidget->IsLeader()) else"));
-
 		ClientSocket->SendRequestInfoOfGameServer();
 	}
 
@@ -1079,24 +1066,14 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 	// 방장이고 아직 게임서버가 구동되지 않았다면
 	if (WaitingGameWidget->IsLeader())
 	{
-		if (ServerSocketInGame->IsServerOn() == false)
-		{
-			ServerSocketInGame->Initialize();
-
-			// 구동 성공시
-			if (ServerSocketInGame->IsServerOn())
-			{
-				// 게임 서버 정보를 메인 서버로 전송
-				int GameServerPort = ServerSocketInGame->GetServerPort();
-				ClientSocket->SendActivateGameServer(GameServerPort);
-			}
-		}
+		StartGameServer();
 	}
 	else // 참가자면
 	{
 		// 게임 클라이언트가 게임 서버 정보를 메인 서버로부터 요청하고 얻으면 접속 시도
 		GameClientConnectGameServer();
 	}
+
 
 	Count--;
 
@@ -1135,6 +1112,38 @@ void AMainScreenGameMode::StartOnlineGame()
 	UGameplayStatics::OpenLevel(this, "Online");
 }
 
+void AMainScreenGameMode::StartGameServer()
+{
+	if (!ClientSocket || !ServerSocketInGame)
+	{
+		printf_s("[ERROR] <AMainScreenGameMode::StartGameServer()> if (!ClientSocket || !ServerSocketInGame)\n");
+		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AMainScreenGameMode::StartGameServer()> if (!ClientSocket || !ServerSocketInGame)"));
+		return;
+	}
+
+	printf_s("[START] <AMainScreenGameMode::StartGameServer()>\n");
+
+
+	if (ServerSocketInGame->IsServerOn())
+	{
+		printf_s("\t already ServerSocketInGame->IsServerOn()\n");
+		return;
+	}
+
+	
+	ServerSocketInGame->Initialize();
+
+	// 구동 성공시
+	if (ServerSocketInGame->IsServerOn())
+	{
+		// 게임 서버 정보를 메인 서버로 전송
+		int GameServerPort = ServerSocketInGame->GetServerPort();
+		ClientSocket->SendActivateGameServer(GameServerPort);
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::StartGameServer()>\n");
+}
 void AMainScreenGameMode::GameClientConnectGameServer()
 {
 	if (!ClientSocket || !ClientSocketInGame)

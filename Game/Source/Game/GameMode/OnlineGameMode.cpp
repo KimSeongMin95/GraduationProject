@@ -20,6 +20,18 @@ const float AOnlineGameMode::CellSize = 64.0f;
 /*** Basic Function : Start ***/
 AOnlineGameMode::AOnlineGameMode()
 {
+	///////////
+	// 초기화
+	///////////
+	ClientSocket = nullptr;
+	ServerSocketInGame = nullptr;
+	ClientSocketInGame = nullptr;
+	PioneerController = nullptr;
+	PioneerManager = nullptr;
+	SpaceShip = nullptr;
+	temp = 0.0f;
+
+
 	PrimaryActorTick.bCanEverTick = true;
 
 	/***** 필수! 꼭 읽어주세요. : Start *****/
