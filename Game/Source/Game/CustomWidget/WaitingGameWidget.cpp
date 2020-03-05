@@ -165,6 +165,14 @@ void UWaitingGameWidget::ShowLeader(cInfoOfPlayer CopiedMyInfo)
 {
 	vecWaitingGameWidget.at(0)->SetText(CopiedMyInfo);
 	vecWaitingGameWidget.at(0)->SetVisible(true);
+
+	if (!Leader)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetLeaderText(...)> if (!Leader)\n");
+		return;
+	}
+
+	Leader->SetText(FText::FromString(FString(CopiedMyInfo.ID.c_str())));
 }
 
 void UWaitingGameWidget::RevealGame(cInfoOfGame& InfoOfGame)

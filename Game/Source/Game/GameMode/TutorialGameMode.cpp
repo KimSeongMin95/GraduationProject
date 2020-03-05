@@ -22,7 +22,7 @@ ATutorialGameMode::ATutorialGameMode()
 
 	PrimaryActorTick.bCanEverTick = true;
 
-	HUDClass = AMyHUD::StaticClass();
+	//HUDClass = AMyHUD::StaticClass();
 
 	PlayerControllerClass = APioneerController::StaticClass();
 

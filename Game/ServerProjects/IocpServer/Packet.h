@@ -176,6 +176,16 @@ enum EPacketType
 	///////////////////////////////////////////
 	// Game Server / Game Clients
 	///////////////////////////////////////////
+
+	/** 게임서버와 게임클라이언트가 연결되었다면
+	Game Client:
+		Recv [CONNECTED]: (순서4) 받은 cInfoOfPlayer를 ClientSocket::MyInfo에 저장
+		Send [CONNECTED]: (순서1) ClientSocket::MyInfo를 전송
+	Game Server:
+		Recv [CONNECTED]: (순서2) 받은 cInfoOfPlayer에 SocketByGameServer, PortOfGameServer, PortOfGameClient를 대입하고 InfoOfClients에 삽입
+		Send [CONNECTED]: (순서3) InfoOfClients에 삽입한 cInfoOfPlayer
+	*/
+	CONNECTED,
 };
 
 

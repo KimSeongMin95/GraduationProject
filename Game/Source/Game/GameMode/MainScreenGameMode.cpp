@@ -501,7 +501,7 @@ void AMainScreenGameMode::_SendCreateGame()
 	WaitingGameWidget->SetStartButtonVisibility(true);
 	WaitingGameWidget->SetJoinButtonVisibility(false);
 	WaitingGameWidget->ShowLeader(ClientSocket->CopyMyInfo());
-	
+
 	ActivateWaitingGameWidget();
 
 	ClientSocket->SendCreateGame();

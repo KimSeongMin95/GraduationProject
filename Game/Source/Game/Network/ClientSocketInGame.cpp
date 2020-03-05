@@ -2,6 +2,12 @@
 #include "ClientSocketInGame.h"
 
 
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Network/ClientSocket.h"
+
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
+
 unsigned int WINAPI CallMainThreadIncClientSocketInGame(LPVOID p)
 {
 	cClientSocketInGame* pOverlappedEvent = (cClientSocketInGame*)p;
@@ -18,6 +24,7 @@ cClientSocketInGame::cClientSocketInGame()
 {
 	printf_s("[START] <cClientSocketInGame::cClientSocketInGame()>\n");
 
+
 	ServerSocket = NULL;
 	//memset(recvBuffer, 0, MAX_BUFFER);
 
@@ -30,10 +37,8 @@ cClientSocketInGame::cClientSocketInGame()
 
 	InitializeCriticalSection(&csAccept);
 
-	//InitializeCriticalSection(&csMyInfo);
-	//EnterCriticalSection(&csMyInfo);
-	//MyInfo = cInfoOfPlayer();
-	//LeaveCriticalSection(&csMyInfo);
+	ClientSocket = cClientSocket::GetSingleton();
+
 
 	printf_s("[END] <cClientSocketInGame::cClientSocketInGame()>\n");
 }
@@ -42,8 +47,6 @@ cClientSocketInGame::~cClientSocketInGame()
 	CloseSocket();
 
 	DeleteCriticalSection(&csAccept);
-
-	//DeleteCriticalSection(&csMyInfo);
 }
 
 bool cClientSocketInGame::InitSocket()
@@ -122,6 +125,8 @@ bool cClientSocketInGame::Connect(const char * pszIP, int nPort)
 
 	printf_s("\t Connect() Success.\n");
 
+	SendConnected();
+
 	bIsConnected = true;
 
 	printf_s("[END] <cClientSocketInGame::Connect(...)>\n");
@@ -191,21 +196,21 @@ void cClientSocketInGame::RunMainThread()
 			/////////////////////////////
 			memset(recvBuffer, 0, MAX_BUFFER);
 
-			//switch (PacketType)
-			//{
-			//case EPacketType::LOGIN:
-			//{
-			//	RecvLogin(RecvStream);
-			//}
-			//break;
+			switch (PacketType)
+			{
+			case EPacketType::CONNECTED:
+			{
+				RecvConnected(RecvStream);
+			}
+			break;
 
 
-			//default:
-			//{
+			default:
+			{
 
-			//}
-			//break;
-			//}
+			}
+			break;
+			}
 		}
 	}
 }
@@ -298,3 +303,49 @@ void cClientSocketInGame::CloseSocket()
 /////////////////////////////////////
 // 서버와 통신
 /////////////////////////////////////
+void cClientSocketInGame::SendConnected()
+{
+	if (!ClientSocket)
+	{
+		printf_s("[ERROR] <cClientSocketInGame::SendConnected()> if (!ClientSocket)\n");
+		return;
+	}
+
+	printf_s("[Start] <cClientSocketInGame::SendConnected()>\n");
+
+
+	cInfoOfPlayer infoOfPlayer = ClientSocket->CopyMyInfo();
+
+	stringstream sendStream;
+	sendStream << EPacketType::CONNECTED << endl;
+	sendStream << infoOfPlayer << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+	infoOfPlayer.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::SendConnected()>\n");
+}
+void cClientSocketInGame::RecvConnected(stringstream& RecvStream)
+{
+	if (!ClientSocket)
+	{
+		printf_s("[ERROR] <cClientSocketInGame::RecvConnected(...)> if (!ClientSocket)\n");
+		return;
+	}
+
+	printf_s("[Start] <cClientSocketInGame::RecvConnected(...)>\n");
+
+
+	cInfoOfPlayer infoOfPlayer;
+
+	RecvStream >> infoOfPlayer;
+
+	ClientSocket->SetMyInfo(infoOfPlayer);
+
+	infoOfPlayer.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::RecvConnected(...)>\n");
+}

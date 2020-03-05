@@ -25,6 +25,8 @@ private:
 	bool bIsConnected;
 	bool bIsClientSocketOn;
 
+	class cClientSocket* ClientSocket = nullptr;
+
 protected:
 	
 
@@ -63,4 +65,6 @@ public:
 	/////////////////////////////////////
 	// 서버와 통신
 	/////////////////////////////////////
+	void SendConnected();
+	void RecvConnected(stringstream& RecvStream);
 };

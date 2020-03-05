@@ -3,6 +3,14 @@
 
 #include "ServerSocketInGame.h"
 
+int cServerSocketInGame::ServerPort;
+
+std::map<SOCKET, stSOCKETINFO*> cServerSocketInGame::GameClients;
+CRITICAL_SECTION cServerSocketInGame::csGameClients;
+
+std::map<SOCKET, cInfoOfPlayer> cServerSocketInGame::InfoOfClients;
+CRITICAL_SECTION cServerSocketInGame::csInfoOfClients;
+
 unsigned int WINAPI CallMainThread(LPVOID p)
 {
 	cServerSocketInGame* pOverlappedEvent = (cServerSocketInGame*)p;
@@ -45,9 +53,14 @@ cServerSocketInGame::cServerSocketInGame()
 	GameClients.clear();
 	LeaveCriticalSection(&csGameClients);
 
+	InitializeCriticalSection(&csInfoOfClients);
+	EnterCriticalSection(&csInfoOfClients);
+	InfoOfClients.clear();
+	LeaveCriticalSection(&csInfoOfClients);
+
 
 	//// 패킷 함수 포인터에 함수 지정
-	//fnProcess[EPacketType::LOGIN].funcProcessPacket = Login;
+	fnProcess[EPacketType::CONNECTED].funcProcessPacket = Connected;
 }
 
 cServerSocketInGame::~cServerSocketInGame()
@@ -56,6 +69,7 @@ cServerSocketInGame::~cServerSocketInGame()
 	CloseServer();
 
 	DeleteCriticalSection(&csGameClients);
+	DeleteCriticalSection(&csInfoOfClients);
 }
 
 bool cServerSocketInGame::Initialize()
@@ -329,6 +343,11 @@ void cServerSocketInGame::CloseServer()
 		printf_s("\t delete[] hWorkerHandle;\n");
 	}
 
+	// InfoOfClients 초기화
+	EnterCriticalSection(&csInfoOfClients);
+	InfoOfClients.clear();
+	LeaveCriticalSection(&csInfoOfClients);
+
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 해제
 	EnterCriticalSection(&csGameClients);
 	for (auto& kvp : GameClients)
@@ -536,6 +555,26 @@ void cServerSocketInGame::CloseSocket(stSOCKETINFO* pSocketInfo)
 
 	printf_s("[Start] <cServerSocketInGame::CloseSocket(...)>\n");
 
+	/*********************************************************************************/
+
+	///////////////////////////
+	// InfoOfClients에서 제거
+	///////////////////////////
+	/// 아래의 InfoOfGames에서 제거에서 사용할 leaderSocketByMainServer를 획득합니다.
+	EnterCriticalSection(&csInfoOfClients);
+	if (InfoOfClients.find(pSocketInfo->socket) != InfoOfClients.end())
+	{
+		/// 네트워크 연결을 종료한 클라이언트의 정보를 제거합니다.
+		printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
+		InfoOfClients.erase(pSocketInfo->socket);
+		printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
+	}
+	else
+	{
+		printf_s("[ERROR] <MainServer::CloseSocket(...)> InfoOfClients can't find pSocketInfo->socket\n");
+	}
+	LeaveCriticalSection(&csInfoOfClients);
+
 
 	///////////////////////////
 	// Clients에서 제거
@@ -620,3 +659,43 @@ void cServerSocketInGame::Recv(stSOCKETINFO* pSocketInfo)
 	}
 }
 
+
+/////////////////////////////////////
+// 패킷 처리 함수
+/////////////////////////////////////
+void cServerSocketInGame::Connected(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Recv by %d] <cServerSocketInGame::Connected(...)>\n", (int)pSocketInfo->socket);
+
+
+	/// 수신
+	cInfoOfPlayer infoOfPlayer;
+	RecvStream >> infoOfPlayer;
+
+	infoOfPlayer.SocketByGameServer = (int)pSocketInfo->socket;
+	infoOfPlayer.PortOfGameServer = ServerPort;
+	infoOfPlayer.PortOfGameClient = pSocketInfo->Port;
+
+	EnterCriticalSection(&csInfoOfClients);
+	printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
+	InfoOfClients[pSocketInfo->socket] = infoOfPlayer;
+	printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
+	LeaveCriticalSection(&csInfoOfClients);
+
+	infoOfPlayer.PrintInfo();
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::CONNECTED << endl;
+	sendStream << infoOfPlayer << endl;
+
+	CopyMemory(pSocketInfo->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
+	pSocketInfo->dataBuf.len = sendStream.str().length();
+
+	Send(pSocketInfo);
+
+
+	printf_s("[Send to %d] <cServerSocketInGame::Connected(...)>\n\n", (int)pSocketInfo->socket);
+}

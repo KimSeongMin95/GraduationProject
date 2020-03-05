@@ -53,7 +53,7 @@ AOnlineGameMode::AOnlineGameMode()
 	*/
 	/***** 필수! 꼭 읽어주세요. : End *****/
 
-	HUDClass = AMyHUD::StaticClass();
+	//HUDClass = AMyHUD::StaticClass();
 
 	// use our custom PlayerController class
 	PlayerControllerClass = APioneerController::StaticClass();
@@ -121,13 +121,13 @@ void AOnlineGameMode::Tick(float DeltaTime)
 	//////////////
 	//// 임시
 	//////////////
-	temp += DeltaTime;
-	if (temp > 30.0f)
-	{
-		if (ServerSocketInGame)
-			ServerSocketInGame->CloseServer();
-		UGameplayStatics::OpenLevel(this, "MainScreen");
-	}
+	//temp += DeltaTime;
+	//if (temp > 30.0f)
+	//{
+	//	if (ServerSocketInGame)
+	//		ServerSocketInGame->CloseServer();
+	//	UGameplayStatics::OpenLevel(this, "MainScreen");
+	//}
 
 	if (SpaceShip)
 	{

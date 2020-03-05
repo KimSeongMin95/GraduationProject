@@ -26,7 +26,7 @@ class GAME_API cServerSocketInGame
 private:
 	FuncProcess	fnProcess[100];	// 패킷 처리 구조체
 
-	int ServerPort;
+	static int ServerPort;
 	bool bIsServerOn;
 
 protected:
@@ -41,12 +41,14 @@ protected:
 	HANDLE*			hWorkerHandle = nullptr;// 작업 스레드 핸들		
 	DWORD			nThreadCnt;				// 작업 스레드 개수
 
-	
-
 public:
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장
-	std::map<SOCKET, stSOCKETINFO*> GameClients;
-	CRITICAL_SECTION csGameClients;
+	static std::map<SOCKET, stSOCKETINFO*> GameClients;
+	static CRITICAL_SECTION csGameClients;
+
+	// Connected 클라이언트의 InfoOfPlayer 저장
+	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
+	static CRITICAL_SECTION csInfoOfClients;
 
 public:
 	////////////////////////
@@ -74,7 +76,7 @@ public:
 	void CloseSocket(stSOCKETINFO* pSocketInfo);
 
 	// 클라이언트에게 송신
-	void Send(stSOCKETINFO* pSocketInfo);
+	static void Send(stSOCKETINFO* pSocketInfo);
 
 	// 클라이언트 수신 대기
 	void Recv(stSOCKETINFO* pSocketInfo);
@@ -86,15 +88,18 @@ public:
 		return &ins;
 	}
 
+
 	////////////////////////
 	// 확인
 	////////////////////////
 	bool IsServerOn() { return bIsServerOn; }
 	int GetServerPort() { return ServerPort; }
 
+
 	////////////////////////
 	// 통신
 	////////////////////////
+	static void Connected(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 
 
