@@ -9,7 +9,7 @@
 #include "Network/ClientSocketInGame.h"
 
 #include "CustomWidget/InGameWidget.h"
-#include "CustomWidget/InGameMenuBarWidget.h"
+#include "CustomWidget/InGameMenuWidget.h"
 #include "CustomWidget/InGameScoreBoardWidget.h"
 
 #include "Controller/PioneerController.h"
@@ -106,8 +106,8 @@ void AOnlineGameMode::BeginPlay()
 	InGameWidget = NewObject<UInGameWidget>(this, FName("InGameWidget"));
 	InGameWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGame.InGame_C'", true);
 
-	InGameMenuBarWidget = NewObject<UInGameMenuBarWidget>(this, FName("InGameMenuBarWidget"));
-	InGameMenuBarWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameMenuBar.InGameMenuBar_C'", false);
+	InGameMenuWidget = NewObject<UInGameMenuWidget>(this, FName("InGameMenuWidget"));
+	InGameMenuWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameMenu.InGameMenu_C'", false);
 
 	InGameScoreBoardWidget = NewObject<UInGameScoreBoardWidget>(this, FName("InGameScoreBoardWidget"));
 	InGameScoreBoardWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameScoreBoard.InGameScoreBoard_C'", false);
@@ -188,33 +188,43 @@ void AOnlineGameMode::_DeactivateInGameWidget()
 	InGameWidget->RemoveFromViewport();
 }
 
-void AOnlineGameMode::ActivateInGameMenuBarWidget()
+void AOnlineGameMode::ActivateInGameMenuWidget()
 {
-	_ActivateInGameMenuBarWidget();
+	_ActivateInGameMenuWidget();
 }
-void AOnlineGameMode::_ActivateInGameMenuBarWidget()
+void AOnlineGameMode::_ActivateInGameMenuWidget()
 {
-	if (!InGameMenuBarWidget)
+	if (!InGameMenuWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameMenuBarWidget()> if (!InGameMenuBarWidget)\n");
+		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameMenuWidget()> if (!InGameMenuWidget)\n");
 		return;
 	}
 
-	InGameMenuBarWidget->AddToViewport();
+	InGameMenuWidget->AddToViewport();
 }
-void AOnlineGameMode::DeactivateInGameMenuBarWidget()
+void AOnlineGameMode::DeactivateInGameMenuWidget()
 {
-	_DeactivateInGameMenuBarWidget();
+	_DeactivateInGameMenuWidget();
 }
-void AOnlineGameMode::_DeactivateInGameMenuBarWidget()
+void AOnlineGameMode::_DeactivateInGameMenuWidget()
 {
-	if (!InGameMenuBarWidget)
+	if (!InGameMenuWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameMenuBarWidget()> if (!InGameMenuBarWidget)\n");
+		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameMenuWidget()> if (!InGameMenuWidget)\n");
 		return;
 	}
 
-	InGameMenuBarWidget->RemoveFromViewport();
+	InGameMenuWidget->RemoveFromViewport();
+}
+void AOnlineGameMode::ToggleInGameMenuWidget()
+{
+	if (!InGameMenuWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::ToggleInGameMenuWidget()> if (!InGameMenuWidget)\n");
+		return;
+	}
+
+	InGameMenuWidget->ToggleViewport();
 }
 
 void AOnlineGameMode::ActivateInGameScoreBoardWidget()
@@ -244,6 +254,45 @@ void AOnlineGameMode::_DeactivateInGameScoreBoardWidget()
 	}
 
 	InGameScoreBoardWidget->RemoveFromViewport();
+}
+void AOnlineGameMode::ToggleInGameScoreBoardWidget()
+{
+	if (!InGameScoreBoardWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::ToggleInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
+		return;
+	}
+
+	InGameScoreBoardWidget->ToggleViewport();
+}
+
+/////////////////////////////////////////////////
+// 타이틀 화면으로 되돌아가기
+/////////////////////////////////////////////////
+void AOnlineGameMode::BackToTitle()
+{
+	_BackToTitle();
+}
+void AOnlineGameMode::_BackToTitle()
+{
+	UGameplayStatics::OpenLevel(this, "MainScreen");
+}
+
+/////////////////////////////////////////////////
+// 게임종료
+/////////////////////////////////////////////////
+void AOnlineGameMode::TerminateGame()
+{
+	_TerminateGame();
+}
+void AOnlineGameMode::_TerminateGame()
+{
+	if (ClientSocket)
+		ClientSocket->CloseSocket();
+	if (ServerSocketInGame)
+		ServerSocketInGame->CloseServer();
+	if (ClientSocketInGame)
+		ClientSocketInGame->CloseSocket();
 }
 
 

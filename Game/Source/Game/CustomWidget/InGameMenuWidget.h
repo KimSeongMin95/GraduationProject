@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "CustomWidget/WidgetBase.h"
-#include "InGameMenuBarWidget.generated.h"
+#include "InGameMenuWidget.generated.h"
 
 
 UCLASS()
-class GAME_API UInGameMenuBarWidget : public UWidgetBase
+class GAME_API UInGameMenuWidget : public UWidgetBase
 {
 	GENERATED_BODY()
 
 public:
-	UInGameMenuBarWidget();
-	~UInGameMenuBarWidget();
+	UInGameMenuWidget();
+	~UInGameMenuWidget();
 
 public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;

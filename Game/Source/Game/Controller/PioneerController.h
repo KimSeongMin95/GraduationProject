@@ -90,6 +90,11 @@ private:
 		void RotatingBuilding(float Value);
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void PlaceBuilding();
+
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
+		void Menu();
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
+		void ScoreBoard();
 /*** APioneerController : End ***/
 
 	///** Resets HMD orientation in VR. */

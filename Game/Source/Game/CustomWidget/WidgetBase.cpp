@@ -76,3 +76,19 @@ void UWidgetBase::RemoveFromViewport()
 	if (UserWidget->IsInViewport() == true)
 		GetUserWidget()->RemoveFromViewport();
 }
+
+
+void UWidgetBase::ToggleViewport()
+{
+	if (!UserWidget)
+	{
+		printf_s("[Error] <UWidgetBase::ToggleViewport()> if (!UserWidget)\n");
+		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::ToggleViewport()> if (!UserWidget)"));
+		return;
+	}
+
+	if (UserWidget->IsInViewport() == false)
+		GetUserWidget()->AddToViewport();
+	else if (UserWidget->IsInViewport() == true)
+		GetUserWidget()->RemoveFromViewport();
+}

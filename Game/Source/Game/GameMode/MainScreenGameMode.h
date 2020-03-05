@@ -50,6 +50,8 @@ public:
 
 /*** AMainScreenGameMode : Start ***/
 private:
+	EOnlineState OnlineState;
+
 	class cClientSocket* ClientSocket = nullptr;
 
 	class cServerSocketInGame* ServerSocketInGame = nullptr;
@@ -79,9 +81,8 @@ private:
 		/**  */
 		class UWaitingGameWidget* WaitingGameWidget = nullptr;
 
-	EOnlineState OnlineState;
-
 	int Count;
+
 private:
 	/////////////////////////////////////////////////
 	// 변환 함수

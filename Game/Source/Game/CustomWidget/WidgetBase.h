@@ -59,5 +59,6 @@ public:
 
 	void AddToViewport();
 	void RemoveFromViewport();
+	void ToggleViewport();
 
 };

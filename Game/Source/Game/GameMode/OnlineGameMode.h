@@ -18,6 +18,14 @@
 #include "GameFramework/GameModeBase.h"
 #include "OnlineGameMode.generated.h"
 
+
+UENUM()
+enum class EOnlineGameState : uint8
+{
+	Disconnected,
+	Connected
+};
+
 UCLASS()
 class GAME_API AOnlineGameMode : public AGameModeBase
 {
@@ -38,6 +46,8 @@ public:
 
 /*** AOnlineGameMode : Start ***/
 private:
+	EOnlineGameState OnlineGameState;
+
 	class cClientSocket* ClientSocket = nullptr;
 
 	class cServerSocketInGame* ServerSocketInGame = nullptr;
@@ -48,7 +58,7 @@ private:
 		class UInGameWidget* InGameWidget = nullptr;
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 인게임 메뉴바 */
-		class UInGameMenuBarWidget* InGameMenuBarWidget = nullptr;
+		class UInGameMenuWidget* InGameMenuWidget = nullptr;
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 인게임 플레이어들의 상황판 */
 		class UInGameScoreBoardWidget* InGameScoreBoardWidget = nullptr;
@@ -75,14 +85,28 @@ public:
 		void DeactivateInGameWidget(); void _DeactivateInGameWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateInGameMenuBarWidget(); void _ActivateInGameMenuBarWidget();
+		void ActivateInGameMenuWidget(); void _ActivateInGameMenuWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateInGameMenuBarWidget(); void _DeactivateInGameMenuBarWidget();
+		void DeactivateInGameMenuWidget(); void _DeactivateInGameMenuWidget();
+	void ToggleInGameMenuWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void ActivateInGameScoreBoardWidget(); void _ActivateInGameScoreBoardWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void DeactivateInGameScoreBoardWidget(); void _DeactivateInGameScoreBoardWidget();
+	void ToggleInGameScoreBoardWidget();
+
+	/////////////////////////////////////////////////
+	// 타이틀 화면으로 되돌아가기
+	/////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void BackToTitle(); void _BackToTitle();
+
+	/////////////////////////////////////////////////
+	// 게임종료
+	/////////////////////////////////////////////////
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void TerminateGame(); void _TerminateGame();
 
 private:
 	void FindPioneerController();

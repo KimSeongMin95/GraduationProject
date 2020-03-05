@@ -10,6 +10,9 @@
 
 #include "Item/Item.h"
 #include "Item/Weapon/Weapon.h"
+
+#include "GameMode/TutorialGameMode.h"
+#include "GameMode/OnlineGameMode.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -73,7 +76,7 @@ void APioneerController::SetupInputComponent()
 
 	// B키: 건물건설모드 진입
 	InputComponent->BindAction("ConstructingMode", IE_Pressed, this, &APioneerController::ConstructingMode);
-	// ESC키 (현재 임시로 Tab키): 건물건설모드 취소
+	// ESC키: 건물건설모드 취소
 	InputComponent->BindAction("ESC_ConstructingMode", IE_Pressed, this, &APioneerController::ESC_ConstructingMode);
 	// 1~9키: 각 키에 해당하는 건물 스폰
 	InputComponent->BindAxis("SpawnBuilding", this, &APioneerController::SpawnBuilding);
@@ -81,6 +84,12 @@ void APioneerController::SetupInputComponent()
 	InputComponent->BindAxis("RotatingBuilding", this, &APioneerController::RotatingBuilding);
 	// 마우스 좌클릭: 건물건설모드를 끝내고 건물을 건설
 	InputComponent->BindAction("PlaceBuilding", IE_Pressed, this, &APioneerController::PlaceBuilding);
+
+	// F10키: 메뉴
+	InputComponent->BindAction("Menu", IE_Pressed, this, &APioneerController::Menu);
+	// Tab키: 스코어 보드
+	InputComponent->BindAction("ScoreBoard", IE_Pressed, this, &APioneerController::ScoreBoard);
+	InputComponent->BindAction("ScoreBoard", IE_Released, this, &APioneerController::ScoreBoard);
 }
 /*** Basic Function : End ***/
 
@@ -494,6 +503,50 @@ void APioneerController::PlaceBuilding()
 		return;
 
 	Pioneer->PlaceBuilding();
+}
+
+void APioneerController::Menu()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		printf_s("[ERROR] <APioneerController::Menu()> if (!world)\n");
+		return;
+	}
+
+	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
+	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
+
+	if (tutorialGameMode)
+	{
+
+	}
+	else if (onlineGameMode)
+	{
+		onlineGameMode->ToggleInGameMenuWidget();
+	}
+}
+
+void APioneerController::ScoreBoard()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		printf_s("[ERROR] <APioneerController::ScoreBoard()> if (!world)\n");
+		return;
+	}
+
+	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
+	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
+
+	if (tutorialGameMode)
+	{
+
+	}
+	else if (onlineGameMode)
+	{
+		onlineGameMode->ToggleInGameScoreBoardWidget();
+	}
 }
 /*** APioneerController : End ***/
 
