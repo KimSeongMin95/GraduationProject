@@ -37,6 +37,11 @@ cClientSocketInGame::cClientSocketInGame()
 
 	InitializeCriticalSection(&csAccept);
 
+	InitializeCriticalSection(&csMyInfoOfScoreBoard);
+	EnterCriticalSection(&csMyInfoOfScoreBoard);
+	MyInfoOfScoreBoard = cInfoOfScoreBoard();
+	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+
 	ClientSocket = cClientSocket::GetSingleton();
 
 
@@ -47,6 +52,8 @@ cClientSocketInGame::~cClientSocketInGame()
 	CloseSocket();
 
 	DeleteCriticalSection(&csAccept);
+
+	DeleteCriticalSection(&csMyInfoOfScoreBoard);
 }
 
 bool cClientSocketInGame::InitSocket()
@@ -203,7 +210,11 @@ void cClientSocketInGame::RunMainThread()
 				RecvConnected(RecvStream);
 			}
 			break;
-
+			case EPacketType::SCORE_BOARD:
+			{
+				RecvScoreBoard(RecvStream);
+			}
+			break;
 
 			default:
 			{
@@ -246,15 +257,9 @@ void cClientSocketInGame::CloseSocket()
 	////////////////////
 	// 멤버변수들 초기화
 	////////////////////
-	//InitMyInfo();
-	//InitMyInfoOfGame();
+	InitMyInfoOfScoreBoard();
 
-	//tsqFindGames.clear();
-	//tsqWaitingGame.clear();
-	//tsqDestroyWaitingGame.clear();
-	//tsqModifyWaitingGame.clear();
-	//tsqStartWaitingGame.clear();
-	//tsqRequestInfoOfGameServer.clear();
+	tsqScoreBoard.clear();
 
 	// 메인 스레드 종료
 	if (bIsClientSocketOn == false)
@@ -325,6 +330,12 @@ void cClientSocketInGame::SendConnected()
 	infoOfPlayer.PrintInfo();
 
 
+	cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
+	infoOfScoreBoard.ID = infoOfPlayer.ID;
+	SetMyInfoOfScoreBoard(infoOfScoreBoard);
+
+	infoOfScoreBoard.PrintInfo();
+
 	printf_s("[End] <cClientSocketInGame::SendConnected()>\n");
 }
 void cClientSocketInGame::RecvConnected(stringstream& RecvStream)
@@ -348,4 +359,68 @@ void cClientSocketInGame::RecvConnected(stringstream& RecvStream)
 
 
 	printf_s("[End] <cClientSocketInGame::RecvConnected(...)>\n");
+}
+
+void cClientSocketInGame::SendScoreBoard()
+{
+	printf_s("[Start] <cClientSocketInGame::SendScoreBoard()>\n");
+
+	cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
+
+	stringstream sendStream;
+	sendStream << EPacketType::SCORE_BOARD << endl;
+	sendStream << infoOfScoreBoard << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+
+	printf_s("[End] <cClientSocketInGame::SendScoreBoard()>\n");
+}
+void cClientSocketInGame::RecvScoreBoard(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvScoreBoard(...)>\n");
+
+
+	if (tsqScoreBoard.size() > 0)
+	{
+		printf_s("[ERROR] <cClientSocketInGame::RecvScoreBoard(...)> if (tsqScoreBoard.size() > 0)\n");
+		return;
+	}
+
+	cInfoOfScoreBoard infoOfScoreBoard;
+
+	while (RecvStream >> infoOfScoreBoard)
+	{
+		tsqScoreBoard.push(infoOfScoreBoard);
+		infoOfScoreBoard.PrintInfo();
+	}
+
+
+	printf_s("[End] <cClientSocketInGame::RecvScoreBoard(...)>\n");
+}
+
+/////////////////////////////////////
+// Set-Get
+/////////////////////////////////////
+void cClientSocketInGame::SetMyInfoOfScoreBoard(cInfoOfScoreBoard& InfoOfScoreBoard)
+{
+	EnterCriticalSection(&csMyInfoOfScoreBoard);
+	MyInfoOfScoreBoard = InfoOfScoreBoard;
+	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+}
+cInfoOfScoreBoard cClientSocketInGame::CopyMyInfoOfScoreBoard()
+{
+	cInfoOfScoreBoard infoOfScoreBoard;
+
+	EnterCriticalSection(&csMyInfoOfScoreBoard);
+	infoOfScoreBoard = MyInfoOfScoreBoard;
+	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+
+	return infoOfScoreBoard;
+}
+void cClientSocketInGame::InitMyInfoOfScoreBoard()
+{
+	EnterCriticalSection(&csMyInfoOfScoreBoard);
+	MyInfoOfScoreBoard = cInfoOfScoreBoard();
+	LeaveCriticalSection(&csMyInfoOfScoreBoard);
 }

@@ -50,6 +50,12 @@ public:
 	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
 	static CRITICAL_SECTION csInfoOfClients;
 
+	// 
+	static std::map<SOCKET, cInfoOfScoreBoard> InfosOfScoreBoard;
+	static CRITICAL_SECTION csInfosOfScoreBoard;
+
+	class cClientSocket* ClientSocket = nullptr;
+
 public:
 	////////////////////////
 	// ±âº»
@@ -101,6 +107,6 @@ public:
 	////////////////////////
 	static void Connected(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-
+	static void ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 };

@@ -108,12 +108,34 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void TerminateGame(); void _TerminateGame();
 
+	/////////////////////////////////////////////////
+	// ≈∏¿Ã∏”
+	/////////////////////////////////////////////////
+	UFUNCTION(Category = "AOnlineGameMode")
+		void ScoreBoard();
+	UFUNCTION(Category = "Timer")
+		void TimerOfScoreBoard();
+	UFUNCTION(Category = "Timer")
+		void ClearTimerOfScoreBoard();
+	FTimerHandle thScoreBoard;
+
+	UFUNCTION(Category = "AOnlineGameMode")
+		void RecvAndApply();
+	UFUNCTION(Category = "Timer")
+		void TimerOfRecvAndApply();
+	UFUNCTION(Category = "Timer")
+		void ClearTimerOfRecvAndApply();
+	FTimerHandle thRecvAndApply;
+
 private:
 	void FindPioneerController();
 
 	void SpawnPioneerManager(); 
 	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
 	
+	void GetScoreBoard();
+	void RecvScoreBoard();
+	int CountRecvOfGameServer;
 
 protected:
 

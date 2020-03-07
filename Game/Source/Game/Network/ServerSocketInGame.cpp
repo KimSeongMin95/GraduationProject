@@ -3,6 +3,13 @@
 
 #include "ServerSocketInGame.h"
 
+
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Network/ClientSocket.h"
+
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
+
 int cServerSocketInGame::ServerPort;
 
 std::map<SOCKET, stSOCKETINFO*> cServerSocketInGame::GameClients;
@@ -10,6 +17,9 @@ CRITICAL_SECTION cServerSocketInGame::csGameClients;
 
 std::map<SOCKET, cInfoOfPlayer> cServerSocketInGame::InfoOfClients;
 CRITICAL_SECTION cServerSocketInGame::csInfoOfClients;
+
+std::map<SOCKET, cInfoOfScoreBoard> cServerSocketInGame::InfosOfScoreBoard;
+CRITICAL_SECTION cServerSocketInGame::csInfosOfScoreBoard;
 
 unsigned int WINAPI CallMainThread(LPVOID p)
 {
@@ -58,9 +68,16 @@ cServerSocketInGame::cServerSocketInGame()
 	InfoOfClients.clear();
 	LeaveCriticalSection(&csInfoOfClients);
 
+	InitializeCriticalSection(&csInfosOfScoreBoard);
+	EnterCriticalSection(&csInfosOfScoreBoard);
+	InfosOfScoreBoard.clear();
+	LeaveCriticalSection(&csInfosOfScoreBoard);
+
+	ClientSocket = cClientSocket::GetSingleton();
 
 	//// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::CONNECTED].funcProcessPacket = Connected;
+	fnProcess[EPacketType::SCORE_BOARD].funcProcessPacket = ScoreBoard;
 }
 
 cServerSocketInGame::~cServerSocketInGame()
@@ -70,6 +87,7 @@ cServerSocketInGame::~cServerSocketInGame()
 
 	DeleteCriticalSection(&csGameClients);
 	DeleteCriticalSection(&csInfoOfClients);
+	DeleteCriticalSection(&csInfosOfScoreBoard);
 }
 
 bool cServerSocketInGame::Initialize()
@@ -188,6 +206,24 @@ bool cServerSocketInGame::Initialize()
 	ResumeThread(hMainHandle);
 	
 	bIsServerOn = true;
+
+
+	// MyInfoOfScoreBoard 초기화
+	if (ClientSocket)
+	{
+		cInfoOfPlayer infoOfPlayer = ClientSocket->CopyMyInfo();
+
+		cInfoOfScoreBoard infoOfScoreBoard;
+		infoOfScoreBoard.ID = infoOfPlayer.ID;
+
+		// 임시: ServerSocketInGame의 SOCKET은 1으로 설정
+		EnterCriticalSection(&csInfosOfScoreBoard);
+		InfosOfScoreBoard[SOCKET(1)] = infoOfScoreBoard;
+		LeaveCriticalSection(&csInfosOfScoreBoard);
+
+		printf_s("[INFO] <cServerSocketInGame::Initialize()> InfosOfScoreBoard[SOCKET(1)] = infoOfScoreBoard;\n");
+	}
+
 
 	return true;
 }
@@ -344,9 +380,18 @@ void cServerSocketInGame::CloseServer()
 	}
 
 	// InfoOfClients 초기화
+	printf_s("\t EnterCriticalSection(&csInfoOfClients);\n");
 	EnterCriticalSection(&csInfoOfClients);
 	InfoOfClients.clear();
 	LeaveCriticalSection(&csInfoOfClients);
+	printf_s("\t LeaveCriticalSection(&csInfoOfClients);\n");
+
+	// InfosOfScoreBoard 초기화
+	printf_s("\t EnterCriticalSection(&csInfosOfScoreBoard);\n");
+	EnterCriticalSection(&csInfosOfScoreBoard);
+	InfosOfScoreBoard.clear();
+	LeaveCriticalSection(&csInfosOfScoreBoard);
+	printf_s("\t LeaveCriticalSection(&csInfosOfScoreBoard);\n");
 
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 해제
 	EnterCriticalSection(&csGameClients);
@@ -558,6 +603,23 @@ void cServerSocketInGame::CloseSocket(stSOCKETINFO* pSocketInfo)
 	/*********************************************************************************/
 
 	///////////////////////////
+	// InfosOfScoreBoard에서 제거
+	///////////////////////////
+	EnterCriticalSection(&csInfosOfScoreBoard);
+	if (InfosOfScoreBoard.find(pSocketInfo->socket) != InfosOfScoreBoard.end())
+	{
+		printf_s("\t InfosOfScoreBoard.size(): %d\n", (int)InfosOfScoreBoard.size());
+		InfosOfScoreBoard.erase(pSocketInfo->socket);
+		printf_s("\t InfosOfScoreBoard.size(): %d\n", (int)InfosOfScoreBoard.size());
+	}
+	else
+	{
+		printf_s("[ERROR] <MainServer::CloseSocket(...)> InfosOfScoreBoard can't find pSocketInfo->socket\n");
+	}
+	LeaveCriticalSection(&csInfosOfScoreBoard);
+
+
+	///////////////////////////
 	// InfoOfClients에서 제거
 	///////////////////////////
 	/// 아래의 InfoOfGames에서 제거에서 사용할 leaderSocketByMainServer를 획득합니다.
@@ -698,4 +760,43 @@ void cServerSocketInGame::Connected(stringstream& RecvStream, stSOCKETINFO* pSoc
 
 
 	printf_s("[Send to %d] <cServerSocketInGame::Connected(...)>\n\n", (int)pSocketInfo->socket);
+}
+
+void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Recv by %d] <cServerSocketInGame::ScoreBoard(...)>\n", (int)pSocketInfo->socket);
+
+
+	/// 수신
+	vector<cInfoOfScoreBoard> vec;
+
+	cInfoOfScoreBoard infoOfScoreBoard;
+	RecvStream >> infoOfScoreBoard;
+
+	EnterCriticalSection(&csInfosOfScoreBoard);
+	InfosOfScoreBoard[pSocketInfo->socket] = infoOfScoreBoard;
+	for (auto& kvp : InfosOfScoreBoard)
+		vec.push_back(kvp.second);
+	LeaveCriticalSection(&csInfosOfScoreBoard);
+
+	std::sort(vec.begin(), vec.end());
+	printf_s("\t vec.size(): %d\n", (int)vec.size());
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::SCORE_BOARD << endl;
+	for (auto& element : vec)
+	{
+		sendStream << element << endl;
+	}
+
+	CopyMemory(pSocketInfo->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
+	pSocketInfo->dataBuf.len = sendStream.str().length();
+
+	Send(pSocketInfo);
+
+
+	printf_s("[Send to %d] <cServerSocketInGame::ScoreBoard(...)>\n\n", (int)pSocketInfo->socket);
 }

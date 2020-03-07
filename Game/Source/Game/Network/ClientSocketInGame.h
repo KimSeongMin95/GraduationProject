@@ -25,6 +25,9 @@ private:
 	bool bIsConnected;
 	bool bIsClientSocketOn;
 
+	class cInfoOfScoreBoard MyInfoOfScoreBoard;
+	CRITICAL_SECTION csMyInfoOfScoreBoard;
+
 	class cClientSocket* ClientSocket = nullptr;
 
 protected:
@@ -67,4 +70,16 @@ public:
 	/////////////////////////////////////
 	void SendConnected();
 	void RecvConnected(stringstream& RecvStream);
+
+	void SendScoreBoard();
+	void RecvScoreBoard(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfScoreBoard> tsqScoreBoard;
+
+
+	/////////////////////////////////////
+	// Set-Get
+	/////////////////////////////////////
+	void SetMyInfoOfScoreBoard(cInfoOfScoreBoard& InfoOfScoreBoard);
+	cInfoOfScoreBoard CopyMyInfoOfScoreBoard();
+	void InitMyInfoOfScoreBoard();
 };

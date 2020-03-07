@@ -42,6 +42,8 @@ private:
 		/** 조종하는 APioneer를 저장합니다. */
 		class APioneer* Pioneer = nullptr;
 
+	bool bScoreBoard;
+
 public:
 	/** true면 마우스 커서로 navigating 합니다. */
 	uint32 bMoveToMouseCursor : 1; 
@@ -94,7 +96,7 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void Menu();
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
-		void ScoreBoard();
+		void ScoreBoard(float Value);
 /*** APioneerController : End ***/
 
 	///** Resets HMD orientation in VR. */

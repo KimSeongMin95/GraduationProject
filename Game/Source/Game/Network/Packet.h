@@ -284,6 +284,16 @@ enum EPacketType
 		Send [CONNECTED]: (순서3) InfoOfClients에 삽입한 cInfoOfPlayer
 	*/
 	CONNECTED,
+
+	/** 클라이언트가 일정시간마다 ScoreBoard 정보를 요청
+	Game Client:
+		Recv [SCORE_BOARD]: 
+		Send [SCORE_BOARD]: 
+	Game Server:
+		Recv [SCORE_BOARD]: 
+		Send [SCORE_BOARD]: 
+	*/
+	SCORE_BOARD
 };
 
 
@@ -549,3 +559,85 @@ public:
 };
 
 FILE* CustomLog::fp_console = nullptr;
+
+
+class GAME_API cInfoOfScoreBoard
+{
+public:
+	int Ping;
+	string ID;
+	string State;
+	int Level;
+	int Kill;
+	int Death;
+
+public:
+	cInfoOfScoreBoard()
+	{
+		Ping = 0;
+		ID = "NULL";
+		State = "Observing";
+		Level = 1;
+		Kill = 0;
+		Death = 0;
+	}
+	~cInfoOfScoreBoard()
+	{
+
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfScoreBoard& Info)
+	{
+		Stream << Info.Ping << endl;
+		Stream << ReplaceCharInString(Info.ID, ' ', '_') << endl;
+		Stream << ReplaceCharInString(Info.State, ' ', '_') << endl;
+		Stream << Info.Level << endl;
+		Stream << Info.Kill << endl;
+		Stream << Info.Death << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfScoreBoard& Info)
+	{
+		Stream >> Info.Ping;
+		Stream >> Info.ID;
+		Info.ID = ReplaceCharInString(Info.ID, '_', ' ');
+		Stream >> Info.State;
+		Info.State = ReplaceCharInString(Info.State, '_', ' ');
+		Stream >> Info.Level;
+		Stream >> Info.Kill;
+		Stream >> Info.Death;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfScoreBoard> Ping: %d, ID: %s, State: %s, Level: %d, Kill: %d, Death: %d \n", TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), Ping, ID.c_str(), State.c_str(), Level, Kill, Death);
+	}
+
+	// Convert
+	static string ReplaceCharInString(string str, char before, char after)
+	{
+		string result = str;
+		for (int i = 0; i < result.size(); i++)
+		{
+			if (result.at(i) == before)
+				result.at(i) = after;
+		}
+		return result;
+	}
+
+	// For Sort()
+	bool operator<(cInfoOfScoreBoard& other) const
+	{
+		if (this->Kill == other.Kill)
+			return this->Level < other.Level;
+		else
+			return this->Kill < other.Kill;
+	}
+};

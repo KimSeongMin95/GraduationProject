@@ -88,13 +88,28 @@ void AOnlineGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	//////////////////////////
+	// 네트워크
+	//////////////////////////
 	ClientSocket = cClientSocket::GetSingleton();
 
 	ServerSocketInGame = cServerSocketInGame::GetSingleton();
 	ClientSocketInGame = cClientSocketInGame::GetSingleton();
+	
+	// 게임클라이언트만
+	if (ClientSocketInGame->IsClientSocketOn())
+	{
+		ScoreBoard();
+	}
 
+	// 게임서버, 게임클라이언트 모두
+	RecvAndApply();
 
+	CountRecvOfGameServer = 0;
+
+	//////////////////////////
+	// Widget
+	//////////////////////////
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
@@ -296,6 +311,68 @@ void AOnlineGameMode::_TerminateGame()
 }
 
 
+/////////////////////////////////////////////////
+// 타이머
+/////////////////////////////////////////////////
+void AOnlineGameMode::ScoreBoard()
+{
+	printf_s("[INFO] <AOnlineGameMode::ScoreBoard()>\n");
+
+	ClearTimerOfScoreBoard();
+	GetWorldTimerManager().SetTimer(thScoreBoard, this, &AOnlineGameMode::TimerOfScoreBoard, 1.0f, true);
+}
+void AOnlineGameMode::TimerOfScoreBoard()
+{
+	if (!ClientSocketInGame)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::TimerOfScoreBoard()> if (!ClientSocketInGame)\n");
+		return;
+	}
+
+	ClientSocketInGame->SendScoreBoard();
+}
+void AOnlineGameMode::ClearTimerOfScoreBoard()
+{
+	printf_s("[INFO] <AOnlineGameMode::ClearTimerOfScoreBoard()>\n");
+
+	if (GetWorldTimerManager().IsTimerActive(thScoreBoard))
+		GetWorldTimerManager().ClearTimer(thScoreBoard);
+}
+
+
+void AOnlineGameMode::RecvAndApply()
+{
+	printf_s("[INFO] <AOnlineGameMode::RecvAndApply()>\n");
+
+	ClearTimerOfRecvAndApply();
+	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AOnlineGameMode::TimerOfRecvAndApply, 0.2f, true);
+}
+void AOnlineGameMode::TimerOfRecvAndApply()
+{
+	if (!ServerSocketInGame || !ClientSocketInGame)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!ServerSocketInGame || !ClientSocketInGame)\n");
+		return;
+	}
+
+	if (ServerSocketInGame->IsServerOn())
+	{
+		GetScoreBoard();
+	}
+	else if (ClientSocketInGame->IsClientSocketOn())
+	{
+		RecvScoreBoard();
+	}
+}
+void AOnlineGameMode::ClearTimerOfRecvAndApply()
+{
+	printf_s("[INFO] <AOnlineGameMode::ClearTimerOfRecvAndApply()>\n");
+
+	if (GetWorldTimerManager().IsTimerActive(thRecvAndApply))
+		GetWorldTimerManager().ClearTimer(thRecvAndApply);
+}
+
+
 void AOnlineGameMode::FindPioneerController()
 {
 	UWorld* const world = GetWorld();
@@ -358,4 +435,72 @@ void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform T
 
 }
 
+void AOnlineGameMode::GetScoreBoard()
+{
+	if (!ServerSocketInGame)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!ServerSocketInGame)\n");
+		return;
+	}
+
+	if (!InGameScoreBoardWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!InGameScoreBoardWidget)\n");
+		return;
+	}
+	printf_s("[START] <AOnlineGameMode::GetScoreBoard()>\n");
+
+
+	std::queue<cInfoOfScoreBoard> copiedQueue;
+
+	EnterCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
+	for (auto& kvp : ServerSocketInGame->InfosOfScoreBoard)
+		copiedQueue.push(kvp.second);
+	LeaveCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
+
+	InGameScoreBoardWidget->RevealScores(copiedQueue);
+
+
+	printf_s("[END] <AOnlineGameMode::GetScoreBoard()>\n");
+}
+void AOnlineGameMode::RecvScoreBoard()
+{
+	if (!ClientSocketInGame)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!ClientSocketInGame)\n");
+		return;
+	}
+
+	if (!InGameScoreBoardWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!InGameScoreBoardWidget)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqScoreBoard.empty())
+	{
+		// 5초동안 게임서버 응답 확인
+		CountRecvOfGameServer++;
+		if (CountRecvOfGameServer >= 25)
+		{
+			InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
+		}
+		return;
+	}
+
+	CountRecvOfGameServer = 0;
+
+	printf_s("[START] <AOnlineGameMode::RecvScoreBoard()>\n");
+
+	/***********************************************************************/
+
+	std::queue<cInfoOfScoreBoard> copiedQueue = ClientSocketInGame->tsqScoreBoard.copy();
+	ClientSocketInGame->tsqScoreBoard.clear();
+
+	InGameScoreBoardWidget->RevealScores(copiedQueue);
+
+	InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
+
+	printf_s("[END] <AOnlineGameMode::RecvScoreBoard()>\n");
+}
 /*** AOnlineGameMode : End ***/

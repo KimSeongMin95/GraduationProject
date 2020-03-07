@@ -26,7 +26,12 @@ UWaitingGameWidget::UWaitingGameWidget()
 
 UWaitingGameWidget::~UWaitingGameWidget()
 {
-
+	for (auto& element : vecWaitingGameWidget)
+	{
+		if (element)
+			delete element;
+	}
+	vecWaitingGameWidget.clear();
 }
 
 

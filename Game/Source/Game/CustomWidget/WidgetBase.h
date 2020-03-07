@@ -17,6 +17,8 @@
 #include "Components/EditableTextBox.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
+
+#include "Components/VerticalBoxSlot.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 

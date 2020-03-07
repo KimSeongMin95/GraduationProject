@@ -9,12 +9,20 @@ UInGameScoreBoardWidget::UInGameScoreBoardWidget()
 	///////////
 	// ÃÊ±âÈ­
 	///////////	
-
+	ScrollBox = nullptr;
+	ServerDestroyed = nullptr;
+	vecInGameScoreBoardWidget.clear();
+	RevealableIndex = 0;
 }
 
 UInGameScoreBoardWidget::~UInGameScoreBoardWidget()
 {
-
+	for (auto& element : vecInGameScoreBoardWidget)
+	{
+		if (element)
+			delete element;
+	}
+	vecInGameScoreBoardWidget.clear();
 }
 
 bool UInGameScoreBoardWidget::InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport)
@@ -29,9 +37,52 @@ bool UInGameScoreBoardWidget::InitWidget(UWorld* const World, const FString Refe
 		return false;
 	}
 
+	ScrollBox = WidgetTree->FindWidget<UScrollBox>(FName(TEXT("ScrollBox_ScoreBoard")));
 
-	//ID = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_ID")));
+	ServerDestroyed = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_ServerDestroyed")));
 
+	for (int i = 0; i < 100; i++)
+		vecInGameScoreBoardWidget.emplace_back(new cInGameScoreBoardWidget(WidgetTree, ScrollBox, i + 1));
 
 	return true;
+}
+
+void UInGameScoreBoardWidget::RevealScores(queue<cInfoOfScoreBoard>& CopiedQueue)
+{
+	Clear();
+
+	int idx = 0;
+
+	while (CopiedQueue.empty() == false)
+	{
+		vecInGameScoreBoardWidget.at(idx)->SetText(CopiedQueue.front());
+		vecInGameScoreBoardWidget.at(idx)->SetVisible(true);
+		CopiedQueue.pop();
+		idx++;
+	}
+}
+
+void UInGameScoreBoardWidget::Clear()
+{
+	for (auto& element : vecInGameScoreBoardWidget)
+	{
+		if (element->IsVisible())
+			element->SetVisible(false);
+		else
+			return;
+	}
+}
+
+void UInGameScoreBoardWidget::SetServerDestroyedVisibility(bool bVisible)
+{
+	if (!ServerDestroyed)
+	{
+		printf_s("[ERROR] <UInGameScoreBoardWidget::SetServerDestroyedVisibility(...)> if (!ServerDestroyed)\n");
+		return;
+	}
+
+	if (bVisible)
+		ServerDestroyed->SetVisibility(ESlateVisibility::HitTestInvisible);
+	else
+		ServerDestroyed->SetVisibility(ESlateVisibility::Hidden);
 }

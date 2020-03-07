@@ -19,6 +19,8 @@
 /*** Basic Function : Start ***/
 APioneerController::APioneerController()
 {
+	bScoreBoard = false;
+
 	// setting mouse
 	bShowMouseCursor = true; // 마우스를 보이게 합니다.
 	//DefaultMouseCursor = EMouseCursor::Default; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
@@ -88,8 +90,7 @@ void APioneerController::SetupInputComponent()
 	// F10키: 메뉴
 	InputComponent->BindAction("Menu", IE_Pressed, this, &APioneerController::Menu);
 	// Tab키: 스코어 보드
-	InputComponent->BindAction("ScoreBoard", IE_Pressed, this, &APioneerController::ScoreBoard);
-	InputComponent->BindAction("ScoreBoard", IE_Released, this, &APioneerController::ScoreBoard);
+	InputComponent->BindAxis("ScoreBoard", this, &APioneerController::ScoreBoard);
 }
 /*** Basic Function : End ***/
 
@@ -273,6 +274,10 @@ void APioneerController::ZoomInOrZoomOut(float Value)
 {
 	// Value에 값이 없으면 실행할 필요가 없으니 종료
 	if (Value == 0.0f)
+		return;
+
+	// 스코어보드판이 나타나있으면 실행하지 않습니다.
+	if (bScoreBoard)
 		return;
 
 	if (!Pioneer || !GetPawn())
@@ -527,12 +532,44 @@ void APioneerController::Menu()
 	}
 }
 
-void APioneerController::ScoreBoard()
+void APioneerController::ScoreBoard(float Value)
 {
+	// Value에 값이 없으면 키가 눌려있지 않은것입니다.
+	if (Value == 0.0f)
+	{
+		if (bScoreBoard)
+		{
+			UWorld* const world = GetWorld();
+			if (!world)
+			{
+				printf_s("[ERROR] <APioneerController::ScoreBoardPressed()> if (!world)\n");
+				return;
+			}
+
+			ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
+			AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
+
+			if (tutorialGameMode)
+			{
+
+			}
+			else if (onlineGameMode)
+			{
+				onlineGameMode->DeactivateInGameScoreBoardWidget();
+			}
+
+			bScoreBoard = false;
+		}
+
+		return;
+	}
+
+	/************************************************************/
+
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <APioneerController::ScoreBoard()> if (!world)\n");
+		printf_s("[ERROR] <APioneerController::ScoreBoardPressed()> if (!world)\n");
 		return;
 	}
 
@@ -545,8 +582,10 @@ void APioneerController::ScoreBoard()
 	}
 	else if (onlineGameMode)
 	{
-		onlineGameMode->ToggleInGameScoreBoardWidget();
+		onlineGameMode->ActivateInGameScoreBoardWidget();
 	}
+
+	bScoreBoard = true;
 }
 /*** APioneerController : End ***/
 

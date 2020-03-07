@@ -17,7 +17,13 @@ UOnlineGameWidget::UOnlineGameWidget()
 
 UOnlineGameWidget::~UOnlineGameWidget()
 {
-
+	for (auto& element : vecOnlineGameWidget)
+	{
+		if (element)
+			delete element;
+	}
+	vecOnlineGameWidget.clear();
+	mapOnlineGameWidget.clear();
 }
 
 bool UOnlineGameWidget::InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport)
