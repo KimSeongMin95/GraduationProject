@@ -3,9 +3,13 @@
 #pragma once
 
 
-#include "CoreMinimal.h"
+/*** 언리얼엔진 헤더 선언 : Start ***/
+#include "DateTime.h"
+/*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "Packet.h"
+
+#include "CoreMinimal.h"
 
 
 /**
@@ -29,6 +33,11 @@ private:
 	CRITICAL_SECTION csMyInfoOfScoreBoard;
 
 	class cClientSocket* ClientSocket = nullptr;
+
+	// Ping 시간 측정
+	FDateTime StartTime;
+	int Ping;
+	CRITICAL_SECTION csPing;
 
 protected:
 	

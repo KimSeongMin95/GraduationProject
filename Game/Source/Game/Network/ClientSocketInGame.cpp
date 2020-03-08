@@ -44,6 +44,11 @@ cClientSocketInGame::cClientSocketInGame()
 
 	ClientSocket = cClientSocket::GetSingleton();
 
+	StartTime = FDateTime::UtcNow();
+	InitializeCriticalSection(&csPing);
+	EnterCriticalSection(&csPing);
+	Ping = 0;
+	LeaveCriticalSection(&csPing);
 
 	printf_s("[END] <cClientSocketInGame::cClientSocketInGame()>\n");
 }
@@ -54,6 +59,8 @@ cClientSocketInGame::~cClientSocketInGame()
 	DeleteCriticalSection(&csAccept);
 
 	DeleteCriticalSection(&csMyInfoOfScoreBoard);
+
+	DeleteCriticalSection(&csPing);
 }
 
 bool cClientSocketInGame::InitSocket()
@@ -218,10 +225,19 @@ void cClientSocketInGame::RunMainThread()
 
 			default:
 			{
-
+				printf_s("[ERROR] <cClientSocketInGame::BeginMainThread()> unknown packet type!\n");
 			}
 			break;
 			}
+
+			// Ping
+			double gap = (FDateTime::UtcNow() - StartTime).GetTotalMilliseconds();
+			if (gap > 10000.0)
+				gap = 9999.0;
+			EnterCriticalSection(&csPing);
+			Ping = (int)gap;
+			LeaveCriticalSection(&csPing);
+			StartTime = FDateTime::UtcNow();
 		}
 	}
 }
@@ -229,6 +245,10 @@ void cClientSocketInGame::RunMainThread()
 void cClientSocketInGame::CloseSocket()
 {
 	printf_s("[START] <cClientSocketInGame::CloseSocket()>\n");
+
+
+	StartTime = FDateTime::UtcNow();
+	Ping = 0;
 
 	if (bIsInitialized == false)
 	{
@@ -301,6 +321,7 @@ void cClientSocketInGame::CloseSocket()
 		hMainHandle = NULL;
 	}
 
+
 	printf_s("[END] <cClientSocketInGame::CloseSocket()>\n");
 }
 
@@ -366,6 +387,12 @@ void cClientSocketInGame::SendScoreBoard()
 	printf_s("[Start] <cClientSocketInGame::SendScoreBoard()>\n");
 
 	cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
+
+	EnterCriticalSection(&csPing);
+	infoOfScoreBoard.Ping = Ping;
+	LeaveCriticalSection(&csPing);
+
+	SetMyInfoOfScoreBoard(infoOfScoreBoard);
 
 	stringstream sendStream;
 	sendStream << EPacketType::SCORE_BOARD << endl;
