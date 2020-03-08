@@ -300,9 +300,9 @@ void APioneerManager::PossessPioneer(class APioneer* Pioneer)
 		return;
 	}
 
-	// PioneerController가 Pawn을 소유하고 있으면 소멸시킵니다.
-	if (PioneerController->GetPawn())
-		PioneerController->GetPawn()->Destroy();
+	//// PioneerController가 Pawn을 소유하고 있으면 소멸시킵니다.
+	//if (PioneerController->GetPawn())
+	//	PioneerController->GetPawn()->Destroy();
 
 	PioneerController->Possess(Pioneer);
 

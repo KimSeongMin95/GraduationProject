@@ -426,6 +426,27 @@ void cClientSocketInGame::RecvScoreBoard(stringstream& RecvStream)
 	printf_s("[End] <cClientSocketInGame::RecvScoreBoard(...)>\n");
 }
 
+void cClientSocketInGame::SendObservation()
+{
+	if (!ClientSocket)
+	{
+		printf_s("[ERROR] <cClientSocketInGame::SendObservation()> if (!ClientSocket)\n");
+		return;
+	}
+
+	printf_s("[Start] <cClientSocketInGame::SendObservation()>\n");
+
+
+	stringstream sendStream;
+	sendStream << EPacketType::OBSERVATION << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+
+	printf_s("[End] <cClientSocketInGame::SendObservation()>\n");
+}
+
+
 /////////////////////////////////////
 // Set-Get
 /////////////////////////////////////

@@ -5,6 +5,8 @@
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "PioneerManager.h"
 #include "Character/Pioneer.h"
+
+#include "Landscape.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -61,8 +63,7 @@ ASpaceShip::ASpaceShip()
 
 	InitPhysicsAsset(TEXT("PhysicsAsset'/Game/SpaceShip/SpaceShip_PhysicsAsset.SpaceShip_PhysicsAsset'"));
 
-	InitAnimSequence(TEXT("AnimSequence'/Game/SpaceShip/SpaceShip_Anim.SpaceShip_Anim'"), false, false, 120.0f, -2.0f);
-
+	InitAnimSequence(TEXT("AnimSequence'/Game/SpaceShip/SpaceShip_Anim.SpaceShip_Anim'"), false, false, 130.0f, -3.0f);
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArmComp->SetupAttachment(RootComponent);
@@ -96,20 +97,20 @@ ASpaceShip::ASpaceShip()
 	InitEngineParticleSystem(EngineParticleSystem2, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), false,
 		FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
-
 	Gravity = 980.0f;
 
 	// 중력가속도가 9.8m/s^2 이므로 1초에 9.8미터가 언리얼에서는 980입니다. 
 	Acceleration = FVector(0.0f, 0.0f, Gravity);
 
-	LandingHeight = 300.0f;
+	LandingHeight = 330.0f;
+
+	State = ESpaceShipState::Idling;
 }
 
 void ASpaceShip::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Flying();
 }
 
 void ASpaceShip::Tick(float DeltaTime)
@@ -297,12 +298,20 @@ void ASpaceShip::StartLanding()
 {
 	State = ESpaceShipState::Landing;
 
+	// 게임에서 보이게 합니다.
+	SkeletalMesh->SetHiddenInGame(false);
+	EngineParticleSystem->SetHiddenInGame(false);
+	EngineParticleSystem2->SetHiddenInGame(false);
+
+	PhysicsBox->SetSimulatePhysics(true);
+
 	Acceleration = FVector(0.0f, 0.0f, 0.0f);
 
 	PhysicsBox->BodyInstance.bLockXTranslation = true;
 	PhysicsBox->BodyInstance.bLockYTranslation = true;
 
 	bPlayalbeLandingAnim = true;
+
 	bOnOffEngines = true;
 
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle))
@@ -313,6 +322,8 @@ void ASpaceShip::Landing()
 {
 	float dist = CalculateDistanceToLand();
 	dist -= LandingHeight;
+
+	//UE_LOG(LogTemp, Warning, TEXT("dist: %f"), dist);
 
 	// F(힘) = m(질량)a(가속도)
 	// F(힘): AddForce of AddImpulse //
@@ -342,12 +353,15 @@ void ASpaceShip::Landing()
 		ManageAcceleration(3.0f, dist, 1.0f);
 
 		// 착륙 애니메이션을 실행합니다.
-		PlayLandingAnimation(false, true, 120.0f, -3.0f);
+		PlayLandingAnimation();
 
 		SetScaleOfEngineParticleSystem(0.005f + dist * 0.0001f);
 	}
 	else if (dist < 3.0f)
 	{
+		// 착륙 애니메이션을 실행합니다.
+		PlayLandingAnimation();
+
 		// 가속도를 중력가속도에 맞추어 정지상태로 만듭니다.
 		Acceleration = FVector(0.0f, 0.0f, Gravity);
 
@@ -414,7 +428,7 @@ void ASpaceShip::StartTakingOff()
 	State = ESpaceShipState::TakingOff;
 
 	// 상승할 수 있도록 가속도를 높입니다.
-	Acceleration = FVector(0.0f, 0.0f, Gravity + 75.0f);
+	Acceleration = FVector(0.0f, 0.0f, Gravity + 150.0f);
 
 	SetScaleOfEngineParticleSystem(0.0075f);
 
@@ -423,7 +437,7 @@ void ASpaceShip::StartTakingOff()
 	OnOffEngines();
 
 	// 이륙 애니메이션을 실행합니다.
-	PlayTakingOffAnimation(false, true, 0.0f, 3.0f);
+	PlayTakingOffAnimation();
 
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 		GetWorldTimerManager().ClearTimer(TimerHandle);
@@ -439,14 +453,31 @@ void ASpaceShip::TakingOff()
 		SetScaleOfEngineParticleSystem(0.015f);
 	}
 	
+	Acceleration = FVector(0.0f, 0.0f, Gravity + 300.0f);
+
 	float dist = CalculateDistanceToLand();
 
-	if (25000.0f <= dist)
+	// 초기 설정한 높이보다 높아지면
+	if (GetActorLocation().Z >= InitLocation.Z)
 	{
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
 
-		Destroy();
+		SetActorLocation(InitLocation);
+
+		// 게임에서 보이지 않게 합니다.
+		SkeletalMesh->SetHiddenInGame(true); 
+		EngineParticleSystem->SetHiddenInGame(true);
+		EngineParticleSystem2->SetHiddenInGame(true);
+
+		// Physics를 끕니다.
+		PhysicsBox->SetSimulatePhysics(false);
+
+		// 엔진을 끕니다.
+		bOnOffEngines = true;
+		OnOffEngines();
+
+		State = ESpaceShipState::Flying;
 	}
 }
 
@@ -470,13 +501,13 @@ float ASpaceShip::CalculateDistanceToLand()
 
 		for (auto& hit : hitResults)
 		{
-			// SpaceShip 자기자신은 무시
-			if (hit.GetActor() == this)
-				continue;
+			//// SpaceShip 자기자신은 무시
+			//if (hit.GetActor() == this)
+			//	continue;
 
-			// ATriggerVolume은 무시
-			if (hit.GetActor()->IsA(ATriggerVolume::StaticClass()))
-				continue;
+			//// ATriggerVolume은 무시
+			//if (hit.GetActor()->IsA(ATriggerVolume::StaticClass()))
+			//	continue;
 
 			//// 이 로그들로 적절한 LandingHeight를 구할 수 있습니다.
 			//UE_LOG(LogTemp, Warning, TEXT("___________%d"), temp);
@@ -485,8 +516,12 @@ float ASpaceShip::CalculateDistanceToLand()
 			//UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
 			//temp++;
 
-			// 가장 먼저 맞은 액터까지의 거리를 반환
-			return hit.Distance;
+			// 지면과 충돌하는 것만 구합니다.
+			if (hit.Actor->GetClass() == ALandscape::StaticClass())
+			{
+				// 가장 먼저 맞은 액터까지의 거리를 반환
+				return hit.Distance;
+			}
 		}
 	}
 
@@ -542,7 +577,7 @@ void ASpaceShip::SetScaleOfEngineParticleSystem(float Scale /*= 0.015f*/)
 	EngineParticleSystem2->SetRelativeScale3D(FVector(Scale));
 }
 
-void ASpaceShip::PlayLandingAnimation(bool bIsLooping /*= false*/, bool bIsPlaying /*= true*/, float Position /*= 0.0f*/, float PlayRate /*= 1.0f*/)
+void ASpaceShip::PlayLandingAnimation()
 {
 	// 한 번만 실행되도록 하는 플래그입니다.
 	if (!bPlayalbeLandingAnim)
@@ -557,12 +592,13 @@ void ASpaceShip::PlayLandingAnimation(bool bIsLooping /*= false*/, bool bIsPlayi
 		return;
 	}
 
-	//SkeletalMesh->OverrideAnimationData(AnimSequence, bIsLooping, bIsPlaying, Position, PlayRate);
-	//SkeletalMesh->PlayAnimation(AnimSequence, false);
+	SkeletalMesh->Stop();
+	SkeletalMesh->SetPosition(130.0f);
+	SkeletalMesh->SetPlayRate(-3.0f);
 	SkeletalMesh->Play(false);
 }
 
-void ASpaceShip::PlayTakingOffAnimation(bool bIsLooping /*= false*/, bool bIsPlaying /*= true*/, float Position /*= 0.0f*/, float PlayRate /*= 1.0f*/)
+void ASpaceShip::PlayTakingOffAnimation()
 {
 	if (!SkeletalMesh)
 	{
@@ -571,9 +607,10 @@ void ASpaceShip::PlayTakingOffAnimation(bool bIsLooping /*= false*/, bool bIsPla
 		return;
 	}
 
-
-	SkeletalMesh->OverrideAnimationData(AnimSequence, bIsLooping, bIsPlaying, Position, PlayRate);
-	SkeletalMesh->PlayAnimation(AnimSequence, false);
+	SkeletalMesh->Stop();
+	SkeletalMesh->SetPosition(0.0f);
+	SkeletalMesh->SetPlayRate(1.0f);
+	SkeletalMesh->Play(false);
 }
 
 void ASpaceShip::RotateTargetRotation(float DeltaTime)
@@ -632,6 +669,11 @@ void ASpaceShip::RotateTargetRotation(float DeltaTime)
 
 	// 변경된 각도로 다시 설정합니다.
 	SpringArmComp->SetRelativeRotation(CurrentRotation);
+}
+
+void ASpaceShip::SetInitLocation(FVector Location)
+{
+	InitLocation = Location;
 }
 /*** ASpaceShip : End ***/
 

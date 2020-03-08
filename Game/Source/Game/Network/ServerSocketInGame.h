@@ -42,6 +42,9 @@ protected:
 	DWORD			nThreadCnt;				// 작업 스레드 개수
 
 public:
+	/** 게임서버의 임시 소켓 */
+	SOCKET SocketID;
+
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장
 	static std::map<SOCKET, stSOCKETINFO*> GameClients;
 	static CRITICAL_SECTION csGameClients;
@@ -55,6 +58,8 @@ public:
 	static CRITICAL_SECTION csInfosOfScoreBoard;
 
 	class cClientSocket* ClientSocket = nullptr;
+
+	static cThreadSafetyQueue<SOCKET> tsqObserver;
 
 public:
 	////////////////////////
@@ -109,4 +114,5 @@ public:
 
 	static void ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
+	static void Observation(stringstream& RecvStream, stSOCKETINFO* pSocket);
 };

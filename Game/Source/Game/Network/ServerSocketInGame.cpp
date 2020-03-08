@@ -21,6 +21,8 @@ CRITICAL_SECTION cServerSocketInGame::csInfoOfClients;
 std::map<SOCKET, cInfoOfScoreBoard> cServerSocketInGame::InfosOfScoreBoard;
 CRITICAL_SECTION cServerSocketInGame::csInfosOfScoreBoard;
 
+cThreadSafetyQueue<SOCKET> cServerSocketInGame::tsqObserver;
+
 unsigned int WINAPI CallMainThread(LPVOID p)
 {
 	cServerSocketInGame* pOverlappedEvent = (cServerSocketInGame*)p;
@@ -58,6 +60,8 @@ cServerSocketInGame::cServerSocketInGame()
 	hWorkerHandle = nullptr;
 	nThreadCnt = 0;
 
+	SocketID = 1;
+
 	InitializeCriticalSection(&csGameClients);
 	EnterCriticalSection(&csGameClients);
 	GameClients.clear();
@@ -75,9 +79,12 @@ cServerSocketInGame::cServerSocketInGame()
 
 	ClientSocket = cClientSocket::GetSingleton();
 
+	tsqObserver.clear();
+
 	//// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::CONNECTED].funcProcessPacket = Connected;
 	fnProcess[EPacketType::SCORE_BOARD].funcProcessPacket = ScoreBoard;
+	fnProcess[EPacketType::OBSERVATION].funcProcessPacket = Observation;
 }
 
 cServerSocketInGame::~cServerSocketInGame()
@@ -208,20 +215,27 @@ bool cServerSocketInGame::Initialize()
 	bIsServerOn = true;
 
 
-	// MyInfoOfScoreBoard 초기화
+	// 초기화
 	if (ClientSocket)
 	{
+		printf_s("\t if (ClientSocket) Initialize.\n");
+
 		cInfoOfPlayer infoOfPlayer = ClientSocket->CopyMyInfo();
+
+		EnterCriticalSection(&csInfoOfClients);
+		InfoOfClients[SocketID] = infoOfPlayer;
+		LeaveCriticalSection(&csInfoOfClients);
+
 
 		cInfoOfScoreBoard infoOfScoreBoard;
 		infoOfScoreBoard.ID = infoOfPlayer.ID;
 
-		// 임시: ServerSocketInGame의 SOCKET은 1으로 설정
 		EnterCriticalSection(&csInfosOfScoreBoard);
-		InfosOfScoreBoard[SOCKET(1)] = infoOfScoreBoard;
+		InfosOfScoreBoard[SocketID] = infoOfScoreBoard;
 		LeaveCriticalSection(&csInfosOfScoreBoard);
 
-		printf_s("[INFO] <cServerSocketInGame::Initialize()> InfosOfScoreBoard[SOCKET(1)] = infoOfScoreBoard;\n");
+
+		tsqObserver.push(SocketID);
 	}
 
 
@@ -317,6 +331,7 @@ void cServerSocketInGame::StartServer()
 void cServerSocketInGame::CloseServer()
 {
 	ServerPort = 9000;
+	tsqObserver.clear();
 
 	if (bIsServerOn == false)
 	{
@@ -746,6 +761,8 @@ void cServerSocketInGame::Connected(stringstream& RecvStream, stSOCKETINFO* pSoc
 
 	infoOfPlayer.PrintInfo();
 
+	tsqObserver.push(pSocketInfo->socket);
+
 
 	/// 송신
 	stringstream sendStream;
@@ -799,4 +816,18 @@ void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSo
 
 
 	printf_s("[Send to %d] <cServerSocketInGame::ScoreBoard(...)>\n\n", (int)pSocketInfo->socket);
+}
+
+void cServerSocketInGame::Observation(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Recv by %d] <cServerSocketInGame::Observation(...)>\n", (int)pSocketInfo->socket);
+
+
+	/// 수신
+	tsqObserver.push(pSocketInfo->socket);
+
+
+	/// 송신
+
+	printf_s("[End] <cServerSocketInGame::Observation(...)>\n\n");
 }

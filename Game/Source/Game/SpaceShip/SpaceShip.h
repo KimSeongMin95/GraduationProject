@@ -34,6 +34,7 @@
 UENUM()
 enum class ESpaceShipState : int8
 {
+	Idling,
 	Flying,
 	Flied,
 	Landing,
@@ -101,6 +102,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
 		class APioneerManager* PioneerManager = nullptr;
+
+	FVector InitLocation;
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "ASpaceShip")
@@ -182,9 +185,11 @@ public:
 	/** 엔진 파티클의 Scale을 조정합니다. */
 	void SetScaleOfEngineParticleSystem(float Scale = 0.015f);
 
-	void PlayLandingAnimation(bool bIsLooping = false, bool bIsPlaying = false, float Position = 0.0f, float PlayRate = 1.0f);
-	void PlayTakingOffAnimation(bool bIsLooping = false, bool bIsPlaying = false, float Position = 0.0f, float PlayRate = 1.0f);
+	void PlayLandingAnimation();
+	void PlayTakingOffAnimation();
 
 	virtual void RotateTargetRotation(float DeltaTime);
+
+	void SetInitLocation(FVector Location);
 /*** ASpaceShip : End ***/
 };

@@ -112,6 +112,9 @@ protected:
 
 
 public:
+	class cServerSocketInGame* ServerSocketInGame = nullptr;
+	class cClientSocketInGame* ClientSocketInGame = nullptr;
+
 	UPROPERTY(EditAnywhere, Category = "PioneerManager")
 		int SocketID;
 

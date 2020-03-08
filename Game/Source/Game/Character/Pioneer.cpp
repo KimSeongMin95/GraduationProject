@@ -33,6 +33,11 @@
 #include "Character/Enemy.h"
 
 #include "Item/Item.h"
+
+#include "Network/ServerSocketInGame.h"
+#include "Network/ClientSocketInGame.h"
+
+#include "Etc/WorldViewCameraActor.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -63,6 +68,9 @@ APioneer::APioneer()
 	InitFSM();
 
 	InitItem();
+
+	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 
 	SocketID = -1;
 	//// 입력 처리를 위한 선회율을 설정합니다.
@@ -837,13 +845,25 @@ void APioneer::DestroyCharacter()
 			weapon->Destroy();
 	}
 
-
-
 	// AIController는 이미 제거되었으므로 플레이어가 조종하는 개척자가 아니면 바로 소멸
 	if (!GetController())
 	{
 		Destroy();
 		return;
+	}
+
+	/*************************************************************************/
+
+	/////////////////////
+	// 네트워크상태일 시, 관전상태를 알림
+	/////////////////////
+	if (ServerSocketInGame->IsServerOn())
+	{
+		ServerSocketInGame->tsqObserver.push(ServerSocketInGame->SocketID);
+	}
+	else if (ClientSocketInGame->IsClientSocketOn())
+	{
+		ClientSocketInGame->SendObservation();
 	}
 
 	if (GetMesh())
@@ -858,14 +878,27 @@ void APioneer::DestroyCharacter()
 	if (PioneerManager)
 	{
 		PioneerManager->Pioneers.Remove(this);
-		PioneerManager->SwitchOtherPioneer(this, 1.0f);
+		
+		// 튜토리얼(싱글플레이)에서는 관전상태에서 직접 빙의
+		// 멀티플레이에서는 관전상태에서 게임서버에 요청해서 허락받으면 빙의
+		//PioneerManager->SwitchOtherPioneer(this, 1.0f);
+
+		// 일단 CameraOfCurrentPioneer로 카메라 전환
+		if (APioneerController* PioneerController = Cast<APioneerController>(GetController()))
+		{
+			CopyTopDownCameraTo(PioneerManager->GetCameraOfCurrentPioneer());
+
+			PioneerController->SetViewTargetWithBlend(PioneerManager->GetCameraOfCurrentPioneer());
+
+			PioneerController->UnPossess();
+		}
 	}
 	else
+	{
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneer::DestroyCharacter()> if (!PioneerManager)"));
+	}
 
-
-	// 여기서 Destroy()하는 대신에 PioneerManager의 PossessPioneer()에서 Destroy를 대신 함.
-	//Destroy();
+	Destroy();
 }
 
 

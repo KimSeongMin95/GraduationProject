@@ -293,7 +293,17 @@ enum EPacketType
 		Recv [SCORE_BOARD]: 
 		Send [SCORE_BOARD]: 
 	*/
-	SCORE_BOARD
+	SCORE_BOARD,
+
+	/** 클라이언트가 관전상태가 되면
+	Game Client:
+		Recv []:
+		Send [OBSERVATION]:
+	Game Server:
+		Recv [OBSERVATION]:
+		Send []:
+	*/
+	OBSERVATION
 };
 
 

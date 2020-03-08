@@ -49,20 +49,23 @@ private:
 	EOnlineGameState OnlineGameState;
 
 	class cClientSocket* ClientSocket = nullptr;
-
 	class cServerSocketInGame* ServerSocketInGame = nullptr;
 	class cClientSocketInGame* ClientSocketInGame = nullptr;
+
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 인게임 UI */
 		class UInGameWidget* InGameWidget = nullptr;
+
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 인게임 메뉴바 */
 		class UInGameMenuWidget* InGameMenuWidget = nullptr;
+
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 인게임 플레이어들의 상황판 */
 		class UInGameScoreBoardWidget* InGameScoreBoardWidget = nullptr;
 	
+
 	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
 		class APioneerController* PioneerController = nullptr;
 
@@ -132,10 +135,18 @@ private:
 
 	void SpawnPioneerManager(); 
 	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
-	
+
 	void GetScoreBoard();
 	void RecvScoreBoard();
-	int CountRecvOfGameServer;
+	/** 게임서버 연결 확인용 */
+	int CountRecvOfGameServer; 
+
+	/////////////////////////////////////////////////
+	// 동기화
+	/////////////////////////////////////////////////
+	void SendInfoOfSpaceShip(); // 게임서버
+	void RecvInfoOfSpaceShip(); // 게임클라이언트
+	float TickOfSpaceShip; // 임시
 
 protected:
 

@@ -84,6 +84,7 @@ public:
 	void RecvScoreBoard(stringstream& RecvStream);
 	cThreadSafetyQueue<cInfoOfScoreBoard> tsqScoreBoard;
 
+	void SendObservation();
 
 	/////////////////////////////////////
 	// Set-Get

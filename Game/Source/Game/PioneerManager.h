@@ -138,6 +138,9 @@ public:
 	순서: FindTargetViewActor -> SwitchNext -> SwitchFinish -> PossessPioneer */
 	void SwitchOtherPioneer(class APioneer* CurrentPioneer, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); // bLockOutgoing: 보간 도중에 나가는 뷰타겟을 업데이트하지 않음.
 
+	FORCEINLINE class AWorldViewCameraActor* GetWorldViewCamera() { return WorldViewCamera; }
+	FORCEINLINE class AWorldViewCameraActor* GetCameraOfCurrentPioneer() { return CameraOfCurrentPioneer; }
+	FORCEINLINE class AWorldViewCameraActor* GetWorldViewCameraOfCurrentPioneer() { return WorldViewCameraOfCurrentPioneer; }
 
 /*** APioneerManager : End ***/
 };
