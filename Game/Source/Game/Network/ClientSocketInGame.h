@@ -86,6 +86,13 @@ public:
 
 	void SendObservation();
 
+	void RecvSpawnPioneer(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfPioneer> tsqSpawnPioneer;
+
+	void SendDiedPioneer(int ID);
+	void RecvDiedPioneer(stringstream& RecvStream);
+	cThreadSafetyQueue<int> tsqDiedPioneer; // ID ¿˙¿Â?
+
 	/////////////////////////////////////
 	// Set-Get
 	/////////////////////////////////////

@@ -145,6 +145,8 @@ void AOnlineGameMode::StartPlay()
 
 	if (PioneerController)
 	{
+		PioneerController->SetPioneerManager(PioneerManager);
+
 		PioneerManager->SetPioneerController(PioneerController);
 
 		PioneerController->SetViewTargetWithBlend(PioneerManager->GetWorldViewCamera());
@@ -366,6 +368,8 @@ void AOnlineGameMode::TimerOfRecvAndApply()
 	{
 		RecvScoreBoard();
 		RecvInfoOfSpaceShip();
+		RecvSpawnPioneer();
+		RecvDiedPioneer();
 	}
 }
 void AOnlineGameMode::ClearTimerOfRecvAndApply()
@@ -563,5 +567,76 @@ void AOnlineGameMode::RecvInfoOfSpaceShip()
 
 	// 플레이어가 관전중인데 SpaceShip->StartLanding();하고 개척자중 AI가 남아있지 않으면 카메라 전환
 	//PioneerController->SetViewTargetWithBlend(SpaceShip, 2.0f);
+}
+
+void AOnlineGameMode::RecvSpawnPioneer()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (!ClientSocketInGame)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!ClientSocketInGame)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqSpawnPioneer.empty())
+		return;
+
+	printf_s("[INFO] <AMainScreenGameMode::RecvSpawnPioneer()>\n");
+
+	/***********************************************************************/
+
+	std::queue<cInfoOfPioneer> copiedQueue = ClientSocketInGame->tsqSpawnPioneer.copy();
+	ClientSocketInGame->tsqSpawnPioneer.clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		PioneerManager->SpawnPioneerByRecv(copiedQueue.front());
+		copiedQueue.pop();
+	}
+}
+
+void AOnlineGameMode::RecvDiedPioneer()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (!ClientSocketInGame)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!ClientSocketInGame)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqSpawnPioneer.empty())
+		return;
+
+	printf_s("[INFO] <AMainScreenGameMode::RecvDiedPioneer()>\n");
+
+	/***********************************************************************/
+
+	std::queue<int> copiedQueue = ClientSocketInGame->tsqDiedPioneer.copy();
+	ClientSocketInGame->tsqDiedPioneer.clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		if (PioneerManager->Pioneers.Contains(copiedQueue.front()))
+		{
+			if (APioneer* pioneer = PioneerManager->Pioneers[copiedQueue.front()])
+			{			
+				// bDying을 바꿔주면 BaseCharacterAnimInstance에서 UPioneerAnimInstance::DestroyCharacter()를 호출하고
+				// Pioneer->DestroyCharacter();을 호출하여 알아서 소멸하게 됩니다.
+				pioneer->bDying = true;
+			}
+		}
+
+		copiedQueue.pop();
+	}
 }
 /*** AOnlineGameMode : End ***/

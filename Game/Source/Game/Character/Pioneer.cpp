@@ -69,10 +69,8 @@ APioneer::APioneer()
 
 	InitItem();
 
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-	ClientSocketInGame = cClientSocketInGame::GetSingleton();
-
-	SocketID = -1;
+	ID = 0;
+	SocketID = 0;
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
 	//BaseLookUpRate = 45.0f;
@@ -87,6 +85,9 @@ void APioneer::BeginPlay()
 	InitWeapon();
 
 	PossessAIController();
+
+	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 }
 
 void APioneer::Tick(float DeltaTime)
@@ -848,23 +849,49 @@ void APioneer::DestroyCharacter()
 	// AIController는 이미 제거되었으므로 플레이어가 조종하는 개척자가 아니면 바로 소멸
 	if (!GetController())
 	{
+		/////////////////////////////////
+		// 게임서버는 AI Pioneer의 죽음을 알림
+		/////////////////////////////////
+		if (ServerSocketInGame)
+		{
+			if (ServerSocketInGame->IsServerOn())
+			{
+				stringstream sendStream;
+				sendStream << EPacketType::DIED_PIONEER << endl;
+				sendStream << ID << endl;
+				ServerSocketInGame->DiedPioneer(sendStream, nullptr);
+			}
+		}
+
 		Destroy();
+
 		return;
 	}
 
 	/*************************************************************************/
+	
+	//////////////////////////////////////////////////////////
+	// 게임서버는와 게임클라이언트는 자신의 죽음과 관전상태를 알림
+	//////////////////////////////////////////////////////////
+	if (ServerSocketInGame && ClientSocketInGame)
+	{
+		if (ServerSocketInGame->IsServerOn())
+		{
+			stringstream sendStream;
+			sendStream << EPacketType::DIED_PIONEER << endl;
+			sendStream << ID << endl;
+			ServerSocketInGame->DiedPioneer(sendStream, nullptr);
 
-	/////////////////////
-	// 네트워크상태일 시, 관전상태를 알림
-	/////////////////////
-	if (ServerSocketInGame->IsServerOn())
-	{
-		ServerSocketInGame->tsqObserver.push(ServerSocketInGame->SocketID);
+			ServerSocketInGame->tsqObserver.push(ServerSocketInGame->SocketID);
+		}
+		else if (ClientSocketInGame->IsClientSocketOn())
+		{
+			ClientSocketInGame->SendDiedPioneer(ID);
+
+			ClientSocketInGame->SendObservation();
+		}
 	}
-	else if (ClientSocketInGame->IsClientSocketOn())
-	{
-		ClientSocketInGame->SendObservation();
-	}
+
 
 	if (GetMesh())
 		GetMesh()->DestroyComponent();
@@ -877,7 +904,7 @@ void APioneer::DestroyCharacter()
 
 	if (PioneerManager)
 	{
-		PioneerManager->Pioneers.Remove(this);
+		PioneerManager->Pioneers.Remove(ID);
 		
 		// 튜토리얼(싱글플레이)에서는 관전상태에서 직접 빙의
 		// 멀티플레이에서는 관전상태에서 게임서버에 요청해서 허락받으면 빙의
@@ -890,7 +917,7 @@ void APioneer::DestroyCharacter()
 
 			PioneerController->SetViewTargetWithBlend(PioneerManager->GetCameraOfCurrentPioneer());
 
-			PioneerController->UnPossess();
+			PioneerController->OnUnPossess();
 		}
 	}
 	else

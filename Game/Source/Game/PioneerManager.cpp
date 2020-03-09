@@ -7,6 +7,8 @@
 #include "Character/Pioneer.h"
 #include "Controller/PioneerController.h"
 #include "Controller/PioneerAIController.h"
+
+#include "Network/ServerSocketInGame.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -20,6 +22,10 @@ APioneerManager::APioneerManager()
 	RootComponent = SceneComp;
 
 	SwitchState = ESwitchState::Switchable;
+
+	ServerSocketInGame = nullptr;
+
+	ID = 1;
 }
 
 void APioneerManager::BeginPlay()
@@ -27,7 +33,7 @@ void APioneerManager::BeginPlay()
 	Super::BeginPlay();
 
 	// 카메라들을 생성합니다.
-	SpawnWorldViewCameraActor(&WorldViewCamera, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 20000.0f)));
+	SpawnWorldViewCameraActor(&WorldViewCamera, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(-7700.0f, -5310.0f, 5000.0f)));
 	SpawnWorldViewCameraActor(&CameraOfCurrentPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 5000.0f)));
 	SpawnWorldViewCameraActor(&WorldViewCameraOfCurrentPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 5000.0f)));
 	SpawnWorldViewCameraActor(&WorldViewCameraOfNextPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 5000.0f)));
@@ -35,6 +41,11 @@ void APioneerManager::BeginPlay()
 
 	// UWorld에서 APioneer를 찾고 TArray에 추가합니다.
 	FindPioneersInWorld();
+
+	//////////////////////////
+	// 네트워크
+	//////////////////////////
+	ServerSocketInGame = cServerSocketInGame::GetSingleton();
 }
 
 void APioneerManager::Tick(float DeltaTime)
@@ -84,10 +95,26 @@ void APioneerManager::FindPioneersInWorld()
 
 	for (TActorIterator<APioneer> ActorItr(world); ActorItr; ++ActorItr)
 	{
-		if (Pioneers.Contains(*ActorItr) == false) // 이미 추가되어있지 않다면
-			Pioneers.Add(*ActorItr);
-
 		ActorItr->SetPioneerManager(this);
+
+		// 이미 추가되어있지 않다면
+		if (Pioneers.Contains(ID) == false) 
+		{
+			Pioneers.Add(ID, *ActorItr);
+			ActorItr->ID = ID;
+
+			if (ServerSocketInGame)
+			{
+				// 이미 생성된 Pioneer를 게임서버에 알립니다.
+				if (ServerSocketInGame->IsServerOn())
+				{
+					cInfoOfPioneer infoOfPioneer(ID, ActorItr->GetActorTransform());
+					ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
+				}
+			}
+
+			ID++;
+		}
 	}
 }
 
@@ -123,17 +150,17 @@ void APioneerManager::FindTargetViewActor(float BlendTime, EViewTargetBlendFunct
 
 	TargetViewActor = nullptr;
 
-	for (auto& pioneer : Pioneers)
-	{
-		if (!pioneer)
-			continue;
+	//for (auto& pioneer : Pioneers)
+	//{
+	//	if (!pioneer)
+	//		continue;
 
-		if (pioneer->bDying || pioneer->IsActorBeingDestroyed())
-			continue;
+	//	if (pioneer->bDying || pioneer->IsActorBeingDestroyed())
+	//		continue;
 
-		if (pioneer->SocketID == -1)
-			TargetViewActor = pioneer;
-	}
+	//	if (pioneer->SocketID == -1)
+	//		TargetViewActor = pioneer;
+	//}
 
 
 	// 전환할 APioneer를 찾으면
@@ -337,20 +364,6 @@ void APioneerManager::SetPioneerController(class APioneerController* pPioneerCon
 	this->PioneerController = pPioneerController;
 }
 
-APioneer* APioneerManager::GetPioneerBySocketID(int SocketID)
-{
-	for (auto& pioneer : Pioneers)
-	{
-		if (!pioneer)
-			continue;
-
-		if (pioneer->SocketID == SocketID)
-			return pioneer;
-	}
-
-	return nullptr;
-}
-
 void APioneerManager::SpawnPioneer(FTransform Transform)
 {
 	UWorld* const World = GetWorld();
@@ -387,15 +400,59 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 
 	APioneer* pioneer = World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
 
-	if (!pioneer)
+	pioneer->SetPioneerManager(this);
+	
+	// 이미 추가되어있지 않다면
+	if (Pioneers.Contains(ID) == false) 
 	{
-		printf_s("[ERROR] <APioneerManager::SpawnPioneer(...)> if (!pioneer)\n");
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SpawnPioneer(...)> if (!pioneer)"));
+		pioneer->ID = ID;
+		Pioneers.Add(ID, pioneer);
+	}
+
+	if (ServerSocketInGame)
+	{// Pioneer 생성을 게임클라이언트들에게 알립니다.
+		if (ServerSocketInGame->IsServerOn())
+		{
+			cInfoOfPioneer infoOfPioneer(ID, myTrans);
+			ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
+		}
+	}
+
+	ID++;
+}
+
+void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
+{
+	// 이미 존재하면 생성하지 않고 위치만 조정합니다.
+	if (Pioneers.Contains(InfoOfPioneer.ID))
+	{
+		printf_s("[INFO] <APioneerManager::SpawnPioneerByRecv(...)> if (Pioneers.Contains(InfoOfPioneer.ID))\n");
+		Pioneers[InfoOfPioneer.ID]->SetActorTransform(InfoOfPioneer.GetActorTransform());
 		return;
 	}
 
+	UWorld* const World = GetWorld();
+	if (!World)
+	{
+		printf_s("[ERROR] <APioneerManager::SpawnPioneerByRecv(...)> if (!World)\n");
+		return;
+	}
+
+	/*******************************************************************/
+
+	FTransform myTrans = InfoOfPioneer.GetActorTransform();
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	APioneer* pioneer = World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
+
 	pioneer->SetPioneerManager(this);
-	Pioneers.Add(pioneer);
+
+	pioneer->ID = InfoOfPioneer.ID;
+	Pioneers.Add(InfoOfPioneer.ID, pioneer);
 }
 
 void APioneerManager::SwitchOtherPioneer(class APioneer* CurrentPioneer, float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)
@@ -479,32 +536,3 @@ void APioneerManager::SwitchOtherPioneer(class APioneer* CurrentPioneer, float B
 /*** APioneerManager : End ***/
 
 
-
-
-
-
-//for (TActorIterator<AWorldViewCameraActor> ActorItr(world); ActorItr; ++ActorItr)
-//{
-//	if ((*ActorItr)->GetName() == "WorldViewCamera")
-//	{
-//		WorldViewCamera = *ActorItr;
-//	}
-//
-//	else if ((*ActorItr)->GetName() == "CameraOfCurrentPioneer")
-//	{
-//		CameraOfCurrentPioneer = *ActorItr;
-//	}
-//	else if ((*ActorItr)->GetName() == "WorldViewCameraOfCurrentPioneer")
-//	{
-//		WorldViewCameraOfCurrentPioneer = *ActorItr;
-//	}
-//
-//	else if ((*ActorItr)->GetName() == "WorldViewCameraOfNextPioneer")
-//	{
-//		WorldViewCameraOfNextPioneer = *ActorItr;
-//	}
-//	else if ((*ActorItr)->GetName() == "CameraOfNextPioneer")
-//	{
-//		CameraOfNextPioneer = *ActorItr;
-//	}
-//}

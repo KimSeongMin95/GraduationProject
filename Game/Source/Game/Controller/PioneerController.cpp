@@ -13,13 +13,21 @@
 
 #include "GameMode/TutorialGameMode.h"
 #include "GameMode/OnlineGameMode.h"
+
+#include "PioneerManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
 /*** Basic Function : Start ***/
 APioneerController::APioneerController()
 {
+	Pioneer = nullptr;
+
 	bScoreBoard = false;
+
+	PioneerManager = nullptr;
+
+	bObservation = true;
 
 	// setting mouse
 	bShowMouseCursor = true; // 마우스를 보이게 합니다.
@@ -91,6 +99,15 @@ void APioneerController::SetupInputComponent()
 	InputComponent->BindAction("Menu", IE_Pressed, this, &APioneerController::Menu);
 	// Tab키: 스코어 보드
 	InputComponent->BindAxis("ScoreBoard", this, &APioneerController::ScoreBoard);
+
+	// Left Arrow키: 관전 변경
+	InputComponent->BindAction("Observation_Left", IE_Pressed, this, &APioneerController::ObservationLeft);
+	// Right Arrow키: 관전 변경
+	InputComponent->BindAction("Observation_Right", IE_Pressed, this, &APioneerController::ObservationRight);
+	// Space Bar키: 관전 자유시점
+	InputComponent->BindAction("Observation_Free", IE_Pressed, this, &APioneerController::ObservationFree);
+	// Enter키: 현재 관전중인 AI Pioneer에 빙의
+	InputComponent->BindAction("Observation_Possess", IE_Pressed, this, &APioneerController::ObservationPossess);
 }
 /*** Basic Function : End ***/
 
@@ -108,6 +125,8 @@ void APioneerController::OnPossess(APawn* InPawn)
 	{
 		Super::OnPossess(InPawn);
 		Pioneer = pioneer;
+
+		bObservation = false;
 	}
 }
 void APioneerController::OnUnPossess()
@@ -121,7 +140,10 @@ void APioneerController::OnUnPossess()
 	}
 
 	Super::OnUnPossess();
+
 	SetPawn(nullptr);
+
+	bObservation = true;
 }
 /*** APlayerController : End ***/
 
@@ -586,6 +608,54 @@ void APioneerController::ScoreBoard(float Value)
 	}
 
 	bScoreBoard = true;
+}
+
+void APioneerController::ObservationLeft()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <APioneerController::ObservationLeft()> if (!PioneerManager)\n");
+		return;
+	}
+
+
+}
+void APioneerController::ObservationRight()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <APioneerController::ObservationLeft()> if (!PioneerManager)\n");
+		return;
+	}
+
+
+}
+void APioneerController::ObservationFree()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <APioneerController::ObservationLeft()> if (!PioneerManager)\n");
+		return;
+	}
+
+
+}
+void APioneerController::ObservationPossess()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <APioneerController::ObservationLeft()> if (!PioneerManager)\n");
+		return;
+	}
+
+
+}
+
+
+
+void APioneerController::SetPioneerManager(class APioneerManager* PioneerManager)
+{
+	this->PioneerManager = PioneerManager;
 }
 /*** APioneerController : End ***/
 

@@ -116,6 +116,8 @@ public:
 	class cClientSocketInGame* ClientSocketInGame = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+		int ID;
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
 		int SocketID;
 
 

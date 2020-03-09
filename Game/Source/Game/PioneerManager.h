@@ -87,10 +87,14 @@ private:
 		/** 최종적으로 플레이어가 조종하는 APioneer입니다. */
 		class APioneer* PioneerOfPlayer = nullptr;
 
+	/** 네트워크 */
+	class cServerSocketInGame* ServerSocketInGame = nullptr;
+
 public:
+	int ID;
 	UPROPERTY(EditAnywhere, Category = "PioneerManager")
-		/** APioneer 객체들을 관리할 TArray입니다. */
-		TArray<class APioneer*> Pioneers;
+		/** APioneer 객체들을 관리할 TMap입니다. */
+		TMap<int32, class APioneer*> Pioneers;
 
 private:
 	/** 카메라 객체 생성 */
@@ -129,10 +133,9 @@ public:
 	/////////////////////////////////////////
 	void SetPioneerController(class APioneerController* PioneerController);
 
-	class APioneer* GetPioneerBySocketID(int SocketID);
-
 	/** APioneer 객체를 생성합니다. */
 	void SpawnPioneer(FTransform Transform);
+	void SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer);
 
 	/** 다른 폰으로 변경하는 함수입니다.
 	순서: FindTargetViewActor -> SwitchNext -> SwitchFinish -> PossessPioneer */

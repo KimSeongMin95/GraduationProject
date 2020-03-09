@@ -42,7 +42,7 @@ cClientSocketInGame::cClientSocketInGame()
 	MyInfoOfScoreBoard = cInfoOfScoreBoard();
 	LeaveCriticalSection(&csMyInfoOfScoreBoard);
 
-	ClientSocket = cClientSocket::GetSingleton();
+	
 
 	StartTime = FDateTime::UtcNow();
 	InitializeCriticalSection(&csPing);
@@ -222,6 +222,16 @@ void cClientSocketInGame::RunMainThread()
 				RecvScoreBoard(RecvStream);
 			}
 			break;
+			case EPacketType::SPAWN_PIONEER:
+			{
+				RecvSpawnPioneer(RecvStream);
+			}
+			break;
+			case EPacketType::DIED_PIONEER:
+			{
+				RecvDiedPioneer(RecvStream);
+			}
+			break;
 
 			default:
 			{
@@ -280,6 +290,8 @@ void cClientSocketInGame::CloseSocket()
 	InitMyInfoOfScoreBoard();
 
 	tsqScoreBoard.clear();
+	tsqSpawnPioneer.clear();
+	tsqDiedPioneer.clear();
 
 	// 메인 스레드 종료
 	if (bIsClientSocketOn == false)
@@ -331,6 +343,8 @@ void cClientSocketInGame::CloseSocket()
 /////////////////////////////////////
 void cClientSocketInGame::SendConnected()
 {
+	ClientSocket = cClientSocket::GetSingleton();
+
 	if (!ClientSocket)
 	{
 		printf_s("[ERROR] <cClientSocketInGame::SendConnected()> if (!ClientSocket)\n");
@@ -361,6 +375,8 @@ void cClientSocketInGame::SendConnected()
 }
 void cClientSocketInGame::RecvConnected(stringstream& RecvStream)
 {
+	ClientSocket = cClientSocket::GetSingleton();
+
 	if (!ClientSocket)
 	{
 		printf_s("[ERROR] <cClientSocketInGame::RecvConnected(...)> if (!ClientSocket)\n");
@@ -385,6 +401,7 @@ void cClientSocketInGame::RecvConnected(stringstream& RecvStream)
 void cClientSocketInGame::SendScoreBoard()
 {
 	printf_s("[Start] <cClientSocketInGame::SendScoreBoard()>\n");
+
 
 	cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
 
@@ -428,6 +445,8 @@ void cClientSocketInGame::RecvScoreBoard(stringstream& RecvStream)
 
 void cClientSocketInGame::SendObservation()
 {
+	ClientSocket = cClientSocket::GetSingleton();
+
 	if (!ClientSocket)
 	{
 		printf_s("[ERROR] <cClientSocketInGame::SendObservation()> if (!ClientSocket)\n");
@@ -444,6 +463,56 @@ void cClientSocketInGame::SendObservation()
 
 
 	printf_s("[End] <cClientSocketInGame::SendObservation()>\n");
+}
+
+void cClientSocketInGame::RecvSpawnPioneer(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvSpawnPioneer(...)>\n");
+
+
+	cInfoOfPioneer infoOfPioneer;
+
+	RecvStream >> infoOfPioneer;
+	
+	tsqSpawnPioneer.push(infoOfPioneer);
+
+	infoOfPioneer.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::RecvSpawnPioneer(...)>\n");
+}
+
+void cClientSocketInGame::SendDiedPioneer(int ID)
+{
+	printf_s("[Start] <cClientSocketInGame::SendDiedPioneer()>\n");
+
+
+	stringstream sendStream;
+	sendStream << EPacketType::DIED_PIONEER << endl;
+	sendStream << ID << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+	printf_s("\t ID: %d\n", ID);
+
+
+	printf_s("[End] <cClientSocketInGame::SendDiedPioneer()>\n");
+}
+void cClientSocketInGame::RecvDiedPioneer(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
+
+
+	int id;
+
+	RecvStream >> id;
+
+	tsqDiedPioneer.push(id);
+		
+	printf_s("\t ID: %d\n", id);
+
+
+	printf_s("[End] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
 }
 
 

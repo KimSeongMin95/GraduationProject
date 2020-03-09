@@ -1021,6 +1021,7 @@ void MainServer::RequestInfoOfGameServer(stringstream& RecvStream, stSOCKETINFO*
 
 void MainServer::Broadcast(stringstream& SendStream)
 {
+	EnterCriticalSection(&csClients);
 	for (const auto& kvp : Clients)
 	{
 		CopyMemory(kvp.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
@@ -1029,9 +1030,11 @@ void MainServer::Broadcast(stringstream& SendStream)
 
 		Send(kvp.second);
 	}
+	LeaveCriticalSection(&csClients);
 }
 void MainServer::BroadcastExcept(stringstream& SendStream, SOCKET Except)
 {
+	EnterCriticalSection(&csClients);
 	for (const auto& kvp : Clients)
 	{
 		if (kvp.second->socket == Except)
@@ -1043,5 +1046,6 @@ void MainServer::BroadcastExcept(stringstream& SendStream, SOCKET Except)
 
 		Send(kvp.second);
 	}
+	LeaveCriticalSection(&csClients);
 }
 

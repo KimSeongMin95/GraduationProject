@@ -303,7 +303,28 @@ enum EPacketType
 		Recv [OBSERVATION]:
 		Send []:
 	*/
-	OBSERVATION
+	OBSERVATION,
+
+
+	/** PioneerManager::SpawnPioneer(...) 호출되면
+	Game Client:
+		Recv [SPAWN_PIONNER]:
+		Send []:
+	Game Server:
+		Recv []:
+		Send [SPAWN_PIONNER]:
+	*/
+	SPAWN_PIONEER,
+
+	/** Pioneer가 죽으면
+	Game Client:
+		Recv [DIED_PIONEER]:
+		Send [DIED_PIONEER]:
+	Game Server:
+		Recv [DIED_PIONEER]:
+		Send [DIED_PIONEER]:
+	*/
+	DIED_PIONEER
 };
 
 
@@ -649,5 +670,119 @@ public:
 			return this->Level < other.Level;
 		else
 			return this->Kill < other.Kill;
+	}
+};
+
+
+class GAME_API cInfoOfPioneer
+{
+public:
+	int ID;
+	int SocketID;
+	
+	float ScaleX;
+	float ScaleY;
+	float ScaleZ;
+
+	float RotX;
+	float RotY;
+	float RotZ;
+
+	float LocX;
+	float LocY;
+	float LocZ;
+
+
+public:
+	cInfoOfPioneer()
+	{
+		ID = 0;
+		SocketID = 0;
+
+		ScaleX = 1.0f;
+		ScaleY = 1.0f;
+		ScaleZ = 1.0f;
+
+		RotX = 0.0f;
+		RotY = 0.0f;
+		RotZ = 0.0f;
+
+		LocX = 0.0f;
+		LocY = 0.0f;
+		LocZ = 0.0f;
+	}
+	cInfoOfPioneer(int ID, FTransform Transform)
+	{
+		this->ID = ID;
+		SocketID = 0;
+
+		ScaleX = Transform.GetScale3D().X;
+		ScaleY = Transform.GetScale3D().Y;
+		ScaleZ = Transform.GetScale3D().Z;
+
+		RotX = Transform.GetRotation().Rotator().Pitch;
+		RotY = Transform.GetRotation().Rotator().Yaw;
+		RotZ = Transform.GetRotation().Rotator().Roll;
+
+		LocX = Transform.GetLocation().X;
+		LocY = Transform.GetLocation().Y;
+		LocZ = Transform.GetLocation().Z;
+	}
+	~cInfoOfPioneer()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer& Info)
+	{
+		Stream << Info.ID << endl;
+		Stream << Info.SocketID << endl;
+		Stream << Info.ScaleX << endl;
+		Stream << Info.ScaleY << endl;
+		Stream << Info.ScaleZ << endl;
+		Stream << Info.RotX << endl;
+		Stream << Info.RotY << endl;
+		Stream << Info.RotZ << endl;
+		Stream << Info.LocX << endl;
+		Stream << Info.LocY << endl;
+		Stream << Info.LocZ << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfPioneer& Info)
+	{
+		Stream >> Info.ID;
+		Stream >> Info.SocketID;
+		Stream >> Info.ScaleX;
+		Stream >> Info.ScaleY;
+		Stream >> Info.ScaleZ;
+		Stream >> Info.RotX;
+		Stream >> Info.RotY;
+		Stream >> Info.RotZ;
+		Stream >> Info.LocX;
+		Stream >> Info.LocY;
+		Stream >> Info.LocZ;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfPioneer> ID: %d, SocketID: %d, ScaleX: %f, ScaleY: %f, ScaleZ: %f, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f \n", 
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, SocketID, ScaleX, ScaleY, ScaleZ, RotX, RotY, RotZ, LocX, LocY, LocZ);
+	}
+
+	FTransform GetActorTransform()
+	{
+		FTransform transform;
+		transform.SetScale3D(FVector(ScaleX, ScaleY, ScaleZ));
+		FQuat quat(FRotator(RotX, RotY, RotZ));
+		transform.SetRotation(quat);
+		transform.SetLocation(FVector(LocX, LocY, LocZ));
+
+		return transform;
 	}
 };

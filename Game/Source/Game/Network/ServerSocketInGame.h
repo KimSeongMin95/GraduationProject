@@ -110,9 +110,16 @@ public:
 	////////////////////////
 	// Ελ½Ε
 	////////////////////////
+	static void Broadcast(stringstream& SendStream);
+	static void BroadcastExceptOne(stringstream& SendStream, SOCKET Except);
+
 	static void Connected(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 	static void ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 	static void Observation(stringstream& RecvStream, stSOCKETINFO* pSocket);
+
+	static void SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer);
+
+	static void DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
 };

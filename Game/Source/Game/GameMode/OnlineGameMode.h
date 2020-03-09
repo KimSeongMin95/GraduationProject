@@ -148,6 +148,10 @@ private:
 	void RecvInfoOfSpaceShip(); // 게임클라이언트
 	float TickOfSpaceShip; // 임시
 
+	void RecvSpawnPioneer(); // 게임클라이언트
+
+	void RecvDiedPioneer(); // 게임클라이언트
+
 protected:
 
 

@@ -77,14 +77,13 @@ cServerSocketInGame::cServerSocketInGame()
 	InfosOfScoreBoard.clear();
 	LeaveCriticalSection(&csInfosOfScoreBoard);
 
-	ClientSocket = cClientSocket::GetSingleton();
-
 	tsqObserver.clear();
 
 	//// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::CONNECTED].funcProcessPacket = Connected;
 	fnProcess[EPacketType::SCORE_BOARD].funcProcessPacket = ScoreBoard;
 	fnProcess[EPacketType::OBSERVATION].funcProcessPacket = Observation;
+	fnProcess[EPacketType::DIED_PIONEER].funcProcessPacket = DiedPioneer;
 }
 
 cServerSocketInGame::~cServerSocketInGame()
@@ -216,6 +215,8 @@ bool cServerSocketInGame::Initialize()
 
 
 	// 초기화
+	ClientSocket = cClientSocket::GetSingleton();
+
 	if (ClientSocket)
 	{
 		printf_s("\t if (ClientSocket) Initialize.\n");
@@ -737,9 +738,44 @@ void cServerSocketInGame::Recv(stSOCKETINFO* pSocketInfo)
 }
 
 
+
 /////////////////////////////////////
 // 패킷 처리 함수
 /////////////////////////////////////
+void cServerSocketInGame::Broadcast(stringstream& SendStream)
+{
+	EnterCriticalSection(&csGameClients);
+	for (const auto& kvp : GameClients)
+	{
+		CopyMemory(kvp.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
+		kvp.second->dataBuf.buf = kvp.second->messageBuffer;
+		kvp.second->dataBuf.len = SendStream.str().length();
+
+		Send(kvp.second);
+
+		printf_s("[Send to %d] <cServerSocketInGame::Broadcast(...)>\n", (int)kvp.first);
+	}
+	LeaveCriticalSection(&csGameClients);
+}
+void cServerSocketInGame::BroadcastExceptOne(stringstream& SendStream, SOCKET Except)
+{
+	EnterCriticalSection(&csGameClients);
+	for (const auto& kvp : GameClients)
+	{
+		if (kvp.second->socket == Except)
+			continue;
+
+		CopyMemory(kvp.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
+		kvp.second->dataBuf.buf = kvp.second->messageBuffer;
+		kvp.second->dataBuf.len = SendStream.str().length();
+
+		Send(kvp.second);
+
+		printf_s("[Send to %d] <cServerSocketInGame::BroadcastExceptOne(...)>\n", (int)kvp.first);
+	}
+	LeaveCriticalSection(&csGameClients);
+}
+
 void cServerSocketInGame::Connected(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 {
 	printf_s("[Recv by %d] <cServerSocketInGame::Connected(...)>\n", (int)pSocketInfo->socket);
@@ -831,3 +867,48 @@ void cServerSocketInGame::Observation(stringstream& RecvStream, stSOCKETINFO* pS
 
 	printf_s("[End] <cServerSocketInGame::Observation(...)>\n\n");
 }
+
+void cServerSocketInGame::SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer)
+{
+	printf_s("[START] <cServerSocketInGame::SendSpawnPioneer()>\n");
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::SPAWN_PIONEER << endl;
+	sendStream << InfoOfPioneer << endl;
+
+	Broadcast(sendStream);
+
+	InfoOfPioneer.PrintInfo();
+
+
+	printf_s("[END] <cServerSocketInGame::SendSpawnPioneer()>\n\n");
+}
+
+void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	if (!pSocketInfo)
+	{
+		printf_s("[Recv by GameServer] <cServerSocketInGame::DiedPioneer(...)>\n");
+	}
+	else
+	{
+		printf_s("[Recv by %d] <cServerSocketInGame::DiedPioneer(...)>\n", (int)pSocketInfo->socket);
+	}
+
+
+	/// 송신
+	if (!pSocketInfo)
+	{
+		Broadcast(RecvStream);
+	}
+	else
+	{
+		BroadcastExceptOne(RecvStream, pSocketInfo->socket);
+	}
+
+	printf_s("[END] <cServerSocketInGame::DiedPioneer(...)>\n");
+
+}
+

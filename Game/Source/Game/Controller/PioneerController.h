@@ -44,6 +44,13 @@ private:
 
 	bool bScoreBoard;
 
+	UPROPERTY(VisibleAnywhere, Category = "PioneerController")
+		/** APioneerManager */
+		class APioneerManager* PioneerManager = nullptr;
+
+	/** 관전상태 */
+	bool bObservation;
+
 public:
 	/** true면 마우스 커서로 navigating 합니다. */
 	uint32 bMoveToMouseCursor : 1; 
@@ -97,6 +104,19 @@ private:
 		void Menu();
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void ScoreBoard(float Value);
+
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
+		void ObservationLeft();
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
+		void ObservationRight();
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
+		void ObservationFree();
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
+		void ObservationPossess();
+
+public:
+	void SetPioneerManager(class APioneerManager* PioneerManager);
+
 /*** APioneerController : End ***/
 
 	///** Resets HMD orientation in VR. */
