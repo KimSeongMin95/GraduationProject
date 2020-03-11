@@ -80,9 +80,14 @@ public:
 	void SendConnected();
 	void RecvConnected(stringstream& RecvStream);
 
+	void RecvDisConnect();
+
 	void SendScoreBoard();
 	void RecvScoreBoard(stringstream& RecvStream);
 	cThreadSafetyQueue<cInfoOfScoreBoard> tsqScoreBoard;
+
+	void RecvSpaceShip(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfSpaceShip> tsqSpaceShip;
 
 	void SendObservation();
 
@@ -92,6 +97,7 @@ public:
 	void SendDiedPioneer(int ID);
 	void RecvDiedPioneer(stringstream& RecvStream);
 	cThreadSafetyQueue<int> tsqDiedPioneer; // ID ¿˙¿Â?
+
 
 	/////////////////////////////////////
 	// Set-Get

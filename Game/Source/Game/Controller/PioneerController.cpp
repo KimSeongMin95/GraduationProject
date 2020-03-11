@@ -653,9 +653,9 @@ void APioneerController::ObservationPossess()
 
 
 
-void APioneerController::SetPioneerManager(class APioneerManager* PioneerManager)
+void APioneerController::SetPioneerManager(class APioneerManager* PM)
 {
-	this->PioneerManager = PioneerManager;
+	this->PioneerManager = PM;
 }
 /*** APioneerController : End ***/
 

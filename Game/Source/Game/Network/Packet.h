@@ -285,6 +285,16 @@ enum EPacketType
 	*/
 	CONNECTED,
 
+	/** 게임서버가 종료되면
+	Game Client:
+		Recv [DISCONNECTED]:
+		Send [X]:
+	Game Server:
+		Recv [X]:
+		Send [DISCONNECTED]:
+	*/
+	DISCONNECT,
+
 	/** 클라이언트가 일정시간마다 ScoreBoard 정보를 요청
 	Game Client:
 		Recv [SCORE_BOARD]: 
@@ -294,6 +304,16 @@ enum EPacketType
 		Send [SCORE_BOARD]: 
 	*/
 	SCORE_BOARD,
+
+	/** 게임서버가 SpaceShip 정보를 계속 게임클라이언트들에게 전송
+	Game Client:
+		Recv [SPACE_SHIP]:
+		Send [X]:
+	Game Server:
+		Recv [X]:
+		Send [SPACE_SHIP]:
+	*/
+	SPACE_SHIP,
 
 	/** 클라이언트가 관전상태가 되면
 	Game Client:

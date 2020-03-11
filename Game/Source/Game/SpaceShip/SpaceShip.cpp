@@ -572,8 +572,10 @@ void ASpaceShip::OnEngines()
 		return;
 	}
 
-	EngineParticleSystem->ToggleActive();
-	EngineParticleSystem2->ToggleActive();
+	EngineParticleSystem->Activate(true);
+	EngineParticleSystem2->Activate(true);
+	//EngineParticleSystem->ToggleActive();
+	//EngineParticleSystem2->ToggleActive();
 
 	bEngine = true;
 }
@@ -589,8 +591,8 @@ void ASpaceShip::OffEngines()
 		return;
 	}
 
-	EngineParticleSystem->ToggleActive();
-	EngineParticleSystem2->ToggleActive();
+	EngineParticleSystem->Deactivate();
+	EngineParticleSystem2->Deactivate();
 
 	bEngine = false;
 }
@@ -654,7 +656,7 @@ void ASpaceShip::SetInitLocation(FVector Location)
 ///////////
 // 네트워크
 ///////////
-void ASpaceShip::SetInfoOfSpaceShip(class cInfoOfSpaceShip InfoOfSpaceShip)
+void ASpaceShip::SetInfoOfSpaceShip(class cInfoOfSpaceShip& InfoOfSpaceShip)
 {
 	// 다른 경우에만
 	ESpaceShipState newState = (ESpaceShipState)InfoOfSpaceShip.State;
@@ -706,7 +708,7 @@ void ASpaceShip::SetInfoOfSpaceShip(class cInfoOfSpaceShip InfoOfSpaceShip)
 			PhysicsBox->SetSimulatePhysics(false);
 	}
 
-	SetScaleOfEngineParticleSystem(InfoOfSpaceShip.bSimulatePhysics);
+	SetScaleOfEngineParticleSystem(InfoOfSpaceShip.ScaleOfEngineParticleSystem);
 
 	AccelerationZ = InfoOfSpaceShip.AccelerationZ;
 	Acceleration = FVector(0.0f, 0.0f, AccelerationZ);

@@ -217,9 +217,19 @@ void cClientSocketInGame::RunMainThread()
 				RecvConnected(RecvStream);
 			}
 			break;
+			case EPacketType::DISCONNECT:
+			{
+				RecvDisConnect();
+			}
+			break;
 			case EPacketType::SCORE_BOARD:
 			{
 				RecvScoreBoard(RecvStream);
+			}
+			break;
+			case EPacketType::SPACE_SHIP:
+			{
+				RecvSpaceShip(RecvStream);
 			}
 			break;
 			case EPacketType::SPAWN_PIONEER:
@@ -290,6 +300,7 @@ void cClientSocketInGame::CloseSocket()
 	InitMyInfoOfScoreBoard();
 
 	tsqScoreBoard.clear();
+	tsqSpaceShip.clear();
 	tsqSpawnPioneer.clear();
 	tsqDiedPioneer.clear();
 
@@ -398,6 +409,17 @@ void cClientSocketInGame::RecvConnected(stringstream& RecvStream)
 	printf_s("[End] <cClientSocketInGame::RecvConnected(...)>\n");
 }
 
+void cClientSocketInGame::RecvDisConnect()
+{
+	printf_s("[START] <cClientSocketInGame::RecvDisConnect()>\n");
+
+
+	CloseSocket();
+
+
+	printf_s("[End] <cClientSocketInGame::RecvDisConnect()>\n");
+}
+
 void cClientSocketInGame::SendScoreBoard()
 {
 	printf_s("[Start] <cClientSocketInGame::SendScoreBoard()>\n");
@@ -441,6 +463,23 @@ void cClientSocketInGame::RecvScoreBoard(stringstream& RecvStream)
 
 
 	printf_s("[End] <cClientSocketInGame::RecvScoreBoard(...)>\n");
+}
+
+void cClientSocketInGame::RecvSpaceShip(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvSpaceShip(...)>\n");
+
+
+	cInfoOfSpaceShip infoOfSpaceShip;
+
+	RecvStream >> infoOfSpaceShip;
+
+	tsqSpaceShip.push(infoOfSpaceShip);
+
+	infoOfSpaceShip.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::RecvSpaceShip(...)>\n");
 }
 
 void cClientSocketInGame::SendObservation()

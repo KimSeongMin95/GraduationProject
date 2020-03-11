@@ -115,11 +115,16 @@ public:
 
 	static void Connected(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
+	static void SendDisconnect();
+
 	static void ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocket);
+
+	static void SendSpaceShip(cInfoOfSpaceShip& InfoOfSpaceShip);
 
 	static void Observation(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	static void SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer);
+	static void SendSpawnPioneer(cInfoOfPioneer& InfoOfPioneer);
 
 	static void DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
+
 };

@@ -331,6 +331,9 @@ void cServerSocketInGame::StartServer()
 
 void cServerSocketInGame::CloseServer()
 {
+	// 먼저 게임클라이언트들에게 접속 종료를 알립니다.
+	SendDisconnect();
+
 	ServerPort = 9000;
 	tsqObserver.clear();
 
@@ -815,6 +818,21 @@ void cServerSocketInGame::Connected(stringstream& RecvStream, stSOCKETINFO* pSoc
 	printf_s("[Send to %d] <cServerSocketInGame::Connected(...)>\n\n", (int)pSocketInfo->socket);
 }
 
+void cServerSocketInGame::SendDisconnect()
+{
+	printf_s("[START] <cServerSocketInGame::SendDisconnect()>\n");
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::DISCONNECT << endl;
+
+	Broadcast(sendStream);
+
+
+	printf_s("[END] <cServerSocketInGame::SendDisconnect()>\n\n");
+}
+
 void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 {
 	printf_s("[Recv by %d] <cServerSocketInGame::ScoreBoard(...)>\n", (int)pSocketInfo->socket);
@@ -854,6 +872,24 @@ void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSo
 	printf_s("[Send to %d] <cServerSocketInGame::ScoreBoard(...)>\n\n", (int)pSocketInfo->socket);
 }
 
+void cServerSocketInGame::SendSpaceShip(cInfoOfSpaceShip& InfoOfSpaceShip)
+{
+	printf_s("[START] <cServerSocketInGame::SendSpaceShip()>\n");
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::SPACE_SHIP << endl;
+	sendStream << InfoOfSpaceShip << endl;
+
+	Broadcast(sendStream);
+
+	InfoOfSpaceShip.PrintInfo();
+
+
+	printf_s("[END] <cServerSocketInGame::SendSpaceShip()>\n\n");
+}
+
 void cServerSocketInGame::Observation(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 {
 	printf_s("[Recv by %d] <cServerSocketInGame::Observation(...)>\n", (int)pSocketInfo->socket);
@@ -868,7 +904,7 @@ void cServerSocketInGame::Observation(stringstream& RecvStream, stSOCKETINFO* pS
 	printf_s("[End] <cServerSocketInGame::Observation(...)>\n\n");
 }
 
-void cServerSocketInGame::SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer)
+void cServerSocketInGame::SendSpawnPioneer(cInfoOfPioneer& InfoOfPioneer)
 {
 	printf_s("[START] <cServerSocketInGame::SendSpawnPioneer()>\n");
 

@@ -110,7 +110,6 @@ void AOnlineGameMode::BeginPlay()
 	// 게임서버, 게임클라이언트 모두
 	RecvAndApply();
 
-	CountRecvOfGameServer = 0.0f;
 
 	//////////////////////////
 	// Widget
@@ -160,7 +159,6 @@ void AOnlineGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	CountRecvOfGameServer += DeltaTime;
 
 	// 임시
 	TickOfSpaceShip += DeltaTime;
@@ -352,7 +350,7 @@ void AOnlineGameMode::RecvAndApply()
 	printf_s("[INFO] <AOnlineGameMode::RecvAndApply()>\n");
 
 	ClearTimerOfRecvAndApply();
-	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AOnlineGameMode::TimerOfRecvAndApply, 0.0166f, true);
+	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AOnlineGameMode::TimerOfRecvAndApply, 0.2f, true);
 }
 void AOnlineGameMode::TimerOfRecvAndApply()
 {
@@ -361,6 +359,13 @@ void AOnlineGameMode::TimerOfRecvAndApply()
 		printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!ServerSocketInGame || !ClientSocketInGame)\n");
 		return;
 	}
+
+	if (!InGameScoreBoardWidget)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!InGameScoreBoardWidget)\n");
+		return;
+	}
+
 
 	// 게임서버
 	if (ServerSocketInGame->IsServerOn())
@@ -375,6 +380,13 @@ void AOnlineGameMode::TimerOfRecvAndApply()
 		RecvInfoOfSpaceShip();
 		RecvSpawnPioneer();
 		RecvDiedPioneer();
+
+		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
+	}
+	// 둘 다 연결이 없으면
+	else
+	{
+		InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
 	}
 }
 void AOnlineGameMode::ClearTimerOfRecvAndApply()
@@ -491,15 +503,7 @@ void AOnlineGameMode::RecvScoreBoard()
 	}
 
 	if (ClientSocketInGame->tsqScoreBoard.empty())
-	{
-		// 5초동안 게임서버 응답 확인
-		if (CountRecvOfGameServer >= 5.0f)
-		{
-			InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
-			CountRecvOfGameServer = 0.0f;
-		}
 		return;
-	}
 
 	printf_s("[START] <AOnlineGameMode::RecvScoreBoard()>\n");
 
@@ -525,7 +529,6 @@ void AOnlineGameMode::SendInfoOfSpaceShip()
 		printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
 		return;
 	}
-
 
 	//PioneerController->SetViewTargetWithBlend(SpaceShip);
 
@@ -554,6 +557,9 @@ void AOnlineGameMode::SendInfoOfSpaceShip()
 	}
 	break;
 	}
+
+	cInfoOfSpaceShip infoOfSpaceShip = SpaceShip->GetInfoOfSpaceShip();
+	ServerSocketInGame->SendSpaceShip(infoOfSpaceShip);
 }
 void AOnlineGameMode::RecvInfoOfSpaceShip()
 {
@@ -567,6 +573,24 @@ void AOnlineGameMode::RecvInfoOfSpaceShip()
 		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!PioneerController)\n");
 		return;
 	}
+
+
+	if (ClientSocketInGame->tsqSpaceShip.empty())
+		return;
+
+	printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfSpaceShip()>\n");
+
+	/***********************************************************************/
+
+	std::queue<cInfoOfSpaceShip> copiedQueue = ClientSocketInGame->tsqSpaceShip.copy();
+	ClientSocketInGame->tsqSpaceShip.clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		SpaceShip->SetInfoOfSpaceShip(copiedQueue.front());
+		copiedQueue.pop();
+	}
+
 
 	// 플레이어가 관전중인데 SpaceShip->StartLanding();하고 개척자중 AI가 남아있지 않으면 카메라 전환
 	//PioneerController->SetViewTargetWithBlend(SpaceShip, 2.0f);
