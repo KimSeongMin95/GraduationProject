@@ -45,7 +45,7 @@
 using namespace std;
 
 
-#define	MAX_BUFFER 4096
+#define	MAX_BUFFER 4096 * 2
 
 
 // 소켓 통신 구조체
@@ -344,7 +344,17 @@ enum EPacketType
 		Recv [DIED_PIONEER]:
 		Send [DIED_PIONEER]:
 	*/
-	DIED_PIONEER
+	DIED_PIONEER,
+
+	/** 게임클라이언트가 자신이 조종중인 Pioneer 정보를 보내면 게임서버는 해당 Pioneer를 제외한 다른 Pioneer들의 정보를 브로드캐스팅
+	Game Client:
+		Recv [INFO_OF_PIONEER]:
+		Send [INFO_OF_PIONEER]:
+	Game Server:
+		Recv [INFO_OF_PIONEER]:
+		Send [INFO_OF_PIONEER]:
+	*/
+	INFO_OF_PIONEER
 };
 
 
@@ -694,12 +704,13 @@ public:
 };
 
 
+
 class GAME_API cInfoOfPioneer
 {
 public:
 	int ID;
 	int SocketID;
-	
+
 	float ScaleX;
 	float ScaleY;
 	float ScaleZ;
@@ -711,6 +722,27 @@ public:
 	float LocX;
 	float LocY;
 	float LocZ;
+
+	float TargetRotX;
+	float TargetRotY;
+	float TargetRotZ;
+
+	float HealthPoint;
+	float MaxHealthPoint;
+	bool bDying;
+
+	float MoveSpeed;
+	float AttackSpeed;
+
+	float AttackPower;
+
+	float SightRange;
+	float DetectRange;
+	float AttackRange;
+
+	bool bHasPistolType;
+	bool bHasRifleType;
+	bool bHasLauncherType;
 
 
 public:
@@ -730,23 +762,27 @@ public:
 		LocX = 0.0f;
 		LocY = 0.0f;
 		LocZ = 0.0f;
-	}
-	cInfoOfPioneer(int ID, FTransform Transform)
-	{
-		this->ID = ID;
-		SocketID = 0;
 
-		ScaleX = Transform.GetScale3D().X;
-		ScaleY = Transform.GetScale3D().Y;
-		ScaleZ = Transform.GetScale3D().Z;
+		TargetRotX = 0.0f;
+		TargetRotY = 0.0f;
+		TargetRotZ = 0.0f;
 
-		RotX = Transform.GetRotation().Rotator().Pitch;
-		RotY = Transform.GetRotation().Rotator().Yaw;
-		RotZ = Transform.GetRotation().Rotator().Roll;
+		HealthPoint = 100.0f;
+		MaxHealthPoint = 100.0f;
+		bDying = false;
 
-		LocX = Transform.GetLocation().X;
-		LocY = Transform.GetLocation().Y;
-		LocZ = Transform.GetLocation().Z;
+		MoveSpeed = 10.0f;
+		AttackSpeed = 1.0f;
+
+		AttackPower = 1.0f;
+
+		AttackRange = 16.0f;
+		DetectRange = 32.0f;
+		SightRange = 32.0f;
+
+		bHasPistolType = false;
+		bHasRifleType = false;
+		bHasLauncherType = false;
 	}
 	~cInfoOfPioneer()
 	{
@@ -766,6 +802,21 @@ public:
 		Stream << Info.LocX << endl;
 		Stream << Info.LocY << endl;
 		Stream << Info.LocZ << endl;
+		Stream << Info.TargetRotX << endl;
+		Stream << Info.TargetRotY << endl;
+		Stream << Info.TargetRotZ << endl;
+		Stream << Info.HealthPoint << endl;
+		Stream << Info.MaxHealthPoint << endl;
+		Stream << Info.bDying << endl;
+		Stream << Info.MoveSpeed << endl;
+		Stream << Info.AttackSpeed << endl;
+		Stream << Info.AttackPower << endl;
+		Stream << Info.AttackRange << endl;
+		Stream << Info.DetectRange << endl;
+		Stream << Info.SightRange << endl;
+		Stream << Info.bHasPistolType << endl;
+		Stream << Info.bHasRifleType << endl;
+		Stream << Info.bHasLauncherType << endl;
 
 		return Stream;
 	}
@@ -784,6 +835,21 @@ public:
 		Stream >> Info.LocX;
 		Stream >> Info.LocY;
 		Stream >> Info.LocZ;
+		Stream >> Info.TargetRotX;
+		Stream >> Info.TargetRotY;
+		Stream >> Info.TargetRotZ;
+		Stream >> Info.HealthPoint;
+		Stream >> Info.MaxHealthPoint;
+		Stream >> Info.bDying;
+		Stream >> Info.MoveSpeed;
+		Stream >> Info.AttackSpeed;
+		Stream >> Info.AttackPower;
+		Stream >> Info.AttackRange;
+		Stream >> Info.DetectRange;
+		Stream >> Info.SightRange;
+		Stream >> Info.bHasPistolType;
+		Stream >> Info.bHasRifleType;
+		Stream >> Info.bHasLauncherType;
 
 		return Stream;
 	}
@@ -791,8 +857,29 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		printf_s("%s%s<cInfoOfPioneer> ID: %d, SocketID: %d, ScaleX: %f, ScaleY: %f, ScaleZ: %f, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f \n", 
-			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, SocketID, ScaleX, ScaleY, ScaleZ, RotX, RotY, RotZ, LocX, LocY, LocZ);
+		printf_s("%s%s<cInfoOfSpaceShip> ID: %d, SocketID : %d, ScaleX: %f, ScaleY: %f, ScaleZ: %f, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, SocketID, ScaleX, ScaleY, ScaleZ, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
+		printf_s("%s%s<cInfoOfSpaceShip> HealthPoint: %f, MaxHealthPoint : %f, bDying: %s, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, AttackRange: %f, DetectRange: %f, SightRange: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), HealthPoint, MaxHealthPoint, (bDying == true) ? "true" : "false", MoveSpeed, AttackSpeed, AttackPower, AttackRange, DetectRange, SightRange);
+		printf_s("%s%s<cInfoOfSpaceShip> bHasPistolType: %s, bHasRifleType : %s, bHasLauncherType: %s \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), (bHasPistolType == true) ? "true" : "false", (bHasRifleType == true) ? "true" : "false", (bHasLauncherType == true) ? "true" : "false");
+	}
+
+	void SetActorTransform(int ID_, FTransform Transform)
+	{
+		this->ID = ID_;
+
+		ScaleX = Transform.GetScale3D().X;
+		ScaleY = Transform.GetScale3D().Y;
+		ScaleZ = Transform.GetScale3D().Z;
+
+		RotX = Transform.GetRotation().Rotator().Pitch;
+		RotY = Transform.GetRotation().Rotator().Yaw;
+		RotZ = Transform.GetRotation().Rotator().Roll;
+
+		LocX = Transform.GetLocation().X;
+		LocY = Transform.GetLocation().Y;
+		LocZ = Transform.GetLocation().Z;
 	}
 
 	FTransform GetActorTransform()
@@ -837,20 +924,6 @@ public:
 		AccelerationZ = 980.0f;
 		bEngine = false;
 	}
-	cInfoOfSpaceShip(int State, FVector Location, bool bHiddenInGame, bool bSimulatePhysics, float ScaleOfEngineParticleSystem, float AccelerationZ, bool bEngine)
-	{
-		this->State = State;
-
-		LocX = Location.X;
-		LocY = Location.Y;
-		LocZ = Location.Z;
-
-		this->bHiddenInGame = bHiddenInGame;
-		this->bSimulatePhysics = bSimulatePhysics;
-		this->ScaleOfEngineParticleSystem = ScaleOfEngineParticleSystem;
-		this->AccelerationZ = AccelerationZ;
-		this->bEngine = bEngine;
-	}
 	~cInfoOfSpaceShip()
 	{
 	}
@@ -892,5 +965,20 @@ public:
 	{
 		printf_s("%s%s<cInfoOfSpaceShip> State: %d, LocX: %f, LocY: %f, LocZ: %f, bHiddenInGame: %s, bSimulatePhysics: %s, ScaleOfEngineParticleSystem: %f, AccelerationZ: %f, bEngine: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), State, LocX, LocY, LocZ, (bHiddenInGame == true) ? "true" : "false", (bSimulatePhysics == true) ? "true" : "false", ScaleOfEngineParticleSystem, AccelerationZ, (bEngine == true) ? "true" : "false");
+	}
+
+	void SetInfo(int State_, FVector Location, bool bHiddenInGame_, bool bSimulatePhysics_, float ScaleOfEngineParticleSystem_, float AccelerationZ_, bool bEngine_)
+	{
+		this->State = State_;
+
+		LocX = Location.X;
+		LocY = Location.Y;
+		LocZ = Location.Z;
+
+		this->bHiddenInGame = bHiddenInGame_;
+		this->bSimulatePhysics = bSimulatePhysics_;
+		this->ScaleOfEngineParticleSystem = ScaleOfEngineParticleSystem_;
+		this->AccelerationZ = AccelerationZ_;
+		this->bEngine = bEngine_;
 	}
 };

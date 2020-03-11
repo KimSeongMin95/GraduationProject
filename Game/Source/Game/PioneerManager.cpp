@@ -25,6 +25,7 @@ APioneerManager::APioneerManager()
 
 	ServerSocketInGame = nullptr;
 
+	// Pioneer의 Default가 0이므로 꼭 1부터 시작해야 합니다.
 	ID = 1;
 }
 
@@ -108,7 +109,8 @@ void APioneerManager::FindPioneersInWorld()
 				// 이미 생성된 Pioneer를 게임서버에 알립니다.
 				if (ServerSocketInGame->IsServerOn())
 				{
-					cInfoOfPioneer infoOfPioneer(ID, ActorItr->GetActorTransform());
+					cInfoOfPioneer infoOfPioneer;
+					infoOfPioneer.SetActorTransform(ID, ActorItr->GetActorTransform());
 					ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
 				}
 			}
@@ -413,7 +415,8 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	{// Pioneer 생성을 게임클라이언트들에게 알립니다.
 		if (ServerSocketInGame->IsServerOn())
 		{
-			cInfoOfPioneer infoOfPioneer(ID, myTrans);
+			cInfoOfPioneer infoOfPioneer;
+			infoOfPioneer.SetActorTransform(ID, pioneer->GetActorTransform());
 			ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
 		}
 	}

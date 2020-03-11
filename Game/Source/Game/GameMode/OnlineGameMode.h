@@ -150,6 +150,12 @@ private:
 
 	void RecvDiedPioneer(); // 게임클라이언트
 
+
+	void SetInfoOfPioneer(); // 게임서버
+	void GetInfoOfPioneer(); // 게임서버
+	void SendInfoOfPioneer(); // 게임클라이언트
+	void RecvInfoOfPioneer(); // 게임클라이언트
+
 protected:
 
 

@@ -26,7 +26,7 @@ ASpaceShip::ASpaceShip()
 	PhysicsBox->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	PhysicsBox->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
 	PhysicsBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	PhysicsBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	//PhysicsBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 
 	PhysicsBox->SetSimulatePhysics(true);
 
@@ -46,11 +46,11 @@ ASpaceShip::ASpaceShip()
 	PioneerSpawnPoint->SetRelativeLocation(FVector(-777.02f, 329.26f, -150.0f));
 
 
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	StaticMesh->SetupAttachment(RootComponent);
+	//StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	//StaticMesh->SetupAttachment(RootComponent);
 
-	InitStaticMesh(TEXT("StaticMesh'/Game/SpaceShip/SpaceShip_ForCollision.SpaceShip_ForCollision'"),
-		FVector(80.0f, 80.0f, 80.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(-3.0f, -214.0f, -260.0f));
+	//InitStaticMesh(TEXT("StaticMesh'/Game/SpaceShip/SpaceShip_ForCollision.SpaceShip_ForCollision'"),
+	//	FVector(80.0f, 80.0f, 80.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(-3.0f, -214.0f, -260.0f));
 
 
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
@@ -146,27 +146,27 @@ void ASpaceShip::InitPhysicsBox(FVector BoxExtent /*= FVector::ZeroVector*/, FVe
 	PhysicsBox->SetRelativeLocation(Location);
 }
 
-void ASpaceShip::InitStaticMesh(const TCHAR* ReferencePath, FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
-{
-	if (!StaticMesh)
-	{
-		printf_s("[ERROR] <ASpaceShip::InitStaticMesh(...)> if (!StaticMesh)\n");
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::InitStaticMesh(...)> if (!StaticMesh)"));
-		return;
-	}
-
-	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(ReferencePath);
-	if (staticMeshAsset.Succeeded())
-	{
-		StaticMesh->SetStaticMesh(staticMeshAsset.Object);
-
-		StaticMesh->SetHiddenInGame(true); // 게임에서 보이지 않게 합니다.
-
-		StaticMesh->SetRelativeScale3D(Scale);
-		StaticMesh->SetRelativeRotation(Rotation);
-		StaticMesh->SetRelativeLocation(Location);
-	}
-}
+//void ASpaceShip::InitStaticMesh(const TCHAR* ReferencePath, FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
+//{
+//	if (!StaticMesh)
+//	{
+//		printf_s("[ERROR] <ASpaceShip::InitStaticMesh(...)> if (!StaticMesh)\n");
+//		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::InitStaticMesh(...)> if (!StaticMesh)"));
+//		return;
+//	}
+//
+//	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(ReferencePath);
+//	if (staticMeshAsset.Succeeded())
+//	{
+//		StaticMesh->SetStaticMesh(staticMeshAsset.Object);
+//
+//		StaticMesh->SetHiddenInGame(true); // 게임에서 보이지 않게 합니다.
+//
+//		StaticMesh->SetRelativeScale3D(Scale);
+//		StaticMesh->SetRelativeRotation(Rotation);
+//		StaticMesh->SetRelativeLocation(Location);
+//	}
+//}
 
 void ASpaceShip::InitSkeletalMesh(const TCHAR* ReferencePath, FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
 {
@@ -285,7 +285,7 @@ void ASpaceShip::Flying()
 {
 	State = ESpaceShipState::Flying;
 
-	if (!PhysicsBox || !PioneerSpawnPoint || !StaticMesh || !SkeletalMesh || !Skeleton || !AnimSequence || !SpringArmComp || !CameraComp || !EngineParticleSystem || !EngineParticleSystem2)
+	if (!PhysicsBox || !PioneerSpawnPoint || !SkeletalMesh || !Skeleton || !AnimSequence || !SpringArmComp || !CameraComp || !EngineParticleSystem || !EngineParticleSystem2)
 	{
 		printf_s("[ERROR] <ASpaceShip::Flying()> nullptr\n");
 		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::Flying()> nullptr"));
@@ -724,7 +724,8 @@ void ASpaceShip::SetInfoOfSpaceShip(class cInfoOfSpaceShip& InfoOfSpaceShip)
 }
 class cInfoOfSpaceShip ASpaceShip::GetInfoOfSpaceShip()
 {
-	cInfoOfSpaceShip infoOfSpaceShip((int)State, GetActorLocation(), bHiddenInGame, bSimulatePhysics, ScaleOfEngineParticleSystem, AccelerationZ, bEngine);
+	cInfoOfSpaceShip infoOfSpaceShip;
+	infoOfSpaceShip.SetInfo((int)State, GetActorLocation(), bHiddenInGame, bSimulatePhysics, ScaleOfEngineParticleSystem, AccelerationZ, bEngine);
 
 	return infoOfSpaceShip;
 }

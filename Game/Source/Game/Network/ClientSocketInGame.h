@@ -98,6 +98,9 @@ public:
 	void RecvDiedPioneer(stringstream& RecvStream);
 	cThreadSafetyQueue<int> tsqDiedPioneer; // ID ¿˙¿Â?
 
+	void SendInfoOfPioneer(cInfoOfPioneer InfoOfPioneer);
+	void RecvInfoOfPioneer(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
 
 	/////////////////////////////////////
 	// Set-Get

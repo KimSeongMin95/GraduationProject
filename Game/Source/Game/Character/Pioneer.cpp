@@ -862,7 +862,6 @@ void APioneer::DestroyCharacter()
 		if (ServerSocketInGame->IsServerOn())
 		{
 			stringstream sendStream;
-			sendStream << EPacketType::DIED_PIONEER << endl;
 			sendStream << ID << endl;
 			ServerSocketInGame->DiedPioneer(sendStream, nullptr);
 
@@ -1304,7 +1303,83 @@ void APioneer::DestroyBuilding()
 		Building = nullptr;
 	}
 }
+
+///////////
+// 네트워크
+///////////
+void APioneer::SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer)
+{
+	ID = InfoOfPioneer.ID;
+	SocketID = InfoOfPioneer.SocketID;
+
+	SetActorTransform(InfoOfPioneer.GetActorTransform());
+
+	TargetRotation = FRotator(InfoOfPioneer.TargetRotX, InfoOfPioneer.TargetRotY, InfoOfPioneer.TargetRotZ);
+
+	HealthPoint = InfoOfPioneer.HealthPoint;
+	MaxHealthPoint = InfoOfPioneer.MaxHealthPoint;
+	bDying = InfoOfPioneer.bDying;
+
+	MoveSpeed = InfoOfPioneer.MoveSpeed;
+	AttackSpeed = InfoOfPioneer.AttackSpeed;
+
+	AttackPower = InfoOfPioneer.AttackPower;
+
+	AttackRange = InfoOfPioneer.AttackRange;
+	DetectRange = InfoOfPioneer.DetectRange;
+	SightRange = InfoOfPioneer.SightRange;
+
+	bHasPistolType = InfoOfPioneer.bHasPistolType;
+	bHasRifleType = InfoOfPioneer.bHasRifleType;
+	bHasLauncherType = InfoOfPioneer.bHasLauncherType;
+}
+class cInfoOfPioneer APioneer::GetInfoOfPioneer()
+{
+	cInfoOfPioneer infoOfPioneer;
+
+	infoOfPioneer.ID = ID;
+	infoOfPioneer.SocketID = SocketID;
+
+	FTransform transform = GetActorTransform();
+	infoOfPioneer.ScaleX = transform.GetScale3D().X;
+	infoOfPioneer.ScaleY = transform.GetScale3D().Y;
+	infoOfPioneer.ScaleZ = transform.GetScale3D().Z;
+
+	infoOfPioneer.RotX = transform.GetRotation().Rotator().Pitch;
+	infoOfPioneer.RotY = transform.GetRotation().Rotator().Yaw;
+	infoOfPioneer.RotZ = transform.GetRotation().Rotator().Roll;
+
+	infoOfPioneer.LocX = transform.GetLocation().X;
+	infoOfPioneer.LocY = transform.GetLocation().Y;
+	infoOfPioneer.LocZ = transform.GetLocation().Z;
+
+	infoOfPioneer.TargetRotX = TargetRotation.Pitch;
+	infoOfPioneer.TargetRotY = TargetRotation.Yaw;
+	infoOfPioneer.TargetRotZ = TargetRotation.Roll;
+
+	infoOfPioneer.HealthPoint = HealthPoint;
+	infoOfPioneer.MaxHealthPoint = MaxHealthPoint;
+	infoOfPioneer.bDying = bDying;
+
+	infoOfPioneer.MoveSpeed = MoveSpeed;
+	infoOfPioneer.AttackSpeed = AttackSpeed;
+
+	infoOfPioneer.AttackPower = AttackPower;
+
+	infoOfPioneer.AttackRange = AttackRange;
+	infoOfPioneer.DetectRange = DetectRange;
+	infoOfPioneer.SightRange = SightRange;
+
+	infoOfPioneer.bHasPistolType = bHasPistolType;
+	infoOfPioneer.bHasRifleType = bHasRifleType;
+	infoOfPioneer.bHasLauncherType = bHasLauncherType;
+
+	return infoOfPioneer;
+}
 /*** APioneer : End ***/
+
+
+
 
 
 

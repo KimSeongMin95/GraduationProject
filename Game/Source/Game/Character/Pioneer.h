@@ -289,6 +289,12 @@ public:
 
 	UFUNCTION(Category = "Building")
 		void DestroyBuilding();
+
+	///////////
+	// 네트워크
+	///////////
+	void SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer);
+	class cInfoOfPioneer GetInfoOfPioneer();
 /*** APioneer : End ***/
 
 

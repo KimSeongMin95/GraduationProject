@@ -552,8 +552,10 @@ void AMainScreenGameMode::RecvFindGames()
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfGame> copiedQueue = ClientSocket->tsqFindGames.copy();
-	ClientSocket->tsqFindGames.clear();
+	std::queue<cInfoOfGame> copiedQueue;
+
+	while (ClientSocket->tsqFindGames.empty() == false)
+		copiedQueue.push(ClientSocket->tsqFindGames.front_pop());
 
 	// 방 보이게 하기
 	while (copiedQueue.empty() == false)
@@ -655,8 +657,10 @@ void AMainScreenGameMode::RecvWaitingGame()
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfGame> copiedQueue = ClientSocket->tsqWaitingGame.copy();
-	ClientSocket->tsqWaitingGame.clear();
+	std::queue<cInfoOfGame> copiedQueue;
+
+	while (ClientSocket->tsqWaitingGame.empty() == false)
+		copiedQueue.push(ClientSocket->tsqWaitingGame.front_pop());
 
 	// 게임방이 시작 카운트다운 중일때 새로 들어온 사람을 위해 Join 버튼을 활성화 시킵니다.
 	if (OnlineState == EOnlineState::PlayerOfWaitingGame)
@@ -808,8 +812,10 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 
 	OnlineState = EOnlineState::Idle;
 
-	std::queue<bool> copiedQueue = ClientSocket->tsqDestroyWaitingGame.copy();
-	ClientSocket->tsqDestroyWaitingGame.clear();
+	std::queue<bool> copiedQueue;
+
+	while (ClientSocket->tsqDestroyWaitingGame.empty() == false)
+		copiedQueue.push(ClientSocket->tsqDestroyWaitingGame.front_pop());
 
 	// 가장 최신에 받은 것만 처리합니다.
 	WaitingGameWidget->SetDestroyedVisibility(copiedQueue.back());
@@ -901,8 +907,10 @@ void AMainScreenGameMode::RecvModifyWaitingGame()
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfGame> copiedQueue = ClientSocket->tsqModifyWaitingGame.copy();
-	ClientSocket->tsqModifyWaitingGame.clear();
+	std::queue<cInfoOfGame> copiedQueue;
+
+	while (ClientSocket->tsqModifyWaitingGame.empty() == false)
+		copiedQueue.push(ClientSocket->tsqModifyWaitingGame.front_pop());
 
 	// 가장 최신에 받은 것만 처리합니다.
 	WaitingGameWidget->SetModifiedInfo(copiedQueue.back());

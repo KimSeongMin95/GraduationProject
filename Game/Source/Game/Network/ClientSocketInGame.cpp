@@ -205,11 +205,6 @@ void cClientSocketInGame::RunMainThread()
 			RecvStream << recvBuffer;
 			RecvStream >> PacketType;
 
-			/////////////////////////////
-			// 필수!!!!: recvBuffer 초기화
-			/////////////////////////////
-			memset(recvBuffer, 0, MAX_BUFFER);
-
 			switch (PacketType)
 			{
 			case EPacketType::CONNECTED:
@@ -242,10 +237,16 @@ void cClientSocketInGame::RunMainThread()
 				RecvDiedPioneer(RecvStream);
 			}
 			break;
+			case EPacketType::INFO_OF_PIONEER:
+			{
+				RecvInfoOfPioneer(RecvStream);
+			}
+			break;
 
 			default:
 			{
-				printf_s("[ERROR] <cClientSocketInGame::BeginMainThread()> unknown packet type!\n");
+				printf_s("[ERROR] <cClientSocketInGame::BeginMainThread()> unknown packet type! PacketType: %d \n", PacketType);
+				printf_s("[ERROR] <cClientSocketInGame::BeginMainThread()> recvBuffer: %s \n", recvBuffer);
 			}
 			break;
 			}
@@ -259,6 +260,11 @@ void cClientSocketInGame::RunMainThread()
 			LeaveCriticalSection(&csPing);
 			StartTime = FDateTime::UtcNow();
 		}
+
+		/////////////////////////////
+		// 필수!!!!: recvBuffer 초기화
+		/////////////////////////////
+		memset(recvBuffer, 0, MAX_BUFFER);
 	}
 }
 
@@ -303,6 +309,7 @@ void cClientSocketInGame::CloseSocket()
 	tsqSpaceShip.clear();
 	tsqSpawnPioneer.clear();
 	tsqDiedPioneer.clear();
+	tsqInfoOfPioneer.clear();
 
 	// 메인 스레드 종료
 	if (bIsClientSocketOn == false)
@@ -447,17 +454,12 @@ void cClientSocketInGame::RecvScoreBoard(stringstream& RecvStream)
 	printf_s("[Start] <cClientSocketInGame::RecvScoreBoard(...)>\n");
 
 
-	if (tsqScoreBoard.size() > 0)
-	{
-		printf_s("[ERROR] <cClientSocketInGame::RecvScoreBoard(...)> if (tsqScoreBoard.size() > 0)\n");
-		return;
-	}
-
 	cInfoOfScoreBoard infoOfScoreBoard;
 
 	while (RecvStream >> infoOfScoreBoard)
 	{
 		tsqScoreBoard.push(infoOfScoreBoard);
+
 		infoOfScoreBoard.PrintInfo();
 	}
 
@@ -476,7 +478,7 @@ void cClientSocketInGame::RecvSpaceShip(stringstream& RecvStream)
 
 	tsqSpaceShip.push(infoOfSpaceShip);
 
-	infoOfSpaceShip.PrintInfo();
+	//infoOfSpaceShip.PrintInfo();
 
 
 	printf_s("[End] <cClientSocketInGame::RecvSpaceShip(...)>\n");
@@ -552,6 +554,37 @@ void cClientSocketInGame::RecvDiedPioneer(stringstream& RecvStream)
 
 
 	printf_s("[End] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
+}
+
+void cClientSocketInGame::SendInfoOfPioneer(cInfoOfPioneer InfoOfPioneer)
+{
+	printf_s("[Start] <cClientSocketInGame::SendInfoOfPioneer()>\n");
+
+
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_PIONEER << endl;
+	sendStream << InfoOfPioneer << endl;
+
+	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+
+
+	printf_s("[End] <cClientSocketInGame::SendInfoOfPioneer()>\n");
+}
+void cClientSocketInGame::RecvInfoOfPioneer(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer(...)>\n");
+
+
+	cInfoOfPioneer infoOfPioneer;
+
+	RecvStream >> infoOfPioneer;
+	
+	tsqInfoOfPioneer.push(infoOfPioneer);
+
+	//infoOfPioneer.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer(...)>\n");
 }
 
 

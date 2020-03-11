@@ -23,6 +23,12 @@ CRITICAL_SECTION cServerSocketInGame::csInfosOfScoreBoard;
 
 cThreadSafetyQueue<SOCKET> cServerSocketInGame::tsqObserver;
 
+std::map<int, cInfoOfPioneer> cServerSocketInGame::InfosOfPioneers;
+CRITICAL_SECTION cServerSocketInGame::csInfosOfPioneers;
+
+cThreadSafetyQueue<cInfoOfPioneer> cServerSocketInGame::tsqInfoOfPioneer;
+
+
 unsigned int WINAPI CallMainThread(LPVOID p)
 {
 	cServerSocketInGame* pOverlappedEvent = (cServerSocketInGame*)p;
@@ -79,11 +85,17 @@ cServerSocketInGame::cServerSocketInGame()
 
 	tsqObserver.clear();
 
+	InitializeCriticalSection(&csInfosOfPioneers);
+	EnterCriticalSection(&csInfosOfPioneers);
+	InfosOfPioneers.clear();
+	LeaveCriticalSection(&csInfosOfPioneers);
+
 	//// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::CONNECTED].funcProcessPacket = Connected;
 	fnProcess[EPacketType::SCORE_BOARD].funcProcessPacket = ScoreBoard;
 	fnProcess[EPacketType::OBSERVATION].funcProcessPacket = Observation;
 	fnProcess[EPacketType::DIED_PIONEER].funcProcessPacket = DiedPioneer;
+	fnProcess[EPacketType::INFO_OF_PIONEER].funcProcessPacket = InfoOfPioneer;
 }
 
 cServerSocketInGame::~cServerSocketInGame()
@@ -398,19 +410,24 @@ void cServerSocketInGame::CloseServer()
 		printf_s("\t delete[] hWorkerHandle;\n");
 	}
 
+	// InfosOfPioneers 초기화
+	EnterCriticalSection(&csInfosOfPioneers);
+	InfosOfPioneers.clear();
+	LeaveCriticalSection(&csInfosOfPioneers);
+
+	tsqInfoOfPioneer.clear();
+
+	// InfosOfScoreBoard 초기화
+	EnterCriticalSection(&csInfosOfScoreBoard);
+	InfosOfScoreBoard.clear();
+	LeaveCriticalSection(&csInfosOfScoreBoard);
+
 	// InfoOfClients 초기화
 	printf_s("\t EnterCriticalSection(&csInfoOfClients);\n");
 	EnterCriticalSection(&csInfoOfClients);
 	InfoOfClients.clear();
 	LeaveCriticalSection(&csInfoOfClients);
 	printf_s("\t LeaveCriticalSection(&csInfoOfClients);\n");
-
-	// InfosOfScoreBoard 초기화
-	printf_s("\t EnterCriticalSection(&csInfosOfScoreBoard);\n");
-	EnterCriticalSection(&csInfosOfScoreBoard);
-	InfosOfScoreBoard.clear();
-	LeaveCriticalSection(&csInfosOfScoreBoard);
-	printf_s("\t LeaveCriticalSection(&csInfosOfScoreBoard);\n");
 
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 해제
 	EnterCriticalSection(&csGameClients);
@@ -543,7 +560,7 @@ void cServerSocketInGame::WorkerThread()
 
 	while (bWorkerThread)
 	{
-		printf_s("[INFO] <cServerSocketInGame::WorkerThread()> before GetQueuedCompletionStatus(...)\n");
+		//printf_s("[INFO] <cServerSocketInGame::WorkerThread()> before GetQueuedCompletionStatus(...)\n");
 		/**
 		 * 이 함수로 인해 쓰레드들은 WaitingThread Queue 에 대기상태로 들어가게 됨
 		 * 완료된 Overlapped I/O 작업이 발생하면 IOCP Queue 에서 완료된 작업을 가져와 뒷처리를 함
@@ -554,7 +571,7 @@ void cServerSocketInGame::WorkerThread()
 			(LPOVERLAPPED*)& pSocketInfo,	// overlapped I/O 객체
 			INFINITE						// 대기할 시간
 		);
-		printf_s("[INFO] <cServerSocketInGame::WorkerThread()> after GetQueuedCompletionStatus(...)\n");
+		//printf_s("[INFO] <cServerSocketInGame::WorkerThread()> after GetQueuedCompletionStatus(...)\n");
 
 		// PostQueuedCompletionStatus(...)로 종료
 		if (pCompletionKey == 0)
@@ -814,6 +831,9 @@ void cServerSocketInGame::Connected(stringstream& RecvStream, stSOCKETINFO* pSoc
 
 	Send(pSocketInfo);
 
+	// 이미 생성된 Pioneer를 스폰하도록 합니다.
+	SendSpawnedPioneer(pSocketInfo);
+
 
 	printf_s("[Send to %d] <cServerSocketInGame::Connected(...)>\n\n", (int)pSocketInfo->socket);
 }
@@ -861,7 +881,6 @@ void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSo
 	{
 		sendStream << element << endl;
 	}
-
 	CopyMemory(pSocketInfo->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
 	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
 	pSocketInfo->dataBuf.len = sendStream.str().length();
@@ -884,7 +903,7 @@ void cServerSocketInGame::SendSpaceShip(cInfoOfSpaceShip& InfoOfSpaceShip)
 
 	Broadcast(sendStream);
 
-	InfoOfSpaceShip.PrintInfo();
+	//InfoOfSpaceShip.PrintInfo();
 
 
 	printf_s("[END] <cServerSocketInGame::SendSpaceShip()>\n\n");
@@ -904,12 +923,16 @@ void cServerSocketInGame::Observation(stringstream& RecvStream, stSOCKETINFO* pS
 	printf_s("[End] <cServerSocketInGame::Observation(...)>\n\n");
 }
 
-void cServerSocketInGame::SendSpawnPioneer(cInfoOfPioneer& InfoOfPioneer)
+void cServerSocketInGame::SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer)
 {
 	printf_s("[START] <cServerSocketInGame::SendSpawnPioneer()>\n");
 
 
 	/// 송신
+	EnterCriticalSection(&csInfosOfPioneers);
+	InfosOfPioneers[InfoOfPioneer.ID] = InfoOfPioneer;
+	LeaveCriticalSection(&csInfosOfPioneers);
+
 	stringstream sendStream;
 	sendStream << EPacketType::SPAWN_PIONEER << endl;
 	sendStream << InfoOfPioneer << endl;
@@ -920,6 +943,34 @@ void cServerSocketInGame::SendSpawnPioneer(cInfoOfPioneer& InfoOfPioneer)
 
 
 	printf_s("[END] <cServerSocketInGame::SendSpawnPioneer()>\n\n");
+}
+void cServerSocketInGame::SendSpawnedPioneer(stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[START] <cServerSocketInGame::SendSpawnedPioneer(...)>\n");
+
+
+	/// 송신
+	EnterCriticalSection(&csInfosOfPioneers);
+	for (auto& kvp : InfosOfPioneers)
+	{
+		stringstream sendStream;
+		sendStream << EPacketType::SPAWN_PIONEER << endl;
+		sendStream << kvp.second << endl;
+
+		CopyMemory(pSocketInfo->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
+		pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
+		pSocketInfo->dataBuf.len = sendStream.str().length();
+
+		Send(pSocketInfo);
+
+		kvp.second.PrintInfo();
+
+		printf_s("[Sent to %d] <cServerSocketInGame::SendSpawnedPioneer(...)>\n", (int)pSocketInfo->socket);
+	}
+	LeaveCriticalSection(&csInfosOfPioneers);
+
+
+	printf_s("[End] <cServerSocketInGame::SendSpawnedPioneer(...)>\n\n");
 }
 
 void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
@@ -934,6 +985,14 @@ void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pS
 	}
 
 
+	int id;
+	RecvStream >> id;
+
+	EnterCriticalSection(&csInfosOfPioneers);
+	InfosOfPioneers.erase(id);
+	LeaveCriticalSection(&csInfosOfPioneers);
+
+
 	/// 송신
 	if (!pSocketInfo)
 	{
@@ -944,7 +1003,46 @@ void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pS
 		BroadcastExceptOne(RecvStream, pSocketInfo->socket);
 	}
 
+
 	printf_s("[END] <cServerSocketInGame::DiedPioneer(...)>\n");
 
 }
 
+void cServerSocketInGame::InfoOfPioneer(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+{
+	printf_s("[Recv by %d] <cServerSocketInGame::InfoOfPioneer(...)>\n", (int)pSocketInfo->socket);
+
+
+	/// 수신
+	cInfoOfPioneer infoOfPioneer;
+	RecvStream >> infoOfPioneer; // 관전중인 게임클라이언트는 inofOfPioneer.ID == 0 입니다.
+
+	EnterCriticalSection(&csInfosOfPioneers);
+	if (InfosOfPioneers.find(infoOfPioneer.ID) != InfosOfPioneers.end())
+	{
+		InfosOfPioneers.at(infoOfPioneer.ID) = infoOfPioneer;
+	}
+	LeaveCriticalSection(&csInfosOfPioneers);
+
+	tsqInfoOfPioneer.push(infoOfPioneer);
+
+
+	/// 송신
+	EnterCriticalSection(&csInfosOfPioneers);
+	for (auto& kvp : InfosOfPioneers)
+	{
+		// Recv한 Pioneer는 제외하고 다른 Pioneer들의 정보를 전송합니다.
+		if (kvp.first == infoOfPioneer.ID)
+			continue;
+
+		stringstream sendStream;
+		sendStream << EPacketType::INFO_OF_PIONEER << endl;
+		sendStream << kvp .second << endl;
+
+		Broadcast(sendStream);
+	}
+	LeaveCriticalSection(&csInfosOfPioneers);
+
+
+	printf_s("[END] <cServerSocketInGame::InfoOfPioneer(...)>\n\n");
+}

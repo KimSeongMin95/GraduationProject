@@ -59,7 +59,11 @@ public:
 
 	class cClientSocket* ClientSocket = nullptr;
 
+
 	static cThreadSafetyQueue<SOCKET> tsqObserver;
+
+	static std::map<int, cInfoOfPioneer> InfosOfPioneers;
+	static CRITICAL_SECTION csInfosOfPioneers;
 
 public:
 	////////////////////////
@@ -123,8 +127,11 @@ public:
 
 	static void Observation(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	static void SendSpawnPioneer(cInfoOfPioneer& InfoOfPioneer);
+	static void SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer);
+	static void SendSpawnedPioneer(stSOCKETINFO* pSocket);
 
 	static void DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
+	static void InfoOfPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	static cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
 };

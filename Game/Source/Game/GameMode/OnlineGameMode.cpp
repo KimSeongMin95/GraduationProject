@@ -350,7 +350,7 @@ void AOnlineGameMode::RecvAndApply()
 	printf_s("[INFO] <AOnlineGameMode::RecvAndApply()>\n");
 
 	ClearTimerOfRecvAndApply();
-	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AOnlineGameMode::TimerOfRecvAndApply, 0.2f, true);
+	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AOnlineGameMode::TimerOfRecvAndApply, 0.5166f, true);
 }
 void AOnlineGameMode::TimerOfRecvAndApply()
 {
@@ -372,6 +372,8 @@ void AOnlineGameMode::TimerOfRecvAndApply()
 	{
 		GetScoreBoard();
 		SendInfoOfSpaceShip();
+		SetInfoOfPioneer();
+		GetInfoOfPioneer();
 	}
 	// 게임클라이언트
 	else if (ClientSocketInGame->IsClientSocketOn())
@@ -380,6 +382,8 @@ void AOnlineGameMode::TimerOfRecvAndApply()
 		RecvInfoOfSpaceShip();
 		RecvSpawnPioneer();
 		RecvDiedPioneer();
+		SendInfoOfPioneer();
+		RecvInfoOfPioneer();
 
 		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
 	}
@@ -582,15 +586,17 @@ void AOnlineGameMode::RecvInfoOfSpaceShip()
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfSpaceShip> copiedQueue = ClientSocketInGame->tsqSpaceShip.copy();
-	ClientSocketInGame->tsqSpaceShip.clear();
+	std::queue<cInfoOfSpaceShip> copiedQueue;
 
-	while (copiedQueue.empty() == false)
-	{
-		SpaceShip->SetInfoOfSpaceShip(copiedQueue.front());
-		copiedQueue.pop();
-	}
+	while (ClientSocketInGame->tsqSpaceShip.empty() == false)
+		copiedQueue.push(ClientSocketInGame->tsqSpaceShip.front_pop());
 
+	//while (copiedQueue.empty() == false)
+	//{
+	//	SpaceShip->SetInfoOfSpaceShip(copiedQueue.front());
+	//	copiedQueue.pop();
+	//}
+	SpaceShip->SetInfoOfSpaceShip(copiedQueue.back());
 
 	// 플레이어가 관전중인데 SpaceShip->StartLanding();하고 개척자중 AI가 남아있지 않으면 카메라 전환
 	//PioneerController->SetViewTargetWithBlend(SpaceShip, 2.0f);
@@ -617,8 +623,10 @@ void AOnlineGameMode::RecvSpawnPioneer()
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfPioneer> copiedQueue = ClientSocketInGame->tsqSpawnPioneer.copy();
-	ClientSocketInGame->tsqSpawnPioneer.clear();
+	std::queue<cInfoOfPioneer> copiedQueue;
+	
+	while (ClientSocketInGame->tsqSpawnPioneer.empty() == false)
+		copiedQueue.push(ClientSocketInGame->tsqSpawnPioneer.front_pop());
 
 	while (copiedQueue.empty() == false)
 	{
@@ -648,18 +656,148 @@ void AOnlineGameMode::RecvDiedPioneer()
 
 	/***********************************************************************/
 
-	std::queue<int> copiedQueue = ClientSocketInGame->tsqDiedPioneer.copy();
-	ClientSocketInGame->tsqDiedPioneer.clear();
+	std::queue<int> copiedQueue;
+
+	while (ClientSocketInGame->tsqDiedPioneer.empty() == false)
+		copiedQueue.push(ClientSocketInGame->tsqDiedPioneer.front_pop());
 
 	while (copiedQueue.empty() == false)
 	{
 		if (PioneerManager->Pioneers.Contains(copiedQueue.front()))
 		{
 			if (APioneer* pioneer = PioneerManager->Pioneers[copiedQueue.front()])
-			{			
+			{
 				// bDying을 바꿔주면 BaseCharacterAnimInstance에서 UPioneerAnimInstance::DestroyCharacter()를 호출하고
 				// Pioneer->DestroyCharacter();을 호출하여 알아서 소멸하게 됩니다.
 				pioneer->bDying = true;
+			}
+			PioneerManager->Pioneers.Remove(copiedQueue.front());
+		}
+
+		copiedQueue.pop();
+	}
+}
+
+void AOnlineGameMode::SetInfoOfPioneer()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (!ServerSocketInGame)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer()> if (!ServerSocketInGame)\n");
+		return;
+	}
+
+
+	for (auto& kvp : PioneerManager->Pioneers)
+	{
+		// SocketID가 0인 AI Pioneer만 적용, SocketID가 1인 게임서버가 조종중인 Pioneer도 포함
+		if (kvp.Value->SocketID > 1)
+			continue;
+
+		if (ServerSocketInGame->InfosOfPioneers.find(kvp.Key) != ServerSocketInGame->InfosOfPioneers.end())
+		{
+			// 정보 적용
+			ServerSocketInGame->InfosOfPioneers.at(kvp.Key) = kvp.Value->GetInfoOfPioneer();
+		}
+
+	}
+}
+void AOnlineGameMode::GetInfoOfPioneer()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (!ServerSocketInGame)
+	{
+		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer()> if (!ServerSocketInGame)\n");
+		return;
+	}
+
+	if (ServerSocketInGame->tsqInfoOfPioneer.empty())
+		return;
+
+	printf_s("[INFO] <AMainScreenGameMode::GetInfoOfPioneer()>\n");
+
+	/***********************************************************************/
+
+	std::queue<cInfoOfPioneer> copiedQueue;
+
+	while (ClientSocketInGame->tsqInfoOfPioneer.empty() == false)
+		copiedQueue.push(ClientSocketInGame->tsqInfoOfPioneer.front_pop());
+
+	while (copiedQueue.empty() == false)
+	{
+		int id = copiedQueue.front().ID;
+		if (PioneerManager->Pioneers.Contains(id))
+		{
+			if (APioneer* pioneer = PioneerManager->Pioneers[id])
+			{
+				pioneer->SetInfoOfPioneer(copiedQueue.front());
+			}
+		}
+
+		copiedQueue.pop();
+	}
+}
+void AOnlineGameMode::SendInfoOfPioneer()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (!ClientSocketInGame)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer()> if (!ClientSocketInGame)\n");
+		return;
+	}
+
+	// 임시
+	ClientSocketInGame->SendInfoOfPioneer(cInfoOfPioneer());
+}
+void AOnlineGameMode::RecvInfoOfPioneer()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (!ClientSocketInGame)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer()> if (!ClientSocketInGame)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqInfoOfPioneer.empty())
+		return;
+
+	printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfPioneer()>\n");
+
+	/***********************************************************************/
+
+	std::queue<cInfoOfPioneer> copiedQueue;
+
+	while (ClientSocketInGame->tsqInfoOfPioneer.empty() == false)
+		copiedQueue.push(ClientSocketInGame->tsqInfoOfPioneer.front_pop());
+
+	while (copiedQueue.empty() == false)
+	{
+		int id = copiedQueue.front().ID;
+		if (PioneerManager->Pioneers.Contains(id))
+		{
+			if (APioneer* pioneer = PioneerManager->Pioneers[id])
+			{
+				pioneer->SetInfoOfPioneer(copiedQueue.front());
 			}
 		}
 
