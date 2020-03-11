@@ -59,6 +59,9 @@ AOnlineGameMode::AOnlineGameMode()
 
 	//HUDClass = AMyHUD::StaticClass();
 
+	//// DefaultPawn이 생성되지 않게 합니다.
+	//DefaultPawnClass = nullptr; 
+
 	// use our custom PlayerController class
 	PlayerControllerClass = APioneerController::StaticClass();
 
@@ -73,7 +76,7 @@ AOnlineGameMode::AOnlineGameMode()
 	//}
 	///*** 블루프린트를 이용한 방법 : End ***/
 
-	DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
+
 
 	//// Default로 비활성화되어있는 Tick()을 활성화 합니다.
 	//PrimaryActorTick.SetTickFunctionEnable(true);
@@ -107,7 +110,7 @@ void AOnlineGameMode::BeginPlay()
 	// 게임서버, 게임클라이언트 모두
 	RecvAndApply();
 
-	CountRecvOfGameServer = 0;
+	CountRecvOfGameServer = 0.0f;
 
 	//////////////////////////
 	// Widget
@@ -149,7 +152,7 @@ void AOnlineGameMode::StartPlay()
 
 		PioneerManager->SetPioneerController(PioneerController);
 
-		PioneerController->SetViewTargetWithBlend(PioneerManager->GetWorldViewCamera());
+		//PioneerController->SetViewTargetWithBlend(PioneerManager->GetWorldViewCamera());
 	}
 }
 
@@ -157,6 +160,8 @@ void AOnlineGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	CountRecvOfGameServer += DeltaTime;
+
 	// 임시
 	TickOfSpaceShip += DeltaTime;
 	if (TickOfSpaceShip >= 30.0f)
@@ -488,15 +493,13 @@ void AOnlineGameMode::RecvScoreBoard()
 	if (ClientSocketInGame->tsqScoreBoard.empty())
 	{
 		// 5초동안 게임서버 응답 확인
-		CountRecvOfGameServer++;
-		if (CountRecvOfGameServer >= 25)
+		if (CountRecvOfGameServer >= 5.0f)
 		{
 			InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
+			CountRecvOfGameServer = 0.0f;
 		}
 		return;
 	}
-
-	CountRecvOfGameServer = 0;
 
 	printf_s("[START] <AOnlineGameMode::RecvScoreBoard()>\n");
 

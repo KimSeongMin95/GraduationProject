@@ -7,6 +7,8 @@
 #include "Character/Pioneer.h"
 
 #include "Landscape.h"
+
+#include "Network/Packet.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -74,8 +76,7 @@ ASpaceShip::ASpaceShip()
 	//SpringArmComp->CameraLagSpeed = 1.0f; // 카메라 이동속도입니다.
 
 	InitSpringArmComp(2500.0f, FRotator(-30.0f, 150.0f, 0.0f), FVector(-20.0f, -870.0f, 190.0f));
-	TargetRotation = FRotator(-30.0f, 45.0f, 0.0f);
-	bRotateTargetRotation = true;
+
 
 	// 따라다니는 카메라를 생성합니다.
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
@@ -100,11 +101,18 @@ ASpaceShip::ASpaceShip()
 	Gravity = 980.0f;
 
 	// 중력가속도가 9.8m/s^2 이므로 1초에 9.8미터가 언리얼에서는 980입니다. 
-	Acceleration = FVector(0.0f, 0.0f, Gravity);
+	AccelerationZ = Gravity;
+	Acceleration = FVector(0.0f, 0.0f, AccelerationZ);
 
 	LandingHeight = 330.0f;
 
 	State = ESpaceShipState::Idling;
+
+	bHiddenInGame = false;
+	bSimulatePhysics = true;
+	ScaleOfEngineParticleSystem = 0.010f;
+	bEngine = false;
+
 }
 
 void ASpaceShip::BeginPlay()
@@ -116,8 +124,6 @@ void ASpaceShip::BeginPlay()
 void ASpaceShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	RotateTargetRotation(DeltaTime);
 
 	if (PhysicsBox->IsSimulatingPhysics())
 		PhysicsBox->AddForce(Acceleration, NAME_None, true);
@@ -302,17 +308,15 @@ void ASpaceShip::StartLanding()
 	SkeletalMesh->SetHiddenInGame(false);
 	EngineParticleSystem->SetHiddenInGame(false);
 	EngineParticleSystem2->SetHiddenInGame(false);
+	bHiddenInGame = false;
 
 	PhysicsBox->SetSimulatePhysics(true);
+	bSimulatePhysics = true;
 
-	Acceleration = FVector(0.0f, 0.0f, 0.0f);
-
-	PhysicsBox->BodyInstance.bLockXTranslation = true;
-	PhysicsBox->BodyInstance.bLockYTranslation = true;
+	AccelerationZ = 0.0f;
+	Acceleration = FVector(0.0f, 0.0f, AccelerationZ);
 
 	bPlayalbeLandingAnim = true;
-
-	bOnOffEngines = true;
 
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 		GetWorldTimerManager().ClearTimer(TimerHandle);
@@ -339,7 +343,7 @@ void ASpaceShip::Landing()
 		{
 			SetScaleOfEngineParticleSystem(0.010f);
 
-			OnOffEngines();
+			OnEngines();
 		}
 	}
 	else if (100.0f <= dist && dist < 500.0f)
@@ -363,14 +367,15 @@ void ASpaceShip::Landing()
 		PlayLandingAnimation();
 
 		// 가속도를 중력가속도에 맞추어 정지상태로 만듭니다.
-		Acceleration = FVector(0.0f, 0.0f, Gravity);
+		AccelerationZ = Gravity;
+		Acceleration = FVector(0.0f, 0.0f, AccelerationZ);
 
 		// Physics를 끕니다.
 		PhysicsBox->SetSimulatePhysics(false);
-		
+		bSimulatePhysics = false;
+
 		// 엔진을 끕니다.
-		bOnOffEngines = true;
-		OnOffEngines();
+		OffEngines();
 
 		State = ESpaceShipState::Landed;
 
@@ -428,13 +433,13 @@ void ASpaceShip::StartTakingOff()
 	State = ESpaceShipState::TakingOff;
 
 	// 상승할 수 있도록 가속도를 높입니다.
-	Acceleration = FVector(0.0f, 0.0f, Gravity + 150.0f);
+	AccelerationZ = Gravity + 150.0f;
+	Acceleration = FVector(0.0f, 0.0f, AccelerationZ);
 
 	SetScaleOfEngineParticleSystem(0.0075f);
 
 	// 엔진을 점화합니다.
-	bOnOffEngines = true;
-	OnOffEngines();
+	OnEngines();
 
 	// 이륙 애니메이션을 실행합니다.
 	PlayTakingOffAnimation();
@@ -449,11 +454,13 @@ void ASpaceShip::TakingOff()
 	if (PhysicsBox->IsSimulatingPhysics() == false)
 	{
 		PhysicsBox->SetSimulatePhysics(true);
+		bSimulatePhysics = true;
 
 		SetScaleOfEngineParticleSystem(0.015f);
 	}
-	
-	Acceleration = FVector(0.0f, 0.0f, Gravity + 300.0f);
+
+	AccelerationZ = Gravity + 300.0f;
+	Acceleration = FVector(0.0f, 0.0f, AccelerationZ);
 
 	float dist = CalculateDistanceToLand();
 
@@ -469,13 +476,14 @@ void ASpaceShip::TakingOff()
 		SkeletalMesh->SetHiddenInGame(true); 
 		EngineParticleSystem->SetHiddenInGame(true);
 		EngineParticleSystem2->SetHiddenInGame(true);
+		bHiddenInGame = true;
 
 		// Physics를 끕니다.
 		PhysicsBox->SetSimulatePhysics(false);
+		bSimulatePhysics = false;
 
 		// 엔진을 끕니다.
-		bOnOffEngines = true;
-		OnOffEngines();
+		OffEngines();
 
 		State = ESpaceShipState::Flying;
 	}
@@ -535,33 +543,56 @@ void ASpaceShip::ManageAcceleration(float MinLimitOfVelocityZ, float MaxLimitOfV
 	float veloZ = FMath::Abs(velocity.Z);
 
 	if (MaxLimitOfVelocityZ < veloZ)
-		// 현재 속력인 velocity.Z에 Power를 곱하여 더해 가속도를 줄입니다.
-		Acceleration = FVector(0.0f, 0.0f, Gravity - (velocity.Z * Power));
+	{	// 현재 속력인 velocity.Z에 Power를 곱하여 더해 가속도를 줄입니다.
+		AccelerationZ = Gravity - (velocity.Z * Power);
+		Acceleration = FVector(0.0f, 0.0f, AccelerationZ);
+		
+	}
 	else if (MinLimitOfVelocityZ <= veloZ && veloZ <= MaxLimitOfVelocityZ)
-		// 적정범위이므로 가속도를 0으로 맞춥니다.
-		Acceleration = FVector(0.0f, 0.0f, Gravity);
+	{	// 적정범위이므로 가속도를 0으로 맞춥니다.
+		AccelerationZ = Gravity;
+		Acceleration = FVector(0.0f, 0.0f, AccelerationZ);
+	}
 	else if (veloZ < MinLimitOfVelocityZ)
-		// 중력가속도를 받게하여 속도를 높입니다.
-		Acceleration = FVector(0.0f, 0.0f, 0.0f);
+	{	// 중력가속도를 받게하여 속도를 높입니다.
+		AccelerationZ = 0.0f;
+		Acceleration = FVector(0.0f, 0.0f, AccelerationZ);
+	}
 }
 
-void ASpaceShip::OnOffEngines()
+void ASpaceShip::OnEngines()
 {
-	// 한 번만 실행되도록 하는 플래그입니다.
-	if (!bOnOffEngines)
+	// 이미 켜져있으면 더이상 실행하지 않습니다.
+	if (bEngine)
 		return;
-	else
-		bOnOffEngines = false;
 
 	if (!EngineParticleSystem || !EngineParticleSystem2)
 	{
-		printf_s("[ERROR] <ASpaceShip::OnOffEngines()> if (!EngineParticleSystem || !EngineParticleSystem2)\n");
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::OnOffEngines()> if (!EngineParticleSystem || !EngineParticleSystem2)"));
+		printf_s("[ERROR] <ASpaceShip::OnEngines()> if (!EngineParticleSystem || !EngineParticleSystem2)\n");
 		return;
 	}
 
 	EngineParticleSystem->ToggleActive();
 	EngineParticleSystem2->ToggleActive();
+
+	bEngine = true;
+}
+void ASpaceShip::OffEngines()
+{
+	// 이미 꺼져있으면 더이상 실행하지 않습니다.
+	if (!bEngine)
+		return;
+
+	if (!EngineParticleSystem || !EngineParticleSystem2)
+	{
+		printf_s("[ERROR] <ASpaceShip::OnEngines()> if (!EngineParticleSystem || !EngineParticleSystem2)\n");
+		return;
+	}
+
+	EngineParticleSystem->ToggleActive();
+	EngineParticleSystem2->ToggleActive();
+
+	bEngine = false;
 }
 
 void ASpaceShip::SetScaleOfEngineParticleSystem(float Scale /*= 0.015f*/)
@@ -575,6 +606,8 @@ void ASpaceShip::SetScaleOfEngineParticleSystem(float Scale /*= 0.015f*/)
 
 	EngineParticleSystem->SetRelativeScale3D(FVector(Scale));
 	EngineParticleSystem2->SetRelativeScale3D(FVector(Scale));
+
+	ScaleOfEngineParticleSystem = Scale;
 }
 
 void ASpaceShip::PlayLandingAnimation()
@@ -613,67 +646,85 @@ void ASpaceShip::PlayTakingOffAnimation()
 	SkeletalMesh->Play(false);
 }
 
-void ASpaceShip::RotateTargetRotation(float DeltaTime)
-{
-	if (!SpringArmComp)
-	{
-		printf_s("[ERROR] <ASpaceShip::RotateTargetRotation(...)> if (!SpringArmComp)\n");
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <ASpaceShip::RotateTargetRotation(...)> if (!SpringArmComp)"));
-		return;
-	}
-
-	if (!bRotateTargetRotation)
-		return;
-
-	FRotator CurrentRotation = SpringArmComp->RelativeRotation; // Normalized
-	if (CurrentRotation.Yaw < 0.0f)
-		CurrentRotation.Yaw += 360.0f;
-
-	FRotator DeltaRot = FRotator(0.0f, 18.0f * DeltaTime, 0.0f);
-
-	float sign = 1.0f;
-	float DifferenceYaw = FMath::Abs(CurrentRotation.Yaw - TargetRotation.Yaw);
-
-	// 180도 이상 차이가 나면 가까운 쪽으로 회전하도록 조정합니다.
-	if (DifferenceYaw > 180.0f)
-		sign = -1.0f;
-
-	// 흔들림 방지용
-	bool under = false; // CurrentRotation.Yaw가 TargetRotation.Yaw보다 작은 상태
-	bool upper = false; // CurrentRotation.Yaw가 TargetRotation.Yaw보다 큰 상태
-
-	// 회전값을 점진적으로 조정합니다.
-	if (CurrentRotation.Yaw < TargetRotation.Yaw)
-	{
-		CurrentRotation.Yaw += DeltaRot.Yaw * sign;
-		under = true;
-	}
-	else
-	{
-		CurrentRotation.Yaw -= DeltaRot.Yaw * sign;
-		upper = true;
-	}
-
-	// 작았었는데 커졌다면 넘어간 것이므로 회전을 바로 적용합니다.
-	if (upper && CurrentRotation.Yaw < TargetRotation.Yaw)
-	{
-		CurrentRotation = TargetRotation;
-		bRotateTargetRotation = false;
-	}
-	// 컸었는데 작아졌다면 넘어간 것이므로 회전을 바로 적용합니다.
-	else if (under && CurrentRotation.Yaw > TargetRotation.Yaw)
-	{
-		CurrentRotation = TargetRotation;
-		bRotateTargetRotation = false;
-	}
-
-	// 변경된 각도로 다시 설정합니다.
-	SpringArmComp->SetRelativeRotation(CurrentRotation);
-}
-
 void ASpaceShip::SetInitLocation(FVector Location)
 {
 	InitLocation = Location;
+}
+
+///////////
+// 네트워크
+///////////
+void ASpaceShip::SetInfoOfSpaceShip(class cInfoOfSpaceShip InfoOfSpaceShip)
+{
+	// 다른 경우에만
+	ESpaceShipState newState = (ESpaceShipState)InfoOfSpaceShip.State;
+	if (State != newState)
+	{
+		State = newState;
+
+		if (State == ESpaceShipState::Landing)
+		{
+			StartLanding();
+		}
+		else if (State == ESpaceShipState::TakingOff)
+		{
+			StartTakingOff();
+		}
+	}
+
+	SetActorLocation(FVector(InfoOfSpaceShip.LocX, InfoOfSpaceShip.LocY, InfoOfSpaceShip.LocZ));
+	
+	bHiddenInGame = InfoOfSpaceShip.bHiddenInGame;
+	if (InfoOfSpaceShip.bHiddenInGame)
+	{
+		if (SkeletalMesh)
+			SkeletalMesh->SetHiddenInGame(true);
+		if (EngineParticleSystem)
+			EngineParticleSystem->SetHiddenInGame(true);
+		if (EngineParticleSystem2)
+			EngineParticleSystem2->SetHiddenInGame(true);
+	}
+	else
+	{
+		if (SkeletalMesh)
+			SkeletalMesh->SetHiddenInGame(false);
+		if (EngineParticleSystem)
+			EngineParticleSystem->SetHiddenInGame(false);
+		if (EngineParticleSystem2)
+			EngineParticleSystem2->SetHiddenInGame(false);
+	}
+
+	bSimulatePhysics = InfoOfSpaceShip.bSimulatePhysics;
+	if (InfoOfSpaceShip.bSimulatePhysics)
+	{
+		if (PhysicsBox)
+			PhysicsBox->SetSimulatePhysics(true);
+	}
+	else
+	{
+		if (PhysicsBox)
+			PhysicsBox->SetSimulatePhysics(false);
+	}
+
+	SetScaleOfEngineParticleSystem(InfoOfSpaceShip.bSimulatePhysics);
+
+	AccelerationZ = InfoOfSpaceShip.AccelerationZ;
+	Acceleration = FVector(0.0f, 0.0f, AccelerationZ);
+
+	if (InfoOfSpaceShip.bEngine)
+	{
+		OnEngines();
+	}
+	else
+	{
+		OffEngines();
+	}
+}
+class cInfoOfSpaceShip ASpaceShip::GetInfoOfSpaceShip()
+{
+	cInfoOfSpaceShip infoOfSpaceShip((int)State, GetActorLocation(), bHiddenInGame, bSimulatePhysics, ScaleOfEngineParticleSystem, AccelerationZ, bEngine);
+
+	return infoOfSpaceShip;
 }
 /*** ASpaceShip : End ***/
 

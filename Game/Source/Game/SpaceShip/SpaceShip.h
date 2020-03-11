@@ -125,14 +125,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "ASpaceShip")
 		float LandingHeight; /** 착륙하는 땅까지의 높이 */
 
-	UPROPERTY(VisibleAnywhere, Category = "Rotation")
-		bool bRotateTargetRotation;
+	bool bPlayalbeLandingAnim; /** 착륙 애니메이션 토글 */
+	bool bOnOffEngines; /** 엔진 점화 토글 */
 
-	UPROPERTY(VisibleAnywhere, Category = "Rotation")
-		FRotator TargetRotation; /** 목표하는 회전값 */
+	///////////
+	// 네트워크
+	///////////
+	bool bHiddenInGame;
+	bool bSimulatePhysics;
+	float ScaleOfEngineParticleSystem;
+	float AccelerationZ;
+	bool bEngine;
 
-	bool bPlayalbeLandingAnim; /** 착륙 애니메이션 플래그 */
-	bool bOnOffEngines; /** 엔진 점화 플래그 */
 
 private:
 	///////////////////////
@@ -180,7 +184,8 @@ public:
 	void ManageAcceleration(float MinLimitOfVelocityZ = 1.0f, float MaxLimitOfVelocityZ = 1.0f, float Power = 1.0f);
 
 	/** 엔진 파티클을 켜고 끕니다. */
-	void OnOffEngines();
+	void OnEngines();
+	void OffEngines();
 
 	/** 엔진 파티클의 Scale을 조정합니다. */
 	void SetScaleOfEngineParticleSystem(float Scale = 0.015f);
@@ -188,8 +193,12 @@ public:
 	void PlayLandingAnimation();
 	void PlayTakingOffAnimation();
 
-	virtual void RotateTargetRotation(float DeltaTime);
-
 	void SetInitLocation(FVector Location);
+
+	///////////
+	// 네트워크
+	///////////
+	void SetInfoOfSpaceShip(class cInfoOfSpaceShip InfoOfSpaceShip);
+	class cInfoOfSpaceShip GetInfoOfSpaceShip();
 /*** ASpaceShip : End ***/
 };

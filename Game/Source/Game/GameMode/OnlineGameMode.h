@@ -139,7 +139,7 @@ private:
 	void GetScoreBoard();
 	void RecvScoreBoard();
 	/** 게임서버 연결 확인용 */
-	int CountRecvOfGameServer; 
+	float CountRecvOfGameServer; 
 
 	/////////////////////////////////////////////////
 	// 동기화

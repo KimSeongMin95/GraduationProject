@@ -57,6 +57,10 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		return;
 	}
 
+	// bDying이 체크되었으나 체력이 양수면, 체력을 음수로 만들어서 죽는 과정을 진행합니다.
+	if (Pioneer->bDying && (Pioneer->HealthPoint > 0.0f))
+		Pioneer->SetHealthPoint(-Pioneer->HealthPoint - 1.0f);
+
 	/// CharacterAI
 	switch (CharacterAI)
 	{

@@ -786,3 +786,91 @@ public:
 		return transform;
 	}
 };
+
+class GAME_API cInfoOfSpaceShip
+{
+public:
+	int State;
+
+	float LocX;
+	float LocY;
+	float LocZ;
+
+	bool bHiddenInGame;
+	bool bSimulatePhysics;
+	float ScaleOfEngineParticleSystem;
+	float AccelerationZ;
+	bool bEngine;
+
+public:
+	cInfoOfSpaceShip()
+	{
+		State = 0;
+
+		LocX = 0.0f;
+		LocY = 0.0f;
+		LocZ = 0.0f;
+
+		bHiddenInGame = false;
+		bSimulatePhysics = true;
+		ScaleOfEngineParticleSystem = 0.010f;
+		AccelerationZ = 980.0f;
+		bEngine = false;
+	}
+	cInfoOfSpaceShip(int State, FVector Location, bool bHiddenInGame, bool bSimulatePhysics, float ScaleOfEngineParticleSystem, float AccelerationZ, bool bEngine)
+	{
+		this->State = State;
+
+		LocX = Location.X;
+		LocY = Location.Y;
+		LocZ = Location.Z;
+
+		this->bHiddenInGame = bHiddenInGame;
+		this->bSimulatePhysics = bSimulatePhysics;
+		this->ScaleOfEngineParticleSystem = ScaleOfEngineParticleSystem;
+		this->AccelerationZ = AccelerationZ;
+		this->bEngine = bEngine;
+	}
+	~cInfoOfSpaceShip()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfSpaceShip& Info)
+	{
+		Stream << Info.State << endl;
+		Stream << Info.LocX << endl;
+		Stream << Info.LocY << endl;
+		Stream << Info.LocZ << endl;
+		Stream << Info.bHiddenInGame << endl;
+		Stream << Info.bSimulatePhysics << endl;
+		Stream << Info.ScaleOfEngineParticleSystem << endl;
+		Stream << Info.AccelerationZ << endl;
+		Stream << Info.bEngine << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfSpaceShip& Info)
+	{
+		Stream >> Info.State;
+		Stream >> Info.LocX;
+		Stream >> Info.LocY;
+		Stream >> Info.LocZ;
+		Stream >> Info.bHiddenInGame;
+		Stream >> Info.bSimulatePhysics;
+		Stream >> Info.ScaleOfEngineParticleSystem;
+		Stream >> Info.AccelerationZ;
+		Stream >> Info.bEngine;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfSpaceShip> State: %d, LocX: %f, LocY: %f, LocZ: %f, bHiddenInGame: %s, bSimulatePhysics: %s, ScaleOfEngineParticleSystem: %f, AccelerationZ: %f, bEngine: %s \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), State, LocX, LocY, LocZ, (bHiddenInGame == true) ? "true" : "false", (bSimulatePhysics == true) ? "true" : "false", ScaleOfEngineParticleSystem, AccelerationZ, (bEngine == true) ? "true" : "false");
+	}
+};

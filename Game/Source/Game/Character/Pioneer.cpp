@@ -839,37 +839,21 @@ void APioneer::OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, clas
 
 void APioneer::DestroyCharacter()
 {
-	// Weapon은 PioneerController와 PioneerAIController 상관없기 때문에 제일 먼저 소멸
 	for (auto& weapon : Weapons)
 	{
 		if (weapon)
 			weapon->Destroy();
 	}
 
-	// AIController는 이미 제거되었으므로 플레이어가 조종하는 개척자가 아니면 바로 소멸
-	if (!GetController())
-	{
-		/////////////////////////////////
-		// 게임서버는 AI Pioneer의 죽음을 알림
-		/////////////////////////////////
-		if (ServerSocketInGame)
-		{
-			if (ServerSocketInGame->IsServerOn())
-			{
-				stringstream sendStream;
-				sendStream << EPacketType::DIED_PIONEER << endl;
-				sendStream << ID << endl;
-				ServerSocketInGame->DiedPioneer(sendStream, nullptr);
-			}
-		}
+	if (GetMesh())
+		GetMesh()->DestroyComponent();
 
-		Destroy();
+	if (GetCharacterMovement())
+		GetCharacterMovement()->DestroyComponent();
 
-		return;
-	}
+	if (HelmetMesh)
+		HelmetMesh->DestroyComponent();
 
-	/*************************************************************************/
-	
 	//////////////////////////////////////////////////////////
 	// 게임서버는와 게임클라이언트는 자신의 죽음과 관전상태를 알림
 	//////////////////////////////////////////////////////////
@@ -882,25 +866,23 @@ void APioneer::DestroyCharacter()
 			sendStream << ID << endl;
 			ServerSocketInGame->DiedPioneer(sendStream, nullptr);
 
-			ServerSocketInGame->tsqObserver.push(ServerSocketInGame->SocketID);
+			// 조종하던 Pioneer라면
+			if (APioneerController* pioneerController = Cast<APioneerController>(GetController()))
+			{
+				ServerSocketInGame->tsqObserver.push(ServerSocketInGame->SocketID);
+			}
 		}
 		else if (ClientSocketInGame->IsClientSocketOn())
 		{
-			ClientSocketInGame->SendDiedPioneer(ID);
+			// 조종하던 Pioneer라면
+			if (APioneerController* pioneerController = Cast<APioneerController>(GetController()))
+			{
+				ClientSocketInGame->SendDiedPioneer(ID);
 
-			ClientSocketInGame->SendObservation();
+				ClientSocketInGame->SendObservation();
+			}
 		}
 	}
-
-
-	if (GetMesh())
-		GetMesh()->DestroyComponent();
-
-	if (GetCharacterMovement())
-		GetCharacterMovement()->DestroyComponent();
-
-	if (HelmetMesh)
-		HelmetMesh->DestroyComponent();
 
 	if (PioneerManager)
 	{
@@ -911,13 +893,13 @@ void APioneer::DestroyCharacter()
 		//PioneerManager->SwitchOtherPioneer(this, 1.0f);
 
 		// 일단 CameraOfCurrentPioneer로 카메라 전환
-		if (APioneerController* PioneerController = Cast<APioneerController>(GetController()))
+		if (APioneerController* pioneerController = Cast<APioneerController>(GetController()))
 		{
 			CopyTopDownCameraTo(PioneerManager->GetCameraOfCurrentPioneer());
 
-			PioneerController->SetViewTargetWithBlend(PioneerManager->GetCameraOfCurrentPioneer());
+			pioneerController->SetViewTargetWithBlend(PioneerManager->GetCameraOfCurrentPioneer());
 
-			PioneerController->OnUnPossess();
+			pioneerController->OnUnPossess();
 		}
 	}
 	else
