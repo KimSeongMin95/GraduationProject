@@ -18,7 +18,28 @@
 #include <sstream>
 
 using namespace std;
-
+//void MainServer::Send(stSOCKETINFO* pSocketInfo)
+//{
+//	//printf_s("<MainServer::Send(...)> : %s\n", pSocketInfo->dataBuf.buf);
+//
+//	DWORD	sendBytes;
+//	DWORD	dwFlags = 0;
+//
+//	int nResult = WSASend(
+//		pSocketInfo->socket,
+//		&(pSocketInfo->dataBuf),
+//		1,
+//		&sendBytes,
+//		dwFlags,
+//		NULL,
+//		NULL
+//	);
+//
+//	if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+//	{
+//		printf_s("[ERROR] <MainServer::Send(...)> WSASend 실패 : %d\n", WSAGetLastError());
+//	}
+//}
 #define	MAX_BUFFER		4096
 #define SERVER_PORT		8000
 
@@ -28,9 +49,11 @@ struct stSOCKETINFO
 	WSAOVERLAPPED	overlapped;
 	WSABUF			dataBuf;
 	SOCKET			socket;
+
 	char			messageBuffer[MAX_BUFFER];
 	int				recvBytes;
-	int				sendBytes;
+	int				sendBytes; // WSASend로 전송할 데이터의 바이트 크기
+	int				sentBytes; // WSASend로 전송된 데이터의 바이트 크기
 
 	string			IPv4Addr; // 메인 클라이언트의 IP 주소
 	int				Port;	  // 메인 클라이언트의 Port 주소

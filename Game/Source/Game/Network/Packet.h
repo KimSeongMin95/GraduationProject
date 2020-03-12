@@ -45,7 +45,7 @@
 using namespace std;
 
 
-#define	MAX_BUFFER 4096 * 2
+#define	MAX_BUFFER 4096
 
 
 // 소켓 통신 구조체
@@ -54,9 +54,11 @@ struct stSOCKETINFO
 	WSAOVERLAPPED	overlapped;
 	WSABUF			dataBuf;
 	SOCKET			socket;
+
 	char			messageBuffer[MAX_BUFFER];
 	int				recvBytes;
-	int				sendBytes;
+	int				sendBytes; // WSASend로 전송할 데이터의 바이트 크기
+	int				sentBytes; // WSASend로 전송된 데이터의 바이트 크기
 
 	string			IPv4Addr; // 게임 클라이언트의 IP 주소
 	int				Port;	  // 게임 클라이언트의 Port 주소

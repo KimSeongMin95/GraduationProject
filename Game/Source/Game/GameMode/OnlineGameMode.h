@@ -114,47 +114,49 @@ public:
 	/////////////////////////////////////////////////
 	// 타이머
 	/////////////////////////////////////////////////
-	UFUNCTION(Category = "AOnlineGameMode")
-		void ScoreBoard();
-	UFUNCTION(Category = "Timer")
-		void TimerOfScoreBoard();
-	UFUNCTION(Category = "Timer")
-		void ClearTimerOfScoreBoard();
-	FTimerHandle thScoreBoard;
+	//UFUNCTION(Category = "AOnlineGameMode")
+	//	void ScoreBoard();
+	//UFUNCTION(Category = "Timer")
+	//	void TimerOfScoreBoard();
+	//UFUNCTION(Category = "Timer")
+	//	void ClearTimerOfScoreBoard();
+	//FTimerHandle thScoreBoard;
 
-	UFUNCTION(Category = "AOnlineGameMode")
-		void RecvAndApply();
-	UFUNCTION(Category = "Timer")
-		void TimerOfRecvAndApply();
-	UFUNCTION(Category = "Timer")
-		void ClearTimerOfRecvAndApply();
-	FTimerHandle thRecvAndApply;
+	//UFUNCTION(Category = "AOnlineGameMode")
+	//	void RecvAndApply();
+	//UFUNCTION(Category = "Timer")
+	//	void TimerOfRecvAndApply();
+	//UFUNCTION(Category = "Timer")
+	//	void ClearTimerOfRecvAndApply();
+	//FTimerHandle thRecvAndApply;
 
 private:
+	/////////////////////////////////////////////////
+	// 
+	/////////////////////////////////////////////////
 	void FindPioneerController();
-
-	void SpawnPioneerManager(); 
+	void SpawnPioneerManager();
 	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
-
-	void GetScoreBoard();
-	void RecvScoreBoard();
 
 	/////////////////////////////////////////////////
 	// 동기화
 	/////////////////////////////////////////////////
-	void SendInfoOfSpaceShip(); // 게임서버
-	void RecvInfoOfSpaceShip(); // 게임클라이언트
-	float TickOfSpaceShip; // 임시
+	//void GetScoreBoard();
+	//void RecvScoreBoard();
 
-	void RecvSpawnPioneer(); // 게임클라이언트
+	//void SendInfoOfSpaceShip(); // 게임서버
+	//void RecvInfoOfSpaceShip(); // 게임클라이언트
+	//float TickOfSpaceShip; // 임시
 
-	void RecvDiedPioneer(); // 게임클라이언트
+	//void RecvSpawnPioneer(); // 게임클라이언트
+
+	//void RecvDiedPioneer(); // 게임클라이언트
 
 
-	void SetInfoOfPioneer(); // 게임서버
-	void GetInfoOfPioneer(); // 게임서버
-	void SendInfoOfPioneer(); // 게임클라이언트
-	void RecvInfoOfPioneer(); // 게임클라이언트
+	//void SetInfoOfPioneer(); // 게임서버
+	//void GetInfoOfPioneer(); // 게임서버
+	//void SendInfoOfPioneer(); // 게임클라이언트
+	//void RecvInfoOfPioneer(); // 게임클라이언트
 
 protected:
 

@@ -198,7 +198,7 @@ void MainServer::WorkerThread()
 	BOOL	bResult;
 
 	// Overlapped I/O 작업에서 전송된 데이터 크기
-	DWORD	recvBytes;
+	DWORD	numberOfBytesTransferred;
 
 	// Completion Key를 받을 포인터 변수
 	stSOCKETINFO* pCompletionKey;
@@ -209,43 +209,61 @@ void MainServer::WorkerThread()
 
 	while (bWorkerThread)
 	{
-		//printf_s("[INFO] before GetQueuedCompletionStatus(...)\n");
+		printf_s("[INFO] <MainServer::WorkerThread()> before GetQueuedCompletionStatus(...)\n");
 		/**
 		 * 이 함수로 인해 쓰레드들은 WaitingThread Queue 에 대기상태로 들어가게 됨
 		 * 완료된 Overlapped I/O 작업이 발생하면 IOCP Queue 에서 완료된 작업을 가져와 뒷처리를 함
 		 */
 		bResult = GetQueuedCompletionStatus(hIOCP,
-			&recvBytes,						// 실제로 전송된 바이트
+			&numberOfBytesTransferred,		// 실제로 전송된 바이트
 			(PULONG_PTR)& pCompletionKey,	// completion key
 			(LPOVERLAPPED*)& pSocketInfo,	// overlapped I/O 객체
 			INFINITE						// 대기할 시간
 		);
-		//printf_s("[INFO] after GetQueuedCompletionStatus(...)\n");
+		printf_s("[INFO] <MainServer::WorkerThread()> after GetQueuedCompletionStatus(...)\n");
+		printf_s("[INFO] <MainServer::WorkerThread()> ThreadID: %d \n", (int)GetCurrentThreadId());
 
-		// PostQueuedCompletionStatus(...)로 종료
+
+		// PostQueuedCompletionStatus(...)로 강제종료
 		if (pCompletionKey == 0)
 		{
-			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> if (pCompletionKey == 0)\n");
+			printf_s("[INFO] <MainServer::WorkerThread()> if (pCompletionKey == 0)\n");
 			return;
 		}
 
-		// 비정상 접속 끊김은 GetQueuedCompletionStatus가 FALSE를 리턴하고 수신바이트 크기가 0입니다.
-		if (!bResult && recvBytes == 0)
+		// WSASend가 완료된 것이므로 바이트 확인
+		if (pSocketInfo->sendBytes > 0)
 		{
-			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> socket(%d) 접속 끊김\n", (int)pSocketInfo->socket);
+			printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->sendBytes: %d \n", pSocketInfo->sendBytes);
+			printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->sentBytes: %d \n", pSocketInfo->sentBytes);
+			printf_s("[INFO] <MainServer::WorkerThread()> numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
+			
+			// WSASend에서 new로 새로 동적할당한 stSOCKETINFO 이므로 송신이 정상적으로 완료되면 delete 해줍니다.
+			if (pSocketInfo->sendBytes == pSocketInfo->sentBytes)
+			{
+				delete pSocketInfo;
+				printf_s("[INFO] <MainServer::WorkerThread()> delete pSocketInfo; \n");
+			}
+			continue;
+		}
+
+		// 비정상 접속 끊김은 GetQueuedCompletionStatus가 FALSE를 리턴하고 수신바이트 크기가 0입니다.
+		if (!bResult && numberOfBytesTransferred == 0)
+		{
+			printf_s("[INFO] <MainServer::WorkerThread()> socket(%d) 접속 끊김\n", (int)pSocketInfo->socket);
 			CloseSocket(pSocketInfo);
 			continue;
 		}
 
 		// 정상 접속 끊김은 GetQueuedCompletionStatus가 TRUE를 리턴하고 수신바이트 크기가 0입니다.
-		if (recvBytes == 0)
+		if (numberOfBytesTransferred == 0)
 		{
-			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> socket(%d) 접속 끊김 if (recvBytes == 0)\n", (int)pSocketInfo->socket);
+			printf_s("[INFO] <MainServer::WorkerThread()> socket(%d) 접속 끊김 if (recvBytes == 0)\n", (int)pSocketInfo->socket);
 			CloseSocket(pSocketInfo);
 			continue;
 		}
 
-		pSocketInfo->dataBuf.len = recvBytes;
+		pSocketInfo->dataBuf.len = numberOfBytesTransferred;
 
 		try
 		{
@@ -381,27 +399,116 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	printf_s("[End] <MainServer::CloseSocket(...)>\n\n");
 }
 
+
+
+
+
+void CALLBACK SendCompletionROUTINE(
+	IN DWORD dwError,
+	IN DWORD cbTransferred,
+	IN LPWSAOVERLAPPED lpOverlapped,
+	IN DWORD dwFlags)
+{
+	printf_s("[INFO] <CompletionROUTINE(...)> WSASend 완료 \n");
+
+	if (dwError != 0)
+	{
+		printf_s("[ERROR] <CompletionROUTINE(...)> WSASend 실패 : %d\n", WSAGetLastError());
+	}
+
+
+
+}
+
 void MainServer::Send(stSOCKETINFO* pSocketInfo)
 {
-	//printf_s("<MainServer::Send(...)> : %s\n", pSocketInfo->dataBuf.buf);
+	printf_s("[START] <MainServer::Send(...)>\n");
 
-	DWORD	sendBytes;
+	// https://moguwai.tistory.com/entry/Overlapped-IO?category=363471
+	// https://a292run.tistory.com/entry/%ED%8E%8C-WSASend
+	// https://docs.microsoft.com/ko-kr/windows/win32/api/winsock2/nf-winsock2-wsasend
+	// IOCP에선 WSASend(...)할 때는 버퍼를 유지해야 한다.
+	// https://moguwai.tistory.com/entry/Overlapped-IO
+
 	DWORD	dwFlags = 0;
 
+	/***** lpOverlapped와 lpCompletionRoutine을 NULL로 하여 기존 send 기능을 하는 비중첩 버전 : Start  *****/
+	//pSocketInfo->sendBytes = pSocketInfo->dataBuf.len;
+	//printf_s("[INFO] <MainServer::Send(...)> pSocketInfo->sendBytes: %d \n", pSocketInfo->sendBytes);
+
+	//int nResult = WSASend(
+	//	pSocketInfo->socket, // s: 연결 소켓을 가리키는 소켓 지정 번호
+	//	&(pSocketInfo->dataBuf), // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킨다.
+	//	1, // dwBufferCount: lpBuffers에 있는 WSABUF(:4300)구조체의 개수
+	//	(LPDWORD)& (pSocketInfo->sentBytes), // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨준다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 한다. 그래야 (잠재적인)잘못된 반환을 피할 수 있다.
+	//	dwFlags,// dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정한다.
+	//	NULL, // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
+	//	//&(pSocketInfo->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
+	//	NULL // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터. 비 중첩 소켓에서는 무시 된다.
+	//);
+
+	//if (nResult == 0)
+	//{
+	//	printf_s("[INFO] <MainServer::Send(...)> WSASend 완료 \n");
+	//	printf_s("[INFO] <MainServer::Send(...)> pSocketInfo->sentBytes: %d \n", pSocketInfo->sentBytes);
+	//}
+	//if (nResult == SOCKET_ERROR)
+	//{
+	//	if (WSAGetLastError() != WSA_IO_PENDING)
+	//	{
+	//		printf_s("[ERROR] <MainServer::Send(...)> WSASend 실패 : %d\n", WSAGetLastError());
+	//	}
+	//	else
+	//	{
+	//		printf_s("[INFO] <MainServer::Send(...)> WSASend: WSA_IO_PENDING \n");
+	//	}
+	//}
+	/***** lpOverlapped와 lpCompletionRoutine을 NULL로 하여 기존 send 기능을 하는 비중첩 버전 : End  *****/
+
+	/***** WSARecv의 &(SocketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : Start  *****/
+	stSOCKETINFO* SocketInfo = new stSOCKETINFO();
+	memset(&(SocketInfo->overlapped), 0, sizeof(OVERLAPPED));
+	CopyMemory(SocketInfo->messageBuffer, pSocketInfo->messageBuffer, MAX_BUFFER);
+	SocketInfo->dataBuf.len = pSocketInfo->dataBuf.len;
+	SocketInfo->dataBuf.buf = SocketInfo->messageBuffer;
+	SocketInfo->socket = pSocketInfo->socket;
+	SocketInfo->recvBytes = 0;
+	SocketInfo->sendBytes = SocketInfo->dataBuf.len;
+	SocketInfo->sentBytes = 0;
+
+	printf_s("[INFO] <MainServer::Send(...)> SocketInfo->sendBytes: %d \n", SocketInfo->sendBytes);
+
 	int nResult = WSASend(
-		pSocketInfo->socket,
-		&(pSocketInfo->dataBuf),
-		1,
-		&sendBytes,
-		dwFlags,
-		NULL,
-		NULL
+		SocketInfo->socket, // s: 연결 소켓을 가리키는 소켓 지정 번호
+		&(SocketInfo->dataBuf), // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킨다.
+		1, // dwBufferCount: lpBuffers에 있는 WSABUF(:4300)구조체의 개수
+		(LPDWORD) & (SocketInfo->sentBytes), // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨준다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 한다. 그래야 (잠재적인)잘못된 반환을 피할 수 있다.
+		dwFlags,// dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정한다.
+		//NULL, // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
+		&(SocketInfo->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
+		NULL // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터. 비 중첩 소켓에서는 무시 된다.
 	);
 
-	if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+	if (nResult == 0)
 	{
-		printf_s("[ERROR] <MainServer::Send(...)> WSASend 실패 : %d\n", WSAGetLastError());
+		printf_s("[INFO] <MainServer::Send(...)> WSASend 완료 \n");
+		printf_s("[INFO] <MainServer::Send(...)> pSocketInfo->sentBytes: %d \n", SocketInfo->sentBytes);
 	}
+	if (nResult == SOCKET_ERROR)
+	{
+		if (WSAGetLastError() != WSA_IO_PENDING)
+		{
+			printf_s("[ERROR] <MainServer::Send(...)> WSASend 실패 : %d\n", WSAGetLastError());
+		}
+		else
+		{
+			printf_s("[INFO] <MainServer::Send(...)> WSASend: WSA_IO_PENDING \n");
+		}
+	}
+	/***** WSARecv의 &(SocketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : End  *****/
+
+
+	printf_s("[END] <MainServer::Send(...)>\n");
 }
 
 /////////////////////////////////////

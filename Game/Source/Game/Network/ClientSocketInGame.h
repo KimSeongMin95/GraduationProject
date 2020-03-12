@@ -29,15 +29,17 @@ private:
 	bool bIsConnected;
 	bool bIsClientSocketOn;
 
-	class cInfoOfScoreBoard MyInfoOfScoreBoard;
-	CRITICAL_SECTION csMyInfoOfScoreBoard;
-
 	class cClientSocket* ClientSocket = nullptr;
 
-	// Ping 시간 측정
-	FDateTime StartTime;
-	int Ping;
-	CRITICAL_SECTION csPing;
+	//class cInfoOfScoreBoard MyInfoOfScoreBoard;
+	//CRITICAL_SECTION csMyInfoOfScoreBoard;
+
+	
+
+	//// Ping 시간 측정
+	//FDateTime StartTime;
+	//int Ping;
+	//CRITICAL_SECTION csPing;
 
 protected:
 	
@@ -80,32 +82,32 @@ public:
 	void SendConnected();
 	void RecvConnected(stringstream& RecvStream);
 
-	void RecvDisConnect();
+	//void RecvDisConnect();
 
-	void SendScoreBoard();
-	void RecvScoreBoard(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfScoreBoard> tsqScoreBoard;
+	//void SendScoreBoard();
+	//void RecvScoreBoard(stringstream& RecvStream);
+	//cThreadSafetyQueue<cInfoOfScoreBoard> tsqScoreBoard;
 
-	void RecvSpaceShip(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfSpaceShip> tsqSpaceShip;
+	//void RecvSpaceShip(stringstream& RecvStream);
+	//cThreadSafetyQueue<cInfoOfSpaceShip> tsqSpaceShip;
 
-	void SendObservation();
+	//void SendObservation();
 
-	void RecvSpawnPioneer(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfPioneer> tsqSpawnPioneer;
+	//void RecvSpawnPioneer(stringstream& RecvStream);
+	//cThreadSafetyQueue<cInfoOfPioneer> tsqSpawnPioneer;
 
-	void SendDiedPioneer(int ID);
-	void RecvDiedPioneer(stringstream& RecvStream);
-	cThreadSafetyQueue<int> tsqDiedPioneer; // ID 저장?
+	//void SendDiedPioneer(int ID);
+	//void RecvDiedPioneer(stringstream& RecvStream);
+	//cThreadSafetyQueue<int> tsqDiedPioneer; // ID 저장?
 
-	void SendInfoOfPioneer(cInfoOfPioneer InfoOfPioneer);
-	void RecvInfoOfPioneer(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
+	//void SendInfoOfPioneer(cInfoOfPioneer InfoOfPioneer);
+	//void RecvInfoOfPioneer(stringstream& RecvStream);
+	//cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
 
-	/////////////////////////////////////
-	// Set-Get
-	/////////////////////////////////////
-	void SetMyInfoOfScoreBoard(cInfoOfScoreBoard& InfoOfScoreBoard);
-	cInfoOfScoreBoard CopyMyInfoOfScoreBoard();
-	void InitMyInfoOfScoreBoard();
+	///////////////////////////////////////
+	//// Set-Get
+	///////////////////////////////////////
+	//void SetMyInfoOfScoreBoard(cInfoOfScoreBoard& InfoOfScoreBoard);
+	//cInfoOfScoreBoard CopyMyInfoOfScoreBoard();
+	//void InitMyInfoOfScoreBoard();
 };

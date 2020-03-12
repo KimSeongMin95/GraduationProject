@@ -863,12 +863,12 @@ void APioneer::DestroyCharacter()
 		{
 			stringstream sendStream;
 			sendStream << ID << endl;
-			ServerSocketInGame->DiedPioneer(sendStream, nullptr);
+			//ServerSocketInGame->DiedPioneer(sendStream, nullptr);
 
 			// 조종하던 Pioneer라면
 			if (APioneerController* pioneerController = Cast<APioneerController>(GetController()))
 			{
-				ServerSocketInGame->tsqObserver.push(ServerSocketInGame->SocketID);
+				//ServerSocketInGame->tsqObserver.push(ServerSocketInGame->SocketID);
 			}
 		}
 		else if (ClientSocketInGame->IsClientSocketOn())
@@ -876,9 +876,9 @@ void APioneer::DestroyCharacter()
 			// 조종하던 Pioneer라면
 			if (APioneerController* pioneerController = Cast<APioneerController>(GetController()))
 			{
-				ClientSocketInGame->SendDiedPioneer(ID);
+				//ClientSocketInGame->SendDiedPioneer(ID);
 
-				ClientSocketInGame->SendObservation();
+				//ClientSocketInGame->SendObservation();
 			}
 		}
 	}

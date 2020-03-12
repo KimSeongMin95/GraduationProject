@@ -1240,12 +1240,12 @@ void AMainScreenGameMode::RecvAndApply()
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvAndApply()>"));
 
 	ClearTimerOfRecvAndApply();
-	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AMainScreenGameMode::TimerOfRecvAndApply, 0.1f, true);
+	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AMainScreenGameMode::TimerOfRecvAndApply, 2.0f, true);
 }
 void AMainScreenGameMode::TimerOfRecvAndApply()
 {
-	//printf_s("[INFO] <AMainScreenGameMode::TimerOfRecvAndApply()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfRecvAndApply()>"));
+	printf_s("[INFO] <AMainScreenGameMode::TimerOfRecvAndApply()>\n");
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::TimerOfRecvAndApply()>"));
 
 	switch (OnlineState)
 	{

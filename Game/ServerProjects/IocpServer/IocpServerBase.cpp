@@ -91,10 +91,10 @@ void IocpServerBase::StartServer()
 	SOCKET clientSocket;
 	SOCKADDR_IN clientAddr;
 	int addrLen = sizeof(SOCKADDR_IN);
-	DWORD recvBytes;
-	DWORD flags;
-
+	DWORD flags = 0;
+	
 	// Completion Port 객체 생성
+	// 4번째 인자는 최대 스레드 수로서 0이면 시스템 코어 수에 맞춰집니다.
 	hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 
 	// Worker Thread 생성
@@ -117,13 +117,20 @@ void IocpServerBase::StartServer()
 		else
 			printf_s("[INFO] <IocpServerBase::StartServer()> WSAAccept 성공, SocketID: %d\n", int(clientSocket));
 
+
 		SocketInfo = new stSOCKETINFO();
+		memset(&(SocketInfo->overlapped), 0, sizeof(OVERLAPPED));
+		//ZeroMemory(&(SocketInfo->overlapped), sizeof(OVERLAPPED));
+		memset(&(SocketInfo->messageBuffer), 0, MAX_BUFFER);
+		//ZeroMemory(SocketInfo->messageBuffer, MAX_BUFFER);
+		SocketInfo->dataBuf.len = MAX_BUFFER;
+		SocketInfo->dataBuf.buf = SocketInfo->messageBuffer;
 		SocketInfo->socket = clientSocket;
 		SocketInfo->recvBytes = 0;
 		SocketInfo->sendBytes = 0;
-		SocketInfo->dataBuf.len = MAX_BUFFER;
-		SocketInfo->dataBuf.buf = SocketInfo->messageBuffer;
-		flags = 0;
+		SocketInfo->sentBytes = 0;
+
+		//flags = 0;
 
 
 		// char *inet_ntoa(struct in_addr adr); // 역으로 네트워크바이트순서로 된 정32비트 정수를 다시 문자열로 돌려주는 함수
@@ -139,25 +146,39 @@ void IocpServerBase::StartServer()
 		LeaveCriticalSection(&csClients);
 
 
-		// 원본은 DWORD로 캐스팅
+		// SocketInfo를 hIOCP에 등록?
 		//hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (DWORD)SocketInfo, 0);
 		hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (ULONG_PTR)SocketInfo, 0);
 
+		// CreateIoCompletionPort의 (ULONG_PTR)SocketInfo 인자가 GetQueuedCompletionStatus의 (PULONG_PTR)& pCompletionKey이다.
+		// GetQueuedCompletionStatus에서 (LPOVERLAPPED*)& pSocketInfo는 WSASend, WSARecv 함수 호출시 전달되는 WSAOVERLAPPED 구조체 주소 값이다.
+		
 		// 중첩 소켓을 지정하고 완료시 실행될 함수를 넘겨줌
 		int nResult = WSARecv(
 			SocketInfo->socket,
-			&SocketInfo->dataBuf,
+			&(SocketInfo->dataBuf),
 			1,
-			&recvBytes,
+			(LPDWORD)& SocketInfo->recvBytes,
 			&flags,
 			&(SocketInfo->overlapped),
 			NULL
 		);
 
-		if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+		if (nResult == SOCKET_ERROR)
 		{
-			printf_s("[ERROR] <IocpServerBase::StartServer()> IO Pending 실패 : %d\n", WSAGetLastError());
-			return;
+			if (WSAGetLastError() == WSA_IO_PENDING)
+			{
+				printf_s("[INFO] <IocpServerBase::StartServer()> WSA_IO_PENDING \n");
+			}
+			else
+			{
+				printf_s("[ERROR] <IocpServerBase::StartServer()> IO Pending 실패 : %d\n", WSAGetLastError());
+				return;
+			}
+		}
+		else
+		{
+			printf_s("[INFO] <IocpServerBase::StartServer()> WSARecv(...) \n");
 		}
 	}
 
@@ -189,19 +210,20 @@ void IocpServerBase::Recv(stSOCKETINFO* pSocketInfo)
 	DWORD dwFlags = 0;
 
 	// stSOCKETINFO 데이터 초기화
-	ZeroMemory(&(pSocketInfo->overlapped), sizeof(OVERLAPPED));
+	ZeroMemory(&pSocketInfo->overlapped, sizeof(OVERLAPPED));
 	ZeroMemory(pSocketInfo->messageBuffer, MAX_BUFFER);
 	pSocketInfo->dataBuf.len = MAX_BUFFER;
 	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
 	pSocketInfo->recvBytes = 0;
 	pSocketInfo->sendBytes = 0;
+	pSocketInfo->sentBytes = 0;
 
 	// 클라이언트로부터 다시 응답을 받기 위해 WSARecv 를 호출해줌
 	int nResult = WSARecv(
 		pSocketInfo->socket,
 		&(pSocketInfo->dataBuf),
 		1,
-		(LPDWORD)& pSocketInfo,
+		(LPDWORD)& (pSocketInfo->recvBytes),
 		&dwFlags,
 		(LPWSAOVERLAPPED)& (pSocketInfo->overlapped),
 		NULL

@@ -101,14 +101,14 @@ void AOnlineGameMode::BeginPlay()
 	ServerSocketInGame = cServerSocketInGame::GetSingleton();
 	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 	
-	// 게임클라이언트만
-	if (ClientSocketInGame->IsClientSocketOn())
-	{
-		ScoreBoard();
-	}
+	//// 게임클라이언트만
+	//if (ClientSocketInGame->IsClientSocketOn())
+	//{
+	//	ScoreBoard();
+	//}
 
-	// 게임서버, 게임클라이언트 모두
-	RecvAndApply();
+	//// 게임서버, 게임클라이언트 모두
+	//RecvAndApply();
 
 
 	//////////////////////////
@@ -161,15 +161,15 @@ void AOnlineGameMode::Tick(float DeltaTime)
 	
 
 	// 임시
-	TickOfSpaceShip += DeltaTime;
-	if (TickOfSpaceShip >= 30.0f)
-	{
-		if (SpaceShip->State == ESpaceShipState::Flying)
-		{
-			TickOfSpaceShip = 0.0f;
-			SpaceShip->State = ESpaceShipState::Idling;
-		}
-	}
+	//TickOfSpaceShip += DeltaTime;
+	//if (TickOfSpaceShip >= 30.0f)
+	//{
+	//	if (SpaceShip->State == ESpaceShipState::Flying)
+	//	{
+	//		TickOfSpaceShip = 0.0f;
+	//		SpaceShip->State = ESpaceShipState::Idling;
+	//	}
+	//}
 
 }
 /*** Basic Function : End ***/
@@ -319,89 +319,92 @@ void AOnlineGameMode::_TerminateGame()
 /////////////////////////////////////////////////
 // 타이머
 /////////////////////////////////////////////////
-void AOnlineGameMode::ScoreBoard()
-{
-	printf_s("[INFO] <AOnlineGameMode::ScoreBoard()>\n");
+//void AOnlineGameMode::ScoreBoard()
+//{
+//	printf_s("[INFO] <AOnlineGameMode::ScoreBoard()>\n");
+//
+//	ClearTimerOfScoreBoard();
+//	GetWorldTimerManager().SetTimer(thScoreBoard, this, &AOnlineGameMode::TimerOfScoreBoard, 1.0f, true);
+//}
+//void AOnlineGameMode::TimerOfScoreBoard()
+//{
+//	if (!ClientSocketInGame)
+//	{
+//		printf_s("[ERROR] <AOnlineGameMode::TimerOfScoreBoard()> if (!ClientSocketInGame)\n");
+//		return;
+//	}
+//
+//	ClientSocketInGame->SendScoreBoard();
+//}
+//void AOnlineGameMode::ClearTimerOfScoreBoard()
+//{
+//	printf_s("[INFO] <AOnlineGameMode::ClearTimerOfScoreBoard()>\n");
+//
+//	if (GetWorldTimerManager().IsTimerActive(thScoreBoard))
+//		GetWorldTimerManager().ClearTimer(thScoreBoard);
+//}
+//
+//
+//void AOnlineGameMode::RecvAndApply()
+//{
+//	printf_s("[INFO] <AOnlineGameMode::RecvAndApply()>\n");
+//
+//	ClearTimerOfRecvAndApply();
+//	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AOnlineGameMode::TimerOfRecvAndApply, 0.5166f, true);
+//}
+//void AOnlineGameMode::TimerOfRecvAndApply()
+//{
+//	if (!ServerSocketInGame || !ClientSocketInGame)
+//	{
+//		printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!ServerSocketInGame || !ClientSocketInGame)\n");
+//		return;
+//	}
+//
+//	if (!InGameScoreBoardWidget)
+//	{
+//		printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!InGameScoreBoardWidget)\n");
+//		return;
+//	}
+//
+//
+//	// 게임서버
+//	if (ServerSocketInGame->IsServerOn())
+//	{
+//		GetScoreBoard();
+//		SendInfoOfSpaceShip();
+//		SetInfoOfPioneer();
+//		GetInfoOfPioneer();
+//	}
+//	// 게임클라이언트
+//	else if (ClientSocketInGame->IsClientSocketOn())
+//	{
+//		RecvScoreBoard();
+//		RecvInfoOfSpaceShip();
+//		RecvSpawnPioneer();
+//		RecvDiedPioneer();
+//		SendInfoOfPioneer();
+//		RecvInfoOfPioneer();
+//
+//		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
+//	}
+//	// 둘 다 연결이 없으면
+//	else
+//	{
+//		InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
+//	}
+//}
+//void AOnlineGameMode::ClearTimerOfRecvAndApply()
+//{
+//	printf_s("[INFO] <AOnlineGameMode::ClearTimerOfRecvAndApply()>\n");
+//
+//	if (GetWorldTimerManager().IsTimerActive(thRecvAndApply))
+//		GetWorldTimerManager().ClearTimer(thRecvAndApply);
+//}
 
-	ClearTimerOfScoreBoard();
-	GetWorldTimerManager().SetTimer(thScoreBoard, this, &AOnlineGameMode::TimerOfScoreBoard, 1.0f, true);
-}
-void AOnlineGameMode::TimerOfScoreBoard()
-{
-	if (!ClientSocketInGame)
-	{
-		printf_s("[ERROR] <AOnlineGameMode::TimerOfScoreBoard()> if (!ClientSocketInGame)\n");
-		return;
-	}
 
-	ClientSocketInGame->SendScoreBoard();
-}
-void AOnlineGameMode::ClearTimerOfScoreBoard()
-{
-	printf_s("[INFO] <AOnlineGameMode::ClearTimerOfScoreBoard()>\n");
-
-	if (GetWorldTimerManager().IsTimerActive(thScoreBoard))
-		GetWorldTimerManager().ClearTimer(thScoreBoard);
-}
-
-
-void AOnlineGameMode::RecvAndApply()
-{
-	printf_s("[INFO] <AOnlineGameMode::RecvAndApply()>\n");
-
-	ClearTimerOfRecvAndApply();
-	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AOnlineGameMode::TimerOfRecvAndApply, 0.5166f, true);
-}
-void AOnlineGameMode::TimerOfRecvAndApply()
-{
-	if (!ServerSocketInGame || !ClientSocketInGame)
-	{
-		printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!ServerSocketInGame || !ClientSocketInGame)\n");
-		return;
-	}
-
-	if (!InGameScoreBoardWidget)
-	{
-		printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!InGameScoreBoardWidget)\n");
-		return;
-	}
-
-
-	// 게임서버
-	if (ServerSocketInGame->IsServerOn())
-	{
-		GetScoreBoard();
-		SendInfoOfSpaceShip();
-		SetInfoOfPioneer();
-		GetInfoOfPioneer();
-	}
-	// 게임클라이언트
-	else if (ClientSocketInGame->IsClientSocketOn())
-	{
-		RecvScoreBoard();
-		RecvInfoOfSpaceShip();
-		RecvSpawnPioneer();
-		RecvDiedPioneer();
-		SendInfoOfPioneer();
-		RecvInfoOfPioneer();
-
-		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
-	}
-	// 둘 다 연결이 없으면
-	else
-	{
-		InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
-	}
-}
-void AOnlineGameMode::ClearTimerOfRecvAndApply()
-{
-	printf_s("[INFO] <AOnlineGameMode::ClearTimerOfRecvAndApply()>\n");
-
-	if (GetWorldTimerManager().IsTimerActive(thRecvAndApply))
-		GetWorldTimerManager().ClearTimer(thRecvAndApply);
-}
-
-
+/////////////////////////////////////////////////
+// 
+/////////////////////////////////////////////////
 void AOnlineGameMode::FindPioneerController()
 {
 	UWorld* const world = GetWorld();
@@ -464,344 +467,348 @@ void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform T
 
 }
 
-void AOnlineGameMode::GetScoreBoard()
-{
-	if (!ServerSocketInGame)
-	{
-		printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!ServerSocketInGame)\n");
-		return;
-	}
-
-	if (!InGameScoreBoardWidget)
-	{
-		printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!InGameScoreBoardWidget)\n");
-		return;
-	}
-	printf_s("[START] <AOnlineGameMode::GetScoreBoard()>\n");
-
-
-	std::queue<cInfoOfScoreBoard> copiedQueue;
-
-	EnterCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
-	for (auto& kvp : ServerSocketInGame->InfosOfScoreBoard)
-		copiedQueue.push(kvp.second);
-	LeaveCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
-
-	InGameScoreBoardWidget->RevealScores(copiedQueue);
-
-
-	printf_s("[END] <AOnlineGameMode::GetScoreBoard()>\n");
-}
-void AOnlineGameMode::RecvScoreBoard()
-{
-	if (!ClientSocketInGame)
-	{
-		printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!ClientSocketInGame)\n");
-		return;
-	}
-
-	if (!InGameScoreBoardWidget)
-	{
-		printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!InGameScoreBoardWidget)\n");
-		return;
-	}
-
-	if (ClientSocketInGame->tsqScoreBoard.empty())
-		return;
-
-	printf_s("[START] <AOnlineGameMode::RecvScoreBoard()>\n");
-
-	/***********************************************************************/
-
-	std::queue<cInfoOfScoreBoard> copiedQueue = ClientSocketInGame->tsqScoreBoard.copy();
-	ClientSocketInGame->tsqScoreBoard.clear();
-
-	InGameScoreBoardWidget->RevealScores(copiedQueue);
-
-	InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
-
-	printf_s("[END] <AOnlineGameMode::RecvScoreBoard()>\n");
-}
 
 /////////////////////////////////////////////////
 // 동기화
 /////////////////////////////////////////////////
-void AOnlineGameMode::SendInfoOfSpaceShip()
-{
-	if (!SpaceShip)
-	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
-		return;
-	}
-
-	//PioneerController->SetViewTargetWithBlend(SpaceShip);
-
-	switch (SpaceShip->State)
-	{
-	case ESpaceShipState::Idling: // 새로운 게임클라이언트가 접속하면 Idling으로 바꿔서 진행
-	{
-		SpaceShip->StartLanding();
-	}
-	break;
-	case ESpaceShipState::Landed:
-	{
-		SpaceShip->StartSpawning(5 + (int)(ServerSocketInGame->tsqObserver.size() * 0.75));
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
-	}
-	break;
-	case ESpaceShipState::Spawned:
-	{
-		SpaceShip->StartTakingOff();
-	}
-	break;
-	default:
-	{
-
-
-	}
-	break;
-	}
-
-	cInfoOfSpaceShip infoOfSpaceShip = SpaceShip->GetInfoOfSpaceShip();
-	ServerSocketInGame->SendSpaceShip(infoOfSpaceShip);
-}
-void AOnlineGameMode::RecvInfoOfSpaceShip()
-{
-	if (!SpaceShip)
-	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!SpaceShip)\n");
-		return;
-	}
-	if (!PioneerController)
-	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!PioneerController)\n");
-		return;
-	}
-
-
-	if (ClientSocketInGame->tsqSpaceShip.empty())
-		return;
-
-	printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfSpaceShip()>\n");
-
-	/***********************************************************************/
-
-	std::queue<cInfoOfSpaceShip> copiedQueue;
-
-	while (ClientSocketInGame->tsqSpaceShip.empty() == false)
-		copiedQueue.push(ClientSocketInGame->tsqSpaceShip.front_pop());
-
-	//while (copiedQueue.empty() == false)
-	//{
-	//	SpaceShip->SetInfoOfSpaceShip(copiedQueue.front());
-	//	copiedQueue.pop();
-	//}
-	SpaceShip->SetInfoOfSpaceShip(copiedQueue.back());
-
-	// 플레이어가 관전중인데 SpaceShip->StartLanding();하고 개척자중 AI가 남아있지 않으면 카메라 전환
-	//PioneerController->SetViewTargetWithBlend(SpaceShip, 2.0f);
-}
-
-void AOnlineGameMode::RecvSpawnPioneer()
-{
-	if (!PioneerManager)
-	{
-		printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!PioneerManager)\n");
-		return;
-	}
-
-	if (!ClientSocketInGame)
-	{
-		printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!ClientSocketInGame)\n");
-		return;
-	}
-
-	if (ClientSocketInGame->tsqSpawnPioneer.empty())
-		return;
-
-	printf_s("[INFO] <AMainScreenGameMode::RecvSpawnPioneer()>\n");
-
-	/***********************************************************************/
-
-	std::queue<cInfoOfPioneer> copiedQueue;
-	
-	while (ClientSocketInGame->tsqSpawnPioneer.empty() == false)
-		copiedQueue.push(ClientSocketInGame->tsqSpawnPioneer.front_pop());
-
-	while (copiedQueue.empty() == false)
-	{
-		PioneerManager->SpawnPioneerByRecv(copiedQueue.front());
-		copiedQueue.pop();
-	}
-}
-
-void AOnlineGameMode::RecvDiedPioneer()
-{
-	if (!PioneerManager)
-	{
-		printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!PioneerManager)\n");
-		return;
-	}
-
-	if (!ClientSocketInGame)
-	{
-		printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!ClientSocketInGame)\n");
-		return;
-	}
-
-	if (ClientSocketInGame->tsqSpawnPioneer.empty())
-		return;
-
-	printf_s("[INFO] <AMainScreenGameMode::RecvDiedPioneer()>\n");
-
-	/***********************************************************************/
-
-	std::queue<int> copiedQueue;
-
-	while (ClientSocketInGame->tsqDiedPioneer.empty() == false)
-		copiedQueue.push(ClientSocketInGame->tsqDiedPioneer.front_pop());
-
-	while (copiedQueue.empty() == false)
-	{
-		if (PioneerManager->Pioneers.Contains(copiedQueue.front()))
-		{
-			if (APioneer* pioneer = PioneerManager->Pioneers[copiedQueue.front()])
-			{
-				// bDying을 바꿔주면 BaseCharacterAnimInstance에서 UPioneerAnimInstance::DestroyCharacter()를 호출하고
-				// Pioneer->DestroyCharacter();을 호출하여 알아서 소멸하게 됩니다.
-				pioneer->bDying = true;
-			}
-			PioneerManager->Pioneers.Remove(copiedQueue.front());
-		}
-
-		copiedQueue.pop();
-	}
-}
-
-void AOnlineGameMode::SetInfoOfPioneer()
-{
-	if (!PioneerManager)
-	{
-		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer()> if (!PioneerManager)\n");
-		return;
-	}
-
-	if (!ServerSocketInGame)
-	{
-		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer()> if (!ServerSocketInGame)\n");
-		return;
-	}
-
-
-	for (auto& kvp : PioneerManager->Pioneers)
-	{
-		// SocketID가 0인 AI Pioneer만 적용, SocketID가 1인 게임서버가 조종중인 Pioneer도 포함
-		if (kvp.Value->SocketID > 1)
-			continue;
-
-		if (ServerSocketInGame->InfosOfPioneers.find(kvp.Key) != ServerSocketInGame->InfosOfPioneers.end())
-		{
-			// 정보 적용
-			ServerSocketInGame->InfosOfPioneers.at(kvp.Key) = kvp.Value->GetInfoOfPioneer();
-		}
-
-	}
-}
-void AOnlineGameMode::GetInfoOfPioneer()
-{
-	if (!PioneerManager)
-	{
-		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer()> if (!PioneerManager)\n");
-		return;
-	}
-
-	if (!ServerSocketInGame)
-	{
-		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer()> if (!ServerSocketInGame)\n");
-		return;
-	}
-
-	if (ServerSocketInGame->tsqInfoOfPioneer.empty())
-		return;
-
-	printf_s("[INFO] <AMainScreenGameMode::GetInfoOfPioneer()>\n");
-
-	/***********************************************************************/
-
-	std::queue<cInfoOfPioneer> copiedQueue;
-
-	while (ClientSocketInGame->tsqInfoOfPioneer.empty() == false)
-		copiedQueue.push(ClientSocketInGame->tsqInfoOfPioneer.front_pop());
-
-	while (copiedQueue.empty() == false)
-	{
-		int id = copiedQueue.front().ID;
-		if (PioneerManager->Pioneers.Contains(id))
-		{
-			if (APioneer* pioneer = PioneerManager->Pioneers[id])
-			{
-				pioneer->SetInfoOfPioneer(copiedQueue.front());
-			}
-		}
-
-		copiedQueue.pop();
-	}
-}
-void AOnlineGameMode::SendInfoOfPioneer()
-{
-	if (!PioneerManager)
-	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer()> if (!PioneerManager)\n");
-		return;
-	}
-
-	if (!ClientSocketInGame)
-	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer()> if (!ClientSocketInGame)\n");
-		return;
-	}
-
-	// 임시
-	ClientSocketInGame->SendInfoOfPioneer(cInfoOfPioneer());
-}
-void AOnlineGameMode::RecvInfoOfPioneer()
-{
-	if (!PioneerManager)
-	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer()> if (!PioneerManager)\n");
-		return;
-	}
-
-	if (!ClientSocketInGame)
-	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer()> if (!ClientSocketInGame)\n");
-		return;
-	}
-
-	if (ClientSocketInGame->tsqInfoOfPioneer.empty())
-		return;
-
-	printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfPioneer()>\n");
-
-	/***********************************************************************/
-
-	std::queue<cInfoOfPioneer> copiedQueue;
-
-	while (ClientSocketInGame->tsqInfoOfPioneer.empty() == false)
-		copiedQueue.push(ClientSocketInGame->tsqInfoOfPioneer.front_pop());
-
-	while (copiedQueue.empty() == false)
-	{
-		int id = copiedQueue.front().ID;
-		if (PioneerManager->Pioneers.Contains(id))
-		{
-			if (APioneer* pioneer = PioneerManager->Pioneers[id])
-			{
-				pioneer->SetInfoOfPioneer(copiedQueue.front());
-			}
-		}
-
-		copiedQueue.pop();
-	}
-}
+//void AOnlineGameMode::GetScoreBoard()
+//{
+//	if (!ServerSocketInGame)
+//	{
+//		printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!ServerSocketInGame)\n");
+//		return;
+//	}
+//
+//	if (!InGameScoreBoardWidget)
+//	{
+//		printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!InGameScoreBoardWidget)\n");
+//		return;
+//	}
+//	printf_s("[START] <AOnlineGameMode::GetScoreBoard()>\n");
+//
+//
+//	std::queue<cInfoOfScoreBoard> copiedQueue;
+//
+//	EnterCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
+//	for (auto& kvp : ServerSocketInGame->InfosOfScoreBoard)
+//		copiedQueue.push(kvp.second);
+//	LeaveCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
+//
+//	InGameScoreBoardWidget->RevealScores(copiedQueue);
+//
+//
+//	printf_s("[END] <AOnlineGameMode::GetScoreBoard()>\n");
+//}
+//void AOnlineGameMode::RecvScoreBoard()
+//{
+//	if (!ClientSocketInGame)
+//	{
+//		printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!ClientSocketInGame)\n");
+//		return;
+//	}
+//
+//	if (!InGameScoreBoardWidget)
+//	{
+//		printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!InGameScoreBoardWidget)\n");
+//		return;
+//	}
+//
+//	if (ClientSocketInGame->tsqScoreBoard.empty())
+//		return;
+//
+//	printf_s("[START] <AOnlineGameMode::RecvScoreBoard()>\n");
+//
+//	/***********************************************************************/
+//
+//	std::queue<cInfoOfScoreBoard> copiedQueue;
+//
+//	while (ClientSocketInGame->tsqScoreBoard.empty() == false)
+//		copiedQueue.push(ClientSocketInGame->tsqScoreBoard.front_pop());
+//
+//	InGameScoreBoardWidget->RevealScores(copiedQueue);
+//
+//	InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
+//
+//	printf_s("[END] <AOnlineGameMode::RecvScoreBoard()>\n");
+//}
+//
+//void AOnlineGameMode::SendInfoOfSpaceShip()
+//{
+//	if (!SpaceShip)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
+//		return;
+//	}
+//
+//	//PioneerController->SetViewTargetWithBlend(SpaceShip);
+//
+//	switch (SpaceShip->State)
+//	{
+//	case ESpaceShipState::Idling: // 새로운 게임클라이언트가 접속하면 Idling으로 바꿔서 진행
+//	{
+//		SpaceShip->StartLanding();
+//	}
+//	break;
+//	case ESpaceShipState::Landed:
+//	{
+//		SpaceShip->StartSpawning(5 + (int)(ServerSocketInGame->tsqObserver.size() * 0.75));
+//		printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
+//	}
+//	break;
+//	case ESpaceShipState::Spawned:
+//	{
+//		SpaceShip->StartTakingOff();
+//	}
+//	break;
+//	default:
+//	{
+//
+//
+//	}
+//	break;
+//	}
+//
+//	cInfoOfSpaceShip infoOfSpaceShip = SpaceShip->GetInfoOfSpaceShip();
+//	ServerSocketInGame->SendSpaceShip(infoOfSpaceShip);
+//}
+//void AOnlineGameMode::RecvInfoOfSpaceShip()
+//{
+//	if (!SpaceShip)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!SpaceShip)\n");
+//		return;
+//	}
+//	if (!PioneerController)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!PioneerController)\n");
+//		return;
+//	}
+//
+//
+//	if (ClientSocketInGame->tsqSpaceShip.empty())
+//		return;
+//
+//	printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfSpaceShip()>\n");
+//
+//	/***********************************************************************/
+//
+//	std::queue<cInfoOfSpaceShip> copiedQueue;
+//
+//	while (ClientSocketInGame->tsqSpaceShip.empty() == false)
+//		copiedQueue.push(ClientSocketInGame->tsqSpaceShip.front_pop());
+//
+//	//while (copiedQueue.empty() == false)
+//	//{
+//	//	SpaceShip->SetInfoOfSpaceShip(copiedQueue.front());
+//	//	copiedQueue.pop();
+//	//}
+//	SpaceShip->SetInfoOfSpaceShip(copiedQueue.back());
+//
+//	// 플레이어가 관전중인데 SpaceShip->StartLanding();하고 개척자중 AI가 남아있지 않으면 카메라 전환
+//	//PioneerController->SetViewTargetWithBlend(SpaceShip, 2.0f);
+//}
+//
+//void AOnlineGameMode::RecvSpawnPioneer()
+//{
+//	if (!PioneerManager)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!PioneerManager)\n");
+//		return;
+//	}
+//
+//	if (!ClientSocketInGame)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!ClientSocketInGame)\n");
+//		return;
+//	}
+//
+//	if (ClientSocketInGame->tsqSpawnPioneer.empty())
+//		return;
+//
+//	printf_s("[INFO] <AMainScreenGameMode::RecvSpawnPioneer()>\n");
+//
+//	/***********************************************************************/
+//
+//	std::queue<cInfoOfPioneer> copiedQueue;
+//	
+//	while (ClientSocketInGame->tsqSpawnPioneer.empty() == false)
+//		copiedQueue.push(ClientSocketInGame->tsqSpawnPioneer.front_pop());
+//
+//	while (copiedQueue.empty() == false)
+//	{
+//		PioneerManager->SpawnPioneerByRecv(copiedQueue.front());
+//		copiedQueue.pop();
+//		printf_s("[INFO] <AMainScreenGameMode::RecvSpawnPioneer()> copiedQueue.pop();\n");
+//	}
+//}
+//
+//void AOnlineGameMode::RecvDiedPioneer()
+//{
+//	if (!PioneerManager)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!PioneerManager)\n");
+//		return;
+//	}
+//
+//	if (!ClientSocketInGame)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!ClientSocketInGame)\n");
+//		return;
+//	}
+//
+//	if (ClientSocketInGame->tsqSpawnPioneer.empty())
+//		return;
+//
+//	printf_s("[INFO] <AMainScreenGameMode::RecvDiedPioneer()>\n");
+//
+//	/***********************************************************************/
+//
+//	std::queue<int> copiedQueue;
+//
+//	while (ClientSocketInGame->tsqDiedPioneer.empty() == false)
+//		copiedQueue.push(ClientSocketInGame->tsqDiedPioneer.front_pop());
+//
+//	while (copiedQueue.empty() == false)
+//	{
+//		if (PioneerManager->Pioneers.Contains(copiedQueue.front()))
+//		{
+//			if (APioneer* pioneer = PioneerManager->Pioneers[copiedQueue.front()])
+//			{
+//				// bDying을 바꿔주면 BaseCharacterAnimInstance에서 UPioneerAnimInstance::DestroyCharacter()를 호출하고
+//				// Pioneer->DestroyCharacter();을 호출하여 알아서 소멸하게 됩니다.
+//				pioneer->bDying = true;
+//			}
+//			PioneerManager->Pioneers.Remove(copiedQueue.front());
+//		}
+//
+//		copiedQueue.pop();
+//	}
+//}
+//
+//void AOnlineGameMode::SetInfoOfPioneer()
+//{
+//	if (!PioneerManager)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer()> if (!PioneerManager)\n");
+//		return;
+//	}
+//
+//	if (!ServerSocketInGame)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer()> if (!ServerSocketInGame)\n");
+//		return;
+//	}
+//
+//
+//	for (auto& kvp : PioneerManager->Pioneers)
+//	{
+//		// SocketID가 0인 AI Pioneer만 적용, SocketID가 1인 게임서버가 조종중인 Pioneer도 포함
+//		if (kvp.Value->SocketID > 1)
+//			continue;
+//
+//		if (ServerSocketInGame->InfosOfPioneers.find(kvp.Key) != ServerSocketInGame->InfosOfPioneers.end())
+//		{
+//			// 정보 적용
+//			ServerSocketInGame->InfosOfPioneers.at(kvp.Key) = kvp.Value->GetInfoOfPioneer();
+//		}
+//
+//	}
+//}
+//void AOnlineGameMode::GetInfoOfPioneer()
+//{
+//	if (!PioneerManager)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer()> if (!PioneerManager)\n");
+//		return;
+//	}
+//
+//	if (!ServerSocketInGame)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer()> if (!ServerSocketInGame)\n");
+//		return;
+//	}
+//
+//	if (ServerSocketInGame->tsqInfoOfPioneer.empty())
+//		return;
+//
+//	printf_s("[INFO] <AMainScreenGameMode::GetInfoOfPioneer()>\n");
+//
+//	/***********************************************************************/
+//
+//	std::queue<cInfoOfPioneer> copiedQueue;
+//
+//	while (ClientSocketInGame->tsqInfoOfPioneer.empty() == false)
+//		copiedQueue.push(ClientSocketInGame->tsqInfoOfPioneer.front_pop());
+//
+//	while (copiedQueue.empty() == false)
+//	{
+//		int id = copiedQueue.front().ID;
+//		if (PioneerManager->Pioneers.Contains(id))
+//		{
+//			if (APioneer* pioneer = PioneerManager->Pioneers[id])
+//			{
+//				pioneer->SetInfoOfPioneer(copiedQueue.front());
+//			}
+//		}
+//
+//		copiedQueue.pop();
+//	}
+//}
+//void AOnlineGameMode::SendInfoOfPioneer()
+//{
+//	if (!PioneerManager)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer()> if (!PioneerManager)\n");
+//		return;
+//	}
+//
+//	if (!ClientSocketInGame)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer()> if (!ClientSocketInGame)\n");
+//		return;
+//	}
+//
+//	// 임시
+//	ClientSocketInGame->SendInfoOfPioneer(cInfoOfPioneer());
+//}
+//void AOnlineGameMode::RecvInfoOfPioneer()
+//{
+//	if (!PioneerManager)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer()> if (!PioneerManager)\n");
+//		return;
+//	}
+//
+//	if (!ClientSocketInGame)
+//	{
+//		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer()> if (!ClientSocketInGame)\n");
+//		return;
+//	}
+//
+//	if (ClientSocketInGame->tsqInfoOfPioneer.empty())
+//		return;
+//
+//	printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfPioneer()>\n");
+//
+//	/***********************************************************************/
+//
+//	std::queue<cInfoOfPioneer> copiedQueue;
+//
+//	while (ClientSocketInGame->tsqInfoOfPioneer.empty() == false)
+//		copiedQueue.push(ClientSocketInGame->tsqInfoOfPioneer.front_pop());
+//
+//	while (copiedQueue.empty() == false)
+//	{
+//		int id = copiedQueue.front().ID;
+//		if (PioneerManager->Pioneers.Contains(id))
+//		{
+//			if (APioneer* pioneer = PioneerManager->Pioneers[id])
+//			{
+//				pioneer->SetInfoOfPioneer(copiedQueue.front());
+//			}
+//		}
+//
+//		copiedQueue.pop();
+//	}
+//}
 /*** AOnlineGameMode : End ***/

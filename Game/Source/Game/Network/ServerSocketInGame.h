@@ -45,6 +45,8 @@ public:
 	/** 게임서버의 임시 소켓 */
 	SOCKET SocketID;
 
+	class cClientSocket* ClientSocket = nullptr;
+
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장
 	static std::map<SOCKET, stSOCKETINFO*> GameClients;
 	static CRITICAL_SECTION csGameClients;
@@ -53,17 +55,13 @@ public:
 	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
 	static CRITICAL_SECTION csInfoOfClients;
 
-	// 
-	static std::map<SOCKET, cInfoOfScoreBoard> InfosOfScoreBoard;
-	static CRITICAL_SECTION csInfosOfScoreBoard;
+	//static std::map<SOCKET, cInfoOfScoreBoard> InfosOfScoreBoard;
+	//static CRITICAL_SECTION csInfosOfScoreBoard;
 
-	class cClientSocket* ClientSocket = nullptr;
+	//static cThreadSafetyQueue<SOCKET> tsqObserver;
 
-
-	static cThreadSafetyQueue<SOCKET> tsqObserver;
-
-	static std::map<int, cInfoOfPioneer> InfosOfPioneers;
-	static CRITICAL_SECTION csInfosOfPioneers;
+	//static std::map<int, cInfoOfPioneer> InfosOfPioneers;
+	//static CRITICAL_SECTION csInfosOfPioneers;
 
 public:
 	////////////////////////
@@ -114,24 +112,24 @@ public:
 	////////////////////////
 	// 통신
 	////////////////////////
-	static void Broadcast(stringstream& SendStream);
-	static void BroadcastExceptOne(stringstream& SendStream, SOCKET Except);
+	//static void Broadcast(stringstream& SendStream);
+	//static void BroadcastExceptOne(stringstream& SendStream, SOCKET Except);
 
 	static void Connected(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	static void SendDisconnect();
+	//static void SendDisconnect();
 
-	static void ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	//static void ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	static void SendSpaceShip(cInfoOfSpaceShip& InfoOfSpaceShip);
+	//static void SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip);
 
-	static void Observation(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	//static void Observation(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	static void SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer);
-	static void SendSpawnedPioneer(stSOCKETINFO* pSocket);
+	//static void SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer);
+	//static void SendSpawnedPioneer(stSOCKETINFO* pSocket);
 
-	static void DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	//static void DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	static void InfoOfPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
-	static cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
+	//static void InfoOfPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	//static cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
 };

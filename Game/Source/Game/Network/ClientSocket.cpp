@@ -27,6 +27,11 @@ uint32 cClientSocket::Run()
 		//// 수신 받은 값 확인하는 용도
 		//FString temp1(recvBuffer);
 		//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] before recvBuffer: %s"), *temp1);
+		
+		/////////////////////////////
+		// 필수!!!!: recvBuffer 초기화
+		/////////////////////////////
+		memset(recvBuffer, 0, MAX_BUFFER);
 
 		int PacketType;
 		int nRecvLen = recv(ServerSocket, (CHAR*)&recvBuffer, MAX_BUFFER, 0);
@@ -37,8 +42,6 @@ uint32 cClientSocket::Run()
 
 		if (nRecvLen > 0)
 		{
-			
-
 			//// 수신 받은 값 확인하는 용도
 			//FString temp3(RecvStream.str().c_str());
 			//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] before RecvStream: %s"), *temp3);
@@ -95,11 +98,6 @@ uint32 cClientSocket::Run()
 			break;
 			}
 		}
-
-		/////////////////////////////
-		// 필수!!!!: recvBuffer 초기화
-		/////////////////////////////
-		memset(recvBuffer, 0, MAX_BUFFER);
 	}
 	return 0;
 }

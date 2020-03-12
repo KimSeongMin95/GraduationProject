@@ -37,18 +37,18 @@ cClientSocketInGame::cClientSocketInGame()
 
 	InitializeCriticalSection(&csAccept);
 
-	InitializeCriticalSection(&csMyInfoOfScoreBoard);
-	EnterCriticalSection(&csMyInfoOfScoreBoard);
-	MyInfoOfScoreBoard = cInfoOfScoreBoard();
-	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+	//InitializeCriticalSection(&csMyInfoOfScoreBoard);
+	//EnterCriticalSection(&csMyInfoOfScoreBoard);
+	//MyInfoOfScoreBoard = cInfoOfScoreBoard();
+	//LeaveCriticalSection(&csMyInfoOfScoreBoard);
 
-	
+	//
 
-	StartTime = FDateTime::UtcNow();
-	InitializeCriticalSection(&csPing);
-	EnterCriticalSection(&csPing);
-	Ping = 0;
-	LeaveCriticalSection(&csPing);
+	//StartTime = FDateTime::UtcNow();
+	//InitializeCriticalSection(&csPing);
+	//EnterCriticalSection(&csPing);
+	//Ping = 0;
+	//LeaveCriticalSection(&csPing);
 
 	printf_s("[END] <cClientSocketInGame::cClientSocketInGame()>\n");
 }
@@ -58,9 +58,9 @@ cClientSocketInGame::~cClientSocketInGame()
 
 	DeleteCriticalSection(&csAccept);
 
-	DeleteCriticalSection(&csMyInfoOfScoreBoard);
+	//DeleteCriticalSection(&csMyInfoOfScoreBoard);
 
-	DeleteCriticalSection(&csPing);
+	//DeleteCriticalSection(&csPing);
 }
 
 bool cClientSocketInGame::InitSocket()
@@ -212,36 +212,36 @@ void cClientSocketInGame::RunMainThread()
 				RecvConnected(RecvStream);
 			}
 			break;
-			case EPacketType::DISCONNECT:
-			{
-				RecvDisConnect();
-			}
-			break;
-			case EPacketType::SCORE_BOARD:
-			{
-				RecvScoreBoard(RecvStream);
-			}
-			break;
-			case EPacketType::SPACE_SHIP:
-			{
-				RecvSpaceShip(RecvStream);
-			}
-			break;
-			case EPacketType::SPAWN_PIONEER:
-			{
-				RecvSpawnPioneer(RecvStream);
-			}
-			break;
-			case EPacketType::DIED_PIONEER:
-			{
-				RecvDiedPioneer(RecvStream);
-			}
-			break;
-			case EPacketType::INFO_OF_PIONEER:
-			{
-				RecvInfoOfPioneer(RecvStream);
-			}
-			break;
+			//case EPacketType::DISCONNECT:
+			//{
+			//	RecvDisConnect();
+			//}
+			//break;
+			//case EPacketType::SCORE_BOARD:
+			//{
+			//	RecvScoreBoard(RecvStream);
+			//}
+			//break;
+			//case EPacketType::SPACE_SHIP:
+			//{
+			//	RecvSpaceShip(RecvStream);
+			//}
+			//break;
+			//case EPacketType::SPAWN_PIONEER:
+			//{
+			//	RecvSpawnPioneer(RecvStream);
+			//}
+			//break;
+			//case EPacketType::DIED_PIONEER:
+			//{
+			//	RecvDiedPioneer(RecvStream);
+			//}
+			//break;
+			//case EPacketType::INFO_OF_PIONEER:
+			//{
+			//	RecvInfoOfPioneer(RecvStream);
+			//}
+			//break;
 
 			default:
 			{
@@ -251,14 +251,14 @@ void cClientSocketInGame::RunMainThread()
 			break;
 			}
 
-			// Ping
-			double gap = (FDateTime::UtcNow() - StartTime).GetTotalMilliseconds();
-			if (gap > 10000.0)
-				gap = 9999.0;
-			EnterCriticalSection(&csPing);
-			Ping = (int)gap;
-			LeaveCriticalSection(&csPing);
-			StartTime = FDateTime::UtcNow();
+			//// Ping
+			//double gap = (FDateTime::UtcNow() - StartTime).GetTotalMilliseconds();
+			//if (gap > 10000.0)
+			//	gap = 9999.0;
+			//EnterCriticalSection(&csPing);
+			//Ping = (int)gap;
+			//LeaveCriticalSection(&csPing);
+			//StartTime = FDateTime::UtcNow();
 		}
 
 		/////////////////////////////
@@ -273,8 +273,8 @@ void cClientSocketInGame::CloseSocket()
 	printf_s("[START] <cClientSocketInGame::CloseSocket()>\n");
 
 
-	StartTime = FDateTime::UtcNow();
-	Ping = 0;
+	//StartTime = FDateTime::UtcNow();
+	//Ping = 0;
 
 	if (bIsInitialized == false)
 	{
@@ -300,16 +300,16 @@ void cClientSocketInGame::CloseSocket()
 	}
 	bIsConnected = false;
 
-	////////////////////
-	// 멤버변수들 초기화
-	////////////////////
-	InitMyInfoOfScoreBoard();
+	//////////////////////
+	//// 멤버변수들 초기화
+	//////////////////////
+	//InitMyInfoOfScoreBoard();
 
-	tsqScoreBoard.clear();
-	tsqSpaceShip.clear();
-	tsqSpawnPioneer.clear();
-	tsqDiedPioneer.clear();
-	tsqInfoOfPioneer.clear();
+	//tsqScoreBoard.clear();
+	//tsqSpaceShip.clear();
+	//tsqSpawnPioneer.clear();
+	//tsqDiedPioneer.clear();
+	//tsqInfoOfPioneer.clear();
 
 	// 메인 스레드 종료
 	if (bIsClientSocketOn == false)
@@ -383,11 +383,11 @@ void cClientSocketInGame::SendConnected()
 	infoOfPlayer.PrintInfo();
 
 
-	cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
-	infoOfScoreBoard.ID = infoOfPlayer.ID;
-	SetMyInfoOfScoreBoard(infoOfScoreBoard);
+	//cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
+	//infoOfScoreBoard.ID = infoOfPlayer.ID;
+	//SetMyInfoOfScoreBoard(infoOfScoreBoard);
 
-	infoOfScoreBoard.PrintInfo();
+	//infoOfScoreBoard.PrintInfo();
 
 	printf_s("[End] <cClientSocketInGame::SendConnected()>\n");
 }
@@ -416,200 +416,200 @@ void cClientSocketInGame::RecvConnected(stringstream& RecvStream)
 	printf_s("[End] <cClientSocketInGame::RecvConnected(...)>\n");
 }
 
-void cClientSocketInGame::RecvDisConnect()
-{
-	printf_s("[START] <cClientSocketInGame::RecvDisConnect()>\n");
-
-
-	CloseSocket();
-
-
-	printf_s("[End] <cClientSocketInGame::RecvDisConnect()>\n");
-}
-
-void cClientSocketInGame::SendScoreBoard()
-{
-	printf_s("[Start] <cClientSocketInGame::SendScoreBoard()>\n");
-
-
-	cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
-
-	EnterCriticalSection(&csPing);
-	infoOfScoreBoard.Ping = Ping;
-	LeaveCriticalSection(&csPing);
-
-	SetMyInfoOfScoreBoard(infoOfScoreBoard);
-
-	stringstream sendStream;
-	sendStream << EPacketType::SCORE_BOARD << endl;
-	sendStream << infoOfScoreBoard << endl;
-
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
-
-
-	printf_s("[End] <cClientSocketInGame::SendScoreBoard()>\n");
-}
-void cClientSocketInGame::RecvScoreBoard(stringstream& RecvStream)
-{
-	printf_s("[Start] <cClientSocketInGame::RecvScoreBoard(...)>\n");
-
-
-	cInfoOfScoreBoard infoOfScoreBoard;
-
-	while (RecvStream >> infoOfScoreBoard)
-	{
-		tsqScoreBoard.push(infoOfScoreBoard);
-
-		infoOfScoreBoard.PrintInfo();
-	}
-
-
-	printf_s("[End] <cClientSocketInGame::RecvScoreBoard(...)>\n");
-}
-
-void cClientSocketInGame::RecvSpaceShip(stringstream& RecvStream)
-{
-	printf_s("[Start] <cClientSocketInGame::RecvSpaceShip(...)>\n");
-
-
-	cInfoOfSpaceShip infoOfSpaceShip;
-
-	RecvStream >> infoOfSpaceShip;
-
-	tsqSpaceShip.push(infoOfSpaceShip);
-
-	//infoOfSpaceShip.PrintInfo();
-
-
-	printf_s("[End] <cClientSocketInGame::RecvSpaceShip(...)>\n");
-}
-
-void cClientSocketInGame::SendObservation()
-{
-	ClientSocket = cClientSocket::GetSingleton();
-
-	if (!ClientSocket)
-	{
-		printf_s("[ERROR] <cClientSocketInGame::SendObservation()> if (!ClientSocket)\n");
-		return;
-	}
-
-	printf_s("[Start] <cClientSocketInGame::SendObservation()>\n");
-
-
-	stringstream sendStream;
-	sendStream << EPacketType::OBSERVATION << endl;
-
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
-
-
-	printf_s("[End] <cClientSocketInGame::SendObservation()>\n");
-}
-
-void cClientSocketInGame::RecvSpawnPioneer(stringstream& RecvStream)
-{
-	printf_s("[Start] <cClientSocketInGame::RecvSpawnPioneer(...)>\n");
-
-
-	cInfoOfPioneer infoOfPioneer;
-
-	RecvStream >> infoOfPioneer;
-	
-	tsqSpawnPioneer.push(infoOfPioneer);
-
-	infoOfPioneer.PrintInfo();
-
-
-	printf_s("[End] <cClientSocketInGame::RecvSpawnPioneer(...)>\n");
-}
-
-void cClientSocketInGame::SendDiedPioneer(int ID)
-{
-	printf_s("[Start] <cClientSocketInGame::SendDiedPioneer()>\n");
-
-
-	stringstream sendStream;
-	sendStream << EPacketType::DIED_PIONEER << endl;
-	sendStream << ID << endl;
-
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
-
-	printf_s("\t ID: %d\n", ID);
-
-
-	printf_s("[End] <cClientSocketInGame::SendDiedPioneer()>\n");
-}
-void cClientSocketInGame::RecvDiedPioneer(stringstream& RecvStream)
-{
-	printf_s("[Start] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
-
-
-	int id;
-
-	RecvStream >> id;
-
-	tsqDiedPioneer.push(id);
-		
-	printf_s("\t ID: %d\n", id);
-
-
-	printf_s("[End] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
-}
-
-void cClientSocketInGame::SendInfoOfPioneer(cInfoOfPioneer InfoOfPioneer)
-{
-	printf_s("[Start] <cClientSocketInGame::SendInfoOfPioneer()>\n");
-
-
-	stringstream sendStream;
-	sendStream << EPacketType::INFO_OF_PIONEER << endl;
-	sendStream << InfoOfPioneer << endl;
-
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
-
-
-	printf_s("[End] <cClientSocketInGame::SendInfoOfPioneer()>\n");
-}
-void cClientSocketInGame::RecvInfoOfPioneer(stringstream& RecvStream)
-{
-	printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer(...)>\n");
-
-
-	cInfoOfPioneer infoOfPioneer;
-
-	RecvStream >> infoOfPioneer;
-	
-	tsqInfoOfPioneer.push(infoOfPioneer);
-
-	//infoOfPioneer.PrintInfo();
-
-
-	printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer(...)>\n");
-}
-
-
-/////////////////////////////////////
-// Set-Get
-/////////////////////////////////////
-void cClientSocketInGame::SetMyInfoOfScoreBoard(cInfoOfScoreBoard& InfoOfScoreBoard)
-{
-	EnterCriticalSection(&csMyInfoOfScoreBoard);
-	MyInfoOfScoreBoard = InfoOfScoreBoard;
-	LeaveCriticalSection(&csMyInfoOfScoreBoard);
-}
-cInfoOfScoreBoard cClientSocketInGame::CopyMyInfoOfScoreBoard()
-{
-	cInfoOfScoreBoard infoOfScoreBoard;
-
-	EnterCriticalSection(&csMyInfoOfScoreBoard);
-	infoOfScoreBoard = MyInfoOfScoreBoard;
-	LeaveCriticalSection(&csMyInfoOfScoreBoard);
-
-	return infoOfScoreBoard;
-}
-void cClientSocketInGame::InitMyInfoOfScoreBoard()
-{
-	EnterCriticalSection(&csMyInfoOfScoreBoard);
-	MyInfoOfScoreBoard = cInfoOfScoreBoard();
-	LeaveCriticalSection(&csMyInfoOfScoreBoard);
-}
+//void cClientSocketInGame::RecvDisConnect()
+//{
+//	printf_s("[START] <cClientSocketInGame::RecvDisConnect()>\n");
+//
+//
+//	CloseSocket();
+//
+//
+//	printf_s("[End] <cClientSocketInGame::RecvDisConnect()>\n");
+//}
+//
+//void cClientSocketInGame::SendScoreBoard()
+//{
+//	printf_s("[Start] <cClientSocketInGame::SendScoreBoard()>\n");
+//
+//
+//	cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
+//
+//	EnterCriticalSection(&csPing);
+//	infoOfScoreBoard.Ping = Ping;
+//	LeaveCriticalSection(&csPing);
+//
+//	SetMyInfoOfScoreBoard(infoOfScoreBoard);
+//
+//	stringstream sendStream;
+//	sendStream << EPacketType::SCORE_BOARD << endl;
+//	sendStream << infoOfScoreBoard << endl;
+//
+//	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+//
+//
+//	printf_s("[End] <cClientSocketInGame::SendScoreBoard()>\n");
+//}
+//void cClientSocketInGame::RecvScoreBoard(stringstream& RecvStream)
+//{
+//	printf_s("[Start] <cClientSocketInGame::RecvScoreBoard(...)>\n");
+//
+//
+//	cInfoOfScoreBoard infoOfScoreBoard;
+//
+//	while (RecvStream >> infoOfScoreBoard)
+//	{
+//		tsqScoreBoard.push(infoOfScoreBoard);
+//
+//		infoOfScoreBoard.PrintInfo();
+//	}
+//
+//
+//	printf_s("[End] <cClientSocketInGame::RecvScoreBoard(...)>\n");
+//}
+//
+//void cClientSocketInGame::RecvSpaceShip(stringstream& RecvStream)
+//{
+//	printf_s("[Start] <cClientSocketInGame::RecvSpaceShip(...)>\n");
+//
+//
+//	cInfoOfSpaceShip infoOfSpaceShip;
+//
+//	RecvStream >> infoOfSpaceShip;
+//
+//	tsqSpaceShip.push(infoOfSpaceShip);
+//
+//	//infoOfSpaceShip.PrintInfo();
+//
+//
+//	printf_s("[End] <cClientSocketInGame::RecvSpaceShip(...)>\n");
+//}
+//
+//void cClientSocketInGame::SendObservation()
+//{
+//	ClientSocket = cClientSocket::GetSingleton();
+//
+//	if (!ClientSocket)
+//	{
+//		printf_s("[ERROR] <cClientSocketInGame::SendObservation()> if (!ClientSocket)\n");
+//		return;
+//	}
+//
+//	printf_s("[Start] <cClientSocketInGame::SendObservation()>\n");
+//
+//
+//	stringstream sendStream;
+//	sendStream << EPacketType::OBSERVATION << endl;
+//
+//	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+//
+//
+//	printf_s("[End] <cClientSocketInGame::SendObservation()>\n");
+//}
+//
+//void cClientSocketInGame::RecvSpawnPioneer(stringstream& RecvStream)
+//{
+//	printf_s("[Start] <cClientSocketInGame::RecvSpawnPioneer(...)>\n");
+//
+//
+//	cInfoOfPioneer infoOfPioneer;
+//
+//	RecvStream >> infoOfPioneer;
+//	
+//	tsqSpawnPioneer.push(infoOfPioneer);
+//
+//	infoOfPioneer.PrintInfo();
+//
+//
+//	printf_s("[End] <cClientSocketInGame::RecvSpawnPioneer(...)>\n");
+//}
+//
+//void cClientSocketInGame::SendDiedPioneer(int ID)
+//{
+//	printf_s("[Start] <cClientSocketInGame::SendDiedPioneer()>\n");
+//
+//
+//	stringstream sendStream;
+//	sendStream << EPacketType::DIED_PIONEER << endl;
+//	sendStream << ID << endl;
+//
+//	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+//
+//	printf_s("\t ID: %d\n", ID);
+//
+//
+//	printf_s("[End] <cClientSocketInGame::SendDiedPioneer()>\n");
+//}
+//void cClientSocketInGame::RecvDiedPioneer(stringstream& RecvStream)
+//{
+//	printf_s("[Start] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
+//
+//
+//	int id;
+//
+//	RecvStream >> id;
+//
+//	tsqDiedPioneer.push(id);
+//		
+//	printf_s("\t ID: %d\n", id);
+//
+//
+//	printf_s("[End] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
+//}
+//
+//void cClientSocketInGame::SendInfoOfPioneer(cInfoOfPioneer InfoOfPioneer)
+//{
+//	printf_s("[Start] <cClientSocketInGame::SendInfoOfPioneer()>\n");
+//
+//
+//	stringstream sendStream;
+//	sendStream << EPacketType::INFO_OF_PIONEER << endl;
+//	sendStream << InfoOfPioneer << endl;
+//
+//	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+//
+//
+//	printf_s("[End] <cClientSocketInGame::SendInfoOfPioneer()>\n");
+//}
+//void cClientSocketInGame::RecvInfoOfPioneer(stringstream& RecvStream)
+//{
+//	printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer(...)>\n");
+//
+//
+//	cInfoOfPioneer infoOfPioneer;
+//
+//	RecvStream >> infoOfPioneer;
+//	
+//	tsqInfoOfPioneer.push(infoOfPioneer);
+//
+//	//infoOfPioneer.PrintInfo();
+//
+//
+//	printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer(...)>\n");
+//}
+//
+//
+///////////////////////////////////////
+//// Set-Get
+///////////////////////////////////////
+//void cClientSocketInGame::SetMyInfoOfScoreBoard(cInfoOfScoreBoard& InfoOfScoreBoard)
+//{
+//	EnterCriticalSection(&csMyInfoOfScoreBoard);
+//	MyInfoOfScoreBoard = InfoOfScoreBoard;
+//	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+//}
+//cInfoOfScoreBoard cClientSocketInGame::CopyMyInfoOfScoreBoard()
+//{
+//	cInfoOfScoreBoard infoOfScoreBoard;
+//
+//	EnterCriticalSection(&csMyInfoOfScoreBoard);
+//	infoOfScoreBoard = MyInfoOfScoreBoard;
+//	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+//
+//	return infoOfScoreBoard;
+//}
+//void cClientSocketInGame::InitMyInfoOfScoreBoard()
+//{
+//	EnterCriticalSection(&csMyInfoOfScoreBoard);
+//	MyInfoOfScoreBoard = cInfoOfScoreBoard();
+//	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+//}

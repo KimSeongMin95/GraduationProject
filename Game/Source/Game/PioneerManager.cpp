@@ -111,7 +111,7 @@ void APioneerManager::FindPioneersInWorld()
 				{
 					cInfoOfPioneer infoOfPioneer;
 					infoOfPioneer.SetActorTransform(ID, ActorItr->GetActorTransform());
-					ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
+					//ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
 				}
 			}
 
@@ -417,7 +417,7 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 		{
 			cInfoOfPioneer infoOfPioneer;
 			infoOfPioneer.SetActorTransform(ID, pioneer->GetActorTransform());
-			ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
+			//ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
 		}
 	}
 
@@ -447,10 +447,22 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
-	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+	SpawnParams.Instigator = Instigator; 
+
+	//SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
 	APioneer* pioneer = World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
+
+	// 충돌나면 위치를 조정
+	while (!pioneer)
+	{
+		FVector location = myTrans.GetLocation();
+		location.X += 100.0f;
+		myTrans.SetLocation(location);
+
+		pioneer = World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
+	}
 
 	pioneer->SetPioneerManager(this);
 
