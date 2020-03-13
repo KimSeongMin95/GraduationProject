@@ -33,6 +33,10 @@ public:
 	static std::map<SOCKET, stSOCKETINFO*> Clients;
 	static CRITICAL_SECTION csClients;
 
+	//static std::queue<char[MAX_BUFFER]> RecvQueue;
+	static std::map<SOCKET, queue<char*>*> MapOfRecvQueue;
+	static CRITICAL_SECTION csMapOfRecvQueue;
+
 public:
 	IocpServerBase();
 	virtual ~IocpServerBase();

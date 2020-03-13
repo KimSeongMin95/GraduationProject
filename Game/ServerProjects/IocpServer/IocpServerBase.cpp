@@ -4,6 +4,9 @@
 std::map<SOCKET, stSOCKETINFO*> IocpServerBase::Clients;
 CRITICAL_SECTION IocpServerBase::csClients;
 
+std::map<SOCKET, queue<char*>*> IocpServerBase::MapOfRecvQueue;
+CRITICAL_SECTION IocpServerBase::csMapOfRecvQueue;
+
 IocpServerBase::IocpServerBase()
 {
 	///////////////////
@@ -23,12 +26,18 @@ IocpServerBase::IocpServerBase()
 	EnterCriticalSection(&csClients);
 	Clients.clear();
 	LeaveCriticalSection(&csClients);
+
+	InitializeCriticalSection(&csMapOfRecvQueue);
+	EnterCriticalSection(&csMapOfRecvQueue);
+	MapOfRecvQueue.clear();
+	LeaveCriticalSection(&csMapOfRecvQueue);
 }
 
 IocpServerBase::~IocpServerBase()
 {
 	// 크리티컬 섹션들을 제거한다.
 	DeleteCriticalSection(&csClients);
+	DeleteCriticalSection(&csMapOfRecvQueue);
 }
 
 bool IocpServerBase::Initialize()
@@ -147,6 +156,11 @@ void IocpServerBase::StartServer()
 		Clients[clientSocket] = SocketInfo;
 		LeaveCriticalSection(&csClients);
 
+		// 
+		queue<char*>* recvQueue = new queue<char*>();
+		EnterCriticalSection(&csMapOfRecvQueue);
+		MapOfRecvQueue[clientSocket] = recvQueue;
+		LeaveCriticalSection(&csMapOfRecvQueue);
 
 		// SocketInfo를 hIOCP에 등록?
 		//hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (DWORD)SocketInfo, 0);

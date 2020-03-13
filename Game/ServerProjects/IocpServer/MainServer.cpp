@@ -98,6 +98,31 @@ MainServer::~MainServer()
 		printf_s("\t delete[] hWorkerHandle;\n");
 	}
 
+	// 
+	EnterCriticalSection(&csMapOfRecvQueue);
+	for (auto& kvp : MapOfRecvQueue)
+	{
+		if (kvp.second)
+		{
+			// 동적할당한 char* newBuffer = new char[MAX_BUFFER];를 해제합니다.
+			while (kvp.second->empty() == false)
+			{
+				if (kvp.second->front())
+				{
+					delete kvp.second->front();
+					kvp.second->pop();
+				}
+			}
+
+			// 동적할당한 queue<char*>* recvQueue = new queue<char*>();를 해제합니다.
+			delete kvp.second;
+
+			printf_s("\t for (auto& kvp : MapOfRecvQueue) if (kvp.second) delete kvp.second;\n");
+		}
+	}
+	MapOfRecvQueue.clear();
+	LeaveCriticalSection(&csMapOfRecvQueue);
+
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 해제
 	EnterCriticalSection(&csClients);
 	for (auto& kvp : Clients)
@@ -282,6 +307,22 @@ void MainServer::WorkerThread()
 
 		pSocketInfo->dataBuf.len = numberOfBytesTransferred;
 
+
+
+
+		// 임시 확인용
+		char* newBuffer = new char[MAX_BUFFER];
+		CopyMemory(newBuffer, pSocketInfo->dataBuf.buf, MAX_BUFFER);
+		EnterCriticalSection(&csMapOfRecvQueue);
+		if (MapOfRecvQueue.find(pSocketInfo->socket) != MapOfRecvQueue.end())
+		{
+			MapOfRecvQueue.at(pSocketInfo->socket)->push(newBuffer);
+			printf_s("strlen(MapOfRecvQueue.at(pSocketInfo->socket)->back()): %d \n", (int)strlen(MapOfRecvQueue.at(pSocketInfo->socket)->back()));
+		}
+		LeaveCriticalSection(&csMapOfRecvQueue);
+
+
+
 		try
 		{
 			int SizeOfPacket = 0;
@@ -303,7 +344,6 @@ void MainServer::WorkerThread()
 				// 일단 에러를 알립니다.
 				printf_s("\n\n\n\n\n\n\n\n\n\n [ERROR] if (SizeOfPacket != (int)numberOfBytesTransferred) \n\n\n\n\n\n\n\n\n\n\n");
 				printf_s("\n\n\n\n\n\n\n\n\n\n pSocketInfo->dataBuf.buf: %s \n\n\n\n\n\n\n\n\n\n\n", pSocketInfo->dataBuf.buf);
-
 				
 				continue;
 			}
@@ -397,6 +437,36 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	if (InfoOfGames.find(leaderSocket) != InfoOfGames.end())
 		InfoOfGames.at(leaderSocket).Players.Remove((int)pSocketInfo->socket);
 	LeaveCriticalSection(&csInfoOfGames);
+
+
+	///////////////////////////
+	// MapOfRecvQueue에서 제거
+	///////////////////////////
+	EnterCriticalSection(&csMapOfRecvQueue);
+	if (MapOfRecvQueue.find(pSocketInfo->socket) != MapOfRecvQueue.end())
+	{
+		if (queue<char*>* recvQueue = MapOfRecvQueue.at(pSocketInfo->socket))
+		{
+			while (recvQueue->empty() == false)
+			{
+				if (recvQueue->front())
+				{
+					delete recvQueue->front();
+					recvQueue->pop();
+				}
+			}
+			delete recvQueue;
+		}
+
+		printf_s("\t MapOfRecvQueue.size(): %d\n", (int)MapOfRecvQueue.size());
+		MapOfRecvQueue.erase(pSocketInfo->socket);
+		printf_s("\t MapOfRecvQueue.size(): %d\n", (int)MapOfRecvQueue.size());
+	}
+	else
+	{
+		printf_s("[ERROR] <MainServer::CloseSocket(...)> MapOfRecvQueue can't find pSocketInfo->socket\n");
+	}
+	LeaveCriticalSection(&csMapOfRecvQueue);
 
 
 	///////////////////////////
