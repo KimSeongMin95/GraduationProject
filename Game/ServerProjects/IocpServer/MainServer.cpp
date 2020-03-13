@@ -209,7 +209,7 @@ void MainServer::WorkerThread()
 
 	while (bWorkerThread)
 	{
-		printf_s("[INFO] <MainServer::WorkerThread()> before GetQueuedCompletionStatus(...)\n");
+		//printf_s("[INFO] <MainServer::WorkerThread()> before GetQueuedCompletionStatus(...)\n");
 		/**
 		 * 이 함수로 인해 쓰레드들은 WaitingThread Queue 에 대기상태로 들어가게 됨
 		 * 완료된 Overlapped I/O 작업이 발생하면 IOCP Queue 에서 완료된 작업을 가져와 뒷처리를 함
@@ -220,9 +220,10 @@ void MainServer::WorkerThread()
 			(LPOVERLAPPED*)& pSocketInfo,	// overlapped I/O 객체
 			INFINITE						// 대기할 시간
 		);
-		printf_s("[INFO] <MainServer::WorkerThread()> after GetQueuedCompletionStatus(...)\n");
+		//printf_s("[INFO] <MainServer::WorkerThread()> after GetQueuedCompletionStatus(...)\n");
 		printf_s("[INFO] <MainServer::WorkerThread()> ThreadID: %d \n", (int)GetCurrentThreadId());
-
+		printf_s("[INFO] <MainServer::WorkerThread()> numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
+		printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->recvBytes: %d \n", pSocketInfo->recvBytes);
 
 		// PostQueuedCompletionStatus(...)로 강제종료
 		if (pCompletionKey == 0)
@@ -236,13 +237,17 @@ void MainServer::WorkerThread()
 		{
 			printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->sendBytes: %d \n", pSocketInfo->sendBytes);
 			printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->sentBytes: %d \n", pSocketInfo->sentBytes);
-			printf_s("[INFO] <MainServer::WorkerThread()> numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
 			
 			// WSASend에서 new로 새로 동적할당한 stSOCKETINFO 이므로 송신이 정상적으로 완료되면 delete 해줍니다.
 			if (pSocketInfo->sendBytes == pSocketInfo->sentBytes)
 			{
 				delete pSocketInfo;
 				printf_s("[INFO] <MainServer::WorkerThread()> delete pSocketInfo; \n");
+			}
+			// 사이즈가 다르다면 제대로 전송이 되지 않은것이므로 일단 콘솔에 알립니다.
+			else
+			{
+				printf_s("\n\n\n\n\n[ERROR] <MainServer::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n");
 			}
 			continue;
 		}
@@ -267,8 +272,9 @@ void MainServer::WorkerThread()
 
 		try
 		{
-			// 패킷 종류
-			int PacketType;
+			
+			int SizeOfPacket = 0;
+			int PacketType = -1; // 패킷 종류
 
 			// 클라이언트 정보 역직렬화
 			stringstream RecvStream;
@@ -276,6 +282,9 @@ void MainServer::WorkerThread()
 			// 문자열인 버퍼 값을 stringstream에 저장합니다.
 			RecvStream << pSocketInfo->dataBuf.buf;
 			
+			RecvStream >> SizeOfPacket;
+			printf_s("\t SizeOfPacket: %d \n", SizeOfPacket);
+
 			// stringstream에서 PacketType의 자료형인 int형에 해당되는 값만 추출/복사하여 PacketType에 대입합니다.
 			RecvStream >> PacketType;
 
@@ -400,9 +409,6 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 }
 
 
-
-
-
 void CALLBACK SendCompletionROUTINE(
 	IN DWORD dwError,
 	IN DWORD cbTransferred,
@@ -420,7 +426,7 @@ void CALLBACK SendCompletionROUTINE(
 
 }
 
-void MainServer::Send(stSOCKETINFO* pSocketInfo)
+void MainServer::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
 {
 	printf_s("[START] <MainServer::Send(...)>\n");
 
@@ -465,11 +471,16 @@ void MainServer::Send(stSOCKETINFO* pSocketInfo)
 	//}
 	/***** lpOverlapped와 lpCompletionRoutine을 NULL로 하여 기존 send 기능을 하는 비중첩 버전 : End  *****/
 
+
+	stringstream finalStream;
+	AddSizeInStream(SendStream, finalStream);
+
 	/***** WSARecv의 &(SocketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : Start  *****/
 	stSOCKETINFO* SocketInfo = new stSOCKETINFO();
 	memset(&(SocketInfo->overlapped), 0, sizeof(OVERLAPPED));
-	CopyMemory(SocketInfo->messageBuffer, pSocketInfo->messageBuffer, MAX_BUFFER);
-	SocketInfo->dataBuf.len = pSocketInfo->dataBuf.len;
+	ZeroMemory(SocketInfo->messageBuffer, MAX_BUFFER);
+	CopyMemory(SocketInfo->messageBuffer, (CHAR*)finalStream.str().c_str(), finalStream.str().length());
+	SocketInfo->dataBuf.len = finalStream.str().length();
 	SocketInfo->dataBuf.buf = SocketInfo->messageBuffer;
 	SocketInfo->socket = pSocketInfo->socket;
 	SocketInfo->recvBytes = 0;
@@ -540,11 +551,7 @@ void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	sendStream << EPacketType::LOGIN << endl;
 	sendStream << infoOfPlayer << endl;
 
-	CopyMemory(pSocketInfo->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
-	pSocketInfo->dataBuf.len = sendStream.str().length();
-
-	Send(pSocketInfo);    
+	Send(sendStream, pSocketInfo);
 
 
 	printf_s("[Send to %d] <MainServer::Login(...)>\n\n", (int)pSocketInfo->socket);
@@ -580,10 +587,9 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 
 
 	/// 송신
+	EnterCriticalSection(&csInfoOfGames);
 	stringstream sendStream;
 	sendStream << EPacketType::FIND_GAMES << endl;
-
-	EnterCriticalSection(&csInfoOfGames);
 	printf_s("\t InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
 	for (auto& kvp : InfoOfGames)
 	{
@@ -592,11 +598,7 @@ void MainServer::FindGames(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 	}
 	LeaveCriticalSection(&csInfoOfGames);
 
-	CopyMemory(pSocketInfo->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
-	pSocketInfo->dataBuf.len = sendStream.str().length();
-
-	Send(pSocketInfo);
+	Send(sendStream, pSocketInfo);
 
 
 	printf_s("[Send to %d] <MainServer::FindGames(...)>\n\n", (int)pSocketInfo->socket);
@@ -657,11 +659,7 @@ void MainServer::JoinOnlineGame(stringstream& RecvStream, stSOCKETINFO* pSocketI
 
 	if (client)
 	{
-		CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-		client->dataBuf.buf = client->messageBuffer;
-		client->dataBuf.len = sendStream.str().length();
-
-		Send(client);
+		Send(sendStream, client);
 
 		printf_s("[Send to %d] <MainServer::JoinOnlineGame(...)>\n", (int)client->socket);
 	}
@@ -679,11 +677,7 @@ void MainServer::JoinOnlineGame(stringstream& RecvStream, stSOCKETINFO* pSocketI
 
 		if (client)
 		{
-			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-			client->dataBuf.buf = client->messageBuffer;
-			client->dataBuf.len = sendStream.str().length();
-
-			Send(client);
+			Send(sendStream, client);
 
 			printf_s("[Send to %d] <MainServer::JoinOnlineGame(...)>\n", (int)client->socket);
 		}
@@ -767,11 +761,7 @@ void MainServer::DestroyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSoc
 
 		if (client)
 		{
-			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-			client->dataBuf.buf = client->messageBuffer;
-			client->dataBuf.len = sendStream.str().length();
-
-			Send(client);
+			Send(sendStream, client);
 
 			printf_s("[Send to %d] <MainServer::DestroyWaitingGame(...)>\n", (int)client->socket);
 		}
@@ -836,11 +826,7 @@ void MainServer::ExitWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 
 	if (client)
 	{
-		CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-		client->dataBuf.buf = client->messageBuffer;
-		client->dataBuf.len = sendStream.str().length();
-
-		Send(client);
+		Send(sendStream, client);
 
 		printf_s("[Send to %d] <MainServer::ExitWaitingGame(...)>\n", (int)client->socket);
 	}
@@ -858,11 +844,7 @@ void MainServer::ExitWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocket
 
 		if (client)
 		{
-			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-			client->dataBuf.buf = client->messageBuffer;
-			client->dataBuf.len = sendStream.str().length();
-
-			Send(client);
+			Send(sendStream, client);
 
 			printf_s("[Send to %d] <MainServer::ExitWaitingGame(...)>\n", (int)client->socket);
 		}
@@ -920,11 +902,7 @@ void MainServer::ModifyWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSock
 
 		if (client)
 		{
-			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-			client->dataBuf.buf = client->messageBuffer;
-			client->dataBuf.len = sendStream.str().length();
-
-			Send(client);
+			Send(sendStream, client);
 
 			printf_s("[Send to %d] <MainServer::ModifyWaitingGame(...)>\n", (int)client->socket);
 		}
@@ -970,11 +948,7 @@ void MainServer::StartWaitingGame(stringstream& RecvStream, stSOCKETINFO* pSocke
 
 		if (client)
 		{
-			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-			client->dataBuf.buf = client->messageBuffer;
-			client->dataBuf.len = sendStream.str().length();
-
-			Send(client);
+			Send(sendStream, client);
 
 			printf_s("[Send to %d] <MainServer::StartWaitingGame(...)>\n", (int)client->socket);
 		}
@@ -1036,11 +1010,7 @@ void MainServer::ActivateGameServer(stringstream& RecvStream, stSOCKETINFO* pSoc
 
 	if (client)
 	{
-		CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-		client->dataBuf.buf = client->messageBuffer;
-		client->dataBuf.len = sendStream.str().length();
-
-		Send(client);
+		Send(sendStream, client);
 
 		printf_s("[Send to %d] <MainServer::ActivateGameServer(...)>\n", (int)client->socket);
 	}
@@ -1058,11 +1028,7 @@ void MainServer::ActivateGameServer(stringstream& RecvStream, stSOCKETINFO* pSoc
 
 		if (client)
 		{
-			CopyMemory(client->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-			client->dataBuf.buf = client->messageBuffer;
-			client->dataBuf.len = sendStream.str().length();
-
-			Send(client);
+			Send(sendStream, client);
 
 			printf_s("[Send to %d] <MainServer::ActivateGameServer(...)>\n", (int)client->socket);
 		}
@@ -1114,11 +1080,7 @@ void MainServer::RequestInfoOfGameServer(stringstream& RecvStream, stSOCKETINFO*
 	sendStream << EPacketType::REQUEST_INFO_OF_GAME_SERVER << endl;
 	sendStream << infoOfPlayer << endl;
 
-	CopyMemory(pSocketInfo->messageBuffer, (CHAR*)sendStream.str().c_str(), sendStream.str().length());
-	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
-	pSocketInfo->dataBuf.len = sendStream.str().length();
-
-	Send(pSocketInfo);
+	Send(sendStream, pSocketInfo);
 
 
 	printf_s("[Send to %d] <MainServer::RequestInfoOfGameServer(...)>\n", (int)pSocketInfo->socket);
@@ -1131,11 +1093,7 @@ void MainServer::Broadcast(stringstream& SendStream)
 	EnterCriticalSection(&csClients);
 	for (const auto& kvp : Clients)
 	{
-		CopyMemory(kvp.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
-		kvp.second->dataBuf.buf = kvp.second->messageBuffer;
-		kvp.second->dataBuf.len = SendStream.str().length();
-
-		Send(kvp.second);
+		Send(SendStream, kvp.second);
 	}
 	LeaveCriticalSection(&csClients);
 }
@@ -1147,11 +1105,7 @@ void MainServer::BroadcastExcept(stringstream& SendStream, SOCKET Except)
 		if (kvp.second->socket == Except)
 			continue;
 
-		CopyMemory(kvp.second->messageBuffer, (CHAR*)SendStream.str().c_str(), SendStream.str().length());
-		kvp.second->dataBuf.buf = kvp.second->messageBuffer;
-		kvp.second->dataBuf.len = SendStream.str().length();
-
-		Send(kvp.second);
+		Send(SendStream, kvp.second);
 	}
 	LeaveCriticalSection(&csClients);
 }

@@ -33,7 +33,7 @@ public:
 	virtual void CloseSocket(stSOCKETINFO* pSocketInfo) override;
 
 	// 클라이언트에게 송신
-	static void Send(stSOCKETINFO* pSocketInfo);
+	static void Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo);
 
 
 private:

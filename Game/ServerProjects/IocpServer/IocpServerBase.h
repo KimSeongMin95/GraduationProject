@@ -53,8 +53,44 @@ public:
 	virtual void CloseSocket(stSOCKETINFO* pSocketInfo);
 
 	// 클라이언트에게 송신
-	virtual void Send(stSOCKETINFO* pSocketInfo);
+	virtual void Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo);
 
 	// 클라이언트 수신 대기
 	virtual void Recv(stSOCKETINFO* pSocketInfo);
+
+	///////////////////////////////////////////
+	// stringstream의 맨 앞에 size를 추가
+	///////////////////////////////////////////
+	static void AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
+	{
+		if (DataStream.str().length() == 0)
+		{
+			printf_s("[ERROR] <AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
+			return;
+		}
+		printf_s("[START] <AddSizeInStream(...)> \n");
+
+		// ex) DateStream의 크기 : 98
+		printf_s("\t DataStream size: %d\n", (int)DataStream.str().length());
+		printf_s("\t DataStream: %s\n", DataStream.str().c_str());
+
+		// dataStreamLength의 크기 : 3 [98 ]
+		stringstream dataStreamLength;
+		dataStreamLength << DataStream.str().length() << endl;
+
+		// lengthOfFinalStream의 크기 : 4 [101 ]
+		stringstream lengthOfFinalStream;
+		lengthOfFinalStream << (dataStreamLength.str().length() + DataStream.str().length()) << endl;
+
+		// FinalStream의 크기 : 101 [101 DataStream]
+		int sizeOfFinalStream = (int)(lengthOfFinalStream.str().length() + DataStream.str().length());
+		FinalStream << sizeOfFinalStream << endl;
+		FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
+
+		printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
+		printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
+
+
+		printf_s("[END] <AddSizeInStream(...)> \n");
+	}
 };

@@ -151,6 +151,15 @@ public:
 
 enum EPacketType
 {
+	/** 패킷 구조
+	int PacketSize;
+	int EPacketType;
+	... Data;
+	*/
+
+	// 최소 [1 1 ] 사이즈와 타입까지 4바이트?
+	// 최대 [4096(MAX_BUFFER) 1 ] 사이즈만 4바이트?
+
 	/** 설명
 	Main Client:
 		Send [EPacketType]:

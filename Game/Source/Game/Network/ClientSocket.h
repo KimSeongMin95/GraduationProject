@@ -56,6 +56,9 @@ public:
 	// 소켓 종료
 	void CloseSocket();
 
+	// 
+	void Send(stringstream& SendStream);
+
 	// 스레드 시작 및 종료
 	bool StartListen();
 	void StopListen();
@@ -69,6 +72,12 @@ public:
 
 	bool IsInitialized() { return bIsInitialized; }
 	bool IsConnected() { return bIsConnected; }
+
+	///////////////////////////////////////////
+	// stringstream의 맨 앞에 size를 추가
+	///////////////////////////////////////////
+	void AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
+
 
 	///////////////////////////////////////////
 	// Main Server / Main Clients

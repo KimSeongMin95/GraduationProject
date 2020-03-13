@@ -199,7 +199,7 @@ void IocpServerBase::CloseSocket(stSOCKETINFO* pSocketInfo)
 	//
 }
 
-void IocpServerBase::Send(stSOCKETINFO* pSocketInfo)
+void IocpServerBase::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
 {
 	//
 }

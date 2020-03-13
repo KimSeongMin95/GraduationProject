@@ -18,28 +18,7 @@
 #include <sstream>
 
 using namespace std;
-//void MainServer::Send(stSOCKETINFO* pSocketInfo)
-//{
-//	//printf_s("<MainServer::Send(...)> : %s\n", pSocketInfo->dataBuf.buf);
-//
-//	DWORD	sendBytes;
-//	DWORD	dwFlags = 0;
-//
-//	int nResult = WSASend(
-//		pSocketInfo->socket,
-//		&(pSocketInfo->dataBuf),
-//		1,
-//		&sendBytes,
-//		dwFlags,
-//		NULL,
-//		NULL
-//	);
-//
-//	if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
-//	{
-//		printf_s("[ERROR] <MainServer::Send(...)> WSASend ½ÇÆÐ : %d\n", WSAGetLastError());
-//	}
-//}
+
 #define	MAX_BUFFER		4096
 #define SERVER_PORT		8000
 

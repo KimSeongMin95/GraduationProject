@@ -33,7 +33,8 @@ uint32 cClientSocket::Run()
 		/////////////////////////////
 		memset(recvBuffer, 0, MAX_BUFFER);
 
-		int PacketType;
+		int SizeOfPacket = 0;
+		int PacketType = -1;
 		int nRecvLen = recv(ServerSocket, (CHAR*)&recvBuffer, MAX_BUFFER, 0);
 
 		//// 수신 받은 값 확인하는 용도
@@ -48,7 +49,10 @@ uint32 cClientSocket::Run()
 
 			// 패킷 처리
 			RecvStream << recvBuffer;
+			RecvStream >> SizeOfPacket;
 			RecvStream >> PacketType;
+
+			printf_s("\t SizeOfPacket: %d \n", SizeOfPacket);
 
 			//// 수신 받은 값 확인하는 용도
 			//FString temp4(RecvStream.str().c_str());
@@ -277,6 +281,14 @@ void cClientSocket::CloseSocket()
 	printf_s("[END] <cClientSocket::CloseSocket()>\n");
 }
 
+void cClientSocket::Send(stringstream& SendStream)
+{
+	stringstream finalStream;
+	AddSizeInStream(SendStream, finalStream);
+
+	send(ServerSocket, (CHAR*)finalStream.str().c_str(), finalStream.str().length(), 0);
+}
+
 bool cClientSocket::StartListen()
 {
 	printf_s("[INFO] <cClientSocket::StartListen()>\n");
@@ -313,8 +325,45 @@ void cClientSocket::StopListen()
 }
 
 
+///////////////////////////////////////////
+// stringstream의 맨 앞에 size를 추가
+///////////////////////////////////////////
+void cClientSocket::AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
+{
+	if (DataStream.str().length() == 0)
+	{
+		printf_s("[ERROR] <cClientSocket::AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
+		return;
+	}
+	printf_s("[START] <cClientSocket::AddSizeInStream(...)> \n");
+
+	// ex) DateStream의 크기 : 98
+	printf_s("\t DataStream size: %d\n", (int)DataStream.str().length());
+	printf_s("\t DataStream: %s\n", DataStream.str().c_str());
+
+	// dataStreamLength의 크기 : 3 [98 ]
+	stringstream dataStreamLength;
+	dataStreamLength << DataStream.str().length() << endl;
+
+	// lengthOfFinalStream의 크기 : 4 [101 ]
+	stringstream lengthOfFinalStream;
+	lengthOfFinalStream << (dataStreamLength.str().length() + DataStream.str().length()) << endl;
+
+	// FinalStream의 크기 : 101 [101 DataStream]
+	int sizeOfFinalStream = (int)(lengthOfFinalStream.str().length() + DataStream.str().length());
+	FinalStream << sizeOfFinalStream << endl;
+	FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
+
+	printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
+	printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
+
+
+	printf_s("[END] <cClientSocket::AddSizeInStream(...)> \n");
+}
+
+
 /////////////////////////////////////
-// 서버와 통신
+// Main Server / Main Clients
 /////////////////////////////////////
 void cClientSocket::SendLogin(const FText ID)
 {
@@ -331,7 +380,7 @@ void cClientSocket::SendLogin(const FText ID)
 	sendStream << EPacketType::LOGIN << endl;
 	sendStream << infoOfPlayer << endl;
 
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	Send(sendStream);
 
 	infoOfPlayer.PrintInfo();
 
@@ -370,7 +419,7 @@ void cClientSocket::SendCreateGame()
 	sendStream << EPacketType::CREATE_GAME << endl;
 	sendStream << infoOfGame << endl;
 
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	Send(sendStream);
 
 	infoOfGame.PrintInfo();
 
@@ -386,7 +435,7 @@ void cClientSocket::SendFindGames()
 	stringstream sendStream;
 	sendStream << EPacketType::FIND_GAMES << endl;
 
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	Send(sendStream);
 
 
 	printf_s("[End] <cClientSocket::SendFindGames()>\n");
@@ -422,7 +471,7 @@ void cClientSocket::SendJoinOnlineGame(int SocketIDOfLeader)
 	sendStream << EPacketType::JOIN_ONLINE_GAME << endl;
 	sendStream << infoOfPlayer << endl;
 
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	Send(sendStream);
 
 
 	printf_s("[End] <cClientSocket::SendJoinWaitingGame(...)>\n");
@@ -465,7 +514,7 @@ void cClientSocket::SendDestroyWaitingGame()
 	stringstream sendStream;
 	sendStream << EPacketType::DESTROY_WAITING_GAME << endl;
 
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	Send(sendStream);
 
 
 	printf_s("[End] <cClientSocket::SendDestroyWaitingGame()>\n");
@@ -509,7 +558,7 @@ void cClientSocket::SendExitWaitingGame()
 	stringstream sendStream;
 	sendStream << EPacketType::EXIT_WAITING_GAME << endl;
 
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	Send(sendStream);
 
 
 	printf_s("[End] <cClientSocket::SendExitWaitingGame(...)>\n");
@@ -527,7 +576,7 @@ void cClientSocket::SendModifyWaitingGame()
 	sendStream << EPacketType::MODIFY_WAITING_GAME << endl;
 	sendStream << infoOfGame << endl;
 
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	Send(sendStream);
 
 	infoOfGame.PrintInfo();
 
@@ -561,7 +610,7 @@ void cClientSocket::SendStartWaitingGame()
 	stringstream sendStream;
 	sendStream << EPacketType::START_WAITING_GAME << endl;
 
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	Send(sendStream);
 
 
 	printf_s("[End] <cClientSocket::SendStartWaitingGame()>\n");
@@ -595,7 +644,7 @@ void cClientSocket::SendActivateGameServer(int PortOfGameServer)
 	sendStream << EPacketType::ACTIVATE_GAME_SERVER << endl;
 	sendStream << infoOfLeader << endl;
 
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	Send(sendStream);
 	
 	infoOfLeader.PrintInfo();
 
@@ -611,7 +660,7 @@ void cClientSocket::SendRequestInfoOfGameServer()
 	stringstream sendStream;
 	sendStream << EPacketType::REQUEST_INFO_OF_GAME_SERVER << endl;
 
-	send(ServerSocket, (CHAR*)sendStream.str().c_str(), sendStream.str().length(), 0);
+	Send(sendStream);
 
 
 	printf_s("[End] <cClientSocket::SendRequestInfoOfGameServer()>\n");
