@@ -93,4 +93,60 @@ public:
 
 		printf_s("[END] <AddSizeInStream(...)> \n");
 	}
+
+	void SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf)
+	{
+		/*
+		The maximum send buffer size is 1,048,576 bytes.
+		The default value of the SO_SNDBUF option is 32,767.
+		For a TCP socket, the maximum length that you can specify is 1 GB.
+		For a UDP or RAW socket, the maximum length that you can specify is the smaller of the following values:
+		65,535 bytes (for a UDP socket) or 32,767 bytes (for a RAW socket).
+		The send buffer size defined by the SO_SNDBUF option.
+		*/
+
+		/* 검증
+		1048576B == 1024KB
+		TCP에선 send buffer와 recv buffer 모두 1048576 * 256까지 가능.
+		*/
+
+		printf_s("[START] <SetSockOpt(...)> \n");
+
+
+		int optval;
+		int optlen = sizeof(optval);
+
+		// 성공시 0, 실패시 -1 반환
+		if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
+		{
+			printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+		}
+		if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
+		{
+			printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+		}
+
+		optval = SendBuf;
+		if (setsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, sizeof(optval)) == 0)
+		{
+			printf_s("\t Socket: %d, setsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+		}
+		optval = RecvBuf;
+		if (setsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, sizeof(optval)) == 0)
+		{
+			printf_s("\t Socket: %d, setsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+		}
+
+		if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
+		{
+			printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+		}
+		if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
+		{
+			printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+		}
+
+
+		printf_s("[END] <SetSockOpt(...)> \n");
+	}
 };

@@ -24,39 +24,62 @@ uint32 cClientSocket::Run()
 	{
 		stringstream RecvStream;
 
-		//// 수신 받은 값 확인하는 용도
-		//FString temp1(recvBuffer);
-		//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] before recvBuffer: %s"), *temp1);
-		
-		/////////////////////////////
-		// 필수!!!!: recvBuffer 초기화
-		/////////////////////////////
-		memset(recvBuffer, 0, MAX_BUFFER);
-
 		int SizeOfPacket = 0;
 		int PacketType = -1;
-		int nRecvLen = recv(ServerSocket, (CHAR*)&recvBuffer, MAX_BUFFER, 0);
+		int nRecvLen = 0;
 
-		//// 수신 받은 값 확인하는 용도
-		//FString temp2(recvBuffer);
-		//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] after recvBuffer: %s"), *temp2);
+		/*
+		FIONREAD
+		네트웍 입력 버퍼에서 기다리고 있는, 소켓 s로부터 읽을 수 있는 데이터의 크기(amount)를 얻어내는데 사용됩니다. 
+		argp 매개변수는 데이터의 크기를 의미하는 unsigned long 형태로 포인트 합니다. 
+		다시 말하자면, 만약 s 매개변수가 연결지향형(stream oriented) 소켓(예:SOCK_STREAM) 일 경우, 
+		FIONREAD 컴맨드에 의한 ioctlsocket 함수의 호출은 recv 함수의 호출로 읽을 수 있는
+		데이터의 크기(amount)를 반환하게 되는거죠. 만약 소켓이 메시지 지향형(message oriented) 소켓(예:SOCK_DGRAM) 일 경우 
+		FIONREAD 컴맨드는 소켓에 큐된 첫 번째 데이터그램의 크기를 반환 합니다.
+		*/
+		u_long amount = 0;
+		if (ioctlsocket(ServerSocket, FIONREAD, &amount) == 0)
+		{
+			// recv 버퍼에 데이터가 0바이트 존재하면 아직 아무 패킷도 받지 않은것이므로 회문합니다.
+			if (amount == 0)
+				continue;
+
+			// recv 버퍼에 데이터가 4바이트 미만으로 쌓여있는 상황이면 recv 하지 않습니다.
+			if (amount < 4)
+			{
+				printf_s("\n\n\n\n\n [ERROR] amount: %d \n\n\n\n\n\n", (int)amount);
+				continue;
+			}
+
+			// 필수!!!!: recvBuffer 초기화
+			memset(recvBuffer, 0, MAX_BUFFER);
+			nRecvLen = recv(ServerSocket, (CHAR*)&recvBuffer, MAX_BUFFER, 0);
+		}
+		else
+		{
+			printf_s("[ERROR] if (ioctlsocket(ServerSocket, FIONREAD, &amount) == -1) \n");
+			continue;
+		}
 
 		if (nRecvLen > 0)
 		{
-			//// 수신 받은 값 확인하는 용도
-			//FString temp3(RecvStream.str().c_str());
-			//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] before RecvStream: %s"), *temp3);
-
-			// 패킷 처리
 			RecvStream << recvBuffer;
+
+			// 사이즈 확인
 			RecvStream >> SizeOfPacket;
-			RecvStream >> PacketType;
-
+			printf_s("\t nRecvLen: %d \n", nRecvLen);
 			printf_s("\t SizeOfPacket: %d \n", SizeOfPacket);
+			// 받은 패킷 크기와 패킷 원본의 크기가 다르다면
+			if (SizeOfPacket != nRecvLen)
+			{
+				// 일단 에러를 알립니다.
+				printf_s("\n\n\n\n\n\n\n\n\n\n [ERROR] if (SizeOfPacket != nRecvLen) \n\n\n\n\n\n\n\n\n\n\n");
+				printf_s("\n\n\n\n\n\n\n\n\n\n recvBuffer: %s \n\n\n\n\n\n\n\n\n\n\n", recvBuffer);
+				continue;
+			}
 
-			//// 수신 받은 값 확인하는 용도
-			//FString temp4(RecvStream.str().c_str());
-			//UE_LOG(LogTemp, Error, TEXT("[case EPacketType::FIND_GAMES] after RecvStream: %s"), *temp4);
+			// 타입 확인
+			RecvStream >> PacketType;
 
 			switch (PacketType)
 			{
@@ -190,6 +213,8 @@ bool cClientSocket::InitSocket()
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)"));
 		return false;
 	}
+
+	SetSockOpt(ServerSocket, 1048576, 1048576);
 
 	bIsInitialized = true;
 
@@ -326,7 +351,7 @@ void cClientSocket::StopListen()
 
 
 ///////////////////////////////////////////
-// stringstream의 맨 앞에 size를 추가
+// Basic Functions
 ///////////////////////////////////////////
 void cClientSocket::AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
 {
@@ -359,6 +384,62 @@ void cClientSocket::AddSizeInStream(stringstream& DataStream, stringstream& Fina
 
 
 	printf_s("[END] <cClientSocket::AddSizeInStream(...)> \n");
+}
+
+void cClientSocket::SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf)
+{
+	/*
+	The maximum send buffer size is 1,048,576 bytes.
+	The default value of the SO_SNDBUF option is 32,767.
+	For a TCP socket, the maximum length that you can specify is 1 GB.
+	For a UDP or RAW socket, the maximum length that you can specify is the smaller of the following values:
+	65,535 bytes (for a UDP socket) or 32,767 bytes (for a RAW socket).
+	The send buffer size defined by the SO_SNDBUF option.
+	*/
+
+	/* 검증
+	1048576B == 1024KB
+	TCP에선 send buffer와 recv buffer 모두 1048576 * 256까지 가능.
+	*/
+
+	printf_s("[START] <cClientSocket::SetSockOpt(...)> \n");
+
+
+	int optval;
+	int optlen = sizeof(optval);
+
+	// 성공시 0, 실패시 -1 반환
+	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
+	{
+		printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+	}
+	if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
+	{
+		printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+	}
+
+	optval = SendBuf;
+	if (setsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, sizeof(optval)) == 0)
+	{
+		printf_s("\t Socket: %d, setsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+	}
+	optval = RecvBuf;
+	if (setsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, sizeof(optval)) == 0)
+	{
+		printf_s("\t Socket: %d, setsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+	}
+
+	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
+	{
+		printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+	}
+	if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
+	{
+		printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+	}
+
+
+	printf_s("[END] <cClientSocket::SetSockOpt(...)> \n");
 }
 
 

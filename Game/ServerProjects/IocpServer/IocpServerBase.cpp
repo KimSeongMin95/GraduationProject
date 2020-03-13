@@ -115,8 +115,10 @@ void IocpServerBase::StartServer()
 			return;
 		}
 		else
+		{
 			printf_s("[INFO] <IocpServerBase::StartServer()> WSAAccept ¼º°ø, SocketID: %d\n", int(clientSocket));
-
+			SetSockOpt(clientSocket, 1048576, 1048576);
+		}
 
 		SocketInfo = new stSOCKETINFO();
 		memset(&(SocketInfo->overlapped), 0, sizeof(OVERLAPPED));

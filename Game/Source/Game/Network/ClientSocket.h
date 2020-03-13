@@ -74,9 +74,12 @@ public:
 	bool IsConnected() { return bIsConnected; }
 
 	///////////////////////////////////////////
-	// stringstream의 맨 앞에 size를 추가
+	// Basic Functions
 	///////////////////////////////////////////
 	void AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
+
+	void SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf);
+
 
 
 	///////////////////////////////////////////

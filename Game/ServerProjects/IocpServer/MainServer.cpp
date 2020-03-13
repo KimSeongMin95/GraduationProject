@@ -209,6 +209,8 @@ void MainServer::WorkerThread()
 
 	while (bWorkerThread)
 	{
+		numberOfBytesTransferred = 0;
+
 		//printf_s("[INFO] <MainServer::WorkerThread()> before GetQueuedCompletionStatus(...)\n");
 		/**
 		 * 이 함수로 인해 쓰레드들은 WaitingThread Queue 에 대기상태로 들어가게 됨
@@ -221,6 +223,7 @@ void MainServer::WorkerThread()
 			INFINITE						// 대기할 시간
 		);
 		//printf_s("[INFO] <MainServer::WorkerThread()> after GetQueuedCompletionStatus(...)\n");
+		printf_s("[INFO] <MainServer::WorkerThread()> SocketID: %d \n", (int)pSocketInfo->socket);
 		printf_s("[INFO] <MainServer::WorkerThread()> ThreadID: %d \n", (int)GetCurrentThreadId());
 		printf_s("[INFO] <MainServer::WorkerThread()> numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
 		printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->recvBytes: %d \n", pSocketInfo->recvBytes);
@@ -247,7 +250,7 @@ void MainServer::WorkerThread()
 			// 사이즈가 다르다면 제대로 전송이 되지 않은것이므로 일단 콘솔에 알립니다.
 			else
 			{
-				printf_s("\n\n\n\n\n[ERROR] <MainServer::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n");
+				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <MainServer::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
 			}
 			continue;
 		}
@@ -268,11 +271,19 @@ void MainServer::WorkerThread()
 			continue;
 		}
 
+		// 크기: 4 [4 1 ] 같이 최소한의 패킷 사이즈를 충족하지 못하면
+		if (0 < numberOfBytesTransferred && numberOfBytesTransferred < 4)
+		{
+			printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <MainServer::WorkerThread()> if (numberOfBytesTransferred < 4) \n\n\n\n\n\n\n\n\n\n\n");
+			continue;
+		}
+
+		/**************************************************************************/
+
 		pSocketInfo->dataBuf.len = numberOfBytesTransferred;
 
 		try
 		{
-			
 			int SizeOfPacket = 0;
 			int PacketType = -1; // 패킷 종류
 
@@ -282,8 +293,20 @@ void MainServer::WorkerThread()
 			// 문자열인 버퍼 값을 stringstream에 저장합니다.
 			RecvStream << pSocketInfo->dataBuf.buf;
 			
+			// 사이즈 확인
 			RecvStream >> SizeOfPacket;
+			printf_s("\t numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
 			printf_s("\t SizeOfPacket: %d \n", SizeOfPacket);
+			// 받은 패킷 크기와 패킷 원본의 크기가 다르다면
+			if (SizeOfPacket != (int)numberOfBytesTransferred)
+			{
+				// 일단 에러를 알립니다.
+				printf_s("\n\n\n\n\n\n\n\n\n\n [ERROR] if (SizeOfPacket != (int)numberOfBytesTransferred) \n\n\n\n\n\n\n\n\n\n\n");
+				printf_s("\n\n\n\n\n\n\n\n\n\n pSocketInfo->dataBuf.buf: %s \n\n\n\n\n\n\n\n\n\n\n", pSocketInfo->dataBuf.buf);
+
+				
+				continue;
+			}
 
 			// stringstream에서 PacketType의 자료형인 int형에 해당되는 값만 추출/복사하여 PacketType에 대입합니다.
 			RecvStream >> PacketType;
