@@ -34,7 +34,9 @@ public:
 
 	// 클라이언트에게 송신
 	static void Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo);
-
+	
+	// 클라이언트 수신 대기
+	static void Recv(stSOCKETINFO* pSocketInfo);
 
 private:
 	///////////////////////////////////////////

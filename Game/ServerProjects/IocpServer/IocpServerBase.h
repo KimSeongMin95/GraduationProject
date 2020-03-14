@@ -38,7 +38,7 @@ public:
 	static CRITICAL_SECTION csMapOfRecvQueue;
 
 	// Send(...)에서 동적할당한 stSOCKETINFO*을 나중에 해제하기 위해 저장
-	static map<stSOCKETINFO*, stSOCKETINFO*> SendCollector;
+	static multimap<SOCKET, stSOCKETINFO*> SendCollector;
 	static CRITICAL_SECTION csSendCollector;
 
 public:
@@ -76,11 +76,11 @@ public:
 			printf_s("[ERROR] <AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
 			return;
 		}
-		printf_s("[START] <AddSizeInStream(...)> \n");
+		//printf_s("[START] <AddSizeInStream(...)> \n");
 
 		// ex) DateStream의 크기 : 98
-		printf_s("\t DataStream size: %d\n", (int)DataStream.str().length());
-		printf_s("\t DataStream: %s\n", DataStream.str().c_str());
+		//printf_s("\t DataStream size: %d\n", (int)DataStream.str().length());
+		//printf_s("\t DataStream: %s\n", DataStream.str().c_str());
 
 		// dataStreamLength의 크기 : 3 [98 ]
 		stringstream dataStreamLength;
@@ -96,10 +96,10 @@ public:
 		FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
 
 		printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
-		printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
+		//printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
 
 
-		printf_s("[END] <AddSizeInStream(...)> \n");
+		//printf_s("[END] <AddSizeInStream(...)> \n");
 	}
 
 	void SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf)

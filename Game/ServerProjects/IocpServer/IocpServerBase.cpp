@@ -7,7 +7,7 @@ CRITICAL_SECTION IocpServerBase::csClients;
 map<SOCKET, queue<char*>*> IocpServerBase::MapOfRecvQueue;
 CRITICAL_SECTION IocpServerBase::csMapOfRecvQueue;
 
-map<stSOCKETINFO*, stSOCKETINFO*> IocpServerBase::SendCollector;
+multimap<SOCKET, stSOCKETINFO*> IocpServerBase::SendCollector;
 CRITICAL_SECTION IocpServerBase::csSendCollector;
 
 IocpServerBase::IocpServerBase()
@@ -243,9 +243,16 @@ void IocpServerBase::Recv(stSOCKETINFO* pSocketInfo)
 		NULL
 	);
 
-	if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
+	if (nResult == SOCKET_ERROR)
 	{
-		printf_s("[ERROR] WSARecv 실패 : %d\n", WSAGetLastError());
+		if (WSAGetLastError() != WSA_IO_PENDING)
+		{
+			printf_s("[ERROR] WSARecv 실패 : %d\n", WSAGetLastError());
+		}
+		else
+		{
+			printf_s("[INFO] <IocpServerBase::Recv(...)> WSARecv: WSA_IO_PENDING \n");
+		}
 	}
 }
 

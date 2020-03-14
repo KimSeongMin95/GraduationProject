@@ -107,7 +107,7 @@ MainServer::~MainServer()
 			delete kvp.second;
 			kvp.second = nullptr;
 
-			printf_s("\t for (auto& kvp : SendCollector) if (kvp.second) delete kvp.second;\n");
+			printf_s("\t SendCollector: delete kvp.second; \n");
 		}
 	}
 	SendCollector.clear();
@@ -127,6 +127,8 @@ MainServer::~MainServer()
 					delete[] kvp.second->front();
 					kvp.second->front() = nullptr;
 					kvp.second->pop();
+
+					printf_s("\t MapOfRecvQueue: delete[] recvQueue->front(); \n");
 				}
 			}
 
@@ -134,7 +136,7 @@ MainServer::~MainServer()
 			delete kvp.second;
 			kvp.second = nullptr;
 
-			printf_s("\t for (auto& kvp : MapOfRecvQueue) if (kvp.second) delete kvp.second;\n");
+			printf_s("\t MapOfRecvQueue: delete kvp.second; \n");
 		}
 	}
 	MapOfRecvQueue.clear();
@@ -292,7 +294,14 @@ void MainServer::WorkerThread()
 			{
 				EnterCriticalSection(&csSendCollector);
 				printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
-				SendCollector.erase(pSocketInfo);
+				auto iter_pair = SendCollector.equal_range(pSocketInfo->socket);
+				for (auto iter = iter_pair.first; iter != iter_pair.second;)
+				{
+					if (iter->second == pSocketInfo)
+						iter = SendCollector.erase(iter);
+					else
+						iter++;
+				}
 				printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
 				LeaveCriticalSection(&csSendCollector);
 
@@ -366,8 +375,9 @@ void MainServer::WorkerThread()
 
 		/**************************************************************************/
 
-		char* newBuffer = new char[MAX_BUFFER + 1];
-		ZeroMemory(newBuffer, MAX_BUFFER + 1);
+		char dataBuffer[MAX_BUFFER + 1];
+		dataBuffer[MAX_BUFFER] = '\0';
+		//ZeroMemory(dataBuffer, MAX_BUFFER + 1);
 
 		int idxOfStartInQueue = 0;
 		int nextIdxOfStartInQueue = 0;
@@ -375,12 +385,12 @@ void MainServer::WorkerThread()
 		// 큐가 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
 		while (recvQueue->empty() == false)
 		{
-			// newBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
+			// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
 			if ((idxOfStartInQueue + strlen(recvQueue->front())) < MAX_BUFFER + 1)
 			{
-				CopyMemory(&newBuffer[idxOfStartInQueue], recvQueue->front(), strlen(recvQueue->front()));
+				CopyMemory(&dataBuffer[idxOfStartInQueue], recvQueue->front(), strlen(recvQueue->front()));
 				idxOfStartInQueue += (int)strlen(recvQueue->front());
-				//newBuffer[idxOfStartInQueue] = '\0';
+				dataBuffer[idxOfStartInQueue] = '\0';
 
 				delete[] recvQueue->front();
 				recvQueue->front() = nullptr;
@@ -390,9 +400,9 @@ void MainServer::WorkerThread()
 			{
 				// 버퍼에 남은 자리 만큼 꽉 채웁니다.
 				nextIdxOfStartInQueue = MAX_BUFFER - idxOfStartInQueue;
-				CopyMemory(&newBuffer[idxOfStartInQueue], recvQueue->front(), nextIdxOfStartInQueue);
+				CopyMemory(&dataBuffer[idxOfStartInQueue], recvQueue->front(), nextIdxOfStartInQueue);
 				idxOfStartInQueue = MAX_BUFFER;
-				//newBuffer[idxOfStartInQueue] = '\0';
+				dataBuffer[idxOfStartInQueue] = '\0';
 
 				break;
 			}
@@ -404,96 +414,93 @@ void MainServer::WorkerThread()
 			///////////////////////////////////////////
 			// 1.1. 버퍼 길이가 4미만이면
 			///////////////////////////////////////////
-			if (strlen(newBuffer) < 4)
+			if (strlen(dataBuffer) < 4)
 			{
-				printf_s("\t if (strlen(newBuffer) < 4): %d \n", (int)strlen(newBuffer));
+				printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
+
+				// dataBuffer의 남은 데이터를 newBuffer에 복사합니다.
+				char* newBuffer = new char[MAX_BUFFER + 1];
+				CopyMemory(newBuffer, &dataBuffer, strlen(dataBuffer));
+				newBuffer[strlen(dataBuffer)] = '\0';
 
 				// 다시 큐에 데이터를 집어넣고
 				recvQueue->push(newBuffer);
 
 				// 다음 데이터를 기다립니다.
-				IocpServerBase::Recv(pSocketInfo);
+				MainServer::Recv(pSocketInfo);
 				continue;
 			}
 
 			///////////////////////////////////////////
 			// 1.2. 버퍼 길이가 4이상 MAX_BUFFER + 1 미만이면 
 			///////////////////////////////////////////
-			else if (strlen(newBuffer) < MAX_BUFFER + 1)
+			else if (strlen(dataBuffer) < MAX_BUFFER + 1)
 			{
-				printf_s("\t else if (strlen(newBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(newBuffer));
+				printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
 
 				int idxOfStartInPacket = 0;
-				int lenOfNewBuffer = (int)strlen(newBuffer);
+				int lenOfNewBuffer = (int)strlen(dataBuffer);
 
-
-				while (idxOfStartInPacket < lenOfNewBuffer)
+				try
 				{
-					printf_s("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
-					printf_s("\t lenOfNewBuffer: %d \n", lenOfNewBuffer);
-
-					// 버퍼 길이가 4이하면 아직 패킷이 전부 수신되지 않은것이므로
-					if (lenOfNewBuffer - idxOfStartInPacket < 4)
+					while (idxOfStartInPacket < lenOfNewBuffer)
 					{
-						printf_s("\t if (lenOfNewBuffer - idxOfStartInPacket < 4): %d \n", lenOfNewBuffer - idxOfStartInPacket);
+						printf_s("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
+						printf_s("\t lenOfNewBuffer: %d \n", lenOfNewBuffer);
 
-						// newBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
-						char* remainingBuffer = new char[MAX_BUFFER + 1];
-						int lenOfRemainingBuffer = (int)strlen(&newBuffer[idxOfStartInPacket]);
-						CopyMemory(remainingBuffer, &newBuffer[idxOfStartInPacket], lenOfRemainingBuffer);
-						remainingBuffer[lenOfRemainingBuffer] = '\0';
+						// 버퍼 길이가 4이하면 아직 패킷이 전부 수신되지 않은것이므로
+						if (lenOfNewBuffer - idxOfStartInPacket < 4)
+						{
+							printf_s("\t if (lenOfNewBuffer - idxOfStartInPacket < 4): %d \n", lenOfNewBuffer - idxOfStartInPacket);
 
-						delete[] newBuffer;
-						newBuffer = nullptr;
+							// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
+							char* newBuffer = new char[MAX_BUFFER + 1];
+							CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
+							newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-						// 다시 큐에 데이터를 집어넣고
-						recvQueue->push(remainingBuffer);
+							// 다시 큐에 데이터를 집어넣고
+							recvQueue->push(newBuffer);
 
-						// 반복문을 종료합니다.
-						break;
-					}
+							// 반복문을 종료합니다.
+							break;
+						}
 
-					char sizeBuffer[5]; // [????\0]
+						char sizeBuffer[5]; // [????\0]
 
-				   // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
-					CopyMemory(sizeBuffer, &newBuffer[idxOfStartInPacket], 4);
-					sizeBuffer[4] = '\0';
+					   // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
+						CopyMemory(sizeBuffer, &dataBuffer[idxOfStartInPacket], 4);
+						sizeBuffer[4] = '\0';
 
-					stringstream sizeStream;
-					sizeStream << sizeBuffer;
-					int sizeOfPacket = 0;
-					sizeStream >> sizeOfPacket;
+						stringstream sizeStream;
+						sizeStream << sizeBuffer;
+						int sizeOfPacket = 0;
+						sizeStream >> sizeOfPacket;
 
-					printf_s("\t sizeOfPacket: %d \n", sizeOfPacket);
-					printf_s("\t strlen(&newBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&newBuffer[idxOfStartInPacket]));
+						printf_s("\t sizeOfPacket: %d \n", sizeOfPacket);
+						printf_s("\t strlen(&dataBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&dataBuffer[idxOfStartInPacket]));
 
-					// 필요한 데이터 사이즈가 버퍼에 남은 데이터 사이즈보다 크면 아직 패킷이 전부 수신되지 않은것이므로
-					if (sizeOfPacket > strlen(&newBuffer[idxOfStartInPacket]))
-					{
-						// newBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
-						char* remainingBuffer = new char[MAX_BUFFER + 1];
-						int lenOfRemainingBuffer = (int)strlen(&newBuffer[idxOfStartInPacket]);
-						CopyMemory(remainingBuffer, &newBuffer[idxOfStartInPacket], lenOfRemainingBuffer);
-						remainingBuffer[lenOfRemainingBuffer] = '\0';
+						// 필요한 데이터 사이즈가 버퍼에 남은 데이터 사이즈보다 크면 아직 패킷이 전부 수신되지 않은것이므로
+						if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket]))
+						{
+							// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
+							char* newBuffer = new char[MAX_BUFFER + 1];
+							CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
+							newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-						delete[] newBuffer;
-						newBuffer = nullptr;
+							// 다시 큐에 데이터를 집어넣고
+							recvQueue->push(newBuffer);
 
-						// 다시 큐에 데이터를 집어넣고
-						recvQueue->push(remainingBuffer);
+							// 반복문을 종료합니다.
+							break;;
+						}
 
-						// 반복문을 종료합니다.
-						break;;
-					}
+						// 패킷은 완성되어 있으므로 마지막에 NULL 문자를 넣어 버퍼를 잘라도 상관 없습니다.
+						dataBuffer[idxOfStartInPacket + sizeOfPacket - 1] = '\0';
 
-					// 패킷은 완성되어 있으므로 마지막에 NULL 문자를 넣어 버퍼를 잘라도 상관 없습니다.
-					newBuffer[idxOfStartInPacket + sizeOfPacket - 1] = '\0';
+						stringstream recvStream;
+						recvStream << &dataBuffer[idxOfStartInPacket];
 
-					stringstream recvStream;
-					recvStream << &newBuffer[idxOfStartInPacket];
 
-					try
-					{
 						// 사이즈 확인
 						int sizeOfRecvStream = 0;
 						recvStream >> sizeOfRecvStream;
@@ -507,31 +514,25 @@ void MainServer::WorkerThread()
 						// 패킷 처리 함수 포인터인 FuncProcess에 바인딩한 PacketType에 맞는 함수들을 실행합니다.
 						if (fnProcess[packetType].funcProcessPacket != nullptr)
 						{
+							// WSASend(...)에서 에러발생시 throw("error message");
 							fnProcess[packetType].funcProcessPacket(recvStream, pSocketInfo);
 						}
 						else
 						{
 							printf_s("[ERROR] <MainServer::WorkerThread()> 정의 되지 않은 패킷 : %d \n\n", packetType);
 						}
-					}
-					catch (const std::exception & e)
-					{
-						printf_s("[ERROR] <MainServer::WorkerThread()> 알 수 없는 예외 발생 : %s \n\n", e.what());
-					}
 
-					idxOfStartInPacket += sizeOfPacket;
-
+						idxOfStartInPacket += sizeOfPacket;
+					}
 				}
-
-				// 동적할당 해제
-				if (newBuffer)
+				catch (const std::exception& e)
 				{
-					delete[] newBuffer;
-					newBuffer = nullptr;
+					printf_s("[ERROR] <MainServer::WorkerThread()> 예외 발생 : %s \n\n", e.what());
+					continue;
 				}
 
 				// 클라이언트 대기
-				IocpServerBase::Recv(pSocketInfo);
+				MainServer::Recv(pSocketInfo);
 				continue;
 			}
 		}
@@ -539,6 +540,7 @@ void MainServer::WorkerThread()
 		else
 		{
 			// 버퍼 길이가 MAX_BUFFER이면
+
 		}
 	}
 }
@@ -611,6 +613,23 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 
 
 	///////////////////////////
+	// SendCollector에서 제거
+	///////////////////////////
+	EnterCriticalSection(&csSendCollector);
+	printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
+	auto iter_pair = SendCollector.equal_range(pSocketInfo->socket);
+	for (auto iter = iter_pair.first; iter != iter_pair.second;)
+	{
+		stSOCKETINFO* socketInfo = iter->second;
+		delete socketInfo;
+
+		iter = SendCollector.erase(iter);
+	}
+	printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
+	LeaveCriticalSection(&csSendCollector);
+
+
+	///////////////////////////
 	// MapOfRecvQueue에서 제거
 	///////////////////////////
 	EnterCriticalSection(&csMapOfRecvQueue);
@@ -618,6 +637,7 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	{
 		if (queue<char*>* recvQueue = MapOfRecvQueue.at(pSocketInfo->socket))
 		{
+			printf_s("\t MapOfRecvQueue: recvQueue.size() %d \n", (int)recvQueue->size());
 			while (recvQueue->empty() == false)
 			{
 				if (recvQueue->front())
@@ -625,10 +645,14 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 					delete[] recvQueue->front();
 					recvQueue->front() = nullptr;
 					recvQueue->pop();
+
+					printf_s("\t MapOfRecvQueue: delete[] recvQueue->front(); \n");
 				}
 			}
 			delete recvQueue;
 			recvQueue = nullptr;
+
+			printf_s("\t MapOfRecvQueue: delete recvQueue; \n");
 		}
 
 		printf_s("\t MapOfRecvQueue.size(): %d\n", (int)MapOfRecvQueue.size());
@@ -744,7 +768,7 @@ void MainServer::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
 	/***** WSARecv의 &(socketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : Start  *****/
 	stSOCKETINFO* socketInfo = new stSOCKETINFO();
 	EnterCriticalSection(&csSendCollector);
-	SendCollector[socketInfo] = socketInfo;
+	SendCollector.insert(pair<SOCKET, stSOCKETINFO*>(pSocketInfo->socket, socketInfo));
 	LeaveCriticalSection(&csSendCollector);
 
 	memset(&(socketInfo->overlapped), 0, sizeof(OVERLAPPED));
@@ -783,12 +807,29 @@ void MainServer::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
 		{
 			printf_s("[ERROR] <MainServer::Send(...)> WSASend 실패 : %d \n", WSAGetLastError());
 
-			printf_s("[ERROR] <MainServer::Send(...)>delete socketInfo; \n");
+			// 전송에 실패했으므로 stSOCKETINFO* socketInfo = new stSOCKETINFO();를 해제
+			EnterCriticalSection(&csSendCollector);
+			printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
+			auto iter_pair = SendCollector.equal_range(socketInfo->socket);
+			for (auto iter = iter_pair.first; iter != iter_pair.second;)
+			{
+				if (iter->second == socketInfo)
+					iter = SendCollector.erase(iter);
+				else
+					iter++;
+			}
+			printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
+			LeaveCriticalSection(&csSendCollector);
+
 			delete socketInfo;
 			socketInfo = nullptr;
+			printf_s("[ERROR] <MainServer::Send(...)> delete socketInfo; \n");
 
-			/// 여기서 CloseSocket(pSocketInfo);하면 에러 발생
-			///CloseSocket(pSocketInfo);
+			// 여기서 그냥 CloseSocket(pSocketInfo);하면 에러가 발생하므로
+			CloseSocket(pSocketInfo);
+
+			// 예외를 <MainServer::WorkerThread()>로 던져줘서 해결
+			throw exception("<MainServer::Send(...)> CloseSocket(pSocketInfo);");
 		}
 		else
 		{
@@ -800,6 +841,47 @@ void MainServer::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
 
 	printf_s("[END] <MainServer::Send(...)>\n");
 }
+
+void MainServer::Recv(stSOCKETINFO* pSocketInfo)
+{
+	// DWORD sendBytes;
+	DWORD dwFlags = 0;
+
+	// stSOCKETINFO 데이터 초기화
+	ZeroMemory(&pSocketInfo->overlapped, sizeof(OVERLAPPED));
+	ZeroMemory(pSocketInfo->messageBuffer, MAX_BUFFER);
+	pSocketInfo->dataBuf.len = MAX_BUFFER;
+	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
+	pSocketInfo->recvBytes = 0;
+	pSocketInfo->sendBytes = 0;
+	pSocketInfo->sentBytes = 0;
+
+	// 클라이언트로부터 다시 응답을 받기 위해 WSARecv 를 호출해줌
+	int nResult = WSARecv(
+		pSocketInfo->socket,
+		&(pSocketInfo->dataBuf),
+		1,
+		(LPDWORD) & (pSocketInfo->recvBytes),
+		&dwFlags,
+		(LPWSAOVERLAPPED) & (pSocketInfo->overlapped),
+		NULL
+	);
+
+	if (nResult == SOCKET_ERROR)
+	{
+		if (WSAGetLastError() != WSA_IO_PENDING)
+		{
+			printf_s("[ERROR] WSARecv 실패 : %d\n", WSAGetLastError());
+
+			CloseSocket(pSocketInfo);
+		}
+		else
+		{
+			printf_s("[INFO] <IocpServerBase::Recv(...)> WSARecv: WSA_IO_PENDING \n");
+		}
+	}
+}
+
 
 /////////////////////////////////////
 // 패킷 처리 함수
