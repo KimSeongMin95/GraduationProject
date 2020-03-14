@@ -30,7 +30,7 @@ public:
 	virtual void WorkerThread() override;
 
 	// 클라이언트 접속 종료
-	virtual void CloseSocket(stSOCKETINFO* pSocketInfo) override;
+	static void CloseSocket(stSOCKETINFO* pSocketInfo);
 
 	// 클라이언트에게 송신
 	static void Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo);

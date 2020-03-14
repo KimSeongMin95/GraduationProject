@@ -1240,7 +1240,7 @@ void AMainScreenGameMode::RecvAndApply()
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvAndApply()>"));
 
 	ClearTimerOfRecvAndApply();
-	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AMainScreenGameMode::TimerOfRecvAndApply, 2.0f, true);
+	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AMainScreenGameMode::TimerOfRecvAndApply, 0.0166f, true);
 }
 void AMainScreenGameMode::TimerOfRecvAndApply()
 {

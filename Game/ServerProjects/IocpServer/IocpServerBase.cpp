@@ -1,11 +1,14 @@
 #include "IocpServerBase.h"
 
 
-std::map<SOCKET, stSOCKETINFO*> IocpServerBase::Clients;
+map<SOCKET, stSOCKETINFO*> IocpServerBase::Clients;
 CRITICAL_SECTION IocpServerBase::csClients;
 
-std::map<SOCKET, queue<char*>*> IocpServerBase::MapOfRecvQueue;
+map<SOCKET, queue<char*>*> IocpServerBase::MapOfRecvQueue;
 CRITICAL_SECTION IocpServerBase::csMapOfRecvQueue;
+
+map<stSOCKETINFO*, stSOCKETINFO*> IocpServerBase::SendCollector;
+CRITICAL_SECTION IocpServerBase::csSendCollector;
 
 IocpServerBase::IocpServerBase()
 {
@@ -23,14 +26,8 @@ IocpServerBase::IocpServerBase()
 	nThreadCnt = 0;
 
 	InitializeCriticalSection(&csClients);
-	EnterCriticalSection(&csClients);
-	Clients.clear();
-	LeaveCriticalSection(&csClients);
-
 	InitializeCriticalSection(&csMapOfRecvQueue);
-	EnterCriticalSection(&csMapOfRecvQueue);
-	MapOfRecvQueue.clear();
-	LeaveCriticalSection(&csMapOfRecvQueue);
+	InitializeCriticalSection(&csSendCollector);
 }
 
 IocpServerBase::~IocpServerBase()
@@ -38,6 +35,7 @@ IocpServerBase::~IocpServerBase()
 	// 크리티컬 섹션들을 제거한다.
 	DeleteCriticalSection(&csClients);
 	DeleteCriticalSection(&csMapOfRecvQueue);
+	DeleteCriticalSection(&csSendCollector);
 }
 
 bool IocpServerBase::Initialize()
@@ -156,7 +154,7 @@ void IocpServerBase::StartServer()
 		Clients[clientSocket] = SocketInfo;
 		LeaveCriticalSection(&csClients);
 
-		// 
+		// 동적할당한 소켓에 대한 recvQueue를 동적할당하여 저장
 		queue<char*>* recvQueue = new queue<char*>();
 		EnterCriticalSection(&csMapOfRecvQueue);
 		MapOfRecvQueue[clientSocket] = recvQueue;

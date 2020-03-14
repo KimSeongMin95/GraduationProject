@@ -30,12 +30,16 @@ protected:
 
 public:
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장
-	static std::map<SOCKET, stSOCKETINFO*> Clients;
+	static map<SOCKET, stSOCKETINFO*> Clients;
 	static CRITICAL_SECTION csClients;
 
-	//static std::queue<char[MAX_BUFFER]> RecvQueue;
-	static std::map<SOCKET, queue<char*>*> MapOfRecvQueue;
+	// 수신한 데이터를 큐에 전부 적재
+	static map<SOCKET, queue<char*>*> MapOfRecvQueue;
 	static CRITICAL_SECTION csMapOfRecvQueue;
+
+	// Send(...)에서 동적할당한 stSOCKETINFO*을 나중에 해제하기 위해 저장
+	static map<stSOCKETINFO*, stSOCKETINFO*> SendCollector;
+	static CRITICAL_SECTION csSendCollector;
 
 public:
 	IocpServerBase();
