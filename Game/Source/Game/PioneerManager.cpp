@@ -111,7 +111,7 @@ void APioneerManager::FindPioneersInWorld()
 				{
 					cInfoOfPioneer infoOfPioneer;
 					infoOfPioneer.SetActorTransform(ID, ActorItr->GetActorTransform());
-					//ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
+					ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
 				}
 			}
 
@@ -417,7 +417,7 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 		{
 			cInfoOfPioneer infoOfPioneer;
 			infoOfPioneer.SetActorTransform(ID, pioneer->GetActorTransform());
-			//ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
+			ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
 		}
 	}
 

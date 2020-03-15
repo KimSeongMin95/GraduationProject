@@ -198,8 +198,8 @@ cClientSocket::cClientSocket()
 {
 	printf_s("[START] <cClientSocket::cClientSocket()>\n");
 
+
 	ServerSocket = NULL;
-	//memset(recvBuffer, 0, MAX_BUFFER);
 
 	Thread = nullptr;
 	StopTaskCounter.Reset();
@@ -216,6 +216,7 @@ cClientSocket::cClientSocket()
 	EnterCriticalSection(&csMyInfoOfGame);
 	MyInfoOfGame = cInfoOfGame();
 	LeaveCriticalSection(&csMyInfoOfGame);
+
 
 	printf_s("[END] <cClientSocket::cClientSocket()>\n");
 }
@@ -313,6 +314,10 @@ void cClientSocket::CloseSocket()
 {
 	printf_s("[START] <cClientSocket::CloseSocket()>\n");
 
+
+	// 게임클라이언트를 종료하면 남아있던 WSASend(...)를 다 보내기 위해 Alertable Wait 상태로 만듭니다.
+	SleepEx(1, true);
+
 	if (bIsInitialized == false)
 	{
 		printf_s("[END] <cClientSocket::CloseSocket()> if (bIsInitialized == false)\n");
@@ -375,14 +380,15 @@ void cClientSocket::CloseSocket()
 	printf_s("[END] <cClientSocket::CloseSocket()>\n");
 }
 
-void CALLBACK SendCompletionRoutine(
+void CALLBACK SendCompletionRoutineBycClientSocket(
 	IN DWORD dwError,
 	IN DWORD cbTransferred,
 	IN LPWSAOVERLAPPED lpOverlapped,
 	IN DWORD dwFlags)
 {
-	printf_s("[START] <CompletionROUTINE(...)> \n");
+	printf_s("[START] <cClientSocket::CompletionROUTINE(...)> \n");
 
+	printf_s("\t cbTransferred: %d \n", (int)cbTransferred);
 
 	stSOCKETINFO* socketInfo = (stSOCKETINFO*)lpOverlapped;
 	if (socketInfo)
@@ -393,12 +399,12 @@ void CALLBACK SendCompletionRoutine(
 
 	if (dwError != 0)
 	{
-		printf_s("[ERROR] <CompletionROUTINE(...)> Fail to WSASend(...) : %d\n", WSAGetLastError());
+		printf_s("[ERROR] <cClientSocket::CompletionROUTINE(...)> Fail to WSASend(...) : %d\n", WSAGetLastError());
 	}
-	printf_s("[INFO] <CompletionROUTINE(...)> Success to WSASend(...)\n");
+	printf_s("[INFO] <cClientSocket::CompletionROUTINE(...)> Success to WSASend(...)\n");
 
 
-	printf_s("[END] <CompletionROUTINE(...)> \n");
+	printf_s("[END] <cClientSocket::CompletionROUTINE(...)> \n");
 }
 
 void cClientSocket::Send(stringstream& SendStream)
@@ -407,7 +413,7 @@ void cClientSocket::Send(stringstream& SendStream)
 	//WSAWaitForMultipleEvents(1, &event, TRUE, WSA_INFINITE, FALSE); // IO가 완료되면 event가 시그널 상태가 됩니다.
 	//WSAGetOverlappedResult(hSocket, &overlapped, (LPDWORD)&sendBytes, FALSE, NULL);
 
-	printf_s("[START] <MainServer::Send(...)>\n");
+	printf_s("[START] <cClientSocket::Send(...)>\n");
 
 
 	DWORD	dwFlags = 0;
@@ -428,7 +434,7 @@ void cClientSocket::Send(stringstream& SendStream)
 	socketInfo->sendBytes = socketInfo->dataBuf.len;
 	socketInfo->sentBytes = 0;
 
-	printf_s("[INFO] <MainServer::Send(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
+	printf_s("[INFO] <cClientSocket::Send(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
 
 	int nResult = WSASend(
 		ServerSocket, // s: 연결 소켓을 가리키는 소켓 지정 번호
@@ -437,26 +443,26 @@ void cClientSocket::Send(stringstream& SendStream)
 		(LPDWORD)& (socketInfo->sentBytes), // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨준다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 한다. 그래야 (잠재적인)잘못된 반환을 피할 수 있다.
 		dwFlags,// dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정한다.
 		&(socketInfo->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
-		SendCompletionRoutine // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터. 비 중첩 소켓에서는 무시 된다.
+		SendCompletionRoutineBycClientSocket // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터. 비 중첩 소켓에서는 무시 된다.
 	);
 
 	if (nResult == 0)
 	{
-		printf_s("[INFO] <MainServer::Send(...)> Success to WSASend(...) \n");
+		printf_s("[INFO] <cClientSocket::Send(...)> Success to WSASend(...) \n");
 	}
 	if (nResult == SOCKET_ERROR)
 	{
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
-			printf_s("[ERROR] <MainServer::Send(...)> Fail to WSASend(...) : %d \n", WSAGetLastError());
+			printf_s("[ERROR] <cClientSocket::Send(...)> Fail to WSASend(...) : %d \n", WSAGetLastError());
 
 			delete socketInfo;
 			socketInfo = nullptr;
-			printf_s("[ERROR] <MainServer::Send(...)> delete socketInfo; \n");
+			printf_s("[ERROR] <cClientSocket::Send(...)> delete socketInfo; \n");
 		}
 		else
 		{
-			printf_s("[INFO] <MainServer::Send(...)> WSASend: WSA_IO_PENDING \n");
+			printf_s("[INFO] <cClientSocket::Send(...)> WSASend: WSA_IO_PENDING \n");
 		}
 	}
 
@@ -528,7 +534,8 @@ void cClientSocket::ProcessReceivedPacket(char* DataBuffer)
 
 	default:
 	{
-
+		printf_s("[ERROR] <cClientSocket::ProcessReceivedPacket()> unknown packet type! PacketType: %d \n", packetType);
+		printf_s("[ERROR] <cClientSocket::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
 	}
 	break;
 	}

@@ -51,17 +51,24 @@ public:
 	static std::map<SOCKET, stSOCKETINFO*> GameClients;
 	static CRITICAL_SECTION csGameClients;
 
+	// 수신한 데이터를 큐에 전부 적재
+	static map<SOCKET, queue<char*>*> MapOfRecvQueue;
+	static CRITICAL_SECTION csMapOfRecvQueue;
+
+	// Send(...)에서 동적할당한 stSOCKETINFO*을 나중에 해제하기 위해 저장
+	static multimap<SOCKET, stSOCKETINFO*> SendCollector;
+	static CRITICAL_SECTION csSendCollector;
+
+
 	// Connected 클라이언트의 InfoOfPlayer 저장
 	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
 	static CRITICAL_SECTION csInfoOfClients;
 
-	//static std::map<SOCKET, cInfoOfScoreBoard> InfosOfScoreBoard;
-	//static CRITICAL_SECTION csInfosOfScoreBoard;
+	static std::map<SOCKET, cInfoOfScoreBoard> InfosOfScoreBoard;
+	static CRITICAL_SECTION csInfosOfScoreBoard;
 
-	//static cThreadSafetyQueue<SOCKET> tsqObserver;
-
-	//static std::map<int, cInfoOfPioneer> InfosOfPioneers;
-	//static CRITICAL_SECTION csInfosOfPioneers;
+	static std::map<int, cInfoOfPioneer> InfosOfPioneers;
+	static CRITICAL_SECTION csInfosOfPioneers;
 
 public:
 	////////////////////////
@@ -86,13 +93,33 @@ public:
 	void WorkerThread();
 
 	// 클라이언트 접속 종료
-	void CloseSocket(stSOCKETINFO* pSocketInfo);
+	static void CloseSocket(stSOCKETINFO* pSocketInfo);
 
 	// 클라이언트에게 송신
-	static void Send(stSOCKETINFO* pSocketInfo);
+	static void Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo);
 
 	// 클라이언트 수신 대기
-	void Recv(stSOCKETINFO* pSocketInfo);
+	static void Recv(stSOCKETINFO* pSocketInfo);
+
+	///////////////////////////////////////////
+	// stringstream의 맨 앞에 size를 추가
+	///////////////////////////////////////////
+	static void AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
+
+	///////////////////////////////////////////
+	// 소켓 버퍼 크기 변경
+	///////////////////////////////////////////
+	void SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf);
+
+	///////////////////////////////////////////
+	// 패킷을 처리합니다.
+	///////////////////////////////////////////
+	void ProcessReceivedPacket(char* DataBuffer, stSOCKETINFO* pSocketInfo);
+
+	///////////////////////////////////////////
+	// 수신한 데이터를 저장하는 큐에서 데이터를 획득
+	///////////////////////////////////////////
+	void GetDataInRecvQueue(queue<char*>* RecvQueue, char* DataBuffer);
 
 	// 싱글턴 객체 가져오기
 	static cServerSocketInGame* GetSingleton()
@@ -112,24 +139,23 @@ public:
 	////////////////////////
 	// 통신
 	////////////////////////
-	//static void Broadcast(stringstream& SendStream);
-	//static void BroadcastExceptOne(stringstream& SendStream, SOCKET Except);
+	static void Broadcast(stringstream& SendStream);
+	static void BroadcastExceptOne(stringstream& SendStream, SOCKET Except);
 
 	static void Connected(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	//static void SendDisconnect();
+	static void ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	//static void ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	static void SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip);
 
-	//static void SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip);
+	static void Observation(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	static cThreadSafetyQueue<SOCKET> tsqObserver;
 
-	//static void Observation(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	static void SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer);
+	static void SendSpawnedPioneer(stSOCKETINFO* pSocket);
 
-	//static void SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer);
-	//static void SendSpawnedPioneer(stSOCKETINFO* pSocket);
+	static void DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
-	//static void DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
-
-	//static void InfoOfPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
-	//static cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
+	static void InfoOfPioneer(stringstream& RecvStream, stSOCKETINFO* pSocket);
+	static cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
 };

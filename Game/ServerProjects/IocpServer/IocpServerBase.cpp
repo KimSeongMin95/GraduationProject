@@ -124,6 +124,8 @@ void IocpServerBase::StartServer()
 		else
 		{
 			printf_s("[INFO] <IocpServerBase::StartServer()> WSAAccept 성공, SocketID: %d\n", int(clientSocket));
+			
+			// 소켓 버퍼 크기 변경
 			SetSockOpt(clientSocket, 1048576, 1048576);
 		}
 
@@ -151,7 +153,9 @@ void IocpServerBase::StartServer()
 
 		// 동적할당한 소켓 정보를 저장
 		EnterCriticalSection(&csClients);
+		printf_s("[[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
 		Clients[clientSocket] = SocketInfo;
+		printf_s("[[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
 		LeaveCriticalSection(&csClients);
 
 		// 동적할당한 소켓에 대한 recvQueue를 동적할당하여 저장

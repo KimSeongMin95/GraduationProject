@@ -246,17 +246,16 @@ void MainServer::WorkerThread()
 	DWORD	numberOfBytesTransferred;
 
 	// Completion Key를 받을 포인터 변수
-	stSOCKETINFO* pCompletionKey;
+	stSOCKETINFO* pCompletionKey = nullptr;
 
 	// I/O 작업을 위해 요청한 Overlapped 구조체를 받을 포인터	
-	stSOCKETINFO* pSocketInfo;
+	stSOCKETINFO* pSocketInfo = nullptr;
 	DWORD	dwFlags = 0;
 
 	while (bWorkerThread)
 	{
 		numberOfBytesTransferred = 0;
 
-		//printf_s("[INFO] <MainServer::WorkerThread()> before GetQueuedCompletionStatus(...)\n");
 		/**
 		 * 이 함수로 인해 쓰레드들은 WaitingThread Queue 에 대기상태로 들어가게 됨
 		 * 완료된 Overlapped I/O 작업이 발생하면 IOCP Queue 에서 완료된 작업을 가져와 뒷처리를 함
@@ -267,19 +266,18 @@ void MainServer::WorkerThread()
 			(LPOVERLAPPED*)& pSocketInfo,	// overlapped I/O 객체
 			INFINITE						// 대기할 시간
 		);
-		//printf_s("[INFO] <MainServer::WorkerThread()> after GetQueuedCompletionStatus(...)\n");
-		printf_s("\n");
-		printf_s("[INFO] <MainServer::WorkerThread()> SocketID: %d \n", (int)pSocketInfo->socket);
-		printf_s("[INFO] <MainServer::WorkerThread()> ThreadID: %d \n", (int)GetCurrentThreadId());
-		printf_s("[INFO] <MainServer::WorkerThread()> numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
-		printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->recvBytes: %d \n", pSocketInfo->recvBytes);
-
 		// PostQueuedCompletionStatus(...)로 강제종료
 		if (pCompletionKey == 0)
 		{
 			printf_s("[INFO] <MainServer::WorkerThread()> if (pCompletionKey == 0) \n\n");
 			return;
 		}
+
+		printf_s("\n");
+		printf_s("[INFO] <MainServer::WorkerThread()> SocketID: %d \n", (int)pSocketInfo->socket);
+		printf_s("[INFO] <MainServer::WorkerThread()> ThreadID: %d \n", (int)GetCurrentThreadId());
+		printf_s("[INFO] <MainServer::WorkerThread()> numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
+		printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->recvBytes: %d \n", pSocketInfo->recvBytes);
 
 		///////////////////////////////////////////
 		// WSASend가 완료된 것이므로 바이트 확인
@@ -643,21 +641,32 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 }
 
 
+// IOCP 서버에서는 사용되지 않으므로 무시합니다.
 void CALLBACK SendCompletionRoutine(
 	IN DWORD dwError,
 	IN DWORD cbTransferred,
 	IN LPWSAOVERLAPPED lpOverlapped,
 	IN DWORD dwFlags)
 {
-	printf_s("[INFO] <CompletionROUTINE(...)> WSASend 완료 \n");
+	printf_s("[START] <CompletionROUTINE(...)> \n");
+
+	printf_s("\t cbTransferred: %d \n", (int)cbTransferred);
+
+	stSOCKETINFO* socketInfo = (stSOCKETINFO*)lpOverlapped;
+	if (socketInfo)
+	{
+		delete socketInfo;
+		printf_s("\t delete socketInfo; \n");
+	}
 
 	if (dwError != 0)
 	{
-		printf_s("[ERROR] <CompletionROUTINE(...)> WSASend 실패 : %d\n", WSAGetLastError());
+		printf_s("[ERROR] <CompletionROUTINE(...)> Fail to WSASend(...) : %d\n", WSAGetLastError());
 	}
+	printf_s("[INFO] <CompletionROUTINE(...)> Success to WSASend(...)\n");
 
 
-
+	printf_s("[END] <CompletionROUTINE(...)> \n");
 }
 
 void MainServer::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
@@ -716,6 +725,7 @@ void MainServer::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
 	LeaveCriticalSection(&csSendCollector);
 
 	memset(&(socketInfo->overlapped), 0, sizeof(OVERLAPPED));
+	socketInfo->overlapped.hEvent = NULL; // IOCP에서는 overlapped.hEvent를 꼭 NULL로 해줘야 한다고 합니다.
 	ZeroMemory(socketInfo->messageBuffer, MAX_BUFFER);
 	CopyMemory(socketInfo->messageBuffer, (CHAR*)finalStream.str().c_str(), finalStream.str().length());
 	socketInfo->dataBuf.len = finalStream.str().length();
@@ -733,7 +743,6 @@ void MainServer::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
 		1, // dwBufferCount: lpBuffers에 있는 WSABUF(:4300)구조체의 개수
 		(LPDWORD)& (socketInfo->sentBytes), // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨준다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 한다. 그래야 (잠재적인)잘못된 반환을 피할 수 있다.
 		dwFlags,// dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정한다.
-		//NULL, // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
 		&(socketInfo->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
 		NULL // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터. 비 중첩 소켓에서는 무시 된다.
 	);
@@ -750,20 +759,6 @@ void MainServer::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
 			printf_s("[ERROR] <MainServer::Send(...)> WSASend 실패 : %d \n", WSAGetLastError());
-
-			// 전송에 실패했으므로 stSOCKETINFO* socketInfo = new stSOCKETINFO();를 해제
-			EnterCriticalSection(&csSendCollector);
-			printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
-			auto iter_pair = SendCollector.equal_range(socketInfo->socket);
-			for (auto iter = iter_pair.first; iter != iter_pair.second;)
-			{
-				if (iter->second == socketInfo)
-					iter = SendCollector.erase(iter);
-				else
-					iter++;
-			}
-			printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
-			LeaveCriticalSection(&csSendCollector);
 
 			delete socketInfo;
 			socketInfo = nullptr;
@@ -821,7 +816,7 @@ void MainServer::Recv(stSOCKETINFO* pSocketInfo)
 		}
 		else
 		{
-			printf_s("[INFO] <IocpServerBase::Recv(...)> WSARecv: WSA_IO_PENDING \n");
+			printf_s("[INFO] <MainServer::Recv(...)> WSARecv: WSA_IO_PENDING \n");
 		}
 	}
 }
@@ -913,6 +908,29 @@ void MainServer::GetDataInRecvQueue(queue<char*>* RecvQueue, char* DataBuffer)
 /////////////////////////////////////
 // 패킷 처리 함수
 /////////////////////////////////////
+void MainServer::Broadcast(stringstream& SendStream)
+{
+	EnterCriticalSection(&csClients);
+	for (const auto& kvp : Clients)
+	{
+		Send(SendStream, kvp.second);
+	}
+	LeaveCriticalSection(&csClients);
+}
+void MainServer::BroadcastExcept(stringstream& SendStream, SOCKET Except)
+{
+	EnterCriticalSection(&csClients);
+	for (const auto& kvp : Clients)
+	{
+		if (kvp.second->socket == Except)
+			continue;
+
+		Send(SendStream, kvp.second);
+	}
+	LeaveCriticalSection(&csClients);
+}
+
+
 void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 {
 	if (!pSocketInfo)
@@ -920,13 +938,13 @@ void MainServer::Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
 		printf_s("[ERROR] <MainServer::Login(...)> if (!pSocketInfo) \n");
 		return;
 	}
-
 	printf_s("[Recv by %d] <MainServer::Login(...)>\n", (int)pSocketInfo->socket);
 
 
 	/// 수신
 	cInfoOfPlayer infoOfPlayer;
 	RecvStream >> infoOfPlayer;
+
 	infoOfPlayer.IPv4Addr = pSocketInfo->IPv4Addr;
 	infoOfPlayer.SocketByMainServer = (int)pSocketInfo->socket;
 	infoOfPlayer.PortOfMainClient = pSocketInfo->Port;
@@ -1542,25 +1560,4 @@ void MainServer::RequestInfoOfGameServer(stringstream& RecvStream, stSOCKETINFO*
 
 
 
-void MainServer::Broadcast(stringstream& SendStream)
-{
-	EnterCriticalSection(&csClients);
-	for (const auto& kvp : Clients)
-	{
-		Send(SendStream, kvp.second);
-	}
-	LeaveCriticalSection(&csClients);
-}
-void MainServer::BroadcastExcept(stringstream& SendStream, SOCKET Except)
-{
-	EnterCriticalSection(&csClients);
-	for (const auto& kvp : Clients)
-	{
-		if (kvp.second->socket == Except)
-			continue;
-
-		Send(SendStream, kvp.second);
-	}
-	LeaveCriticalSection(&csClients);
-}
 

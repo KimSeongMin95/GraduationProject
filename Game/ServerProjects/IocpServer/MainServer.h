@@ -52,6 +52,9 @@ private:
 	///////////////////////////////////////////
 	// Main Server / Main Clients
 	///////////////////////////////////////////
+	static void Broadcast(stringstream& SendStream);
+	static void BroadcastExcept(stringstream& SendStream, SOCKET Except);
+
 	static void Login(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
 	
 	static void CreateGame(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
@@ -74,10 +77,4 @@ private:
 	static void ActivateGameServer(stringstream& RecvStream, stSOCKETINFO* pSocket);
 
 	static void RequestInfoOfGameServer(stringstream& RecvStream, stSOCKETINFO* pSocket);
-
-
-
-	// 브로드캐스트 함수
-	static void Broadcast(stringstream& SendStream);
-	static void BroadcastExcept(stringstream& SendStream, SOCKET Except);
 };

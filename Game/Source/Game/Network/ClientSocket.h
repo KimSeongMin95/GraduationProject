@@ -80,7 +80,6 @@ public:
 	///////////////////////////////////////////
 	void GetDataInRecvQueue(char* DataBuffer);
 
-
 	// 스레드 시작 및 종료
 	bool StartListen();
 	void StopListen();
@@ -101,7 +100,6 @@ public:
 	void AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
 
 	void SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf);
-
 
 
 	///////////////////////////////////////////
