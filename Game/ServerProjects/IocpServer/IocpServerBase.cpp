@@ -157,7 +157,10 @@ void IocpServerBase::StartServer()
 		// 동적할당한 소켓에 대한 recvQueue를 동적할당하여 저장
 		queue<char*>* recvQueue = new queue<char*>();
 		EnterCriticalSection(&csMapOfRecvQueue);
-		MapOfRecvQueue[clientSocket] = recvQueue;
+		if (MapOfRecvQueue.find(clientSocket) == MapOfRecvQueue.end())
+		{
+			MapOfRecvQueue.insert(pair<SOCKET, queue<char*>*>(clientSocket, recvQueue));
+		}
 		LeaveCriticalSection(&csMapOfRecvQueue);
 
 		// SocketInfo를 hIOCP에 등록?
@@ -224,7 +227,7 @@ void IocpServerBase::Recv(stSOCKETINFO* pSocketInfo)
 	DWORD dwFlags = 0;
 
 	// stSOCKETINFO 데이터 초기화
-	ZeroMemory(&pSocketInfo->overlapped, sizeof(OVERLAPPED));
+	ZeroMemory(&(pSocketInfo->overlapped), sizeof(OVERLAPPED));
 	ZeroMemory(pSocketInfo->messageBuffer, MAX_BUFFER);
 	pSocketInfo->dataBuf.len = MAX_BUFFER;
 	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;

@@ -635,6 +635,7 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	EnterCriticalSection(&csMapOfRecvQueue);
 	if (MapOfRecvQueue.find(pSocketInfo->socket) != MapOfRecvQueue.end())
 	{
+		printf_s("\t MapOfRecvQueue.size(): %d\n", (int)MapOfRecvQueue.size());
 		if (queue<char*>* recvQueue = MapOfRecvQueue.at(pSocketInfo->socket))
 		{
 			printf_s("\t MapOfRecvQueue: recvQueue.size() %d \n", (int)recvQueue->size());
@@ -654,8 +655,6 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 
 			printf_s("\t MapOfRecvQueue: delete recvQueue; \n");
 		}
-
-		printf_s("\t MapOfRecvQueue.size(): %d\n", (int)MapOfRecvQueue.size());
 		MapOfRecvQueue.erase(pSocketInfo->socket);
 		printf_s("\t MapOfRecvQueue.size(): %d\n", (int)MapOfRecvQueue.size());
 	}
@@ -678,7 +677,7 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	}
 	else
 	{
-		printf_s("[ERROR] <MainServer::CloseSocket(...)> Clients can't find pSocketInfo->socket\n");
+		printf_s("[ERROR] <MainServer::CloseSocket(...)> Clients can't find pSocketInfo->socket \n");
 	}
 	LeaveCriticalSection(&csClients);
 
@@ -690,6 +689,10 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 	{
 		closesocket(pSocketInfo->socket);
 		pSocketInfo->socket = NULL;
+	}
+	else
+	{
+		printf_s("[ERROR] <MainServer::CloseSocket(...)> fail to closesocket(pSocketInfo->socket); \n");
 	}
 	delete pSocketInfo;
 	pSocketInfo = nullptr;
@@ -848,7 +851,7 @@ void MainServer::Recv(stSOCKETINFO* pSocketInfo)
 	DWORD dwFlags = 0;
 
 	// stSOCKETINFO 데이터 초기화
-	ZeroMemory(&pSocketInfo->overlapped, sizeof(OVERLAPPED));
+	ZeroMemory(&(pSocketInfo->overlapped), sizeof(OVERLAPPED));
 	ZeroMemory(pSocketInfo->messageBuffer, MAX_BUFFER);
 	pSocketInfo->dataBuf.len = MAX_BUFFER;
 	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
@@ -861,9 +864,9 @@ void MainServer::Recv(stSOCKETINFO* pSocketInfo)
 		pSocketInfo->socket,
 		&(pSocketInfo->dataBuf),
 		1,
-		(LPDWORD) & (pSocketInfo->recvBytes),
+		(LPDWORD)& (pSocketInfo->recvBytes),
 		&dwFlags,
-		(LPWSAOVERLAPPED) & (pSocketInfo->overlapped),
+		(LPWSAOVERLAPPED)& (pSocketInfo->overlapped),
 		NULL
 	);
 
