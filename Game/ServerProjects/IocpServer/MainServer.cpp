@@ -380,7 +380,7 @@ void MainServer::WorkerThread()
 		//ZeroMemory(dataBuffer, MAX_BUFFER + 1);
 
 		int idxOfStartInQueue = 0;
-		int nextIdxOfStartInQueue = 0;
+		int idxOfStartInNextQueue = 0;
 
 		// 큐가 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
 		while (recvQueue->empty() == false)
@@ -399,149 +399,147 @@ void MainServer::WorkerThread()
 			else
 			{
 				// 버퍼에 남은 자리 만큼 꽉 채웁니다.
-				nextIdxOfStartInQueue = MAX_BUFFER - idxOfStartInQueue;
-				CopyMemory(&dataBuffer[idxOfStartInQueue], recvQueue->front(), nextIdxOfStartInQueue);
-				idxOfStartInQueue = MAX_BUFFER;
-				dataBuffer[idxOfStartInQueue] = '\0';
+				idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
+				CopyMemory(&dataBuffer[idxOfStartInQueue], recvQueue->front(), idxOfStartInNextQueue);
+				dataBuffer[MAX_BUFFER] = '\0';
+
+
+				// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
+				int lenOfRestInNextQueue = (int)strlen(&recvQueue->front()[idxOfStartInNextQueue]);
+				char tempBuffer[MAX_BUFFER + 1];
+				CopyMemory(tempBuffer, &recvQueue->front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
+				tempBuffer[lenOfRestInNextQueue] = '\0';
+
+				// 임시 버퍼에 있는 데이터들을 다시 recvQueue->front()에 복사합니다.
+				CopyMemory(recvQueue->front(), tempBuffer, strlen(tempBuffer));
+				recvQueue->front()[strlen(tempBuffer)] = '\0';
 
 				break;
 			}
 		}
 		
-		// 1. 큐가 비었는데
-		if (recvQueue->empty())
+
+		/////////////////////////////////////////////
+		// 1. 버퍼 길이가 4미만이면
+		/////////////////////////////////////////////
+		if (strlen(dataBuffer) < 4)
 		{
-			///////////////////////////////////////////
-			// 1.1. 버퍼 길이가 4미만이면
-			///////////////////////////////////////////
-			if (strlen(dataBuffer) < 4)
+			printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
+
+			// dataBuffer의 남은 데이터를 newBuffer에 복사합니다.
+			char* newBuffer = new char[MAX_BUFFER + 1];
+			CopyMemory(newBuffer, &dataBuffer, strlen(dataBuffer));
+			newBuffer[strlen(dataBuffer)] = '\0';
+
+			// 다시 큐에 데이터를 집어넣고
+			recvQueue->push(newBuffer);
+		}
+		/////////////////////////////////////////////
+		// 2. 버퍼 길이가 4이상 MAX_BUFFER + 1 미만이면
+		/////////////////////////////////////////////
+		else if (strlen(dataBuffer) < MAX_BUFFER + 1)
+		{
+			printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
+
+			int idxOfStartInPacket = 0;
+			int lenOfNewBuffer = (int)strlen(dataBuffer);
+
+			try
 			{
-				printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
-
-				// dataBuffer의 남은 데이터를 newBuffer에 복사합니다.
-				char* newBuffer = new char[MAX_BUFFER + 1];
-				CopyMemory(newBuffer, &dataBuffer, strlen(dataBuffer));
-				newBuffer[strlen(dataBuffer)] = '\0';
-
-				// 다시 큐에 데이터를 집어넣고
-				recvQueue->push(newBuffer);
-
-				// 다음 데이터를 기다립니다.
-				MainServer::Recv(pSocketInfo);
-				continue;
-			}
-
-			///////////////////////////////////////////
-			// 1.2. 버퍼 길이가 4이상 MAX_BUFFER + 1 미만이면 
-			///////////////////////////////////////////
-			else if (strlen(dataBuffer) < MAX_BUFFER + 1)
-			{
-				printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
-
-				int idxOfStartInPacket = 0;
-				int lenOfNewBuffer = (int)strlen(dataBuffer);
-
-				try
+				while (idxOfStartInPacket < lenOfNewBuffer)
 				{
-					while (idxOfStartInPacket < lenOfNewBuffer)
+					printf_s("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
+					printf_s("\t lenOfNewBuffer: %d \n", lenOfNewBuffer);
+
+					// 버퍼 길이가 4이하면 아직 패킷이 전부 수신되지 않은것이므로
+					if (lenOfNewBuffer - idxOfStartInPacket < 4)
 					{
-						printf_s("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
-						printf_s("\t lenOfNewBuffer: %d \n", lenOfNewBuffer);
+						printf_s("\t if (lenOfNewBuffer - idxOfStartInPacket < 4): %d \n", lenOfNewBuffer - idxOfStartInPacket);
 
-						// 버퍼 길이가 4이하면 아직 패킷이 전부 수신되지 않은것이므로
-						if (lenOfNewBuffer - idxOfStartInPacket < 4)
-						{
-							printf_s("\t if (lenOfNewBuffer - idxOfStartInPacket < 4): %d \n", lenOfNewBuffer - idxOfStartInPacket);
+						// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
+						char* newBuffer = new char[MAX_BUFFER + 1];
+						CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
+						newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-							// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
-							char* newBuffer = new char[MAX_BUFFER + 1];
-							CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
-							newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
+						// 다시 큐에 데이터를 집어넣고
+						recvQueue->push(newBuffer);
 
-							// 다시 큐에 데이터를 집어넣고
-							recvQueue->push(newBuffer);
-
-							// 반복문을 종료합니다.
-							break;
-						}
-
-						char sizeBuffer[5]; // [????\0]
-
-					   // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
-						CopyMemory(sizeBuffer, &dataBuffer[idxOfStartInPacket], 4);
-						sizeBuffer[4] = '\0';
-
-						stringstream sizeStream;
-						sizeStream << sizeBuffer;
-						int sizeOfPacket = 0;
-						sizeStream >> sizeOfPacket;
-
-						printf_s("\t sizeOfPacket: %d \n", sizeOfPacket);
-						printf_s("\t strlen(&dataBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&dataBuffer[idxOfStartInPacket]));
-
-						// 필요한 데이터 사이즈가 버퍼에 남은 데이터 사이즈보다 크면 아직 패킷이 전부 수신되지 않은것이므로
-						if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket]))
-						{
-							// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
-							char* newBuffer = new char[MAX_BUFFER + 1];
-							CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
-							newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
-
-							// 다시 큐에 데이터를 집어넣고
-							recvQueue->push(newBuffer);
-
-							// 반복문을 종료합니다.
-							break;;
-						}
-
-						// 패킷은 완성되어 있으므로 마지막에 NULL 문자를 넣어 버퍼를 잘라도 상관 없습니다.
-						dataBuffer[idxOfStartInPacket + sizeOfPacket - 1] = '\0';
-
-						stringstream recvStream;
-						recvStream << &dataBuffer[idxOfStartInPacket];
-
-
-						// 사이즈 확인
-						int sizeOfRecvStream = 0;
-						recvStream >> sizeOfRecvStream;
-						printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
-
-						// stringstream에서 PacketType의 자료형인 int형에 해당되는 값만 추출/복사하여 packetType에 대입합니다.
-						int packetType = -1; // 패킷 종류
-						recvStream >> packetType;
-						printf_s("\t packetType: %d \n", packetType);
-
-						// 패킷 처리 함수 포인터인 FuncProcess에 바인딩한 PacketType에 맞는 함수들을 실행합니다.
-						if (fnProcess[packetType].funcProcessPacket != nullptr)
-						{
-							// WSASend(...)에서 에러발생시 throw("error message");
-							fnProcess[packetType].funcProcessPacket(recvStream, pSocketInfo);
-						}
-						else
-						{
-							printf_s("[ERROR] <MainServer::WorkerThread()> 정의 되지 않은 패킷 : %d \n\n", packetType);
-						}
-
-						idxOfStartInPacket += sizeOfPacket;
+						// 반복문을 종료합니다.
+						break;
 					}
-				}
-				catch (const std::exception& e)
-				{
-					printf_s("[ERROR] <MainServer::WorkerThread()> 예외 발생 : %s \n\n", e.what());
-					continue;
-				}
 
-				// 클라이언트 대기
-				MainServer::Recv(pSocketInfo);
+					char sizeBuffer[5]; // [????\0]
+
+					// 앞 4자리 데이터만 sizeBuffer에 복사합니다.
+					CopyMemory(sizeBuffer, &dataBuffer[idxOfStartInPacket], 4);
+					sizeBuffer[4] = '\0';
+
+					stringstream sizeStream;
+					sizeStream << sizeBuffer;
+					int sizeOfPacket = 0;
+					sizeStream >> sizeOfPacket;
+
+					printf_s("\t sizeOfPacket: %d \n", sizeOfPacket);
+					printf_s("\t strlen(&dataBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&dataBuffer[idxOfStartInPacket]));
+
+					// 필요한 데이터 사이즈가 버퍼에 남은 데이터 사이즈보다 크면 아직 패킷이 전부 수신되지 않은것이므로
+					if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket]))
+					{
+						printf_s("\t if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket])) \n");
+
+						// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
+						char* newBuffer = new char[MAX_BUFFER + 1];
+						CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
+						newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
+
+						// 다시 큐에 데이터를 집어넣고
+						recvQueue->push(newBuffer);
+
+						// 반복문을 종료합니다.
+						break;;
+					}
+
+					// 패킷은 완성되어 있으므로 마지막에 NULL 문자를 넣어 버퍼를 잘라도 상관 없습니다.
+					dataBuffer[idxOfStartInPacket + sizeOfPacket - 1] = '\0';
+
+					stringstream recvStream;
+					recvStream << &dataBuffer[idxOfStartInPacket];
+
+
+					// 사이즈 확인
+					int sizeOfRecvStream = 0;
+					recvStream >> sizeOfRecvStream;
+					printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
+
+					// stringstream에서 PacketType의 자료형인 int형에 해당되는 값만 추출/복사하여 packetType에 대입합니다.
+					int packetType = -1; // 패킷 종류
+					recvStream >> packetType;
+					printf_s("\t packetType: %d \n", packetType);
+
+					// 패킷 처리 함수 포인터인 FuncProcess에 바인딩한 PacketType에 맞는 함수들을 실행합니다.
+					if (fnProcess[packetType].funcProcessPacket != nullptr)
+					{
+						// WSASend(...)에서 에러발생시 throw("error message");
+						fnProcess[packetType].funcProcessPacket(recvStream, pSocketInfo);
+					}
+					else
+					{
+						printf_s("[ERROR] <MainServer::WorkerThread()> 정의 되지 않은 패킷 : %d \n\n", packetType);
+					}
+
+					idxOfStartInPacket += sizeOfPacket;
+				}
+			}
+			catch (const std::exception& e)
+			{
+				printf_s("[ERROR] <MainServer::WorkerThread()> 예외 발생 : %s \n\n", e.what());
 				continue;
 			}
 		}
-		// 2. 큐가 비지 않았는데
-		else
-		{
-			// 버퍼 길이가 MAX_BUFFER이면
 
-		}
+		// 클라이언트 대기
+		MainServer::Recv(pSocketInfo);
+		continue;
 	}
 }
 
