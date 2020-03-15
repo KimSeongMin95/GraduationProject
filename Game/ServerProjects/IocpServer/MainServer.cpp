@@ -377,47 +377,10 @@ void MainServer::WorkerThread()
 
 		char dataBuffer[MAX_BUFFER + 1];
 		dataBuffer[MAX_BUFFER] = '\0';
-		//ZeroMemory(dataBuffer, MAX_BUFFER + 1);
 
-		int idxOfStartInQueue = 0;
-		int idxOfStartInNextQueue = 0;
+		// 수신한 데이터를 저장하는 큐에서 데이터를 획득
+		GetDataInRecvQueue(recvQueue, dataBuffer);
 
-		// 큐가 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
-		while (recvQueue->empty() == false)
-		{
-			// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
-			if ((idxOfStartInQueue + strlen(recvQueue->front())) < MAX_BUFFER + 1)
-			{
-				CopyMemory(&dataBuffer[idxOfStartInQueue], recvQueue->front(), strlen(recvQueue->front()));
-				idxOfStartInQueue += (int)strlen(recvQueue->front());
-				dataBuffer[idxOfStartInQueue] = '\0';
-
-				delete[] recvQueue->front();
-				recvQueue->front() = nullptr;
-				recvQueue->pop();
-			}
-			else
-			{
-				// 버퍼에 남은 자리 만큼 꽉 채웁니다.
-				idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
-				CopyMemory(&dataBuffer[idxOfStartInQueue], recvQueue->front(), idxOfStartInNextQueue);
-				dataBuffer[MAX_BUFFER] = '\0';
-
-
-				// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
-				int lenOfRestInNextQueue = (int)strlen(&recvQueue->front()[idxOfStartInNextQueue]);
-				char tempBuffer[MAX_BUFFER + 1];
-				CopyMemory(tempBuffer, &recvQueue->front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
-				tempBuffer[lenOfRestInNextQueue] = '\0';
-
-				// 임시 버퍼에 있는 데이터들을 다시 recvQueue->front()에 복사합니다.
-				CopyMemory(recvQueue->front(), tempBuffer, strlen(tempBuffer));
-				recvQueue->front()[strlen(tempBuffer)] = '\0';
-
-				break;
-			}
-		}
-		
 
 		/////////////////////////////////////////////
 		// 1. 버퍼 길이가 4미만이면
@@ -468,7 +431,7 @@ void MainServer::WorkerThread()
 						break;
 					}
 
-					char sizeBuffer[5]; // [????\0]
+					char sizeBuffer[5]; // [1234\0]
 
 					// 앞 4자리 데이터만 sizeBuffer에 복사합니다.
 					CopyMemory(sizeBuffer, &dataBuffer[idxOfStartInPacket], 4);
@@ -504,7 +467,6 @@ void MainServer::WorkerThread()
 
 					stringstream recvStream;
 					recvStream << &dataBuffer[idxOfStartInPacket];
-
 
 					// 사이즈 확인
 					int sizeOfRecvStream = 0;
@@ -881,6 +843,54 @@ void MainServer::Recv(stSOCKETINFO* pSocketInfo)
 			printf_s("[INFO] <IocpServerBase::Recv(...)> WSARecv: WSA_IO_PENDING \n");
 		}
 	}
+}
+
+
+///////////////////////////////////////////
+// 수신한 데이터를 저장하는 큐에서 데이터를 획득
+///////////////////////////////////////////
+void MainServer::GetDataInRecvQueue(queue<char*>* RecvQueue, char* DataBuffer)
+{
+	int idxOfStartInQueue = 0;
+	int idxOfStartInNextQueue = 0;
+
+	// 큐가 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
+	while (RecvQueue->empty() == false)
+	{
+		// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
+		if ((idxOfStartInQueue + strlen(RecvQueue->front())) < MAX_BUFFER + 1)
+		{
+			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvQueue->front(), strlen(RecvQueue->front()));
+			idxOfStartInQueue += (int)strlen(RecvQueue->front());
+			DataBuffer[idxOfStartInQueue] = '\0';
+
+			delete[] RecvQueue->front();
+			RecvQueue->front() = nullptr;
+			RecvQueue->pop();
+		}
+		else
+		{
+			// 버퍼에 남은 자리 만큼 꽉 채웁니다.
+			idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
+			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvQueue->front(), idxOfStartInNextQueue);
+			DataBuffer[MAX_BUFFER] = '\0';
+
+
+			// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
+			int lenOfRestInNextQueue = (int)strlen(&RecvQueue->front()[idxOfStartInNextQueue]);
+			char tempBuffer[MAX_BUFFER + 1];
+			CopyMemory(tempBuffer, &RecvQueue->front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
+			tempBuffer[lenOfRestInNextQueue] = '\0';
+
+			// 임시 버퍼에 있는 데이터들을 다시 RecvQueue->front()에 복사합니다.
+			CopyMemory(RecvQueue->front(), tempBuffer, strlen(tempBuffer));
+			RecvQueue->front()[strlen(tempBuffer)] = '\0';
+
+			break;
+		}
+	}
+
+
 }
 
 

@@ -38,6 +38,12 @@ public:
 	// 클라이언트 수신 대기
 	static void Recv(stSOCKETINFO* pSocketInfo);
 
+
+	///////////////////////////////////////////
+	// 수신한 데이터를 저장하는 큐에서 데이터를 획득
+	///////////////////////////////////////////
+	void GetDataInRecvQueue(queue<char*>* RecvQueue, char* DataBuffer);
+
 private:
 	///////////////////////////////////////////
 	// Main Server / Main Clients
