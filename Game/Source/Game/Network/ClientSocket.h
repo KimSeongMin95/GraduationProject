@@ -16,7 +16,7 @@ class GAME_API cClientSocket : public FRunnable
 {
 private:
 	SOCKET	ServerSocket;				// 서버와 연결할 소켓	
-	char 	recvBuffer[MAX_BUFFER];		// 수신 버퍼 스트림	
+	
 
 	// FRunnable Thread members	
 	FRunnableThread* Thread = nullptr;
@@ -24,6 +24,8 @@ private:
 
 	bool bIsInitialized;
 	bool bIsConnected;
+
+	queue<char*> RecvQueue;
 
 	class cInfoOfPlayer MyInfo;
 	CRITICAL_SECTION csMyInfo;
@@ -56,8 +58,28 @@ public:
 	// 소켓 종료
 	void CloseSocket();
 
-	// 
+	// 송신
 	void Send(stringstream& SendStream);
+
+	///////////////////////////////////////////
+	// 패킷을 처리합니다.
+	///////////////////////////////////////////
+	void ProcessReceivedPacket(char* DataBuffer);
+
+	// (임시) 패킷 하나만 잘림 없이 전송되는 경우 바로 실행 
+	// 잘려오는 경우 여기서 에러가 발생할 수 있어서 조심해야 함!
+	bool ProcessDirectly(char* RecvBuffer, int RecvLen);
+
+	///////////////////////////////////////////
+	// recvQueue에 수신한 데이터를 적재
+	///////////////////////////////////////////
+	void PushRecvBufferInQueue(char* RecvBuffer, int RecvLen);
+
+	///////////////////////////////////////////
+	// 수신한 데이터를 저장하는 큐에서 데이터를 획득
+	///////////////////////////////////////////
+	void GetDataInRecvQueue(char* DataBuffer);
+
 
 	// 스레드 시작 및 종료
 	bool StartListen();

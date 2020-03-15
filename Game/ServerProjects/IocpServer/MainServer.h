@@ -38,6 +38,10 @@ public:
 	// 클라이언트 수신 대기
 	static void Recv(stSOCKETINFO* pSocketInfo);
 
+	///////////////////////////////////////////
+	// 패킷을 처리합니다.
+	///////////////////////////////////////////
+	void ProcessReceivedPacket(char* DataBuffer, stSOCKETINFO* pSocketInfo);
 
 	///////////////////////////////////////////
 	// 수신한 데이터를 저장하는 큐에서 데이터를 획득

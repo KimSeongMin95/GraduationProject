@@ -378,7 +378,9 @@ void MainServer::WorkerThread()
 		char dataBuffer[MAX_BUFFER + 1];
 		dataBuffer[MAX_BUFFER] = '\0';
 
+		///////////////////////////////////////////
 		// 수신한 데이터를 저장하는 큐에서 데이터를 획득
+		///////////////////////////////////////////
 		GetDataInRecvQueue(recvQueue, dataBuffer);
 
 
@@ -405,19 +407,19 @@ void MainServer::WorkerThread()
 			printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
 
 			int idxOfStartInPacket = 0;
-			int lenOfNewBuffer = (int)strlen(dataBuffer);
+			int lenOfDataBuffer = (int)strlen(dataBuffer);
 
 			try
 			{
-				while (idxOfStartInPacket < lenOfNewBuffer)
+				while (idxOfStartInPacket < lenOfDataBuffer)
 				{
 					printf_s("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
-					printf_s("\t lenOfNewBuffer: %d \n", lenOfNewBuffer);
+					printf_s("\t lenOfDataBuffer: %d \n", lenOfDataBuffer);
 
-					// 버퍼 길이가 4이하면 아직 패킷이 전부 수신되지 않은것이므로
-					if (lenOfNewBuffer - idxOfStartInPacket < 4)
+					// 남은 데이터 버퍼 길이가 4이하면 아직 패킷이 전부 수신되지 않은것이므로
+					if ((lenOfDataBuffer - idxOfStartInPacket) < 4)
 					{
-						printf_s("\t if (lenOfNewBuffer - idxOfStartInPacket < 4): %d \n", lenOfNewBuffer - idxOfStartInPacket);
+						printf_s("\t if (lenOfDataBuffer - idxOfStartInPacket < 4): %d \n", lenOfDataBuffer - idxOfStartInPacket);
 
 						// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
 						char* newBuffer = new char[MAX_BUFFER + 1];
@@ -432,9 +434,7 @@ void MainServer::WorkerThread()
 					}
 
 					char sizeBuffer[5]; // [1234\0]
-
-					// 앞 4자리 데이터만 sizeBuffer에 복사합니다.
-					CopyMemory(sizeBuffer, &dataBuffer[idxOfStartInPacket], 4);
+					CopyMemory(sizeBuffer, &dataBuffer[idxOfStartInPacket], 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
 					sizeBuffer[4] = '\0';
 
 					stringstream sizeStream;
@@ -465,29 +465,10 @@ void MainServer::WorkerThread()
 					// 패킷은 완성되어 있으므로 마지막에 NULL 문자를 넣어 버퍼를 잘라도 상관 없습니다.
 					dataBuffer[idxOfStartInPacket + sizeOfPacket - 1] = '\0';
 
-					stringstream recvStream;
-					recvStream << &dataBuffer[idxOfStartInPacket];
-
-					// 사이즈 확인
-					int sizeOfRecvStream = 0;
-					recvStream >> sizeOfRecvStream;
-					printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
-
-					// stringstream에서 PacketType의 자료형인 int형에 해당되는 값만 추출/복사하여 packetType에 대입합니다.
-					int packetType = -1; // 패킷 종류
-					recvStream >> packetType;
-					printf_s("\t packetType: %d \n", packetType);
-
-					// 패킷 처리 함수 포인터인 FuncProcess에 바인딩한 PacketType에 맞는 함수들을 실행합니다.
-					if (fnProcess[packetType].funcProcessPacket != nullptr)
-					{
-						// WSASend(...)에서 에러발생시 throw("error message");
-						fnProcess[packetType].funcProcessPacket(recvStream, pSocketInfo);
-					}
-					else
-					{
-						printf_s("[ERROR] <MainServer::WorkerThread()> 정의 되지 않은 패킷 : %d \n\n", packetType);
-					}
+					///////////////////////////////////////////
+					// 패킷을 처리합니다.
+					///////////////////////////////////////////
+					ProcessReceivedPacket(&dataBuffer[idxOfStartInPacket], pSocketInfo);
 
 					idxOfStartInPacket += sizeOfPacket;
 				}
@@ -662,7 +643,7 @@ void MainServer::CloseSocket(stSOCKETINFO* pSocketInfo)
 }
 
 
-void CALLBACK SendCompletionROUTINE(
+void CALLBACK SendCompletionRoutine(
 	IN DWORD dwError,
 	IN DWORD cbTransferred,
 	IN LPWSAOVERLAPPED lpOverlapped,
@@ -847,6 +828,43 @@ void MainServer::Recv(stSOCKETINFO* pSocketInfo)
 
 
 ///////////////////////////////////////////
+// 패킷을 처리합니다.
+///////////////////////////////////////////
+void MainServer::ProcessReceivedPacket(char* DataBuffer, stSOCKETINFO* pSocketInfo)
+{
+	if (!DataBuffer)
+	{
+		printf_s("[ERROR] <MainServer::ProcessReceivedPacket(...)> if (!DataBuffer) \n");
+		return;
+	}
+
+	stringstream recvStream;
+	recvStream << DataBuffer;
+
+	// 사이즈 확인
+	int sizeOfRecvStream = 0;
+	recvStream >> sizeOfRecvStream;
+	printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
+
+	// 패킷 종류 확인
+	int packetType = -1;
+	recvStream >> packetType;
+	printf_s("\t packetType: %d \n", packetType);
+
+	// 패킷 처리 함수 포인터인 FuncProcess에 바인딩한 PacketType에 맞는 함수들을 실행합니다.
+	if (fnProcess[packetType].funcProcessPacket != nullptr)
+	{
+		// WSASend(...)에서 에러발생시 throw("error message");
+		fnProcess[packetType].funcProcessPacket(recvStream, pSocketInfo);
+	}
+	else
+	{
+		printf_s("[ERROR] <MainServer::WorkerThread()> 정의 되지 않은 패킷 : %d \n\n", packetType);
+	}
+}
+
+
+///////////////////////////////////////////
 // 수신한 데이터를 저장하는 큐에서 데이터를 획득
 ///////////////////////////////////////////
 void MainServer::GetDataInRecvQueue(queue<char*>* RecvQueue, char* DataBuffer)
@@ -889,8 +907,6 @@ void MainServer::GetDataInRecvQueue(queue<char*>* RecvQueue, char* DataBuffer)
 			break;
 		}
 	}
-
-
 }
 
 
@@ -1031,6 +1047,12 @@ void MainServer::JoinOnlineGame(stringstream& RecvStream, stSOCKETINFO* pSocketI
 	{
 		/// 수신 - 에러
 		printf_s("[ERROR] <MainServer::JoinOnlineGame(...)> if (InfoOfGames.find(leaderSocket) == InfoOfGames.end()) \n");
+		
+		// 게임방이 종료되었다면 DESTROY_WAITING_GAME를 전송
+		stringstream sendStream;
+		sendStream << EPacketType::DESTROY_WAITING_GAME << endl;
+		Send(sendStream, pSocketInfo);
+
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
