@@ -20,7 +20,7 @@ uint32 cClientSocket::Run()
 
 
 	// 수신 버퍼 스트림
-	char recvBuffer[MAX_BUFFER];
+	char recvBuffer[MAX_BUFFER + 1];
 
 	// recv while loop 시작
 	// StopTaskCounter 클래스 변수를 사용해 Thread Safety하게 해줌
@@ -160,13 +160,15 @@ uint32 cClientSocket::Run()
 					break;;
 				}
 
-				// 패킷은 완성되어 있으므로 마지막에 NULL 문자를 넣어 버퍼를 잘라도 상관 없습니다.
-				dataBuffer[idxOfStartInPacket + sizeOfPacket - 1] = '\0';
+				// 패킷을 자르면서 임시 버퍼에 복사합니다.
+				char cutBuffer[MAX_BUFFER + 1];
+				CopyMemory(cutBuffer, &dataBuffer[idxOfStartInPacket], sizeOfPacket);
+				cutBuffer[idxOfStartInPacket + sizeOfPacket] = '\0';
 
 				///////////////////////////////////////////
 				// 패킷을 처리합니다.
 				///////////////////////////////////////////
-				ProcessReceivedPacket(&dataBuffer[idxOfStartInPacket]);
+				ProcessReceivedPacket(cutBuffer);
 
 				idxOfStartInPacket += sizeOfPacket;
 			}
@@ -493,6 +495,13 @@ void cClientSocket::ProcessReceivedPacket(char* DataBuffer)
 	int packetType = -1; 
 	recvStream >> packetType;
 	printf_s("\t packetType: %d \n", packetType);
+
+	/// 오류 확인
+	if (sizeOfRecvStream == 0)
+	{
+		printf_s("[ERROR] <cClientSocket::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
+		return;
+	}
 
 	switch (packetType)
 	{

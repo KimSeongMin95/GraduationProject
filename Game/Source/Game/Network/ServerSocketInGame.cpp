@@ -832,13 +832,15 @@ void cServerSocketInGame::WorkerThread()
 					break;;
 				}
 
-				// 패킷은 완성되어 있으므로 마지막에 NULL 문자를 넣어 버퍼를 잘라도 상관 없습니다.
-				dataBuffer[idxOfStartInPacket + sizeOfPacket - 1] = '\0';
+				// 패킷을 자르면서 임시 버퍼에 복사합니다.
+				char cutBuffer[MAX_BUFFER + 1];
+				CopyMemory(cutBuffer, &dataBuffer[idxOfStartInPacket], sizeOfPacket);
+				cutBuffer[idxOfStartInPacket + sizeOfPacket] = '\0';
 
 				///////////////////////////////////////////
 				// 패킷을 처리합니다.
 				///////////////////////////////////////////
-				ProcessReceivedPacket(&dataBuffer[idxOfStartInPacket], pSocketInfo);
+				ProcessReceivedPacket(cutBuffer, pSocketInfo);
 
 				idxOfStartInPacket += sizeOfPacket;
 			}
@@ -862,9 +864,6 @@ void cServerSocketInGame::CloseSocket(stSOCKETINFO* pSocketInfo)
 
 
 	/*********************************************************************************/
-	
-	// 게임클라이언트를 종료하면 남아있던 WSASend(...)를 다 보내기 위해 Alertable Wait 상태로 만듭니다.
-	SleepEx(1, true);
 
 	///////////////////////////
 	// InfosOfScoreBoard에서 제거
@@ -909,9 +908,10 @@ void cServerSocketInGame::CloseSocket(stSOCKETINFO* pSocketInfo)
 	for (auto iter = iter_pair.first; iter != iter_pair.second;)
 	{
 		stSOCKETINFO* socketInfo = iter->second;
-		delete socketInfo;
-
+		
 		iter = SendCollector.erase(iter);
+
+		delete socketInfo;
 	}
 	printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
 	LeaveCriticalSection(&csSendCollector);
@@ -1001,9 +1001,6 @@ void cServerSocketInGame::Send(stringstream& SendStream, stSOCKETINFO* pSocketIn
 
 	/***** WSARecv의 &(socketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : Start  *****/
 	stSOCKETINFO* socketInfo = new stSOCKETINFO();
-	EnterCriticalSection(&csSendCollector);
-	SendCollector.insert(pair<SOCKET, stSOCKETINFO*>(pSocketInfo->socket, socketInfo));
-	LeaveCriticalSection(&csSendCollector);
 
 	memset(&(socketInfo->overlapped), 0, sizeof(OVERLAPPED));
 	socketInfo->overlapped.hEvent = NULL; // IOCP에서는 overlapped.hEvent를 꼭 NULL로 해줘야 한다고 합니다.
@@ -1033,10 +1030,14 @@ void cServerSocketInGame::Send(stringstream& SendStream, stSOCKETINFO* pSocketIn
 	{
 		printf_s("[INFO] <MainServer::Send(...)> Success to WSASend(...) \n");
 
+		EnterCriticalSection(&csSendCollector);
+		SendCollector.insert(pair<SOCKET, stSOCKETINFO*>(socketInfo->socket, socketInfo));
+		LeaveCriticalSection(&csSendCollector);
+
 		// WSASend(...)후 GetQueuedCompletionStatus 받기 전에 읽으려고 하니까 상호배제가 충족되지 않아서 에러값이 나타납니다.
 		//printf_s("[INFO] <MainServer::Send(...)> socketInfo->sentBytes: %d \n", socketInfo->sentBytes);
 	}
-	if (nResult == SOCKET_ERROR)
+	else if (nResult == SOCKET_ERROR)
 	{
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
@@ -1052,6 +1053,10 @@ void cServerSocketInGame::Send(stringstream& SendStream, stSOCKETINFO* pSocketIn
 		else
 		{
 			printf_s("[INFO] <MainServer::Send(...)> WSASend: WSA_IO_PENDING \n");
+
+			EnterCriticalSection(&csSendCollector);
+			SendCollector.insert(pair<SOCKET, stSOCKETINFO*>(socketInfo->socket, socketInfo));
+			LeaveCriticalSection(&csSendCollector);
 		}
 	}
 	/***** WSARecv의 &(socketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : End  *****/
@@ -1222,6 +1227,13 @@ void cServerSocketInGame::ProcessReceivedPacket(char* DataBuffer, stSOCKETINFO* 
 	recvStream >> packetType;
 	printf_s("\t packetType: %d \n", packetType);
 
+	/// 오류 확인
+	if (sizeOfRecvStream == 0)
+	{
+		printf_s("[ERROR] <cServerSocketInGame::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
+		return;
+	}
+
 	// 패킷 처리 함수 포인터인 FuncProcess에 바인딩한 PacketType에 맞는 함수들을 실행합니다.
 	if (fnProcess[packetType].funcProcessPacket != nullptr)
 	{
@@ -1231,6 +1243,7 @@ void cServerSocketInGame::ProcessReceivedPacket(char* DataBuffer, stSOCKETINFO* 
 	else
 	{
 		printf_s("[ERROR] <cServerSocketInGame::WorkerThread()> undefiend packet type: %d \n\n", packetType);
+		printf_s("[ERROR] <cServerSocketInGame::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
 	}
 }
 

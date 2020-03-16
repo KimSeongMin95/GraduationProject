@@ -382,6 +382,13 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 	recvStream >> packetType;
 	printf_s("\t packetType: %d \n", packetType);
 
+	/// 오류 확인
+	if (sizeOfRecvStream == 0)
+	{
+		printf_s("[ERROR] <cClientSocketInGame::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
+		return;
+	}
+
 	switch (packetType)
 	{
 	case EPacketType::CONNECTED:
@@ -555,8 +562,8 @@ bool cClientSocketInGame::BeginMainThread()
 
 void cClientSocketInGame::RunMainThread()
 {
-	// 수신 버퍼 스트림
-	char recvBuffer[MAX_BUFFER];
+	// 수신 버퍼 스트림 (최대 MAX_BUFFER 사이즈의 데이터를 저장하기 때문에, 마지막 '\0'용 사이즈가 필요)
+	char recvBuffer[MAX_BUFFER + 1];
 
 	// recv while loop 시작
 	// StopTaskCounter 클래스 변수를 사용해 Thread Safety하게 해줌
@@ -705,13 +712,15 @@ void cClientSocketInGame::RunMainThread()
 					break;;
 				}
 
-				// 패킷은 완성되어 있으므로 마지막에 NULL 문자를 넣어 버퍼를 잘라도 상관 없습니다.
-				dataBuffer[idxOfStartInPacket + sizeOfPacket - 1] = '\0';
+				// 패킷을 자르면서 임시 버퍼에 복사합니다.
+				char cutBuffer[MAX_BUFFER + 1];
+				CopyMemory(cutBuffer, &dataBuffer[idxOfStartInPacket], sizeOfPacket);
+				cutBuffer[idxOfStartInPacket + sizeOfPacket] = '\0';
 
 				///////////////////////////////////////////
 				// 패킷을 처리합니다.
 				///////////////////////////////////////////
-				ProcessReceivedPacket(&dataBuffer[idxOfStartInPacket]);
+				ProcessReceivedPacket(cutBuffer);
 
 				idxOfStartInPacket += sizeOfPacket;
 			}

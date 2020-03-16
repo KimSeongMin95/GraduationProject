@@ -8,7 +8,7 @@ using namespace std;
 struct FuncProcess
 {
 	// RecvStream은 수신한 정보, pSocket은 Overlapped I/O 작업이 발생한 IOCP 소켓 구조체 정보
-	void(*funcProcessPacket)(stringstream& RecvStream, stSOCKETINFO* pSocketInfo);
+	void(*funcProcessPacket)(stringstream& RecvStream, SOCKET Socket);
 	FuncProcess()
 	{
 		funcProcessPacket = nullptr;
@@ -29,7 +29,11 @@ protected:
 	DWORD			nThreadCnt;				 // 작업 스레드 개수
 
 public:
-	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장
+	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장, (서버가 닫힐 때 할당 해제용도)
+	static queue<stSOCKETINFO*> GC_SocketInfo;
+	static CRITICAL_SECTION csGC_SocketInfo;
+
+	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장, (delete 금지)
 	static map<SOCKET, stSOCKETINFO*> Clients;
 	static CRITICAL_SECTION csClients;
 
@@ -37,9 +41,11 @@ public:
 	static map<SOCKET, queue<char*>*> MapOfRecvQueue;
 	static CRITICAL_SECTION csMapOfRecvQueue;
 
-	// Send(...)에서 동적할당한 stSOCKETINFO*을 나중에 해제하기 위해 저장
-	static multimap<SOCKET, stSOCKETINFO*> SendCollector;
-	static CRITICAL_SECTION csSendCollector;
+	
+	//// Send(...)에서 동적할당한 stSOCKETINFO*을 나중에 해제하기 위해 저장
+	//// 메인서버는 껏다 켯다하지 않고 계속 돌리기 때문에 사실상 필요 없고게임서버에서 필요할 듯.
+	//static multimap<SOCKET, stSOCKETINFO*> SendCollector;
+	//static CRITICAL_SECTION csSendCollector;
 
 public:
 	IocpServerBase();
@@ -58,23 +64,23 @@ public:
 	virtual void WorkerThread();
 
 	// 클라이언트 접속 종료
-	virtual void CloseSocket(stSOCKETINFO* pSocketInfo);
+	virtual void CloseSocket(SOCKET Socket);
 
 	// 클라이언트에게 송신
-	virtual void Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo);
+	virtual void Send(stringstream& SendStream, SOCKET Socket);
 
 	// 클라이언트 수신 대기
-	virtual void Recv(stSOCKETINFO* pSocketInfo);
+	virtual void Recv(SOCKET Socket);
 
 	///////////////////////////////////////////
 	// stringstream의 맨 앞에 size를 추가
 	///////////////////////////////////////////
-	static void AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
+	static bool AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
 	{
 		if (DataStream.str().length() == 0)
 		{
 			printf_s("[ERROR] <AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
-			return;
+			return false;
 		}
 		//printf_s("[START] <AddSizeInStream(...)> \n");
 
@@ -98,11 +104,20 @@ public:
 		printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
 		//printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
 
+		// 전송할 데이터가 최대 버퍼 크기보다 크면 전송 불가능을 알립니다.
+		if (FinalStream.str().length() > MAX_BUFFER)
+		{
+			printf_s("[ERROR] <AddSizeInStream(...)> if (FinalStream.str().length() > MAX_BUFFER \n");
+			return false;
+		}
+
 
 		//printf_s("[END] <AddSizeInStream(...)> \n");
+
+		return true;
 	}
 
-	void SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf)
+	void SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
 	{
 		/*
 		The maximum send buffer size is 1,048,576 bytes.

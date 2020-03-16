@@ -1,14 +1,19 @@
 #include "IocpServerBase.h"
 
 
+queue<stSOCKETINFO*> IocpServerBase::GC_SocketInfo;
+CRITICAL_SECTION IocpServerBase::csGC_SocketInfo;
+
 map<SOCKET, stSOCKETINFO*> IocpServerBase::Clients;
 CRITICAL_SECTION IocpServerBase::csClients;
 
 map<SOCKET, queue<char*>*> IocpServerBase::MapOfRecvQueue;
 CRITICAL_SECTION IocpServerBase::csMapOfRecvQueue;
 
-multimap<SOCKET, stSOCKETINFO*> IocpServerBase::SendCollector;
-CRITICAL_SECTION IocpServerBase::csSendCollector;
+//// Send(...)에서 동적할당한 stSOCKETINFO*을 나중에 해제하기 위해 저장
+//// 메인서버는 껏다 켯다하지 않고 계속 돌리기 때문에 사실상 필요 없고 게임서버에서 필요할 듯.
+//multimap<SOCKET, stSOCKETINFO*> IocpServerBase::SendCollector;
+//CRITICAL_SECTION IocpServerBase::csSendCollector;
 
 IocpServerBase::IocpServerBase()
 {
@@ -25,17 +30,19 @@ IocpServerBase::IocpServerBase()
 	hWorkerHandle = nullptr;
 	nThreadCnt = 0;
 
+	InitializeCriticalSection(&csGC_SocketInfo);
 	InitializeCriticalSection(&csClients);
 	InitializeCriticalSection(&csMapOfRecvQueue);
-	InitializeCriticalSection(&csSendCollector);
+	//InitializeCriticalSection(&csSendCollector);
 }
 
 IocpServerBase::~IocpServerBase()
 {
 	// 크리티컬 섹션들을 제거한다.
+	DeleteCriticalSection(&csGC_SocketInfo);
 	DeleteCriticalSection(&csClients);
 	DeleteCriticalSection(&csMapOfRecvQueue);
-	DeleteCriticalSection(&csSendCollector);
+	//DeleteCriticalSection(&csSendCollector);
 }
 
 bool IocpServerBase::Initialize()
@@ -151,7 +158,13 @@ void IocpServerBase::StartServer()
 		SocketInfo->Port = (int)ntohs(clientAddr.sin_port);
 		printf_s("[INFO] <IocpServerBase::StartServer()> Client's Port: %d\n\n", SocketInfo->Port);
 
-		// 동적할당한 소켓 정보를 저장
+
+		// 동적할당한 소켓 정보를 저장 (서버가 완전히 종료되면 할당 해제)
+		EnterCriticalSection(&csGC_SocketInfo);
+		GC_SocketInfo.push(SocketInfo);
+		LeaveCriticalSection(&csGC_SocketInfo);
+
+		// 동적할당한 소켓 정보를 저장 (delete 금지)
 		EnterCriticalSection(&csClients);
 		printf_s("[[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
 		Clients[clientSocket] = SocketInfo;
@@ -166,6 +179,7 @@ void IocpServerBase::StartServer()
 			MapOfRecvQueue.insert(pair<SOCKET, queue<char*>*>(clientSocket, recvQueue));
 		}
 		LeaveCriticalSection(&csMapOfRecvQueue);
+
 
 		// SocketInfo를 hIOCP에 등록?
 		//hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (DWORD)SocketInfo, 0);
@@ -215,23 +229,44 @@ void IocpServerBase::WorkerThread()
 	//
 }
 
-void IocpServerBase::CloseSocket(stSOCKETINFO* pSocketInfo)
+void IocpServerBase::CloseSocket(SOCKET Socket)
 {
 	//
 }
 
-void IocpServerBase::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
+void IocpServerBase::Send(stringstream& SendStream, SOCKET Socket)
 {
 	//
 }
 
-void IocpServerBase::Recv(stSOCKETINFO* pSocketInfo)
+void IocpServerBase::Recv(SOCKET Socket)
 {
+	/////////////////////////////
+	// 소켓 유효성 검증
+	/////////////////////////////
+	EnterCriticalSection(&csClients);
+	if (Clients.find(Socket) == Clients.end())
+	{
+		printf_s("[ERROR] <IocpServerBase::Recv(...)> if (Clients.find(Socket) == Clients.end()) \n");
+		LeaveCriticalSection(&csClients);
+		return;
+	}
+	stSOCKETINFO* pSocketInfo = Clients.at(Socket);
+	if (pSocketInfo->socket == NULL || pSocketInfo->socket == INVALID_SOCKET)
+	{
+		printf_s("[ERROR] <IocpServerBase::Recv(...)> if (pSocketInfo->socket == NULL || pSocketInfo->socket == INVALID_SOCKET) \n");
+		LeaveCriticalSection(&csClients);
+		return;
+	}
+	LeaveCriticalSection(&csClients);
+
+
 	// DWORD sendBytes;
 	DWORD dwFlags = 0;
 
 	// stSOCKETINFO 데이터 초기화
 	ZeroMemory(&(pSocketInfo->overlapped), sizeof(OVERLAPPED));
+	pSocketInfo->overlapped.hEvent = NULL; // IOCP에서는 overlapped.hEvent를 꼭 NULL로 해줘야 한다고 합니다.
 	ZeroMemory(pSocketInfo->messageBuffer, MAX_BUFFER);
 	pSocketInfo->dataBuf.len = MAX_BUFFER;
 	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
@@ -255,6 +290,8 @@ void IocpServerBase::Recv(stSOCKETINFO* pSocketInfo)
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
 			printf_s("[ERROR] WSARecv 실패 : %d\n", WSAGetLastError());
+
+			CloseSocket(pSocketInfo->socket);
 		}
 		else
 		{
