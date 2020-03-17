@@ -117,7 +117,7 @@ void AOnlineGameMode::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::BeginPlay()> if (!world)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::BeginPlay()> if (!world)\n");
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::BeginPlay()> if (!world)"));
 		return;
 	}
@@ -187,7 +187,7 @@ void AOnlineGameMode::_ActivateInGameWidget()
 {
 	if (!InGameWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameWidget()> if (!InGameWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::ActivateInGameWidget()> if (!InGameWidget)\n");
 		return;
 	}
 
@@ -201,7 +201,7 @@ void AOnlineGameMode::_DeactivateInGameWidget()
 {
 	if (!InGameWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameWidget()> if (!InGameWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameWidget()> if (!InGameWidget)\n");
 		return;
 	}
 
@@ -216,7 +216,7 @@ void AOnlineGameMode::_ActivateInGameMenuWidget()
 {
 	if (!InGameMenuWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameMenuWidget()> if (!InGameMenuWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::ActivateInGameMenuWidget()> if (!InGameMenuWidget)\n");
 		return;
 	}
 
@@ -230,7 +230,7 @@ void AOnlineGameMode::_DeactivateInGameMenuWidget()
 {
 	if (!InGameMenuWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameMenuWidget()> if (!InGameMenuWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameMenuWidget()> if (!InGameMenuWidget)\n");
 		return;
 	}
 
@@ -240,7 +240,7 @@ void AOnlineGameMode::ToggleInGameMenuWidget()
 {
 	if (!InGameMenuWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ToggleInGameMenuWidget()> if (!InGameMenuWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::ToggleInGameMenuWidget()> if (!InGameMenuWidget)\n");
 		return;
 	}
 
@@ -255,7 +255,7 @@ void AOnlineGameMode::_ActivateInGameScoreBoardWidget()
 {
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::ActivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
 		return;
 	}
 
@@ -269,7 +269,7 @@ void AOnlineGameMode::_DeactivateInGameScoreBoardWidget()
 {
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
 		return;
 	}
 
@@ -279,7 +279,7 @@ void AOnlineGameMode::ToggleInGameScoreBoardWidget()
 {
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ToggleInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::ToggleInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
 		return;
 	}
 
@@ -321,7 +321,7 @@ void AOnlineGameMode::_TerminateGame()
 /////////////////////////////////////////////////
 void AOnlineGameMode::ScoreBoard()
 {
-	printf_s("[INFO] <AOnlineGameMode::ScoreBoard()>\n");
+	//printf_s("[INFO] <AOnlineGameMode::ScoreBoard()>\n");
 
 	ClearTimerOfScoreBoard();
 	GetWorldTimerManager().SetTimer(thScoreBoard, this, &AOnlineGameMode::TimerOfScoreBoard, 1.0f, true);
@@ -330,7 +330,7 @@ void AOnlineGameMode::TimerOfScoreBoard()
 {
 	if (!ClientSocketInGame)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::TimerOfScoreBoard()> if (!ClientSocketInGame)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::TimerOfScoreBoard()> if (!ClientSocketInGame)\n");
 		return;
 	}
 
@@ -338,7 +338,7 @@ void AOnlineGameMode::TimerOfScoreBoard()
 }
 void AOnlineGameMode::ClearTimerOfScoreBoard()
 {
-	printf_s("[INFO] <AOnlineGameMode::ClearTimerOfScoreBoard()>\n");
+	//printf_s("[INFO] <AOnlineGameMode::ClearTimerOfScoreBoard()>\n");
 
 	if (GetWorldTimerManager().IsTimerActive(thScoreBoard))
 		GetWorldTimerManager().ClearTimer(thScoreBoard);
@@ -347,7 +347,7 @@ void AOnlineGameMode::ClearTimerOfScoreBoard()
 
 void AOnlineGameMode::RecvAndApply()
 {
-	printf_s("[INFO] <AOnlineGameMode::RecvAndApply()>\n");
+	//printf_s("[INFO] <AOnlineGameMode::RecvAndApply()>\n");
 
 	ClearTimerOfRecvAndApply();
 	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AOnlineGameMode::TimerOfRecvAndApply, 0.5f, true);
@@ -356,13 +356,13 @@ void AOnlineGameMode::TimerOfRecvAndApply()
 {
 	if (!ServerSocketInGame || !ClientSocketInGame)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!ServerSocketInGame || !ClientSocketInGame)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!ServerSocketInGame || !ClientSocketInGame)\n");
 		return;
 	}
 
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!InGameScoreBoardWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::TimerOfRecvAndApply()> if (!InGameScoreBoardWidget)\n");
 		return;
 	}
 
@@ -395,7 +395,7 @@ void AOnlineGameMode::TimerOfRecvAndApply()
 }
 void AOnlineGameMode::ClearTimerOfRecvAndApply()
 {
-	printf_s("[INFO] <AOnlineGameMode::ClearTimerOfRecvAndApply()>\n");
+	//printf_s("[INFO] <AOnlineGameMode::ClearTimerOfRecvAndApply()>\n");
 
 	if (GetWorldTimerManager().IsTimerActive(thRecvAndApply))
 		GetWorldTimerManager().ClearTimer(thRecvAndApply);
@@ -410,7 +410,7 @@ void AOnlineGameMode::FindPioneerController()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::FindPioneerController()> if (!world)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::FindPioneerController()> if (!world)\n");
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::FindPioneerController()> if (!world)"));
 		return;
 	}
@@ -418,7 +418,7 @@ void AOnlineGameMode::FindPioneerController()
 	// UWorld에서 APioneerController를 찾습니다.
 	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
 	{
-		printf_s("[INFO] <AOnlineGameMode::FindPioneerController()> found APioneerController\n");
+		//printf_s("[INFO] <AOnlineGameMode::FindPioneerController()> found APioneerController\n");
 		//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AOnlineGameMode::FindPioneerController()> found APioneerController"));
 		PioneerController = *ActorItr;
 	}
@@ -429,7 +429,7 @@ void AOnlineGameMode::SpawnPioneerManager()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::SpawnPioneerManager()> if (!world)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::SpawnPioneerManager()> if (!world)\n");
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::SpawnPioneerManager()> if (!world)"));
 		return;
 	}
@@ -450,7 +450,7 @@ void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform T
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::SpawnSpaceShip(...)> if (!world)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::SpawnSpaceShip(...)> if (!world)\n");
 		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <AOnlineGameMode::SpawnSpaceShip(...)> if (!world)"));
 		return;
 	}
@@ -475,16 +475,16 @@ void AOnlineGameMode::GetScoreBoard()
 {
 	if (!ServerSocketInGame)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!ServerSocketInGame)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!ServerSocketInGame)\n");
 		return;
 	}
 
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!InGameScoreBoardWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!InGameScoreBoardWidget)\n");
 		return;
 	}
-	printf_s("[START] <AOnlineGameMode::GetScoreBoard()>\n");
+	//printf_s("[START] <AOnlineGameMode::GetScoreBoard()>\n");
 
 
 	std::queue<cInfoOfScoreBoard> copiedQueue;
@@ -497,26 +497,26 @@ void AOnlineGameMode::GetScoreBoard()
 	InGameScoreBoardWidget->RevealScores(copiedQueue);
 
 
-	printf_s("[END] <AOnlineGameMode::GetScoreBoard()>\n");
+	//printf_s("[END] <AOnlineGameMode::GetScoreBoard()>\n");
 }
 void AOnlineGameMode::RecvScoreBoard()
 {
 	if (!ClientSocketInGame)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!ClientSocketInGame)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!ClientSocketInGame)\n");
 		return;
 	}
 
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!InGameScoreBoardWidget)\n");
+		//printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!InGameScoreBoardWidget)\n");
 		return;
 	}
 
 	if (ClientSocketInGame->tsqScoreBoard.empty())
 		return;
 
-	printf_s("[START] <AOnlineGameMode::RecvScoreBoard()>\n");
+	//printf_s("[START] <AOnlineGameMode::RecvScoreBoard()>\n");
 
 	/***********************************************************************/
 
@@ -529,14 +529,14 @@ void AOnlineGameMode::RecvScoreBoard()
 
 	InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
 
-	printf_s("[END] <AOnlineGameMode::RecvScoreBoard()>\n");
+	//printf_s("[END] <AOnlineGameMode::RecvScoreBoard()>\n");
 }
 
 void AOnlineGameMode::SendInfoOfSpaceShip()
 {
 	if (!SpaceShip)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
+		//printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
 		return;
 	}
 
@@ -552,7 +552,7 @@ void AOnlineGameMode::SendInfoOfSpaceShip()
 	case ESpaceShipState::Landed:
 	{
 		SpaceShip->StartSpawning(5 + (int)(ServerSocketInGame->tsqObserver.size() * 1.00));
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
+		//printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
 	}
 	break;
 	case ESpaceShipState::Spawned:
@@ -575,12 +575,12 @@ void AOnlineGameMode::RecvInfoOfSpaceShip()
 {
 	if (!SpaceShip)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!SpaceShip)\n");
+		//printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!SpaceShip)\n");
 		return;
 	}
 	if (!PioneerController)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!PioneerController)\n");
+		//printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!PioneerController)\n");
 		return;
 	}
 
@@ -588,7 +588,7 @@ void AOnlineGameMode::RecvInfoOfSpaceShip()
 	if (ClientSocketInGame->tsqSpaceShip.empty())
 		return;
 
-	printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfSpaceShip()>\n");
+	//printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfSpaceShip()>\n");
 
 	/***********************************************************************/
 
@@ -612,20 +612,20 @@ void AOnlineGameMode::RecvSpawnPioneer()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!PioneerManager)\n");
+		//printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!PioneerManager)\n");
 		return;
 	}
 
 	if (!ClientSocketInGame)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!ClientSocketInGame)\n");
+		//printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!ClientSocketInGame)\n");
 		return;
 	}
 
 	if (ClientSocketInGame->tsqSpawnPioneer.empty())
 		return;
 
-	printf_s("[INFO] <AMainScreenGameMode::RecvSpawnPioneer()>\n");
+	//printf_s("[INFO] <AMainScreenGameMode::RecvSpawnPioneer()>\n");
 
 	/***********************************************************************/
 
@@ -638,7 +638,7 @@ void AOnlineGameMode::RecvSpawnPioneer()
 	{
 		PioneerManager->SpawnPioneerByRecv(copiedQueue.front());
 		copiedQueue.pop();
-		printf_s("[INFO] <AMainScreenGameMode::RecvSpawnPioneer()> copiedQueue.pop();\n");
+		//printf_s("[INFO] <AMainScreenGameMode::RecvSpawnPioneer()> copiedQueue.pop();\n");
 	}
 }
 
@@ -646,20 +646,20 @@ void AOnlineGameMode::RecvDiedPioneer()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!PioneerManager)\n");
+		//printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!PioneerManager)\n");
 		return;
 	}
 
 	if (!ClientSocketInGame)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!ClientSocketInGame)\n");
+		//printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!ClientSocketInGame)\n");
 		return;
 	}
 
 	if (ClientSocketInGame->tsqSpawnPioneer.empty())
 		return;
 
-	printf_s("[INFO] <AMainScreenGameMode::RecvDiedPioneer()>\n");
+	//printf_s("[INFO] <AMainScreenGameMode::RecvDiedPioneer()>\n");
 
 	/***********************************************************************/
 
@@ -689,13 +689,13 @@ void AOnlineGameMode::SetInfoOfPioneer()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer()> if (!PioneerManager)\n");
+		//printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer()> if (!PioneerManager)\n");
 		return;
 	}
 
 	if (!ServerSocketInGame)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer()> if (!ServerSocketInGame)\n");
+		//printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer()> if (!ServerSocketInGame)\n");
 		return;
 	}
 
@@ -718,20 +718,20 @@ void AOnlineGameMode::GetInfoOfPioneer()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer()> if (!PioneerManager)\n");
+		//printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer()> if (!PioneerManager)\n");
 		return;
 	}
 
 	if (!ServerSocketInGame)
 	{
-		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer()> if (!ServerSocketInGame)\n");
+		//printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer()> if (!ServerSocketInGame)\n");
 		return;
 	}
 
 	if (ServerSocketInGame->tsqInfoOfPioneer.empty())
 		return;
 
-	printf_s("[INFO] <AMainScreenGameMode::GetInfoOfPioneer()>\n");
+	//printf_s("[INFO] <AMainScreenGameMode::GetInfoOfPioneer()>\n");
 
 	/***********************************************************************/
 
@@ -758,13 +758,13 @@ void AOnlineGameMode::SendInfoOfPioneer()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer()> if (!PioneerManager)\n");
+		//printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer()> if (!PioneerManager)\n");
 		return;
 	}
 
 	if (!ClientSocketInGame)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer()> if (!ClientSocketInGame)\n");
+		//printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer()> if (!ClientSocketInGame)\n");
 		return;
 	}
 
@@ -775,20 +775,20 @@ void AOnlineGameMode::RecvInfoOfPioneer()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer()> if (!PioneerManager)\n");
+		//printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer()> if (!PioneerManager)\n");
 		return;
 	}
 
 	if (!ClientSocketInGame)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer()> if (!ClientSocketInGame)\n");
+		//printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer()> if (!ClientSocketInGame)\n");
 		return;
 	}
 
 	if (ClientSocketInGame->tsqInfoOfPioneer.empty())
 		return;
 
-	printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfPioneer()>\n");
+	//printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfPioneer()>\n");
 
 	/***********************************************************************/
 

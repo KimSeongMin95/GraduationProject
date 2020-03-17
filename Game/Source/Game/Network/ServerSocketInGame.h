@@ -164,4 +164,44 @@ public:
 
 	static void InfoOfPioneer(stringstream& RecvStream, SOCKET Socket);
 	static cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
+
+
+
+	////////////////////////////////////////////////
+	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+	////////////////////////////////////////////////
+	static void PrintPacket(char* DataBuffer, bool send)
+	{
+		int len = strlen(DataBuffer);
+
+		char cutBuffer[MAX_BUFFER + 1];
+		CopyMemory(cutBuffer, DataBuffer, len);
+		cutBuffer[len] = '\0';
+
+		for (int i = 0; i < len; i++)
+		{
+			if (cutBuffer[i] == '\n')
+				cutBuffer[i] = '_';
+		}
+
+
+		char sizeBuffer[5]; // [1234\0]
+		CopyMemory(sizeBuffer, cutBuffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
+		sizeBuffer[4] = '\0';
+
+		stringstream sizeStream;
+		sizeStream << sizeBuffer;
+		int sizeOfPacket = 0;
+		sizeStream >> sizeOfPacket;
+
+
+		if (sizeOfPacket == len)
+		{
+			printf_s("\n type: %s \n %s \n sizeOfPacket: %d \n len: %d \n", send ? "Send" : "Recv", cutBuffer, sizeOfPacket, len);
+		}
+		else
+		{
+			printf_s("\n\n\n\n\n\n\n\n\n\ntype: %s \n %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", cutBuffer, sizeOfPacket, len);
+		}
+	}
 };

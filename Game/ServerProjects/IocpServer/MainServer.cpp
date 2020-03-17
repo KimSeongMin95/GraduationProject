@@ -463,7 +463,7 @@ void MainServer::WorkerThread()
 				// 패킷을 자르면서 임시 버퍼에 복사합니다.
 				char cutBuffer[MAX_BUFFER + 1];
 				CopyMemory(cutBuffer, &dataBuffer[idxOfStartInPacket], sizeOfPacket);
-				cutBuffer[idxOfStartInPacket + sizeOfPacket] = '\0';
+				cutBuffer[sizeOfPacket] = '\0';
 
 				///////////////////////////////////////////
 				// 패킷을 처리합니다.
