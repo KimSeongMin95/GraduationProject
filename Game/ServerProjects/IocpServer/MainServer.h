@@ -46,7 +46,7 @@ public:
 	///////////////////////////////////////////
 	// 수신한 데이터를 저장하는 큐에서 데이터를 획득
 	///////////////////////////////////////////
-	void GetDataInRecvQueue(queue<char*>* RecvQueue, char* DataBuffer);
+	void GetDataInRecvQueue(deque<char*>* RecvDeque, char* DataBuffer);
 
 private:
 	///////////////////////////////////////////

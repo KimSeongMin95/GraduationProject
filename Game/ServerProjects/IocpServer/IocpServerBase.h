@@ -37,15 +37,10 @@ public:
 	static map<SOCKET, stSOCKETINFO*> Clients;
 	static CRITICAL_SECTION csClients;
 
-	// 수신한 데이터를 큐에 전부 적재
-	static map<SOCKET, queue<char*>*> MapOfRecvQueue;
-	static CRITICAL_SECTION csMapOfRecvQueue;
+	// 수신한 데이터를 덱에 전부 적재
+	static map<SOCKET, deque<char*>*> MapOfRecvDeque;
+	static CRITICAL_SECTION csMapOfRecvDeque;
 
-	
-	//// Send(...)에서 동적할당한 stSOCKETINFO*을 나중에 해제하기 위해 저장
-	//// 메인서버는 껏다 켯다하지 않고 계속 돌리기 때문에 사실상 필요 없고게임서버에서 필요할 듯.
-	//static multimap<SOCKET, stSOCKETINFO*> SendCollector;
-	//static CRITICAL_SECTION csSendCollector;
 
 public:
 	IocpServerBase();
@@ -75,101 +70,10 @@ public:
 	///////////////////////////////////////////
 	// stringstream의 맨 앞에 size를 추가
 	///////////////////////////////////////////
-	static bool AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
-	{
-		if (DataStream.str().length() == 0)
-		{
-			printf_s("[ERROR] <AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
-			return false;
-		}
-		//printf_s("[START] <AddSizeInStream(...)> \n");
+	static bool AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
 
-		// ex) DateStream의 크기 : 98
-		//printf_s("\t DataStream size: %d\n", (int)DataStream.str().length());
-		//printf_s("\t DataStream: %s\n", DataStream.str().c_str());
-
-		// dataStreamLength의 크기 : 3 [98 ]
-		stringstream dataStreamLength;
-		dataStreamLength << DataStream.str().length() << endl;
-
-		// lengthOfFinalStream의 크기 : 4 [101 ]
-		stringstream lengthOfFinalStream;
-		lengthOfFinalStream << (dataStreamLength.str().length() + DataStream.str().length()) << endl;
-
-		// FinalStream의 크기 : 101 [101 DataStream]
-		int sizeOfFinalStream = (int)(lengthOfFinalStream.str().length() + DataStream.str().length());
-		FinalStream << sizeOfFinalStream << endl;
-		FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
-
-		printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
-		//printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
-
-		// 전송할 데이터가 최대 버퍼 크기보다 크면 전송 불가능을 알립니다.
-		if (FinalStream.str().length() > MAX_BUFFER)
-		{
-			printf_s("[ERROR] <AddSizeInStream(...)> if (FinalStream.str().length() > MAX_BUFFER \n");
-			return false;
-		}
-
-
-		//printf_s("[END] <AddSizeInStream(...)> \n");
-
-		return true;
-	}
-
-	void SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
-	{
-		/*
-		The maximum send buffer size is 1,048,576 bytes.
-		The default value of the SO_SNDBUF option is 32,767.
-		For a TCP socket, the maximum length that you can specify is 1 GB.
-		For a UDP or RAW socket, the maximum length that you can specify is the smaller of the following values:
-		65,535 bytes (for a UDP socket) or 32,767 bytes (for a RAW socket).
-		The send buffer size defined by the SO_SNDBUF option.
-		*/
-
-		/* 검증
-		1048576B == 1024KB
-		TCP에선 send buffer와 recv buffer 모두 1048576 * 256까지 가능.
-		*/
-
-		printf_s("[START] <SetSockOpt(...)> \n");
-
-
-		int optval;
-		int optlen = sizeof(optval);
-
-		// 성공시 0, 실패시 -1 반환
-		if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
-		{
-			printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
-		}
-		if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
-		{
-			printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
-		}
-
-		optval = SendBuf;
-		if (setsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, sizeof(optval)) == 0)
-		{
-			printf_s("\t Socket: %d, setsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
-		}
-		optval = RecvBuf;
-		if (setsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, sizeof(optval)) == 0)
-		{
-			printf_s("\t Socket: %d, setsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
-		}
-
-		if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
-		{
-			printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
-		}
-		if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
-		{
-			printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
-		}
-
-
-		printf_s("[END] <SetSockOpt(...)> \n");
-	}
+	///////////////////////////////////////////
+	// 소켓 버퍼 크기 변경
+	///////////////////////////////////////////
+	void SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf);
 };

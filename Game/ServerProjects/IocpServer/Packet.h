@@ -16,6 +16,7 @@
 #include <iostream>
 #include <map>
 #include <queue>
+#include <deque>
 #include <sstream>
 
 using namespace std;
