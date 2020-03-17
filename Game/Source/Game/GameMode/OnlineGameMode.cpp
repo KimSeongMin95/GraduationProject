@@ -551,7 +551,7 @@ void AOnlineGameMode::SendInfoOfSpaceShip()
 	break;
 	case ESpaceShipState::Landed:
 	{
-		SpaceShip->StartSpawning(5 + (int)(ServerSocketInGame->tsqObserver.size() * 0.75));
+		SpaceShip->StartSpawning(5 + (int)(ServerSocketInGame->tsqObserver.size() * 1.00));
 		printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
 	}
 	break;

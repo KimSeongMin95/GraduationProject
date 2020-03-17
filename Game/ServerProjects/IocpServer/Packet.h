@@ -56,6 +56,15 @@ struct stSOCKETINFO
 
 enum EPacketType
 {
+	/** 패킷 구조
+	int PacketSize;
+	int EPacketType;
+	... Data;
+	*/
+
+	// 최소 [1 1 ] 사이즈와 타입까지 4바이트?
+	// 최대 [4096(MAX_BUFFER) 1 ] 사이즈만 4바이트?
+
 	/** 설명
 	Main Client:
 		Send [EPacketType]:
@@ -191,8 +200,78 @@ enum EPacketType
 		Send [CONNECTED]: (순서3) InfoOfClients에 삽입한 cInfoOfPlayer
 	*/
 	CONNECTED,
-};
 
+	/** 게임서버가 종료되면
+	Game Client:
+		Recv [DISCONNECTED]:
+		Send [X]:
+	Game Server:
+		Recv [X]:
+		Send [DISCONNECTED]:
+	*/
+	DISCONNECT,
+
+	/** 클라이언트가 일정시간마다 ScoreBoard 정보를 요청
+	Game Client:
+		Recv [SCORE_BOARD]:
+		Send [SCORE_BOARD]:
+	Game Server:
+		Recv [SCORE_BOARD]:
+		Send [SCORE_BOARD]:
+	*/
+	SCORE_BOARD,
+
+	/** 게임서버가 SpaceShip 정보를 계속 게임클라이언트들에게 전송
+	Game Client:
+		Recv [SPACE_SHIP]:
+		Send [X]:
+	Game Server:
+		Recv [X]:
+		Send [SPACE_SHIP]:
+	*/
+	SPACE_SHIP,
+
+	/** 클라이언트가 관전상태가 되면
+	Game Client:
+		Recv []:
+		Send [OBSERVATION]:
+	Game Server:
+		Recv [OBSERVATION]:
+		Send []:
+	*/
+	OBSERVATION,
+
+
+	/** PioneerManager::SpawnPioneer(...) 호출되면
+	Game Client:
+		Recv [SPAWN_PIONNER]:
+		Send []:
+	Game Server:
+		Recv []:
+		Send [SPAWN_PIONNER]:
+	*/
+	SPAWN_PIONEER,
+
+	/** Pioneer가 죽으면
+	Game Client:
+		Recv [DIED_PIONEER]:
+		Send [DIED_PIONEER]:
+	Game Server:
+		Recv [DIED_PIONEER]:
+		Send [DIED_PIONEER]:
+	*/
+	DIED_PIONEER,
+
+	/** 게임클라이언트가 자신이 조종중인 Pioneer 정보를 보내면 게임서버는 해당 Pioneer를 제외한 다른 Pioneer들의 정보를 브로드캐스팅
+	Game Client:
+		Recv [INFO_OF_PIONEER]:
+		Send [INFO_OF_PIONEER]:
+	Game Server:
+		Recv [INFO_OF_PIONEER]:
+		Send [INFO_OF_PIONEER]:
+	*/
+	INFO_OF_PIONEER
+};
 
 
 class cInfoOfPlayer

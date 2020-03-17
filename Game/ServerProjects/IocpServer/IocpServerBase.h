@@ -29,8 +29,10 @@ protected:
 	DWORD			nThreadCnt;				 // 작업 스레드 개수
 
 public:
+	CRITICAL_SECTION csAccept;
+
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장, (서버가 닫힐 때 할당 해제용도)
-	static queue<stSOCKETINFO*> GC_SocketInfo;
+	static map<SOCKET, stSOCKETINFO*> GC_SocketInfo;
 	static CRITICAL_SECTION csGC_SocketInfo;
 
 	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장, (delete 금지)

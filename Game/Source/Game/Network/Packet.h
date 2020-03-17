@@ -28,6 +28,7 @@
 
 #include <map>
 #include <queue>
+#include <deque>
 
 #include <sstream>
 #include <algorithm>

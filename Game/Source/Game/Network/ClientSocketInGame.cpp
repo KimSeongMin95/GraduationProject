@@ -161,6 +161,12 @@ void cClientSocketInGame::CloseSocket()
 	StartTime = FDateTime::UtcNow();
 	Ping = 0;
 
+
+	EnterCriticalSection(&csAccept);
+	bAccept = false;
+	LeaveCriticalSection(&csAccept);
+
+
 	if (bIsInitialized == false)
 	{
 		printf_s("[END] <cClientSocketInGame::CloseSocket()> if (bIsInitialized == false)\n");
@@ -186,9 +192,6 @@ void cClientSocketInGame::CloseSocket()
 	bIsConnected = false;
 
 
-	////////////////////
-	// 먼저 메인 스레드 종료
-	////////////////////
 	if (bIsClientSocketOn == false)
 	{
 		printf_s("[END] <cClientSocketInGame::CloseSocket()> if (bIsClientSocketOn == false)\n");
@@ -196,13 +199,13 @@ void cClientSocketInGame::CloseSocket()
 	}
 	bIsClientSocketOn = false;
 
-	EnterCriticalSection(&csAccept);
-	bAccept = false;
-	LeaveCriticalSection(&csAccept);
 
+	////////////////////
+	// 메인 스레드 종료
+	////////////////////
 	if (hMainHandle != NULL && hMainHandle != INVALID_HANDLE_VALUE)
 	{
-		DWORD result = WaitForSingleObject(hMainHandle, 1000);
+		DWORD result = WaitForSingleObject(hMainHandle, 10000);
 
 		// hMainHandle이 signal이면
 		if (result == WAIT_OBJECT_0)
@@ -230,16 +233,16 @@ void cClientSocketInGame::CloseSocket()
 
 
 	////////////////////
-	// RecvQueue 초기화
+	// RecvDeque 초기화
 	////////////////////
-	while (RecvQueue.empty() == false)
+	while (RecvDeque.empty() == false)
 	{
-		if (RecvQueue.front())
+		if (RecvDeque.front())
 		{
-			delete[] RecvQueue.front();
-			RecvQueue.front() = nullptr;
+			delete[] RecvDeque.front();
+			RecvDeque.front() = nullptr;
 		}
-		RecvQueue.pop();
+		RecvDeque.pop_front();
 	}
 
 
@@ -249,10 +252,10 @@ void cClientSocketInGame::CloseSocket()
 	InitMyInfoOfScoreBoard();
 
 	tsqScoreBoard.clear();
-	//tsqSpaceShip.clear();
-	//tsqSpawnPioneer.clear();
-	//tsqDiedPioneer.clear();
-	//tsqInfoOfPioneer.clear();
+	tsqSpaceShip.clear();
+	tsqSpawnPioneer.clear();
+	tsqDiedPioneer.clear();
+	tsqInfoOfPioneer.clear();
 
 
 	printf_s("[END] <cClientSocketInGame::CloseSocket()>\n");
@@ -291,13 +294,26 @@ void cClientSocketInGame::Send(stringstream& SendStream)
 	//WSAWaitForMultipleEvents(1, &event, TRUE, WSA_INFINITE, FALSE); // IO가 완료되면 event가 시그널 상태가 됩니다.
 	//WSAGetOverlappedResult(hSocket, &overlapped, (LPDWORD)&sendBytes, FALSE, NULL);
 
-	printf_s("[START] <cClientSocketInGame::Send(...)>\n");
 
+	/////////////////////////////
+	// 소켓 유효성 검증
+	/////////////////////////////
+	if (ServerSocket == NULL || ServerSocket == INVALID_SOCKET)
+	{
+		printf_s("[ERROR] <cClientSocketInGame::Send(...)> if (ServerSocket == NULL || ServerSocket == INVALID_SOCKET) \n");
+		return;
+	}
+	printf_s("[START] <cClientSocketInGame::Send(...)> \n");
 
-	DWORD	dwFlags = 0;
 
 	stringstream finalStream;
-	AddSizeInStream(SendStream, finalStream);
+	if (AddSizeInStream(SendStream, finalStream) == false)
+	{
+		printf_s("\n\n\n\n\n [ERROR] <cClientSocketInGame::Send(...)> if (AddSizeInStream(SendStream, finalStream) == false) \n\n\n\n\n\n");
+		return;
+	}
+
+	DWORD	dwFlags = 0;
 
 	stSOCKETINFO* socketInfo = new stSOCKETINFO();
 
@@ -337,6 +353,9 @@ void cClientSocketInGame::Send(stringstream& SendStream)
 			delete socketInfo;
 			socketInfo = nullptr;
 			printf_s("[ERROR] <cClientSocketInGame::Send(...)> delete socketInfo; \n");
+
+			/// 서버소켓을 닫아도 되는지 아직 확인이 안되었습니다.
+			///CloseSocket();
 		}
 		else
 		{
@@ -351,6 +370,194 @@ void cClientSocketInGame::Send(stringstream& SendStream)
 }
 
 
+///////////////////////////////////////////
+// 소켓 버퍼 크기 변경
+///////////////////////////////////////////
+void cClientSocketInGame::SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
+{
+	/*
+	The maximum send buffer size is 1,048,576 bytes.
+	The default value of the SO_SNDBUF option is 32,767.
+	For a TCP socket, the maximum length that you can specify is 1 GB.
+	For a UDP or RAW socket, the maximum length that you can specify is the smaller of the following values:
+	65,535 bytes (for a UDP socket) or 32,767 bytes (for a RAW socket).
+	The send buffer size defined by the SO_SNDBUF option.
+	*/
+
+	/* 검증
+	1048576B == 1024KB
+	TCP에선 send buffer와 recv buffer 모두 1048576 * 256까지 가능.
+	*/
+
+	printf_s("[START] <cClientSocketInGame::SetSockOpt(...)> \n");
+
+
+	int optval;
+	int optlen = sizeof(optval);
+
+	// 성공시 0, 실패시 -1 반환
+	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
+	{
+		printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+	}
+	if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
+	{
+		printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+	}
+
+	optval = SendBuf;
+	if (setsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, sizeof(optval)) == 0)
+	{
+		printf_s("\t Socket: %d, setsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+	}
+	optval = RecvBuf;
+	if (setsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, sizeof(optval)) == 0)
+	{
+		printf_s("\t Socket: %d, setsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+	}
+
+	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
+	{
+		printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+	}
+	if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
+	{
+		printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+	}
+
+
+	printf_s("[END] <cClientSocketInGame::SetSockOpt(...)> \n");
+}
+
+
+///////////////////////////////////////////
+// stringstream의 맨 앞에 size를 추가
+///////////////////////////////////////////
+bool cClientSocketInGame::AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
+{
+	if (DataStream.str().length() == 0)
+	{
+		printf_s("[ERROR] <cClientSocketInGame::AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
+		return false;
+	}
+	//printf_s("[START] <cClientSocketInGame::AddSizeInStream(...)> \n");
+
+	// ex) DateStream의 크기 : 98
+	//printf_s("\t DataStream size: %d\n", (int)DataStream.str().length());
+	//printf_s("\t DataStream: %s\n", DataStream.str().c_str());
+
+	// dataStreamLength의 크기 : 3 [98 ]
+	stringstream dataStreamLength;
+	dataStreamLength << DataStream.str().length() << endl;
+
+	// lengthOfFinalStream의 크기 : 4 [101 ]
+	stringstream lengthOfFinalStream;
+	lengthOfFinalStream << (dataStreamLength.str().length() + DataStream.str().length()) << endl;
+
+	// FinalStream의 크기 : 101 [101 DataStream]
+	int sizeOfFinalStream = (int)(lengthOfFinalStream.str().length() + DataStream.str().length());
+	FinalStream << sizeOfFinalStream << endl;
+	FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
+
+	//printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
+	//printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
+
+
+	// 전송할 데이터가 최대 버퍼 크기보다 크거나 같으면 전송 불가능을 알립니다.
+	// messageBuffer[MAX_BUFFER];에서 마지막에 '\0'을 넣어줘야 되기 때문에 MAX_BUFFER와 같을때도 무시합니다.
+	if (FinalStream.str().length() >= MAX_BUFFER)
+	{
+		printf_s("\n\n\n\n\n\n\n\n\n\n");
+		printf_s("[ERROR] <cClientSocketInGame::AddSizeInStream(...)> if (FinalStream.str().length() > MAX_BUFFER \n");
+		printf_s("[ERROR] <cClientSocketInGame::AddSizeInStream(...)> FinalStream.str().length(): %d \n", (int)FinalStream.str().length());
+		printf_s("[ERROR] <cClientSocketInGame::AddSizeInStream(...)> FinalStream.str().c_str(): %s \n", FinalStream.str().c_str());
+		printf_s("\n\n\n\n\n\n\n\n\n\n");
+		return false;
+	}
+
+
+	//printf_s("[END] <v::AddSizeInStream(...)> \n");
+
+	return true;
+}
+
+
+///////////////////////////////////////////
+// recvDeque에 수신한 데이터를 적재
+///////////////////////////////////////////
+void cClientSocketInGame::PushRecvBufferInDeque(char* RecvBuffer, int RecvLen)
+{
+	if (!RecvBuffer)
+	{
+		printf_s("[ERROR] <cClientSocketInGame::PushRecvBufferInQueue(...)> if (!RecvBuffer) \n");
+		return;
+	}
+
+	// 데이터가 MAX_BUFFER 그대로 4096개 꽉 채워서 오는 경우가 있기 때문에, 대비하기 위하여 +1로 '\0' 공간을 만들어줍니다.
+	char* newBuffer = new char[MAX_BUFFER + 1];
+	//ZeroMemory(newBuffer, MAX_BUFFER);
+	CopyMemory(newBuffer, RecvBuffer, RecvLen);
+	newBuffer[RecvLen] = '\0';
+
+	RecvDeque.push_back(newBuffer); // 뒤에 순차적으로 적재합니다.
+}
+
+
+///////////////////////////////////////////
+// 수신한 데이터를 저장하는 덱에서 데이터를 획득
+///////////////////////////////////////////
+void cClientSocketInGame::GetDataInRecvDeque(char* DataBuffer)
+{
+	if (!DataBuffer)
+	{
+		printf_s("[ERROR] <cClientSocketInGame::GetDataInRecvQueue(...)> if (!DataBuffer) \n");
+		return;
+	}
+
+	int idxOfStartInQueue = 0;
+	int idxOfStartInNextQueue = 0;
+
+	// 덱이 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
+	while (RecvDeque.empty() == false)
+	{
+		// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
+		if ((idxOfStartInQueue + strlen(RecvDeque.front())) < MAX_BUFFER + 1)
+		{
+			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque.front(), strlen(RecvDeque.front()));
+			idxOfStartInQueue += (int)strlen(RecvDeque.front());
+			DataBuffer[idxOfStartInQueue] = '\0';
+
+			delete[] RecvDeque.front();
+			RecvDeque.front() = nullptr;
+			RecvDeque.pop_front();
+		}
+		else
+		{
+			// 버퍼에 남은 자리 만큼 꽉 채웁니다.
+			idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
+			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque.front(), idxOfStartInNextQueue);
+			DataBuffer[MAX_BUFFER] = '\0';
+
+
+			// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
+			int lenOfRestInNextQueue = (int)strlen(&RecvDeque.front()[idxOfStartInNextQueue]);
+			char tempBuffer[MAX_BUFFER + 1];
+			CopyMemory(tempBuffer, &RecvDeque.front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
+			tempBuffer[lenOfRestInNextQueue] = '\0';
+
+			// 임시 버퍼에 있는 데이터들을 다시 RecvDeque.front()에 복사합니다.
+			CopyMemory(RecvDeque.front(), tempBuffer, strlen(tempBuffer));
+			RecvDeque.front()[strlen(tempBuffer)] = '\0';
+
+			break;
+		}
+	}
+}
+
+
+///////////////////////////////////////////
+// 패킷을 처리합니다.
+///////////////////////////////////////////
 void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 {
 	if (!DataBuffer)
@@ -381,13 +588,6 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 	int packetType = -1;
 	recvStream >> packetType;
 	printf_s("\t packetType: %d \n", packetType);
-
-	/// 오류 확인
-	if (sizeOfRecvStream == 0)
-	{
-		printf_s("[ERROR] <cClientSocketInGame::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
-		return;
-	}
 
 	switch (packetType)
 	{
@@ -429,105 +629,8 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 	}
 	break;
 	}
-
 }
 
-bool cClientSocketInGame::ProcessDirectly(char* RecvBuffer, int RecvLen)
-{
-	if (!RecvBuffer)
-	{
-		printf_s("[ERROR] <cClientSocketInGame::ProcessDirectly(...)> if (!RecvBuffer) \n");
-		return false;
-	}
-
-	if (RecvLen >= 4) // 한번 더 확인
-	{
-		char sizeBuffer[5]; // [1234\0]
-		CopyMemory(sizeBuffer, RecvBuffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
-		sizeBuffer[4] = '\0';
-
-		stringstream sizeStream;
-		sizeStream << sizeBuffer;
-		int sizeOfPacket = -1;
-		sizeStream >> sizeOfPacket;
-
-		if (sizeOfPacket != -1 && sizeOfPacket == RecvLen)
-		{
-			printf_s("[INFO] <cClientSocketInGame::Run()> if (sizeOfPacket != -1 && sizeOfPacket == nRecvLen) \n");
-			printf_s("[INFO] <cClientSocketInGame::Run()> sizeOfPacket: %d, nRecvLen:%d \n", sizeOfPacket, RecvLen);
-			ProcessReceivedPacket(RecvBuffer);
-
-			return true;
-		}
-	}
-
-	return false;
-}
-
-void cClientSocketInGame::PushRecvBufferInQueue(char* RecvBuffer, int RecvLen)
-{
-	if (!RecvBuffer)
-	{
-		printf_s("[ERROR] <cClientSocketInGame::PushRecvBufferInQueue(...)> if (!RecvBuffer) \n");
-		return;
-	}
-
-	// 데이터가 MAX_BUFFER 그대로 4096개 꽉 채워서 오는 경우가 있기 때문에, 대비하기 위하여 +1로 '\0' 공간을 만들어줍니다.
-	char* newBuffer = new char[MAX_BUFFER + 1];
-	//ZeroMemory(newBuffer, MAX_BUFFER);
-	CopyMemory(newBuffer, RecvBuffer, RecvLen);
-	newBuffer[RecvLen] = '\0';
-
-	RecvQueue.push(newBuffer);
-}
-
-void cClientSocketInGame::GetDataInRecvQueue(char* DataBuffer)
-{
-	if (!DataBuffer)
-	{
-		printf_s("[ERROR] <cClientSocketInGame::GetDataInRecvQueue(...)> if (!DataBuffer) \n");
-		return;
-	}
-
-	int idxOfStartInQueue = 0;
-	int idxOfStartInNextQueue = 0;
-
-	// 큐가 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
-	while (RecvQueue.empty() == false)
-	{
-		// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
-		if ((idxOfStartInQueue + strlen(RecvQueue.front())) < MAX_BUFFER + 1)
-		{
-			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvQueue.front(), strlen(RecvQueue.front()));
-			idxOfStartInQueue += (int)strlen(RecvQueue.front());
-			DataBuffer[idxOfStartInQueue] = '\0';
-
-			delete[] RecvQueue.front();
-			RecvQueue.front() = nullptr;
-			RecvQueue.pop();
-		}
-		else
-		{
-			// 버퍼에 남은 자리 만큼 꽉 채웁니다.
-			idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
-			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvQueue.front(), idxOfStartInNextQueue);
-			DataBuffer[MAX_BUFFER] = '\0';
-
-
-			// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
-			int lenOfRestInNextQueue = (int)strlen(&RecvQueue.front()[idxOfStartInNextQueue]);
-			char tempBuffer[MAX_BUFFER + 1];
-			CopyMemory(tempBuffer, &RecvQueue.front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
-			tempBuffer[lenOfRestInNextQueue] = '\0';
-
-			// 임시 버퍼에 있는 데이터들을 다시 RecvQueue.front()에 복사합니다.
-			CopyMemory(RecvQueue.front(), tempBuffer, strlen(tempBuffer));
-			RecvQueue.front()[strlen(tempBuffer)] = '\0';
-
-			break;
-		}
-	}
-}
 
 bool cClientSocketInGame::BeginMainThread()
 {
@@ -537,7 +640,9 @@ bool cClientSocketInGame::BeginMainThread()
 		return true;
 	}
 
-	// 임계영역
+	////////////////////
+	// 메인 스레드 시작
+	////////////////////
 	EnterCriticalSection(&csAccept);
 	bAccept = true;
 	LeaveCriticalSection(&csAccept);
@@ -616,31 +721,33 @@ void cClientSocketInGame::RunMainThread()
 		recvBuffer[nRecvLen] = '\0';
 
 
-		/////////////////////////////////////////////
-		//// (임시) 패킷 하나만 잘림 없이 전송되는 경우 바로 실행 (잘려오는 경우 여기서 에러가 발생할 수 있기 때문에 임시로 한 것이므로 조심!)
-		/////////////////////////////////////////////
-		//if (ProcessDirectly(recvBuffer, nRecvLen) == true)
-		//{
-		//	continue;
-		//}
-
-
 		///////////////////////////////////////////
-		// recvQueue에 수신한 데이터를 적재
+		// recvDeque에 수신한 데이터를 적재
 		///////////////////////////////////////////
-		PushRecvBufferInQueue(recvBuffer, nRecvLen);
+		PushRecvBufferInDeque(recvBuffer, nRecvLen);
 
 		/**************************************************************************/
 
 		char dataBuffer[MAX_BUFFER + 1];
+		dataBuffer[0] = '\0'; // GetDataInRecvDeque(...)를 해도 덱이 비어있는 상태면 오류가 날 수 있으므로 초기화
 		dataBuffer[MAX_BUFFER] = '\0';
 
 		///////////////////////////////////////////
-		// 수신한 데이터를 저장하는 큐에서 데이터를 획득
+		// 수신한 데이터를 저장하는 덱에서 데이터를 획득
 		///////////////////////////////////////////
-		GetDataInRecvQueue(dataBuffer);
+		GetDataInRecvDeque(dataBuffer);
 
-		// 버퍼 길이가 4미만이면
+
+		/////////////////////////////////////////////
+		// 1. 데이터 버퍼 길이가 0이면
+		/////////////////////////////////////////////
+		if (strlen(dataBuffer) == 0)
+		{
+			printf_s("\t if (strlen(dataBuffer) == 0) \n");
+		}
+		/////////////////////////////////////////////
+		// 2. 데이터 버퍼 길이가 4미만이면
+		/////////////////////////////////////////////
 		if (strlen(dataBuffer) < 4)
 		{
 			printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
@@ -650,10 +757,12 @@ void cClientSocketInGame::RunMainThread()
 			CopyMemory(newBuffer, &dataBuffer, strlen(dataBuffer));
 			newBuffer[strlen(dataBuffer)] = '\0';
 
-			// 다시 큐에 데이터를 집어넣고
-			RecvQueue.push(newBuffer);
+			// 다시 덱 앞부분에 적재합니다.
+			RecvDeque.push_front(newBuffer);
 		}
-		// 버퍼 길이가 4이상 MAX_BUFFER + 1 미만이면
+		/////////////////////////////////////////////
+		// 3. 데이터 버퍼 길이가 4이상 MAX_BUFFER + 1 미만이면
+		/////////////////////////////////////////////
 		else if (strlen(dataBuffer) < MAX_BUFFER + 1)
 		{
 			printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
@@ -676,8 +785,8 @@ void cClientSocketInGame::RunMainThread()
 					CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
 					newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-					// 다시 큐에 데이터를 집어넣고
-					RecvQueue.push(newBuffer);
+					// 다시 덱 앞부분에 적재합니다.
+					RecvDeque.push_front(newBuffer);
 
 					// 반복문을 종료합니다.
 					break;
@@ -705,11 +814,20 @@ void cClientSocketInGame::RunMainThread()
 					CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
 					newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-					// 다시 큐에 데이터를 집어넣고
-					RecvQueue.push(newBuffer);
+					// 다시 덱 앞부분에 적재합니다.
+					RecvDeque.push_front(newBuffer);
 
 					// 반복문을 종료합니다.
 					break;;
+				}
+
+				/// 오류 확인
+				if (sizeOfPacket <= 0)
+				{
+					printf_s("\n\n\n\n\n\n\n\n\n\n");
+					printf_s("[ERROR] <MainServer::WorkerThread()> sizeOfPacket: %d \n", sizeOfPacket);
+					printf_s("\n\n\n\n\n\n\n\n\n\n");
+					break;
 				}
 
 				// 패킷을 자르면서 임시 버퍼에 복사합니다.
@@ -732,101 +850,8 @@ void cClientSocketInGame::RunMainThread()
 }
 
 
-///////////////////////////////////////////
-// Basic Functions
-///////////////////////////////////////////
-void cClientSocketInGame::AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
-{
-	if (DataStream.str().length() == 0)
-	{
-		printf_s("[ERROR] <cClientSocketInGame::AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
-		return;
-	}
-	//printf_s("[START] <cClientSocketInGame::AddSizeInStream(...)> \n");
-
-	// ex) DateStream의 크기 : 98
-	//printf_s("\t DataStream size: %d\n", (int)DataStream.str().length());
-	//printf_s("\t DataStream: %s\n", DataStream.str().c_str());
-
-	// dataStreamLength의 크기 : 3 [98 ]
-	stringstream dataStreamLength;
-	dataStreamLength << DataStream.str().length() << endl;
-
-	// lengthOfFinalStream의 크기 : 4 [101 ]
-	stringstream lengthOfFinalStream;
-	lengthOfFinalStream << (dataStreamLength.str().length() + DataStream.str().length()) << endl;
-
-	// FinalStream의 크기 : 101 [101 DataStream]
-	int sizeOfFinalStream = (int)(lengthOfFinalStream.str().length() + DataStream.str().length());
-	FinalStream << sizeOfFinalStream << endl;
-	FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
-
-	printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
-	//printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
-
-
-	//printf_s("[END] <cClientSocketInGame::AddSizeInStream(...)> \n");
-}
-
-void cClientSocketInGame::SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf)
-{
-	/*
-	The maximum send buffer size is 1,048,576 bytes.
-	The default value of the SO_SNDBUF option is 32,767.
-	For a TCP socket, the maximum length that you can specify is 1 GB.
-	For a UDP or RAW socket, the maximum length that you can specify is the smaller of the following values:
-	65,535 bytes (for a UDP socket) or 32,767 bytes (for a RAW socket).
-	The send buffer size defined by the SO_SNDBUF option.
-	*/
-
-	/* 검증
-	1048576B == 1024KB
-	TCP에선 send buffer와 recv buffer 모두 1048576 * 256까지 가능.
-	*/
-
-	printf_s("[START] <cClientSocketInGame::SetSockOpt(...)> \n");
-
-
-	int optval;
-	int optlen = sizeof(optval);
-
-	// 성공시 0, 실패시 -1 반환
-	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
-	{
-		printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
-	}
-	if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
-	{
-		printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
-	}
-
-	optval = SendBuf;
-	if (setsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, sizeof(optval)) == 0)
-	{
-		printf_s("\t Socket: %d, setsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
-	}
-	optval = RecvBuf;
-	if (setsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, sizeof(optval)) == 0)
-	{
-		printf_s("\t Socket: %d, setsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
-	}
-
-	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
-	{
-		printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
-	}
-	if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
-	{
-		printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
-	}
-
-
-	printf_s("[END] <cClientSocketInGame::SetSockOpt(...)> \n");
-}
-
-
 /////////////////////////////////////
-// 서버와 통신
+// Game Server / Game Clients
 /////////////////////////////////////
 void cClientSocketInGame::SendConnected()
 {
@@ -1072,22 +1097,3 @@ void cClientSocketInGame::InitMyInfoOfScoreBoard()
 	LeaveCriticalSection(&csMyInfoOfScoreBoard);
 }
 
-
-
-
-
-
-
-
-
-
-//void cClientSocketInGame::RecvDisConnect()
-//{
-//	printf_s("[START] <cClientSocketInGame::RecvDisConnect()>\n");
-//
-//
-//	CloseSocket();
-//
-//
-//	printf_s("[End] <cClientSocketInGame::RecvDisConnect()>\n");
-//}

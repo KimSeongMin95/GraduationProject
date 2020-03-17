@@ -19,7 +19,7 @@ uint32 cClientSocket::Run()
 	//FPlatformProcess::Sleep(0.03);
 
 
-	// 수신 버퍼 스트림
+	// 수신 버퍼 스트림 (최대 MAX_BUFFER 사이즈의 데이터를 저장하기 때문에, 마지막 '\0'용 사이즈가 필요)
 	char recvBuffer[MAX_BUFFER + 1];
 
 	// recv while loop 시작
@@ -62,33 +62,35 @@ uint32 cClientSocket::Run()
 		// 수신
 		nRecvLen = recv(ServerSocket, (CHAR*)&recvBuffer, MAX_BUFFER, 0);
 		recvBuffer[nRecvLen] = '\0';
-		
-
-		/////////////////////////////////////////////
-		//// (임시) 패킷 하나만 잘림 없이 전송되는 경우 바로 실행 (잘려오는 경우 여기서 에러가 발생할 수 있기 때문에 임시로 한 것이므로 조심!)
-		/////////////////////////////////////////////
-		//if (ProcessDirectly(recvBuffer, nRecvLen) == true)
-		//{
-		//	continue;
-		//}
 
 
 		///////////////////////////////////////////
-		// recvQueue에 수신한 데이터를 적재
+		// recvDeque에 수신한 데이터를 적재
 		///////////////////////////////////////////
-		PushRecvBufferInQueue(recvBuffer, nRecvLen);
+		PushRecvBufferInDeque(recvBuffer, nRecvLen);
 
 		/**************************************************************************/
 
 		char dataBuffer[MAX_BUFFER + 1];
+		dataBuffer[0] = '\0'; // GetDataInRecvDeque(...)를 해도 덱이 비어있는 상태면 오류가 날 수 있으므로 초기화
 		dataBuffer[MAX_BUFFER] = '\0';
 
 		///////////////////////////////////////////
-		// 수신한 데이터를 저장하는 큐에서 데이터를 획득
+		// 수신한 데이터를 저장하는 덱에서 데이터를 획득
 		///////////////////////////////////////////
-		GetDataInRecvQueue(dataBuffer);
+		GetDataInRecvDeque(dataBuffer);
 
-		// 버퍼 길이가 4미만이면
+
+		/////////////////////////////////////////////
+		// 1. 데이터 버퍼 길이가 0이면
+		/////////////////////////////////////////////
+		if (strlen(dataBuffer) == 0)
+		{
+			printf_s("\t if (strlen(dataBuffer) == 0) \n");
+		}
+		/////////////////////////////////////////////
+		// 2. 데이터 버퍼 길이가 4미만이면
+		/////////////////////////////////////////////
 		if (strlen(dataBuffer) < 4)
 		{
 			printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
@@ -98,10 +100,12 @@ uint32 cClientSocket::Run()
 			CopyMemory(newBuffer, &dataBuffer, strlen(dataBuffer));
 			newBuffer[strlen(dataBuffer)] = '\0';
 
-			// 다시 큐에 데이터를 집어넣고
-			RecvQueue.push(newBuffer);
+			// 다시 덱 앞부분에 적재합니다.
+			RecvDeque.push_front(newBuffer);
 		}
-		// 버퍼 길이가 4이상 MAX_BUFFER + 1 미만이면
+		/////////////////////////////////////////////
+		// 3. 데이터 버퍼 길이가 4이상 MAX_BUFFER + 1 미만이면
+		/////////////////////////////////////////////
 		else if (strlen(dataBuffer) < MAX_BUFFER + 1)
 		{
 			printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
@@ -124,8 +128,8 @@ uint32 cClientSocket::Run()
 					CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
 					newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-					// 다시 큐에 데이터를 집어넣고
-					RecvQueue.push(newBuffer);
+					// 다시 덱 앞부분에 적재합니다.
+					RecvDeque.push_front(newBuffer);
 
 					// 반복문을 종료합니다.
 					break;
@@ -153,11 +157,20 @@ uint32 cClientSocket::Run()
 					CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
 					newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-					// 다시 큐에 데이터를 집어넣고
-					RecvQueue.push(newBuffer);
+					// 다시 덱 앞부분에 적재합니다.
+					RecvDeque.push_front(newBuffer);
 
 					// 반복문을 종료합니다.
 					break;;
+				}
+
+				/// 오류 확인
+				if (sizeOfPacket <= 0)
+				{
+					printf_s("\n\n\n\n\n\n\n\n\n\n");
+					printf_s("[ERROR] <MainServer::WorkerThread()> sizeOfPacket: %d \n", sizeOfPacket);
+					printf_s("\n\n\n\n\n\n\n\n\n\n");
+					break;
 				}
 
 				// 패킷을 자르면서 임시 버퍼에 복사합니다.
@@ -307,6 +320,8 @@ bool cClientSocket::Connect(const char * pszIP, int nPort)
 		return false;
 	}
 
+	printf_s("\t Connect() Success.\n");
+
 	bIsConnected = true;
 
 	return true;
@@ -319,6 +334,13 @@ void cClientSocket::CloseSocket()
 
 	// 게임클라이언트를 종료하면 남아있던 WSASend(...)를 다 보내기 위해 Alertable Wait 상태로 만듭니다.
 	SleepEx(1, true);
+
+
+	////////////////////
+	// 먼저 스레드부터 종료
+	////////////////////
+	StopListen();
+
 
 	if (bIsInitialized == false)
 	{
@@ -346,22 +368,16 @@ void cClientSocket::CloseSocket()
 
 
 	////////////////////
-	// 먼저 스레드부터 종료
+	// RecvDeque 초기화
 	////////////////////
-	StopListen();
-
-
-	////////////////////
-	// RecvQueue 초기화
-	////////////////////
-	while (RecvQueue.empty() == false)
+	while (RecvDeque.empty() == false)
 	{
-		if (RecvQueue.front())
+		if (RecvDeque.front())
 		{
-			delete[] RecvQueue.front();
-			RecvQueue.front() = nullptr;
+			delete[] RecvDeque.front();
+			RecvDeque.front() = nullptr;
 		}
-		RecvQueue.pop();
+		RecvDeque.pop_front();
 	}
 
 
@@ -414,14 +430,27 @@ void cClientSocket::Send(stringstream& SendStream)
 	// 참고: https://driftmind.tistory.com/50
 	//WSAWaitForMultipleEvents(1, &event, TRUE, WSA_INFINITE, FALSE); // IO가 완료되면 event가 시그널 상태가 됩니다.
 	//WSAGetOverlappedResult(hSocket, &overlapped, (LPDWORD)&sendBytes, FALSE, NULL);
+		
+	
+	/////////////////////////////
+	// 소켓 유효성 검증
+	/////////////////////////////
+	if (ServerSocket == NULL || ServerSocket == INVALID_SOCKET)
+	{
+		printf_s("[ERROR] <cClientSocket::Send(...)> if (ServerSocket == NULL || ServerSocket == INVALID_SOCKET) \n");
+		return;
+	}
+	printf_s("[START] <cClientSocket::Send(...)> \n");
 
-	printf_s("[START] <cClientSocket::Send(...)>\n");
-
-
-	DWORD	dwFlags = 0;
 
 	stringstream finalStream;
-	AddSizeInStream(SendStream, finalStream);
+	if (AddSizeInStream(SendStream, finalStream) == false)
+	{
+		printf_s("\n\n\n\n\n [ERROR] <cClientSocket::Send(...)> if (AddSizeInStream(SendStream, finalStream) == false) \n\n\n\n\n\n");
+		return;
+	}
+
+	DWORD	dwFlags = 0;
 
 	stSOCKETINFO* socketInfo = new stSOCKETINFO();
 	
@@ -461,6 +490,9 @@ void cClientSocket::Send(stringstream& SendStream)
 			delete socketInfo;
 			socketInfo = nullptr;
 			printf_s("[ERROR] <cClientSocket::Send(...)> delete socketInfo; \n");
+
+			/// 서버소켓을 닫아도 되는지 아직 확인이 안되었습니다.
+			///CloseSocket();
 		}
 		else
 		{
@@ -475,252 +507,10 @@ void cClientSocket::Send(stringstream& SendStream)
 }
 
 
-void cClientSocket::ProcessReceivedPacket(char* DataBuffer)
-{
-	if (!DataBuffer)
-	{
-		printf_s("[ERROR] <cClientSocket::ProcessReceivedPacket(...)> if (!DataBuffer) \n");
-		return;
-	}
-
-	stringstream recvStream;
-	recvStream << DataBuffer;
-
-	// 사이즈 확인
-	int sizeOfRecvStream = 0;
-	recvStream >> sizeOfRecvStream;
-	printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
-
-	// 패킷 종류 확인
-	int packetType = -1; 
-	recvStream >> packetType;
-	printf_s("\t packetType: %d \n", packetType);
-
-	/// 오류 확인
-	if (sizeOfRecvStream == 0)
-	{
-		printf_s("[ERROR] <cClientSocket::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
-		return;
-	}
-
-	switch (packetType)
-	{
-	case EPacketType::LOGIN:
-	{
-		RecvLogin(recvStream);
-	}
-	break;
-	case EPacketType::FIND_GAMES:
-	{
-		RecvFindGames(recvStream);
-	}
-	break;
-	case EPacketType::WAITING_GAME:
-	{
-		RecvWaitingGame(recvStream);
-	}
-	break;
-	case EPacketType::DESTROY_WAITING_GAME:
-	{
-		RecvDestroyWaitingGame(recvStream);
-	}
-	break;
-	case EPacketType::MODIFY_WAITING_GAME:
-	{
-		RecvModifyWaitingGame(recvStream);
-	}
-	break;
-	case EPacketType::START_WAITING_GAME:
-	{
-		RecvStartWaitingGame(recvStream);
-	}
-	break;
-	case EPacketType::REQUEST_INFO_OF_GAME_SERVER:
-	{
-		RecvRequestInfoOfGameServer(recvStream);
-	}
-	break;
-
-	default:
-	{
-		printf_s("[ERROR] <cClientSocket::ProcessReceivedPacket()> unknown packet type! PacketType: %d \n", packetType);
-		printf_s("[ERROR] <cClientSocket::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
-	}
-	break;
-	}
-
-}
-
-bool cClientSocket::ProcessDirectly(char* RecvBuffer, int RecvLen)
-{
-	if (!RecvBuffer)
-	{
-		printf_s("[ERROR] <cClientSocket::ProcessDirectly(...)> if (!RecvBuffer) \n");
-		return false;
-	}
-
-	if (RecvLen >= 4) // 한번 더 확인
-	{
-		char sizeBuffer[5]; // [1234\0]
-		CopyMemory(sizeBuffer, RecvBuffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
-		sizeBuffer[4] = '\0';
-
-		stringstream sizeStream;
-		sizeStream << sizeBuffer;
-		int sizeOfPacket = -1;
-		sizeStream >> sizeOfPacket;
-
-		if (sizeOfPacket != -1 && sizeOfPacket == RecvLen)
-		{
-			printf_s("[INFO] <cClientSocket::Run()> if (sizeOfPacket != -1 && sizeOfPacket == nRecvLen) \n");
-			printf_s("[INFO] <cClientSocket::Run()> sizeOfPacket: %d, nRecvLen:%d \n", sizeOfPacket, RecvLen);
-			ProcessReceivedPacket(RecvBuffer);
-			
-			return true;
-		}
-	}
-
-	return false;
-}
-
-void cClientSocket::PushRecvBufferInQueue(char* RecvBuffer, int RecvLen)
-{
-	if (!RecvBuffer)
-	{
-		printf_s("[ERROR] <cClientSocket::PushRecvBufferInQueue(...)> if (!RecvBuffer) \n");
-		return;
-	}
-
-	// 데이터가 MAX_BUFFER 그대로 4096개 꽉 채워서 오는 경우가 있기 때문에, 대비하기 위하여 +1로 '\0' 공간을 만들어줍니다.
-	char* newBuffer = new char[MAX_BUFFER + 1];
-	//ZeroMemory(newBuffer, MAX_BUFFER);
-	CopyMemory(newBuffer, RecvBuffer, RecvLen);
-	newBuffer[RecvLen] = '\0';
-
-	RecvQueue.push(newBuffer);
-}
-
-void cClientSocket::GetDataInRecvQueue(char* DataBuffer)
-{
-	if (!DataBuffer)
-	{
-		printf_s("[ERROR] <cClientSocket::GetDataInRecvQueue(...)> if (!DataBuffer) \n");
-		return;
-	}
-
-	int idxOfStartInQueue = 0;
-	int idxOfStartInNextQueue = 0;
-
-	// 큐가 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
-	while (RecvQueue.empty() == false)
-	{
-		// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
-		if ((idxOfStartInQueue + strlen(RecvQueue.front())) < MAX_BUFFER + 1)
-		{
-			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvQueue.front(), strlen(RecvQueue.front()));
-			idxOfStartInQueue += (int)strlen(RecvQueue.front());
-			DataBuffer[idxOfStartInQueue] = '\0';
-
-			delete[] RecvQueue.front();
-			RecvQueue.front() = nullptr;
-			RecvQueue.pop();
-		}
-		else
-		{
-			// 버퍼에 남은 자리 만큼 꽉 채웁니다.
-			idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
-			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvQueue.front(), idxOfStartInNextQueue);
-			DataBuffer[MAX_BUFFER] = '\0';
-
-
-			// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
-			int lenOfRestInNextQueue = (int)strlen(&RecvQueue.front()[idxOfStartInNextQueue]);
-			char tempBuffer[MAX_BUFFER + 1];
-			CopyMemory(tempBuffer, &RecvQueue.front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
-			tempBuffer[lenOfRestInNextQueue] = '\0';
-
-			// 임시 버퍼에 있는 데이터들을 다시 RecvQueue.front()에 복사합니다.
-			CopyMemory(RecvQueue.front(), tempBuffer, strlen(tempBuffer));
-			RecvQueue.front()[strlen(tempBuffer)] = '\0';
-
-			break;
-		}
-	}
-}
-
-bool cClientSocket::StartListen()
-{
-	printf_s("[INFO] <cClientSocket::StartListen()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StartListen()>"));
-
-	if (Thread)
-		return true;
-
-	// 스레드 시작
-	Thread = FRunnableThread::Create(this, TEXT("cClientSocket"), 0, TPri_BelowNormal);
-
-	return (Thread != nullptr);
-}
-
-void cClientSocket::StopListen()
-{
-	printf_s("[START] <cClientSocket::StopListen()>\n");
-
-	// 스레드 종료
-	Stop();
-
-	if (Thread)
-	{
-		Thread->WaitForCompletion();
-		Thread->Kill();
-		delete Thread;
-		Thread = nullptr;
-
-		printf_s("\t Thread->WaitForCompletion(); Thread->Kill(); delete Thread;\n");
-	}
-	StopTaskCounter.Reset();
-
-	printf_s("[END] <cClientSocket::StopListen()>\n");
-}
-
-
 ///////////////////////////////////////////
-// Basic Functions
+// 소켓 버퍼 크기 변경
 ///////////////////////////////////////////
-void cClientSocket::AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
-{
-	if (DataStream.str().length() == 0)
-	{
-		printf_s("[ERROR] <cClientSocket::AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
-		return;
-	}
-	//printf_s("[START] <cClientSocket::AddSizeInStream(...)> \n");
-
-	// ex) DateStream의 크기 : 98
-	//printf_s("\t DataStream size: %d\n", (int)DataStream.str().length());
-	//printf_s("\t DataStream: %s\n", DataStream.str().c_str());
-
-	// dataStreamLength의 크기 : 3 [98 ]
-	stringstream dataStreamLength;
-	dataStreamLength << DataStream.str().length() << endl;
-
-	// lengthOfFinalStream의 크기 : 4 [101 ]
-	stringstream lengthOfFinalStream;
-	lengthOfFinalStream << (dataStreamLength.str().length() + DataStream.str().length()) << endl;
-
-	// FinalStream의 크기 : 101 [101 DataStream]
-	int sizeOfFinalStream = (int)(lengthOfFinalStream.str().length() + DataStream.str().length());
-	FinalStream << sizeOfFinalStream << endl;
-	FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
-
-	printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
-	//printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
-
-
-	//printf_s("[END] <cClientSocket::AddSizeInStream(...)> \n");
-}
-
-void cClientSocket::SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf)
+void cClientSocket::SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
 {
 	/*
 	The maximum send buffer size is 1,048,576 bytes.
@@ -774,6 +564,239 @@ void cClientSocket::SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf)
 
 
 	printf_s("[END] <cClientSocket::SetSockOpt(...)> \n");
+}
+
+
+///////////////////////////////////////////
+// stringstream의 맨 앞에 size를 추가
+///////////////////////////////////////////
+bool cClientSocket::AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
+{
+	if (DataStream.str().length() == 0)
+	{
+		printf_s("[ERROR] <cClientSocket::AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
+		return false;
+	}
+	//printf_s("[START] <cClientSocket::AddSizeInStream(...)> \n");
+
+	// ex) DateStream의 크기 : 98
+	//printf_s("\t DataStream size: %d\n", (int)DataStream.str().length());
+	//printf_s("\t DataStream: %s\n", DataStream.str().c_str());
+
+	// dataStreamLength의 크기 : 3 [98 ]
+	stringstream dataStreamLength;
+	dataStreamLength << DataStream.str().length() << endl;
+
+	// lengthOfFinalStream의 크기 : 4 [101 ]
+	stringstream lengthOfFinalStream;
+	lengthOfFinalStream << (dataStreamLength.str().length() + DataStream.str().length()) << endl;
+
+	// FinalStream의 크기 : 101 [101 DataStream]
+	int sizeOfFinalStream = (int)(lengthOfFinalStream.str().length() + DataStream.str().length());
+	FinalStream << sizeOfFinalStream << endl;
+	FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
+
+	//printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
+	//printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
+
+
+	// 전송할 데이터가 최대 버퍼 크기보다 크거나 같으면 전송 불가능을 알립니다.
+	// messageBuffer[MAX_BUFFER];에서 마지막에 '\0'을 넣어줘야 되기 때문에 MAX_BUFFER와 같을때도 무시합니다.
+	if (FinalStream.str().length() >= MAX_BUFFER)
+	{
+		printf_s("\n\n\n\n\n\n\n\n\n\n");
+		printf_s("[ERROR] <cClientSocket::AddSizeInStream(...)> if (FinalStream.str().length() > MAX_BUFFER \n");
+		printf_s("[ERROR] <cClientSocket::AddSizeInStream(...)> FinalStream.str().length(): %d \n", (int)FinalStream.str().length());
+		printf_s("[ERROR] <cClientSocket::AddSizeInStream(...)> FinalStream.str().c_str(): %s \n", FinalStream.str().c_str());
+		printf_s("\n\n\n\n\n\n\n\n\n\n");
+		return false;
+	}
+
+
+	//printf_s("[END] <cClientSocket::AddSizeInStream(...)> \n");
+
+	return true;
+}
+
+
+///////////////////////////////////////////
+// recvDeque에 수신한 데이터를 적재
+///////////////////////////////////////////
+void cClientSocket::PushRecvBufferInDeque(char* RecvBuffer, int RecvLen)
+{
+	if (!RecvBuffer)
+	{
+		printf_s("[ERROR] <cClientSocket::PushRecvBufferInQueue(...)> if (!RecvBuffer) \n");
+		return;
+	}
+
+	// 데이터가 MAX_BUFFER 그대로 4096개 꽉 채워서 오는 경우가 있기 때문에, 대비하기 위하여 +1로 '\0' 공간을 만들어줍니다.
+	char* newBuffer = new char[MAX_BUFFER + 1];
+	//ZeroMemory(newBuffer, MAX_BUFFER);
+	CopyMemory(newBuffer, RecvBuffer, RecvLen);
+	newBuffer[RecvLen] = '\0';
+
+	RecvDeque.push_back(newBuffer); // 뒤에 순차적으로 적재합니다.
+}
+
+
+///////////////////////////////////////////
+// 수신한 데이터를 저장하는 덱에서 데이터를 획득
+///////////////////////////////////////////
+void cClientSocket::GetDataInRecvDeque(char* DataBuffer)
+{
+	if (!DataBuffer)
+	{
+		printf_s("[ERROR] <cClientSocket::GetDataInRecvQueue(...)> if (!DataBuffer) \n");
+		return;
+	}
+
+	int idxOfStartInQueue = 0;
+	int idxOfStartInNextQueue = 0;
+
+	// 덱이 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
+	while (RecvDeque.empty() == false)
+	{
+		// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
+		if ((idxOfStartInQueue + strlen(RecvDeque.front())) < MAX_BUFFER + 1)
+		{
+			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque.front(), strlen(RecvDeque.front()));
+			idxOfStartInQueue += (int)strlen(RecvDeque.front());
+			DataBuffer[idxOfStartInQueue] = '\0';
+
+			delete[] RecvDeque.front();
+			RecvDeque.front() = nullptr;
+			RecvDeque.pop_front();
+		}
+		else
+		{
+			// 버퍼에 남은 자리 만큼 꽉 채웁니다.
+			idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
+			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque.front(), idxOfStartInNextQueue);
+			DataBuffer[MAX_BUFFER] = '\0';
+
+
+			// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
+			int lenOfRestInNextQueue = (int)strlen(&RecvDeque.front()[idxOfStartInNextQueue]);
+			char tempBuffer[MAX_BUFFER + 1];
+			CopyMemory(tempBuffer, &RecvDeque.front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
+			tempBuffer[lenOfRestInNextQueue] = '\0';
+
+			// 임시 버퍼에 있는 데이터들을 다시 RecvDeque.front()에 복사합니다.
+			CopyMemory(RecvDeque.front(), tempBuffer, strlen(tempBuffer));
+			RecvDeque.front()[strlen(tempBuffer)] = '\0';
+
+			break;
+		}
+	}
+}
+
+
+///////////////////////////////////////////
+// 패킷을 처리합니다.
+///////////////////////////////////////////
+void cClientSocket::ProcessReceivedPacket(char* DataBuffer)
+{
+	if (!DataBuffer)
+	{
+		printf_s("[ERROR] <cClientSocket::ProcessReceivedPacket(...)> if (!DataBuffer) \n");
+		return;
+	}
+
+	stringstream recvStream;
+	recvStream << DataBuffer;
+
+	// 사이즈 확인
+	int sizeOfRecvStream = 0;
+	recvStream >> sizeOfRecvStream;
+	printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
+
+	// 패킷 종류 확인
+	int packetType = -1; 
+	recvStream >> packetType;
+	printf_s("\t packetType: %d \n", packetType);
+
+	switch (packetType)
+	{
+	case EPacketType::LOGIN:
+	{
+		RecvLogin(recvStream);
+	}
+	break;
+	case EPacketType::FIND_GAMES:
+	{
+		RecvFindGames(recvStream);
+	}
+	break;
+	case EPacketType::WAITING_GAME:
+	{
+		RecvWaitingGame(recvStream);
+	}
+	break;
+	case EPacketType::DESTROY_WAITING_GAME:
+	{
+		RecvDestroyWaitingGame(recvStream);
+	}
+	break;
+	case EPacketType::MODIFY_WAITING_GAME:
+	{
+		RecvModifyWaitingGame(recvStream);
+	}
+	break;
+	case EPacketType::START_WAITING_GAME:
+	{
+		RecvStartWaitingGame(recvStream);
+	}
+	break;
+	case EPacketType::REQUEST_INFO_OF_GAME_SERVER:
+	{
+		RecvRequestInfoOfGameServer(recvStream);
+	}
+	break;
+
+	default:
+	{
+		printf_s("[ERROR] <cClientSocket::ProcessReceivedPacket()> unknown packet type! PacketType: %d \n", packetType);
+		printf_s("[ERROR] <cClientSocket::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
+	}
+	break;
+	}
+}
+
+
+bool cClientSocket::StartListen()
+{
+	printf_s("[INFO] <cClientSocket::StartListen()>\n");
+	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StartListen()>"));
+
+	if (Thread)
+		return true;
+
+	// 스레드 시작
+	Thread = FRunnableThread::Create(this, TEXT("cClientSocket"), 0, TPri_BelowNormal);
+
+	return (Thread != nullptr);
+}
+
+void cClientSocket::StopListen()
+{
+	printf_s("[START] <cClientSocket::StopListen()>\n");
+
+	// 스레드 종료
+	Stop();
+
+	if (Thread)
+	{
+		Thread->WaitForCompletion();
+		Thread->Kill();
+		delete Thread;
+		Thread = nullptr;
+
+		printf_s("\t Thread->WaitForCompletion(); Thread->Kill(); delete Thread;\n");
+	}
+	StopTaskCounter.Reset();
+
+	printf_s("[END] <cClientSocket::StopListen()>\n");
 }
 
 
@@ -1041,6 +1064,10 @@ void cClientSocket::RecvStartWaitingGame(stringstream& RecvStream)
 	printf_s("[End] <cClientSocket::RecvStartWaitingGame(...)>\n");
 }
 
+
+///////////////////////////////////////////
+// Game Server / Game Clients
+///////////////////////////////////////////
 void cClientSocket::SendActivateGameServer(int PortOfGameServer)
 {
 	printf_s("[Start] <cClientSocket::SendActivateGameServer(...)\n");
@@ -1101,7 +1128,6 @@ void cClientSocket::RecvRequestInfoOfGameServer(stringstream& RecvStream)
 
 	printf_s("[End] <cClientSocket::RecvRequestInfoOfGameServer(...)>\n");
 }
-
 
 
 /////////////////////////////////////

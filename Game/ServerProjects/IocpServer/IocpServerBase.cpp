@@ -1,7 +1,7 @@
 #include "IocpServerBase.h"
 
 
-queue<stSOCKETINFO*> IocpServerBase::GC_SocketInfo;
+map<SOCKET, stSOCKETINFO*> IocpServerBase::GC_SocketInfo;
 CRITICAL_SECTION IocpServerBase::csGC_SocketInfo;
 
 map<SOCKET, stSOCKETINFO*> IocpServerBase::Clients;
@@ -26,6 +26,8 @@ IocpServerBase::IocpServerBase()
 	hWorkerHandle = nullptr;
 	nThreadCnt = 0;
 
+	InitializeCriticalSection(&csAccept);
+
 	InitializeCriticalSection(&csGC_SocketInfo);
 	InitializeCriticalSection(&csClients);
 	InitializeCriticalSection(&csMapOfRecvDeque);
@@ -34,6 +36,8 @@ IocpServerBase::IocpServerBase()
 IocpServerBase::~IocpServerBase()
 {
 	// 크리티컬 섹션들을 제거한다.
+	DeleteCriticalSection(&csAccept);
+
 	DeleteCriticalSection(&csGC_SocketInfo);
 	DeleteCriticalSection(&csClients);
 	DeleteCriticalSection(&csMapOfRecvDeque);
@@ -106,21 +110,35 @@ void IocpServerBase::StartServer()
 	hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 
 	// Worker Thread 생성
-	if (!CreateWorkerThread()) 
+	if (!CreateWorkerThread())
+	{
+		printf_s("[ERROR] <IocpServerBase::StartServer()> if (!CreateWorkerThread()) \n");
 		return;
+	}
 
 	printf_s("[INFO] <IocpServerBase::StartServer()> 서버 시작...\n");
 
 	// 클라이언트 접속을 받음
 	while (bAccept)
 	{
+		// 메인스레드 종료 확인
+		EnterCriticalSection(&csAccept);
+		if (!bAccept)
+		{
+			bAccept = true;
+			printf_s("[INFO] <cServerSocketInGame::StartServer()> if (!bAccept) \n");
+			printf_s("[INFO] <cServerSocketInGame::StartServer()> Main Thread is Closeed! \n");
+			return;
+		}
+		LeaveCriticalSection(&csAccept);
+
 		clientSocket = WSAAccept(ListenSocket, (struct sockaddr*)& clientAddr, &addrLen, NULL, NULL);
 	
 		if (clientSocket == INVALID_SOCKET)
 		{
 			printf_s("[ERROR] <IocpServerBase::StartServer()> WSAAccept 실패\n");
 			// closesocket(ListenSocket); 하면 여기서 종료됩니다.
-			return;
+			continue;
 		}
 		else
 		{
@@ -155,7 +173,16 @@ void IocpServerBase::StartServer()
 
 		// 동적할당한 소켓 정보를 저장 (서버가 완전히 종료되면 할당 해제)
 		EnterCriticalSection(&csGC_SocketInfo);
-		GC_SocketInfo.push(SocketInfo);
+		if (GC_SocketInfo.find(clientSocket) != GC_SocketInfo.end())
+		{
+			printf_s("\n\n\n\n\n\n\n\n\n\n");
+			printf_s("[[INFO] <IocpServerBase::StartServer()> if (GC_SocketInfo.find(clientSocket) != GC_SocketInfo.end()) \n");
+			printf_s("\n\n\n\n\n\n\n\n\n\n");
+
+			delete GC_SocketInfo[clientSocket];
+			GC_SocketInfo.erase(clientSocket);
+		}
+		GC_SocketInfo[clientSocket] = SocketInfo;
 		LeaveCriticalSection(&csGC_SocketInfo);
 
 		// 동적할당한 소켓 정보를 저장 (delete 금지)
@@ -165,7 +192,7 @@ void IocpServerBase::StartServer()
 		printf_s("[[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
 		LeaveCriticalSection(&csClients);
 
-		// 동적할당한 소켓에 대한 recvDeque를 동적할당하여 저장
+		// 동적할당한 소켓에 대한 recvDeque을 동적할당하여 저장
 		deque<char*>* recvDeque = new deque<char*>();
 		EnterCriticalSection(&csMapOfRecvDeque);
 		if (MapOfRecvDeque.find(clientSocket) == MapOfRecvDeque.end())
@@ -202,7 +229,35 @@ void IocpServerBase::StartServer()
 			else
 			{
 				printf_s("[ERROR] <IocpServerBase::StartServer()> IO Pending 실패 : %d\n", WSAGetLastError());
-				return;
+				
+				delete SocketInfo;
+				SocketInfo = nullptr;	
+
+				EnterCriticalSection(&csGC_SocketInfo);
+				if (GC_SocketInfo.find(clientSocket) != GC_SocketInfo.end())
+				{
+					GC_SocketInfo.erase(clientSocket);
+				}
+				LeaveCriticalSection(&csGC_SocketInfo);
+
+				EnterCriticalSection(&csClients);
+				if (Clients.find(clientSocket) != Clients.end())
+				{
+					printf_s("[[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
+					Clients.erase(clientSocket);
+					printf_s("[[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
+				}
+				LeaveCriticalSection(&csClients);
+
+				EnterCriticalSection(&csMapOfRecvDeque);
+				if (MapOfRecvDeque.find(clientSocket) != MapOfRecvDeque.end())
+				{
+					delete MapOfRecvDeque.at(clientSocket);
+					MapOfRecvDeque.erase(clientSocket);
+				}
+				LeaveCriticalSection(&csMapOfRecvDeque);
+				
+				continue;
 			}
 		}
 		else
@@ -235,63 +290,63 @@ void IocpServerBase::Send(stringstream& SendStream, SOCKET Socket)
 
 void IocpServerBase::Recv(SOCKET Socket)
 {
-	/////////////////////////////
-	// 소켓 유효성 검증
-	/////////////////////////////
-	EnterCriticalSection(&csClients);
-	if (Clients.find(Socket) == Clients.end())
-	{
-		printf_s("[ERROR] <IocpServerBase::Recv(...)> if (Clients.find(Socket) == Clients.end()) \n");
-		LeaveCriticalSection(&csClients);
-		return;
-	}
-	stSOCKETINFO* pSocketInfo = Clients.at(Socket);
-	if (pSocketInfo->socket == NULL || pSocketInfo->socket == INVALID_SOCKET)
-	{
-		printf_s("[ERROR] <IocpServerBase::Recv(...)> if (pSocketInfo->socket == NULL || pSocketInfo->socket == INVALID_SOCKET) \n");
-		LeaveCriticalSection(&csClients);
-		return;
-	}
-	LeaveCriticalSection(&csClients);
+	///////////////////////////////
+	//// 소켓 유효성 검증
+	///////////////////////////////
+	//EnterCriticalSection(&csClients);
+	//if (Clients.find(Socket) == Clients.end())
+	//{
+	//	printf_s("[ERROR] <IocpServerBase::Recv(...)> if (Clients.find(Socket) == Clients.end()) \n");
+	//	LeaveCriticalSection(&csClients);
+	//	return;
+	//}
+	//stSOCKETINFO* pSocketInfo = Clients.at(Socket);
+	//if (pSocketInfo->socket == NULL || pSocketInfo->socket == INVALID_SOCKET)
+	//{
+	//	printf_s("[ERROR] <IocpServerBase::Recv(...)> if (pSocketInfo->socket == NULL || pSocketInfo->socket == INVALID_SOCKET) \n");
+	//	LeaveCriticalSection(&csClients);
+	//	return;
+	//}
+	//LeaveCriticalSection(&csClients);
 
 
-	// DWORD sendBytes;
-	DWORD dwFlags = 0;
+	//// DWORD sendBytes;
+	//DWORD dwFlags = 0;
 
-	// stSOCKETINFO 데이터 초기화
-	ZeroMemory(&(pSocketInfo->overlapped), sizeof(OVERLAPPED));
-	pSocketInfo->overlapped.hEvent = NULL; // IOCP에서는 overlapped.hEvent를 꼭 NULL로 해줘야 한다고 합니다.
-	ZeroMemory(pSocketInfo->messageBuffer, MAX_BUFFER);
-	pSocketInfo->dataBuf.len = MAX_BUFFER;
-	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
-	pSocketInfo->recvBytes = 0;
-	pSocketInfo->sendBytes = 0;
-	pSocketInfo->sentBytes = 0;
+	//// stSOCKETINFO 데이터 초기화
+	//ZeroMemory(&(pSocketInfo->overlapped), sizeof(OVERLAPPED));
+	//pSocketInfo->overlapped.hEvent = NULL; // IOCP에서는 overlapped.hEvent를 꼭 NULL로 해줘야 한다고 합니다.
+	//ZeroMemory(pSocketInfo->messageBuffer, MAX_BUFFER);
+	//pSocketInfo->dataBuf.len = MAX_BUFFER;
+	//pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
+	//pSocketInfo->recvBytes = 0;
+	//pSocketInfo->sendBytes = 0;
+	//pSocketInfo->sentBytes = 0;
 
-	// 클라이언트로부터 다시 응답을 받기 위해 WSARecv 를 호출해줌
-	int nResult = WSARecv(
-		pSocketInfo->socket,
-		&(pSocketInfo->dataBuf),
-		1,
-		(LPDWORD)& (pSocketInfo->recvBytes),
-		&dwFlags,
-		(LPWSAOVERLAPPED)& (pSocketInfo->overlapped),
-		NULL
-	);
+	//// 클라이언트로부터 다시 응답을 받기 위해 WSARecv 를 호출해줌
+	//int nResult = WSARecv(
+	//	pSocketInfo->socket,
+	//	&(pSocketInfo->dataBuf),
+	//	1,
+	//	(LPDWORD)& (pSocketInfo->recvBytes),
+	//	&dwFlags,
+	//	(LPWSAOVERLAPPED)& (pSocketInfo->overlapped),
+	//	NULL
+	//);
 
-	if (nResult == SOCKET_ERROR)
-	{
-		if (WSAGetLastError() != WSA_IO_PENDING)
-		{
-			printf_s("[ERROR] WSARecv 실패 : %d\n", WSAGetLastError());
+	//if (nResult == SOCKET_ERROR)
+	//{
+	//	if (WSAGetLastError() != WSA_IO_PENDING)
+	//	{
+	//		printf_s("[ERROR] WSARecv 실패 : %d\n", WSAGetLastError());
 
-			CloseSocket(pSocketInfo->socket);
-		}
-		else
-		{
-			printf_s("[INFO] <IocpServerBase::Recv(...)> WSARecv: WSA_IO_PENDING \n");
-		}
-	}
+	//		CloseSocket(pSocketInfo->socket);
+	//	}
+	//	else
+	//	{
+	//		printf_s("[INFO] <IocpServerBase::Recv(...)> WSARecv: WSA_IO_PENDING \n");
+	//	}
+	//}
 }
 
 
@@ -326,6 +381,7 @@ bool IocpServerBase::AddSizeInStream(stringstream& DataStream, stringstream& Fin
 
 	//printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
 	//printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
+
 
 	// 전송할 데이터가 최대 버퍼 크기보다 크거나 같으면 전송 불가능을 알립니다.
 	// messageBuffer[MAX_BUFFER];에서 마지막에 '\0'을 넣어줘야 되기 때문에 MAX_BUFFER와 같을때도 무시합니다.

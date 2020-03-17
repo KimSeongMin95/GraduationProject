@@ -12,14 +12,19 @@
 
 int cServerSocketInGame::ServerPort;
 
+
+map<SOCKET, stSOCKETINFO*> cServerSocketInGame::GC_SocketInfo;
+CRITICAL_SECTION cServerSocketInGame::csGC_SocketInfo;
+
 std::map<SOCKET, stSOCKETINFO*> cServerSocketInGame::GameClients;
 CRITICAL_SECTION cServerSocketInGame::csGameClients;
 
-map<SOCKET, queue<char*>*> cServerSocketInGame::MapOfRecvQueue;
-CRITICAL_SECTION cServerSocketInGame::csMapOfRecvQueue;
+map<SOCKET, deque<char*>*> cServerSocketInGame::MapOfRecvDeque;
+CRITICAL_SECTION cServerSocketInGame::csMapOfRecvDeque;
 
-multimap<SOCKET, stSOCKETINFO*> cServerSocketInGame::SendCollector;
-CRITICAL_SECTION cServerSocketInGame::csSendCollector;
+
+unsigned int cServerSocketInGame::CountOfSend;
+CRITICAL_SECTION cServerSocketInGame::csCountOfSend;
 
 
 std::map<SOCKET, cInfoOfPlayer> cServerSocketInGame::InfoOfClients;
@@ -76,9 +81,15 @@ cServerSocketInGame::cServerSocketInGame()
 
 	SocketID = 1;
 
+	CountOfSend = 0;
+
+	InitializeCriticalSection(&csAccept);
+
+	InitializeCriticalSection(&csGC_SocketInfo);
 	InitializeCriticalSection(&csGameClients);
-	InitializeCriticalSection(&csMapOfRecvQueue);
-	InitializeCriticalSection(&csSendCollector);
+	InitializeCriticalSection(&csMapOfRecvDeque);
+
+	InitializeCriticalSection(&csCountOfSend);
 
 	InitializeCriticalSection(&csInfoOfClients);
 	InitializeCriticalSection(&csInfosOfScoreBoard);
@@ -101,9 +112,13 @@ cServerSocketInGame::~cServerSocketInGame()
 	// 서버 종료는 여기서 처리
 	CloseServer();
 
+	DeleteCriticalSection(&csAccept);
+
+	DeleteCriticalSection(&csGC_SocketInfo);
 	DeleteCriticalSection(&csGameClients);
-	DeleteCriticalSection(&csMapOfRecvQueue);
-	DeleteCriticalSection(&csSendCollector);
+	DeleteCriticalSection(&csMapOfRecvDeque);
+
+	DeleteCriticalSection(&csCountOfSend);
 
 	DeleteCriticalSection(&csInfoOfClients);
 	DeleteCriticalSection(&csInfosOfScoreBoard);
@@ -208,6 +223,10 @@ bool cServerSocketInGame::Initialize()
 	////////////////////
 	// 메인 스레드 시작
 	////////////////////
+	EnterCriticalSection(&csAccept);
+	bAccept = true;
+	LeaveCriticalSection(&csAccept);
+
 	printf_s("[INFO] <cServerSocketInGame::Initialize()> Start main thread\n");
 	unsigned int threadId;
 
@@ -228,7 +247,14 @@ bool cServerSocketInGame::Initialize()
 	bIsServerOn = true;
 
 
-	// 초기화
+	EnterCriticalSection(&csCountOfSend);
+	CountOfSend = 0;
+	LeaveCriticalSection(&csCountOfSend);
+
+
+	///////////////////////////////////////////
+	// 메인 클라이언트 초기화
+	///////////////////////////////////////////
 	ClientSocket = cClientSocket::GetSingleton();
 
 	if (ClientSocket)
@@ -271,21 +297,34 @@ void cServerSocketInGame::StartServer()
 	// Worker Thread 생성
 	if (!CreateWorkerThread())
 	{
-		printf_s("[ERROR] <cServerSocketInGame::StartServer()> if (!CreateWorkerThread())\n");
+		printf_s("[ERROR] <cServerSocketInGame::StartServer()> if (!CreateWorkerThread()) \n");
 		return;
 	}
 
 	printf_s("[INFO] <cServerSocketInGame::StartServer()> Server started.\n");
 
 	// 클라이언트 접속을 받음
-	while (bAccept)
+	while (true)
 	{
+		// 메인스레드 종료 확인
+		EnterCriticalSection(&csAccept);
+		if (!bAccept)
+		{
+			bAccept = true;
+			printf_s("[INFO] <cServerSocketInGame::StartServer()> if (!bAccept) \n");
+			printf_s("[INFO] <cServerSocketInGame::StartServer()> Main Thread is Closeed! \n");
+
+			LeaveCriticalSection(&csAccept);
+			return;
+		}
+		LeaveCriticalSection(&csAccept);
+
 		clientSocket = WSAAccept(ListenSocket, (struct sockaddr*)& clientAddr, &addrLen, NULL, NULL);
 
 		if (clientSocket == INVALID_SOCKET)
 		{
 			printf_s("[ERROR] <cServerSocketInGame::StartServer()> if (clientSocket == INVALID_SOCKET)\n");
-			return;
+			continue;
 		}
 		else
 		{
@@ -316,23 +355,40 @@ void cServerSocketInGame::StartServer()
 		SocketInfo->Port = (int)ntohs(clientAddr.sin_port);
 		printf_s("[INFO] <cServerSocketInGame::StartServer()> Game Client's Port: %d\n\n", SocketInfo->Port);
 
-		// 동적할당한 소켓 정보를 저장
+
+		// 동적할당한 소켓 정보를 저장 (서버가 완전히 종료되면 할당 해제)
+		EnterCriticalSection(&csGC_SocketInfo);
+		if (GC_SocketInfo.find(clientSocket) != GC_SocketInfo.end())
+		{
+			printf_s("\n\n\n\n\n\n\n\n\n\n");
+			printf_s("[[INFO] <IocpServerBase::StartServer()> if (GC_SocketInfo.find(clientSocket) != GC_SocketInfo.end()) \n");
+			printf_s("\n\n\n\n\n\n\n\n\n\n");
+
+			delete GC_SocketInfo[clientSocket];
+			GC_SocketInfo.erase(clientSocket);
+		}
+		GC_SocketInfo[clientSocket] = SocketInfo;
+		LeaveCriticalSection(&csGC_SocketInfo);
+
+		// 동적할당한 소켓 정보를 저장 (delete 금지)
 		EnterCriticalSection(&csGameClients);
 		printf_s("[[INFO] <cServerSocketInGame::StartServer()> GameClients.size(): %d\n", (int)GameClients.size());
 		GameClients[clientSocket] = SocketInfo;
 		printf_s("[[INFO] <cServerSocketInGame::StartServer()> GameClients.size(): %d\n", (int)GameClients.size());
 		LeaveCriticalSection(&csGameClients);
 
-		// 동적할당한 소켓에 대한 recvQueue를 동적할당하여 저장
-		queue<char*>* recvQueue = new queue<char*>();
-		EnterCriticalSection(&csMapOfRecvQueue);
-		if (MapOfRecvQueue.find(clientSocket) == MapOfRecvQueue.end())
+		// 동적할당한 소켓에 대한 recvDeque을 동적할당하여 저장
+		deque<char*>* recvDeque = new deque<char*>();
+		EnterCriticalSection(&csMapOfRecvDeque);
+		if (MapOfRecvDeque.find(clientSocket) == MapOfRecvDeque.end())
 		{
-			MapOfRecvQueue.insert(pair<SOCKET, queue<char*>*>(clientSocket, recvQueue));
+			MapOfRecvDeque.insert(pair<SOCKET, deque<char*>*>(clientSocket, recvDeque));
 		}
-		LeaveCriticalSection(&csMapOfRecvQueue);
+		LeaveCriticalSection(&csMapOfRecvDeque);
+
 
 		hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (ULONG_PTR)SocketInfo, 0);
+
 
 		// 중첩 소켓을 지정하고 완료시 실행될 함수를 넘겨줌
 		int nResult = WSARecv(
@@ -354,7 +410,35 @@ void cServerSocketInGame::StartServer()
 			else
 			{
 				printf_s("[ERROR] <cServerSocketInGame::StartServer()> Fail to IO Pending: %d\n", WSAGetLastError());
-				return;
+				
+				delete SocketInfo;
+				SocketInfo = nullptr;
+
+				EnterCriticalSection(&csGC_SocketInfo);
+				if (GC_SocketInfo.find(clientSocket) != GC_SocketInfo.end())
+				{
+					GC_SocketInfo.erase(clientSocket);
+				}
+				LeaveCriticalSection(&csGC_SocketInfo);
+
+				EnterCriticalSection(&csGameClients);
+				if (GameClients.find(clientSocket) != GameClients.end())
+				{
+					printf_s("[[INFO] <cServerSocketInGame::StartServer()> GameClients.size(): %d\n", (int)GameClients.size());
+					GameClients.erase(clientSocket);
+					printf_s("[[INFO] <cServerSocketInGame::StartServer()> GameClients.size(): %d\n", (int)GameClients.size());
+				}
+				LeaveCriticalSection(&csGameClients);
+
+				EnterCriticalSection(&csMapOfRecvDeque);
+				if (MapOfRecvDeque.find(clientSocket) != MapOfRecvDeque.end())
+				{
+					delete MapOfRecvDeque.at(clientSocket);
+					MapOfRecvDeque.erase(clientSocket);
+				}
+				LeaveCriticalSection(&csMapOfRecvDeque);
+
+				continue;
 			}
 		}
 		else
@@ -380,6 +464,82 @@ void cServerSocketInGame::CloseServer()
 
 	printf_s("[START] <cServerSocketInGame::CloseServer()>\n");
 
+
+	// 메인스레드 종료
+	EnterCriticalSection(&csAccept);
+	bAccept = false;
+	LeaveCriticalSection(&csAccept);
+
+
+	// 서버 리슨 소켓 닫기
+	if (ListenSocket != NULL && ListenSocket != INVALID_SOCKET)
+	{
+		closesocket(ListenSocket);
+		ListenSocket = NULL;
+
+		printf_s("\t closesocket(ListenSocket);\n");
+	}
+
+
+	// 메인 스레드 종료 확인
+	if (hMainHandle != NULL && hMainHandle != INVALID_HANDLE_VALUE)
+	{
+		DWORD result = WaitForSingleObject(hMainHandle, 10000);
+
+		// hMainHandle이 signal이면
+		if (result == WAIT_OBJECT_0)
+		{
+			CloseHandle(hMainHandle);
+
+			printf_s("\t CloseHandle(hMainHandle);\n");
+		}
+		else if (result == WAIT_TIMEOUT)
+		{
+			printf_s("[ERROR] WaitForSingleObject(...) result: WAIT_TIMEOUT\n");
+
+			TerminateThread(hMainHandle, 0);
+			CloseHandle(hMainHandle);
+
+			printf_s("\t TerminateThread(hMainHandle, 0); CloseHandle(hMainHandle);\n");
+		}
+		else
+		{
+			printf_s("[ERROR] WaitForSingleObject(...) failed: %d\n", (int)GetLastError());
+		}
+
+		hMainHandle = NULL;
+	}
+
+
+	// 클라이언트 소켓 닫기
+	EnterCriticalSection(&csGameClients);
+	for (auto& kvp : GameClients)
+	{
+		SOCKET socket = kvp.second->socket;
+		if (socket != NULL && socket != INVALID_SOCKET)
+			closesocket(socket); // 소켓 닫기
+	}
+	GameClients.clear();
+	LeaveCriticalSection(&csGameClients);
+
+
+	////////////////////////////////////////////////////////////////////////
+	// 모든 WSASend가 GetQueuedCompletionStatus에 의해 완료처리 되었는지 확인
+	////////////////////////////////////////////////////////////////////////
+	while (true)
+	{
+		EnterCriticalSection(&csCountOfSend);
+		if (CountOfSend == 0)
+		{
+			printf_s("\t if (CountOfSend == 0) \n");
+			LeaveCriticalSection(&csCountOfSend);
+			break;
+		}
+		printf_s("\t CountOfSend: %d \n", (int)CountOfSend);
+		LeaveCriticalSection(&csCountOfSend);
+	}
+
+
 	if (hIOCP)
 	{
 		// Worker 스레드들을 강제 종료하도록 한다. 
@@ -391,10 +551,11 @@ void cServerSocketInGame::CloseServer()
 		}
 	}
 	
+
 	if (nThreadCnt > 0)
 	{
 		// 모든 스레드가 실행을 중지했는지 확인한다.
-		DWORD result = WaitForMultipleObjects(nThreadCnt, hWorkerHandle, true, 5000);
+		DWORD result = WaitForMultipleObjects(nThreadCnt, hWorkerHandle, true, INFINITE);
 
 		// 모든 스레드가 중지되었다면 == 기다리던 모든 Event들이 signal이 된 경우
 		if (result == WAIT_OBJECT_0)
@@ -424,7 +585,8 @@ void cServerSocketInGame::CloseServer()
 		printf_s("\t nThreadCnt: %d\n", (int)nThreadCnt);
 	}
 
-	// 스레드 핸들 할당해제
+
+	// 작업스레드 핸들 할당해제
 	if (hWorkerHandle)
 	{
 		delete[] hWorkerHandle;
@@ -432,6 +594,24 @@ void cServerSocketInGame::CloseServer()
 
 		printf_s("\t delete[] hWorkerHandle;\n");
 	}
+
+
+	// IOCP를 제거한다.  
+	if (hIOCP)
+	{
+		CloseHandle(hIOCP);
+		hIOCP = NULL;
+
+		printf_s("\t CloseHandle(hIOCP);\n");
+	}
+
+
+	// winsock 라이브러리를 해제한다.
+	WSACleanup();
+
+
+	/*********************************************************************************/
+
 
 	// InfosOfPioneers 초기화
 	EnterCriticalSection(&csInfosOfPioneers);
@@ -449,123 +629,35 @@ void cServerSocketInGame::CloseServer()
 	LeaveCriticalSection(&csInfoOfClients);
 
 
-	// Send(...)에서 동적할당한 stSOCKETINFO*을 전부 해제
-	EnterCriticalSection(&csSendCollector);
-	for (auto& kvp : SendCollector)
+	// 덱에 남아있는 수신한 데이터를 전부 해제
+	EnterCriticalSection(&csMapOfRecvDeque);
+	for (auto& kvp : MapOfRecvDeque)
 	{
 		if (kvp.second)
 		{
-			delete kvp.second;
-			kvp.second = nullptr;
-
-			printf_s("\t SendCollector: delete kvp.second; \n");
-		}
-	}
-	SendCollector.clear();
-	LeaveCriticalSection(&csSendCollector);
-
-	// 큐에 남아있는 수신한 데이터를 전부 해제
-	EnterCriticalSection(&csMapOfRecvQueue);
-	for (auto& kvp : MapOfRecvQueue)
-	{
-		if (kvp.second)
-		{
-			// 동적할당한 char* newBuffer = new char[MAX_BUFFER];를 해제합니다.
+			// 동적할당한 char* newBuffer = new char[MAX_BUFFER + 1];를 해제합니다.
 			while (kvp.second->empty() == false)
 			{
 				if (kvp.second->front())
 				{
 					delete[] kvp.second->front();
 					kvp.second->front() = nullptr;
-					kvp.second->pop();
+					kvp.second->pop_front();
 
-					printf_s("\t MapOfRecvQueue: delete[] recvQueue->front(); \n");
+					printf_s("\t MapOfRecvDeque: delete[] recvDeque->front(); \n");
 				}
 			}
 
-			// 동적할당한 queue<char*>* recvQueue = new queue<char*>();를 해제합니다.
+			// 동적할당한 deque<char*>* recvDeque = new deque<char*>();를 해제합니다.
 			delete kvp.second;
 			kvp.second = nullptr;
 
-			printf_s("\t MapOfRecvQueue: delete kvp.second; \n");
+			printf_s("\t MapOfRecvDeque: delete kvp.second; \n");
 		}
 	}
-	MapOfRecvQueue.clear();
-	LeaveCriticalSection(&csMapOfRecvQueue);
+	MapOfRecvDeque.clear();
+	LeaveCriticalSection(&csMapOfRecvDeque);
 
-	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 해제
-	EnterCriticalSection(&csGameClients);
-	for (auto& kvp : GameClients)
-	{
-		if (kvp.second)
-		{
-			// 소켓을 제거한다.
-			if (kvp.second->socket != NULL && kvp.second->socket != INVALID_SOCKET)
-			{
-				closesocket(kvp.second->socket);
-				kvp.second->socket = NULL;
-
-				printf_s("\t closesocket(kvp.second->socket);\n");
-			}
-
-			delete kvp.second;
-			kvp.second = nullptr;
-
-			printf_s("\t for (auto& kvp : GameClients) if (kvp.second) delete kvp.second;\n");
-		}
-	}
-	GameClients.clear();
-	LeaveCriticalSection(&csGameClients);
-
-	// IOCP를 제거한다.  
-	if (hIOCP)
-	{
-		CloseHandle(hIOCP);
-		hIOCP = NULL;
-
-		printf_s("\t CloseHandle(hIOCP);\n");
-	}
-
-	// 대기 소켓을 제거한다.
-	if (ListenSocket != NULL && ListenSocket != INVALID_SOCKET)
-	{
-		closesocket(ListenSocket);
-		ListenSocket = NULL;
-
-		printf_s("\t closesocket(ListenSocket);\n");
-	}
-
-	// 메인 스레드 종료 확인
-	if (hMainHandle != NULL && hMainHandle != INVALID_HANDLE_VALUE)
-	{
-		DWORD result = WaitForSingleObject(hMainHandle, 5000);
-
-		// hMainHandle이 signal이면
-		if (result == WAIT_OBJECT_0)
-		{
-			CloseHandle(hMainHandle);
-
-			printf_s("\t CloseHandle(hMainHandle);\n");
-		}
-		else if (result == WAIT_TIMEOUT)
-		{
-			printf_s("[ERROR] WaitForSingleObject(...) result: WAIT_TIMEOUT\n");
-
-			TerminateThread(hMainHandle, 0);
-			CloseHandle(hMainHandle);
-
-			printf_s("\t TerminateThread(hMainHandle, 0); CloseHandle(hMainHandle);\n");
-		}
-		else
-		{
-			printf_s("[ERROR] WaitForSingleObject(...) failed: %d\n", (int)GetLastError());
-		}
-
-		hMainHandle = NULL;
-	}
-
-	// winsock 라이브러리를 해제한다.
-	WSACleanup();
 
 	bIsServerOn = false;
 
@@ -622,6 +714,7 @@ void cServerSocketInGame::WorkerThread()
 
 	// I/O 작업을 위해 요청한 Overlapped 구조체를 받을 포인터	
 	stSOCKETINFO* pSocketInfo = nullptr;
+
 	DWORD	dwFlags = 0;
 
 	while (bWorkerThread)
@@ -638,9 +731,8 @@ void cServerSocketInGame::WorkerThread()
 			(LPOVERLAPPED*)& pSocketInfo,	// overlapped I/O 객체
 			INFINITE						// 대기할 시간
 		);
+
 		// PostQueuedCompletionStatus(...)로 강제종료
-		// 항상 GetQueuedCompletionStatus 바로 아래에 있어야지만 PostQueuedCompletionStatus로 스레드를 강제종료할 때
-		// 아래 코드를 실행하여 pSocketInfo가 nullptr가 된 상태에서 참조하지 않음
 		if (pCompletionKey == 0)
 		{
 			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> if (pCompletionKey == 0) \n\n");
@@ -661,42 +753,39 @@ void cServerSocketInGame::WorkerThread()
 			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> pSocketInfo->sendBytes: %d \n", pSocketInfo->sendBytes);
 			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> pSocketInfo->sentBytes: %d \n", pSocketInfo->sentBytes);
 
-			// WSASend에서 new로 새로 동적할당한 stSOCKETINFO 이므로 송신이 정상적으로 완료되면 delete 해줍니다.
+			// 사이즈가 같으면 제대로 전송이 완료된 것입니다.
 			if (pSocketInfo->sendBytes == pSocketInfo->sentBytes)
 			{
-				EnterCriticalSection(&csSendCollector);
-				printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
-				auto iter_pair = SendCollector.equal_range(pSocketInfo->socket);
-				for (auto iter = iter_pair.first; iter != iter_pair.second;)
-				{
-					if (iter->second == pSocketInfo)
-						iter = SendCollector.erase(iter);
-					else
-						iter++;
-				}
-				printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
-				LeaveCriticalSection(&csSendCollector);
-
-				delete pSocketInfo;
-				pSocketInfo = nullptr;
-				printf_s("[INFO] <cServerSocketInGame::WorkerThread()> delete pSocketInfo; \n\n");
+				printf_s("[INFO] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes == pSocketInfo->sentBytes) \n");
 			}
 			// 사이즈가 다르다면 제대로 전송이 되지 않은것이므로 일단 콘솔에 알립니다.
 			else
 			{
-				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
-				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
-				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
-				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
-				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
-				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
-				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
-				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
-				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
-				printf_s("\n\n\n\n\n\n\n\n\n\n[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n\n\n\n\n\n\n\n\n\n\n");
+				printf_s("\n\n\n\n\n\n\n\n\n\n");
+				printf_s("[ERROR] <cServerSocketInGame::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n");
+				printf_s("\n\n\n\n\n\n\n\n\n\n");
 			}
+
+			// 송신에 사용하기위해 동적할당한 overlapped 객체를 소멸시킵니다.
+			delete pSocketInfo;
+			pSocketInfo = nullptr;
+			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> delete pSocketInfo; \n\n");
+
+
+			EnterCriticalSection(&csCountOfSend);
+			CountOfSend--;
+			LeaveCriticalSection(&csCountOfSend);
+
 			continue;
 		}
+
+
+		// 소켓 획득
+		SOCKET socket = 0;
+		if (pSocketInfo)
+			socket = pSocketInfo->socket;
+		else
+			continue;
 
 
 		///////////////////////////////////////////
@@ -705,34 +794,35 @@ void cServerSocketInGame::WorkerThread()
 		// 비정상 접속 끊김은 GetQueuedCompletionStatus가 FALSE를 리턴하고 수신바이트 크기가 0입니다.
 		if (!bResult && numberOfBytesTransferred == 0)
 		{
-			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> socket(%d) connecting closed \n\n", (int)pSocketInfo->socket);
-			CloseSocket(pSocketInfo);
+			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> socket(%d) connect closed. \n\n", (int)socket);
+			CloseSocket(socket);
 			continue;
 		}
 
 		// 정상 접속 끊김은 GetQueuedCompletionStatus가 TRUE를 리턴하고 수신바이트 크기가 0입니다.
 		if (numberOfBytesTransferred == 0)
 		{
-			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> socket(%d) connecting closed if (recvBytes == 0) \n\n", (int)pSocketInfo->socket);
-			CloseSocket(pSocketInfo);
+			printf_s("[INFO] <cServerSocketInGame::WorkerThread()> socket(%d) connect closed. \n\n", (int)socket);
+			CloseSocket(socket);
 			continue;
 		}
 
 
 		///////////////////////////////////////////
-		// recvQueue에 수신한 데이터를 적재
+		// recvDeque에 수신한 데이터를 적재
 		///////////////////////////////////////////
-		queue<char*>* recvQueue = nullptr;
-		EnterCriticalSection(&csMapOfRecvQueue);
-		if (MapOfRecvQueue.find(pSocketInfo->socket) != MapOfRecvQueue.end())
+		deque<char*>* recvDeque = nullptr;
+		EnterCriticalSection(&csMapOfRecvDeque);
+		if (MapOfRecvDeque.find(socket) != MapOfRecvDeque.end())
 		{
-			recvQueue = MapOfRecvQueue.at(pSocketInfo->socket);
+			recvDeque = MapOfRecvDeque.at(socket);
 		}
-		LeaveCriticalSection(&csMapOfRecvQueue);
-		if (recvQueue == nullptr)
+		LeaveCriticalSection(&csMapOfRecvDeque);
+
+		if (recvDeque == nullptr)
 		{
-			printf_s("[ERROR] <cServerSocketInGame::WorkerThread()> if (recvQueue == nullptr) \n\n");
-			CloseSocket(pSocketInfo);
+			printf_s("[ERROR] <cServerSocketInGame::WorkerThread()> if (recvDeque == nullptr) \n\n");
+			CloseSocket(socket);
 			continue;
 		}
 		else
@@ -742,24 +832,32 @@ void cServerSocketInGame::WorkerThread()
 			//ZeroMemory(newBuffer, MAX_BUFFER);
 			CopyMemory(newBuffer, pSocketInfo->dataBuf.buf, numberOfBytesTransferred);
 			newBuffer[numberOfBytesTransferred] = '\0';
-			recvQueue->push(newBuffer);
+			recvDeque->push_back(newBuffer); // 뒤에 순차적으로 적재합니다.
 		}
 
 		/**************************************************************************/
 
 		char dataBuffer[MAX_BUFFER + 1];
+		dataBuffer[0] = '\0'; // GetDataInRecvDeque(...)를 해도 덱이 비어있는 상태면 오류가 날 수 있으므로 초기화
 		dataBuffer[MAX_BUFFER] = '\0';
 
 		///////////////////////////////////////////
-		// 수신한 데이터를 저장하는 큐에서 데이터를 획득
+		// 수신한 데이터를 저장하는 덱에서 데이터를 획득
 		///////////////////////////////////////////
-		GetDataInRecvQueue(recvQueue, dataBuffer);
+		GetDataInRecvDeque(recvDeque, dataBuffer);
 
 
 		/////////////////////////////////////////////
-		// 1. 버퍼 길이가 4미만이면
+		// 1. 데이터 버퍼 길이가 0이면
 		/////////////////////////////////////////////
-		if (strlen(dataBuffer) < 4)
+		if (strlen(dataBuffer) == 0)
+		{
+			printf_s("\t if (strlen(dataBuffer) == 0) \n");
+		}
+		/////////////////////////////////////////////
+		// 2. 데이터 버퍼 길이가 4미만이면
+		/////////////////////////////////////////////
+		else if (strlen(dataBuffer) < 4)
 		{
 			printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
 
@@ -768,11 +866,11 @@ void cServerSocketInGame::WorkerThread()
 			CopyMemory(newBuffer, &dataBuffer, strlen(dataBuffer));
 			newBuffer[strlen(dataBuffer)] = '\0';
 
-			// 다시 큐에 데이터를 집어넣고
-			recvQueue->push(newBuffer);
+			// 다시 덱 앞부분에 적재합니다.
+			recvDeque->push_front(newBuffer);
 		}
 		/////////////////////////////////////////////
-		// 2. 버퍼 길이가 4이상 MAX_BUFFER + 1 미만이면
+		// 3. 데이터 버퍼 길이가 4이상 MAX_BUFFER + 1 미만이면
 		/////////////////////////////////////////////
 		else if (strlen(dataBuffer) < MAX_BUFFER + 1)
 		{
@@ -796,8 +894,8 @@ void cServerSocketInGame::WorkerThread()
 					CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
 					newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-					// 다시 큐에 데이터를 집어넣고
-					recvQueue->push(newBuffer);
+					// 다시 덱 앞부분에 적재합니다.
+					recvDeque->push_front(newBuffer);
 
 					// 반복문을 종료합니다.
 					break;
@@ -825,11 +923,20 @@ void cServerSocketInGame::WorkerThread()
 					CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
 					newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-					// 다시 큐에 데이터를 집어넣고
-					recvQueue->push(newBuffer);
+					// 다시 덱 앞부분에 적재합니다.
+					recvDeque->push_front(newBuffer);
 
 					// 반복문을 종료합니다.
 					break;;
+				}
+
+				/// 오류 확인
+				if (sizeOfPacket <= 0)
+				{
+					printf_s("\n\n\n\n\n\n\n\n\n\n");
+					printf_s("[ERROR] <cServerSocketInGame::WorkerThread()> sizeOfPacket: %d \n", sizeOfPacket);
+					printf_s("\n\n\n\n\n\n\n\n\n\n");
+					break;
 				}
 
 				// 패킷을 자르면서 임시 버퍼에 복사합니다.
@@ -840,44 +947,100 @@ void cServerSocketInGame::WorkerThread()
 				///////////////////////////////////////////
 				// 패킷을 처리합니다.
 				///////////////////////////////////////////
-				ProcessReceivedPacket(cutBuffer, pSocketInfo);
+				ProcessReceivedPacket(cutBuffer, socket);
 
 				idxOfStartInPacket += sizeOfPacket;
 			}
 		}
 
 		// 클라이언트 대기
-		Recv(pSocketInfo);
+		Recv(socket);
 		continue;
 	}
-
 }
 
-void cServerSocketInGame::CloseSocket(stSOCKETINFO* pSocketInfo)
+
+void cServerSocketInGame::CloseSocket(SOCKET Socket)
 {
-	if (!pSocketInfo)
-	{
-		printf_s("[ERROR] <cServerSocketInGame::CloseSocket(...)>if (!pSocketInfo)\n");
-		return;
-	}
 	printf_s("[Start] <cServerSocketInGame::CloseSocket(...)>\n");
 
 
+	/////////////////////////////
+	// 소켓 유효성 검증
+	/////////////////////////////
+	EnterCriticalSection(&csGameClients);
+	if (Socket != NULL && Socket != INVALID_SOCKET)
+		closesocket(Socket); // 소켓 닫기
+
+	if (GameClients.find(Socket) != GameClients.end())
+	{
+		GameClients.at(Socket)->socket = NULL;
+
+		printf_s("\t GameClients.size(): %d\n", (int)GameClients.size());
+		GameClients.erase(Socket);
+		printf_s("\t GameClients.size(): %d\n", (int)GameClients.size());
+	}
+	LeaveCriticalSection(&csGameClients);
+
+	///////////////////////////
+	// 해당 클라이언트의 네트워크 접속 종료를 다른 클라이언트들에게 알려줍니다.
+	///////////////////////////
+	//temp.str("");
+	//temp.clear();
+	//stringstream temp;
+
 	/*********************************************************************************/
+
+
+	///////////////////////////
+	// MapOfRecvDeque에서 제거
+	///////////////////////////
+	EnterCriticalSection(&csMapOfRecvDeque);
+	if (MapOfRecvDeque.find(Socket) != MapOfRecvDeque.end())
+	{
+		printf_s("\t MapOfRecvDeque.size(): %d\n", (int)MapOfRecvDeque.size());
+		if (deque<char*>* recvDeque = MapOfRecvDeque.at(Socket))
+		{
+			printf_s("\t MapOfRecvDeque: recvDeque.size() %d \n", (int)recvDeque->size());
+			while (recvDeque->empty() == false)
+			{
+				if (recvDeque->front())
+				{
+					delete[] recvDeque->front();
+					recvDeque->front() = nullptr;
+					recvDeque->pop_front();
+
+					printf_s("\t MapOfRecvDeque: delete[] recvDeque->front(); \n");
+				}
+			}
+			delete recvDeque;
+			recvDeque = nullptr;
+
+			printf_s("\t MapOfRecvDeque: delete recvDeque; \n");
+		}
+		MapOfRecvDeque.erase(Socket);
+		printf_s("\t MapOfRecvDeque.size(): %d\n", (int)MapOfRecvDeque.size());
+	}
+	else
+	{
+		printf_s("[ERROR] <cServerSocketInGame::CloseSocket(...)> MapOfRecvDeque can't find Socket\n");
+	}
+	LeaveCriticalSection(&csMapOfRecvDeque);
+
 
 	///////////////////////////
 	// InfosOfScoreBoard에서 제거
 	///////////////////////////
 	EnterCriticalSection(&csInfosOfScoreBoard);
-	if (InfosOfScoreBoard.find(pSocketInfo->socket) != InfosOfScoreBoard.end())
+	if (InfosOfScoreBoard.find(Socket) != InfosOfScoreBoard.end())
 	{
 		printf_s("\t InfosOfScoreBoard.size(): %d\n", (int)InfosOfScoreBoard.size());
-		InfosOfScoreBoard.erase(pSocketInfo->socket);
+		InfosOfScoreBoard.erase(Socket);
 		printf_s("\t InfosOfScoreBoard.size(): %d\n", (int)InfosOfScoreBoard.size());
 	}
 	else
 	{
-		printf_s("[ERROR] <cServerSocketInGame::CloseSocket(...)> InfosOfScoreBoard can't find pSocketInfo->socket\n");
+		printf_s("[ERROR] <cServerSocketInGame::CloseSocket(...)> InfosOfScoreBoard can't find Socket\n");
 	}
 	LeaveCriticalSection(&csInfosOfScoreBoard);
 
@@ -886,135 +1049,70 @@ void cServerSocketInGame::CloseSocket(stSOCKETINFO* pSocketInfo)
 	// InfoOfClients에서 제거
 	///////////////////////////
 	EnterCriticalSection(&csInfoOfClients);
-	if (InfoOfClients.find(pSocketInfo->socket) != InfoOfClients.end())
+	if (InfoOfClients.find(Socket) != InfoOfClients.end())
 	{
 		printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
-		InfoOfClients.erase(pSocketInfo->socket);
+		InfoOfClients.erase(Socket);
 		printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
 	}
 	else
 	{
-		printf_s("[ERROR] <cServerSocketInGame::CloseSocket(...)> InfoOfClients can't find pSocketInfo->socket\n");
+		printf_s("[ERROR] <cServerSocketInGame::CloseSocket(...)> InfoOfClients can't find Socket\n");
 	}
 	LeaveCriticalSection(&csInfoOfClients);
-
-
-	///////////////////////////
-	// SendCollector에서 제거
-	///////////////////////////
-	EnterCriticalSection(&csSendCollector);
-	printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
-	auto iter_pair = SendCollector.equal_range(pSocketInfo->socket);
-	for (auto iter = iter_pair.first; iter != iter_pair.second;)
-	{
-		stSOCKETINFO* socketInfo = iter->second;
-		
-		iter = SendCollector.erase(iter);
-
-		delete socketInfo;
-	}
-	printf_s("\t SendCollector.size(): %d\n", (int)SendCollector.size());
-	LeaveCriticalSection(&csSendCollector);
-
-
-	///////////////////////////
-	// MapOfRecvQueue에서 제거
-	///////////////////////////
-	EnterCriticalSection(&csMapOfRecvQueue);
-	if (MapOfRecvQueue.find(pSocketInfo->socket) != MapOfRecvQueue.end())
-	{
-		printf_s("\t MapOfRecvQueue.size(): %d\n", (int)MapOfRecvQueue.size());
-		if (queue<char*>* recvQueue = MapOfRecvQueue.at(pSocketInfo->socket))
-		{
-			printf_s("\t MapOfRecvQueue: recvQueue.size() %d \n", (int)recvQueue->size());
-			while (recvQueue->empty() == false)
-			{
-				if (recvQueue->front())
-				{
-					delete[] recvQueue->front();
-					recvQueue->front() = nullptr;
-					recvQueue->pop();
-
-					printf_s("\t MapOfRecvQueue: delete[] recvQueue->front(); \n");
-				}
-			}
-			delete recvQueue;
-			recvQueue = nullptr;
-
-			printf_s("\t MapOfRecvQueue: delete recvQueue; \n");
-		}
-		MapOfRecvQueue.erase(pSocketInfo->socket);
-		printf_s("\t MapOfRecvQueue.size(): %d\n", (int)MapOfRecvQueue.size());
-	}
-	else
-	{
-		printf_s("[ERROR] <cServerSocketInGame::CloseSocket(...)> MapOfRecvQueue can't find pSocketInfo->socket\n");
-	}
-	LeaveCriticalSection(&csMapOfRecvQueue);
-
-
-	///////////////////////////
-	// Clients에서 제거
-	///////////////////////////
-	EnterCriticalSection(&csGameClients);
-	if (GameClients.find(pSocketInfo->socket) != GameClients.end())
-	{
-		printf_s("\t GameClients.size(): %d\n", (int)GameClients.size());
-		GameClients.erase(pSocketInfo->socket);
-		printf_s("\t GameClients.size(): %d\n", (int)GameClients.size());
-	}
-	else
-	{
-		printf_s("[ERROR] <cServerSocketInGame::CloseSocket(...)> Clients can't find pSocketInfo->socket\n");
-	}
-	LeaveCriticalSection(&csGameClients);
-
-
-	///////////////////////////
-	// closesocket
-	///////////////////////////
-	if (pSocketInfo->socket != NULL && pSocketInfo->socket != INVALID_SOCKET)
-	{
-		closesocket(pSocketInfo->socket);
-		pSocketInfo->socket = NULL;
-	}
-	else
-	{
-		printf_s("[ERROR] <cServerSocketInGame::CloseSocket(...)> fail to closesocket(pSocketInfo->socket); \n");
-	}
-	delete pSocketInfo; // 중단점 예외처리하는 문제로 인해 free 대신에 if (pSocketInfo) 검사 후, delete 사용
-	pSocketInfo = nullptr;
 
 
 	printf_s("[End] <cServerSocketInGame::CloseSocket(...)>\n");
 }
 
-void cServerSocketInGame::Send(stringstream& SendStream, stSOCKETINFO* pSocketInfo)
+void cServerSocketInGame::Send(stringstream& SendStream, SOCKET Socket)
 {
-	printf_s("[START] <MainServer::Send(...)>\n");
+	// https://moguwai.tistory.com/entry/Overlapped-IO?category=363471
+	// https://a292run.tistory.com/entry/%ED%8E%8C-WSASend
+	// https://docs.microsoft.com/ko-kr/windows/win32/api/winsock2/nf-winsock2-wsasend
+	// IOCP에선 WSASend(...)할 때는 버퍼를 유지해야 한다.
+	// https://moguwai.tistory.com/entry/Overlapped-IO
 
+
+	/////////////////////////////
+	// 소켓 유효성 검증
+	/////////////////////////////
+	EnterCriticalSection(&csGameClients);
+	if (GameClients.find(Socket) == GameClients.end())
+	{
+		printf_s("[ERROR] <cServerSocketInGame::Send(...)> if (GameClients.find(Socket) == GameClients.end()) \n");
+		LeaveCriticalSection(&csGameClients);
+		return;
+	}
+	LeaveCriticalSection(&csGameClients);
+
+	printf_s("[START] <cServerSocketInGame::Send(...)>\n");
+
+
+	/***** WSARecv의 &(socketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : Start  *****/
+	stringstream finalStream;
+	if (AddSizeInStream(SendStream, finalStream) == false)
+	{
+		printf_s("\n\n\n\n\n [ERROR] <cServerSocketInGame::Send(...)> if (AddSizeInStream(SendStream, finalStream) == false) \n\n\n\n\n\n");
+		return;
+	}
 
 	DWORD	dwFlags = 0;
 
-	stringstream finalStream;
-	AddSizeInStream(SendStream, finalStream);
-
-	/***** WSARecv의 &(socketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : Start  *****/
 	stSOCKETINFO* socketInfo = new stSOCKETINFO();
 
 	memset(&(socketInfo->overlapped), 0, sizeof(OVERLAPPED));
 	socketInfo->overlapped.hEvent = NULL; // IOCP에서는 overlapped.hEvent를 꼭 NULL로 해줘야 한다고 합니다.
-	//ZeroMemory(socketInfo->messageBuffer, MAX_BUFFER);
 	CopyMemory(socketInfo->messageBuffer, (CHAR*)finalStream.str().c_str(), finalStream.str().length());
 	socketInfo->messageBuffer[finalStream.str().length()] = '\0';
 	socketInfo->dataBuf.len = finalStream.str().length();
 	socketInfo->dataBuf.buf = socketInfo->messageBuffer;
-	socketInfo->socket = pSocketInfo->socket;
+	socketInfo->socket = Socket;
 	socketInfo->recvBytes = 0;
 	socketInfo->sendBytes = socketInfo->dataBuf.len;
 	socketInfo->sentBytes = 0;
 
-	printf_s("[INFO] <MainServer::Send(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
+	printf_s("[INFO] <cServerSocketInGame::Send(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
 
 	int nResult = WSASend(
 		socketInfo->socket, // s: 연결 소켓을 가리키는 소켓 지정 번호
@@ -1028,50 +1126,68 @@ void cServerSocketInGame::Send(stringstream& SendStream, stSOCKETINFO* pSocketIn
 
 	if (nResult == 0)
 	{
-		printf_s("[INFO] <MainServer::Send(...)> Success to WSASend(...) \n");
+		printf_s("[INFO] <cServerSocketInGame::Send(...)> Success to WSASend(...) \n");
 
-		EnterCriticalSection(&csSendCollector);
-		SendCollector.insert(pair<SOCKET, stSOCKETINFO*>(socketInfo->socket, socketInfo));
-		LeaveCriticalSection(&csSendCollector);
-
-		// WSASend(...)후 GetQueuedCompletionStatus 받기 전에 읽으려고 하니까 상호배제가 충족되지 않아서 에러값이 나타납니다.
-		//printf_s("[INFO] <MainServer::Send(...)> socketInfo->sentBytes: %d \n", socketInfo->sentBytes);
+		EnterCriticalSection(&csCountOfSend);
+		CountOfSend++;
+		LeaveCriticalSection(&csCountOfSend);
 	}
 	else if (nResult == SOCKET_ERROR)
 	{
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
-			printf_s("[ERROR] <MainServer::Send(...)> Failt to WSASend(...) : %d \n", WSAGetLastError());
+			printf_s("[ERROR] <cServerSocketInGame::Send(...)> Fail to WSASend(...) : %d \n", WSAGetLastError());
 
 			delete socketInfo;
 			socketInfo = nullptr;
-			printf_s("[ERROR] <MainServer::Send(...)> delete socketInfo; \n");
+			printf_s("[ERROR] <cServerSocketInGame::Send(...)> delete socketInfo; \n");
 
-			/// 여기서 그냥 CloseSocket(pSocketInfo);하면 에러가 발생
-			///CloseSocket(pSocketInfo);
+			// 송신에 실패한 클라이언트의 소켓을 닫아줍니다.
+			CloseSocket(Socket);
 		}
 		else
 		{
-			printf_s("[INFO] <MainServer::Send(...)> WSASend: WSA_IO_PENDING \n");
+			printf_s("[INFO] <cServerSocketInGame::Send(...)> WSASend: WSA_IO_PENDING \n");
 
-			EnterCriticalSection(&csSendCollector);
-			SendCollector.insert(pair<SOCKET, stSOCKETINFO*>(socketInfo->socket, socketInfo));
-			LeaveCriticalSection(&csSendCollector);
+			EnterCriticalSection(&csCountOfSend);
+			CountOfSend++;
+			LeaveCriticalSection(&csCountOfSend);
 		}
 	}
 	/***** WSARecv의 &(socketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : End  *****/
 
 
-	printf_s("[END] <MainServer::Send(...)>\n");
+	printf_s("[END] <cServerSocketInGame::Send(...)>\n");
 }
 
-void cServerSocketInGame::Recv(stSOCKETINFO* pSocketInfo)
+void cServerSocketInGame::Recv(SOCKET Socket)
 {
+	/////////////////////////////
+	// 소켓 유효성 검증
+	/////////////////////////////
+	EnterCriticalSection(&csGameClients);
+	if (GameClients.find(Socket) == GameClients.end())
+	{
+		printf_s("[ERROR] <cServerSocketInGame::Recv(...)> if (GameClients.find(Socket) == GameClients.end()) \n");
+		LeaveCriticalSection(&csGameClients);
+		return;
+	}
+	stSOCKETINFO* pSocketInfo = GameClients.at(Socket);
+	if (pSocketInfo->socket == NULL || pSocketInfo->socket == INVALID_SOCKET)
+	{
+		printf_s("[ERROR] <cServerSocketInGame::Recv(...)> if (pSocketInfo->socket == NULL || pSocketInfo->socket == INVALID_SOCKET) \n");
+		LeaveCriticalSection(&csGameClients);
+		return;
+	}
+	LeaveCriticalSection(&csGameClients);
+
+
 	// DWORD sendBytes;
 	DWORD dwFlags = 0;
 
 	// stSOCKETINFO 데이터 초기화
 	ZeroMemory(&(pSocketInfo->overlapped), sizeof(OVERLAPPED));
+	pSocketInfo->overlapped.hEvent = NULL; // IOCP에서는 overlapped.hEvent를 꼭 NULL로 해줘야 한다고 합니다.
 	ZeroMemory(pSocketInfo->messageBuffer, MAX_BUFFER);
 	pSocketInfo->dataBuf.len = MAX_BUFFER;
 	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
@@ -1094,9 +1210,9 @@ void cServerSocketInGame::Recv(stSOCKETINFO* pSocketInfo)
 	{
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
-			printf_s("[ERROR] Fail to WSARecv(...) : %d\n", WSAGetLastError());
+			printf_s("[ERROR] Failt to WSARecv(...) : %d\n", WSAGetLastError());
 
-			CloseSocket(pSocketInfo);
+			CloseSocket(pSocketInfo->socket);
 		}
 		else
 		{
@@ -1109,12 +1225,12 @@ void cServerSocketInGame::Recv(stSOCKETINFO* pSocketInfo)
 ///////////////////////////////////////////
 // stringstream의 맨 앞에 size를 추가
 ///////////////////////////////////////////
-void cServerSocketInGame::AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
+bool cServerSocketInGame::AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
 {
 	if (DataStream.str().length() == 0)
 	{
 		printf_s("[ERROR] <AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
-		return;
+		return false;
 	}
 	//printf_s("[START] <AddSizeInStream(...)> \n");
 
@@ -1135,18 +1251,33 @@ void cServerSocketInGame::AddSizeInStream(stringstream& DataStream, stringstream
 	FinalStream << sizeOfFinalStream << endl;
 	FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
 
-	printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
+	//printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
 	//printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
 
 
+	// 전송할 데이터가 최대 버퍼 크기보다 크거나 같으면 전송 불가능을 알립니다.
+	// messageBuffer[MAX_BUFFER];에서 마지막에 '\0'을 넣어줘야 되기 때문에 MAX_BUFFER와 같을때도 무시합니다.
+	if (FinalStream.str().length() >= MAX_BUFFER)
+	{
+		printf_s("\n\n\n\n\n\n\n\n\n\n");
+		printf_s("[ERROR] <AddSizeInStream(...)> if (FinalStream.str().length() > MAX_BUFFER \n");
+		printf_s("[ERROR] <AddSizeInStream(...)> FinalStream.str().length(): %d \n", (int)FinalStream.str().length());
+		printf_s("[ERROR] <AddSizeInStream(...)> FinalStream.str().c_str(): %s \n", FinalStream.str().c_str());
+		printf_s("\n\n\n\n\n\n\n\n\n\n");
+		return false;
+	}
+
+
 	//printf_s("[END] <AddSizeInStream(...)> \n");
+
+	return true;
 }
 
 
 ///////////////////////////////////////////
 // 소켓 버퍼 크기 변경
 ///////////////////////////////////////////
-void cServerSocketInGame::SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf)
+void cServerSocketInGame::SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
 {
 	/*
 	The maximum send buffer size is 1,048,576 bytes.
@@ -1204,9 +1335,54 @@ void cServerSocketInGame::SetSockOpt(SOCKET& Socket, int SendBuf, int RecvBuf)
 
 
 ///////////////////////////////////////////
+// 수신한 데이터를 저장하는 덱에서 데이터를 획득
+///////////////////////////////////////////
+void cServerSocketInGame::GetDataInRecvDeque(deque<char*>* RecvDeque, char* DataBuffer)
+{
+	int idxOfStartInQueue = 0;
+	int idxOfStartInNextQueue = 0;
+
+	// 덱이 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
+	while (RecvDeque->empty() == false)
+	{
+		// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
+		if ((idxOfStartInQueue + strlen(RecvDeque->front())) < MAX_BUFFER + 1)
+		{
+			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque->front(), strlen(RecvDeque->front()));
+			idxOfStartInQueue += (int)strlen(RecvDeque->front());
+			DataBuffer[idxOfStartInQueue] = '\0';
+
+			delete[] RecvDeque->front();
+			RecvDeque->front() = nullptr;
+			RecvDeque->pop_front();
+		}
+		else
+		{
+			// 버퍼에 남은 자리 만큼 꽉 채웁니다.
+			idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
+			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque->front(), idxOfStartInNextQueue);
+			DataBuffer[MAX_BUFFER] = '\0';
+
+			// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
+			int lenOfRestInNextQueue = (int)strlen(&RecvDeque->front()[idxOfStartInNextQueue]);
+			char tempBuffer[MAX_BUFFER + 1];
+			CopyMemory(tempBuffer, &RecvDeque->front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
+			tempBuffer[lenOfRestInNextQueue] = '\0';
+
+			// 임시 버퍼에 있는 데이터들을 다시 RecvDeque->front()에 복사합니다.
+			CopyMemory(RecvDeque->front(), tempBuffer, strlen(tempBuffer));
+			RecvDeque->front()[strlen(tempBuffer)] = '\0';
+
+			break;
+		}
+	}
+}
+
+
+///////////////////////////////////////////
 // 패킷을 처리합니다.
 ///////////////////////////////////////////
-void cServerSocketInGame::ProcessReceivedPacket(char* DataBuffer, stSOCKETINFO* pSocketInfo)
+void cServerSocketInGame::ProcessReceivedPacket(char* DataBuffer, SOCKET Socket)
 {
 	if (!DataBuffer)
 	{
@@ -1227,69 +1403,16 @@ void cServerSocketInGame::ProcessReceivedPacket(char* DataBuffer, stSOCKETINFO* 
 	recvStream >> packetType;
 	printf_s("\t packetType: %d \n", packetType);
 
-	/// 오류 확인
-	if (sizeOfRecvStream == 0)
-	{
-		printf_s("[ERROR] <cServerSocketInGame::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
-		return;
-	}
-
 	// 패킷 처리 함수 포인터인 FuncProcess에 바인딩한 PacketType에 맞는 함수들을 실행합니다.
 	if (fnProcess[packetType].funcProcessPacket != nullptr)
 	{
 		// WSASend(...)에서 에러발생시 throw("error message");
-		fnProcess[packetType].funcProcessPacket(recvStream, pSocketInfo);
+		fnProcess[packetType].funcProcessPacket(recvStream, Socket);
 	}
 	else
 	{
-		printf_s("[ERROR] <cServerSocketInGame::WorkerThread()> undefiend packet type: %d \n\n", packetType);
+		printf_s("[ERROR] <cServerSocketInGame::ProcessReceivedPacket()> 정의 되지 않은 패킷 : %d \n\n", packetType);
 		printf_s("[ERROR] <cServerSocketInGame::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
-	}
-}
-
-
-///////////////////////////////////////////
-// 수신한 데이터를 저장하는 큐에서 데이터를 획득
-///////////////////////////////////////////
-void cServerSocketInGame::GetDataInRecvQueue(queue<char*>* RecvQueue, char* DataBuffer)
-{
-	int idxOfStartInQueue = 0;
-	int idxOfStartInNextQueue = 0;
-
-	// 큐가 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
-	while (RecvQueue->empty() == false)
-	{
-		// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
-		if ((idxOfStartInQueue + strlen(RecvQueue->front())) < MAX_BUFFER + 1)
-		{
-			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvQueue->front(), strlen(RecvQueue->front()));
-			idxOfStartInQueue += (int)strlen(RecvQueue->front());
-			DataBuffer[idxOfStartInQueue] = '\0';
-
-			delete[] RecvQueue->front();
-			RecvQueue->front() = nullptr;
-			RecvQueue->pop();
-		}
-		else
-		{
-			// 버퍼에 남은 자리 만큼 꽉 채웁니다.
-			idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
-			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvQueue->front(), idxOfStartInNextQueue);
-			DataBuffer[MAX_BUFFER] = '\0';
-
-
-			// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
-			int lenOfRestInNextQueue = (int)strlen(&RecvQueue->front()[idxOfStartInNextQueue]);
-			char tempBuffer[MAX_BUFFER + 1];
-			CopyMemory(tempBuffer, &RecvQueue->front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
-			tempBuffer[lenOfRestInNextQueue] = '\0';
-
-			// 임시 버퍼에 있는 데이터들을 다시 RecvQueue->front()에 복사합니다.
-			CopyMemory(RecvQueue->front(), tempBuffer, strlen(tempBuffer));
-			RecvQueue->front()[strlen(tempBuffer)] = '\0';
-
-			break;
-		}
 	}
 }
 
@@ -1302,9 +1425,7 @@ void cServerSocketInGame::Broadcast(stringstream& SendStream)
 	EnterCriticalSection(&csGameClients);
 	for (const auto& kvp : GameClients)
 	{
-		Send(SendStream, kvp.second);
-
-		printf_s("[Send to %d] <cServerSocketInGame::Broadcast(...)>\n", (int)kvp.first);
+		Send(SendStream, kvp.second->socket);
 	}
 	LeaveCriticalSection(&csGameClients);
 }
@@ -1316,40 +1437,45 @@ void cServerSocketInGame::BroadcastExceptOne(stringstream& SendStream, SOCKET Ex
 		if (kvp.second->socket == Except)
 			continue;
 
-		Send(SendStream, kvp.second);
-
-		printf_s("[Send to %d] <cServerSocketInGame::BroadcastExceptOne(...)>\n", (int)kvp.first);
+		Send(SendStream, kvp.second->socket);
 	}
 	LeaveCriticalSection(&csGameClients);
 }
 
-void cServerSocketInGame::Connected(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+void cServerSocketInGame::Connected(stringstream& RecvStream, SOCKET Socket)
 {
-	if (!pSocketInfo)
+	printf_s("[Recv by %d] <cServerSocketInGame::Connected(...)>\n", (int)Socket);
+
+
+	stSOCKETINFO* pSocketInfo = nullptr;
+	EnterCriticalSection(&csGameClients);
+	if (GameClients.find(Socket) != GameClients.end())
 	{
-		printf_s("[ERROR] <cServerSocketInGame::Connected(...)> if (!pSocketInfo) \n");
-		return;
+		pSocketInfo = GameClients.at(Socket);
 	}
-	printf_s("[Recv by %d] <cServerSocketInGame::Connected(...)>\n", (int)pSocketInfo->socket);
+	LeaveCriticalSection(&csGameClients);
 
 
 	/// 수신
 	cInfoOfPlayer infoOfPlayer;
 	RecvStream >> infoOfPlayer;
 
-	infoOfPlayer.SocketByGameServer = (int)pSocketInfo->socket;
+	infoOfPlayer.SocketByGameServer = (int)Socket;
 	infoOfPlayer.PortOfGameServer = ServerPort;
-	infoOfPlayer.PortOfGameClient = pSocketInfo->Port;
+	if (pSocketInfo)
+	{
+		infoOfPlayer.PortOfGameClient = pSocketInfo->Port;
+	}
 
 	EnterCriticalSection(&csInfoOfClients);
 	printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
-	InfoOfClients[pSocketInfo->socket] = infoOfPlayer;
+	InfoOfClients[Socket] = infoOfPlayer;
 	printf_s("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
 	LeaveCriticalSection(&csInfoOfClients);
 
 	infoOfPlayer.PrintInfo();
 
-	tsqObserver.push(pSocketInfo->socket);
+	tsqObserver.push(Socket);
 
 
 	/// 송신
@@ -1357,23 +1483,18 @@ void cServerSocketInGame::Connected(stringstream& RecvStream, stSOCKETINFO* pSoc
 	sendStream << EPacketType::CONNECTED << endl;
 	sendStream << infoOfPlayer << endl;
 
-	Send(sendStream, pSocketInfo);
+	Send(sendStream, Socket);
 
 	// 이미 생성된 Pioneer를 스폰하도록 합니다.
-	SendSpawnedPioneer(pSocketInfo);
+	SendSpawnedPioneer(Socket);
 
 
-	printf_s("[Send to %d] <cServerSocketInGame::Connected(...)>\n\n", (int)pSocketInfo->socket);
+	printf_s("[Send to %d] <cServerSocketInGame::Connected(...)>\n\n", (int)Socket);
 }
 
-void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, SOCKET Socket)
 {
-	if (!pSocketInfo)
-	{
-		printf_s("[ERROR] <cServerSocketInGame::ScoreBoard(...)> if (!pSocketInfo) \n");
-		return;
-	}
-	printf_s("[Recv by %d] <cServerSocketInGame::ScoreBoard(...)>\n", (int)pSocketInfo->socket);
+	printf_s("[Recv by %d] <cServerSocketInGame::ScoreBoard(...)>\n", (int)Socket);
 
 
 	/// 수신
@@ -1383,7 +1504,7 @@ void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSo
 	RecvStream >> infoOfScoreBoard;
 
 	EnterCriticalSection(&csInfosOfScoreBoard);
-	InfosOfScoreBoard[pSocketInfo->socket] = infoOfScoreBoard;
+	InfosOfScoreBoard[Socket] = infoOfScoreBoard;
 
 	for (auto& kvp : InfosOfScoreBoard)
 	{
@@ -1405,10 +1526,10 @@ void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, stSOCKETINFO* pSo
 		element.PrintInfo();
 	}
 
-	Send(sendStream, pSocketInfo);
+	Send(sendStream, Socket);
 
 
-	printf_s("[Send to %d] <cServerSocketInGame::ScoreBoard(...)>\n\n", (int)pSocketInfo->socket);
+	printf_s("[Send to %d] <cServerSocketInGame::ScoreBoard(...)>\n\n", (int)Socket);
 }
 
 void cServerSocketInGame::SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip)
@@ -1429,18 +1550,13 @@ void cServerSocketInGame::SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip)
 	printf_s("[END] <cServerSocketInGame::SendSpaceShip()>\n\n");
 }
 
-void cServerSocketInGame::Observation(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+void cServerSocketInGame::Observation(stringstream& RecvStream, SOCKET Socket)
 {
-	if (!pSocketInfo)
-	{
-		printf_s("[ERROR] <cServerSocketInGame::Observation(...)> if (!pSocketInfo) \n");
-		return;
-	}
-	printf_s("[Recv by %d] <cServerSocketInGame::Observation(...)>\n", (int)pSocketInfo->socket);
+	printf_s("[Recv by %d] <cServerSocketInGame::Observation(...)>\n", (int)Socket);
 
 
 	/// 수신
-	tsqObserver.push(pSocketInfo->socket);
+	tsqObserver.push(Socket);
 
 
 	/// 송신
@@ -1469,7 +1585,7 @@ void cServerSocketInGame::SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer)
 
 	printf_s("[END] <cServerSocketInGame::SendSpawnPioneer()>\n\n");
 }
-void cServerSocketInGame::SendSpawnedPioneer(stSOCKETINFO* pSocketInfo)
+void cServerSocketInGame::SendSpawnedPioneer(SOCKET Socket)
 {
 	printf_s("[START] <cServerSocketInGame::SendSpawnedPioneer(...)>\n");
 
@@ -1494,27 +1610,27 @@ void cServerSocketInGame::SendSpawnedPioneer(stSOCKETINFO* pSocketInfo)
 		sendStream << EPacketType::SPAWN_PIONEER << endl;
 		sendStream << copiedQueue.front() << endl;
 
-		Send(sendStream, pSocketInfo);
+		Send(sendStream, Socket);
 
 		copiedQueue.front().PrintInfo();
 		copiedQueue.pop();
 
-		printf_s("[Sent to %d] <cServerSocketInGame::SendSpawnedPioneer(...)>\n", (int)pSocketInfo->socket);
+		printf_s("[Sent to %d] <cServerSocketInGame::SendSpawnedPioneer(...)>\n", (int)Socket);
 	}
 
 
 	printf_s("[End] <cServerSocketInGame::SendSpawnedPioneer(...)>\n\n");
 }
 
-void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, SOCKET Socket)
 {
-	if (!pSocketInfo)
+	if (Socket == NULL || Socket == INVALID_SOCKET)
 	{
 		printf_s("[Recv by GameServer] <cServerSocketInGame::DiedPioneer(...)>\n");
 	}
 	else
 	{
-		printf_s("[Recv by %d] <cServerSocketInGame::DiedPioneer(...)>\n", (int)pSocketInfo->socket);
+		printf_s("[Recv by %d] <cServerSocketInGame::DiedPioneer(...)>\n", (int)Socket);
 	}
 
 
@@ -1527,13 +1643,13 @@ void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pS
 
 
 	/// 송신
-	if (!pSocketInfo)
+	if (Socket == NULL || Socket == INVALID_SOCKET)
 	{
 		Broadcast(RecvStream);
 	}
 	else
 	{
-		BroadcastExceptOne(RecvStream, pSocketInfo->socket);
+		BroadcastExceptOne(RecvStream, Socket);
 	}
 
 
@@ -1541,14 +1657,9 @@ void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, stSOCKETINFO* pS
 
 }
 
-void cServerSocketInGame::InfoOfPioneer(stringstream& RecvStream, stSOCKETINFO* pSocketInfo)
+void cServerSocketInGame::InfoOfPioneer(stringstream& RecvStream, SOCKET Socket)
 {
-	if (!pSocketInfo)
-	{
-		printf_s("[ERROR] <cServerSocketInGame::InfoOfPioneer(...)> if (!pSocketInfo) \n");
-		return;
-	}
-	printf_s("[Recv by %d] <cServerSocketInGame::InfoOfPioneer(...)>\n", (int)pSocketInfo->socket);
+	printf_s("[Recv by %d] <cServerSocketInGame::InfoOfPioneer(...)>\n", (int)Socket);
 
 
 	/// 수신
@@ -1584,26 +1695,3 @@ void cServerSocketInGame::InfoOfPioneer(stringstream& RecvStream, stSOCKETINFO* 
 
 	printf_s("[END] <cServerSocketInGame::InfoOfPioneer(...)>\n\n");
 }
-
-
-
-
-
-
-
-
-
-//void cServerSocketInGame::SendDisconnect()
-//{
-//	printf_s("[START] <cServerSocketInGame::SendDisconnect()>\n");
-//
-//
-//	/// 송신
-//	stringstream sendStream;
-//	sendStream << EPacketType::DISCONNECT << endl;
-//
-//	Broadcast(sendStream);
-//
-//
-//	printf_s("[END] <cServerSocketInGame::SendDisconnect()>\n\n");
-//}

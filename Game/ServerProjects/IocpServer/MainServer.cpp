@@ -46,9 +46,22 @@ MainServer::~MainServer()
 	printf_s("[START] <MainServer::~MainServer()>");
 
 
-	/////////////////////////////
-	// 먼저 소켓부터 전부 닫습니다.
-	/////////////////////////////
+	// 메인스레드 종료
+	EnterCriticalSection(&csAccept);
+	bAccept = false;
+	LeaveCriticalSection(&csAccept);
+
+
+	// 서버 리슨 소켓 닫기
+	if (ListenSocket != NULL && ListenSocket != INVALID_SOCKET)
+	{
+		closesocket(ListenSocket);
+		ListenSocket = NULL;
+
+		printf_s("\t closesocket(ListenSocket);\n");
+	}
+
+	// 클라이언트 소켓 닫기
 	EnterCriticalSection(&csClients);
 	for (auto& kvp : Clients)
 	{
@@ -71,10 +84,11 @@ MainServer::~MainServer()
 		}
 	}
 
+
 	if (nThreadCnt > 0)
 	{
 		// 모든 스레드가 실행을 중지했는지 확인한다.
-		DWORD result = WaitForMultipleObjects(nThreadCnt, hWorkerHandle, true, 5000);
+		DWORD result = WaitForMultipleObjects(nThreadCnt, hWorkerHandle, true, INFINITE);
 
 		// 모든 스레드가 중지되었다면 == 기다리던 모든 Event들이 signal이 된 경우
 		if (result == WAIT_OBJECT_0)
@@ -104,6 +118,7 @@ MainServer::~MainServer()
 		printf_s("\t nThreadCnt: %d\n", (int)nThreadCnt);
 	}
 
+
 	// 스레드 핸들 할당해제
 	if (hWorkerHandle)
 	{
@@ -112,6 +127,7 @@ MainServer::~MainServer()
 
 		printf_s("\t delete[] hWorkerHandle;\n");
 	}
+
 
 	// IOCP를 제거한다.  
 	if (hIOCP)
@@ -122,23 +138,18 @@ MainServer::~MainServer()
 		printf_s("\t CloseHandle(hIOCP);\n");
 	}
 
-	// 대기 소켓을 제거한다.
-	if (ListenSocket != NULL && ListenSocket != INVALID_SOCKET)
-	{
-		closesocket(ListenSocket);
-		ListenSocket = NULL;
-
-		printf_s("\t if (ListenSocket != INVALID_SOCKET) closesocket(ListenSocket);\n");
-	}
 
 	// 크리티컬 섹션들을 제거한다.
 	DeleteCriticalSection(&csInfoOfClients);
 	DeleteCriticalSection(&csInfoOfGames);
 
+
 	// winsock 라이브러리를 해제한다.
 	WSACleanup();
 
+
 	/*********************************************************************************/
+
 
 	// 덱에 남아있는 수신한 데이터를 전부 해제
 	EnterCriticalSection(&csMapOfRecvDeque);
@@ -348,13 +359,13 @@ void MainServer::WorkerThread()
 		/**************************************************************************/
 
 		char dataBuffer[MAX_BUFFER + 1];
-		dataBuffer[0] = '\0'; // GetDataInRecvQueue(...)를 해도 큐가 비어있는 상태면 오류가 날 수 있으므로
+		dataBuffer[0] = '\0'; // GetDataInRecvDeque(...)를 해도 덱이 비어있는 상태면 오류가 날 수 있으므로 초기화
 		dataBuffer[MAX_BUFFER] = '\0';
 
 		///////////////////////////////////////////
 		// 수신한 데이터를 저장하는 덱에서 데이터를 획득
 		///////////////////////////////////////////
-		GetDataInRecvQueue(recvDeque, dataBuffer);
+		GetDataInRecvDeque(recvDeque, dataBuffer);
 
 
 		/////////////////////////////////////////////
@@ -618,48 +629,11 @@ void MainServer::CloseSocket(SOCKET Socket)
 
 void MainServer::Send(stringstream& SendStream, SOCKET Socket)
 {
-	printf_s("[START] <MainServer::Send(...)>\n");
-
 	// https://moguwai.tistory.com/entry/Overlapped-IO?category=363471
 	// https://a292run.tistory.com/entry/%ED%8E%8C-WSASend
 	// https://docs.microsoft.com/ko-kr/windows/win32/api/winsock2/nf-winsock2-wsasend
 	// IOCP에선 WSASend(...)할 때는 버퍼를 유지해야 한다.
 	// https://moguwai.tistory.com/entry/Overlapped-IO
-
-	DWORD	dwFlags = 0;
-
-	/***** lpOverlapped와 lpCompletionRoutine을 NULL로 하여 기존 send 기능을 하는 비중첩 버전 : Start  *****/
-	//pSocketInfo->sendBytes = pSocketInfo->dataBuf.len;
-	//printf_s("[INFO] <MainServer::Send(...)> pSocketInfo->sendBytes: %d \n", pSocketInfo->sendBytes);
-
-	//int nResult = WSASend(
-	//	pSocketInfo->socket, // s: 연결 소켓을 가리키는 소켓 지정 번호
-	//	&(pSocketInfo->dataBuf), // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킨다.
-	//	1, // dwBufferCount: lpBuffers에 있는 WSABUF(:4300)구조체의 개수
-	//	(LPDWORD)& (pSocketInfo->sentBytes), // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨준다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 한다. 그래야 (잠재적인)잘못된 반환을 피할 수 있다.
-	//	dwFlags,// dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정한다.
-	//	NULL, // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
-	//	//&(pSocketInfo->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
-	//	NULL // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터. 비 중첩 소켓에서는 무시 된다.
-	//);
-
-	//if (nResult == 0)
-	//{
-	//	printf_s("[INFO] <MainServer::Send(...)> WSASend 완료 \n");
-	//	printf_s("[INFO] <MainServer::Send(...)> pSocketInfo->sentBytes: %d \n", pSocketInfo->sentBytes);
-	//}
-	//if (nResult == SOCKET_ERROR)
-	//{
-	//	if (WSAGetLastError() != WSA_IO_PENDING)
-	//	{
-	//		printf_s("[ERROR] <MainServer::Send(...)> WSASend 실패 : %d\n", WSAGetLastError());
-	//	}
-	//	else
-	//	{
-	//		printf_s("[INFO] <MainServer::Send(...)> WSASend: WSA_IO_PENDING \n");
-	//	}
-	//}
-	/***** lpOverlapped와 lpCompletionRoutine을 NULL로 하여 기존 send 기능을 하는 비중첩 버전 : End  *****/
 
 
 	/////////////////////////////
@@ -674,6 +648,8 @@ void MainServer::Send(stringstream& SendStream, SOCKET Socket)
 	}
 	LeaveCriticalSection(&csClients);
 
+	printf_s("[START] <MainServer::Send(...)>\n");
+
 
 	/***** WSARecv의 &(socketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : Start  *****/
 	stringstream finalStream;
@@ -682,6 +658,8 @@ void MainServer::Send(stringstream& SendStream, SOCKET Socket)
 		printf_s("\n\n\n\n\n [ERROR] <MainServer::Send(...)> if (AddSizeInStream(SendStream, finalStream) == false) \n\n\n\n\n\n");
 		return;
 	}
+
+	DWORD	dwFlags = 0;
 
 	stSOCKETINFO* socketInfo = new stSOCKETINFO();
 
@@ -802,6 +780,51 @@ void MainServer::Recv(SOCKET Socket)
 
 
 ///////////////////////////////////////////
+// 수신한 데이터를 저장하는 덱에서 데이터를 획득
+///////////////////////////////////////////
+void MainServer::GetDataInRecvDeque(deque<char*>* RecvDeque, char* DataBuffer)
+{
+	int idxOfStartInQueue = 0;
+	int idxOfStartInNextQueue = 0;
+
+	// 덱이 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
+	while (RecvDeque->empty() == false)
+	{
+		// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
+		if ((idxOfStartInQueue + strlen(RecvDeque->front())) < MAX_BUFFER + 1)
+		{
+			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque->front(), strlen(RecvDeque->front()));
+			idxOfStartInQueue += (int)strlen(RecvDeque->front());
+			DataBuffer[idxOfStartInQueue] = '\0';
+
+			delete[] RecvDeque->front();
+			RecvDeque->front() = nullptr;
+			RecvDeque->pop_front();
+		}
+		else
+		{
+			// 버퍼에 남은 자리 만큼 꽉 채웁니다.
+			idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
+			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque->front(), idxOfStartInNextQueue);
+			DataBuffer[MAX_BUFFER] = '\0';
+
+			// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
+			int lenOfRestInNextQueue = (int)strlen(&RecvDeque->front()[idxOfStartInNextQueue]);
+			char tempBuffer[MAX_BUFFER + 1];
+			CopyMemory(tempBuffer, &RecvDeque->front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
+			tempBuffer[lenOfRestInNextQueue] = '\0';
+
+			// 임시 버퍼에 있는 데이터들을 다시 RecvDeque->front()에 복사합니다.
+			CopyMemory(RecvDeque->front(), tempBuffer, strlen(tempBuffer));
+			RecvDeque->front()[strlen(tempBuffer)] = '\0';
+
+			break;
+		}
+	}
+}
+
+
+///////////////////////////////////////////
 // 패킷을 처리합니다.
 ///////////////////////////////////////////
 void MainServer::ProcessReceivedPacket(char* DataBuffer, SOCKET Socket)
@@ -839,53 +862,8 @@ void MainServer::ProcessReceivedPacket(char* DataBuffer, SOCKET Socket)
 }
 
 
-///////////////////////////////////////////
-// 수신한 데이터를 저장하는 큐에서 데이터를 획득
-///////////////////////////////////////////
-void MainServer::GetDataInRecvQueue(deque<char*>* RecvDeque, char* DataBuffer)
-{
-	int idxOfStartInQueue = 0;
-	int idxOfStartInNextQueue = 0;
-
-	// 큐가 빌 때까지 진행 (buffer가 다 차면 반복문을 빠져나옵니다.)
-	while (RecvDeque->empty() == false)
-	{
-		// dataBuffer를 채우려고 하는 사이즈가 최대로 MAX_BUFFER면 CopyMemory 가능.
-		if ((idxOfStartInQueue + strlen(RecvDeque->front())) < MAX_BUFFER + 1)
-		{
-			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque->front(), strlen(RecvDeque->front()));
-			idxOfStartInQueue += (int)strlen(RecvDeque->front());
-			DataBuffer[idxOfStartInQueue] = '\0';
-
-			delete[] RecvDeque->front();
-			RecvDeque->front() = nullptr;
-			RecvDeque->pop_front();
-		}
-		else
-		{
-			// 버퍼에 남은 자리 만큼 꽉 채웁니다.
-			idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
-			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque->front(), idxOfStartInNextQueue);
-			DataBuffer[MAX_BUFFER] = '\0';
-
-			// dateBuffer에 복사하고 남은 데이터들을 임시 버퍼에 복사합니다. 
-			int lenOfRestInNextQueue = (int)strlen(&RecvDeque->front()[idxOfStartInNextQueue]);
-			char tempBuffer[MAX_BUFFER + 1];
-			CopyMemory(tempBuffer, &RecvDeque->front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
-			tempBuffer[lenOfRestInNextQueue] = '\0';
-
-			// 임시 버퍼에 있는 데이터들을 다시 RecvDeque->front()에 복사합니다.
-			CopyMemory(RecvDeque->front(), tempBuffer, strlen(tempBuffer));
-			RecvDeque->front()[strlen(tempBuffer)] = '\0';
-
-			break;
-		}
-	}
-}
-
-
 /////////////////////////////////////
-// 패킷 처리 함수
+// Main Server / Main Clients
 /////////////////////////////////////
 void MainServer::Broadcast(stringstream& SendStream)
 {
@@ -1287,6 +1265,9 @@ void MainServer::StartWaitingGame(stringstream& RecvStream, SOCKET Socket)
 }
 
 
+///////////////////////////////////////////
+// Game Server / Game Clients
+///////////////////////////////////////////
 void MainServer::ActivateGameServer(stringstream& RecvStream, SOCKET Socket)
 {
 	printf_s("[Recv by %d] <MainServer::ActivateGameServer(...)>\n", (int)Socket);
