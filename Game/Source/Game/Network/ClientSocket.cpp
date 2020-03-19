@@ -55,7 +55,7 @@ uint32 cClientSocket::Run()
 			if (amount == 0)
 				continue;
 
-			printf_s("\n\n\n\n\n\n\n\n\n\n [ERROR] amount: %d \n\n\n\n\n\n\n\n\n\n\n", (int)amount);
+			//printf_s("\n\n\n\n\n\n\n\n\n\n [ERROR] amount: %d \n\n\n\n\n\n\n\n\n\n\n", (int)amount);
 			continue;
 		}
 
@@ -86,14 +86,14 @@ uint32 cClientSocket::Run()
 		/////////////////////////////////////////////
 		if (strlen(dataBuffer) == 0)
 		{
-			printf_s("\t if (strlen(dataBuffer) == 0) \n");
+			//printf_s("\t if (strlen(dataBuffer) == 0) \n");
 		}
 		/////////////////////////////////////////////
 		// 2. 데이터 버퍼 길이가 4미만이면
 		/////////////////////////////////////////////
 		if (strlen(dataBuffer) < 4)
 		{
-			printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
+			//printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
 
 			// dataBuffer의 남은 데이터를 newBuffer에 복사합니다.
 			char* newBuffer = new char[MAX_BUFFER + 1];
@@ -108,20 +108,20 @@ uint32 cClientSocket::Run()
 		/////////////////////////////////////////////
 		else if (strlen(dataBuffer) < MAX_BUFFER + 1)
 		{
-			printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
+			//printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
 
 			int idxOfStartInPacket = 0;
 			int lenOfDataBuffer = (int)strlen(dataBuffer);
 
 			while (idxOfStartInPacket < lenOfDataBuffer)
 			{
-				printf_s("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
-				printf_s("\t lenOfDataBuffer: %d \n", lenOfDataBuffer);
+				//printf_s("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
+				//printf_s("\t lenOfDataBuffer: %d \n", lenOfDataBuffer);
 
 				// 버퍼 길이가 4이하면 아직 패킷이 전부 수신되지 않은것이므로
 				if ((lenOfDataBuffer - idxOfStartInPacket) < 4)
 				{
-					printf_s("\t if (lenOfDataBuffer - idxOfStartInPacket < 4): %d \n", lenOfDataBuffer - idxOfStartInPacket);
+					//printf_s("\t if (lenOfDataBuffer - idxOfStartInPacket < 4): %d \n", lenOfDataBuffer - idxOfStartInPacket);
 
 					// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
 					char* newBuffer = new char[MAX_BUFFER + 1];
@@ -144,13 +144,13 @@ uint32 cClientSocket::Run()
 				int sizeOfPacket = 0;
 				sizeStream >> sizeOfPacket;
 
-				printf_s("\t sizeOfPacket: %d \n", sizeOfPacket);
-				printf_s("\t strlen(&dataBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&dataBuffer[idxOfStartInPacket]));
+				//printf_s("\t sizeOfPacket: %d \n", sizeOfPacket);
+				//printf_s("\t strlen(&dataBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&dataBuffer[idxOfStartInPacket]));
 
 				// 필요한 데이터 사이즈가 버퍼에 남은 데이터 사이즈보다 크면 아직 패킷이 전부 수신되지 않은것이므로
 				if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket]))
 				{
-					printf_s("\t if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket])) \n");
+					//printf_s("\t if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket])) \n");
 
 					// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
 					char* newBuffer = new char[MAX_BUFFER + 1];
@@ -177,6 +177,13 @@ uint32 cClientSocket::Run()
 				char cutBuffer[MAX_BUFFER + 1];
 				CopyMemory(cutBuffer, &dataBuffer[idxOfStartInPacket], sizeOfPacket);
 				cutBuffer[sizeOfPacket] = '\0';
+
+
+				////////////////////////////////////////////////
+				// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+				////////////////////////////////////////////////
+				VerifyPacket(cutBuffer, false);
+
 
 				///////////////////////////////////////////
 				// 패킷을 처리합니다.
@@ -257,7 +264,6 @@ bool cClientSocket::InitSocket()
 
 	printf_s("\n\n/********** cClientSocket **********/\n");
 	printf_s("[INFO] <cClientSocket::InitSocket()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::InitSocket()>"));
 
 	WSADATA wsaData;
 
@@ -265,7 +271,6 @@ bool cClientSocket::InitSocket()
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
 	{
 		printf_s("[ERROR] <cClientSocket::InitSocket()> if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)\n");
-		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)"));
 		return false;
 	}
 
@@ -276,7 +281,6 @@ bool cClientSocket::InitSocket()
 		WSACleanup();
 
 		printf_s("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)\n");
-		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::InitSocket()> if (ServerSocket == INVALID_SOCKET)"));
 		return false;
 	}
 
@@ -302,7 +306,6 @@ bool cClientSocket::Connect(const char * pszIP, int nPort)
 	}
 
 	printf_s("[INFO] <cClientSocket::Connect(...)>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::Connect(...)>"));
 
 	// 접속할 서버 정보를 저장할 구조체
 	SOCKADDR_IN stServerAddr;
@@ -316,7 +319,6 @@ bool cClientSocket::Connect(const char * pszIP, int nPort)
 	if (connect(ServerSocket, (sockaddr*)&stServerAddr, sizeof(sockaddr)) == SOCKET_ERROR)
 	{
 		printf_s("[ERROR] <cClientSocket::Connect(...)> if (connect(...) == SOCKET_ERROR)\n");
-		//UE_LOG(LogTemp, Error, TEXT("[ERROR] <cClientSocket::Connect(...)> if (connect(...) == SOCKET_ERROR)"));
 		return false;
 	}
 
@@ -404,25 +406,34 @@ void CALLBACK SendCompletionRoutineBycClientSocket(
 	IN LPWSAOVERLAPPED lpOverlapped,
 	IN DWORD dwFlags)
 {
-	printf_s("[START] <cClientSocket::CompletionROUTINE(...)> \n");
+	//printf_s("[START] <cClientSocket::CompletionROUTINE(...)> \n");
 
-	printf_s("\t cbTransferred: %d \n", (int)cbTransferred);
-
-	stSOCKETINFO* socketInfo = (stSOCKETINFO*)lpOverlapped;
-	if (socketInfo)
-	{
-		delete socketInfo;
-		printf_s("\t delete socketInfo; \n");
-	}
 
 	if (dwError != 0)
 	{
 		printf_s("[ERROR] <cClientSocket::CompletionROUTINE(...)> Fail to WSASend(...) : %d\n", WSAGetLastError());
 	}
-	printf_s("[INFO] <cClientSocket::CompletionROUTINE(...)> Success to WSASend(...)\n");
+	//printf_s("[INFO] <cClientSocket::CompletionROUTINE(...)> Success to WSASend(...)\n");
+
+	stSOCKETINFO* socketInfo = (stSOCKETINFO*)lpOverlapped;
+	if (socketInfo)
+	{
+		// 전송할 데이터 사이즈와 전송된 데이터 사이즈가 다르면
+		if (socketInfo->sendBytes != cbTransferred)
+		{
+			printf_s("\n\n\n\n\n\n\n\n\n\n");
+			printf_s("[ERROR] <cClientSocket::CompletionROUTINE(...)> if (socketInfo->sendBytes != cbTransferred) \n");
+			printf_s("[ERROR] <cClientSocket::CompletionROUTINE(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
+			printf_s("[ERROR] <cClientSocket::CompletionROUTINE(...)> cbTransferred: %d \n", (int)cbTransferred);
+			printf_s("\n\n\n\n\n\n\n\n\n\n");
+		}
+
+		delete socketInfo;
+		//printf_s("\t delete socketInfo; \n");
+	}
 
 
-	printf_s("[END] <cClientSocket::CompletionROUTINE(...)> \n");
+	//printf_s("[END] <cClientSocket::CompletionROUTINE(...)> \n");
 }
 
 void cClientSocket::Send(stringstream& SendStream)
@@ -440,7 +451,7 @@ void cClientSocket::Send(stringstream& SendStream)
 		printf_s("[ERROR] <cClientSocket::Send(...)> if (ServerSocket == NULL || ServerSocket == INVALID_SOCKET) \n");
 		return;
 	}
-	printf_s("[START] <cClientSocket::Send(...)> \n");
+	//printf_s("[START] <cClientSocket::Send(...)> \n");
 
 
 	stringstream finalStream;
@@ -463,15 +474,21 @@ void cClientSocket::Send(stringstream& SendStream)
 	socketInfo->socket = NULL;
 	socketInfo->recvBytes = 0;
 	socketInfo->sendBytes = socketInfo->dataBuf.len;
-	socketInfo->sentBytes = 0;
 
-	printf_s("[INFO] <cClientSocket::Send(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
+	//printf_s("[INFO] <cClientSocket::Send(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
+
+
+	////////////////////////////////////////////////
+	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+	////////////////////////////////////////////////
+	VerifyPacket(socketInfo->messageBuffer, true);
+
 
 	int nResult = WSASend(
 		ServerSocket, // s: 연결 소켓을 가리키는 소켓 지정 번호
 		&(socketInfo->dataBuf), // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킨다.
 		1, // dwBufferCount: lpBuffers에 있는 WSABUF(:4300)구조체의 개수
-		(LPDWORD)& (socketInfo->sentBytes), // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨준다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 한다. 그래야 (잠재적인)잘못된 반환을 피할 수 있다.
+		NULL, // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨준다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 한다. 그래야 (잠재적인)잘못된 반환을 피할 수 있다.
 		dwFlags,// dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정한다.
 		&(socketInfo->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
 		SendCompletionRoutineBycClientSocket // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터. 비 중첩 소켓에서는 무시 된다.
@@ -479,7 +496,7 @@ void cClientSocket::Send(stringstream& SendStream)
 
 	if (nResult == 0)
 	{
-		printf_s("[INFO] <cClientSocket::Send(...)> Success to WSASend(...) \n");
+		//printf_s("[INFO] <cClientSocket::Send(...)> Success to WSASend(...) \n");
 	}
 	if (nResult == SOCKET_ERROR)
 	{
@@ -496,14 +513,14 @@ void cClientSocket::Send(stringstream& SendStream)
 		}
 		else
 		{
-			printf_s("[INFO] <cClientSocket::Send(...)> WSASend: WSA_IO_PENDING \n");
+			//printf_s("[INFO] <cClientSocket::Send(...)> WSASend: WSA_IO_PENDING \n");
 		}
 	}
 
 	//send(ServerSocket, (CHAR*)finalStream.str().c_str(), finalStream.str().length(), 0);
 
 
-	printf_s("[END] <cClientSocket::Send(...)>\n");
+	//printf_s("[END] <cClientSocket::Send(...)>\n");
 }
 
 
@@ -709,12 +726,12 @@ void cClientSocket::ProcessReceivedPacket(char* DataBuffer)
 	// 사이즈 확인
 	int sizeOfRecvStream = 0;
 	recvStream >> sizeOfRecvStream;
-	printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
+	//printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
 
 	// 패킷 종류 확인
 	int packetType = -1; 
 	recvStream >> packetType;
-	printf_s("\t packetType: %d \n", packetType);
+	//printf_s("\t packetType: %d \n", packetType);
 
 	switch (packetType)
 	{
@@ -767,7 +784,6 @@ void cClientSocket::ProcessReceivedPacket(char* DataBuffer)
 bool cClientSocket::StartListen()
 {
 	printf_s("[INFO] <cClientSocket::StartListen()>\n");
-	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <cClientSocket::StartListen()>"));
 
 	if (Thread)
 		return true;

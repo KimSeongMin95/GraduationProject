@@ -158,7 +158,6 @@ void IocpServerBase::StartServer()
 		SocketInfo->socket = clientSocket;
 		SocketInfo->recvBytes = 0;
 		SocketInfo->sendBytes = 0;
-		SocketInfo->sentBytes = 0;
 
 		//flags = 0;
 
@@ -176,7 +175,7 @@ void IocpServerBase::StartServer()
 		if (GC_SocketInfo.find(clientSocket) != GC_SocketInfo.end())
 		{
 			printf_s("\n\n\n\n\n\n\n\n\n\n");
-			printf_s("[[INFO] <IocpServerBase::StartServer()> if (GC_SocketInfo.find(clientSocket) != GC_SocketInfo.end()) \n");
+			printf_s("[INFO] <IocpServerBase::StartServer()> if (GC_SocketInfo.find(clientSocket) != GC_SocketInfo.end()) \n");
 			printf_s("\n\n\n\n\n\n\n\n\n\n");
 
 			delete GC_SocketInfo[clientSocket];
@@ -187,9 +186,9 @@ void IocpServerBase::StartServer()
 
 		// 동적할당한 소켓 정보를 저장 (delete 금지)
 		EnterCriticalSection(&csClients);
-		printf_s("[[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
+		printf_s("[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
 		Clients[clientSocket] = SocketInfo;
-		printf_s("[[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
+		printf_s("[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
 		LeaveCriticalSection(&csClients);
 
 		// 동적할당한 소켓에 대한 recvDeque을 동적할당하여 저장
@@ -243,9 +242,9 @@ void IocpServerBase::StartServer()
 				EnterCriticalSection(&csClients);
 				if (Clients.find(clientSocket) != Clients.end())
 				{
-					printf_s("[[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
+					printf_s("[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
 					Clients.erase(clientSocket);
-					printf_s("[[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
+					printf_s("[INFO] <IocpServerBase::StartServer()> Clients.size(): %d\n", (int)Clients.size());
 				}
 				LeaveCriticalSection(&csClients);
 
@@ -321,7 +320,6 @@ void IocpServerBase::Recv(SOCKET Socket)
 	//pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
 	//pSocketInfo->recvBytes = 0;
 	//pSocketInfo->sendBytes = 0;
-	//pSocketInfo->sentBytes = 0;
 
 	//// 클라이언트로부터 다시 응답을 받기 위해 WSARecv 를 호출해줌
 	//int nResult = WSARecv(

@@ -170,23 +170,34 @@ public:
 	////////////////////////////////////////////////
 	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
 	////////////////////////////////////////////////
-	static void PrintPacket(char* DataBuffer, bool send)
+	static void VerifyPacket(char* DataBuffer, bool send)
 	{
-		int len = strlen(DataBuffer);
+		if (!DataBuffer)
+		{
+			printf_s("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (!DataBuffer) \n");
+			return;
+		}
 
-		char cutBuffer[MAX_BUFFER + 1];
-		CopyMemory(cutBuffer, DataBuffer, len);
-		cutBuffer[len] = '\0';
+		int len = (int)strlen(DataBuffer);
+
+		if (len < 4)
+		{
+			printf_s("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (len < 4) \n");
+			return;
+		}
+
+		char buffer[MAX_BUFFER + 1];
+		CopyMemory(buffer, DataBuffer, len);
+		buffer[len] = '\0';
 
 		for (int i = 0; i < len; i++)
 		{
-			if (cutBuffer[i] == '\n')
-				cutBuffer[i] = '_';
+			if (buffer[i] == '\n')
+				buffer[i] = '_';
 		}
 
-
 		char sizeBuffer[5]; // [1234\0]
-		CopyMemory(sizeBuffer, cutBuffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
+		CopyMemory(sizeBuffer, buffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
 		sizeBuffer[4] = '\0';
 
 		stringstream sizeStream;
@@ -194,14 +205,9 @@ public:
 		int sizeOfPacket = 0;
 		sizeStream >> sizeOfPacket;
 
-
-		if (sizeOfPacket == len)
+		if (sizeOfPacket != len)
 		{
-			printf_s("\n type: %s \n %s \n sizeOfPacket: %d \n len: %d \n", send ? "Send" : "Recv", cutBuffer, sizeOfPacket, len);
-		}
-		else
-		{
-			printf_s("\n\n\n\n\n\n\n\n\n\ntype: %s \n %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", cutBuffer, sizeOfPacket, len);
+			printf_s("\n\n\n\n\n\n\n\n\n\n type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
 		}
 	}
 };

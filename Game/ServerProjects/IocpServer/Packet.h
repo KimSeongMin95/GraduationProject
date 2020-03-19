@@ -35,7 +35,6 @@ struct stSOCKETINFO
 	char			messageBuffer[MAX_BUFFER];
 	int				recvBytes;
 	int				sendBytes; // WSASend로 전송할 데이터의 바이트 크기
-	int				sentBytes; // WSASend로 전송된 데이터의 바이트 크기
 
 	string			IPv4Addr; // 메인 클라이언트의 IP 주소
 	int				Port;	  // 메인 클라이언트의 Port 주소

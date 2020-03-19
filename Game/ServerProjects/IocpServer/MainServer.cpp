@@ -265,37 +265,36 @@ void MainServer::WorkerThread()
 			return;
 		}
 
-		printf_s("\n");
-		printf_s("[INFO] <MainServer::WorkerThread()> SocketID: %d \n", (int)pSocketInfo->socket);
-		printf_s("[INFO] <MainServer::WorkerThread()> ThreadID: %d \n", (int)GetCurrentThreadId());
-		printf_s("[INFO] <MainServer::WorkerThread()> numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
-		printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->recvBytes: %d \n", pSocketInfo->recvBytes);
+		//printf_s("\n");
+		//printf_s("[INFO] <MainServer::WorkerThread()> SocketID: %d \n", (int)pSocketInfo->socket);
+		//printf_s("[INFO] <MainServer::WorkerThread()> ThreadID: %d \n", (int)GetCurrentThreadId());
+		//printf_s("[INFO] <MainServer::WorkerThread()> numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
+		//printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->recvBytes: %d \n", pSocketInfo->recvBytes);
 
 		///////////////////////////////////////////
 		// WSASend가 완료된 것이므로 바이트 확인
 		///////////////////////////////////////////
 		if (pSocketInfo->sendBytes > 0)
 		{
-			printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->sendBytes: %d \n", pSocketInfo->sendBytes);
-			printf_s("[INFO] <MainServer::WorkerThread()> pSocketInfo->sentBytes: %d \n", pSocketInfo->sentBytes);
-			
 			// 사이즈가 같으면 제대로 전송이 완료된 것입니다.
-			if (pSocketInfo->sendBytes == pSocketInfo->sentBytes)
+			if (pSocketInfo->sendBytes == numberOfBytesTransferred)
 			{
-				printf_s("[INFO] <MainServer::WorkerThread()> if (pSocketInfo->sendBytes == pSocketInfo->sentBytes) \n");
+				//printf_s("[INFO] <MainServer::WorkerThread()> if (pSocketInfo->sendBytes == numberOfBytesTransferred) \n");
 			}
 			// 사이즈가 다르다면 제대로 전송이 되지 않은것이므로 일단 콘솔에 알립니다.
 			else
 			{
 				printf_s("\n\n\n\n\n\n\n\n\n\n");
-				printf_s("[ERROR] <MainServer::WorkerThread()> if (pSocketInfo->sendBytes != pSocketInfo->sentBytes) \n");
+				printf_s("[ERROR] <MainServer::WorkerThread()> if (pSocketInfo->sendBytes != numberOfBytesTransferred) \n");
+				printf_s("[ERROR] <MainServer::WorkerThread()> pSocketInfo->sendBytes: %d \n", pSocketInfo->sendBytes);
+				printf_s("[ERROR] <MainServer::WorkerThread()> numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
 				printf_s("\n\n\n\n\n\n\n\n\n\n");
 			}
 
 			// 송신에 사용하기위해 동적할당한 overlapped 객체를 소멸시킵니다.
 			delete pSocketInfo;
 			pSocketInfo = nullptr;
-			printf_s("[INFO] <MainServer::WorkerThread()> delete pSocketInfo; \n\n");
+			//printf_s("[INFO] <MainServer::WorkerThread()> delete pSocketInfo; \n\n");
 
 			continue;
 		}
@@ -373,14 +372,14 @@ void MainServer::WorkerThread()
 		/////////////////////////////////////////////
 		if (strlen(dataBuffer) == 0)
 		{
-			printf_s("\t if (strlen(dataBuffer) == 0) \n");
+			//printf_s("\t if (strlen(dataBuffer) == 0) \n");
 		}
 		/////////////////////////////////////////////
 		// 2. 데이터 버퍼 길이가 4미만이면
 		/////////////////////////////////////////////
 		else if (strlen(dataBuffer) < 4)
 		{
-			printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
+			//printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
 
 			// dataBuffer의 남은 데이터를 newBuffer에 복사합니다.
 			char* newBuffer = new char[MAX_BUFFER + 1];
@@ -395,20 +394,20 @@ void MainServer::WorkerThread()
 		/////////////////////////////////////////////
 		else if (strlen(dataBuffer) < MAX_BUFFER + 1)
 		{
-			printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
+			//printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
 
 			int idxOfStartInPacket = 0;
 			int lenOfDataBuffer = (int)strlen(dataBuffer);
 
 			while (idxOfStartInPacket < lenOfDataBuffer)
 			{
-				printf_s("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
-				printf_s("\t lenOfDataBuffer: %d \n", lenOfDataBuffer);
+				//printf_s("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
+				//printf_s("\t lenOfDataBuffer: %d \n", lenOfDataBuffer);
 
 				// 남은 데이터 버퍼 길이가 4이하면 아직 패킷이 전부 수신되지 않은것이므로
 				if ((lenOfDataBuffer - idxOfStartInPacket) < 4)
 				{
-					printf_s("\t if (lenOfDataBuffer - idxOfStartInPacket < 4): %d \n", lenOfDataBuffer - idxOfStartInPacket);
+					//printf_s("\t if (lenOfDataBuffer - idxOfStartInPacket < 4): %d \n", lenOfDataBuffer - idxOfStartInPacket);
 
 					// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
 					char* newBuffer = new char[MAX_BUFFER + 1];
@@ -431,13 +430,13 @@ void MainServer::WorkerThread()
 				int sizeOfPacket = 0;
 				sizeStream >> sizeOfPacket;
 
-				printf_s("\t sizeOfPacket: %d \n", sizeOfPacket);
-				printf_s("\t strlen(&dataBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&dataBuffer[idxOfStartInPacket]));
+				//printf_s("\t sizeOfPacket: %d \n", sizeOfPacket);
+				//printf_s("\t strlen(&dataBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&dataBuffer[idxOfStartInPacket]));
 
 				// 필요한 데이터 사이즈가 버퍼에 남은 데이터 사이즈보다 크면 아직 패킷이 전부 수신되지 않은것이므로
 				if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket]))
 				{
-					printf_s("\t if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket])) \n");
+					//printf_s("\t if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket])) \n");
 
 					// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
 					char* newBuffer = new char[MAX_BUFFER + 1];
@@ -464,6 +463,13 @@ void MainServer::WorkerThread()
 				char cutBuffer[MAX_BUFFER + 1];
 				CopyMemory(cutBuffer, &dataBuffer[idxOfStartInPacket], sizeOfPacket);
 				cutBuffer[sizeOfPacket] = '\0';
+
+
+				////////////////////////////////////////////////
+				// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+				////////////////////////////////////////////////
+				VerifyPacket(cutBuffer, false);
+
 
 				///////////////////////////////////////////
 				// 패킷을 처리합니다.
@@ -606,25 +612,25 @@ void MainServer::CloseSocket(SOCKET Socket)
 //	IN LPWSAOVERLAPPED lpOverlapped,
 //	IN DWORD dwFlags)
 //{
-//	printf_s("[START] <CompletionROUTINE(...)> \n");
+//	//printf_s("[START] <CompletionROUTINE(...)> \n");
 //
-//	printf_s("\t cbTransferred: %d \n", (int)cbTransferred);
+//	//printf_s("\t cbTransferred: %d \n", (int)cbTransferred);
 //
 //	stSOCKETINFO* socketInfo = (stSOCKETINFO*)lpOverlapped;
 //	if (socketInfo)
 //	{
 //		delete socketInfo;
-//		printf_s("\t delete socketInfo; \n");
+//		//printf_s("\t delete socketInfo; \n");
 //	}
 //
 //	if (dwError != 0)
 //	{
-//		printf_s("[ERROR] <CompletionROUTINE(...)> Fail to WSASend(...) : %d\n", WSAGetLastError());
+//		//printf_s("[ERROR] <CompletionROUTINE(...)> Fail to WSASend(...) : %d\n", WSAGetLastError());
 //	}
-//	printf_s("[INFO] <CompletionROUTINE(...)> Success to WSASend(...)\n");
+//	//printf_s("[INFO] <CompletionROUTINE(...)> Success to WSASend(...)\n");
 //
 //
-//	printf_s("[END] <CompletionROUTINE(...)> \n");
+//	//printf_s("[END] <CompletionROUTINE(...)> \n");
 //}
 
 void MainServer::Send(stringstream& SendStream, SOCKET Socket)
@@ -648,7 +654,7 @@ void MainServer::Send(stringstream& SendStream, SOCKET Socket)
 	}
 	LeaveCriticalSection(&csClients);
 
-	printf_s("[START] <MainServer::Send(...)>\n");
+	//printf_s("[START] <MainServer::Send(...)>\n");
 
 
 	/***** WSARecv의 &(socketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : Start  *****/
@@ -672,15 +678,21 @@ void MainServer::Send(stringstream& SendStream, SOCKET Socket)
 	socketInfo->socket = Socket;
 	socketInfo->recvBytes = 0;
 	socketInfo->sendBytes = socketInfo->dataBuf.len;
-	socketInfo->sentBytes = 0;
 
-	printf_s("[INFO] <MainServer::Send(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
+	//printf_s("[INFO] <MainServer::Send(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
+
+
+	////////////////////////////////////////////////
+	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+	////////////////////////////////////////////////
+	VerifyPacket(socketInfo->messageBuffer, true);
+
 
 	int nResult = WSASend(
 		socketInfo->socket, // s: 연결 소켓을 가리키는 소켓 지정 번호
 		&(socketInfo->dataBuf), // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킨다.
 		1, // dwBufferCount: lpBuffers에 있는 WSABUF(:4300)구조체의 개수
-		(LPDWORD)& (socketInfo->sentBytes), // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨준다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 한다. 그래야 (잠재적인)잘못된 반환을 피할 수 있다.
+		NULL, // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨준다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 한다. 그래야 (잠재적인)잘못된 반환을 피할 수 있다.
 		dwFlags,// dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정한다.
 		&(socketInfo->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터다. 비 (overlapped)중첩 소켓에서는 무시된다.
 		NULL // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터. 비 중첩 소켓에서는 무시 된다.
@@ -688,10 +700,7 @@ void MainServer::Send(stringstream& SendStream, SOCKET Socket)
 
 	if (nResult == 0)
 	{
-		printf_s("[INFO] <MainServer::Send(...)> WSASend 완료 \n");
-
-		/// WSASend(...)후 GetQueuedCompletionStatus 받기 전에 읽으려고 하니까 상호배제가 충족되지 않아서 에러값이 나타납니다.
-		///printf_s("[INFO] <MainServer::Send(...)> socketInfo->sentBytes: %d \n", socketInfo->sentBytes);
+		//printf_s("[INFO] <MainServer::Send(...)> WSASend 완료 \n");
 	}
 	else if (nResult == SOCKET_ERROR)
 	{
@@ -703,18 +712,19 @@ void MainServer::Send(stringstream& SendStream, SOCKET Socket)
 			socketInfo = nullptr;
 			printf_s("[ERROR] <MainServer::Send(...)> delete socketInfo; \n");
 
+			/// UE4의 게임서버에서는 CloseSocket(...)을 하면 Fatal Error가 발생하여 종료됩니다.
 			// 송신에 실패한 클라이언트의 소켓을 닫아줍니다.
 			CloseSocket(Socket);
 		}
 		else
 		{
-			printf_s("[INFO] <MainServer::Send(...)> WSASend: WSA_IO_PENDING \n");
+			//printf_s("[INFO] <MainServer::Send(...)> WSASend: WSA_IO_PENDING \n");
 		}
 	}
 	/***** WSARecv의 &(socketInfo->overlapped)와 중복되면 문제가 발생하므로 새로 동적할당하여 중첩되게 하는 버전 : End  *****/
 
 
-	printf_s("[END] <MainServer::Send(...)>\n");
+	//printf_s("[END] <MainServer::Send(...)>\n");
 }
 
 void MainServer::Recv(SOCKET Socket)
@@ -750,7 +760,6 @@ void MainServer::Recv(SOCKET Socket)
 	pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
 	pSocketInfo->recvBytes = 0;
 	pSocketInfo->sendBytes = 0;
-	pSocketInfo->sentBytes = 0;
 
 	// 클라이언트로부터 다시 응답을 받기 위해 WSARecv 를 호출해줌
 	int nResult = WSARecv(
@@ -773,7 +782,7 @@ void MainServer::Recv(SOCKET Socket)
 		}
 		else
 		{
-			printf_s("[INFO] <MainServer::Recv(...)> WSARecv: WSA_IO_PENDING \n");
+			//printf_s("[INFO] <MainServer::Recv(...)> WSARecv: WSA_IO_PENDING \n");
 		}
 	}
 }
@@ -841,12 +850,12 @@ void MainServer::ProcessReceivedPacket(char* DataBuffer, SOCKET Socket)
 	// 사이즈 확인
 	int sizeOfRecvStream = 0;
 	recvStream >> sizeOfRecvStream;
-	printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
+	//printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
 
 	// 패킷 종류 확인
 	int packetType = -1;
 	recvStream >> packetType;
-	printf_s("\t packetType: %d \n", packetType);
+	//printf_s("\t packetType: %d \n", packetType);
 
 	// 패킷 처리 함수 포인터인 FuncProcess에 바인딩한 PacketType에 맞는 함수들을 실행합니다.
 	if (fnProcess[packetType].funcProcessPacket != nullptr)
