@@ -1104,7 +1104,7 @@ void cClientSocketInGame::RecvInfoOfPioneer(stringstream& RecvStream)
 	{
 		tsqInfoOfPioneer.push(infoOfPioneer);
 
-		infoOfPioneer.PrintInfo();
+		//infoOfPioneer.PrintInfo();
 	}
 
 	

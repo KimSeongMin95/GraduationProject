@@ -106,13 +106,20 @@ private:
 		void ScoreBoard(float Value);
 
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
-		void ObservationLeft();
+		void ObservingLeft();
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
-		void ObservationRight();
+		void ObservingRight();
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
-		void ObservationFree();
+		void ObservingFree();
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
-		void ObservationPossess();
+		void ObservingPossess();
+
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
+		void FreeViewPoint_MoveForward(float Value);
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
+		void FreeViewPoint_MoveRight(float Value);
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
+		void FreeViewPoint_MoveUp(float Value);
 
 public:
 	void SetPioneerManager(class APioneerManager* PioneerManager);

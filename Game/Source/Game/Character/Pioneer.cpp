@@ -900,6 +900,9 @@ void APioneer::DestroyCharacter()
 
 			pioneerController->OnUnPossess();
 		}
+
+		// 관전모드 시작
+		PioneerManager->Observation();
 	}
 	else
 	{

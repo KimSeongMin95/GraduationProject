@@ -161,7 +161,10 @@ void AOnlineGameMode::StartPlay()
 
 		PioneerManager->SetPioneerController(PioneerController);
 
-		//PioneerController->SetViewTargetWithBlend(PioneerManager->GetWorldViewCamera());
+		// 초기엔 우주선을 보도록 합니다.
+		PioneerController->SetViewTargetWithBlend(SpaceShip);
+
+		PioneerManager->ViewpointState = EViewpointState::SpaceShip;
 	}
 }
 
@@ -322,8 +325,6 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 	/***********************************************************/
 	//printf_s("[START] <AOnlineGameMode::SendInfoOfSpaceShip()>\n");
 
-
-	//PioneerController->SetViewTargetWithBlend(SpaceShip);
 
 	switch (SpaceShip->State)
 	{
@@ -533,7 +534,7 @@ void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[INFO] <AMainScreenGameMode::RecvInfoOfSpaceShip()>\n");
+	//printf_s("[START] <AMainScreenGameMode::RecvInfoOfSpaceShip()>\n");
 
 
 	std::queue<cInfoOfSpaceShip> copiedQueue = ClientSocketInGame->tsqSpaceShip.copy_clear();
@@ -545,8 +546,8 @@ void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 	//}
 	SpaceShip->SetInfoOfSpaceShip(copiedQueue.back());
 
-	// 플레이어가 관전중인데 SpaceShip->StartLanding();하고 개척자중 AI가 남아있지 않으면 카메라 전환
-	//PioneerController->SetViewTargetWithBlend(SpaceShip, 2.0f);
+
+	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfSpaceShip()>\n");
 }
 
 void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
@@ -643,7 +644,7 @@ void AOnlineGameMode::SendInfoOfPioneer(float DeltaTime)
 	//printf_s("[START] <AMainScreenGameMode::SendInfoOfPioneer()>\n");
 
 
-	ClientSocketInGame->SendInfoOfPioneer(cInfoOfPioneer());
+	//ClientSocketInGame->SendInfoOfPioneer(cInfoOfPioneer());
 
 
 	//printf_s("[END] <AMainScreenGameMode::SendInfoOfPioneer()>\n");

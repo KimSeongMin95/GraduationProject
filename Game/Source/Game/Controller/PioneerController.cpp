@@ -15,6 +15,8 @@
 #include "GameMode/OnlineGameMode.h"
 
 #include "PioneerManager.h"
+
+#include "Etc/WorldViewCameraActor.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -101,13 +103,20 @@ void APioneerController::SetupInputComponent()
 	InputComponent->BindAxis("ScoreBoard", this, &APioneerController::ScoreBoard);
 
 	// Left Arrow키: 관전 변경
-	InputComponent->BindAction("Observation_Left", IE_Pressed, this, &APioneerController::ObservationLeft);
+	InputComponent->BindAction("Observing_Left", IE_Pressed, this, &APioneerController::ObservingLeft);
 	// Right Arrow키: 관전 변경
-	InputComponent->BindAction("Observation_Right", IE_Pressed, this, &APioneerController::ObservationRight);
+	InputComponent->BindAction("Observing_Right", IE_Pressed, this, &APioneerController::ObservingRight);
 	// Space Bar키: 관전 자유시점
-	InputComponent->BindAction("Observation_Free", IE_Pressed, this, &APioneerController::ObservationFree);
+	InputComponent->BindAction("Observing_Free", IE_Pressed, this, &APioneerController::ObservingFree);
 	// Enter키: 현재 관전중인 AI Pioneer에 빙의
-	InputComponent->BindAction("Observation_Possess", IE_Pressed, this, &APioneerController::ObservationPossess);
+	InputComponent->BindAction("Observing_Possess", IE_Pressed, this, &APioneerController::ObservingPossess);
+
+	// 자유시점 카메라 W S키: 전후진이동
+	InputComponent->BindAxis("FreeViewPoint_MoveForward", this, &APioneerController::FreeViewPoint_MoveForward);
+	// 자유시점 카메라 A D키: 좌우측이동
+	InputComponent->BindAxis("FreeViewPoint_MoveRight", this, &APioneerController::FreeViewPoint_MoveRight);
+	// 자유시점 카메라 Q E키: 상하이동
+	InputComponent->BindAxis("FreeViewPoint_MoveUp", this, &APioneerController::FreeViewPoint_MoveUp);
 }
 /*** Basic Function : End ***/
 
@@ -610,47 +619,148 @@ void APioneerController::ScoreBoard(float Value)
 	bScoreBoard = true;
 }
 
-void APioneerController::ObservationLeft()
+void APioneerController::ObservingLeft()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::ObservationLeft()> if (!PioneerManager)\n");
+		printf_s("[ERROR] <APioneerController::ObservingLeft()> if (!PioneerManager)\n");
 		return;
 	}
 
-
+	// 관전모드 상태일때만 실행합니다.
+	if (PioneerManager->ViewpointState == EViewpointState::Observation)
+	{
+		PioneerManager->ObserveLeft();
+	}
 }
-void APioneerController::ObservationRight()
+void APioneerController::ObservingRight()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::ObservationLeft()> if (!PioneerManager)\n");
+		printf_s("[ERROR] <APioneerController::ObservingRight()> if (!PioneerManager)\n");
 		return;
 	}
 
-
+	// 관전모드 상태일때만 실행합니다.
+	if (PioneerManager->ViewpointState == EViewpointState::Observation)
+	{
+		PioneerManager->ObserveRight();
+	}
 }
-void APioneerController::ObservationFree()
+void APioneerController::ObservingFree()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::ObservationLeft()> if (!PioneerManager)\n");
+		printf_s("[ERROR] <APioneerController::ObservingFree()> if (!PioneerManager)\n");
 		return;
 	}
 
-
+	// 관전모드 상태일때만 실행합니다.
+	if (PioneerManager->ViewpointState == EViewpointState::Idle ||
+		PioneerManager->ViewpointState == EViewpointState::Observation)
+	{
+		PioneerManager->SwitchToFreeViewpoint();
+	}
+	else if (PioneerManager->ViewpointState == EViewpointState::Free)
+	{
+		PioneerManager->Observation();
+	}
 }
-void APioneerController::ObservationPossess()
+void APioneerController::ObservingPossess()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::ObservationLeft()> if (!PioneerManager)\n");
+		printf_s("[ERROR] <APioneerController::ObservingPossess()> if (!PioneerManager)\n");
 		return;
 	}
 
-
+	// 관전모드 상태일때만 실행합니다.
+	if (PioneerManager->ViewpointState == EViewpointState::Observation)
+	{
+		PioneerManager->SendPossessObservingPioneer();
+	}
 }
 
+void APioneerController::FreeViewPoint_MoveForward(float Value)
+{
+	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	if (Value == 0.0f)
+		return;
+
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <APioneerController::FreeViewPoint_MoveForward(...)> if (!PioneerManager)\n");
+		return;
+	}
+
+	// 자유시점 모드일때만 조종합니다.
+	if (PioneerManager->ViewpointState == EViewpointState::Free)
+	{
+		//printf_s("[INFO] <APioneerController::FreeViewPoint_MoveForward(...)> if (PioneerManager->ViewpointState == EViewpointState::Free) \n");
+		return;
+	}
+
+	if (AWorldViewCameraActor* freeViewCamera = PioneerManager->GetFreeViewCamera())
+	{
+		FTransform transform = freeViewCamera->GetActorTransform();
+		transform.AddToTranslation(freeViewCamera->GetActorForwardVector() * Value);
+		freeViewCamera->SetActorTransform(transform);
+	}
+}
+
+void APioneerController::FreeViewPoint_MoveRight(float Value)
+{
+	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	if (Value == 0.0f)
+		return;
+
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <APioneerController::FreeViewPoint_MoveRight(...)> if (!PioneerManager)\n");
+		return;
+	}
+
+	// 자유시점 모드일때만 조종합니다.
+	if (PioneerManager->ViewpointState == EViewpointState::Free)
+	{
+		//printf_s("[INFO] <APioneerController::FreeViewPoint_MoveRight(...)> if (PioneerManager->ViewpointState == EViewpointState::Free) \n");
+		return;
+	}
+
+	if (AWorldViewCameraActor* freeViewCamera = PioneerManager->GetFreeViewCamera())
+	{
+		FTransform transform = freeViewCamera->GetActorTransform();
+		transform.AddToTranslation(freeViewCamera->GetActorRightVector() * Value);
+		freeViewCamera->SetActorTransform(transform);
+	}
+}
+
+void APioneerController::FreeViewPoint_MoveUp(float Value)
+{
+	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	if (Value == 0.0f)
+		return;
+
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <APioneerController::FreeViewPoint_MoveUp(...)> if (!PioneerManager)\n");
+		return;
+	}
+
+	// 자유시점 모드일때만 조종합니다.
+	if (PioneerManager->ViewpointState == EViewpointState::Free)
+	{
+		//printf_s("[INFO] <APioneerController::FreeViewPoint_MoveUp(...)> if (PioneerManager->ViewpointState == EViewpointState::Free) \n");
+		return;
+	}
+
+	if (AWorldViewCameraActor* freeViewCamera = PioneerManager->GetFreeViewCamera())
+	{
+		FTransform transform = freeViewCamera->GetActorTransform();
+		transform.AddToTranslation(freeViewCamera->GetActorUpVector() * Value);
+		freeViewCamera->SetActorTransform(transform);
+	}
+}
 
 
 void APioneerController::SetPioneerManager(class APioneerManager* PM)

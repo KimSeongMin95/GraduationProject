@@ -1680,15 +1680,14 @@ void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, SOCKET Socket)
 	else
 	{
 		printf_s("[Recv by %d] <cServerSocketInGame::DiedPioneer(...)>\n", (int)Socket);
+
+		int id = -1;
+		RecvStream >> id;
+
+		EnterCriticalSection(&csInfosOfPioneers);
+		InfosOfPioneers.erase(id);
+		LeaveCriticalSection(&csInfosOfPioneers);
 	}
-
-
-	int id;
-	RecvStream >> id;
-
-	EnterCriticalSection(&csInfosOfPioneers);
-	InfosOfPioneers.erase(id);
-	LeaveCriticalSection(&csInfosOfPioneers);
 
 
 	/// ¼Û½Å
