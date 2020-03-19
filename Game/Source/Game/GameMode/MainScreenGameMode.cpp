@@ -552,10 +552,7 @@ void AMainScreenGameMode::RecvFindGames()
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfGame> copiedQueue;
-
-	while (ClientSocket->tsqFindGames.empty() == false)
-		copiedQueue.push(ClientSocket->tsqFindGames.front_pop());
+	std::queue<cInfoOfGame> copiedQueue = ClientSocket->tsqFindGames.copy_clear();
 
 	// 방 보이게 하기
 	while (copiedQueue.empty() == false)
@@ -657,10 +654,7 @@ void AMainScreenGameMode::RecvWaitingGame()
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfGame> copiedQueue;
-
-	while (ClientSocket->tsqWaitingGame.empty() == false)
-		copiedQueue.push(ClientSocket->tsqWaitingGame.front_pop());
+	std::queue<cInfoOfGame> copiedQueue = ClientSocket->tsqWaitingGame.copy_clear();
 
 	// 게임방이 시작 카운트다운 중일때 새로 들어온 사람을 위해 Join 버튼을 활성화 시킵니다.
 	if (OnlineState == EOnlineState::PlayerOfWaitingGame)
@@ -812,10 +806,7 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 
 	OnlineState = EOnlineState::Idle;
 
-	std::queue<bool> copiedQueue;
-
-	while (ClientSocket->tsqDestroyWaitingGame.empty() == false)
-		copiedQueue.push(ClientSocket->tsqDestroyWaitingGame.front_pop());
+	std::queue<bool> copiedQueue = ClientSocket->tsqDestroyWaitingGame.copy_clear();
 
 	// 가장 최신에 받은 것만 처리합니다.
 	WaitingGameWidget->SetDestroyedVisibility(copiedQueue.back());
@@ -907,10 +898,7 @@ void AMainScreenGameMode::RecvModifyWaitingGame()
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfGame> copiedQueue;
-
-	while (ClientSocket->tsqModifyWaitingGame.empty() == false)
-		copiedQueue.push(ClientSocket->tsqModifyWaitingGame.front_pop());
+	std::queue<cInfoOfGame> copiedQueue = ClientSocket->tsqModifyWaitingGame.copy_clear();
 
 	// 가장 최신에 받은 것만 처리합니다.
 	WaitingGameWidget->SetModifiedInfo(copiedQueue.back());
@@ -1167,12 +1155,12 @@ void AMainScreenGameMode::GameClientConnectGameServer()
 	if (ClientSocketInGame->IsClientSocketOn())
 		return;
 
-	// 요청을 보냅니다.
-	ClientSocket->SendRequestInfoOfGameServer();
-
 	if (ClientSocket->tsqRequestInfoOfGameServer.empty())
+	{
+		// 요청을 보냅니다.
+		ClientSocket->SendRequestInfoOfGameServer();
 		return;
-
+	}
 
 	cInfoOfPlayer infoOfPlayer = ClientSocket->tsqRequestInfoOfGameServer.back();
 	ClientSocket->tsqRequestInfoOfGameServer.clear();
@@ -1240,7 +1228,7 @@ void AMainScreenGameMode::RecvAndApply()
 	//UE_LOG(LogTemp, Warning, TEXT("[INFO] <AMainScreenGameMode::RecvAndApply()>"));
 
 	ClearTimerOfRecvAndApply();
-	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AMainScreenGameMode::TimerOfRecvAndApply, 0.01f, true);
+	GetWorldTimerManager().SetTimer(thRecvAndApply, this, &AMainScreenGameMode::TimerOfRecvAndApply, 0.25f, true);
 }
 void AMainScreenGameMode::TimerOfRecvAndApply()
 {

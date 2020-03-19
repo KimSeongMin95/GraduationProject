@@ -42,6 +42,8 @@ protected:
 	HANDLE*			 hWorkerHandle = nullptr; // 작업 스레드 핸들		
 	DWORD			 nThreadCnt;			  // 작업 스레드 개수
 
+	//HANDLE			 hBroadcastHandle;			  //  브로드캐스팅 전용 핸들	
+
 public:
 	/** 게임서버의 임시 소켓 */
 	SOCKET SocketID;
@@ -72,8 +74,13 @@ public:
 	static std::map<SOCKET, cInfoOfScoreBoard> InfosOfScoreBoard;
 	static CRITICAL_SECTION csInfosOfScoreBoard;
 
+	static std::map<SOCKET, SOCKET> Observers;
+	static CRITICAL_SECTION csObservers;
+
 	static std::map<int, cInfoOfPioneer> InfosOfPioneers;
 	static CRITICAL_SECTION csInfosOfPioneers;
+
+
 
 public:
 	////////////////////////
@@ -155,7 +162,8 @@ public:
 	static void SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip);
 
 	static void Observation(stringstream& RecvStream, SOCKET Socket);
-	static cThreadSafetyQueue<SOCKET> tsqObserver;
+	static int SizeOfObservers();
+	static void InsertAtObersers(SOCKET Socket);
 
 	static void SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer);
 	static void SendSpawnedPioneer(SOCKET Socket);

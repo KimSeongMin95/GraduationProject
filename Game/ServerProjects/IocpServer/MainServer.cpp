@@ -513,7 +513,6 @@ void MainServer::CloseSocket(SOCKET Socket)
 	// 해당 클라이언트의 네트워크 접속 종료를 다른 클라이언트들에게 알려줍니다.
 	///////////////////////////
 	//temp.str("");
-	//temp.clear();
 	stringstream temp;
 	ExitWaitingGame(temp, Socket);
 	DestroyWaitingGame(temp, Socket);

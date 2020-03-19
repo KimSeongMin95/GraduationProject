@@ -79,6 +79,55 @@ protected:
 
 
 public:
+	static const float CellSize;
+
+	float TickOfSpaceShip; // 임시
+
+private:
+	/////////////////////////////////////////////////
+	// 필수
+	/////////////////////////////////////////////////
+	void FindPioneerController();
+	void SpawnPioneerManager();
+	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
+
+
+	/////////////////////////////////////////////////
+	// Tick (Server)
+	/////////////////////////////////////////////////
+	UFUNCTION(Category = "AOnlineGameMode")
+		void TickOfServerSocketInGame(float DeltaTime);
+
+	void GetScoreBoard(float DeltaTime); float TimerOfGetScoreBoard;
+
+	void SendInfoOfSpaceShip(float DeltaTime); float TimerOfSendInfoOfSpaceShip;
+
+	void SetInfoOfPioneer(float DeltaTime); float TimerOfSetInfoOfPioneer;
+	void GetInfoOfPioneer(float DeltaTime); float TimerOfGetInfoOfPioneer;
+
+
+	/////////////////////////////////////////////////
+	// Tick (Client)
+	/////////////////////////////////////////////////
+	UFUNCTION(Category = "AOnlineGameMode")
+		void TickOfClientSocketInGame(float DeltaTime);
+
+	void SendScoreBoard(float DeltaTime); float TimerOfSendScoreBoard;
+	void RecvScoreBoard(float DeltaTime); float TimerOfRecvScoreBoard;
+
+	void RecvInfoOfSpaceShip(float DeltaTime); float TimerOfRecvInfoOfSpaceShip;
+
+	void RecvSpawnPioneer(float DeltaTime); float TimerOfRecvSpawnPioneer;
+	void RecvDiedPioneer(float DeltaTime); float TimerOfRecvDiedPioneer;
+
+	void SendInfoOfPioneer(float DeltaTime); float TimerOfSendInfoOfPioneer;
+	void RecvInfoOfPioneer(float DeltaTime); float TimerOfRecvInfoOfPioneer;
+
+
+protected:
+
+
+public:
 	/////////////////////////////////////////////////
 	// 위젯 활성화 / 비활성화
 	/////////////////////////////////////////////////
@@ -99,11 +148,13 @@ public:
 		void DeactivateInGameScoreBoardWidget(); void _DeactivateInGameScoreBoardWidget();
 	void ToggleInGameScoreBoardWidget();
 
+
 	/////////////////////////////////////////////////
 	// 타이틀 화면으로 되돌아가기
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void BackToTitle(); void _BackToTitle();
+
 
 	/////////////////////////////////////////////////
 	// 게임종료
@@ -111,61 +162,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void TerminateGame(); void _TerminateGame();
 
-	/////////////////////////////////////////////////
-	// 타이머
-	/////////////////////////////////////////////////
-	UFUNCTION(Category = "AOnlineGameMode")
-		void ScoreBoard();
-	UFUNCTION(Category = "Timer")
-		void TimerOfScoreBoard();
-	UFUNCTION(Category = "Timer")
-		void ClearTimerOfScoreBoard();
-	FTimerHandle thScoreBoard;
-
-	UFUNCTION(Category = "AOnlineGameMode")
-		void RecvAndApply();
-	UFUNCTION(Category = "Timer")
-		void TimerOfRecvAndApply();
-	UFUNCTION(Category = "Timer")
-		void ClearTimerOfRecvAndApply();
-	FTimerHandle thRecvAndApply;
-
-private:
-	/////////////////////////////////////////////////
-	// 
-	/////////////////////////////////////////////////
-	void FindPioneerController();
-	void SpawnPioneerManager();
-	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
-
-	/////////////////////////////////////////////////
-	// 동기화
-	/////////////////////////////////////////////////
-	void GetScoreBoard();
-	void RecvScoreBoard();
-
-	void SendInfoOfSpaceShip(); // 게임서버
-	void RecvInfoOfSpaceShip(); // 게임클라이언트
-	float TickOfSpaceShip; // 임시
-
-	void RecvSpawnPioneer(); // 게임클라이언트
-
-	void RecvDiedPioneer(); // 게임클라이언트
-
-
-	void SetInfoOfPioneer(); // 게임서버
-	void GetInfoOfPioneer(); // 게임서버
-	void SendInfoOfPioneer(); // 게임클라이언트
-	void RecvInfoOfPioneer(); // 게임클라이언트
-
-protected:
-
-
-
-public:
-	
-	
-
-	static const float CellSize;
 /*** AOnlineGameMode : End ***/
 };

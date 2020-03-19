@@ -32,6 +32,9 @@ private:
 
 	deque<char*> RecvDeque;
 
+	bool bServerOn;
+	CRITICAL_SECTION csServerOn;
+
 	class cInfoOfScoreBoard MyInfoOfScoreBoard;
 	CRITICAL_SECTION csMyInfoOfScoreBoard;
 
@@ -104,6 +107,7 @@ public:
 	bool IsConnected() { return bIsConnected; }
 	bool IsClientSocketOn() { return bIsClientSocketOn; }
 
+	bool IsServerOn();
 
 	/////////////////////////////////////
 	// Game Server / Game Clients

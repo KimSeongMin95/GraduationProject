@@ -142,9 +142,19 @@ public:
 	std::queue<T> copy()
 	{
 		EnterCriticalSection(&cs);
-		std::queue<T> copyQ = q;
+		std::queue<T> copiedQ = q;
 		LeaveCriticalSection(&cs);
-		return copyQ;
+		return copiedQ;
+	}
+
+	std::queue<T> copy_clear()
+	{
+		EnterCriticalSection(&cs);
+		std::queue<T> copiedQ = q;
+		while (q.empty() == false)
+			q.pop();
+		LeaveCriticalSection(&cs);
+		return copiedQ;
 	}
 };
 

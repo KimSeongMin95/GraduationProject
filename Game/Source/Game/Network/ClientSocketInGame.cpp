@@ -34,7 +34,11 @@ cClientSocketInGame::cClientSocketInGame()
 	bIsConnected = false;
 	bIsClientSocketOn = false;
 
+	bServerOn = false;
+
 	InitializeCriticalSection(&csAccept);
+
+	InitializeCriticalSection(&csServerOn);
 
 	InitializeCriticalSection(&csMyInfoOfScoreBoard);
 	EnterCriticalSection(&csMyInfoOfScoreBoard);
@@ -56,6 +60,8 @@ cClientSocketInGame::~cClientSocketInGame()
 	CloseSocket();
 
 	DeleteCriticalSection(&csAccept);
+
+	DeleteCriticalSection(&csServerOn);
 
 	DeleteCriticalSection(&csMyInfoOfScoreBoard);
 
@@ -153,14 +159,14 @@ void cClientSocketInGame::CloseSocket()
 	// 게임클라이언트를 종료하면 남아있던 WSASend(...)를 다 보내기 위해 Alertable Wait 상태로 만듭니다.
 	SleepEx(1, true);
 
-	StartTime = FDateTime::UtcNow();
-	Ping = 0;
-
-
 	EnterCriticalSection(&csAccept);
 	bAccept = false;
 	LeaveCriticalSection(&csAccept);
 
+	StartTime = FDateTime::UtcNow();
+	EnterCriticalSection(&csPing);
+	Ping = 0;
+	LeaveCriticalSection(&csPing);
 
 	if (bIsInitialized == false)
 	{
@@ -366,6 +372,11 @@ void cClientSocketInGame::Send(stringstream& SendStream)
 
 			/// 서버소켓을 닫아도 되는지 아직 확인이 안되었습니다.
 			///CloseSocket();
+
+			// 서버 연결끊김 확인
+			EnterCriticalSection(&csServerOn);
+			bServerOn = false;
+			LeaveCriticalSection(&csServerOn);
 		}
 		else
 		{
@@ -672,6 +683,10 @@ bool cClientSocketInGame::BeginMainThread()
 
 	bIsClientSocketOn = true;
 
+	EnterCriticalSection(&csServerOn);
+	bServerOn = true;
+	LeaveCriticalSection(&csServerOn);
+
 	return true;
 }
 
@@ -866,6 +881,14 @@ void cClientSocketInGame::RunMainThread()
 	}
 }
 
+bool cClientSocketInGame::IsServerOn()
+{
+	EnterCriticalSection(&csServerOn);
+	bool result = bServerOn;
+	LeaveCriticalSection(&csServerOn);
+
+	return result;
+}
 
 /////////////////////////////////////
 // Game Server / Game Clients
@@ -1077,11 +1100,14 @@ void cClientSocketInGame::RecvInfoOfPioneer(stringstream& RecvStream)
 
 	cInfoOfPioneer infoOfPioneer;
 
-	RecvStream >> infoOfPioneer;
-	
-	tsqInfoOfPioneer.push(infoOfPioneer);
+	while (RecvStream >> infoOfPioneer)
+	{
+		tsqInfoOfPioneer.push(infoOfPioneer);
 
-	//infoOfPioneer.PrintInfo();
+		infoOfPioneer.PrintInfo();
+	}
+
+	
 
 
 	printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer(...)>\n");

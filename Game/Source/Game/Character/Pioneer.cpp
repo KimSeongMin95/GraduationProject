@@ -868,7 +868,7 @@ void APioneer::DestroyCharacter()
 			// 조종하던 Pioneer라면
 			if (APioneerController* pioneerController = Cast<APioneerController>(GetController()))
 			{
-				ServerSocketInGame->tsqObserver.push(ServerSocketInGame->SocketID);
+				ServerSocketInGame->InsertAtObersers(ServerSocketInGame->SocketID);
 			}
 		}
 		else if (ClientSocketInGame->IsClientSocketOn())
