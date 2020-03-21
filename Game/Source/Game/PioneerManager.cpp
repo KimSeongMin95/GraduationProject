@@ -25,7 +25,7 @@ APioneerManager::APioneerManager()
 
 	//SwitchState = ESwitchState::Switchable;
 
-	TargetView = nullptr;
+	ViewTarget = nullptr;
 
 	ClientSocket = nullptr;
 	ServerSocketInGame = nullptr;
@@ -582,9 +582,9 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 
 void APioneerManager::TickOfObservation()
 {
-	if (!TargetView)
+	if (!ViewTarget)
 	{
-		//printf_s("[INFO] <APioneerManager::TickOfObservation()> if (!TargetView) \n");
+		//printf_s("[INFO] <APioneerManager::TickOfObservation()> if (!ViewTarget) \n");
 		return;
 	}
 	if (!PioneerController)
@@ -592,9 +592,9 @@ void APioneerManager::TickOfObservation()
 		printf_s("[ERROR] <APioneerManager::TickOfObservation(...)> if (!PioneerController)\n");
 		return;
 	}
-	if (TargetView->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)
+	if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)
 	{
-		//printf_s("[ERROR] <APioneerManager::TickOfObservation()> if (TargetView->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false) \n");
+		//printf_s("[ERROR] <APioneerManager::TickOfObservation()> if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false) \n");
 		return;
 	}
 	/***********************************************************************/
@@ -602,7 +602,7 @@ void APioneerManager::TickOfObservation()
 
 	if (WorldViewCameraOfCurrentPioneer)
 	{
-		FVector location = TargetView->GetActorLocation();
+		FVector location = ViewTarget->GetActorLocation();
 		location.Z = 2000.0f;
 
 		WorldViewCameraOfCurrentPioneer->SetActorLocation(location);
@@ -623,32 +623,41 @@ void APioneerManager::Observation()
 	}
 	/***********************************************************************/
 
-	ViewpointState = EViewpointState::Observation;
+	TArray<int32> keys;
+	Pioneers.GetKeys(keys);
 
-	// 아직 관전하지 않고 있다면
-	if (IdCurrentlyBeingObserved == 0)
+	// Pioneer가 0명이라면 자유시점으로 전환합니다.
+	if (keys.Num() == 0)
 	{
-		TArray<int32> keys;
-		Pioneers.GetKeys(keys);
+		SwitchToFreeViewpoint();
+		return;
+	}
 
-		// Pioneer가 0명이라면 자유시점으로 전환합니다.
-		if (keys.Num() == 0)
-		{
-			SwitchToFreeViewpoint();
-			return;
-		}
 
+	if (Pioneers.Contains(IdCurrentlyBeingObserved) == false)
+	{
+		// 가장 나중에 생성된 Pioneer
 		IdCurrentlyBeingObserved = keys.Top();
 	}
 
 	if (Pioneers.Contains(IdCurrentlyBeingObserved))
 	{
-		TargetView = Pioneers[IdCurrentlyBeingObserved];
+		ViewpointState = EViewpointState::Observation;
+
+		ViewTarget = Pioneers[IdCurrentlyBeingObserved];
+
+		// 만약 변경하는 뷰타켓이 같을경우 바로 이동되므로 WorldViewCameraOfNextPioneer를 거쳐서 이동되도록 합니다.
+		if (PioneerController->GetViewTarget() == WorldViewCameraOfCurrentPioneer)
+		{
+			FTransform transform = WorldViewCameraOfCurrentPioneer->GetActorTransform();
+			WorldViewCameraOfNextPioneer->SetActorTransform(transform);
+			PioneerController->SetViewTargetWithBlend(WorldViewCameraOfNextPioneer, 0.0f);
+		}
 
 		// 카메라 위치 조정
 		TickOfObservation();
 
-		PioneerController->SetViewTargetWithBlend(WorldViewCameraOfCurrentPioneer, 2.0f, EViewTargetBlendFunction::VTBlend_Cubic);
+		PioneerController->SetViewTargetWithBlend(WorldViewCameraOfCurrentPioneer, 1.0f);
 	}
 }
 void APioneerManager::ObserveLeft()
@@ -663,35 +672,22 @@ void APioneerManager::ObserveLeft()
 	TArray<int32> keys;
 	Pioneers.GetKeys(keys);
 
-	// Pioneer가 0명이라면 자유시점으로 전환합니다.
-	if (keys.Num() == 0)
-	{
-		SwitchToFreeViewpoint();
-		return;
-	}
-
-	ViewpointState = EViewpointState::Observation;
-
 	int32 currentIdx = keys.Find(IdCurrentlyBeingObserved);
 
-	// 이미 맨 처음이므로 더이상 실행하지 않습니다.
-	if (currentIdx == 0)
-	{
-		return;
-	}
-
 	currentIdx--;
-	IdCurrentlyBeingObserved = keys[currentIdx];
 
-	if (Pioneers.Contains(IdCurrentlyBeingObserved))
+	// 맨 처음이면 끝으로 순환합니다.
+	if (currentIdx < 0)
 	{
-		TargetView = Pioneers[IdCurrentlyBeingObserved];
-
-		// 카메라 위치 조정
-		TickOfObservation();
-
-		PioneerController->SetViewTargetWithBlend(WorldViewCameraOfCurrentPioneer, 1.0f, EViewTargetBlendFunction::VTBlend_Cubic);
+		currentIdx = keys.Num() - 1;
 	}
+
+	if (keys.IsValidIndex(currentIdx))
+		IdCurrentlyBeingObserved = keys[currentIdx];
+	else
+		printf_s("[ERROR] <APioneerManager::ObserveLeft()> if (keys.IsValidIndex(currentIdx) == false)\n");
+
+	Observation();
 }
 void APioneerManager::ObserveRight()
 {
@@ -702,55 +698,50 @@ void APioneerManager::ObserveRight()
 	}
 	/***********************************************************************/
 
+
 	TArray<int32> keys;
 	Pioneers.GetKeys(keys);
 
-	// Pioneer가 0명이라면 자유시점으로 전환합니다.
-	if (keys.Num() == 0)
-	{
-		SwitchToFreeViewpoint();
-		return;
-	}
-
-	ViewpointState = EViewpointState::Observation;
-
 	int32 currentIdx = keys.Find(IdCurrentlyBeingObserved);
 
-	// 이미 맨 끝이므로 더이상 실행하지 않습니다.
-	if (currentIdx == (keys.Num() - 1))
-	{
-		return;
-	}
-
 	currentIdx++;
-	IdCurrentlyBeingObserved = keys[currentIdx];
 
-	if (Pioneers.Contains(IdCurrentlyBeingObserved))
+	// 맨 끝이면 처음으로 순환합니다.
+	if (currentIdx >= keys.Num())
 	{
-		TargetView = Pioneers[IdCurrentlyBeingObserved];
-
-		// 카메라 위치 조정
-		TickOfObservation();
-
-		PioneerController->SetViewTargetWithBlend(WorldViewCameraOfCurrentPioneer, 1.0f, EViewTargetBlendFunction::VTBlend_Cubic);
+		currentIdx = 0;
 	}
+
+	if (keys.IsValidIndex(currentIdx))
+		IdCurrentlyBeingObserved = keys[currentIdx];
+	else
+		printf_s("[ERROR] <APioneerManager::ObserveRight()> if (keys.IsValidIndex(currentIdx) == false)\n");
+
+	Observation();
 }
 
 void APioneerManager::SwitchToFreeViewpoint()
 {
+	// 이미 자유시점이면 더이상 진행하지 않습니다.
+	if (ViewpointState == EViewpointState::Free)
+	{
+		printf_s("[INFO] <APioneerManager::SwitchToFreeViewpoint()> if (ViewpointState == EViewpointState::Free) \n");
+		return;
+	}
+
 	if (!PioneerController)
 	{
 		printf_s("[ERROR] <APioneerManager::SwitchToFreeViewpoint()> if (!PioneerController)\n");
 		return;
 	}
-	if (!TargetView)
+	if (!ViewTarget)
 	{
-		//printf_s("[INFO] <APioneerManager::SwitchToFreeViewpoint()> if (!TargetView) \n");
+		//printf_s("[INFO] <APioneerManager::SwitchToFreeViewpoint()> if (!ViewTarget) \n");
 		return;
 	}
-	if (TargetView->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)
+	if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)
 	{
-		//printf_s("[ERROR] <APioneerManager::SwitchToFreeViewpoint()> if (TargetView->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false) \n");
+		//printf_s("[ERROR] <APioneerManager::SwitchToFreeViewpoint()> if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false) \n");
 		return;
 	}
 	if (!FreeViewCamera)
@@ -760,16 +751,15 @@ void APioneerManager::SwitchToFreeViewpoint()
 	}
 	/***********************************************************************/
 
+	ViewpointState = EViewpointState::Free;
 
-	FVector location = TargetView->GetActorLocation();
-	location.Z = 2000.0f;
+	FVector location = ViewTarget->GetActorLocation();
+	location.Z = 5000.0f;
 
 	FreeViewCamera->SetActorLocation(location);
-	FreeViewCamera->SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
+	FreeViewCamera->SetActorRotation(FRotator(-45.0f, 0.0f, 0.0f));
 
-	PioneerController->SetViewTargetWithBlend(FreeViewCamera, 1.0f, EViewTargetBlendFunction::VTBlend_Cubic);
-
-	ViewpointState = EViewpointState::Free;
+	PioneerController->SetViewTargetWithBlend(FreeViewCamera, 1.0f);
 }
 
 void APioneerManager::SendPossessObservingPioneer()
@@ -782,19 +772,16 @@ void APioneerManager::SendPossessObservingPioneer()
 		{
 
 
+			return;
 		}
-
-		return;
 	}
 	if (ClientSocketInGame)
 	{
 		if (ClientSocketInGame->IsClientSocketOn())
 		{
 
-
+			return;
 		}
-
-		return;
 	}
 
 	// 싱글플레이에선 바로 빙의
@@ -825,7 +812,7 @@ void APioneerManager::PossessObservingPioneerByRecv(int PermittedID)
 
 		pioneer->SocketID = ClientSocket->CopyMyInfo().SocketByGameServer;
 
-		TargetView = nullptr;
+		ViewTarget = nullptr;
 
 		PioneerOfPlayer = pioneer;
 
@@ -836,7 +823,7 @@ void APioneerManager::PossessObservingPioneerByRecv(int PermittedID)
 
 		// PioneerController->OnPossess(pioneer); 대신에, 
 		// 먼저 SetViewTargetWithBlend()하고 SetTimer로 pioneer의 죽음을 살피고 최종적으로 OnPossess 해야 함.
-		//PioneerController->SetViewTargetWithBlend(FreeViewCamera, 1.0f, EViewTargetBlendFunction::VTBlend_Cubic);
+		//PioneerController->SetViewTargetWithBlend(FreeViewCamera, 1.0f);
 	}
 }
 

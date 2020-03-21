@@ -31,6 +31,8 @@ APioneerController::APioneerController()
 
 	bObservation = true;
 
+	ViewTarget = nullptr;
+
 	// setting mouse
 	bShowMouseCursor = true; // 마우스를 보이게 합니다.
 	//DefaultMouseCursor = EMouseCursor::Default; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
@@ -394,6 +396,10 @@ void APioneerController::ArmOrDisArmWeapon()
 	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
+
+	// 건설모드 해제
+	if (Pioneer->bConstructingMode)
+		Pioneer->bConstructingMode = false;
 
 	if (Pioneer->GetCurrentWeapon())
 		Pioneer->Disarming();
@@ -767,6 +773,14 @@ void APioneerController::SetPioneerManager(class APioneerManager* PM)
 {
 	this->PioneerManager = PM;
 }
+
+void APioneerController::SetViewTargetWithBlend(class AActor* NewViewTarget, float BlendTime, enum EViewTargetBlendFunction BlendFunc, float BlendExp, bool bLockOutgoing)
+{
+	ViewTarget = NewViewTarget;
+
+	APlayerController::SetViewTargetWithBlend(NewViewTarget, BlendTime, BlendFunc, BlendExp, bLockOutgoing);
+}
+
 /*** APioneerController : End ***/
 
 

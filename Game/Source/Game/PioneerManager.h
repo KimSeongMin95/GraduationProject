@@ -93,7 +93,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
 		/** 변경할 APioneer를 저장합니다. */
-		class APioneer* TargetView = nullptr;
+		class APioneer* ViewTarget = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
 		/** 최종적으로 플레이어가 조종하는 APioneer입니다. */

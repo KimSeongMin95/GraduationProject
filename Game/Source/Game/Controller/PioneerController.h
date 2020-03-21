@@ -51,6 +51,8 @@ private:
 	/** 관전상태 */
 	bool bObservation;
 
+	AActor* ViewTarget = nullptr;
+
 public:
 	/** true면 마우스 커서로 navigating 합니다. */
 	uint32 bMoveToMouseCursor : 1; 
@@ -123,6 +125,11 @@ private:
 
 public:
 	void SetPioneerManager(class APioneerManager* PioneerManager);
+
+	// bLockOutgoing을 true로 해야 중간에 가다가 ViewTarget이 변경되어도 자연스럽게 넘어갑니다.
+	virtual void SetViewTargetWithBlend(class AActor* NewViewTarget, float BlendTime = 0.0f, enum EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true) override;
+	
+	//FORCEINLINE class AActor* GetViewTarget() { return ViewTarget; }
 
 /*** APioneerController : End ***/
 
