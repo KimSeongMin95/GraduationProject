@@ -375,7 +375,17 @@ enum EPacketType
 		Recv [INFO_OF_PIONEER]:
 		Send [INFO_OF_PIONEER]:
 	*/
-	INFO_OF_PIONEER
+	INFO_OF_PIONEER,
+
+	/** 게임클라이언트가 관전중인 Pioneer에 빙의하려는 요청을 보내면
+	Game Client:
+		Recv [POSSESS_PIONEER]:
+		Send [POSSESS_PIONEER]:
+	Game Server:
+		Recv [POSSESS_PIONEER]:
+		Send [POSSESS_PIONEER]: 이미 누군가가 빙의중이거나 Pioneer가 죽으면 -1를 보냅니다.
+	*/
+	POSSESS_PIONEER
 };
 
 
@@ -804,6 +814,46 @@ public:
 		bHasPistolType = false;
 		bHasRifleType = false;
 		bHasLauncherType = false;
+	}
+	cInfoOfPioneer& operator=(const cInfoOfPioneer& other)
+	{
+		ID = other.ID;
+		//SocketID = other.SocketID; // SocketID는 따로 적용하기 위해
+
+		ScaleX = other.ScaleX;
+		ScaleY = other.ScaleY;
+		ScaleZ = other.ScaleZ;
+
+		RotX = other.RotX;
+		RotY = other.RotY;
+		RotZ = other.RotZ;
+
+		LocX = other.LocX;
+		LocY = other.LocY;
+		LocZ = other.LocZ;
+
+		TargetRotX = other.TargetRotX;
+		TargetRotY = other.TargetRotY;
+		TargetRotZ = other.TargetRotZ;
+
+		HealthPoint = other.HealthPoint;
+		MaxHealthPoint = other.MaxHealthPoint;
+		//bDying = other.bDying; // bDying는 따로 적용하기 위해
+
+		MoveSpeed = other.MoveSpeed;
+		AttackSpeed = other.AttackSpeed;
+
+		AttackPower = other.AttackPower;
+
+		AttackRange = other.AttackRange;
+		DetectRange = other.DetectRange;
+		SightRange = other.SightRange;
+
+		bHasPistolType = other.bHasPistolType;
+		bHasRifleType = other.bHasRifleType;
+		bHasLauncherType = other.bHasLauncherType;
+
+		return *this;
 	}
 	~cInfoOfPioneer()
 	{

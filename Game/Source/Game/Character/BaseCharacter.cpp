@@ -273,9 +273,6 @@ float ABaseCharacter::DistanceToActor(AActor* Actor)
 
 void ABaseCharacter::SetHealthPoint(float Value)
 {
-	if (bDying)
-		return;
-
 	HealthPoint += Value;
 
 	if (HealthPoint > 0.0f)
@@ -305,12 +302,21 @@ void ABaseCharacter::SetHealthPoint(float Value)
 	}
 
 	if (HelthPointBar)
+	{
 		HelthPointBar->DestroyComponent();
+		HelthPointBar = nullptr;
+	}
 
 	if (DetectRangeSphereComp)
+	{
 		DetectRangeSphereComp->DestroyComponent();
+		DetectRangeSphereComp = nullptr;
+	}
 	if (AttackRangeSphereComp)
+	{
 		AttackRangeSphereComp->DestroyComponent();
+		AttackRangeSphereComp = nullptr;
+	}
 }
 
 

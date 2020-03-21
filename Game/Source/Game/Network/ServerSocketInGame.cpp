@@ -106,6 +106,8 @@ cServerSocketInGame::cServerSocketInGame()
 	fnProcess[EPacketType::OBSERVATION].funcProcessPacket = Observation;
 	fnProcess[EPacketType::DIED_PIONEER].funcProcessPacket = DiedPioneer;
 	fnProcess[EPacketType::INFO_OF_PIONEER].funcProcessPacket = InfoOfPioneer;
+	fnProcess[EPacketType::POSSESS_PIONEER].funcProcessPacket = PossessPioneer;
+	
 }
 
 cServerSocketInGame::~cServerSocketInGame()
@@ -1523,7 +1525,7 @@ void cServerSocketInGame::Connected(stringstream& RecvStream, SOCKET Socket)
 
 void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, SOCKET Socket)
 {
-	printf_s("[Recv by %d] <cServerSocketInGame::ScoreBoard(...)>\n", (int)Socket);
+	//printf_s("[Recv by %d] <cServerSocketInGame::ScoreBoard(...)>\n", (int)Socket);
 
 
 	/// 수신
@@ -1546,7 +1548,7 @@ void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, SOCKET Socket)
 	LeaveCriticalSection(&csInfosOfScoreBoard);
 
 	std::sort(vec.begin(), vec.end());
-	printf_s("\t vec.size(): %d\n", (int)vec.size());
+	//printf_s("\t vec.size(): %d\n", (int)vec.size());
 
 
 	/// 송신
@@ -1561,12 +1563,12 @@ void cServerSocketInGame::ScoreBoard(stringstream& RecvStream, SOCKET Socket)
 	Send(sendStream, Socket);
 
 
-	printf_s("[Send to %d] <cServerSocketInGame::ScoreBoard(...)>\n\n", (int)Socket);
+	//printf_s("[Send to %d] <cServerSocketInGame::ScoreBoard(...)>\n\n", (int)Socket);
 }
 
 void cServerSocketInGame::SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip)
 {
-	printf_s("[START] <cServerSocketInGame::SendSpaceShip()>\n");
+	//printf_s("[START] <cServerSocketInGame::SendSpaceShip()>\n");
 
 
 	/// 송신
@@ -1579,7 +1581,7 @@ void cServerSocketInGame::SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip)
 	//InfoOfSpaceShip.PrintInfo();
 
 
-	printf_s("[END] <cServerSocketInGame::SendSpaceShip()>\n\n");
+	//printf_s("[END] <cServerSocketInGame::SendSpaceShip()>\n\n");
 }
 
 void cServerSocketInGame::Observation(stringstream& RecvStream, SOCKET Socket)
@@ -1681,7 +1683,7 @@ void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, SOCKET Socket)
 	{
 		printf_s("[Recv by %d] <cServerSocketInGame::DiedPioneer(...)>\n", (int)Socket);
 
-		int id = -1;
+		int id = 0;
 		RecvStream >> id;
 
 		EnterCriticalSection(&csInfosOfPioneers);
@@ -1707,7 +1709,7 @@ void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, SOCKET Socket)
 
 void cServerSocketInGame::InfoOfPioneer(stringstream& RecvStream, SOCKET Socket)
 {
-	printf_s("[Recv by %d] <cServerSocketInGame::InfoOfPioneer(...)>\n", (int)Socket);
+	//printf_s("[Recv by %d] <cServerSocketInGame::InfoOfPioneer(...)>\n", (int)Socket);
 
 
 	/// 수신
@@ -1716,15 +1718,22 @@ void cServerSocketInGame::InfoOfPioneer(stringstream& RecvStream, SOCKET Socket)
 	cInfoOfPioneer infoOfPioneer;
 	RecvStream >> infoOfPioneer; // 관전중인 게임클라이언트는 inofOfPioneer.ID == 0 입니다.
 
+
+	//printf_s("\t ID: %d, SocketID: %d \n", infoOfPioneer.ID, infoOfPioneer.SocketID);
+
 	EnterCriticalSection(&csInfosOfPioneers);
 	if (InfosOfPioneers.find(infoOfPioneer.ID) != InfosOfPioneers.end())
 	{
 		InfosOfPioneers.at(infoOfPioneer.ID) = infoOfPioneer;
+
+		tsqInfoOfPioneer.push(infoOfPioneer);
 	}
 
 	// 복사
 	for (auto& kvp : InfosOfPioneers)
 	{
+		//// 해당 클라이언트는 제외
+		//printf_s("\t kvp.first: %d, ID: %d \n", (int)kvp.first, infoOfPioneer.ID);
 		if (kvp.first == infoOfPioneer.ID)
 			continue;
 
@@ -1732,7 +1741,7 @@ void cServerSocketInGame::InfoOfPioneer(stringstream& RecvStream, SOCKET Socket)
 	}
 	LeaveCriticalSection(&csInfosOfPioneers);
 
-	tsqInfoOfPioneer.push(infoOfPioneer);
+
 
 
 	/// 송신
@@ -1763,8 +1772,95 @@ void cServerSocketInGame::InfoOfPioneer(stringstream& RecvStream, SOCKET Socket)
 		sendStream << copiedQueue.front() << endl;
 		copiedQueue.pop();
 	}
-	Broadcast(sendStream);
+	//Broadcast(sendStream);
+	Send(sendStream, Socket);
+
+	//printf_s("[END] <cServerSocketInGame::InfoOfPioneer(...)>\n\n");
+}
 
 
-	printf_s("[END] <cServerSocketInGame::InfoOfPioneer(...)>\n\n");
+void cServerSocketInGame::PossessPioneer(stringstream& RecvStream, SOCKET Socket)
+{
+	printf_s("[Recv by %d] <cServerSocketInGame::PossessPioneer(...)>\n", (int)Socket);
+
+
+	/// 수신
+	int requestedID = 0;
+	RecvStream >> requestedID;
+
+
+	EnterCriticalSection(&csInfosOfPioneers);
+	// 존재하지 않으면
+	if (InfosOfPioneers.find(requestedID) == InfosOfPioneers.end())
+	{
+		requestedID = 0;
+
+		printf_s("\t if (InfosOfPioneers.find(requestedID) == InfosOfPioneers.end()) \n");
+	}
+	else
+	{
+		// 빙의하고 있는 플레이어가 없고 죽은 상태가 아니라면
+		if (InfosOfPioneers.at(requestedID).SocketID == 0 && InfosOfPioneers.at(requestedID).bDying == false)
+		{
+			InfosOfPioneers.at(requestedID).SocketID = (int)Socket;
+
+			// 관전자에서 지웁니다.
+			EnterCriticalSection(&csObservers);
+			Observers.erase(Socket);
+			LeaveCriticalSection(&csObservers);
+
+			printf_s("\t requestedID: %d \n", requestedID);
+		}
+		else
+		{
+			requestedID = 0;
+
+			printf_s("\t if (InfosOfPioneers.at(requestedID).SocketID != 0 || InfosOfPioneers.at(requestedID).bDying == true \n");
+		}
+	}
+	LeaveCriticalSection(&csInfosOfPioneers);
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::POSSESS_PIONEER << endl;
+	sendStream << requestedID << endl;
+	
+	Send(sendStream, Socket);
+
+
+	printf_s("[Send to %d] <cServerSocketInGame::PossessPioneer(...)>\n\n", (int)Socket);
+}
+
+bool cServerSocketInGame::PossessingPioneer(int RequestingID)
+{
+	printf_s("[START] <cServerSocketInGame::PossessingPioneer(...)>\n\n");
+
+
+	EnterCriticalSection(&csInfosOfPioneers);
+	if (InfosOfPioneers.find(RequestingID) != InfosOfPioneers.end())
+	{
+		// 빙의하고 있는 플레이어가 없고 죽은 상태가 아니라면
+		if (InfosOfPioneers.at(RequestingID).SocketID == 0 && InfosOfPioneers.at(RequestingID).bDying == false)
+		{
+			InfosOfPioneers.at(RequestingID).SocketID = (int)SocketID;
+
+			// 관전자에서 지웁니다.
+			EnterCriticalSection(&csObservers);
+			Observers.erase(SocketID);
+			LeaveCriticalSection(&csObservers);
+
+			LeaveCriticalSection(&csInfosOfPioneers);
+
+
+			printf_s("\t RequestingID: %d \n", RequestingID);
+			printf_s("[END] <cServerSocketInGame::PossessingPioneer(...)>\n\n");
+			return true;
+		}
+	}
+	LeaveCriticalSection(&csInfosOfPioneers);
+		
+
+	printf_s("[END] <cServerSocketInGame::PossessingPioneer(...)>\n\n");
+	return false;
 }

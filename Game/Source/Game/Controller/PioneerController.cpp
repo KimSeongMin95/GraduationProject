@@ -31,8 +31,6 @@ APioneerController::APioneerController()
 
 	bObservation = true;
 
-	ViewTarget = nullptr;
-
 	// setting mouse
 	bShowMouseCursor = true; // 마우스를 보이게 합니다.
 	//DefaultMouseCursor = EMouseCursor::Default; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
@@ -683,7 +681,7 @@ void APioneerController::ObservingPossess()
 	// 관전모드 상태일때만 실행합니다.
 	if (PioneerManager->ViewpointState == EViewpointState::Observation)
 	{
-		PioneerManager->SendPossessObservingPioneer();
+		PioneerManager->PossessObservingPioneer();
 	}
 }
 
@@ -700,7 +698,7 @@ void APioneerController::FreeViewPoint_MoveForward(float Value)
 	}
 
 	// 자유시점 모드일때만 조종합니다.
-	if (PioneerManager->ViewpointState == EViewpointState::Free)
+	if (PioneerManager->ViewpointState != EViewpointState::Free)
 	{
 		//printf_s("[INFO] <APioneerController::FreeViewPoint_MoveForward(...)> if (PioneerManager->ViewpointState == EViewpointState::Free) \n");
 		return;
@@ -709,7 +707,7 @@ void APioneerController::FreeViewPoint_MoveForward(float Value)
 	if (AWorldViewCameraActor* freeViewCamera = PioneerManager->GetFreeViewCamera())
 	{
 		FTransform transform = freeViewCamera->GetActorTransform();
-		transform.AddToTranslation(freeViewCamera->GetActorForwardVector() * Value);
+		transform.AddToTranslation(freeViewCamera->GetActorForwardVector() * Value * 32.0f);
 		freeViewCamera->SetActorTransform(transform);
 	}
 }
@@ -727,7 +725,7 @@ void APioneerController::FreeViewPoint_MoveRight(float Value)
 	}
 
 	// 자유시점 모드일때만 조종합니다.
-	if (PioneerManager->ViewpointState == EViewpointState::Free)
+	if (PioneerManager->ViewpointState != EViewpointState::Free)
 	{
 		//printf_s("[INFO] <APioneerController::FreeViewPoint_MoveRight(...)> if (PioneerManager->ViewpointState == EViewpointState::Free) \n");
 		return;
@@ -736,8 +734,12 @@ void APioneerController::FreeViewPoint_MoveRight(float Value)
 	if (AWorldViewCameraActor* freeViewCamera = PioneerManager->GetFreeViewCamera())
 	{
 		FTransform transform = freeViewCamera->GetActorTransform();
-		transform.AddToTranslation(freeViewCamera->GetActorRightVector() * Value);
+		transform.AddToTranslation(freeViewCamera->GetActorRightVector() * Value * 32.0f);
 		freeViewCamera->SetActorTransform(transform);
+	}
+	else
+	{
+		printf_s("[ERROR] <APioneerController::FreeViewPoint_MoveRight(...)> else \n");
 	}
 }
 
@@ -754,7 +756,7 @@ void APioneerController::FreeViewPoint_MoveUp(float Value)
 	}
 
 	// 자유시점 모드일때만 조종합니다.
-	if (PioneerManager->ViewpointState == EViewpointState::Free)
+	if (PioneerManager->ViewpointState != EViewpointState::Free)
 	{
 		//printf_s("[INFO] <APioneerController::FreeViewPoint_MoveUp(...)> if (PioneerManager->ViewpointState == EViewpointState::Free) \n");
 		return;
@@ -762,9 +764,9 @@ void APioneerController::FreeViewPoint_MoveUp(float Value)
 
 	if (AWorldViewCameraActor* freeViewCamera = PioneerManager->GetFreeViewCamera())
 	{
-		FTransform transform = freeViewCamera->GetActorTransform();
-		transform.AddToTranslation(freeViewCamera->GetActorUpVector() * Value);
-		freeViewCamera->SetActorTransform(transform);
+		FVector moveUp = freeViewCamera->GetActorUpVector() * Value * 32.0f;
+		FVector movedLocation = freeViewCamera->GetActorLocation() + moveUp;
+		freeViewCamera->SetActorLocation(movedLocation);
 	}
 }
 
@@ -776,8 +778,6 @@ void APioneerController::SetPioneerManager(class APioneerManager* PM)
 
 void APioneerController::SetViewTargetWithBlend(class AActor* NewViewTarget, float BlendTime, enum EViewTargetBlendFunction BlendFunc, float BlendExp, bool bLockOutgoing)
 {
-	ViewTarget = NewViewTarget;
-
 	APlayerController::SetViewTargetWithBlend(NewViewTarget, BlendTime, BlendFunc, BlendExp, bLockOutgoing);
 }
 

@@ -131,9 +131,13 @@ public:
 	void RecvDiedPioneer(stringstream& RecvStream);
 	cThreadSafetyQueue<int> tsqDiedPioneer; // ID ¿˙¿Â?
 
-	void SendInfoOfPioneer(cInfoOfPioneer InfoOfPioneer);
+	void SendInfoOfPioneer(class APioneer* PioneerOfPlayer);
 	void RecvInfoOfPioneer(stringstream& RecvStream);
 	cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
+
+	void SendPossessPioneer(int RequestingID);
+	void RecvPossessPioneer(stringstream& RecvStream);
+	cThreadSafetyQueue<int> tsqPossessPioneer;
 
 
 	/////////////////////////////////////

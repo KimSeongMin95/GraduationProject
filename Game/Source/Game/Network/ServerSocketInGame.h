@@ -173,7 +173,8 @@ public:
 	static void InfoOfPioneer(stringstream& RecvStream, SOCKET Socket);
 	static cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
 
-
+	static void PossessPioneer(stringstream& RecvStream, SOCKET Socket);
+	bool PossessingPioneer(int RequestingID);
 
 	////////////////////////////////////////////////
 	// (임시) 패킷 사이즈와 실제 길이 검증용 함수

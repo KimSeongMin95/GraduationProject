@@ -331,24 +331,28 @@ void APioneer::RotateTargetRotation(float DeltaTime)
 
 void APioneer::SetHealthPoint(float Value)
 {
-	if (bDying)
-		return;
-
 	Super::SetHealthPoint(Value);
 
 	if (HealthPoint > 0.0f)
 		return;
 
 	if (CursorToWorld)
+	{
 		CursorToWorld->DestroyComponent();
+		CursorToWorld = nullptr;
+	}
 
 	if (Building)
+	{
 		Building->Destroy();
+		Building = nullptr;
+	}
 
 	if (AIController)
 	{
 		AIController->UnPossess();
 		AIController->Destroy();
+		AIController = nullptr;
 	}
 }
 
@@ -866,7 +870,7 @@ void APioneer::DestroyCharacter()
 			ServerSocketInGame->DiedPioneer(sendStream, NULL);
 
 			// 조종하던 Pioneer라면
-			if (APioneerController* pioneerController = Cast<APioneerController>(GetController()))
+			if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 			{
 				ServerSocketInGame->InsertAtObersers(ServerSocketInGame->SocketID);
 			}
@@ -874,7 +878,7 @@ void APioneer::DestroyCharacter()
 		else if (ClientSocketInGame->IsClientSocketOn())
 		{
 			// 조종하던 Pioneer라면
-			if (APioneerController* pioneerController = Cast<APioneerController>(GetController()))
+			if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 			{
 				ClientSocketInGame->SendDiedPioneer(ID);
 
@@ -886,23 +890,25 @@ void APioneer::DestroyCharacter()
 	if (PioneerManager)
 	{
 		PioneerManager->Pioneers.Remove(ID);
-		
-		// 튜토리얼(싱글플레이)에서는 관전상태에서 직접 빙의
-		// 멀티플레이에서는 관전상태에서 게임서버에 요청해서 허락받으면 빙의
-		//PioneerManager->SwitchOtherPioneer(this, 1.0f);
+		PioneerManager->PioneerOfPlayer = nullptr;
 
 		// 일단 CameraOfCurrentPioneer로 카메라 전환
-		if (APioneerController* pioneerController = Cast<APioneerController>(GetController()))
+		if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 		{
 			CopyTopDownCameraTo(PioneerManager->GetCameraOfCurrentPioneer());
 
-			pioneerController->SetViewTargetWithBlend(PioneerManager->GetCameraOfCurrentPioneer());
+			// 먼저 카메라 변경
+			pioneerController->SetViewTarget(PioneerManager->GetCameraOfCurrentPioneer());
 
+			// 카메라타겟 활성화를 자동관리하지 않도록 합니다. (true일 때, 폰에 빙의하면 자동으로 뷰타겟을 변경?)
+			pioneerController->bAutoManageActiveCameraTarget = false;
+
+			// 빙의 해제
 			pioneerController->OnUnPossess();
-		}
 
-		// 관전모드 시작
-		PioneerManager->Observation();
+			// 관전모드 시작
+			PioneerManager->Observation();
+		}
 	}
 	else
 	{
@@ -1320,8 +1326,10 @@ void APioneer::SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer)
 	TargetRotation = FRotator(InfoOfPioneer.TargetRotX, InfoOfPioneer.TargetRotY, InfoOfPioneer.TargetRotZ);
 
 	HealthPoint = InfoOfPioneer.HealthPoint;
+	SetHealthPoint(NULL);
+
 	MaxHealthPoint = InfoOfPioneer.MaxHealthPoint;
-	bDying = InfoOfPioneer.bDying;
+	//bDying = InfoOfPioneer.bDying;
 
 	MoveSpeed = InfoOfPioneer.MoveSpeed;
 	AttackSpeed = InfoOfPioneer.AttackSpeed;
@@ -1362,7 +1370,7 @@ class cInfoOfPioneer APioneer::GetInfoOfPioneer()
 
 	infoOfPioneer.HealthPoint = HealthPoint;
 	infoOfPioneer.MaxHealthPoint = MaxHealthPoint;
-	infoOfPioneer.bDying = bDying;
+	//infoOfPioneer.bDying = bDying;
 
 	infoOfPioneer.MoveSpeed = MoveSpeed;
 	infoOfPioneer.AttackSpeed = AttackSpeed;

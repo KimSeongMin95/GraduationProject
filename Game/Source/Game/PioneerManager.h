@@ -92,21 +92,24 @@ private:
 	//ESwitchState SwitchState;
 
 	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
-		/** 변경할 APioneer를 저장합니다. */
+		/** 관전중인 Pioneer를 저장합니다. 상태창에 표시할 때 쓰입니다. */
 		class APioneer* ViewTarget = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
-		/** 최종적으로 플레이어가 조종하는 APioneer입니다. */
-		class APioneer* PioneerOfPlayer = nullptr;
 
 	/** 네트워크 */
 	class cClientSocket* ClientSocket = nullptr;
 	class cServerSocketInGame* ServerSocketInGame = nullptr;
 	class cClientSocketInGame* ClientSocketInGame = nullptr;
 
-	
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 인게임 UI */
+		class UInGameWidget* InGameWidget = nullptr;
 
 public:
+	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
+		/** 최종적으로 플레이어가 조종하는 APioneer입니다. */
+		class APioneer* PioneerOfPlayer = nullptr;
+
 	int KeyID;
 	UPROPERTY(EditAnywhere, Category = "PioneerManager")
 		/** APioneer 객체들을 관리할 TMap입니다. */
@@ -152,7 +155,9 @@ public:
 	/////////////////////////////////////////
 	// public
 	/////////////////////////////////////////
-	void SetPioneerController(class APioneerController* PioneerController);
+	void SetPioneerController(class APioneerController* pPioneerController);
+
+	void SetInGameWidget(class UInGameWidget* pInGameWidget);
 
 	/** APioneer 객체를 생성합니다. */
 	void SpawnPioneer(FTransform Transform);
@@ -161,7 +166,7 @@ public:
 	///** 다른 폰으로 변경하는 함수입니다.
 	//순서: FindTargetViewActor -> SwitchNext -> SwitchFinish -> PossessPioneer */
 	//void SwitchOtherPioneer(class APioneer* CurrentPioneer, float BlendTime = 0, EViewTargetBlendFunction BlendFunc = VTBlend_Cubic, float BlendExp = 0, bool bLockOutgoing = true); // bLockOutgoing: 보간 도중에 나가는 뷰타겟을 업데이트하지 않음.
-
+	
 	FORCEINLINE class AWorldViewCameraActor* GetFreeViewCamera() { return FreeViewCamera; }
 	FORCEINLINE class AWorldViewCameraActor* GetCameraOfCurrentPioneer() { return CameraOfCurrentPioneer; }
 	FORCEINLINE class AWorldViewCameraActor* GetWorldViewCameraOfCurrentPioneer() { return WorldViewCameraOfCurrentPioneer; }
@@ -174,8 +179,11 @@ public:
 
 	void SwitchToFreeViewpoint();
 
-	void SendPossessObservingPioneer(); // 서버에 빙의 요청을 보냅니다.
+	void PossessObservingPioneer(); // 빙의 (서버, 클라이언트, 싱글플레이)
 	void PossessObservingPioneerByRecv(int PermittedID); // 서버로부터 빙의 허가를 받습니다.
+	UFUNCTION()
+		void SetTimerForPossessPioneer(class APioneer* Pioneer);
+	FTimerHandle TimerOfPossessPioneer;
 
 /*** APioneerManager : End ***/
 };

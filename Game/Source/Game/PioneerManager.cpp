@@ -11,6 +11,8 @@
 #include "Network/ClientSocket.h"
 #include "Network/ServerSocketInGame.h"
 #include "Network/ClientSocketInGame.h"
+
+#include "CustomWidget/InGameWidget.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -51,8 +53,6 @@ void APioneerManager::BeginPlay()
 	SpawnWorldViewCameraActor(&WorldViewCameraOfNextPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 2000.0f)));
 	SpawnWorldViewCameraActor(&CameraOfNextPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 2000.0f)));
 
-	// UWorld에서 APioneer를 찾고 TArray에 추가합니다.
-	FindPioneersInWorld();
 
 	//////////////////////////
 	// 네트워크
@@ -60,6 +60,9 @@ void APioneerManager::BeginPlay()
 	ClientSocket = cClientSocket::GetSingleton();
 	ServerSocketInGame = cServerSocketInGame::GetSingleton();
 	ClientSocketInGame = cClientSocketInGame::GetSingleton();
+
+
+	FindPioneersInWorld();
 }
 
 void APioneerManager::Tick(float DeltaTime)
@@ -383,6 +386,13 @@ void APioneerManager::SetPioneerController(class APioneerController* pPioneerCon
 	this->PioneerController = pPioneerController;
 }
 
+void APioneerManager::SetInGameWidget(class UInGameWidget* pInGameWidget)
+{
+	printf_s("[INFO] <APioneerManager::SetInGameWidget()>\n");
+
+	this->InGameWidget = pInGameWidget;
+}
+
 void APioneerManager::SpawnPioneer(FTransform Transform)
 {
 	UWorld* const World = GetWorld();
@@ -582,6 +592,13 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 
 void APioneerManager::TickOfObservation()
 {
+	// 빙의한 Pioneer가 있으면 실행하지 않습니다.
+	if (PioneerOfPlayer)
+	{
+		//printf_s("[INFO] <APioneerManager::TickOfObservation()> if (PioneerOfPlayer) \n");
+		return;
+	}
+
 	if (!ViewTarget)
 	{
 		//printf_s("[INFO] <APioneerManager::TickOfObservation()> if (!ViewTarget) \n");
@@ -622,6 +639,15 @@ void APioneerManager::Observation()
 		return;
 	}
 	/***********************************************************************/
+
+	// UI 설정
+	if (InGameWidget)
+	{
+		InGameWidget->SetArrowButtonsVisibility(true);
+		InGameWidget->SetPossessButtonVisibility(true);
+		InGameWidget->SetFreeViewpointButtonVisibility(true);
+		InGameWidget->SetObservingButtonVisibility(false);
+	}
 
 	TArray<int32> keys;
 	Pioneers.GetKeys(keys);
@@ -751,10 +777,19 @@ void APioneerManager::SwitchToFreeViewpoint()
 	}
 	/***********************************************************************/
 
+	// UI 설정
+	if (InGameWidget)
+	{
+		InGameWidget->SetArrowButtonsVisibility(false);
+		InGameWidget->SetPossessButtonVisibility(false);
+		InGameWidget->SetFreeViewpointButtonVisibility(false);
+		InGameWidget->SetObservingButtonVisibility(true);
+	}
+
 	ViewpointState = EViewpointState::Free;
 
 	FVector location = ViewTarget->GetActorLocation();
-	location.Z = 5000.0f;
+	location.Z = 2500.0f;
 
 	FreeViewCamera->SetActorLocation(location);
 	FreeViewCamera->SetActorRotation(FRotator(-45.0f, 0.0f, 0.0f));
@@ -762,15 +797,64 @@ void APioneerManager::SwitchToFreeViewpoint()
 	PioneerController->SetViewTargetWithBlend(FreeViewCamera, 1.0f);
 }
 
-void APioneerManager::SendPossessObservingPioneer()
+void APioneerManager::PossessObservingPioneer()
 {
+	if (!ViewTarget)
+	{
+		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!ViewTarget) \n");
+		return;
+	}
+
+	if (!Pioneers.Contains(IdCurrentlyBeingObserved))
+	{
+		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!Pioneers.Contains(IdCurrentlyBeingObserved)) \n");
+		return;
+	}
+
+	if (Pioneers[IdCurrentlyBeingObserved]->bDying)
+	{
+		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (Pioneers[IdCurrentlyBeingObserved]->bDying) \n");
+		return;
+	}
+	/***********************************************************************/
+
+	// UI 설정
+	if (InGameWidget)
+	{
+		InGameWidget->SetArrowButtonsVisibility(false);
+		InGameWidget->SetPossessButtonVisibility(false);
+		InGameWidget->SetFreeViewpointButtonVisibility(false);
+		InGameWidget->SetObservingButtonVisibility(false);
+	}
+
 	ViewpointState = EViewpointState::WaitingPermission;
 
 	if (ServerSocketInGame)
 	{
 		if (ServerSocketInGame->IsServerOn())
 		{
+			// 빙의 할 수 있는지 확인
+			bool result = ServerSocketInGame->PossessingPioneer(IdCurrentlyBeingObserved);
 
+			if (result)
+			{
+				// 빙의
+				PossessObservingPioneerByRecv(IdCurrentlyBeingObserved);
+			}
+			else
+			{
+				// 다시 관전모드
+				ViewpointState = EViewpointState::Observation;
+
+				// UI 설정
+				if (InGameWidget)
+				{
+					InGameWidget->SetArrowButtonsVisibility(true);
+					InGameWidget->SetPossessButtonVisibility(true);
+					InGameWidget->SetFreeViewpointButtonVisibility(true);
+					InGameWidget->SetObservingButtonVisibility(false);
+				}
+			}
 
 			return;
 		}
@@ -779,6 +863,7 @@ void APioneerManager::SendPossessObservingPioneer()
 	{
 		if (ClientSocketInGame->IsClientSocketOn())
 		{
+			ClientSocketInGame->SendPossessPioneer(IdCurrentlyBeingObserved);
 
 			return;
 		}
@@ -789,9 +874,9 @@ void APioneerManager::SendPossessObservingPioneer()
 }
 void APioneerManager::PossessObservingPioneerByRecv(int PermittedID)
 {
-	if (!ClientSocket)
+	if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!ClientSocket)\n");
+		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)\n");
 		return;
 	}
 	if (!PioneerController)
@@ -802,29 +887,75 @@ void APioneerManager::PossessObservingPioneerByRecv(int PermittedID)
 	if (!Pioneers.Contains(PermittedID))
 	{
 		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!PioneerController)\n");
+		
+		// 존재하지 않으면 자유시점 모드로 전환합니다.
+		SwitchToFreeViewpoint();
 		return;
 	}
 	/***********************************************************************/
+
+	// UI 설정
+	if (InGameWidget)
+	{
+		InGameWidget->SetArrowButtonsVisibility(false);
+		InGameWidget->SetPossessButtonVisibility(false);
+		InGameWidget->SetFreeViewpointButtonVisibility(false);
+		InGameWidget->SetObservingButtonVisibility(false);
+	}
 
 	if (APioneer* pioneer = Pioneers[PermittedID])
 	{
 		IdCurrentlyBeingObserved = 0;
 
-		pioneer->SocketID = ClientSocket->CopyMyInfo().SocketByGameServer;
 
-		ViewTarget = nullptr;
-
+		if (ServerSocketInGame->IsServerOn())
+		{
+			pioneer->SocketID = ServerSocketInGame->SocketID;
+		}
+		else if (ClientSocketInGame->IsClientSocketOn())
+		{
+			pioneer->SocketID = ClientSocket->CopyMyInfo().SocketByGameServer;
+		}
+		
 		PioneerOfPlayer = pioneer;
 
 		ViewpointState = EViewpointState::Pioneer;
 
-		PioneerController->OnPossess(pioneer);
+		TickOfObservation();
 
+		PioneerController->SetViewTargetWithBlend(CameraOfCurrentPioneer, 1.0f);
 
-		// PioneerController->OnPossess(pioneer); 대신에, 
-		// 먼저 SetViewTargetWithBlend()하고 SetTimer로 pioneer의 죽음을 살피고 최종적으로 OnPossess 해야 함.
-		//PioneerController->SetViewTargetWithBlend(FreeViewCamera, 1.0f);
+		if (GetWorldTimerManager().IsTimerActive(TimerOfPossessPioneer))
+			GetWorldTimerManager().ClearTimer(TimerOfPossessPioneer);
+
+		FTimerDelegate timerDel;
+		timerDel.BindUFunction(this, FName("SetTimerForPossessPioneer"), pioneer); // 인수를 포함하여 함수를 바인딩합니다. (this, FName("함수이름"), 함수인수1, 함수인수2, ...);
+		GetWorldTimerManager().SetTimer(TimerOfPossessPioneer, timerDel, 1.2f, false);
 	}
+	else
+	{
+		// 존재하지 않으면 자유시점 모드로 전환합니다.
+		SwitchToFreeViewpoint();
+	}
+}
+
+void APioneerManager::SetTimerForPossessPioneer(class APioneer* Pioneer)
+{
+	if (!Pioneer)
+	{
+		printf_s("[ERROR] <APioneerManager::SetTimerForPossessPioneer()> if (!Pioneer)\n");
+		return;
+	}
+	if (!PioneerController)
+	{
+		printf_s("[ERROR] <APioneerManager::SetTimerForPossessPioneer()> if (!PioneerController)\n");
+		return;
+	}
+
+	// 카메라타겟 활성화를 자동관리하지 않도록 합니다. (true일 때, 폰에 빙의하면 자동으로 뷰타겟을 변경?)
+	PioneerController->bAutoManageActiveCameraTarget = true;
+
+	PioneerController->OnPossess(Pioneer);
 }
 
 /*** APioneerManager : End ***/

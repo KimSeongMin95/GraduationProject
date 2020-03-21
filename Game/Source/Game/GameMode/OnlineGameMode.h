@@ -123,6 +123,7 @@ private:
 	void SendInfoOfPioneer(float DeltaTime); float TimerOfSendInfoOfPioneer;
 	void RecvInfoOfPioneer(float DeltaTime); float TimerOfRecvInfoOfPioneer;
 
+	void RecvPossessPioneer(float DeltaTime); float TimerOfRecvPossessPioneer;
 
 protected:
 
@@ -148,6 +149,15 @@ public:
 		void DeactivateInGameScoreBoardWidget(); void _DeactivateInGameScoreBoardWidget();
 	void ToggleInGameScoreBoardWidget();
 
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void LeftArrowInGameWidget(); void _LeftArrowInGameWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void RightArrowInGameWidget(); void _RightArrowInGameWidget();
+
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void FreeViewpointInGameWidget(); void _FreeViewpointInGameWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ObservingInGameWidget(); void _ObservingInGameWidget();
 
 	/////////////////////////////////////////////////
 	// 타이틀 화면으로 되돌아가기

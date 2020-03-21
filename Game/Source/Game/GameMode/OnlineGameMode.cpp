@@ -47,6 +47,7 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfRecvDiedPioneer = 0.0f;
 	TimerOfSendInfoOfPioneer = 0.0f;
 	TimerOfRecvInfoOfPioneer = 0.0f;
+	TimerOfRecvPossessPioneer = 0.0f;
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -161,6 +162,8 @@ void AOnlineGameMode::StartPlay()
 
 		PioneerManager->SetPioneerController(PioneerController);
 
+		PioneerManager->SetInGameWidget(InGameWidget);
+
 		// 초기엔 우주선을 보도록 합니다.
 		PioneerController->SetViewTargetWithBlend(SpaceShip);
 
@@ -179,7 +182,7 @@ void AOnlineGameMode::Tick(float DeltaTime)
 
 	// 임시
 	TickOfSpaceShip += DeltaTime;
-	if (TickOfSpaceShip >= 30.0f)
+	if (TickOfSpaceShip >= 120.0f)
 	{
 		if (SpaceShip->State == ESpaceShipState::Flying)
 		{
@@ -294,7 +297,7 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AOnlineGameMode::GetScoreBoard()>\n");
+	//printf_s("[START] <AOnlineGameMode::GetScoreBoard()>\n");
 
 
 	std::queue<cInfoOfScoreBoard> copiedQueue;
@@ -307,7 +310,7 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 	InGameScoreBoardWidget->RevealScores(copiedQueue);
 
 
-	printf_s("[END] <AOnlineGameMode::GetScoreBoard()>\n");
+	//printf_s("[END] <AOnlineGameMode::GetScoreBoard()>\n");
 }
 
 void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
@@ -361,7 +364,7 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 void AOnlineGameMode::SetInfoOfPioneer(float DeltaTime)
 {
 	TimerOfSetInfoOfPioneer += DeltaTime;
-	if (TimerOfSetInfoOfPioneer < 0.1f)
+	if (TimerOfSetInfoOfPioneer < 0.01f)
 		return;
 	TimerOfSetInfoOfPioneer = 0.0f;
 
@@ -376,15 +379,12 @@ void AOnlineGameMode::SetInfoOfPioneer(float DeltaTime)
 
 	for (auto& kvp : PioneerManager->Pioneers)
 	{
-		// SocketID가 0인 AI Pioneer만 적용, SocketID가 1인 게임서버가 조종중인 Pioneer도 포함
-		if (kvp.Value->SocketID > 1)
-			continue;
-
 		EnterCriticalSection(&ServerSocketInGame->csInfosOfPioneers);
 		if (ServerSocketInGame->InfosOfPioneers.find(kvp.Key) != ServerSocketInGame->InfosOfPioneers.end())
 		{
-			// 정보 적용
-			ServerSocketInGame->InfosOfPioneers.at(kvp.Key) = kvp.Value->GetInfoOfPioneer();
+			// AI거나 게임서버가 조종하는 Pioneer만 정보를 설정합니다.
+			if (ServerSocketInGame->InfosOfPioneers.at(kvp.Key).SocketID <= 1)
+				ServerSocketInGame->InfosOfPioneers.at(kvp.Key) = kvp.Value->GetInfoOfPioneer();
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfosOfPioneers);
 	}
@@ -395,7 +395,7 @@ void AOnlineGameMode::SetInfoOfPioneer(float DeltaTime)
 void AOnlineGameMode::GetInfoOfPioneer(float DeltaTime)
 {
 	TimerOfGetInfoOfPioneer += DeltaTime;
-	if (TimerOfGetInfoOfPioneer < 0.05f)
+	if (TimerOfGetInfoOfPioneer < 0.01f)
 		return;
 	TimerOfGetInfoOfPioneer = 0.0f;
 
@@ -411,7 +411,7 @@ void AOnlineGameMode::GetInfoOfPioneer(float DeltaTime)
 	//printf_s("[START] <AMainScreenGameMode::GetInfoOfPioneer()>\n");
 
 
-	std::queue<cInfoOfPioneer> copiedQueue = ClientSocketInGame->tsqInfoOfPioneer.copy_clear();
+	std::queue<cInfoOfPioneer> copiedQueue = ServerSocketInGame->tsqInfoOfPioneer.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -458,6 +458,7 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 	RecvDiedPioneer(DeltaTime);
 	SendInfoOfPioneer(DeltaTime);
 	RecvInfoOfPioneer(DeltaTime);
+	RecvPossessPioneer(DeltaTime);
 }
 
 void AOnlineGameMode::SendScoreBoard(float DeltaTime)
@@ -514,7 +515,7 @@ void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 {
 	TimerOfRecvInfoOfSpaceShip += DeltaTime;
-	if (TimerOfRecvInfoOfSpaceShip < 0.5f)
+	if (TimerOfRecvInfoOfSpaceShip < 0.25f)
 		return;
 	TimerOfRecvInfoOfSpaceShip = 0.0f;
 
@@ -553,7 +554,7 @@ void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
 {
 	TimerOfRecvSpawnPioneer += DeltaTime;
-	if (TimerOfRecvSpawnPioneer < 0.1f)
+	if (TimerOfRecvSpawnPioneer < 0.02f)
 		return;
 	TimerOfRecvSpawnPioneer = 0.0f;
 
@@ -588,7 +589,7 @@ void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
 void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 {
 	TimerOfRecvDiedPioneer += DeltaTime;
-	if (TimerOfRecvDiedPioneer < 0.1f)
+	if (TimerOfRecvDiedPioneer < 0.02f)
 		return;
 	TimerOfRecvDiedPioneer = 0.0f;
 
@@ -631,7 +632,7 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 void AOnlineGameMode::SendInfoOfPioneer(float DeltaTime)
 {
 	TimerOfSendInfoOfPioneer += DeltaTime;
-	if (TimerOfSendInfoOfPioneer < 0.1f)
+	if (TimerOfSendInfoOfPioneer < 0.01f)
 		return;
 	TimerOfSendInfoOfPioneer = 0.0f;
 
@@ -644,7 +645,7 @@ void AOnlineGameMode::SendInfoOfPioneer(float DeltaTime)
 	//printf_s("[START] <AMainScreenGameMode::SendInfoOfPioneer()>\n");
 
 
-	//ClientSocketInGame->SendInfoOfPioneer(cInfoOfPioneer());
+	ClientSocketInGame->SendInfoOfPioneer(PioneerManager->PioneerOfPlayer);
 
 
 	//printf_s("[END] <AMainScreenGameMode::SendInfoOfPioneer()>\n");
@@ -652,7 +653,7 @@ void AOnlineGameMode::SendInfoOfPioneer(float DeltaTime)
 void AOnlineGameMode::RecvInfoOfPioneer(float DeltaTime)
 {
 	TimerOfRecvInfoOfPioneer += DeltaTime;
-	if (TimerOfRecvInfoOfPioneer < 0.1f)
+	if (TimerOfRecvInfoOfPioneer < 0.01f)
 		return;
 	TimerOfRecvInfoOfPioneer = 0.0f;
 
@@ -688,6 +689,57 @@ void AOnlineGameMode::RecvInfoOfPioneer(float DeltaTime)
 
 
 	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfPioneer()>\n");
+}
+
+void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
+{
+	TimerOfRecvPossessPioneer += DeltaTime;
+	if (TimerOfRecvPossessPioneer < 0.02f)
+		return;
+	TimerOfRecvPossessPioneer = 0.0f;
+
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvPossessPioneer()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqPossessPioneer.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	//printf_s("[START] <AMainScreenGameMode::RecvPossessPioneer()>\n");
+
+
+	std::queue<int> copiedQueue = ClientSocketInGame->tsqPossessPioneer.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		if (copiedQueue.front() == 0)
+		{
+			PioneerManager->ViewpointState = EViewpointState::Observation;
+
+			// UI 설정
+			if (InGameWidget)
+			{
+				InGameWidget->SetArrowButtonsVisibility(true);
+				InGameWidget->SetPossessButtonVisibility(true);
+				InGameWidget->SetFreeViewpointButtonVisibility(true);
+				InGameWidget->SetObservingButtonVisibility(false);
+			}
+
+			copiedQueue.pop();
+			continue;
+		}
+
+		PioneerManager->PossessObservingPioneerByRecv(copiedQueue.front());
+
+		copiedQueue.pop();
+	}
+
+
+	//printf_s("[END] <AMainScreenGameMode::RecvPossessPioneer()>\n");
 }
 
 
@@ -799,6 +851,65 @@ void AOnlineGameMode::ToggleInGameScoreBoardWidget()
 	}
 
 	InGameScoreBoardWidget->ToggleViewport();
+}
+
+void AOnlineGameMode::LeftArrowInGameWidget()
+{
+	_LeftArrowInGameWidget();
+}
+void AOnlineGameMode::_LeftArrowInGameWidget()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::LeftArrowInGameWidget()> if (!PioneerManager)\n");
+		return;
+	}
+
+	PioneerManager->ObserveLeft();
+}
+void AOnlineGameMode::RightArrowInGameWidget()
+{
+	_RightArrowInGameWidget();
+}
+void AOnlineGameMode::_RightArrowInGameWidget()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::RightArrowInGameWidget()> if (!PioneerManager)\n");
+		return;
+	}
+
+	PioneerManager->ObserveRight();
+}
+
+void AOnlineGameMode::FreeViewpointInGameWidget()
+{
+	_FreeViewpointInGameWidget();
+}
+void AOnlineGameMode::_FreeViewpointInGameWidget()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::FreeViewpointInGameWidget()> if (!PioneerManager)\n");
+		return;
+	}
+
+	PioneerManager->SwitchToFreeViewpoint();
+}
+
+void AOnlineGameMode::ObservingInGameWidget()
+{
+	_ObservingInGameWidget();
+}
+void AOnlineGameMode::_ObservingInGameWidget()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::ObservingInGameWidget()> if (!PioneerManager)\n");
+		return;
+	}
+
+	PioneerManager->Observation();
 }
 
 /////////////////////////////////////////////////
