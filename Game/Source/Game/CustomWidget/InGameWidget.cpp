@@ -69,17 +69,17 @@ void UInGameWidget::SetPossessButtonVisibility(bool bVisible)
 {
 	if (!PossessButton)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetPossessButtonVisibility(...)> if (!FreeViewpointButton) \n");
+		printf_s("[ERROR] <UWaitingGameWidget::SetPossessButtonVisibility(...)> if (!PossessButton) \n");
 		return;
 	}
 
 	if (bVisible)
 	{
-		FreeViewpointButton->SetVisibility(ESlateVisibility::Visible);
+		PossessButton->SetVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{
-		FreeViewpointButton->SetVisibility(ESlateVisibility::Hidden);
+		PossessButton->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 void UInGameWidget::SetFreeViewpointButtonVisibility(bool bVisible)

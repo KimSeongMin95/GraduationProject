@@ -141,19 +141,23 @@ public:
 		void ActivateInGameMenuWidget(); void _ActivateInGameMenuWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void DeactivateInGameMenuWidget(); void _DeactivateInGameMenuWidget();
-	void ToggleInGameMenuWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ToggleInGameMenuWidget(); void _ToggleInGameMenuWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void ActivateInGameScoreBoardWidget(); void _ActivateInGameScoreBoardWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void DeactivateInGameScoreBoardWidget(); void _DeactivateInGameScoreBoardWidget();
-	void ToggleInGameScoreBoardWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ToggleInGameScoreBoardWidget(); void _ToggleInGameScoreBoardWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void LeftArrowInGameWidget(); void _LeftArrowInGameWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void RightArrowInGameWidget(); void _RightArrowInGameWidget();
 
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void PossessInGameWidget(); void _PossessInGameWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void FreeViewpointInGameWidget(); void _FreeViewpointInGameWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")

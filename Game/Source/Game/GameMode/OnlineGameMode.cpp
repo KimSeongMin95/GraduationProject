@@ -805,6 +805,10 @@ void AOnlineGameMode::_DeactivateInGameMenuWidget()
 }
 void AOnlineGameMode::ToggleInGameMenuWidget()
 {
+	_ToggleInGameMenuWidget();
+}
+void AOnlineGameMode::_ToggleInGameMenuWidget()
+{
 	if (!InGameMenuWidget)
 	{
 		printf_s("[ERROR] <AOnlineGameMode::ToggleInGameMenuWidget()> if (!InGameMenuWidget)\n");
@@ -844,6 +848,10 @@ void AOnlineGameMode::_DeactivateInGameScoreBoardWidget()
 }
 void AOnlineGameMode::ToggleInGameScoreBoardWidget()
 {
+	_ToggleInGameScoreBoardWidget();
+}
+void AOnlineGameMode::_ToggleInGameScoreBoardWidget()
+{
 	if (!InGameScoreBoardWidget)
 	{
 		printf_s("[ERROR] <AOnlineGameMode::ToggleInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
@@ -880,6 +888,21 @@ void AOnlineGameMode::_RightArrowInGameWidget()
 	}
 
 	PioneerManager->ObserveRight();
+}
+
+void AOnlineGameMode::PossessInGameWidget()
+{
+	_PossessInGameWidget();
+}
+void AOnlineGameMode::_PossessInGameWidget()
+{
+	if (!PioneerManager)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::PossessInGameWidget()> if (!PioneerManager)\n");
+		return;
+	}
+
+	PioneerManager->PossessObservingPioneer();
 }
 
 void AOnlineGameMode::FreeViewpointInGameWidget()

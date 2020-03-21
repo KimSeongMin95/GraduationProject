@@ -29,7 +29,6 @@ protected:
 	UPROPERTY()
 		class UButton* ObservingButton = nullptr;
 
-
 public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) override;
 
