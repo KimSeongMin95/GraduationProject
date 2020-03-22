@@ -2,6 +2,7 @@
 
 #include "PioneerManager.h"
 
+
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Etc/WorldViewCameraActor.h"
 #include "Character/Pioneer.h"
@@ -13,6 +14,8 @@
 #include "Network/ClientSocketInGame.h"
 
 #include "CustomWidget/InGameWidget.h"
+
+#include "Item/Weapon/Weapon.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -39,6 +42,12 @@ APioneerManager::APioneerManager()
 	KeyID = 1;
 
 	IdCurrentlyBeingObserved = 0;
+
+	NumOfMineral = 0;
+	NumOfOrganic = 0;
+	NumOfEnergy = 0;
+
+	SceneCapture2D = nullptr;
 }
 
 void APioneerManager::BeginPlay()
@@ -63,6 +72,8 @@ void APioneerManager::BeginPlay()
 
 
 	FindPioneersInWorld();
+
+	FindSceneCapture2D();
 }
 
 void APioneerManager::Tick(float DeltaTime)
@@ -71,6 +82,9 @@ void APioneerManager::Tick(float DeltaTime)
 
 	TickOfObservation();
 
+	TickOfViewTarget();
+
+	TickOfResources();
 
 
 	//SwitchTick();
@@ -139,6 +153,22 @@ void APioneerManager::FindPioneersInWorld()
 		}
 	}
 }
+
+void APioneerManager::FindSceneCapture2D()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		printf_s("[ERROR] <APioneerManager::FindSceneCapture2D()> if (!world)\n");
+		return;
+	}
+
+	for (TActorIterator<ASceneCapture2D> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		SceneCapture2D = *ActorItr;
+	}
+}
+
 
 ///////////////////////////////////////////
 //// ViewTarget과 Possess 변환
@@ -647,6 +677,8 @@ void APioneerManager::Observation()
 		InGameWidget->SetPossessButtonVisibility(true);
 		InGameWidget->SetFreeViewpointButtonVisibility(true);
 		InGameWidget->SetObservingButtonVisibility(false);
+
+		InGameWidget->SetBuildingBoxVisibility(false);
 	}
 
 	TArray<int32> keys;
@@ -901,6 +933,8 @@ void APioneerManager::PossessObservingPioneerByRecv(int PermittedID)
 		InGameWidget->SetPossessButtonVisibility(false);
 		InGameWidget->SetFreeViewpointButtonVisibility(false);
 		InGameWidget->SetObservingButtonVisibility(false);
+		
+		InGameWidget->SetBuildingBoxVisibility(true);
 	}
 
 	if (APioneer* pioneer = Pioneers[PermittedID])
@@ -956,6 +990,57 @@ void APioneerManager::SetTimerForPossessPioneer(class APioneer* Pioneer)
 	PioneerController->bAutoManageActiveCameraTarget = true;
 
 	PioneerController->OnPossess(Pioneer);
+}
+
+void APioneerManager::TickOfViewTarget()
+{
+	if (!InGameWidget)
+	{
+		printf_s("[ERROR] <APioneerManager::TickOfViewTarget()> if (!InGameWidget) \n");
+		return;
+	}
+	if (!ViewTarget)
+	{
+		//printf_s("[INFO] <APioneerManager::TickOfViewTarget()> if (!ViewTarget) \n");
+		InGameWidget->SetPioneerBoxVisibility(false);
+		InGameWidget->SetWeaponBoxVisibility(false);
+
+		return;
+	}
+
+	// 상태창
+	InGameWidget->SetPioneerBoxVisibility(true);
+	InGameWidget->SetTextOfPioneerBox(ViewTarget);
+
+	if (AWeapon* weapon = ViewTarget->GetCurrentWeapon())
+	{
+		InGameWidget->SetWeaponBoxVisibility(true);
+		InGameWidget->SetTextOfWeaponBox(weapon);
+	}
+	else
+	{
+		InGameWidget->SetWeaponBoxVisibility(false);
+	}
+
+	// 미니맵
+	if (SceneCapture2D)
+	{
+		FVector location = SceneCapture2D->GetActorLocation();
+		location.X = ViewTarget->GetActorLocation().X;
+		location.Y = ViewTarget->GetActorLocation().Y;
+		SceneCapture2D->SetActorLocation(location);
+	}
+}
+
+void APioneerManager::TickOfResources()
+{
+	if (!InGameWidget)
+	{
+		printf_s("[ERROR] <APioneerManager::TickOfResources()> if (!InGameWidget) \n");
+		return;
+	}
+
+	InGameWidget->SetTextOfResources(Pioneers.Num(), NumOfMineral, NumOfOrganic, NumOfEnergy);
 }
 
 /*** APioneerManager : End ***/

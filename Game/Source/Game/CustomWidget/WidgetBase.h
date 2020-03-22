@@ -19,6 +19,7 @@
 #include "Components/UniformGridSlot.h"
 
 #include "Components/VerticalBoxSlot.h"
+#include "Components/Image.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 

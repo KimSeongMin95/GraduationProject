@@ -119,7 +119,8 @@ public:
 		int ID;
 	UPROPERTY(EditAnywhere, Category = "PioneerManager")
 		int SocketID;
-
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+		FString Name_ID;
 
 	UPROPERTY(VisibleAnywhere, Category = "AnimInstance")
 		bool bHasPistolType;

@@ -71,6 +71,8 @@ APioneer::APioneer()
 
 	ID = 0;
 	SocketID = 0;
+	Name_ID = "AI";
+
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
 	//BaseLookUpRate = 45.0f;
@@ -1320,6 +1322,7 @@ void APioneer::SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer)
 {
 	ID = InfoOfPioneer.ID;
 	SocketID = InfoOfPioneer.SocketID;
+	// NameOfID;
 
 	SetActorTransform(InfoOfPioneer.GetActorTransform());
 
@@ -1350,6 +1353,7 @@ class cInfoOfPioneer APioneer::GetInfoOfPioneer()
 
 	infoOfPioneer.ID = ID;
 	infoOfPioneer.SocketID = SocketID;
+	// NameOfID;
 
 	FTransform transform = GetActorTransform();
 	infoOfPioneer.ScaleX = transform.GetScale3D().X;

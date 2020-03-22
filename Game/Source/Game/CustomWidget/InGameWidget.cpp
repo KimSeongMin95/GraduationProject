@@ -4,6 +4,13 @@
 #include "InGameWidget.h"
 
 
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Character/Pioneer.h"
+
+#include "Item/Weapon/Weapon.h"
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
+
 UInGameWidget::UInGameWidget()
 {
 	///////////
@@ -16,6 +23,29 @@ UInGameWidget::UInGameWidget()
 	FreeViewpointButton = nullptr;
 	ObservingButton = nullptr;
 
+	NumOfPioneer = nullptr;
+	NumOfMineral = nullptr;
+	NumOfOrganic = nullptr;
+	NumOfEnergy = nullptr;
+
+	BuildingBox = nullptr;
+
+	PioneerBox = nullptr;
+	HealthOfPioneer = nullptr;
+	IDOfPioneer = nullptr;
+	MoveSpeedOfPioneer = nullptr;
+	AttackSpeedOfPioneer = nullptr;
+	AttackPowerOfPioneer = nullptr;
+	SightRangeOfPioneer = nullptr;
+	DetectRangeOfPioneer = nullptr;
+	AttackRangeOfPioneer = nullptr;
+
+	WeaponBox = nullptr;
+	LimitedLevelOfWeapon = nullptr;
+	AttackPowerOfWeapon = nullptr;
+	AttackSpeedOfWeapon = nullptr;
+	AttackRangeOfWeapon = nullptr;
+	ReloadTimeOfWeapon = nullptr;
 }
 
 UInGameWidget::~UInGameWidget()
@@ -42,6 +72,30 @@ bool UInGameWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 	PossessButton = WidgetTree->FindWidget<UButton>(FName(TEXT("Button_Possess")));
 	FreeViewpointButton = WidgetTree->FindWidget<UButton>(FName(TEXT("Button_FreeViewpoint")));
 	ObservingButton = WidgetTree->FindWidget<UButton>(FName(TEXT("Button_Observing")));
+
+	NumOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_NumOfPioneer")));
+	NumOfMineral = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_NumOfMineral")));
+	NumOfOrganic = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_NumOfOrganic")));
+	NumOfEnergy = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_NumOfEnergy")));
+
+	BuildingBox = WidgetTree->FindWidget<UHorizontalBox>(FName(TEXT("HorizontalBox_BuidlingBox")));
+
+	PioneerBox = WidgetTree->FindWidget<UHorizontalBox>(FName(TEXT("HorizontalBox_PioneerBox")));
+	HealthOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_Health")));
+	IDOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_ID")));
+	MoveSpeedOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_MoveSpeed")));
+	AttackSpeedOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_AttackSpeed")));
+	AttackPowerOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_AttackPower")));
+	SightRangeOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_SightRange")));
+	DetectRangeOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_DetectRange")));
+	AttackRangeOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_AttackRange")));
+
+	WeaponBox = WidgetTree->FindWidget<UHorizontalBox>(FName(TEXT("HorizontalBox_WeaponBox")));
+	LimitedLevelOfWeapon = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_LimitedLevel")));
+	AttackPowerOfWeapon = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Weapon_AttackPower")));
+	AttackSpeedOfWeapon = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Weapon_AttackSpeed")));
+	AttackRangeOfWeapon = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Weapon_AttackRange")));
+	ReloadTimeOfWeapon = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Weapon_ReloadTime")));
 
 	return true;
 }
@@ -115,4 +169,140 @@ void UInGameWidget::SetObservingButtonVisibility(bool bVisible)
 	{
 		ObservingButton->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+void UInGameWidget::SetTextOfResources(int nPioneer, int nMineral, int nOrganic, int nEnergy)
+{
+	if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfResources(...)> if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy)\n");
+		return;
+	}
+
+	NumOfPioneer->SetText(FText::FromString(FString::FromInt(nPioneer)));
+	NumOfMineral->SetText(FText::FromString(FString::FromInt(nMineral)));
+	NumOfOrganic->SetText(FText::FromString(FString::FromInt(nOrganic)));
+	NumOfEnergy->SetText(FText::FromString(FString::FromInt(nEnergy)));
+}
+
+void UInGameWidget::SetBuildingBoxVisibility(bool bVisible)
+{
+	if (!BuildingBox)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetBuildingBoxVisibility(...)> if (!BuildingBox) \n");
+		return;
+	}
+
+	if (bVisible)
+	{
+		BuildingBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+	else
+	{
+		BuildingBox->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UInGameWidget::SetPioneerBoxVisibility(bool bVisible)
+{
+	if (!PioneerBox)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetPioneerBoxVisibility(...)> if (!PioneerBox) \n");
+		return;
+	}
+
+	if (bVisible)
+	{
+		PioneerBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+	else
+	{
+		PioneerBox->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+void UInGameWidget::SetTextOfPioneerBox(class APioneer* Pioneer)
+{
+	if (!Pioneer)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfPioneerBox(...)> if (!Pioneer)\n");
+		return;
+	}
+	if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !AttackSpeedOfPioneer ||
+		!AttackPowerOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfPioneerBox(...)> if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !AttackSpeedOfPioneer || !AttackPowerOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer) \n");
+		return;
+	}
+
+	FString tHealth = FString::SanitizeFloat(Pioneer->HealthPoint) + " / " + FString::FromInt(Pioneer->MaxHealthPoint);
+	HealthOfPioneer->SetText(FText::FromString(tHealth));
+	
+	FString tID = "ID: " + Pioneer->Name_ID;
+	IDOfPioneer->SetText(FText::FromString(tID));
+
+	FString tMoveSpeed = "MoveSpeed: " + FString::SanitizeFloat(Pioneer->MoveSpeed);
+	MoveSpeedOfPioneer->SetText(FText::FromString(tMoveSpeed));
+
+	FString tAttackSpeed = "AttackSpeed: " + FString::SanitizeFloat(Pioneer->AttackSpeed);
+	AttackSpeedOfPioneer->SetText(FText::FromString(tAttackSpeed));
+
+	FString tAttackPower = "AttackPower: " + FString::SanitizeFloat(Pioneer->AttackPower);
+	AttackPowerOfPioneer->SetText(FText::FromString(tAttackPower));
+
+	FString tSightRange = "SightRange: " + FString::SanitizeFloat(Pioneer->SightRange);
+	SightRangeOfPioneer->SetText(FText::FromString(tSightRange));
+
+	FString tDetectRange = "DetectRange: " + FString::SanitizeFloat(Pioneer->DetectRange);
+	DetectRangeOfPioneer->SetText(FText::FromString(tDetectRange));
+
+	FString tAttackRange = "AttackRange: " + FString::SanitizeFloat(Pioneer->AttackRange);
+	AttackRangeOfPioneer->SetText(FText::FromString(tAttackRange));
+}
+
+void UInGameWidget::SetWeaponBoxVisibility(bool bVisible)
+{
+	if (!WeaponBox)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetWeaponBoxVisibility(...)> if (!WeaponBox) \n");
+		return;
+	}
+
+	if (bVisible)
+	{
+		WeaponBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+	else
+	{
+		WeaponBox->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+void UInGameWidget::SetTextOfWeaponBox(class AWeapon* Weapon)
+{
+	if (!Weapon)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfWeaponBox(...)> if (!Weapon)\n");
+		return;
+	}
+	if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfWeaponBox(...)>	if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon) \n");
+		return;
+	}
+
+
+	FString tLimitedLevel = "Limit Lv: " + FString::FromInt(Weapon->LimitedLevel);
+	LimitedLevelOfWeapon->SetText(FText::FromString(tLimitedLevel));
+
+	FString tAttackPower = "AttackPower: " + FString::SanitizeFloat(Weapon->AttackPower);
+	AttackPowerOfWeapon->SetText(FText::FromString(tAttackPower));
+
+	FString tAttackSpeed = "AttackSpeed: " + FString::SanitizeFloat(Weapon->AttackSpeed);
+	AttackSpeedOfWeapon->SetText(FText::FromString(tAttackSpeed));
+
+	FString tAttackRange = "AttackRange: " + FString::SanitizeFloat(Weapon->AttackRange);
+	AttackRangeOfWeapon->SetText(FText::FromString(tAttackRange));
+
+	FString tReloadTime = "ReloadTime: " + FString::SanitizeFloat(Weapon->ReloadTime, 2);
+	ReloadTimeOfWeapon->SetText(FText::FromString(tReloadTime));
+
 }

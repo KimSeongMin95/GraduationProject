@@ -119,12 +119,22 @@ public:
 
 	int32 IdCurrentlyBeingObserved;
 
+	int NumOfMineral;
+	int NumOfOrganic;
+	int NumOfEnergy;
+
+	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+		/** 미내밉을 캡쳐하면서 ViewTarget의 위치를 따라갈 카메라입니다. */
+		class ASceneCapture2D* SceneCapture2D = nullptr;
+
 private:
 	/** 카메라 객체 생성 */
 	void SpawnWorldViewCameraActor(class AWorldViewCameraActor** WorldViewCameraActor, FTransform Transform);
 	
 	/** UWorld에서 APioneer를 찾고 TArray에 추가합니다. */
 	void FindPioneersInWorld();
+
+	void FindSceneCapture2D();
 
 
 	///////////////////////////////////////////
@@ -184,6 +194,12 @@ public:
 	UFUNCTION()
 		void SetTimerForPossessPioneer(class APioneer* Pioneer);
 	FTimerHandle TimerOfPossessPioneer;
+
+	void TickOfViewTarget();
+
+	void TickOfResources();
+
+
 
 /*** APioneerManager : End ***/
 };
