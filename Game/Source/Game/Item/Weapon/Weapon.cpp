@@ -65,6 +65,7 @@ void AWeapon::InitStat()
 {
 	/* 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 	WeaponType = EWeaponType::Pistol;
+	WeaponNumbering = 0;
 
 	LimitedLevel = 1;
 

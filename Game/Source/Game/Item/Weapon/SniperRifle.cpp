@@ -50,6 +50,7 @@ void ASniperRifle::InitItem()
 void ASniperRifle::InitStat()
 {
 	WeaponType = EWeaponType::Rifle;
+	WeaponNumbering = 4;
 
 	LimitedLevel = 10;
 

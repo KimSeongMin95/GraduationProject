@@ -51,6 +51,7 @@ void APistol::InitItem()
 void APistol::InitStat()
 {
 	WeaponType = EWeaponType::Pistol;
+	WeaponNumbering = 1;
 
 	LimitedLevel = 1;
 

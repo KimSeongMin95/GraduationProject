@@ -50,6 +50,7 @@ void AShotgun::InitItem()
 void AShotgun::InitStat()
 {
 	WeaponType = EWeaponType::Launcher;
+	WeaponNumbering = 3;
 
 	LimitedLevel = 10;
 

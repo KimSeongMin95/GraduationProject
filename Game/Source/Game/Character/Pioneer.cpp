@@ -90,6 +90,10 @@ void APioneer::BeginPlay()
 
 	ServerSocketInGame = cServerSocketInGame::GetSingleton();
 	ClientSocketInGame = cClientSocketInGame::GetSingleton();
+
+
+	if (EditableTextBoxForID)
+		EditableTextBoxForID->SetText(FText::FromString(Name_ID));
 }
 
 void APioneer::Tick(float DeltaTime)
@@ -129,7 +133,7 @@ void APioneer::InitHelthPointBar()
 		return;
 
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
-	HelthPointBar->SetDrawSize(FVector2D(80, 20));
+	//HelthPointBar->SetDrawSize(FVector2D(80, 20));
 }
 /*** IHealthPointBarInterface : End ***/
 

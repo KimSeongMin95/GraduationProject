@@ -55,7 +55,7 @@ public:
 	/** true면 마우스 커서로 navigating 합니다. */
 	uint32 bMoveToMouseCursor : 1; 
 
-private:
+public:
 	/** Navigate player to the current mouse cursor location. */
 	void MoveToMouseCursor();
 	///** Navigate player to the current touch location. */

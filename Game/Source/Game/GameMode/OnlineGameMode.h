@@ -163,6 +163,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void ObservingInGameWidget(); void _ObservingInGameWidget();
 
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void SpawnBuildingInGameWidget(int Value); void _SpawnBuildingInGameWidget(int Value);
+
 	/////////////////////////////////////////////////
 	// 타이틀 화면으로 되돌아가기
 	/////////////////////////////////////////////////

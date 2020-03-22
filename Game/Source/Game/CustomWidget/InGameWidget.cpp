@@ -41,6 +41,12 @@ UInGameWidget::UInGameWidget()
 	AttackRangeOfPioneer = nullptr;
 
 	WeaponBox = nullptr;
+	ImageOfPistol = nullptr;
+	ImageOfAssaultRifle = nullptr;
+	ImageOfShotgun = nullptr;
+	ImageOfSniperRifle = nullptr;
+	ImageOfGrenadeLauncher = nullptr;
+	ImageOfRocketLauncher = nullptr;
 	LimitedLevelOfWeapon = nullptr;
 	AttackPowerOfWeapon = nullptr;
 	AttackSpeedOfWeapon = nullptr;
@@ -91,6 +97,12 @@ bool UInGameWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 	AttackRangeOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_AttackRange")));
 
 	WeaponBox = WidgetTree->FindWidget<UHorizontalBox>(FName(TEXT("HorizontalBox_WeaponBox")));
+	ImageOfPistol = WidgetTree->FindWidget<UImage>(FName(TEXT("Image_Weapon_Pistol")));
+	ImageOfAssaultRifle = WidgetTree->FindWidget<UImage>(FName(TEXT("Image_Weapon_AssaultRifle")));
+	ImageOfShotgun = WidgetTree->FindWidget<UImage>(FName(TEXT("Image_Weapon_Shotgun")));
+	ImageOfSniperRifle = WidgetTree->FindWidget<UImage>(FName(TEXT("Image_Weapon_SniperRifle")));
+	ImageOfGrenadeLauncher = WidgetTree->FindWidget<UImage>(FName(TEXT("Image_Weapon_GrenadeLauncher")));
+	ImageOfRocketLauncher = WidgetTree->FindWidget<UImage>(FName(TEXT("Image_Weapon_RocketLauncher")));
 	LimitedLevelOfWeapon = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_LimitedLevel")));
 	AttackPowerOfWeapon = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Weapon_AttackPower")));
 	AttackSpeedOfWeapon = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Weapon_AttackSpeed")));
@@ -283,12 +295,52 @@ void UInGameWidget::SetTextOfWeaponBox(class AWeapon* Weapon)
 		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfWeaponBox(...)> if (!Weapon)\n");
 		return;
 	}
+	if (!ImageOfPistol || !ImageOfAssaultRifle || !ImageOfShotgun || !ImageOfSniperRifle || !ImageOfGrenadeLauncher || !ImageOfRocketLauncher)
+	{
+		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfWeaponBox(...)> if (!ImageOfPistol || !ImageOfAssaultRifle || !ImageOfShotgun || !ImageOfSniperRifle || !ImageOfGrenadeLauncher || !ImageOfRocketLauncher) \n");
+		return;
+	}
 	if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon)
 	{
 		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfWeaponBox(...)>	if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon) \n");
 		return;
 	}
 
+	
+	if (ImageOfPistol->IsVisible())
+		ImageOfPistol->SetVisibility(ESlateVisibility::Hidden);
+	if (ImageOfAssaultRifle->IsVisible())
+		ImageOfAssaultRifle->SetVisibility(ESlateVisibility::Hidden);
+	if (ImageOfShotgun->IsVisible())
+		ImageOfShotgun->SetVisibility(ESlateVisibility::Hidden);
+	if (ImageOfSniperRifle->IsVisible())
+		ImageOfSniperRifle->SetVisibility(ESlateVisibility::Hidden);
+	if (ImageOfGrenadeLauncher->IsVisible())
+		ImageOfGrenadeLauncher->SetVisibility(ESlateVisibility::Hidden);
+	if (ImageOfRocketLauncher->IsVisible())
+		ImageOfRocketLauncher->SetVisibility(ESlateVisibility::Hidden);
+
+	switch (Weapon->WeaponNumbering)
+	{
+	case 1:
+		ImageOfPistol->SetVisibility(ESlateVisibility::HitTestInvisible);
+		break;
+	case 2:
+		ImageOfAssaultRifle->SetVisibility(ESlateVisibility::HitTestInvisible);
+		break;
+	case 3:
+		ImageOfShotgun->SetVisibility(ESlateVisibility::HitTestInvisible);
+		break;
+	case 4:
+		ImageOfSniperRifle->SetVisibility(ESlateVisibility::HitTestInvisible);
+		break;
+	case 5:
+		ImageOfGrenadeLauncher->SetVisibility(ESlateVisibility::HitTestInvisible);
+		break;
+	case 6:
+		ImageOfRocketLauncher->SetVisibility(ESlateVisibility::HitTestInvisible);
+		break;
+	}
 
 	FString tLimitedLevel = "Limit Lv: " + FString::FromInt(Weapon->LimitedLevel);
 	LimitedLevelOfWeapon->SetText(FText::FromString(tLimitedLevel));

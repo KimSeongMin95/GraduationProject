@@ -63,6 +63,18 @@ protected:
 	UPROPERTY()
 		class UHorizontalBox* WeaponBox = nullptr;
 	UPROPERTY()
+		class UImage* ImageOfPistol = nullptr;
+	UPROPERTY()
+		class UImage* ImageOfAssaultRifle = nullptr;
+	UPROPERTY()
+		class UImage* ImageOfShotgun = nullptr;
+	UPROPERTY()
+		class UImage* ImageOfSniperRifle = nullptr;
+	UPROPERTY()
+		class UImage* ImageOfGrenadeLauncher = nullptr;
+	UPROPERTY()
+		class UImage* ImageOfRocketLauncher = nullptr;
+	UPROPERTY()
 		class UEditableTextBox* LimitedLevelOfWeapon = nullptr;
 	UPROPERTY()
 		class UEditableTextBox* AttackPowerOfWeapon = nullptr;

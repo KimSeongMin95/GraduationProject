@@ -77,6 +77,7 @@ private:
 
 public:
 	EWeaponType WeaponType;
+	int WeaponNumbering;
 
 
 	UPROPERTY(EditAnywhere, Category = "Stat")

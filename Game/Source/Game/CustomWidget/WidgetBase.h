@@ -20,6 +20,7 @@
 
 #include "Components/VerticalBoxSlot.h"
 #include "Components/Image.h"
+#include "Components/EditableText.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 

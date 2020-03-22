@@ -50,6 +50,7 @@ void AAssaultRifle::InitItem()
 void AAssaultRifle::InitStat()
 {
 	WeaponType = EWeaponType::Rifle;
+	WeaponNumbering = 2;
 
 	LimitedLevel = 5;
 

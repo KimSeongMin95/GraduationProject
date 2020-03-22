@@ -107,6 +107,8 @@ void ABaseCharacter::BeginPlayHelthPointBar()
 			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
 			if (ProgressBar == nullptr)
 				UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar(): ProgressBar == nullptr"));
+		
+			EditableTextBoxForID = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_147")));
 		}
 		else
 			UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar(): WidgetTree == nullptr"));

@@ -72,8 +72,8 @@ AOnlineGameMode::AOnlineGameMode()
 
 	//HUDClass = AMyHUD::StaticClass();
 
-	//// DefaultPawn이 생성되지 않게 합니다.
-	//DefaultPawnClass = nullptr; 
+	// DefaultPawn이 생성되지 않게 합니다.
+	DefaultPawnClass = nullptr; 
 
 	// use our custom PlayerController class
 	PlayerControllerClass = APioneerController::StaticClass();
@@ -934,6 +934,24 @@ void AOnlineGameMode::_ObservingInGameWidget()
 
 	PioneerManager->Observation();
 }
+
+void AOnlineGameMode::SpawnBuildingInGameWidget(int Value)
+{
+	_SpawnBuildingInGameWidget(Value);
+}
+void AOnlineGameMode::_SpawnBuildingInGameWidget(int Value)
+{
+	if (!PioneerController)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::SpawnBuildingInGameWidget()> if (!PioneerController)\n");
+		return;
+	}
+
+	PioneerController->ConstructingMode();
+
+	PioneerController->SpawnBuilding(Value);
+}
+
 
 /////////////////////////////////////////////////
 // 타이틀 화면으로 되돌아가기

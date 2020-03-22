@@ -49,6 +49,7 @@ void ARocketLauncher::InitItem()
 void ARocketLauncher::InitStat()
 {
 	WeaponType = EWeaponType::Launcher;
+	WeaponNumbering = 6;
 
 	LimitedLevel = 10;
 
