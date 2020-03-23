@@ -102,8 +102,12 @@ private:
 
 	void SendInfoOfSpaceShip(float DeltaTime); float TimerOfSendInfoOfSpaceShip;
 
-	void SetInfoOfPioneer(float DeltaTime); float TimerOfSetInfoOfPioneer;
-	void GetInfoOfPioneer(float DeltaTime); float TimerOfGetInfoOfPioneer;
+	void GetDiedPioneer(float DeltaTime); float TimerOfGetDiedPioneer;
+
+	void GetInfoOfPioneer_Animation(float DeltaTime); float TimerOfGetInfoOfPioneer_Animation;
+	void SetInfoOfPioneer_Animation(float DeltaTime); float TimerOfSetInfoOfPioneer_Animation;
+
+	void GetInfoOfPioneer_Socket(float DeltaTime); float TimerOfGetInfoOfPioneer_Socket;
 
 
 	/////////////////////////////////////////////////
@@ -120,10 +124,12 @@ private:
 	void RecvSpawnPioneer(float DeltaTime); float TimerOfRecvSpawnPioneer;
 	void RecvDiedPioneer(float DeltaTime); float TimerOfRecvDiedPioneer;
 
-	void SendInfoOfPioneer(float DeltaTime); float TimerOfSendInfoOfPioneer;
-	void RecvInfoOfPioneer(float DeltaTime); float TimerOfRecvInfoOfPioneer;
+	void SendInfoOfPioneer_Animation(float DeltaTime); float TimerOfSendInfoOfPioneer_Animation;
+	void RecvInfoOfPioneer_Animation(float DeltaTime); float TimerOfRecvInfoOfPioneer_Animation;
 
 	void RecvPossessPioneer(float DeltaTime); float TimerOfRecvPossessPioneer;
+
+	void RecvInfoOfPioneer_Socket(float DeltaTime); float TimerOfRecvInfoOfPioneer_Socket;
 
 protected:
 

@@ -367,15 +367,15 @@ enum EPacketType
 	*/
 	DIED_PIONEER,
 
-	/** 게임클라이언트가 자신이 조종중인 Pioneer 정보를 보내면 게임서버는 해당 Pioneer를 제외한 다른 Pioneer들의 정보를 브로드캐스팅
+	/** 게임클라이언트가 자신이 조종중인 Pioneer의 애니메이션 정보를 보내면 게임서버는 해당 Pioneer를 제외한 다른 Pioneer들의 정보를 브로드캐스팅
 	Game Client:
-		Recv [INFO_OF_PIONEER]:
-		Send [INFO_OF_PIONEER]:
+		Recv [INFO_OF_PIONEER_ANIMATION]:
+		Send [INFO_OF_PIONEER_ANIMATION]:
 	Game Server:
-		Recv [INFO_OF_PIONEER]:
-		Send [INFO_OF_PIONEER]:
+		Recv [INFO_OF_PIONEER_ANIMATION]:
+		Send [INFO_OF_PIONEER_ANIMATION]:
 	*/
-	INFO_OF_PIONEER,
+	INFO_OF_PIONEER_ANIMATION,
 
 	/** 게임클라이언트가 관전중인 Pioneer에 빙의하려는 요청을 보내면
 	Game Client:
@@ -383,9 +383,19 @@ enum EPacketType
 		Send [POSSESS_PIONEER]:
 	Game Server:
 		Recv [POSSESS_PIONEER]:
-		Send [POSSESS_PIONEER]: 이미 누군가가 빙의중이거나 Pioneer가 죽으면 -1를 보냅니다.
+		Send [POSSESS_PIONEER]: 이미 누군가가 빙의중이거나 죽으면 0을 보냅니다.
 	*/
-	POSSESS_PIONEER
+	POSSESS_PIONEER,
+
+	/** POSSESS_PIONEER때 브로드캐스팅으로 전송
+	Game Client:
+		Recv [INFO_OF_PIONEER_SOCKET]:
+		Send []:
+	Game Server:
+		Recv []:
+		Send [INFO_OF_PIONEER_SOCKET]: 
+	*/
+	INFO_OF_PIONEER_SOCKET
 };
 
 
@@ -735,236 +745,6 @@ public:
 };
 
 
-
-class GAME_API cInfoOfPioneer
-{
-public:
-	int ID;
-	int SocketID;
-
-	float ScaleX;
-	float ScaleY;
-	float ScaleZ;
-
-	float RotX;
-	float RotY;
-	float RotZ;
-
-	float LocX;
-	float LocY;
-	float LocZ;
-
-	float TargetRotX;
-	float TargetRotY;
-	float TargetRotZ;
-
-	float HealthPoint;
-	float MaxHealthPoint;
-	bool bDying;
-
-	float MoveSpeed;
-	float AttackSpeed;
-
-	float AttackPower;
-
-	float SightRange;
-	float DetectRange;
-	float AttackRange;
-
-	bool bHasPistolType;
-	bool bHasRifleType;
-	bool bHasLauncherType;
-
-
-public:
-	cInfoOfPioneer()
-	{
-		ID = 0;
-		SocketID = 0;
-
-		ScaleX = 1.0f;
-		ScaleY = 1.0f;
-		ScaleZ = 1.0f;
-
-		RotX = 0.0f;
-		RotY = 0.0f;
-		RotZ = 0.0f;
-
-		LocX = 0.0f;
-		LocY = 0.0f;
-		LocZ = 0.0f;
-
-		TargetRotX = 0.0f;
-		TargetRotY = 0.0f;
-		TargetRotZ = 0.0f;
-
-		HealthPoint = 100.0f;
-		MaxHealthPoint = 100.0f;
-		bDying = false;
-
-		MoveSpeed = 10.0f;
-		AttackSpeed = 1.0f;
-
-		AttackPower = 1.0f;
-
-		AttackRange = 16.0f;
-		DetectRange = 32.0f;
-		SightRange = 32.0f;
-
-		bHasPistolType = false;
-		bHasRifleType = false;
-		bHasLauncherType = false;
-	}
-	cInfoOfPioneer& operator=(const cInfoOfPioneer& other)
-	{
-		ID = other.ID;
-		//SocketID = other.SocketID; // SocketID는 따로 적용하기 위해
-
-		ScaleX = other.ScaleX;
-		ScaleY = other.ScaleY;
-		ScaleZ = other.ScaleZ;
-
-		RotX = other.RotX;
-		RotY = other.RotY;
-		RotZ = other.RotZ;
-
-		LocX = other.LocX;
-		LocY = other.LocY;
-		LocZ = other.LocZ;
-
-		TargetRotX = other.TargetRotX;
-		TargetRotY = other.TargetRotY;
-		TargetRotZ = other.TargetRotZ;
-
-		HealthPoint = other.HealthPoint;
-		MaxHealthPoint = other.MaxHealthPoint;
-		//bDying = other.bDying; // bDying는 따로 적용하기 위해
-
-		MoveSpeed = other.MoveSpeed;
-		AttackSpeed = other.AttackSpeed;
-
-		AttackPower = other.AttackPower;
-
-		AttackRange = other.AttackRange;
-		DetectRange = other.DetectRange;
-		SightRange = other.SightRange;
-
-		bHasPistolType = other.bHasPistolType;
-		bHasRifleType = other.bHasRifleType;
-		bHasLauncherType = other.bHasLauncherType;
-
-		return *this;
-	}
-	~cInfoOfPioneer()
-	{
-	}
-
-	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer& Info)
-	{
-		Stream << Info.ID << endl;
-		Stream << Info.SocketID << endl;
-		Stream << Info.ScaleX << endl;
-		Stream << Info.ScaleY << endl;
-		Stream << Info.ScaleZ << endl;
-		Stream << Info.RotX << endl;
-		Stream << Info.RotY << endl;
-		Stream << Info.RotZ << endl;
-		Stream << Info.LocX << endl;
-		Stream << Info.LocY << endl;
-		Stream << Info.LocZ << endl;
-		Stream << Info.TargetRotX << endl;
-		Stream << Info.TargetRotY << endl;
-		Stream << Info.TargetRotZ << endl;
-		Stream << Info.HealthPoint << endl;
-		Stream << Info.MaxHealthPoint << endl;
-		Stream << Info.bDying << endl;
-		Stream << Info.MoveSpeed << endl;
-		Stream << Info.AttackSpeed << endl;
-		Stream << Info.AttackPower << endl;
-		Stream << Info.AttackRange << endl;
-		Stream << Info.DetectRange << endl;
-		Stream << Info.SightRange << endl;
-		Stream << Info.bHasPistolType << endl;
-		Stream << Info.bHasRifleType << endl;
-		Stream << Info.bHasLauncherType << endl;
-
-		return Stream;
-	}
-
-	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfPioneer& Info)
-	{
-		Stream >> Info.ID;
-		Stream >> Info.SocketID;
-		Stream >> Info.ScaleX;
-		Stream >> Info.ScaleY;
-		Stream >> Info.ScaleZ;
-		Stream >> Info.RotX;
-		Stream >> Info.RotY;
-		Stream >> Info.RotZ;
-		Stream >> Info.LocX;
-		Stream >> Info.LocY;
-		Stream >> Info.LocZ;
-		Stream >> Info.TargetRotX;
-		Stream >> Info.TargetRotY;
-		Stream >> Info.TargetRotZ;
-		Stream >> Info.HealthPoint;
-		Stream >> Info.MaxHealthPoint;
-		Stream >> Info.bDying;
-		Stream >> Info.MoveSpeed;
-		Stream >> Info.AttackSpeed;
-		Stream >> Info.AttackPower;
-		Stream >> Info.AttackRange;
-		Stream >> Info.DetectRange;
-		Stream >> Info.SightRange;
-		Stream >> Info.bHasPistolType;
-		Stream >> Info.bHasRifleType;
-		Stream >> Info.bHasLauncherType;
-
-		return Stream;
-	}
-
-	// Log
-	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
-	{
-		printf_s("%s%s<cInfoOfSpaceShip> ID: %d, SocketID : %d, ScaleX: %f, ScaleY: %f, ScaleZ: %f, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
-			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, SocketID, ScaleX, ScaleY, ScaleZ, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
-		printf_s("%s%s<cInfoOfSpaceShip> HealthPoint: %f, MaxHealthPoint : %f, bDying: %s, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, AttackRange: %f, DetectRange: %f, SightRange: %f \n",
-			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), HealthPoint, MaxHealthPoint, (bDying == true) ? "true" : "false", MoveSpeed, AttackSpeed, AttackPower, AttackRange, DetectRange, SightRange);
-		printf_s("%s%s<cInfoOfSpaceShip> bHasPistolType: %s, bHasRifleType : %s, bHasLauncherType: %s \n",
-			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), (bHasPistolType == true) ? "true" : "false", (bHasRifleType == true) ? "true" : "false", (bHasLauncherType == true) ? "true" : "false");
-	}
-
-	void SetActorTransform(int ID_, FTransform Transform)
-	{
-		this->ID = ID_;
-
-		ScaleX = Transform.GetScale3D().X;
-		ScaleY = Transform.GetScale3D().Y;
-		ScaleZ = Transform.GetScale3D().Z;
-
-		RotX = Transform.GetRotation().Rotator().Pitch;
-		RotY = Transform.GetRotation().Rotator().Yaw;
-		RotZ = Transform.GetRotation().Rotator().Roll;
-
-		LocX = Transform.GetLocation().X;
-		LocY = Transform.GetLocation().Y;
-		LocZ = Transform.GetLocation().Z;
-	}
-
-	FTransform GetActorTransform()
-	{
-		FTransform transform;
-		transform.SetScale3D(FVector(ScaleX, ScaleY, ScaleZ));
-		FQuat quat(FRotator(RotX, RotY, RotZ));
-		transform.SetRotation(quat);
-		transform.SetLocation(FVector(LocX, LocY, LocZ));
-
-		return transform;
-	}
-};
-
 class GAME_API cInfoOfSpaceShip
 {
 public:
@@ -1052,4 +832,358 @@ public:
 		this->AccelerationZ = AccelerationZ_;
 		this->bEngine = bEngine_;
 	}
+};
+
+
+class GAME_API cInfoOfPioneer_Socket
+{
+public:
+	int ID;
+
+	int SocketID;
+	string NameOfID;
+	//bool bDying; // 딱히 필요없는 듯 합니다.
+
+public:
+	cInfoOfPioneer_Socket()
+	{
+		ID = 0;
+
+		SocketID = 0;
+		NameOfID = "AI";
+		//bDying = false;
+	}
+	~cInfoOfPioneer_Socket()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer_Socket& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.SocketID << endl;
+		Stream << ReplaceCharInString(Info.NameOfID, ' ', '_') << endl;
+		Stream << Info.NameOfID << endl;
+		//Stream << Info.bDying << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfPioneer_Socket& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.SocketID;
+		Stream >> Info.NameOfID;
+		Info.NameOfID = ReplaceCharInString(Info.NameOfID, '_', ' ');
+		//Stream >> Info.bDying;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfPioneer_Socket> ID: %d, SocketID : %d, NameOfID: %s\n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, SocketID, NameOfID.c_str());
+	}
+
+	// Convert
+	static string ReplaceCharInString(string str, char before, char after)
+	{
+		string result = str;
+		for (int i = 0; i < result.size(); i++)
+		{
+			if (result.at(i) == before)
+				result.at(i) = after;
+		}
+		return result;
+	}
+};
+
+class GAME_API cInfoOfPioneer_Animation
+{
+public:
+	int ID;
+
+	float RotX;
+	float RotY;
+	float RotZ;
+
+	float LocX;
+	float LocY;
+	float LocZ;
+
+	float TargetRotX;
+	float TargetRotY;
+	float TargetRotZ;
+
+
+	// 애니메이션 변수들
+	float VelocityX;
+	float VelocityY;
+	float VelocityZ;
+
+	bool bHasPistolType;
+	bool bHasRifleType;
+	bool bHasLauncherType;
+
+	bool bFired;
+
+public:
+	cInfoOfPioneer_Animation()
+	{
+		ID = 0;
+
+		RotX = 0.0f;
+		RotY = 0.0f;
+		RotZ = 0.0f;
+
+		LocX = 0.0f;
+		LocY = 0.0f;
+		LocZ = 0.0f;
+
+		TargetRotX = 0.0f;
+		TargetRotY = 0.0f;
+		TargetRotZ = 0.0f;
+
+		VelocityX = 0.0f;
+		VelocityY = 0.0f;
+		VelocityZ = 0.0f;
+
+		bHasPistolType = false;
+		bHasRifleType = false;
+		bHasLauncherType = false;
+
+		bFired = false;
+	}
+	~cInfoOfPioneer_Animation()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer_Animation& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.RotX << endl;
+		Stream << Info.RotY << endl;
+		Stream << Info.RotZ << endl;
+		Stream << Info.LocX << endl;
+		Stream << Info.LocY << endl;
+		Stream << Info.LocZ << endl;
+		Stream << Info.TargetRotX << endl;
+		Stream << Info.TargetRotY << endl;
+		Stream << Info.TargetRotZ << endl;
+
+		Stream << Info.VelocityX << endl;
+		Stream << Info.VelocityY << endl;
+		Stream << Info.VelocityZ << endl;
+		Stream << Info.bHasPistolType << endl;
+		Stream << Info.bHasRifleType << endl;
+		Stream << Info.bHasLauncherType << endl;
+		Stream << Info.bFired << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfPioneer_Animation& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.RotX;
+		Stream >> Info.RotY;
+		Stream >> Info.RotZ;
+		Stream >> Info.LocX;
+		Stream >> Info.LocY;
+		Stream >> Info.LocZ;
+		Stream >> Info.TargetRotX;
+		Stream >> Info.TargetRotY;
+		Stream >> Info.TargetRotZ;
+
+		Stream >> Info.VelocityX;
+		Stream >> Info.VelocityY;
+		Stream >> Info.VelocityZ;
+		Stream >> Info.bHasPistolType;
+		Stream >> Info.bHasRifleType;
+		Stream >> Info.bHasLauncherType;
+		Stream >> Info.bFired;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfPioneer_Animation> ID: %d, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
+		printf_s("%s%s<cInfoOfPioneer_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, bHasPistolType: %s, bHasRifleType : %s, bHasLauncherType: %s, bFired: %s \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), VelocityX, VelocityY, VelocityZ, (bHasPistolType == true) ? "true" : "false", (bHasRifleType == true) ? "true" : "false", (bHasLauncherType == true) ? "true" : "false", (bFired == true) ? "true" : "false");
+
+	}
+
+	void SetActorTransform(const FTransform& Transform)
+	{
+		RotX = Transform.GetRotation().Rotator().Pitch;
+		RotY = Transform.GetRotation().Rotator().Yaw;
+		RotZ = Transform.GetRotation().Rotator().Roll;
+	
+		LocX = Transform.GetLocation().X;
+		LocY = Transform.GetLocation().Y;
+		LocZ = Transform.GetLocation().Z;
+	}
+	
+	FTransform GetActorTransform()
+	{
+		FTransform transform;
+		FQuat quat(FRotator(RotX, RotY, RotZ));
+		transform.SetRotation(quat);
+		transform.SetLocation(FVector(LocX, LocY, LocZ));
+	
+		return transform;
+	}
+};
+
+class GAME_API cInfoOfPioneer_Stat
+{
+public:
+	int ID;
+
+	float HealthPoint;
+	float MaxHealthPoint;
+	
+	float MoveSpeed;
+	float AttackSpeed;
+	
+	float AttackPower;
+	
+	float SightRange;
+	float DetectRange;
+	float AttackRange;
+
+public:
+	cInfoOfPioneer_Stat()
+	{
+		ID = 0;
+
+		HealthPoint = 100.0f;
+		MaxHealthPoint = 100.0f;
+		
+		MoveSpeed = 10.0f;
+		AttackSpeed = 1.0f;
+		
+		AttackPower = 1.0f;
+		
+		SightRange = 32.0f;
+		DetectRange = 32.0f;
+		AttackRange = 16.0f;
+	}
+	~cInfoOfPioneer_Stat()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer_Stat& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.HealthPoint << endl;
+		Stream << Info.MaxHealthPoint << endl;
+		Stream << Info.MoveSpeed << endl;
+		Stream << Info.AttackSpeed << endl;
+		Stream << Info.AttackPower << endl;
+		Stream << Info.SightRange << endl;
+		Stream << Info.DetectRange << endl;
+		Stream << Info.AttackRange << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfPioneer_Stat& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.HealthPoint;
+		Stream >> Info.MaxHealthPoint;
+		Stream >> Info.MoveSpeed;
+		Stream >> Info.AttackSpeed;
+		Stream >> Info.AttackPower;
+		Stream >> Info.SightRange;
+		Stream >> Info.DetectRange;
+		Stream >> Info.AttackRange;
+
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfPioneer_Stat> HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), HealthPoint, MaxHealthPoint, MoveSpeed, AttackSpeed, AttackPower, SightRange, DetectRange, AttackRange);
+	}
+
+};
+
+// 전부 합친거
+class GAME_API cInfoOfPioneer
+{
+public:
+	int ID;
+
+	cInfoOfPioneer_Socket Socket;
+	cInfoOfPioneer_Animation Animation;
+	cInfoOfPioneer_Stat Stat;
+
+public:
+	cInfoOfPioneer()
+	{
+		ID = 0;
+
+
+	}
+	cInfoOfPioneer(int ID, cInfoOfPioneer_Socket Socket, cInfoOfPioneer_Animation Animation, cInfoOfPioneer_Stat Stat)
+		: ID(ID), Socket(Socket), Animation(Animation), Stat(Stat)
+	{
+	}
+	~cInfoOfPioneer()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.Socket << endl;
+		Stream << Info.Animation << endl;
+		Stream << Info.Stat << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfPioneer& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.Socket;
+		Stream >> Info.Animation;
+		Stream >> Info.Stat;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		Socket.PrintInfo();
+		Animation.PrintInfo();
+		Stat.PrintInfo();
+	}
+
 };

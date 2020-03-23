@@ -53,6 +53,7 @@ cClientSocketInGame::cClientSocketInGame()
 	Ping = 0;
 	LeaveCriticalSection(&csPing);
 
+	PossessedID = 0;
 
 	printf_s("[END] <cClientSocketInGame::cClientSocketInGame()>\n");
 }
@@ -157,6 +158,11 @@ void cClientSocketInGame::CloseSocket()
 	printf_s("[START] <cClientSocketInGame::CloseSocket()>\n");
 
 
+	// 게임클라이언트를 종료하기 전에 조종하던 Pioneer가 죽게끔 알립니다.
+	if (bIsClientSocketOn)
+		SendDiedPioneer(PossessedID);
+
+
 	// 게임클라이언트를 종료하면 남아있던 WSASend(...)를 다 보내기 위해 Alertable Wait 상태로 만듭니다.
 	SleepEx(1, true);
 
@@ -257,8 +263,9 @@ void cClientSocketInGame::CloseSocket()
 	tsqSpaceShip.clear();
 	tsqSpawnPioneer.clear();
 	tsqDiedPioneer.clear();
-	tsqInfoOfPioneer.clear();
+	tsqInfoOfPioneer_Animation.clear();
 	tsqPossessPioneer.clear();
+	tsqInfoOfPioneer_Socket.clear();
 
 	printf_s("[END] <cClientSocketInGame::CloseSocket()>\n");
 }
@@ -638,9 +645,9 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 		RecvDiedPioneer(recvStream);
 	}
 	break;
-	case EPacketType::INFO_OF_PIONEER:
+	case EPacketType::INFO_OF_PIONEER_ANIMATION:
 	{
-		RecvInfoOfPioneer(recvStream);
+		RecvInfoOfPioneer_Animation(recvStream);
 	}
 	break;
 	case EPacketType::POSSESS_PIONEER:
@@ -648,7 +655,13 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 		RecvPossessPioneer(recvStream);
 	}
 	break;
+	case EPacketType::INFO_OF_PIONEER_SOCKET:
+	{
+		RecvInfoOfPioneer_Socket(recvStream);
+	}
+	break;
 
+	
 	default:
 	{
 		printf_s("[ERROR] <cClientSocketInGame::ProcessReceivedPacket()> unknown packet type! PacketType: %d \n", packetType);
@@ -1073,7 +1086,7 @@ void cClientSocketInGame::RecvDiedPioneer(stringstream& RecvStream)
 	printf_s("[Start] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
 
 
-	int id;
+	int id = 0;
 
 	RecvStream >> id;
 
@@ -1085,60 +1098,57 @@ void cClientSocketInGame::RecvDiedPioneer(stringstream& RecvStream)
 	printf_s("[End] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
 }
 
-void cClientSocketInGame::SendInfoOfPioneer(class APioneer* PioneerOfPlayer)
+void cClientSocketInGame::SendInfoOfPioneer_Animation(class APioneer* PioneerOfPlayer)
 {
-	//printf_s("[Start] <cClientSocketInGame::SendInfoOfPioneer()>\n");
+	//printf_s("[Start] <cClientSocketInGame::SendInfoOfPioneer_Animation()>\n");
 
 
-	cInfoOfPioneer infoOfPioneer;
+	cInfoOfPioneer_Animation animtion;
 	
 	if (PioneerOfPlayer)
 	{
-		infoOfPioneer = PioneerOfPlayer->GetInfoOfPioneer();
-		//printf_s("\t if (PioneerOfPlayer)\n");
+		animtion = PioneerOfPlayer->GetInfoOfPioneer_Animation();
 	}
 	
 	stringstream sendStream;
-	sendStream << EPacketType::INFO_OF_PIONEER << endl;
-	sendStream << infoOfPioneer << endl;
+	sendStream << EPacketType::INFO_OF_PIONEER_ANIMATION << endl;
+	sendStream << animtion << endl;
 
 	Send(sendStream);
 
 
-	//printf_s("[End] <cClientSocketInGame::SendInfoOfPioneer()>\n");
+	//printf_s("[End] <cClientSocketInGame::SendInfoOfPioneer_Animation()>\n");
 }
-void cClientSocketInGame::RecvInfoOfPioneer(stringstream& RecvStream)
+void cClientSocketInGame::RecvInfoOfPioneer_Animation(stringstream& RecvStream)
 {
-	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer(...)>\n");
+	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer_Animation(...)>\n");
 
 
-	cInfoOfPioneer infoOfPioneer;
+	cInfoOfPioneer_Animation animation;
 
-	while (RecvStream >> infoOfPioneer)
+	while (RecvStream >> animation)
 	{
-		tsqInfoOfPioneer.push(infoOfPioneer);
+		tsqInfoOfPioneer_Animation.push(animation);
 
-		//infoOfPioneer.PrintInfo();
+		//animation.PrintInfo();
 	}
 
 	
-
-
-	//printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer(...)>\n");
+	//printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer_Animation(...)>\n");
 }
 
-void cClientSocketInGame::SendPossessPioneer(int RequestingID)
+void cClientSocketInGame::SendPossessPioneer(cInfoOfPioneer_Socket Socket)
 {
 	printf_s("[Start] <cClientSocketInGame::SendPossessPioneer()>\n");
 
 
 	stringstream sendStream;
 	sendStream << EPacketType::POSSESS_PIONEER << endl;
-	sendStream << RequestingID << endl;
+	sendStream << Socket << endl;
 
 	Send(sendStream);
 
-	printf_s("\t RequestingID: %d \n", RequestingID);
+	Socket.PrintInfo();
 
 
 	printf_s("[End] <cClientSocketInGame::SendPossessPioneer()>\n");
@@ -1148,15 +1158,37 @@ void cClientSocketInGame::RecvPossessPioneer(stringstream& RecvStream)
 	printf_s("[Start] <cClientSocketInGame::RecvPossessPioneer(...)>\n");
 
 
-	int permittedID = 0;
-	RecvStream >> permittedID;
+	cInfoOfPioneer_Socket socket;
 
-	tsqPossessPioneer.push(permittedID);
+	RecvStream >> socket;
 
-	printf_s("\t permittedID: %d \n", permittedID);
+	tsqPossessPioneer.push(socket);
+
+	socket.PrintInfo();
+
+
+	if (socket.ID != 0)
+		PossessedID = socket.ID;
 
 
 	printf_s("[End] <cClientSocketInGame::RecvPossessPioneer(...)>\n");
+}
+
+void cClientSocketInGame::RecvInfoOfPioneer_Socket(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer_Socket(...)>\n");
+
+
+	cInfoOfPioneer_Socket socket;
+
+	RecvStream >> socket;
+
+	tsqInfoOfPioneer_Socket.push(socket);
+
+	socket.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer_Socket(...)>\n");
 }
 
 

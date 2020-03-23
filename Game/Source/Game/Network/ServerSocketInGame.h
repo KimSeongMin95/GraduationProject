@@ -77,8 +77,19 @@ public:
 	static std::map<SOCKET, SOCKET> Observers;
 	static CRITICAL_SECTION csObservers;
 
-	static std::map<int, cInfoOfPioneer> InfosOfPioneers;
-	static CRITICAL_SECTION csInfosOfPioneers;
+
+	///////////////////////////////////////////
+	// Pioneer 세분화
+	///////////////////////////////////////////
+	static std::map<int, cInfoOfPioneer_Socket> InfosOfPioneer_Socket;
+	static CRITICAL_SECTION csInfosOfPioneer_Socket;
+
+	static std::map<int, cInfoOfPioneer_Animation> InfosOfPioneer_Animation;
+	static CRITICAL_SECTION csInfosOfPioneer_Animation;
+
+	static std::map<int, cInfoOfPioneer_Stat> InfosOfPioneer_Stat;
+	static CRITICAL_SECTION csInfosOfPioneer_Stat;
+
 
 
 
@@ -169,12 +180,14 @@ public:
 	static void SendSpawnedPioneer(SOCKET Socket);
 
 	static void DiedPioneer(stringstream& RecvStream, SOCKET Socket);
+	static cThreadSafetyQueue<int> tsqDiedPioneer;
 
-	static void InfoOfPioneer(stringstream& RecvStream, SOCKET Socket);
-	static cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
+	static void InfoOfPioneer_Animation(stringstream& RecvStream, SOCKET Socket);
+	static cThreadSafetyQueue<cInfoOfPioneer_Animation> tsqInfoOfPioneer_Animation;
 
 	static void PossessPioneer(stringstream& RecvStream, SOCKET Socket);
-	bool PossessingPioneer(int RequestingID);
+	bool PossessingPioneer(cInfoOfPioneer_Socket Socket);
+	static cThreadSafetyQueue<cInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
 
 	////////////////////////////////////////////////
 	// (임시) 패킷 사이즈와 실제 길이 검증용 함수

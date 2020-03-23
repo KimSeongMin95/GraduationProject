@@ -143,8 +143,7 @@ void APioneerManager::FindPioneersInWorld()
 				// 이미 생성된 Pioneer를 게임서버에 알립니다.
 				if (ServerSocketInGame->IsServerOn())
 				{
-					cInfoOfPioneer infoOfPioneer;
-					infoOfPioneer.SetActorTransform(KeyID, ActorItr->GetActorTransform());
+					cInfoOfPioneer infoOfPioneer = ActorItr->GetInfoOfPioneer();
 					ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
 				}
 			}
@@ -473,8 +472,7 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 		// Pioneer 생성을 게임클라이언트들에게 알립니다.
 		if (ServerSocketInGame->IsServerOn())
 		{
-			cInfoOfPioneer infoOfPioneer;
-			infoOfPioneer.SetActorTransform(KeyID, pioneer->GetActorTransform());
+			cInfoOfPioneer infoOfPioneer = pioneer->GetInfoOfPioneer();
 			ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
 		}
 	}
@@ -490,11 +488,11 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 
 void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 {
-	// 이미 존재하면 생성하지 않고 위치만 조정합니다.
+	// 이미 존재하면 생성하지 않고 값만 설정합니다.
 	if (Pioneers.Contains(InfoOfPioneer.ID))
 	{
-		printf_s("[INFO] <APioneerManager::SpawnPioneerByRecv(...)> if (Pioneers.Contains(InfoOfPioneer.KeyID))\n");
-		Pioneers[InfoOfPioneer.ID]->SetActorTransform(InfoOfPioneer.GetActorTransform());
+		printf_s("[INFO] <APioneerManager::SpawnPioneerByRecv(...)> if (Pioneers.Contains(InfoOfPioneer.ID)) \n");
+		Pioneers[InfoOfPioneer.ID]->SetInfoOfPioneer(InfoOfPioneer);
 		return;
 	}
 
@@ -507,7 +505,7 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 
 	/*******************************************************************/
 
-	FTransform myTrans = InfoOfPioneer.GetActorTransform();
+	FTransform myTrans = InfoOfPioneer.Animation.GetActorTransform();
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
@@ -531,8 +529,9 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 	pioneer->SetPioneerManager(this);
 
 	pioneer->ID = InfoOfPioneer.ID;
+	pioneer->SetInfoOfPioneer(InfoOfPioneer);
 	Pioneers.Add(InfoOfPioneer.ID, pioneer);
-
+	
 
 	if (ViewpointState == EViewpointState::SpaceShip)
 	{
@@ -831,6 +830,11 @@ void APioneerManager::SwitchToFreeViewpoint()
 
 void APioneerManager::PossessObservingPioneer()
 {
+	if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)
+	{
+		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer(...)> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)\n");
+		return;
+	}
 	if (!ViewTarget)
 	{
 		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!ViewTarget) \n");
@@ -861,64 +865,69 @@ void APioneerManager::PossessObservingPioneer()
 
 	ViewpointState = EViewpointState::WaitingPermission;
 
-	if (ServerSocketInGame)
+
+	cInfoOfPioneer_Socket socket;
+	socket.ID = IdCurrentlyBeingObserved;
+	socket.NameOfID = ClientSocket->CopyMyInfo().ID;
+
+
+	if (ServerSocketInGame->IsServerOn())
 	{
-		if (ServerSocketInGame->IsServerOn())
+		// 빙의 할 수 있는지 확인
+		bool result = ServerSocketInGame->PossessingPioneer(socket);
+
+		if (result)
 		{
-			// 빙의 할 수 있는지 확인
-			bool result = ServerSocketInGame->PossessingPioneer(IdCurrentlyBeingObserved);
+			// 빙의
+			PossessObservingPioneerByRecv(socket);
 
-			if (result)
-			{
-				// 빙의
-				PossessObservingPioneerByRecv(IdCurrentlyBeingObserved);
-			}
-			else
-			{
-				// 다시 관전모드
-				ViewpointState = EViewpointState::Observation;
-
-				// UI 설정
-				if (InGameWidget)
-				{
-					InGameWidget->SetArrowButtonsVisibility(true);
-					InGameWidget->SetPossessButtonVisibility(true);
-					InGameWidget->SetFreeViewpointButtonVisibility(true);
-					InGameWidget->SetObservingButtonVisibility(false);
-				}
-			}
-
-			return;
+			//if (APioneer* pioneer = Pioneers[socket.ID])
+			//	pioneer->SetInfoOfPioneer_Socket(socket);
 		}
+		else
+		{
+			// 다시 관전모드
+			ViewpointState = EViewpointState::Observation;
+
+			// UI 설정
+			if (InGameWidget)
+			{
+				InGameWidget->SetArrowButtonsVisibility(true);
+				InGameWidget->SetPossessButtonVisibility(true);
+				InGameWidget->SetFreeViewpointButtonVisibility(true);
+				InGameWidget->SetObservingButtonVisibility(false);
+			}
+		}
+
+		return;
 	}
-	if (ClientSocketInGame)
+
+	if (ClientSocketInGame->IsClientSocketOn())
 	{
-		if (ClientSocketInGame->IsClientSocketOn())
-		{
-			ClientSocketInGame->SendPossessPioneer(IdCurrentlyBeingObserved);
+		ClientSocketInGame->SendPossessPioneer(socket);
 
-			return;
-		}
+		return;
 	}
+	
 
 	// 싱글플레이에선 바로 빙의
-	PossessObservingPioneerByRecv(IdCurrentlyBeingObserved);
+	PossessObservingPioneerByRecv(socket);
 }
-void APioneerManager::PossessObservingPioneerByRecv(int PermittedID)
+void APioneerManager::PossessObservingPioneerByRecv(const class cInfoOfPioneer_Socket& Socket)
 {
 	if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)\n");
+		printf_s("[ERROR] <APioneerManager::PossessObservingPioneerByRecv(...)> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame) \n");
 		return;
 	}
 	if (!PioneerController)
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!PioneerController)\n");
+		printf_s("[ERROR] <APioneerManager::PossessObservingPioneerByRecv(...)> if (!PioneerController) \n");
 		return;
 	}
-	if (!Pioneers.Contains(PermittedID))
+	if (!Pioneers.Contains(Socket.ID))
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!PioneerController)\n");
+		printf_s("[ERROR] <APioneerManager::PossessObservingPioneerByRecv(...)> if (!Pioneers.Contains(Socket.ID)) \n");
 		
 		// 존재하지 않으면 자유시점 모드로 전환합니다.
 		SwitchToFreeViewpoint();
@@ -937,18 +946,13 @@ void APioneerManager::PossessObservingPioneerByRecv(int PermittedID)
 		InGameWidget->SetBuildingBoxVisibility(true);
 	}
 
-	if (APioneer* pioneer = Pioneers[PermittedID])
+	if (APioneer* pioneer = Pioneers[Socket.ID])
 	{
 		IdCurrentlyBeingObserved = 0;
 
-
-		if (ServerSocketInGame->IsServerOn())
+		if (ClientSocketInGame->IsClientSocketOn())
 		{
-			pioneer->SocketID = ServerSocketInGame->SocketID;
-		}
-		else if (ClientSocketInGame->IsClientSocketOn())
-		{
-			pioneer->SocketID = ClientSocket->CopyMyInfo().SocketByGameServer;
+			pioneer->SetInfoOfPioneer_Socket(const_cast<cInfoOfPioneer_Socket&>(Socket));
 		}
 		
 		PioneerOfPlayer = pioneer;

@@ -34,6 +34,9 @@ protected:
 
 public:
 	virtual void DestroyCharacter() override;
+
+	UFUNCTION(BlueprintCallable)
+		void FireEnd();
 /*** UBaseCharacterAnimInstance : End ***/
 
 

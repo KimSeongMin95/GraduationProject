@@ -190,7 +190,7 @@ public:
 	void SwitchToFreeViewpoint();
 
 	void PossessObservingPioneer(); // 빙의 (서버, 클라이언트, 싱글플레이)
-	void PossessObservingPioneerByRecv(int PermittedID); // 서버로부터 빙의 허가를 받습니다.
+	void PossessObservingPioneerByRecv(const class cInfoOfPioneer_Socket& Socket); // 서버로부터 빙의 허가를 받습니다.
 	UFUNCTION()
 		void SetTimerForPossessPioneer(class APioneer* Pioneer);
 	FTimerHandle TimerOfPossessPioneer;

@@ -249,7 +249,7 @@ void UInGameWidget::SetTextOfPioneerBox(class APioneer* Pioneer)
 	FString tHealth = FString::SanitizeFloat(Pioneer->HealthPoint) + " / " + FString::FromInt(Pioneer->MaxHealthPoint);
 	HealthOfPioneer->SetText(FText::FromString(tHealth));
 	
-	FString tID = "ID: " + Pioneer->Name_ID;
+	FString tID = "ID: " + Pioneer->NameOfID;
 	IDOfPioneer->SetText(FText::FromString(tID));
 
 	FString tMoveSpeed = "MoveSpeed: " + FString::SanitizeFloat(Pioneer->MoveSpeed);

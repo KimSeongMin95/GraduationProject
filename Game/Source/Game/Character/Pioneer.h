@@ -120,7 +120,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "PioneerManager")
 		int SocketID;
 	UPROPERTY(EditAnywhere, Category = "PioneerManager")
-		FString Name_ID;
+		FString NameOfID;
 
 	UPROPERTY(VisibleAnywhere, Category = "AnimInstance")
 		bool bHasPistolType;
@@ -131,6 +131,8 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "AnimInstance")
 		bool bHasLauncherType;
 
+	UPROPERTY(VisibleAnywhere, Category = "AnimInstance")
+		bool bFired;
 
 	/// 카메라 설정들을 PIE때 변경합니다.
 	UPROPERTY(EditAnywhere, Category = Camera)
@@ -292,9 +294,19 @@ public:
 	UFUNCTION(Category = "Building")
 		void DestroyBuilding();
 
+
 	///////////
 	// 네트워크
 	///////////
+	void SetInfoOfPioneer_Socket(class cInfoOfPioneer_Socket& Socket);
+	class cInfoOfPioneer_Socket GetInfoOfPioneer_Socket();
+
+	void SetInfoOfPioneer_Animation(class cInfoOfPioneer_Animation& Animation);
+	class cInfoOfPioneer_Animation GetInfoOfPioneer_Animation();
+
+	void SetInfoOfPioneer_Stat(class cInfoOfPioneer_Stat& Stat);
+	class cInfoOfPioneer_Stat GetInfoOfPioneer_Stat();
+
 	void SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer);
 	class cInfoOfPioneer GetInfoOfPioneer();
 /*** APioneer : End ***/

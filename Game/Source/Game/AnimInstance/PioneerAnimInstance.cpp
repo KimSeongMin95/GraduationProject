@@ -57,9 +57,9 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		return;
 	}
 
-	// bDying이 체크되었으나 체력이 양수면, 체력을 음수로 만들어서 죽는 과정을 진행합니다.
-	if (Pioneer->bDying && (Pioneer->HealthPoint > 0.0f))
-		Pioneer->SetHealthPoint(-Pioneer->HealthPoint - 1.0f);
+	// bDying이 체크되었으면 무조건 체력을 0으로 만들어서 죽는 과정을 진행합니다.
+	if (Pioneer->bDying)
+		Pioneer->SetHealthPoint(-Pioneer->HealthPoint);
 
 	/// CharacterAI
 	switch (CharacterAI)
@@ -78,6 +78,8 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 	bHasPistolType = Pioneer->HasPistolType();
 	bHasRifleType = Pioneer->HasRifleType();
 	bHasLauncherType = Pioneer->HasLauncherType();
+
+	bFired = Pioneer->bFired;
 }
 /*** AnimInstance Basic Function : End ***/
 
@@ -91,6 +93,17 @@ void UPioneerAnimInstance::SetFSM()
 void UPioneerAnimInstance::SetBehaviorTree()
 {
 
+}
+
+void UPioneerAnimInstance::FireEnd()
+{
+	if (!Pioneer)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::FireEnd: !Pioneer"));
+		return;
+	}
+
+	Pioneer->bFired = false;
 }
 
 void UPioneerAnimInstance::DestroyCharacter()

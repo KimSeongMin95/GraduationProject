@@ -71,7 +71,7 @@ APioneer::APioneer()
 
 	ID = 0;
 	SocketID = 0;
-	Name_ID = "AI";
+	NameOfID = "AI";
 
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
@@ -93,7 +93,7 @@ void APioneer::BeginPlay()
 
 
 	if (EditableTextBoxForID)
-		EditableTextBoxForID->SetText(FText::FromString(Name_ID));
+		EditableTextBoxForID->SetText(FText::FromString(NameOfID));
 }
 
 void APioneer::Tick(float DeltaTime)
@@ -360,6 +360,46 @@ void APioneer::SetHealthPoint(float Value)
 		AIController->Destroy();
 		AIController = nullptr;
 	}
+
+
+	if (PioneerManager)
+	{
+		// 1번만 실행하기 위해 Pioneers에 존재하는지 확인합니다.
+		if (PioneerManager->Pioneers.Contains(ID))
+		{
+			//////////////////////////////////////////////////////////
+			// 게임서버는와 게임클라이언트는 자신의 죽음과 관전상태를 알림
+			//////////////////////////////////////////////////////////
+			if (ServerSocketInGame && ClientSocketInGame)
+			{
+				if (ServerSocketInGame->IsServerOn())
+				{
+					stringstream sendStream;
+					sendStream << ID << endl;
+
+					ServerSocketInGame->DiedPioneer(sendStream, NULL);
+
+					// 조종하던 Pioneer라면
+					if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
+					{
+						ServerSocketInGame->InsertAtObersers(ServerSocketInGame->SocketID);
+					}
+				}
+				else if (ClientSocketInGame->IsClientSocketOn())
+				{
+					// 조종하던 Pioneer라면
+					if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
+					{
+						ClientSocketInGame->SendDiedPioneer(ID);
+
+						ClientSocketInGame->SendObservation();
+					}
+				}
+			}
+		}
+
+		PioneerManager->Pioneers.Remove(ID);
+	}
 }
 
 
@@ -564,6 +604,8 @@ void APioneer::InitSkeletalAnimation()
 	bHasPistolType = false;
 	bHasRifleType = false;
 	bHasLauncherType = false;
+
+	bFired = false;
 
 	//// 5.1 AnimInstance를 사용하지 않고 간단하게 애니메이션을 재생하려면 AnimSequence를 가져와서 Skeleton에 적용합니다.
 	//static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Mannequin/Animations/ThirdPersonRun.ThirdPersonRun'"));
@@ -864,56 +906,30 @@ void APioneer::DestroyCharacter()
 	if (HelmetMesh)
 		HelmetMesh->DestroyComponent();
 
-	//////////////////////////////////////////////////////////
-	// 게임서버는와 게임클라이언트는 자신의 죽음과 관전상태를 알림
-	//////////////////////////////////////////////////////////
-	if (ServerSocketInGame && ClientSocketInGame)
-	{
-		if (ServerSocketInGame->IsServerOn())
-		{
-			stringstream sendStream;
-			sendStream << ID << endl;
-			ServerSocketInGame->DiedPioneer(sendStream, NULL);
-
-			// 조종하던 Pioneer라면
-			if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
-			{
-				ServerSocketInGame->InsertAtObersers(ServerSocketInGame->SocketID);
-			}
-		}
-		else if (ClientSocketInGame->IsClientSocketOn())
-		{
-			// 조종하던 Pioneer라면
-			if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
-			{
-				ClientSocketInGame->SendDiedPioneer(ID);
-
-				ClientSocketInGame->SendObservation();
-			}
-		}
-	}
-
 	if (PioneerManager)
 	{
-		PioneerManager->Pioneers.Remove(ID);
-		PioneerManager->PioneerOfPlayer = nullptr;
-
-		// 일단 CameraOfCurrentPioneer로 카메라 전환
-		if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
+		// 조정하던 Pioneer라면
+		if (PioneerManager->PioneerOfPlayer == this)
 		{
-			CopyTopDownCameraTo(PioneerManager->GetCameraOfCurrentPioneer());
+			// 일단 CameraOfCurrentPioneer로 카메라 전환
+			if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
+			{
+				CopyTopDownCameraTo(PioneerManager->GetCameraOfCurrentPioneer());
 
-			// 먼저 카메라 변경
-			pioneerController->SetViewTarget(PioneerManager->GetCameraOfCurrentPioneer());
+				// 먼저 카메라 변경
+				pioneerController->SetViewTarget(PioneerManager->GetCameraOfCurrentPioneer());
 
-			// 카메라타겟 활성화를 자동관리하지 않도록 합니다. (true일 때, 폰에 빙의하면 자동으로 뷰타겟을 변경?)
-			pioneerController->bAutoManageActiveCameraTarget = false;
+				// 카메라타겟 활성화를 자동관리하지 않도록 합니다. (true일 때, 폰에 빙의하면 자동으로 뷰타겟을 변경?)
+				pioneerController->bAutoManageActiveCameraTarget = false;
 
-			// 빙의 해제
-			pioneerController->OnUnPossess();
+				// 빙의 해제
+				pioneerController->OnUnPossess();
 
-			// 관전모드 시작
-			PioneerManager->Observation();
+				// 관전모드 시작
+				PioneerManager->Observation();
+			}
+
+			PioneerManager->PioneerOfPlayer = nullptr;
 		}
 	}
 	else
@@ -1032,10 +1048,14 @@ void APioneer::FireWeapon()
 			// Pistol은 Fire 애니메이션이 없어서 제외합니다.
 			if (CurrentWeapon->IsA(APistol::StaticClass()) == false)
 			{
-				// 사용중인 BP_PioneerAnimation을 가져와서 bFired 변수를 조정합니다.
-				UPioneerAnimInstance* PAnimInst = dynamic_cast<UPioneerAnimInstance*>(GetMesh()->GetAnimInstance());
-				if (PAnimInst)
-					PAnimInst->bFired = true;
+				//// 사용중인 BP_PioneerAnimation을 가져와서 bFired 변수를 조정합니다.
+				//if (GetMesh())
+				//{
+				//	if (UPioneerAnimInstance* PAnimInst = dynamic_cast<UPioneerAnimInstance*>(GetMesh()->GetAnimInstance()))
+				//		PAnimInst->bFired = true;
+				//}
+
+				bFired = true;
 			}
 
 			State = EPioneerFSM::Idle;
@@ -1322,76 +1342,115 @@ void APioneer::DestroyBuilding()
 ///////////
 // 네트워크
 ///////////
-void APioneer::SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer)
+void APioneer::SetInfoOfPioneer_Socket(class cInfoOfPioneer_Socket& Socket)
 {
-	ID = InfoOfPioneer.ID;
-	SocketID = InfoOfPioneer.SocketID;
-	// NameOfID;
+	SocketID = Socket.SocketID;
+	NameOfID = FString(Socket.NameOfID.c_str());
 
-	SetActorTransform(InfoOfPioneer.GetActorTransform());
+	if (EditableTextBoxForID)
+		EditableTextBoxForID->SetText(FText::FromString(NameOfID));
+}
+class cInfoOfPioneer_Socket APioneer::GetInfoOfPioneer_Socket()
+{
+	cInfoOfPioneer_Socket socket;
 
-	TargetRotation = FRotator(InfoOfPioneer.TargetRotX, InfoOfPioneer.TargetRotY, InfoOfPioneer.TargetRotZ);
+	socket.ID = ID;
 
-	HealthPoint = InfoOfPioneer.HealthPoint;
+	socket.SocketID = SocketID;
+	socket.NameOfID = TCHAR_TO_UTF8(*NameOfID);
+
+	return socket;
+}
+
+void APioneer::SetInfoOfPioneer_Animation(class cInfoOfPioneer_Animation& Animation)
+{
+	SetActorTransform(Animation.GetActorTransform());
+
+	TargetRotation = FRotator(Animation.TargetRotX, Animation.TargetRotY, Animation.TargetRotZ);
+
+	// 이동
+	if (UCharacterMovementComponent* characterMovement = GetCharacterMovement())
+		characterMovement->Velocity = FVector(Animation.VelocityX, Animation.VelocityY, Animation.VelocityZ);
+
+
+	bHasPistolType = Animation.bHasPistolType;
+	bHasRifleType = Animation.bHasRifleType;
+	bHasLauncherType = Animation.bHasLauncherType;
+
+	bFired = Animation.bFired;
+}
+class cInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
+{
+	cInfoOfPioneer_Animation animation;
+
+	animation.ID = ID;
+
+	animation.SetActorTransform(GetActorTransform());
+
+	animation.TargetRotX = TargetRotation.Pitch;
+	animation.TargetRotY = TargetRotation.Yaw;
+	animation.TargetRotZ = TargetRotation.Roll;
+
+	FVector velocity = GetVelocity();
+	animation.VelocityX = velocity.X;
+	animation.VelocityY = velocity.Y;
+	animation.VelocityZ = velocity.Z;
+
+	animation.bHasPistolType = bHasPistolType;
+	animation.bHasRifleType = bHasRifleType;
+	animation.bHasLauncherType = bHasLauncherType;
+
+	animation.bFired = bFired;
+
+	return animation;
+}
+
+void APioneer::SetInfoOfPioneer_Stat(class cInfoOfPioneer_Stat& Stat)
+{
+	HealthPoint = Stat.HealthPoint;
 	SetHealthPoint(NULL);
 
-	MaxHealthPoint = InfoOfPioneer.MaxHealthPoint;
-	//bDying = InfoOfPioneer.bDying;
+	MaxHealthPoint = Stat.MaxHealthPoint;
 
-	MoveSpeed = InfoOfPioneer.MoveSpeed;
-	AttackSpeed = InfoOfPioneer.AttackSpeed;
+	MoveSpeed = Stat.MoveSpeed;
+	AttackSpeed = Stat.AttackSpeed;
 
-	AttackPower = InfoOfPioneer.AttackPower;
+	AttackPower = Stat.AttackPower;
 
-	AttackRange = InfoOfPioneer.AttackRange;
-	DetectRange = InfoOfPioneer.DetectRange;
-	SightRange = InfoOfPioneer.SightRange;
+	SightRange = Stat.SightRange;
+	DetectRange = Stat.DetectRange;
+	AttackRange = Stat.AttackRange;
+}
+class cInfoOfPioneer_Stat APioneer::GetInfoOfPioneer_Stat()
+{
+	cInfoOfPioneer_Stat stat;
 
-	bHasPistolType = InfoOfPioneer.bHasPistolType;
-	bHasRifleType = InfoOfPioneer.bHasRifleType;
-	bHasLauncherType = InfoOfPioneer.bHasLauncherType;
+	stat.ID = ID;
+
+	stat.HealthPoint = HealthPoint;
+	stat.MaxHealthPoint = MaxHealthPoint;
+
+	stat.MoveSpeed = MoveSpeed;
+	stat.AttackSpeed = AttackSpeed;
+
+	stat.AttackPower = AttackPower;
+
+	stat.SightRange = SightRange;
+	stat.DetectRange = DetectRange;
+	stat.AttackRange = AttackRange;
+
+	return stat;
+}
+
+void APioneer::SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer)
+{
+	SetInfoOfPioneer_Socket(InfoOfPioneer.Socket);
+	SetInfoOfPioneer_Animation(InfoOfPioneer.Animation);
+	SetInfoOfPioneer_Stat(InfoOfPioneer.Stat);
 }
 class cInfoOfPioneer APioneer::GetInfoOfPioneer()
 {
-	cInfoOfPioneer infoOfPioneer;
-
-	infoOfPioneer.ID = ID;
-	infoOfPioneer.SocketID = SocketID;
-	// NameOfID;
-
-	FTransform transform = GetActorTransform();
-	infoOfPioneer.ScaleX = transform.GetScale3D().X;
-	infoOfPioneer.ScaleY = transform.GetScale3D().Y;
-	infoOfPioneer.ScaleZ = transform.GetScale3D().Z;
-
-	infoOfPioneer.RotX = transform.GetRotation().Rotator().Pitch;
-	infoOfPioneer.RotY = transform.GetRotation().Rotator().Yaw;
-	infoOfPioneer.RotZ = transform.GetRotation().Rotator().Roll;
-
-	infoOfPioneer.LocX = transform.GetLocation().X;
-	infoOfPioneer.LocY = transform.GetLocation().Y;
-	infoOfPioneer.LocZ = transform.GetLocation().Z;
-
-	infoOfPioneer.TargetRotX = TargetRotation.Pitch;
-	infoOfPioneer.TargetRotY = TargetRotation.Yaw;
-	infoOfPioneer.TargetRotZ = TargetRotation.Roll;
-
-	infoOfPioneer.HealthPoint = HealthPoint;
-	infoOfPioneer.MaxHealthPoint = MaxHealthPoint;
-	//infoOfPioneer.bDying = bDying;
-
-	infoOfPioneer.MoveSpeed = MoveSpeed;
-	infoOfPioneer.AttackSpeed = AttackSpeed;
-
-	infoOfPioneer.AttackPower = AttackPower;
-
-	infoOfPioneer.AttackRange = AttackRange;
-	infoOfPioneer.DetectRange = DetectRange;
-	infoOfPioneer.SightRange = SightRange;
-
-	infoOfPioneer.bHasPistolType = bHasPistolType;
-	infoOfPioneer.bHasRifleType = bHasRifleType;
-	infoOfPioneer.bHasLauncherType = bHasLauncherType;
+	cInfoOfPioneer infoOfPioneer(ID, GetInfoOfPioneer_Socket(), GetInfoOfPioneer_Animation(), GetInfoOfPioneer_Stat());
 
 	return infoOfPioneer;
 }

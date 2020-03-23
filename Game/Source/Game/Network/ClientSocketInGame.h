@@ -43,6 +43,8 @@ private:
 	int Ping;
 	CRITICAL_SECTION csPing;
 
+	int PossessedID;
+
 protected:
 	
 
@@ -131,13 +133,16 @@ public:
 	void RecvDiedPioneer(stringstream& RecvStream);
 	cThreadSafetyQueue<int> tsqDiedPioneer; // ID ¿˙¿Â?
 
-	void SendInfoOfPioneer(class APioneer* PioneerOfPlayer);
-	void RecvInfoOfPioneer(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfPioneer> tsqInfoOfPioneer;
+	void SendInfoOfPioneer_Animation(class APioneer* PioneerOfPlayer);
+	void RecvInfoOfPioneer_Animation(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfPioneer_Animation> tsqInfoOfPioneer_Animation;
 
-	void SendPossessPioneer(int RequestingID);
+	void SendPossessPioneer(cInfoOfPioneer_Socket Socket);
 	void RecvPossessPioneer(stringstream& RecvStream);
-	cThreadSafetyQueue<int> tsqPossessPioneer;
+	cThreadSafetyQueue<cInfoOfPioneer_Socket> tsqPossessPioneer;
+
+	void RecvInfoOfPioneer_Socket(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
 
 
 	/////////////////////////////////////
