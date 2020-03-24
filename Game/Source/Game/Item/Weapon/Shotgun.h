@@ -39,6 +39,6 @@ protected:
 	virtual void InitWeapon() final;
 
 public:
-	virtual bool Fire() final; // 오버라이드 하면 UFUNCTION()를 다시 선언할 필요가 없음.
+	virtual bool Fire(int IDOfPioneer) final; // 오버라이드 하면 UFUNCTION()를 다시 선언할 필요가 없음.
 /*** AWeapon : End ***/
 };

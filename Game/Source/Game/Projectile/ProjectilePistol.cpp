@@ -23,6 +23,8 @@ AProjectilePistol::AProjectilePistol()
 	InitParticleSystem(GetTrailParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Pistol_Tracer_Light.P_Pistol_Tracer_Light'"));
 
 	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Impact_Stone_Small_Light.P_Impact_Stone_Small_Light'"));
+
+	TotalDamage = 5.0f;
 }
 
 void AProjectilePistol::BeginPlay()

@@ -309,6 +309,11 @@ public:
 
 	void SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer);
 	class cInfoOfPioneer GetInfoOfPioneer();
+
+
+	void SpawnWeapon();
+
+
 /*** APioneer : End ***/
 
 

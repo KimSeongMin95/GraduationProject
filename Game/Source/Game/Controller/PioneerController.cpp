@@ -17,6 +17,9 @@
 #include "PioneerManager.h"
 
 #include "Etc/WorldViewCameraActor.h"
+
+#include "Network/ServerSocketInGame.h"
+#include "Network/ClientSocketInGame.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -28,6 +31,9 @@ APioneerController::APioneerController()
 	bScoreBoard = false;
 
 	PioneerManager = nullptr;
+
+	ServerSocketInGame = nullptr;
+	ClientSocketInGame = nullptr;
 
 	bObservation = true;
 
@@ -409,6 +415,9 @@ void APioneerController::ArmOrDisArmWeapon()
 
 void APioneerController::AcquireItem()
 {
+	// 네트워크 동기화의 어려움 때문에 기능을 사용하지 않습니다.
+	return;
+
 	UE_LOG(LogTemp, Warning, TEXT("APioneerController::AcquireItem()"));
 
 
@@ -441,17 +450,70 @@ void APioneerController::AcquireItem()
 	
 	UE_LOG(LogTemp, Warning, TEXT("APioneerController::AcquireItem(): find"));
 
-	if (closestItem->IsA(AWeapon::StaticClass()))
-		Pioneer->AcquireWeapon(Cast<AWeapon>(closestItem));
+	if (AWeapon* weapon = dynamic_cast<AWeapon*>(closestItem))
+	{
+		//if (!ServerSocketInGame)
+		//	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+		//if (ServerSocketInGame->IsServerOn())
+		//{
+		//	if (ServerSocketInGame->AcquiringWeapon())
+		//	{
+
+		//		ServerSocketInGame->AcquireWeapon(weapon);
+
+		//		Pioneer->AcquireWeapon(weapon);
+		//	}
+
+		//	return;
+		//}
+
+		//if (!ClientSocketInGame)
+		//	ClientSocketInGame = cClientSocketInGame::GetSingleton();
+		//if (ClientSocketInGame->IsClientSocketOn())
+		//{
+		//	ClientSocketInGame->SendAcquireWeapon();
+
+		//	return;
+		//}
+
+		// 싱글플레이에서는 바로 획득합니다.
+		Pioneer->AcquireWeapon(weapon);
+	}
 }
 
 void APioneerController::AbandonWeapon()
 {
+	// 네트워크 동기화의 어려움 때문에 기능을 사용하지 않습니다.
+	return;
+
 	if (!Pioneer || !GetPawn())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ChangeWeapon: if (!Pioneer || !GetPawn())"));
 		return;
 	}
+
+
+	//if (!ServerSocketInGame)
+	//	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	//if (ServerSocketInGame->IsServerOn())
+	//{
+	//	Pioneer->GetCurrentWeapon();
+
+	//	ServerSocketInGame->AbandonWeapon();
+	//	
+	//	Pioneer->AbandonWeapon();
+
+	//	return;
+	//}
+
+	//if (!ClientSocketInGame)
+	//	ClientSocketInGame = cClientSocketInGame::GetSingleton();
+	//if (ClientSocketInGame->IsClientSocketOn())
+	//{
+	//	ClientSocketInGame->SendAbandonWeapon();
+
+	//	return;
+	//}
 
 	Pioneer->AbandonWeapon();
 }

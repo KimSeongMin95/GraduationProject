@@ -55,6 +55,9 @@ cThreadSafetyQueue<cInfoOfPioneer_Animation> cServerSocketInGame::tsqInfoOfPione
 
 cThreadSafetyQueue<cInfoOfPioneer_Socket> cServerSocketInGame::tsqInfoOfPioneer_Socket;
 
+cThreadSafetyQueue<cInfoOfPioneer_Stat> cServerSocketInGame::tsqInfoOfPioneer_Stat;
+
+cThreadSafetyQueue<cInfoOfProjectile> cServerSocketInGame::tsqInfoOfProjectile;
 
 unsigned int WINAPI CallMainThread(LPVOID p)
 {
@@ -116,6 +119,8 @@ cServerSocketInGame::cServerSocketInGame()
 	tsqDiedPioneer.clear();
 	tsqInfoOfPioneer_Animation.clear();
 	tsqInfoOfPioneer_Socket.clear();
+	tsqInfoOfPioneer_Stat.clear();
+	tsqInfoOfProjectile.clear();
 
 	// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::CONNECTED].funcProcessPacket = Connected;
@@ -124,7 +129,8 @@ cServerSocketInGame::cServerSocketInGame()
 	fnProcess[EPacketType::DIED_PIONEER].funcProcessPacket = DiedPioneer;
 	fnProcess[EPacketType::INFO_OF_PIONEER_ANIMATION].funcProcessPacket = InfoOfPioneer_Animation;
 	fnProcess[EPacketType::POSSESS_PIONEER].funcProcessPacket = PossessPioneer;
-	
+	fnProcess[EPacketType::INFO_OF_PIONEER_STAT].funcProcessPacket = InfoOfPioneer_Stat;
+	fnProcess[EPacketType::INFO_OF_PROJECTILE].funcProcessPacket = InfoOfProjectile;
 }
 
 cServerSocketInGame::~cServerSocketInGame()
@@ -480,6 +486,8 @@ void cServerSocketInGame::CloseServer()
 	tsqDiedPioneer.clear();
 	tsqInfoOfPioneer_Animation.clear();
 	tsqInfoOfPioneer_Socket.clear();
+	tsqInfoOfPioneer_Stat.clear();
+	tsqInfoOfProjectile.clear();
 
 	if (bIsServerOn == false)
 	{
@@ -1815,7 +1823,7 @@ void cServerSocketInGame::InfoOfPioneer_Animation(stringstream& RecvStream, SOCK
 	queue<cInfoOfPioneer_Animation> copiedQueue;
 
 	cInfoOfPioneer_Animation animation;
-	RecvStream >> animation; // 관전중인 게임클라이언트는 inofOfPioneer.ID == 0 입니다.
+	RecvStream >> animation; // 관전중인 게임클라이언트는 animation.ID == 0 입니다.
 
 	//animation.PrintInfo();
 
@@ -1991,4 +1999,117 @@ bool cServerSocketInGame::PossessingPioneer(cInfoOfPioneer_Socket Socket)
 
 	printf_s("[END] <cServerSocketInGame::PossessingPioneer(...)>\n\n");
 	return false;
+}
+
+void cServerSocketInGame::InfoOfPioneer_Stat(stringstream& RecvStream, SOCKET Socket)
+{
+	//printf_s("[Recv by %d] <cServerSocketInGame::InfoOfPioneer_Stat(...)>\n", (int)Socket);
+
+
+	/// 수신
+	queue<cInfoOfPioneer_Stat> copiedQueue;
+
+	cInfoOfPioneer_Stat stat;
+	RecvStream >> stat; // 관전중인 게임클라이언트는 stat.ID == 0 입니다.
+
+	stat.PrintInfo();
+
+	EnterCriticalSection(&csInfosOfPioneer_Stat);
+	if (InfosOfPioneer_Stat.find(stat.ID) != InfosOfPioneer_Stat.end())
+	{
+		InfosOfPioneer_Stat.at(stat.ID) = stat;
+
+		tsqInfoOfPioneer_Stat.push(stat);
+	}
+
+	// 복사
+	for (auto& kvp : InfosOfPioneer_Stat)
+	{
+		// 해당 클라이언트는 제외
+		//printf_s("\t kvp.first: %d, stat.ID: %d \n", (int)kvp.first, stat.ID);
+		if (kvp.first == stat.ID)
+			continue;
+
+		copiedQueue.push(kvp.second);
+
+		//kvp.second.PrintInfo();
+	}
+	LeaveCriticalSection(&csInfosOfPioneer_Stat);
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_PIONEER_STAT << endl;
+
+	while (copiedQueue.empty() == false)
+	{
+		stringstream temp;
+		temp << copiedQueue.front() << endl;
+		size_t total = sendStream.str().length() + 2 + temp.str().length();
+
+		// size를 넣을 공간까지 생각해서 최대 크기를 벗어나면
+		if (total >= MAX_BUFFER - 5)
+		{
+			printf_s("\n\n\n\n\n");
+			printf_s("[INFO] <cServerSocketInGame::InfoOfPioneer_Stat(...)> if (total >= MAX_BUFFER) \n");
+			printf_s("[INFO] <cServerSocketInGame::InfoOfPioneer_Stat(...)> total: %d \n", (int)total);
+			printf_s("\n\n\n\n\n");
+
+			// 먼저 보냅니다.
+			Send(sendStream, Socket);
+
+			sendStream.str("");
+			sendStream << EPacketType::INFO_OF_PIONEER_STAT << endl;
+		}
+
+		sendStream << copiedQueue.front() << endl;
+		copiedQueue.pop();
+	}
+	Send(sendStream, Socket);
+
+
+	//printf_s("[END] <cServerSocketInGame::InfoOfPioneer_Stat(...)>\n\n");
+}
+
+
+void cServerSocketInGame::SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile)
+{
+	printf_s("[START] <cServerSocketInGame::SendInfoOfProjectile(...)>\n");
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_PROJECTILE << endl;
+	sendStream << InfoOfProjectile << endl;
+
+
+	Broadcast(sendStream);
+
+
+	printf_s("[END] <cServerSocketInGame::SendInfoOfProjectile(...)>\n");
+}
+
+
+void cServerSocketInGame::InfoOfProjectile(stringstream& RecvStream, SOCKET Socket)
+{
+	printf_s("[Recv by %d] <cServerSocketInGame::InfoOfProjectile(...)>\n", (int)Socket);
+	
+
+	cInfoOfProjectile infoOfProjectile;
+	RecvStream >> infoOfProjectile;
+
+	infoOfProjectile.PrintInfo();
+
+	tsqInfoOfProjectile.push(infoOfProjectile);
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_PROJECTILE << endl;
+	sendStream << infoOfProjectile << endl;
+
+	BroadcastExceptOne(sendStream, Socket);
+
+
+	printf_s("[END] <cServerSocketInGame::InfoOfProjectile(...)>\n");
 }

@@ -395,7 +395,27 @@ enum EPacketType
 		Recv []:
 		Send [INFO_OF_PIONEER_SOCKET]: 
 	*/
-	INFO_OF_PIONEER_SOCKET
+	INFO_OF_PIONEER_SOCKET, 
+
+	/** 
+	Game Client:
+		Recv [INFO_OF_PIONEER_STAT]:
+		Send [INFO_OF_PIONEER_STAT]:
+	Game Server:
+		Recv [INFO_OF_PIONEER_STAT]:
+		Send [INFO_OF_PIONEER_STAT]:
+	*/
+	INFO_OF_PIONEER_STAT,
+
+	/**
+	Game Client:
+		Recv [INFO_OF_PROJECTILE]:
+		Send [INFO_OF_PROJECTILE]:
+	Game Server:
+		Recv [INFO_OF_PROJECTILE]:
+		Send [INFO_OF_PROJECTILE]:
+	*/
+	INFO_OF_PROJECTILE
 };
 
 
@@ -932,6 +952,9 @@ public:
 
 	bool bFired;
 
+	// 무기
+	int IdxOfCurrentWeapon;
+
 public:
 	cInfoOfPioneer_Animation()
 	{
@@ -958,6 +981,8 @@ public:
 		bHasLauncherType = false;
 
 		bFired = false;
+
+		IdxOfCurrentWeapon = 0;
 	}
 	~cInfoOfPioneer_Animation()
 	{
@@ -986,6 +1011,8 @@ public:
 		Stream << Info.bHasLauncherType << endl;
 		Stream << Info.bFired << endl;
 
+		Stream << Info.IdxOfCurrentWeapon << endl;
+
 		return Stream;
 	}
 
@@ -1012,6 +1039,8 @@ public:
 		Stream >> Info.bHasLauncherType;
 		Stream >> Info.bFired;
 
+		Stream >> Info.IdxOfCurrentWeapon;
+
 		return Stream;
 	}
 
@@ -1022,7 +1051,8 @@ public:
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
 		printf_s("%s%s<cInfoOfPioneer_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, bHasPistolType: %s, bHasRifleType : %s, bHasLauncherType: %s, bFired: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), VelocityX, VelocityY, VelocityZ, (bHasPistolType == true) ? "true" : "false", (bHasRifleType == true) ? "true" : "false", (bHasLauncherType == true) ? "true" : "false", (bFired == true) ? "true" : "false");
-
+		printf_s("%s%s<cInfoOfPioneer_Animation> IdxOfCurrentWeapon: %d \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), IdxOfCurrentWeapon);
 	}
 
 	void SetActorTransform(const FTransform& Transform)
@@ -1123,8 +1153,8 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		printf_s("%s%s<cInfoOfPioneer_Stat> HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f \n",
-			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), HealthPoint, MaxHealthPoint, MoveSpeed, AttackSpeed, AttackPower, SightRange, DetectRange, AttackRange);
+		printf_s("%s%s<cInfoOfPioneer_Stat> ID: %d, HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, HealthPoint, MaxHealthPoint, MoveSpeed, AttackSpeed, AttackPower, SightRange, DetectRange, AttackRange);
 	}
 
 };
@@ -1187,3 +1217,213 @@ public:
 	}
 
 };
+
+class GAME_API cInfoOfProjectile
+{
+public:
+	int ID; // Pioneer::ID;
+
+	int Numbering;
+
+	float ScaleX;
+	float ScaleY;
+	float ScaleZ;
+
+	float RotX;
+	float RotY;
+	float RotZ;
+
+	float LocX;
+	float LocY;
+	float LocZ;
+
+public:
+	cInfoOfProjectile()
+	{
+		ID = 0;
+
+		Numbering = 0;
+
+		ScaleX = 0.0f;
+		ScaleY = 0.0f;
+		ScaleZ = 0.0f;
+
+		RotX = 0.0f;
+		RotY = 0.0f;
+		RotZ = 0.0f;
+
+		LocX = 0.0f;
+		LocY = 0.0f;
+		LocZ = 0.0f;
+	}
+	~cInfoOfProjectile()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfProjectile& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.Numbering << endl;
+
+		Stream << Info.ScaleX << endl;
+		Stream << Info.ScaleY << endl;
+		Stream << Info.ScaleZ << endl;
+
+		Stream << Info.RotX << endl;
+		Stream << Info.RotY << endl;
+		Stream << Info.RotZ << endl;
+
+		Stream << Info.LocX << endl;
+		Stream << Info.LocY << endl;
+		Stream << Info.LocZ << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfProjectile& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.Numbering;
+
+		Stream >> Info.ScaleX;
+		Stream >> Info.ScaleY;
+		Stream >> Info.ScaleZ;
+
+		Stream >> Info.RotX;
+		Stream >> Info.RotY;
+		Stream >> Info.RotZ;
+
+		Stream >> Info.LocX;
+		Stream >> Info.LocY;
+		Stream >> Info.LocZ;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfProjectile> ID: %d, Numbering : %d \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, Numbering);
+		printf_s("%s%s<cInfoOfProjectile> ScaleX: %f, ScaleY : %f, ScaleZ: %f, RotX: %f, RotY : %f, RotZ: %f, LocX: %f, LocY : %f, LocZ: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ScaleX, ScaleY, ScaleZ, RotX, RotY, RotZ, LocX, LocY, LocZ);
+	}
+
+	void SetActorTransform(const FTransform& Transform)
+	{
+		ScaleX = Transform.GetScale3D().X;
+		ScaleY = Transform.GetScale3D().Y;
+		ScaleZ = Transform.GetScale3D().Z;
+
+		RotX = Transform.GetRotation().Rotator().Pitch;
+		RotY = Transform.GetRotation().Rotator().Yaw;
+		RotZ = Transform.GetRotation().Rotator().Roll;
+
+		LocX = Transform.GetLocation().X;
+		LocY = Transform.GetLocation().Y;
+		LocZ = Transform.GetLocation().Z;
+	}
+
+	FTransform GetActorTransform()
+	{
+		FTransform transform;
+
+		transform.SetScale3D(FVector(ScaleX, ScaleY, ScaleZ));
+		FQuat quat(FRotator(RotX, RotY, RotZ));
+		transform.SetRotation(quat);
+		transform.SetLocation(FVector(LocX, LocY, LocZ));
+
+		return transform;
+	}
+};
+
+
+//class GAME_API cInfoOfWeapon
+//{
+//public:
+//	int ID; // WeaponManager::Weapons의 key로 사용될 고유 ID
+//	
+//	int IDOfPioneer;
+//	int Idx; // Pioner::IdxOfCurrentWeapon
+//
+//	int WeaponType;
+//	int WeaponNumbering;
+//
+//	int LimitedLevel;
+//
+//	float AttackPower;
+//	float AttackSpeed;
+//	float AttackRange;
+//
+//public:
+//	cInfoOfWeapon()
+//	{
+//		ID = 0;
+//
+//		IDOfPioneer = 0;
+//		Idx = 0;
+//
+//		WeaponType = 0;
+//		WeaponNumbering = 1;
+//
+//		LimitedLevel = 1;
+//
+//		AttackPower = 1.0f;
+//		AttackSpeed = 1.0f;
+//		AttackRange = 8.0f * 64.0f;
+//	}
+//	~cInfoOfWeapon()
+//	{
+//	}
+//
+//	// Send
+//	friend ostream& operator<<(ostream& Stream, cInfoOfWeapon& Info)
+//	{
+//		Stream << Info.ID << endl;
+//
+//		Stream << Info.IDOfPioneer << endl;
+//		Stream << Info.Idx << endl;
+//
+//		Stream << Info.WeaponType << endl;
+//		Stream << Info.WeaponNumbering << endl;
+//		Stream << Info.LimitedLevel << endl;
+//		Stream << Info.AttackPower << endl;
+//		Stream << Info.AttackSpeed << endl;
+//		Stream << Info.AttackRange << endl;
+//
+//		return Stream;
+//	}
+//
+//	// Recv
+//	friend istream& operator>>(istream& Stream, cInfoOfWeapon& Info)
+//	{
+//		Stream >> Info.ID;
+//
+//		Stream >> Info.IDOfPioneer;
+//		Stream >> Info.Idx;
+//
+//		Stream >> Info.WeaponType;
+//		Stream >> Info.WeaponNumbering;
+//		Stream >> Info.LimitedLevel;
+//		Stream >> Info.AttackPower;
+//		Stream >> Info.AttackSpeed;
+//		Stream >> Info.AttackRange;
+//
+//
+//		return Stream;
+//	}
+//
+//	// Log
+//	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+//	{
+//		printf_s("%s%s<cInfoOfWeapon> ID: %d, IDOfPioneer: %d, Idx: %d, WeaponType: %d, WeaponNumbering: %d \n",
+//			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, IDOfPioneer, Idx, WeaponType, WeaponNumbering);
+//		printf_s("%s%s<cInfoOfWeapon> LimitedLevel: %d, AttackPower: %f, AttackSpeed: %f, AttackRange: %f \n",
+//			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), LimitedLevel, AttackPower, AttackSpeed, AttackRange);
+//	}
+//
+//};

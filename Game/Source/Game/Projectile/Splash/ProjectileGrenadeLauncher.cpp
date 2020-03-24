@@ -43,6 +43,8 @@ AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
 
 	RootComponent->SetupAttachment(PhysicsBoxComp);
 	RootComponent = PhysicsBoxComp;
+
+	TotalDamage = 40.0f;
 }
 
 void AProjectileGrenadeLauncher::BeginPlay()

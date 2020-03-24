@@ -708,34 +708,12 @@ void APioneer::InitWeapon()
 		Arming();
 	}
 
-	/*** 임시 코드 : Start ***/
 	AAssaultRifle* assaultRifle = World->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
 	assaultRifle->Acquired();
 	assaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	assaultRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(assaultRifle) == false)
 		Weapons.Add(assaultRifle);
-
-	AGrenadeLauncher* grenadeLauncher = World->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
-	grenadeLauncher->Acquired();
-	grenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
-	grenadeLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	if (Weapons.Contains(grenadeLauncher) == false)
-		Weapons.Add(grenadeLauncher);
-
-	Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
-	Pistol->Acquired();
-	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
-	Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	if (Weapons.Contains(Pistol) == false)
-		Weapons.Add(Pistol);
-
-	ARocketLauncher* rocketLauncher = World->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
-	rocketLauncher->Acquired();
-	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
-	rocketLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
-	if (Weapons.Contains(rocketLauncher) == false)
-		Weapons.Add(rocketLauncher);
 
 	AShotgun* shotgun = World->SpawnActor<AShotgun>(AShotgun::StaticClass(), myTrans, SpawnParams);
 	shotgun->Acquired();
@@ -750,7 +728,20 @@ void APioneer::InitWeapon()
 	sniperRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(sniperRifle) == false)
 		Weapons.Add(sniperRifle);
-	/*** 임시 코드 : End ***/
+
+	AGrenadeLauncher* grenadeLauncher = World->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
+	grenadeLauncher->Acquired();
+	grenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
+	grenadeLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	if (Weapons.Contains(grenadeLauncher) == false)
+		Weapons.Add(grenadeLauncher);
+
+	ARocketLauncher* rocketLauncher = World->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
+	rocketLauncher->Acquired();
+	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
+	rocketLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	if (Weapons.Contains(rocketLauncher) == false)
+		Weapons.Add(rocketLauncher);
 }
 
 void APioneer::InitBuilding()
@@ -1043,7 +1034,7 @@ void APioneer::FireWeapon()
 	if (CurrentWeapon)
 	{
 		// 쿨타임이 돌아와서 발사가 되었다면 UPioneerAnimInstance에 알려줍니다.
-		if (CurrentWeapon->Fire())
+		if (CurrentWeapon->Fire(ID))
 		{
 			// Pistol은 Fire 애니메이션이 없어서 제외합니다.
 			if (CurrentWeapon->IsA(APistol::StaticClass()) == false)
@@ -1073,7 +1064,7 @@ void APioneer::SetWeaponType()
 	// 현재 무기를 든 상태여야 무기 변경 가능
 	if (!CurrentWeapon)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::SetWeaponType: if (!CurrentWeapon)"));
+		//UE_LOG(LogTemp, Warning, TEXT("APioneer::SetWeaponType: if (!CurrentWeapon)"));
 		return;
 	}
 
@@ -1378,6 +1369,10 @@ void APioneer::SetInfoOfPioneer_Animation(class cInfoOfPioneer_Animation& Animat
 	bHasLauncherType = Animation.bHasLauncherType;
 
 	bFired = Animation.bFired;
+
+	Disarming();
+	IdxOfCurrentWeapon = Animation.IdxOfCurrentWeapon;
+	Arming();
 }
 class cInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
 {
@@ -1401,6 +1396,8 @@ class cInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
 	animation.bHasLauncherType = bHasLauncherType;
 
 	animation.bFired = bFired;
+
+	animation.IdxOfCurrentWeapon = IdxOfCurrentWeapon;
 
 	return animation;
 }

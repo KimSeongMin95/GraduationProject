@@ -5,6 +5,9 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Projectile/Splash/ProjectileRocketLauncher.h"
+
+#include "Network/ServerSocketInGame.h"
+#include "Network/ClientSocketInGame.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -78,9 +81,9 @@ void ARocketLauncher::InitWeapon()
 }
 
 
-bool ARocketLauncher::Fire()
+bool ARocketLauncher::Fire(int IDOfPioneer)
 {
-	if (Super::Fire() == false)
+	if (Super::Fire(IDOfPioneer) == false)
 		return false;
 
 	UWorld* const World = GetWorld();
@@ -103,6 +106,36 @@ bool ARocketLauncher::Fire()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
 	AProjectile* projectile = World->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+
+
+	if (ServerSocketInGame)
+	{
+		if (ServerSocketInGame->IsServerOn())
+		{
+			cInfoOfProjectile infoOfProjectile;
+			infoOfProjectile.ID = IDOfPioneer;
+			infoOfProjectile.Numbering = WeaponNumbering;
+			infoOfProjectile.SetActorTransform(myTrans);
+
+			ServerSocketInGame->SendInfoOfProjectile(infoOfProjectile);
+
+			return true;
+		}
+	}
+	if (ClientSocketInGame)
+	{
+		if (ClientSocketInGame->IsClientSocketOn())
+		{
+			cInfoOfProjectile infoOfProjectile;
+			infoOfProjectile.ID = IDOfPioneer;
+			infoOfProjectile.Numbering = WeaponNumbering;
+			infoOfProjectile.SetActorTransform(myTrans);
+
+			ClientSocketInGame->SendInfoOfProjectile(infoOfProjectile);
+
+			return true;
+		}
+	}
 
 	return true;
 }

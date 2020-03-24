@@ -67,6 +67,8 @@ private:
 		/** Item으로 보여질 StaticMesh입니다. (최대 크기에 제한이 있습니다.) */
 		class UStaticMeshComponent* ItemMesh = nullptr;
 
+	//int ID; // WeaponManager::Weapons의 key로 사용될 고유 ID
+
 protected:
 	virtual void InitItem(); /** 초기화 */
 	void InitInteractionRange(float Radius);

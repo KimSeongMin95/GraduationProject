@@ -91,6 +91,7 @@ private:
 	void SpawnPioneerManager();
 	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
 
+	void SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile);
 
 	/////////////////////////////////////////////////
 	// Tick (Server)
@@ -108,6 +109,11 @@ private:
 	void SetInfoOfPioneer_Animation(float DeltaTime); float TimerOfSetInfoOfPioneer_Animation;
 
 	void GetInfoOfPioneer_Socket(float DeltaTime); float TimerOfGetInfoOfPioneer_Socket;
+
+	void GetInfoOfPioneer_Stat(float DeltaTime); float TimerOfGetInfoOfPioneer_Stat;
+	void SetInfoOfPioneer_Stat(float DeltaTime); float TimerOfSetInfoOfPioneer_Stat;
+
+	void GetInfoOfProjectile(float DeltaTime); float TimerOfGetInfoOfProjectile;
 
 
 	/////////////////////////////////////////////////
@@ -130,6 +136,11 @@ private:
 	void RecvPossessPioneer(float DeltaTime); float TimerOfRecvPossessPioneer;
 
 	void RecvInfoOfPioneer_Socket(float DeltaTime); float TimerOfRecvInfoOfPioneer_Socket;
+
+	void SendInfoOfPioneer_Stat(float DeltaTime); float TimerOfSendInfoOfPioneer_Stat;
+	void RecvInfoOfPioneer_Stat(float DeltaTime); float TimerOfRecvInfoOfPioneer_Stat;
+
+	void RecvInfoOfProjectile(float DeltaTime); float TimerOfRecvInfoOfProjectile;
 
 protected:
 

@@ -5,6 +5,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Enemy.h"
+#include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -23,6 +24,7 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 
 	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_RocketLauncher_Explosion_Light.P_RocketLauncher_Explosion_Light'"));
 
+	TotalDamage = 30.0f;
 }
 
 void AProjectileRocketLauncher::BeginPlay()

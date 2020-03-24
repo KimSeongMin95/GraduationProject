@@ -266,6 +266,8 @@ void cClientSocketInGame::CloseSocket()
 	tsqInfoOfPioneer_Animation.clear();
 	tsqPossessPioneer.clear();
 	tsqInfoOfPioneer_Socket.clear();
+	tsqInfoOfPioneer_Stat.clear();
+	tsqInfoOfProjectile.clear();
 
 	printf_s("[END] <cClientSocketInGame::CloseSocket()>\n");
 }
@@ -660,8 +662,17 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 		RecvInfoOfPioneer_Socket(recvStream);
 	}
 	break;
+	case EPacketType::INFO_OF_PIONEER_STAT:
+	{
+		RecvInfoOfPioneer_Stat(recvStream);
+	}
+	break;
+	case EPacketType::INFO_OF_PROJECTILE:
+	{
+		RecvInfoOfProjectile(recvStream);
+	}
+	break;
 
-	
 	default:
 	{
 		printf_s("[ERROR] <cClientSocketInGame::ProcessReceivedPacket()> unknown packet type! PacketType: %d \n", packetType);
@@ -1189,6 +1200,80 @@ void cClientSocketInGame::RecvInfoOfPioneer_Socket(stringstream& RecvStream)
 
 
 	printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer_Socket(...)>\n");
+}
+
+void cClientSocketInGame::SendInfoOfPioneer_Stat(class APioneer* PioneerOfPlayer)
+{
+	//printf_s("[Start] <cClientSocketInGame::SendInfoOfPioneer_Stat()>\n");
+
+
+	cInfoOfPioneer_Stat stat;
+
+	if (PioneerOfPlayer)
+	{
+		stat = PioneerOfPlayer->GetInfoOfPioneer_Stat();
+	}
+
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_PIONEER_STAT << endl;
+	sendStream << stat << endl;
+
+	Send(sendStream);
+
+
+	//stat.PrintInfo();
+
+	//printf_s("[End] <cClientSocketInGame::SendInfoOfPioneer_Stat()>\n");
+}
+void cClientSocketInGame::RecvInfoOfPioneer_Stat(stringstream& RecvStream)
+{
+	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer_Stat(...)>\n");
+
+
+	cInfoOfPioneer_Stat stat;
+
+	while (RecvStream >> stat)
+	{
+		tsqInfoOfPioneer_Stat.push(stat);
+
+		//stat.PrintInfo();
+	}
+
+
+	//printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer_Stat(...)>\n");
+}
+
+void cClientSocketInGame::SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile)
+{
+	printf_s("[Start] <cClientSocketInGame::SendInfoOfProjectile()>\n");
+
+
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_PROJECTILE << endl;
+	sendStream << InfoOfProjectile << endl;
+
+	Send(sendStream);
+
+	InfoOfProjectile.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::SendInfoOfProjectile()>\n");
+}
+void cClientSocketInGame::RecvInfoOfProjectile(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvInfoOfProjectile(...)>\n");
+
+
+	cInfoOfProjectile infoOfProjectile;
+
+	RecvStream >> infoOfProjectile;
+
+	tsqInfoOfProjectile.push(infoOfProjectile);
+
+	infoOfProjectile.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::RecvInfoOfProjectile(...)>\n");
 }
 
 

@@ -91,8 +91,6 @@ public:
 	static CRITICAL_SECTION csInfosOfPioneer_Stat;
 
 
-
-
 public:
 	////////////////////////
 	// 기본
@@ -188,6 +186,14 @@ public:
 	static void PossessPioneer(stringstream& RecvStream, SOCKET Socket);
 	bool PossessingPioneer(cInfoOfPioneer_Socket Socket);
 	static cThreadSafetyQueue<cInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
+
+	static void InfoOfPioneer_Stat(stringstream& RecvStream, SOCKET Socket);
+	static cThreadSafetyQueue<cInfoOfPioneer_Stat> tsqInfoOfPioneer_Stat;
+
+	static void SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile);
+	static void InfoOfProjectile(stringstream& RecvStream, SOCKET Socket);
+	static cThreadSafetyQueue<cInfoOfProjectile> tsqInfoOfProjectile;
+
 
 	////////////////////////////////////////////////
 	// (임시) 패킷 사이즈와 실제 길이 검증용 함수

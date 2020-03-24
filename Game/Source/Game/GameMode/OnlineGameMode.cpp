@@ -18,6 +18,13 @@
 #include "SpaceShip/SpaceShip.h"
 
 #include "Etc/WorldViewCameraActor.h"
+
+#include "Projectile/ProjectilePistol.h"
+#include "Projectile/ProjectileAssaultRifle.h"
+#include "Projectile/ProjectileShotgun.h"
+#include "Projectile/ProjectileSniperRifle.h"
+#include "Projectile/Splash/ProjectileGrenadeLauncher.h"
+#include "Projectile/Splash/ProjectileRocketLauncher.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 const float AOnlineGameMode::CellSize = 64.0f;
@@ -41,6 +48,9 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfGetInfoOfPioneer_Animation = 0.0f;
 	TimerOfSetInfoOfPioneer_Animation = 0.0f;
 	TimerOfGetInfoOfPioneer_Socket = 0.0f;
+	TimerOfGetInfoOfPioneer_Stat = 0.0f;
+	TimerOfSetInfoOfPioneer_Stat = 0.0f;
+	TimerOfGetInfoOfProjectile = 0.0f;
 
 	TimerOfSendScoreBoard = 0.0f;
 	TimerOfRecvScoreBoard = 0.0f;
@@ -51,6 +61,9 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfRecvInfoOfPioneer_Animation = 0.0f;
 	TimerOfRecvPossessPioneer = 0.0f;
 	TimerOfRecvInfoOfPioneer_Socket = 0.0f;
+	TimerOfSendInfoOfPioneer_Stat = 0.0f;
+	TimerOfRecvInfoOfPioneer_Stat = 0.0f;
+	TimerOfRecvInfoOfProjectile = 0.0f;
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -261,6 +274,62 @@ void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform T
 
 }
 
+void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::SpawnProjectile(...)> if (!world)\n");
+		return;
+	}
+
+	FTransform myTrans = InfoOfProjectile.GetActorTransform();
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	switch (InfoOfProjectile.Numbering)
+	{
+	case 1:
+	{
+		world->SpawnActor<AProjectilePistol>(AProjectilePistol::StaticClass(), myTrans, SpawnParams);
+	}
+	break;
+	case 2:
+	{
+		world->SpawnActor<AProjectileAssaultRifle>(AProjectileAssaultRifle::StaticClass(), myTrans, SpawnParams);
+	}
+	break;
+	case 3:
+	{
+		world->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams);
+	}
+	break;
+	case 4:
+	{
+		world->SpawnActor<AProjectileSniperRifle>(AProjectileSniperRifle::StaticClass(), myTrans, SpawnParams);
+	}
+	break;
+	case 5:
+	{
+		world->SpawnActor<AProjectileGrenadeLauncher>(AProjectileGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
+	}
+	break;
+	case 6:
+	{
+		world->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams);
+	}
+	break;
+
+	default:
+		printf_s("[ERROR] <AOnlineGameMode::SpawnProjectile(...)> default: \n");
+		break;
+
+	}
+
+}
 
 /////////////////////////////////////////////////
 // Tick (Server)
@@ -287,6 +356,9 @@ void AOnlineGameMode::TickOfServerSocketInGame(float DeltaTime)
 	GetInfoOfPioneer_Animation(DeltaTime);
 	SetInfoOfPioneer_Animation(DeltaTime);
 	GetInfoOfPioneer_Socket(DeltaTime);
+	GetInfoOfPioneer_Stat(DeltaTime);
+	SetInfoOfPioneer_Stat(DeltaTime);
+	GetInfoOfProjectile(DeltaTime);
 }
 
 void AOnlineGameMode::GetScoreBoard(float DeltaTime)
@@ -514,6 +586,108 @@ void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
 	//printf_s("[END] <AMainScreenGameMode::GetInfoOfPioneer_Socket()>\n");
 }
 
+void AOnlineGameMode::GetInfoOfPioneer_Stat(float DeltaTime)
+{
+	TimerOfGetInfoOfPioneer_Stat += DeltaTime;
+	if (TimerOfGetInfoOfPioneer_Stat < 0.2f)
+		return;
+	TimerOfGetInfoOfPioneer_Stat = 0.0f;
+
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer_Stat()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (ServerSocketInGame->tsqInfoOfPioneer_Stat.empty())
+		return;
+	/***********************************************************************/
+	printf_s("[START] <AMainScreenGameMode::GetInfoOfPioneer_Stat()>\n");
+
+
+	std::queue<cInfoOfPioneer_Stat> copiedQueue = ServerSocketInGame->tsqInfoOfPioneer_Stat.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		int id = copiedQueue.front().ID;
+		if (PioneerManager->Pioneers.Contains(id))
+		{
+			if (APioneer* pioneer = PioneerManager->Pioneers[id])
+			{
+				pioneer->SetInfoOfPioneer_Stat(copiedQueue.front());
+			}
+		}
+
+		copiedQueue.pop();
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::GetInfoOfPioneer_Stat()>\n");
+}
+void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
+{
+	TimerOfSetInfoOfPioneer_Stat += DeltaTime;
+	if (TimerOfSetInfoOfPioneer_Stat < 0.2f)
+		return;
+	TimerOfSetInfoOfPioneer_Stat = 0.0f;
+
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer_Stat()> if (!PioneerManager)\n");
+		return;
+	}
+	/***********************************************************/
+	//printf_s("[START] <AOnlineGameMode::SetInfoOfPioneer_Stat()>\n");
+
+
+	for (auto& kvp : PioneerManager->Pioneers)
+	{
+		EnterCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Stat);
+		if (ServerSocketInGame->InfosOfPioneer_Stat.find(kvp.Key) != ServerSocketInGame->InfosOfPioneer_Stat.end())
+		{
+			// AI거나 게임서버가 조종하는 Pioneer만 정보를 설정합니다.
+			if (kvp.Value->SocketID <= 1)
+				ServerSocketInGame->InfosOfPioneer_Stat.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Stat();
+		}
+		LeaveCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Stat);
+	}
+
+
+	//printf_s("[END] <AOnlineGameMode::SetInfoOfPioneer_Stat()>\n");
+}
+
+void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
+{
+	TimerOfGetInfoOfProjectile += DeltaTime;
+	if (TimerOfGetInfoOfProjectile < 0.01f)
+		return;
+	TimerOfGetInfoOfProjectile = 0.0f;
+
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::InfoOfProjectile()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (ServerSocketInGame->tsqInfoOfProjectile.empty())
+		return;
+	/***********************************************************************/
+	printf_s("[START] <AMainScreenGameMode::InfoOfProjectile()>\n");
+
+
+	std::queue<cInfoOfProjectile> copiedQueue = ServerSocketInGame->tsqInfoOfProjectile.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		SpawnProjectile(copiedQueue.front());
+
+		copiedQueue.pop();
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::InfoOfProjectile()>\n");
+}
+
 
 /////////////////////////////////////////////////
 // Tick (Client)
@@ -543,6 +717,9 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 	RecvInfoOfPioneer_Animation(DeltaTime);
 	RecvPossessPioneer(DeltaTime);
 	RecvInfoOfPioneer_Socket(DeltaTime);
+	SendInfoOfPioneer_Stat(DeltaTime);
+	RecvInfoOfPioneer_Stat(DeltaTime);
+	RecvInfoOfProjectile(DeltaTime);
 }
 
 void AOnlineGameMode::SendScoreBoard(float DeltaTime)
@@ -865,6 +1042,101 @@ void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfPioneer_Socket()>\n");
 }
 
+void AOnlineGameMode::SendInfoOfPioneer_Stat(float DeltaTime)
+{
+	TimerOfSendInfoOfPioneer_Stat += DeltaTime;
+	if (TimerOfSendInfoOfPioneer_Stat < 0.25f)
+		return;
+	TimerOfSendInfoOfPioneer_Stat = 0.0f;
+
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer_Stat()> if (!PioneerManager)\n");
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::SendInfoOfPioneer_Stat()>\n");
+
+
+	ClientSocketInGame->SendInfoOfPioneer_Stat(PioneerManager->PioneerOfPlayer);
+
+
+	printf_s("[END] <AMainScreenGameMode::SendInfoOfPioneer_Stat()>\n");
+}
+void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
+{
+	TimerOfRecvInfoOfPioneer_Stat += DeltaTime;
+	if (TimerOfRecvInfoOfPioneer_Stat < 0.2f)
+		return;
+	TimerOfRecvInfoOfPioneer_Stat = 0.0f;
+
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer_Stat()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqInfoOfPioneer_Stat.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::RecvInfoOfPioneer_Stat()>\n");
+
+
+	std::queue<cInfoOfPioneer_Stat> copiedQueue = ClientSocketInGame->tsqInfoOfPioneer_Stat.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		int id = copiedQueue.front().ID;
+		if (PioneerManager->Pioneers.Contains(id))
+		{
+			if (APioneer* pioneer = PioneerManager->Pioneers[id])
+			{
+				pioneer->SetInfoOfPioneer_Stat(copiedQueue.front());
+			}
+		}
+
+		copiedQueue.pop();
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::RecvInfoOfPioneer_Stat()>\n");
+}
+
+void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
+{
+	TimerOfRecvInfoOfProjectile += DeltaTime;
+	if (TimerOfRecvInfoOfProjectile < 0.01f)
+		return;
+	TimerOfRecvInfoOfProjectile = 0.0f;
+
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfProjectile()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqInfoOfProjectile.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	//printf_s("[START] <AMainScreenGameMode::RecvInfoOfProjectile()>\n");
+
+
+	std::queue<cInfoOfProjectile> copiedQueue = ClientSocketInGame->tsqInfoOfProjectile.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		SpawnProjectile(copiedQueue.front());
+
+		copiedQueue.pop();
+	}
+
+
+	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfProjectile()>\n");
+}
 
 
 /////////////////////////////////////////////////

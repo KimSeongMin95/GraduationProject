@@ -3,7 +3,8 @@
 #include "Weapon.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-
+#include "Network/ServerSocketInGame.h"
+#include "Network/ClientSocketInGame.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -20,6 +21,9 @@ AWeapon::AWeapon()
 	// 발사될 Projectile의 Transform 값을 저장할 ArrowComponent 생성후 Mesh에 부착
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>("Arrow");
 	ArrowComponent->SetupAttachment(WeaponMesh);
+
+	ServerSocketInGame = nullptr;
+	ClientSocketInGame = nullptr;
 }
 
 void AWeapon::BeginPlay()
@@ -27,6 +31,9 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 	
 	Droped(); // 기본적으로 Drop된 상태
+
+	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 }
 
 void AWeapon::Tick(float DeltaTime)
@@ -129,7 +136,7 @@ void AWeapon::InitFireAnimSequence(const TCHAR* ReferencePath)
 }
 
 
-bool AWeapon::Fire()
+bool AWeapon::Fire(int IDOfPioneer)
 {
 	if (FireCoolTime < (1.0f / AttackSpeed))
 		return false;

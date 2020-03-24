@@ -48,6 +48,10 @@ private:
 		/** APioneerManager */
 		class APioneerManager* PioneerManager = nullptr;
 
+	/** 네트워크 */
+	class cServerSocketInGame* ServerSocketInGame = nullptr;
+	class cClientSocketInGame* ClientSocketInGame = nullptr;
+
 	/** 관전상태 */
 	bool bObservation;
 

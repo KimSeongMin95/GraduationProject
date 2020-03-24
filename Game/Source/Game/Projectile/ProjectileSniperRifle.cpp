@@ -27,6 +27,8 @@ AProjectileSniperRifle::AProjectileSniperRifle()
 
 
 	hitCount = 0;
+
+	TotalDamage = 25.0f;
 }
 
 void AProjectileSniperRifle::BeginPlay()

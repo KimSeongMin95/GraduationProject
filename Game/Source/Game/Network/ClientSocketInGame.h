@@ -144,6 +144,14 @@ public:
 	void RecvInfoOfPioneer_Socket(stringstream& RecvStream);
 	cThreadSafetyQueue<cInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
 
+	void SendInfoOfPioneer_Stat(class APioneer* PioneerOfPlayer);
+	void RecvInfoOfPioneer_Stat(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfPioneer_Stat> tsqInfoOfPioneer_Stat;
+
+	void SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile);
+	void RecvInfoOfProjectile(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfProjectile> tsqInfoOfProjectile;
+
 
 	/////////////////////////////////////
 	// Set-Get

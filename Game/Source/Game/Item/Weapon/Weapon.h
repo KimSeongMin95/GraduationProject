@@ -75,6 +75,10 @@ private:
 		/** main skeletal mesh의 무기를 발사하는 AinmSequence */
 		class UAnimSequence* FireAnimSequence = nullptr;
 
+protected:
+	class cServerSocketInGame* ServerSocketInGame = nullptr;
+	class cClientSocketInGame* ClientSocketInGame = nullptr;
+
 public:
 	EWeaponType WeaponType;
 	int WeaponNumbering;
@@ -127,7 +131,7 @@ public:
 
 
 	UFUNCTION()
-		virtual bool Fire(); /** 무기를 발사 */
+		virtual bool Fire(int IDOfPioneer); /** 무기를 발사 */
 /*** AWeapon : End ***/
 
 };

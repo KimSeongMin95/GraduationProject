@@ -23,6 +23,8 @@ AProjectileShotgun::AProjectileShotgun()
 	InitParticleSystem(GetTrailParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Shotgun_Tracer_Light.P_Shotgun_Tracer_Light'"));
 
 	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Impact_Wood_Medium_Light.P_Impact_Wood_Medium_Light'"));
+
+	TotalDamage = 10.0f;
 }
 
 void AProjectileShotgun::BeginPlay()
