@@ -81,8 +81,11 @@ public:
 
 /*** APioneer : Start ***/
 private:
-	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
 		class APioneerManager* PioneerManager = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "BuildingManager")
+		class ABuildingManager* BuildingManager = nullptr;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -160,6 +163,8 @@ public:
 		/** 현재 무기의 인덱스를 저장 */
 		int IdxOfCurrentWeapon;
 
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+		bool bArmedWeapon;
 
 	UPROPERTY(VisibleAnywhere, Category = "Building")
 		bool bConstructingMode;
@@ -172,6 +177,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Item")
 		/** 충돌한 AItem들을 모두 저장하고 벗어나면 삭제 */
 		TArray<class AItem*> OverlapedItems;
+
 
 
 private:
@@ -218,11 +224,13 @@ protected:
 
 public:
 	FORCEINLINE void SetPioneerManager(class APioneerManager* pPioneerManager) { this->PioneerManager = pPioneerManager; }
+	FORCEINLINE void SetBuildingManager(class ABuildingManager* pBuildingManager) { this->BuildingManager = pBuildingManager; }
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetTopDownCamera() const { return TopDownCameraComponent; }
 	FORCEINLINE class UDecalComponent* GetCursorToWorld() const { return CursorToWorld; }
 	FORCEINLINE class AWeapon* GetCurrentWeapon() { return CurrentWeapon; }
+	FORCEINLINE class ABuilding* GetBuilding() { return Building; }
 
 
 	UFUNCTION(Category = "PioneerManager")
@@ -310,8 +318,6 @@ public:
 	void SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer);
 	class cInfoOfPioneer GetInfoOfPioneer();
 
-
-	void SpawnWeapon();
 
 
 /*** APioneer : End ***/

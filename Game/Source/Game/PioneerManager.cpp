@@ -16,8 +16,11 @@
 #include "CustomWidget/InGameWidget.h"
 
 #include "Item/Weapon/Weapon.h"
+
+#include "BuildingManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
+class cInfoOfResources APioneerManager::Resources;
 
 /*** Basic Function : Start ***/
 APioneerManager::APioneerManager()
@@ -43,11 +46,11 @@ APioneerManager::APioneerManager()
 
 	IdCurrentlyBeingObserved = 0;
 
-	NumOfMineral = 0;
-	NumOfOrganic = 0;
-	NumOfEnergy = 0;
+	Resources = cInfoOfResources();
 
 	SceneCapture2D = nullptr;
+
+	BuildingManager = nullptr;
 }
 
 void APioneerManager::BeginPlay()
@@ -131,6 +134,8 @@ void APioneerManager::FindPioneersInWorld()
 	for (TActorIterator<APioneer> ActorItr(world); ActorItr; ++ActorItr)
 	{
 		ActorItr->SetPioneerManager(this);
+
+		ActorItr->SetBuildingManager(BuildingManager);
 
 		// 이미 추가되어있지 않다면
 		if (Pioneers.Contains(KeyID) == false)
@@ -415,6 +420,14 @@ void APioneerManager::SetPioneerController(class APioneerController* pPioneerCon
 	this->PioneerController = pPioneerController;
 }
 
+void APioneerManager::SetBuildingManager(class ABuildingManager* pBuildingManager)
+{
+	printf_s("[INFO] <APioneerManager::SetBuildingManager()>\n");
+	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SetBuildingManager()>"));
+
+	this->BuildingManager = pBuildingManager;
+}
+
 void APioneerManager::SetInGameWidget(class UInGameWidget* pInGameWidget)
 {
 	printf_s("[INFO] <APioneerManager::SetInGameWidget()>\n");
@@ -460,6 +473,8 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 
 	pioneer->SetPioneerManager(this);
 	
+	pioneer->SetBuildingManager(BuildingManager);
+
 	// 이미 추가되어있지 않다면
 	if (Pioneers.Contains(KeyID) == false)
 	{
@@ -1044,7 +1059,7 @@ void APioneerManager::TickOfResources()
 		return;
 	}
 
-	InGameWidget->SetTextOfResources(Pioneers.Num(), NumOfMineral, NumOfOrganic, NumOfEnergy);
+	InGameWidget->SetTextOfResources(Pioneers.Num(), Resources);
 }
 
 /*** APioneerManager : End ***/

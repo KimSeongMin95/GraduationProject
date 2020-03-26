@@ -18,6 +18,8 @@ AGate::AGate()
 	InitConstructBuilding();
 
 	InitBuilding();
+
+	BuildingType = EBuildingType::Gate;
 }
 
 void AGate::BeginPlay()
@@ -50,18 +52,20 @@ void AGate::InitHelthPointBar()
 /*** ABuilding : Start ***/
 void AGate::InitStat()
 {
-	HealthPoint = 50.0f;
+	ConstructionTime = 15.0f;
+
+	HealthPoint = 100.0f;
 	MaxHealthPoint = 500.0f;
+	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
 	Size = FVector2D(1.0f, 1.0f);
-	ConstructionTime = 2.0f;
 
-	NeedMineral = 0.0f;
-	NeedOrganicMatter = 0.0f;
+	NeedMineral = 100.0f;
+	NeedOrganicMatter = 50.0f;
 
 	ConsumeMineral = 0.0f;
 	ConsumeOrganicMatter = 0.0f;
-	ConsumeElectricPower = 0.0f;
+	ConsumeElectricPower = 2.0f;
 
 	ProductionMineral = 0.0f;
 	ProductionOrganicMatter = 0.0f;

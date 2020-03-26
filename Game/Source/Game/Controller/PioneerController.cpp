@@ -20,6 +20,8 @@
 
 #include "Network/ServerSocketInGame.h"
 #include "Network/ClientSocketInGame.h"
+
+#include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -603,6 +605,18 @@ void APioneerController::PlaceBuilding()
 	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
+
+	// nullptr 체크
+	if (!Pioneer->GetBuilding())
+		return;
+
+
+	// 기본적으로 자원이 부족하면 건설하지 않습니다.
+	if (APioneerManager::Resources.NumOfMineral < Pioneer->GetBuilding()->NeedMineral
+		|| APioneerManager::Resources.NumOfOrganic < Pioneer->GetBuilding()->NeedOrganicMatter)
+	{
+		return;
+	}
 
 	Pioneer->PlaceBuilding();
 }

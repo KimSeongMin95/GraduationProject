@@ -130,20 +130,35 @@ protected:
 		/** EBuildingState::Constructable일 때 사용할 빨간색 반투명한 머터리얼 */
 		class UMaterial* UnConstructableMaterial = nullptr;
 
-public:
-	EBuildingState BuildingState;
+	UPROPERTY(EditAnywhere)
+		float TimerOfTickOfConsumeAndProduct;
 
+	class cServerSocketInGame* ServerSocketInGame = nullptr;
+	class cClientSocketInGame* ClientSocketInGame = nullptr;
+	
+
+
+public:
+	UPROPERTY(VisibleAnywhere)
+		/** BuildingManager에서 관리할 고유한 식별자 */
+		int ID;
+
+	EBuildingState BuildingState;
+	EBuildingType BuildingType;
+
+
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float ConstructionTime; /** 건설시간 (s) */
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float HealthPoint; /** 초기(현재) 생명력 */
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float MaxHealthPoint; /** 완성된 생명력 */
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float TickHealthPoint; /** 1초당 증가하는 생명력 */
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		FVector2D Size; /** 크기 (NxN) */
-
-	UPROPERTY(EditAnywhere, Category = "Stat")
-		float ConstructionTime; /** 건설시간 (s) */
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float NeedMineral; /** 건설재료 무기물 (kg) */
@@ -190,6 +205,7 @@ protected:
 	UFUNCTION(Category = "Building")
 		virtual void OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	void TickOfConsumeAndProduct(float DeltaTime);
 
 public:
 	UFUNCTION(Category = "Stat")
@@ -221,5 +237,12 @@ public:
 	UFUNCTION(Category = "ABuilding")
 		/** EBuildingState::Destroying */
 		void Destroying();
+
+
+	///////////
+	// 네트워크
+	///////////
+	void SetcInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn);
+	class cInfoOfBuilding_Spawn GetcInfoOfBuilding_Spawn();
 /*** ABuilding : End ***/
 };

@@ -5,6 +5,12 @@
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Projectile/Projectile.h"
 #include "Character/BaseCharacter.h"
+
+#include "Network/Packet.h"
+#include "Network/ServerSocketInGame.h"
+#include "Network/ClientSocketInGame.h"
+
+#include "PioneerManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -37,20 +43,43 @@ ABuilding::ABuilding()
 
 
 	BuildingState = EBuildingState::Constructable;
+
+	TimerOfTickOfConsumeAndProduct = 0.0f;
+
+	ServerSocketInGame = nullptr;
+	ClientSocketInGame = nullptr;
+
+	ID = 0;
 }
 
 void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	ClientSocketInGame = cClientSocketInGame::GetSingleton();
+
+
 	// Pioneer가 생성한게 아니라면 건물을 바로 완성시킴
 	if (!GetOwner())
 	{
+		// 게임클라이언트라면 게임서버에서 SpawnBuilding으로 생성하기 때문에 소멸시킵니다.
+		if (ClientSocketInGame)
+		{
+			if (ClientSocketInGame->IsClientSocketOn())
+			{
+				Destroy();
+				return;
+			}
+		}
+
 		BuildingState = EBuildingState::Constructed;
 		CompleteConstructing();
 	}
 
 	BeginPlayHelthPointBar();
+
+	
 }
 
 void ABuilding::Tick(float DeltaTime)
@@ -66,6 +95,8 @@ void ABuilding::Tick(float DeltaTime)
 	}
 
 	TickHelthPointBar();
+
+	TickOfConsumeAndProduct(DeltaTime);
 }
 /*** Basic Function : End ***/
 
@@ -141,11 +172,13 @@ void ABuilding::TickHelthPointBar()
 void ABuilding::InitStat()
 {
 	/// Default Settings
+	ConstructionTime = 2.0f;
+
 	HealthPoint = 10.0f;
 	MaxHealthPoint = 100.0f;
+	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
 	Size = FVector2D(1.0f, 1.0f);
-	ConstructionTime = 2.0f;
 
 	NeedMineral = 0.0f;
 	NeedOrganicMatter = 0.0f;
@@ -418,6 +451,27 @@ void ABuilding::OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp,
 		OverapedActors.RemoveSingle(OtherActor);
 }
 
+void ABuilding::TickOfConsumeAndProduct(float DeltaTime)
+{
+	TimerOfTickOfConsumeAndProduct += DeltaTime;
+	if (TimerOfTickOfConsumeAndProduct < 1.0f)
+		return;
+	TimerOfTickOfConsumeAndProduct -= 1.0f;
+
+	if (BuildingState == EBuildingState::Constructing)
+	{
+		HealthPoint += TickHealthPoint;
+		if (HealthPoint > MaxHealthPoint)
+			HealthPoint = MaxHealthPoint;
+	}
+	// 건설이 완료된 경우에만 실행합니다.
+	else if (BuildingState == EBuildingState::Constructed)
+	{
+		APioneerManager::Resources.NumOfMineral += ProductionMineral - ConsumeMineral;
+		APioneerManager::Resources.NumOfOrganic += ProductionOrganicMatter - ConsumeOrganicMatter;
+		APioneerManager::Resources.NumOfEnergy += ProductionElectricPower - ConsumeElectricPower;
+	}
+}
 
 void ABuilding::SetHealthPoint(float Value)
 {
@@ -515,6 +569,7 @@ bool ABuilding::Constructing()
 {
 	if (OverapedActors.Num() > 0)
 		return false;
+
 
 	// Constructable --> Constructing
 	BuildingState = EBuildingState::Constructing;
@@ -617,6 +672,33 @@ void ABuilding::CompleteConstructing()
 void ABuilding::Destroying()
 {
 	Destroy();
+}
+
+void ABuilding::SetcInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn)
+{
+	ID = Spawn.ID;
+
+	BuildingType = (EBuildingType)Spawn.Numbering;
+
+	NeedMineral = Spawn.NeedMineral;
+	NeedOrganicMatter = Spawn.NeedOrganicMatter;
+
+	SetActorTransform(Spawn.GetActorTransform());
+}
+class cInfoOfBuilding_Spawn ABuilding::GetcInfoOfBuilding_Spawn()
+{
+	cInfoOfBuilding_Spawn infoOfBuilding_Spawn;
+
+	infoOfBuilding_Spawn.ID = ID;
+
+	infoOfBuilding_Spawn.Numbering = (int)BuildingType;
+
+	infoOfBuilding_Spawn.NeedMineral = NeedMineral;
+	infoOfBuilding_Spawn.NeedOrganicMatter = NeedOrganicMatter;
+
+	infoOfBuilding_Spawn.SetActorTransform(GetActorTransform());
+
+	return infoOfBuilding_Spawn;
 }
 /*** ABuilding : End ***/
 

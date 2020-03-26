@@ -268,6 +268,8 @@ void cClientSocketInGame::CloseSocket()
 	tsqInfoOfPioneer_Socket.clear();
 	tsqInfoOfPioneer_Stat.clear();
 	tsqInfoOfProjectile.clear();
+	tsqInfoOfResources.clear();
+	tsqInfoOfBuilding_Spawn.clear();
 
 	printf_s("[END] <cClientSocketInGame::CloseSocket()>\n");
 }
@@ -670,6 +672,16 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 	case EPacketType::INFO_OF_PROJECTILE:
 	{
 		RecvInfoOfProjectile(recvStream);
+	}
+	break;
+	case EPacketType::INFO_OF_RESOURCES:
+	{
+		RecvInfoOfResources(recvStream);
+	}
+	break;
+	case EPacketType::INFO_OF_BUILDING_SPAWN:
+	{
+		RecvInfoOfBuilding_Spawn(recvStream);
 	}
 	break;
 
@@ -1274,6 +1286,55 @@ void cClientSocketInGame::RecvInfoOfProjectile(stringstream& RecvStream)
 
 
 	printf_s("[End] <cClientSocketInGame::RecvInfoOfProjectile(...)>\n");
+}
+
+void cClientSocketInGame::RecvInfoOfResources(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvInfoOfResources(...)>\n");
+
+
+	cInfoOfResources infoOfResources;
+
+	if (RecvStream >> infoOfResources)
+		tsqInfoOfResources.push(infoOfResources);
+
+	infoOfResources.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::RecvInfoOfResources(...)>\n");
+}
+
+void cClientSocketInGame::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn)
+{
+	printf_s("[Start] <cClientSocketInGame::SendInfoOfBuilding_Spawn()>\n");
+
+
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_BUILDING_SPAWN << endl;
+	sendStream << InfoOfBuilding_Spawn << endl;
+
+	Send(sendStream);
+
+	InfoOfBuilding_Spawn.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::SendInfoOfBuilding_Spawn()>\n");
+}
+void cClientSocketInGame::RecvInfoOfBuilding_Spawn(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
+
+
+	cInfoOfBuilding_Spawn infoOfBuilding_Spawn;
+
+	if (RecvStream >> infoOfBuilding_Spawn)
+	{
+		tsqInfoOfBuilding_Spawn.push(infoOfBuilding_Spawn);
+
+		infoOfBuilding_Spawn.PrintInfo();
+	}
+
+	printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
 }
 
 

@@ -25,6 +25,8 @@
 #include "Projectile/ProjectileSniperRifle.h"
 #include "Projectile/Splash/ProjectileGrenadeLauncher.h"
 #include "Projectile/Splash/ProjectileRocketLauncher.h"
+
+#include "BuildingManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 const float AOnlineGameMode::CellSize = 64.0f;
@@ -51,6 +53,8 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfGetInfoOfPioneer_Stat = 0.0f;
 	TimerOfSetInfoOfPioneer_Stat = 0.0f;
 	TimerOfGetInfoOfProjectile = 0.0f;
+	TimerOfSendInfoOfResources = 0.0f;
+	TimerOfGetInfoOfBuilding_Spawn = 0.0f;
 
 	TimerOfSendScoreBoard = 0.0f;
 	TimerOfRecvScoreBoard = 0.0f;
@@ -64,6 +68,8 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfSendInfoOfPioneer_Stat = 0.0f;
 	TimerOfRecvInfoOfPioneer_Stat = 0.0f;
 	TimerOfRecvInfoOfProjectile = 0.0f;
+	TimerOfRecvInfoOfResources = 0.0f;
+	TimerOfRecvInfoOfBuilding_Spawn = 0.0f;
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -168,6 +174,8 @@ void AOnlineGameMode::StartPlay()
 
 	SpawnPioneerManager();
 
+	SpawnBuildingManager();
+
 	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(-8064.093f, -7581.192f, 20000.0f)));
 	SpaceShip->SetInitLocation(FVector(-8064.093f, -7581.192f, 10000.0f));
 	SpaceShip->SetPioneerManager(PioneerManager);
@@ -178,6 +186,8 @@ void AOnlineGameMode::StartPlay()
 
 		PioneerManager->SetPioneerController(PioneerController);
 
+		PioneerManager->SetBuildingManager(BuildingManager);
+
 		PioneerManager->SetInGameWidget(InGameWidget);
 
 		// 초기엔 우주선을 보도록 합니다.
@@ -185,6 +195,8 @@ void AOnlineGameMode::StartPlay()
 
 		PioneerManager->ViewpointState = EViewpointState::SpaceShip;
 	}
+
+
 }
 
 void AOnlineGameMode::Tick(float DeltaTime)
@@ -331,6 +343,27 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 
 }
 
+void AOnlineGameMode::SpawnBuildingManager()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::SpawnBuildingManager()> if (!world)\n");
+		return;
+	}
+
+	FTransform myTrans = FTransform::Identity;
+
+	FActorSpawnParameters SpawnParams;
+	//SpawnParams.Name = TEXT("Name");
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	BuildingManager = world->SpawnActor<ABuildingManager>(ABuildingManager::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+}
+
+
 /////////////////////////////////////////////////
 // Tick (Server)
 /////////////////////////////////////////////////
@@ -359,6 +392,8 @@ void AOnlineGameMode::TickOfServerSocketInGame(float DeltaTime)
 	GetInfoOfPioneer_Stat(DeltaTime);
 	SetInfoOfPioneer_Stat(DeltaTime);
 	GetInfoOfProjectile(DeltaTime);
+	SendInfoOfResources(DeltaTime);
+	GetInfoOfBuilding_Spawn(DeltaTime);
 }
 
 void AOnlineGameMode::GetScoreBoard(float DeltaTime)
@@ -665,14 +700,14 @@ void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::InfoOfProjectile()> if (!PioneerManager)\n");
+		printf_s("[INFO] <AOnlineGameMode::GetInfoOfProjectile()> if (!PioneerManager)\n");
 		return;
 	}
 
 	if (ServerSocketInGame->tsqInfoOfProjectile.empty())
 		return;
 	/***********************************************************************/
-	printf_s("[START] <AMainScreenGameMode::InfoOfProjectile()>\n");
+	printf_s("[START] <AMainScreenGameMode::GetInfoOfProjectile()>\n");
 
 
 	std::queue<cInfoOfProjectile> copiedQueue = ServerSocketInGame->tsqInfoOfProjectile.copy_clear();
@@ -685,7 +720,83 @@ void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
 	}
 
 
-	printf_s("[END] <AMainScreenGameMode::InfoOfProjectile()>\n");
+	printf_s("[END] <AMainScreenGameMode::GetInfoOfProjectile()>\n");
+}
+
+void AOnlineGameMode::SendInfoOfResources(float DeltaTime)
+{
+	TimerOfSendInfoOfResources += DeltaTime;
+	if (TimerOfSendInfoOfResources < 0.2f)
+		return;
+	TimerOfSendInfoOfResources = 0.0f;
+
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SendInfoOfResources()> if (!PioneerManager)\n");
+		return;
+	}
+	/***********************************************************/
+	//printf_s("[START] <AOnlineGameMode::SendInfoOfResources()>\n");
+
+
+	ServerSocketInGame->SendInfoOfResources(PioneerManager->Resources);
+
+
+	//printf_s("[END] <AOnlineGameMode::SendInfoOfResources()>\n");
+}
+
+void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
+{
+	TimerOfGetInfoOfBuilding_Spawn += DeltaTime;
+	if (TimerOfGetInfoOfBuilding_Spawn < 0.1f)
+		return;
+	TimerOfGetInfoOfBuilding_Spawn = 0.0f;
+
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::GetInfoOfBuilding_Spawn()> if (!PioneerManager)\n");
+		return;
+	}
+	
+	if (!BuildingManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::GetInfoOfBuilding_Spawn()> if (!BuildingManager)\n");
+		return;
+	}
+
+	if (ServerSocketInGame->tsqInfoOfBuilding_Spawn.empty())
+		return;
+	/***********************************************************************/
+	printf_s("[START] <AMainScreenGameMode::GetInfoOfBuilding_Spawn()>\n");
+
+
+	std::queue<cInfoOfBuilding_Spawn> copiedQueue = ServerSocketInGame->tsqInfoOfBuilding_Spawn.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		float needMineral = copiedQueue.front().NeedMineral;
+		float needOrganicMatter = copiedQueue.front().NeedOrganicMatter;
+
+		// 자원이 건물을 건설하기에 충분하다면
+		if (PioneerManager->Resources.NumOfMineral > needMineral &&
+			PioneerManager->Resources.NumOfOrganic > needOrganicMatter)
+		{
+			PioneerManager->Resources.NumOfMineral -= needMineral;
+			PioneerManager->Resources.NumOfOrganic -= needOrganicMatter;
+
+
+			copiedQueue.front().ID = BuildingManager->ID++;
+
+			BuildingManager->RecvSpawnBuilding(copiedQueue.front());
+
+			ServerSocketInGame->SendInfoOfBuilding_Spawn(copiedQueue.front());
+		}
+
+		copiedQueue.pop();
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::GetInfoOfBuilding_Spawn()>\n");
 }
 
 
@@ -720,6 +831,8 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 	SendInfoOfPioneer_Stat(DeltaTime);
 	RecvInfoOfPioneer_Stat(DeltaTime);
 	RecvInfoOfProjectile(DeltaTime);
+	RecvInfoOfResources(DeltaTime);
+	RecvInfoOfBuilding_Spawn(DeltaTime);
 }
 
 void AOnlineGameMode::SendScoreBoard(float DeltaTime)
@@ -1136,6 +1249,75 @@ void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
 
 
 	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfProjectile()>\n");
+}
+
+void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
+{
+	TimerOfRecvInfoOfResources += DeltaTime;
+	if (TimerOfRecvInfoOfResources < 0.2f)
+		return;
+	TimerOfRecvInfoOfResources = 0.0f;
+
+	if (!PioneerManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfResources()> if (!PioneerManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqInfoOfResources.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	//printf_s("[START] <AMainScreenGameMode::RecvInfoOfResources()>\n");
+
+
+	std::queue<cInfoOfResources> copiedQueue = ClientSocketInGame->tsqInfoOfResources.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		// 제일 마지막에 받은 것만 적용합니다.
+		PioneerManager->Resources = copiedQueue.back();
+
+		copiedQueue.pop();
+	}
+
+
+	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfResources()>\n");
+}
+
+void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
+{
+	TimerOfRecvInfoOfBuilding_Spawn += DeltaTime;
+	if (TimerOfRecvInfoOfBuilding_Spawn < 0.1f)
+		return;
+	TimerOfRecvInfoOfBuilding_Spawn = 0.0f;
+
+	if (!BuildingManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfBuilding_Spawn()> if (!BuildingManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqInfoOfBuilding_Spawn.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::RecvInfoOfBuilding_Spawn()>\n");
+
+
+	std::queue<cInfoOfBuilding_Spawn> copiedQueue = ClientSocketInGame->tsqInfoOfBuilding_Spawn.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		BuildingManager->RecvSpawnBuilding(copiedQueue.front());
+
+		copiedQueue.pop();
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::RecvInfoOfBuilding_Spawn()>\n");
 }
 
 

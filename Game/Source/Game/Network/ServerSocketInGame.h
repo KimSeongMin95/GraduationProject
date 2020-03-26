@@ -194,6 +194,11 @@ public:
 	static void InfoOfProjectile(stringstream& RecvStream, SOCKET Socket);
 	static cThreadSafetyQueue<cInfoOfProjectile> tsqInfoOfProjectile;
 
+	static void SendInfoOfResources(cInfoOfResources InfoOfResources);
+
+	static void SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn);
+	static void RecvInfoOfBuilding_Spawn(stringstream& RecvStream, SOCKET Socket);
+	static cThreadSafetyQueue<cInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
 
 	////////////////////////////////////////////////
 	// (임시) 패킷 사이즈와 실제 길이 검증용 함수

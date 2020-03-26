@@ -183,7 +183,7 @@ void UInGameWidget::SetObservingButtonVisibility(bool bVisible)
 	}
 }
 
-void UInGameWidget::SetTextOfResources(int nPioneer, int nMineral, int nOrganic, int nEnergy)
+void UInGameWidget::SetTextOfResources(int nPioneer, const class cInfoOfResources& Resources)
 {
 	if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy)
 	{
@@ -192,9 +192,9 @@ void UInGameWidget::SetTextOfResources(int nPioneer, int nMineral, int nOrganic,
 	}
 
 	NumOfPioneer->SetText(FText::FromString(FString::FromInt(nPioneer)));
-	NumOfMineral->SetText(FText::FromString(FString::FromInt(nMineral)));
-	NumOfOrganic->SetText(FText::FromString(FString::FromInt(nOrganic)));
-	NumOfEnergy->SetText(FText::FromString(FString::FromInt(nEnergy)));
+	NumOfMineral->SetText(FText::FromString(FString::FromInt(Resources.NumOfMineral)));
+	NumOfOrganic->SetText(FText::FromString(FString::FromInt(Resources.NumOfOrganic)));
+	NumOfEnergy->SetText(FText::FromString(FString::FromInt(Resources.NumOfEnergy)));
 }
 
 void UInGameWidget::SetBuildingBoxVisibility(bool bVisible)

@@ -152,6 +152,12 @@ public:
 	void RecvInfoOfProjectile(stringstream& RecvStream);
 	cThreadSafetyQueue<cInfoOfProjectile> tsqInfoOfProjectile;
 
+	void RecvInfoOfResources(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfResources> tsqInfoOfResources;
+
+	void SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn);
+	void RecvInfoOfBuilding_Spawn(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
 
 	/////////////////////////////////////
 	// Set-Get

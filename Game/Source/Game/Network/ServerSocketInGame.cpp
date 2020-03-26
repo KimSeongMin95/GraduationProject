@@ -59,6 +59,8 @@ cThreadSafetyQueue<cInfoOfPioneer_Stat> cServerSocketInGame::tsqInfoOfPioneer_St
 
 cThreadSafetyQueue<cInfoOfProjectile> cServerSocketInGame::tsqInfoOfProjectile;
 
+cThreadSafetyQueue<cInfoOfBuilding_Spawn> cServerSocketInGame::tsqInfoOfBuilding_Spawn;
+
 unsigned int WINAPI CallMainThread(LPVOID p)
 {
 	cServerSocketInGame* pOverlappedEvent = (cServerSocketInGame*)p;
@@ -121,6 +123,7 @@ cServerSocketInGame::cServerSocketInGame()
 	tsqInfoOfPioneer_Socket.clear();
 	tsqInfoOfPioneer_Stat.clear();
 	tsqInfoOfProjectile.clear();
+	tsqInfoOfBuilding_Spawn.clear();
 
 	// 패킷 함수 포인터에 함수 지정
 	fnProcess[EPacketType::CONNECTED].funcProcessPacket = Connected;
@@ -131,6 +134,7 @@ cServerSocketInGame::cServerSocketInGame()
 	fnProcess[EPacketType::POSSESS_PIONEER].funcProcessPacket = PossessPioneer;
 	fnProcess[EPacketType::INFO_OF_PIONEER_STAT].funcProcessPacket = InfoOfPioneer_Stat;
 	fnProcess[EPacketType::INFO_OF_PROJECTILE].funcProcessPacket = InfoOfProjectile;
+	fnProcess[EPacketType::INFO_OF_BUILDING_SPAWN].funcProcessPacket = RecvInfoOfBuilding_Spawn;
 }
 
 cServerSocketInGame::~cServerSocketInGame()
@@ -488,6 +492,7 @@ void cServerSocketInGame::CloseServer()
 	tsqInfoOfPioneer_Socket.clear();
 	tsqInfoOfPioneer_Stat.clear();
 	tsqInfoOfProjectile.clear();
+	tsqInfoOfBuilding_Spawn.clear();
 
 	if (bIsServerOn == false)
 	{
@@ -2112,4 +2117,57 @@ void cServerSocketInGame::InfoOfProjectile(stringstream& RecvStream, SOCKET Sock
 
 
 	printf_s("[END] <cServerSocketInGame::InfoOfProjectile(...)>\n");
+}
+
+
+void cServerSocketInGame::SendInfoOfResources(cInfoOfResources InfoOfResources)
+{
+	printf_s("[START] <cServerSocketInGame::SendInfoOfResources(...)>\n");
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_RESOURCES << endl;
+	sendStream << InfoOfResources << endl;
+
+
+	Broadcast(sendStream);  
+
+
+	printf_s("[END] <cServerSocketInGame::SendInfoOfResources(...)>\n");
+}
+
+void cServerSocketInGame::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn)
+{
+	printf_s("[START] <cServerSocketInGame::SendInfoOfBuilding_Spawn(...)>\n");
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_BUILDING_SPAWN << endl;
+	sendStream << InfoOfBuilding_Spawn << endl;
+
+
+	Broadcast(sendStream);
+
+
+	printf_s("[END] <cServerSocketInGame::SendInfoOfBuilding_Spawn(...)>\n");
+}
+
+
+void cServerSocketInGame::RecvInfoOfBuilding_Spawn(stringstream& RecvStream, SOCKET Socket)
+{
+	printf_s("[Recv by %d] <cServerSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n", (int)Socket);
+
+
+	cInfoOfBuilding_Spawn infoOfBuilding_Spawn;
+
+	if (RecvStream >> infoOfBuilding_Spawn)
+	{
+		infoOfBuilding_Spawn.PrintInfo();
+
+		tsqInfoOfBuilding_Spawn.push(infoOfBuilding_Spawn);
+	}
+
+	printf_s("[END] <cServerSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
 }

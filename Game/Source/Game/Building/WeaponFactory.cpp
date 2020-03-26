@@ -3,6 +3,7 @@
 
 #include "WeaponFactory.h"
 
+
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 
 /*** 직접 정의한 헤더 전방 선언 : End ***/
@@ -18,6 +19,8 @@ AWeaponFactory::AWeaponFactory()
 	InitConstructBuilding();
 
 	InitBuilding();
+
+	BuildingType = EBuildingType::WeaponFactory;
 }
 
 void AWeaponFactory::BeginPlay()
@@ -50,18 +53,20 @@ void AWeaponFactory::InitHelthPointBar()
 /*** ABuilding : Start ***/
 void AWeaponFactory::InitStat()
 {
-	HealthPoint = 10.0f;
-	MaxHealthPoint = 100.0f;
+	ConstructionTime = 30.0f;
+
+	HealthPoint = 100.0f;
+	MaxHealthPoint = 500.0f;
+	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
 	Size = FVector2D(1.0f, 1.0f);
-	ConstructionTime = 2.0f;
 
-	NeedMineral = 0.0f;
-	NeedOrganicMatter = 0.0f;
+	NeedMineral = 300.0f;
+	NeedOrganicMatter = 100.0f;
 
 	ConsumeMineral = 0.0f;
 	ConsumeOrganicMatter = 0.0f;
-	ConsumeElectricPower = 0.0f;
+	ConsumeElectricPower = 10.0f;
 
 	ProductionMineral = 0.0f;
 	ProductionOrganicMatter = 0.0f;

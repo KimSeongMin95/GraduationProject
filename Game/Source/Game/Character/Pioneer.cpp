@@ -17,16 +17,20 @@
 #include "Item/Weapon/Shotgun.h"
 #include "Item/Weapon/SniperRifle.h"
 
-#include "Building/Wall.h"
-#include "Building/Floor.h"
-#include "Building/Stairs.h"
-#include "Building/Turret.h"
-#include "Building/Gate.h"
-#include "Building/OrganicMine.h"
-#include "Building/InorganicMine.h"
-#include "Building/NuclearFusionPowerPlant.h"
-#include "Building/ResearchInstitute.h"
-#include "Building/WeaponFactory.h"
+#include "Building/Building.h"
+
+//#include "Building/Wall.h"
+//#include "Building/Floor.h"
+//#include "Building/Stairs.h"
+//#include "Building/Turret.h"
+//#include "Building/Gate.h"
+//#include "Building/OrganicMine.h"
+//#include "Building/InorganicMine.h"
+//#include "Building/NuclearFusionPowerPlant.h"
+//#include "Building/ResearchInstitute.h"
+//#include "Building/WeaponFactory.h"
+
+#include "BuildingManager.h"
 
 #include "Landscape.h"
 
@@ -76,6 +80,8 @@ APioneer::APioneer()
 	//// 입력 처리를 위한 선회율을 설정합니다.
 	//BaseTurnRate = 45.0f;
 	//BaseLookUpRate = 45.0f;
+
+	BuildingManager = nullptr;
 }
 
 void APioneer::BeginPlay()
@@ -1171,9 +1177,13 @@ void APioneer::Arming()
 
 	if (!CurrentWeapon)
 	{
+		bArmedWeapon = false;
+
 		UE_LOG(LogTemp, Warning, TEXT("APioneer::Arming: if (!CurrentWeapon)"));
 		return;
 	}
+
+	bArmedWeapon = true;
 
 	CurrentWeapon->SetActorHiddenInGame(false);
 
@@ -1185,6 +1195,8 @@ void APioneer::Arming()
 
 void APioneer::Disarming()
 {
+	bArmedWeapon = false;
+
 	if (CurrentWeapon)
 		CurrentWeapon->SetActorHiddenInGame(true);
 
@@ -1201,55 +1213,25 @@ void APioneer::SpawnBuilding(int Value)
 {
 	DestroyBuilding();
 
-	UWorld* const World = GetWorld();
-	if (!World)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::SpawnBuilding: if (!World)"));
-		return;
-	}
 
-	FTransform myTrans = FTransform::Identity;
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
-
-	switch ((EBuildingType)Value)
+	if (!BuildingManager)
 	{
-	case EBuildingType::Floor:
-		Building = World->SpawnActor<AFloor>(AFloor::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::Wall:
-		Building = World->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::Stairs:
-		Building = World->SpawnActor<AStairs>(AStairs::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::Turret:
-		Building = World->SpawnActor<ATurret>(ATurret::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::Gate:
-		Building = World->SpawnActor<AGate>(AGate::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::OrganicMine:
-		Building = World->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::InorganicMine:
-		Building = World->SpawnActor<AInorganicMine>(AInorganicMine::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::NuclearFusionPowerPlant:
-		Building = World->SpawnActor<ANuclearFusionPowerPlant>(ANuclearFusionPowerPlant::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::ResearchInstitute:
-		Building = World->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::WeaponFactory:
-		Building = World->SpawnActor<AWeaponFactory>(AWeaponFactory::StaticClass(), myTrans, SpawnParams);
-		break;
-	default:
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::SpawnBuilding: if (!World)"));
-		break;
+		UWorld* const world = GetWorld();
+		if (!world)
+		{
+			printf_s("[ERROR] <APioneerManager::SpawnBuilding()> if (!world)\n");
+			return;
+		}
+
+		for (TActorIterator<ABuildingManager> ActorItr(world); ActorItr; ++ActorItr)
+		{
+			BuildingManager = *ActorItr;
+			break;
+		}
 	}
+	
+	if (BuildingManager)
+		Building = BuildingManager->SpawnBuilding(Value);
 }
 
 void APioneer::OnConstructingMode()
@@ -1316,6 +1298,30 @@ void APioneer::PlaceBuilding()
 	bool success = Building->Constructing();
 	if (success)
 	{
+		// 게임서버라면
+		if (ServerSocketInGame)
+		{
+			if (ServerSocketInGame->IsServerOn())
+			{
+				ServerSocketInGame->SendInfoOfBuilding_Spawn(Building->GetcInfoOfBuilding_Spawn());
+
+				APioneerManager::Resources.NumOfMineral -= Building->NeedMineral;
+				APioneerManager::Resources.NumOfOrganic -= Building->NeedOrganicMatter;
+				
+			}
+		}
+		// 게임클라이언트라면
+		if (ClientSocketInGame)
+		{
+			if (ClientSocketInGame->IsClientSocketOn())
+			{
+				// 요청을 서버에 보내고 서버에서 SpawnBuilding을 받으면 건설합니다.
+				ClientSocketInGame->SendInfoOfBuilding_Spawn(Building->GetcInfoOfBuilding_Spawn());
+
+				Building->Destroy();
+			}
+		}
+
 		Building = nullptr;
 		bConstructingMode = false;
 	}
@@ -1373,6 +1379,15 @@ void APioneer::SetInfoOfPioneer_Animation(class cInfoOfPioneer_Animation& Animat
 	Disarming();
 	IdxOfCurrentWeapon = Animation.IdxOfCurrentWeapon;
 	Arming();
+
+	//bArmedWeapon = Animation.bArmedWeapon;
+
+	//if (bArmedWeapon)
+	//{
+	//	//Disarming();
+	//	IdxOfCurrentWeapon = Animation.IdxOfCurrentWeapon;
+	//	Arming();
+	//}
 }
 class cInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
 {
@@ -1398,6 +1413,8 @@ class cInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
 	animation.bFired = bFired;
 
 	animation.IdxOfCurrentWeapon = IdxOfCurrentWeapon;
+
+	//animation.bArmedWeapon = bArmedWeapon;
 
 	return animation;
 }

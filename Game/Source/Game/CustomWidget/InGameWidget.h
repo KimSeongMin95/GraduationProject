@@ -93,7 +93,7 @@ public:
 	void SetFreeViewpointButtonVisibility(bool bVisible);
 	void SetObservingButtonVisibility(bool bVisible);
 
-	void SetTextOfResources(int nPioneer, int nMineral, int nOrganic, int nEnergy);
+	void SetTextOfResources(int nPioneer, const class cInfoOfResources& Resources);
 
 	void SetBuildingBoxVisibility(bool bVisible);
 

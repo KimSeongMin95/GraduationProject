@@ -18,6 +18,8 @@ AStairs::AStairs()
 	InitConstructBuilding();
 
 	InitBuilding();
+
+	BuildingType = EBuildingType::Stairs;
 }
 
 void AStairs::BeginPlay()
@@ -50,13 +52,15 @@ void AStairs::InitHelthPointBar()
 /*** ABuilding : Start ***/
 void AStairs::InitStat()
 {
-	HealthPoint = 30.0f;
-	MaxHealthPoint = 300.0f;
+	ConstructionTime = 10.0f;
+
+	HealthPoint = 50.0f;
+	MaxHealthPoint = 200.0f;
+	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
 	Size = FVector2D(1.0f, 1.0f);
-	ConstructionTime = 2.0f;
 
-	NeedMineral = 0.0f;
+	NeedMineral = 100.0f;
 	NeedOrganicMatter = 0.0f;
 
 	ConsumeMineral = 0.0f;

@@ -18,6 +18,8 @@ ANuclearFusionPowerPlant::ANuclearFusionPowerPlant()
 	InitConstructBuilding();
 
 	InitBuilding();
+
+	BuildingType = EBuildingType::NuclearFusionPowerPlant;
 }
 
 void ANuclearFusionPowerPlant::BeginPlay()
@@ -50,22 +52,24 @@ void ANuclearFusionPowerPlant::InitHelthPointBar()
 /*** ABuilding : Start ***/
 void ANuclearFusionPowerPlant::InitStat()
 {
-	HealthPoint = 10.0f;
-	MaxHealthPoint = 100.0f;
+	ConstructionTime = 20.0f;
+
+	HealthPoint = 100.0f;
+	MaxHealthPoint = 500.0f;
+	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
 	Size = FVector2D(1.0f, 1.0f);
-	ConstructionTime = 2.0f;
 
-	NeedMineral = 0.0f;
-	NeedOrganicMatter = 0.0f;
+	NeedMineral = 500.0f;
+	NeedOrganicMatter = 200.0f;
 
-	ConsumeMineral = 0.0f;
-	ConsumeOrganicMatter = 0.0f;
+	ConsumeMineral = 5.0f;
+	ConsumeOrganicMatter = 2.0f;
 	ConsumeElectricPower = 0.0f;
 
 	ProductionMineral = 0.0f;
 	ProductionOrganicMatter = 0.0f;
-	ProductionElectricPower = 0.0f;
+	ProductionElectricPower = 100.0f;
 }
 
 void ANuclearFusionPowerPlant::InitConstructBuilding()

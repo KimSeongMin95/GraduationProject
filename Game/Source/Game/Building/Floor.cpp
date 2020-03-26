@@ -18,6 +18,8 @@ AFloor::AFloor()
 	InitConstructBuilding();
 
 	InitBuilding();
+
+	BuildingType = EBuildingType::Floor;
 }
 
 void AFloor::BeginPlay()
@@ -50,13 +52,13 @@ void AFloor::InitHelthPointBar()
 /*** ABuilding : Start ***/
 void AFloor::InitStat()
 {
-	HealthPoint = 10.0f;
-	MaxHealthPoint = 100.0f;
+	HealthPoint = 100.0f;
+	MaxHealthPoint = 200.0f;
 
 	Size = FVector2D(1.0f, 1.0f);
-	ConstructionTime = 2.0f;
+	ConstructionTime = 10.0f;
 
-	NeedMineral = 0.0f;
+	NeedMineral = 100.0f;
 	NeedOrganicMatter = 0.0f;
 
 	ConsumeMineral = 0.0f;

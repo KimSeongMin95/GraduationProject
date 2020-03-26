@@ -18,6 +18,8 @@ ATurret::ATurret()
 	InitConstructBuilding();
 
 	InitBuilding();
+
+	BuildingType = EBuildingType::Turret;
 }
 
 void ATurret::BeginPlay()
@@ -49,18 +51,20 @@ void ATurret::InitHelthPointBar()
 /*** ABuilding : Start ***/
 void ATurret::InitStat()
 {
-	HealthPoint = 10.0f;
-	MaxHealthPoint = 100.0f;
+	ConstructionTime = 20.0f;
+
+	HealthPoint = 100.0f;
+	MaxHealthPoint = 300.0f;
+	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
 	Size = FVector2D(1.0f, 1.0f);
-	ConstructionTime = 2.0f;
 
-	NeedMineral = 0.0f;
-	NeedOrganicMatter = 0.0f;
+	NeedMineral = 200.0f;
+	NeedOrganicMatter = 50.0f;
 
 	ConsumeMineral = 0.0f;
 	ConsumeOrganicMatter = 0.0f;
-	ConsumeElectricPower = 0.0f;
+	ConsumeElectricPower = 2.0f;
 
 	ProductionMineral = 0.0f;
 	ProductionOrganicMatter = 0.0f;

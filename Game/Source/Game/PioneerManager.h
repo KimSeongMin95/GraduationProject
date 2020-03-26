@@ -85,9 +85,13 @@ private:
 		/** 다음 개척자의 카메라입니다. */
 		class AWorldViewCameraActor* CameraOfNextPioneer = nullptr; 
 
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UPROPERTY(VisibleAnywhere)
 		/** Pioneer 전용 컨트롤러 입니다. */
 		class APioneerController* PioneerController = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+		/**  */
+		class ABuildingManager* BuildingManager = nullptr;
 
 	//ESwitchState SwitchState;
 
@@ -119,9 +123,8 @@ public:
 
 	int32 IdCurrentlyBeingObserved;
 
-	int NumOfMineral;
-	int NumOfOrganic;
-	int NumOfEnergy;
+	/** 자원량 */
+	static class cInfoOfResources Resources;
 
 	UPROPERTY(EditAnywhere, Category = "PioneerManager")
 		/** 미내밉을 캡쳐하면서 ViewTarget의 위치를 따라갈 카메라입니다. */
@@ -166,6 +169,8 @@ public:
 	// public
 	/////////////////////////////////////////
 	void SetPioneerController(class APioneerController* pPioneerController);
+
+	void SetBuildingManager(class ABuildingManager* pBuildingManager);
 
 	void SetInGameWidget(class UInGameWidget* pInGameWidget);
 

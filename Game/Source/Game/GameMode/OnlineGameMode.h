@@ -75,6 +75,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
 		class ASpaceShip* SpaceShip = nullptr;
 
+	UPROPERTY(VisibleAnywhere, Category = "BuildingManager")
+		class ABuildingManager* BuildingManager = nullptr;
+
 protected:
 
 
@@ -92,6 +95,8 @@ private:
 	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
 
 	void SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile);
+
+	void SpawnBuildingManager();
 
 	/////////////////////////////////////////////////
 	// Tick (Server)
@@ -115,6 +120,9 @@ private:
 
 	void GetInfoOfProjectile(float DeltaTime); float TimerOfGetInfoOfProjectile;
 
+	void SendInfoOfResources(float DeltaTime); float TimerOfSendInfoOfResources;
+
+	void GetInfoOfBuilding_Spawn(float DeltaTime); float TimerOfGetInfoOfBuilding_Spawn;
 
 	/////////////////////////////////////////////////
 	// Tick (Client)
@@ -141,6 +149,10 @@ private:
 	void RecvInfoOfPioneer_Stat(float DeltaTime); float TimerOfRecvInfoOfPioneer_Stat;
 
 	void RecvInfoOfProjectile(float DeltaTime); float TimerOfRecvInfoOfProjectile;
+
+	void RecvInfoOfResources(float DeltaTime); float TimerOfRecvInfoOfResources;
+
+	void RecvInfoOfBuilding_Spawn(float DeltaTime); float TimerOfRecvInfoOfBuilding_Spawn;
 
 protected:
 

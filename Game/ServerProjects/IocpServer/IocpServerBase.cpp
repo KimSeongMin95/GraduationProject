@@ -84,7 +84,7 @@ bool IocpServerBase::Initialize()
 	}
 
 	// 수신 대기열 생성
-	if (listen(ListenSocket, 5) == SOCKET_ERROR)
+	if (listen(ListenSocket, SOMAXCONN) == SOCKET_ERROR) // SOMAXCONN은 윈도우 최대?
 	{
 		closesocket(ListenSocket);
 		ListenSocket = NULL;

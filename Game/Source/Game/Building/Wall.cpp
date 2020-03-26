@@ -18,6 +18,8 @@ AWall::AWall()
 	InitConstructBuilding();
 
 	InitBuilding();
+
+	BuildingType = EBuildingType::Wall;
 }
 
 void AWall::BeginPlay()
@@ -50,13 +52,15 @@ void AWall::InitHelthPointBar()
 /*** ABuilding : Start ***/
 void AWall::InitStat()
 {
+	ConstructionTime = 10.0f;
+
 	HealthPoint = 100.0f;
-	MaxHealthPoint = 1000.0f;
+	MaxHealthPoint = 500.0f;
+	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
 	Size = FVector2D(1.0f, 1.0f);
-	ConstructionTime = 2.0f;
 
-	NeedMineral = 0.0f;
+	NeedMineral = 200.0f;
 	NeedOrganicMatter = 0.0f;
 
 	ConsumeMineral = 0.0f;

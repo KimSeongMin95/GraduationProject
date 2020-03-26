@@ -415,7 +415,32 @@ enum EPacketType
 		Recv [INFO_OF_PROJECTILE]:
 		Send [INFO_OF_PROJECTILE]:
 	*/
-	INFO_OF_PROJECTILE
+	INFO_OF_PROJECTILE, 
+
+
+	/**
+	Game Client:
+		Recv [INFO_OF_RESOURCES]:
+		Send []:
+	Game Server:
+		Recv []:
+		Send [INFO_OF_RESOURCES]: 현재 자원량을 보냅니다.
+	*/
+	INFO_OF_RESOURCES,
+
+
+
+	/** 건물을 건설하면
+	Game Client:
+		Recv [INFO_OF_BUILDING_SPAWN]: 건설을 합니다.
+		Send [INFO_OF_BUILDING_SPAWN]: 건설 요청을 서버에게 보냅니다.
+	Game Server:
+		Recv [INFO_OF_BUILDING_SPAWN]: 건설 요청에 필요한 자원이 존재하면 건설하고
+		Send [INFO_OF_BUILDING_SPAWN]: 모든 플레이어에게 건설하라고 명령합니다.
+	*/
+	INFO_OF_BUILDING_SPAWN
+
+
 };
 
 
@@ -955,6 +980,8 @@ public:
 	// 무기
 	int IdxOfCurrentWeapon;
 
+	bool bArmedWeapon;
+
 public:
 	cInfoOfPioneer_Animation()
 	{
@@ -983,6 +1010,8 @@ public:
 		bFired = false;
 
 		IdxOfCurrentWeapon = 0;
+
+		bArmedWeapon = false;
 	}
 	~cInfoOfPioneer_Animation()
 	{
@@ -1013,6 +1042,8 @@ public:
 
 		Stream << Info.IdxOfCurrentWeapon << endl;
 
+		Stream << Info.bArmedWeapon << endl;
+
 		return Stream;
 	}
 
@@ -1041,6 +1072,8 @@ public:
 
 		Stream >> Info.IdxOfCurrentWeapon;
 
+		Stream >> Info.bArmedWeapon;
+
 		return Stream;
 	}
 
@@ -1051,8 +1084,8 @@ public:
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
 		printf_s("%s%s<cInfoOfPioneer_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, bHasPistolType: %s, bHasRifleType : %s, bHasLauncherType: %s, bFired: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), VelocityX, VelocityY, VelocityZ, (bHasPistolType == true) ? "true" : "false", (bHasRifleType == true) ? "true" : "false", (bHasLauncherType == true) ? "true" : "false", (bFired == true) ? "true" : "false");
-		printf_s("%s%s<cInfoOfPioneer_Animation> IdxOfCurrentWeapon: %d \n",
-			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), IdxOfCurrentWeapon);
+		printf_s("%s%s<cInfoOfPioneer_Animation> IdxOfCurrentWeapon: %d, bArmedWeapon: %s \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), IdxOfCurrentWeapon, (bArmedWeapon == true) ? "true" : "false");
 	}
 
 	void SetActorTransform(const FTransform& Transform)
@@ -1341,89 +1374,184 @@ public:
 	}
 };
 
+class GAME_API cInfoOfResources
+{
+public:
+	float NumOfMineral;
+	float NumOfOrganic;
+	float NumOfEnergy;
 
-//class GAME_API cInfoOfWeapon
-//{
-//public:
-//	int ID; // WeaponManager::Weapons의 key로 사용될 고유 ID
-//	
-//	int IDOfPioneer;
-//	int Idx; // Pioner::IdxOfCurrentWeapon
-//
-//	int WeaponType;
-//	int WeaponNumbering;
-//
-//	int LimitedLevel;
-//
-//	float AttackPower;
-//	float AttackSpeed;
-//	float AttackRange;
-//
-//public:
-//	cInfoOfWeapon()
-//	{
-//		ID = 0;
-//
-//		IDOfPioneer = 0;
-//		Idx = 0;
-//
-//		WeaponType = 0;
-//		WeaponNumbering = 1;
-//
-//		LimitedLevel = 1;
-//
-//		AttackPower = 1.0f;
-//		AttackSpeed = 1.0f;
-//		AttackRange = 8.0f * 64.0f;
-//	}
-//	~cInfoOfWeapon()
-//	{
-//	}
-//
-//	// Send
-//	friend ostream& operator<<(ostream& Stream, cInfoOfWeapon& Info)
-//	{
-//		Stream << Info.ID << endl;
-//
-//		Stream << Info.IDOfPioneer << endl;
-//		Stream << Info.Idx << endl;
-//
-//		Stream << Info.WeaponType << endl;
-//		Stream << Info.WeaponNumbering << endl;
-//		Stream << Info.LimitedLevel << endl;
-//		Stream << Info.AttackPower << endl;
-//		Stream << Info.AttackSpeed << endl;
-//		Stream << Info.AttackRange << endl;
-//
-//		return Stream;
-//	}
-//
-//	// Recv
-//	friend istream& operator>>(istream& Stream, cInfoOfWeapon& Info)
-//	{
-//		Stream >> Info.ID;
-//
-//		Stream >> Info.IDOfPioneer;
-//		Stream >> Info.Idx;
-//
-//		Stream >> Info.WeaponType;
-//		Stream >> Info.WeaponNumbering;
-//		Stream >> Info.LimitedLevel;
-//		Stream >> Info.AttackPower;
-//		Stream >> Info.AttackSpeed;
-//		Stream >> Info.AttackRange;
-//
-//
-//		return Stream;
-//	}
-//
-//	// Log
-//	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
-//	{
-//		printf_s("%s%s<cInfoOfWeapon> ID: %d, IDOfPioneer: %d, Idx: %d, WeaponType: %d, WeaponNumbering: %d \n",
-//			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, IDOfPioneer, Idx, WeaponType, WeaponNumbering);
-//		printf_s("%s%s<cInfoOfWeapon> LimitedLevel: %d, AttackPower: %f, AttackSpeed: %f, AttackRange: %f \n",
-//			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), LimitedLevel, AttackPower, AttackSpeed, AttackRange);
-//	}
-//
-//};
+public:
+	cInfoOfResources()
+	{
+		NumOfMineral = 1000.0f;
+		NumOfOrganic = 1000.0f;
+		NumOfEnergy = 1000.0f;
+	}
+	~cInfoOfResources()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfResources& Info)
+	{
+		Stream << Info.NumOfMineral << endl;
+		Stream << Info.NumOfOrganic << endl;
+		Stream << Info.NumOfEnergy << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfResources& Info)
+	{
+		Stream >> Info.NumOfMineral;
+		Stream >> Info.NumOfOrganic;
+		Stream >> Info.NumOfEnergy;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfResources> NumOfMineral: %f, NumOfOrganic: %f, NumOfEnergy: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), NumOfMineral, NumOfOrganic, NumOfEnergy);
+	}
+};
+
+
+class GAME_API cInfoOfBuilding_Spawn
+{
+public:
+	int ID; // BuildingManager::???
+
+	int Numbering; // 1~8
+
+	float NeedMineral;
+	float NeedOrganicMatter;
+
+	float ScaleX;
+	float ScaleY;
+	float ScaleZ;
+
+	float RotX;
+	float RotY;
+	float RotZ;
+
+	float LocX;
+	float LocY;
+	float LocZ;
+
+public:
+	cInfoOfBuilding_Spawn()
+	{
+		ID = 0;
+
+		Numbering = 0;
+
+		NeedMineral = 0.0f;
+		NeedOrganicMatter = 0.0f;
+
+		ScaleX = 0.0f;
+		ScaleY = 0.0f;
+		ScaleZ = 0.0f;
+
+		RotX = 0.0f;
+		RotY = 0.0f;
+		RotZ = 0.0f;
+
+		LocX = 0.0f;
+		LocY = 0.0f;
+		LocZ = 0.0f;
+	}
+	~cInfoOfBuilding_Spawn()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfBuilding_Spawn& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.Numbering << endl;
+
+		Stream << Info.NeedMineral << endl;
+		Stream << Info.NeedOrganicMatter << endl;
+
+		Stream << Info.ScaleX << endl;
+		Stream << Info.ScaleY << endl;
+		Stream << Info.ScaleZ << endl;
+
+		Stream << Info.RotX << endl;
+		Stream << Info.RotY << endl;
+		Stream << Info.RotZ << endl;
+
+		Stream << Info.LocX << endl;
+		Stream << Info.LocY << endl;
+		Stream << Info.LocZ << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfBuilding_Spawn& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.Numbering;
+
+		Stream >> Info.NeedMineral;
+		Stream >> Info.NeedOrganicMatter;
+
+		Stream >> Info.ScaleX;
+		Stream >> Info.ScaleY;
+		Stream >> Info.ScaleZ;
+
+		Stream >> Info.RotX;
+		Stream >> Info.RotY;
+		Stream >> Info.RotZ;
+
+		Stream >> Info.LocX;
+		Stream >> Info.LocY;
+		Stream >> Info.LocZ;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfBuilding_Spawn> ID: %d, Numbering : %d, NeedMineral: %f, NeedOrganicMatter: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, Numbering, NeedMineral, NeedOrganicMatter);
+		printf_s("%s%s<cInfoOfBuilding_Spawn> ScaleX: %f, ScaleY : %f, ScaleZ: %f, RotX: %f, RotY : %f, RotZ: %f, LocX: %f, LocY : %f, LocZ: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ScaleX, ScaleY, ScaleZ, RotX, RotY, RotZ, LocX, LocY, LocZ);
+	}
+
+	void SetActorTransform(const FTransform& Transform)
+	{
+		ScaleX = Transform.GetScale3D().X;
+		ScaleY = Transform.GetScale3D().Y;
+		ScaleZ = Transform.GetScale3D().Z;
+
+		RotX = Transform.GetRotation().Rotator().Pitch;
+		RotY = Transform.GetRotation().Rotator().Yaw;
+		RotZ = Transform.GetRotation().Rotator().Roll;
+
+		LocX = Transform.GetLocation().X;
+		LocY = Transform.GetLocation().Y;
+		LocZ = Transform.GetLocation().Z;
+	}
+
+	FTransform GetActorTransform()
+	{
+		FTransform transform;
+
+		transform.SetScale3D(FVector(ScaleX, ScaleY, ScaleZ));
+		FQuat quat(FRotator(RotX, RotY, RotZ));
+		transform.SetRotation(quat);
+		transform.SetLocation(FVector(LocX, LocY, LocZ));
+
+		return transform;
+	}
+};
