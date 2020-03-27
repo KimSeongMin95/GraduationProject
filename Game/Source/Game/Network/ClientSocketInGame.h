@@ -166,6 +166,9 @@ public:
 	void RecvInfoOfBuilding_Stat(stringstream& RecvStream);
 	cThreadSafetyQueue<cInfoOfBuilding_Stat> tsqInfoOfBuilding_Stat;
 
+	void RecvDestroyBuilding(stringstream& RecvStream);
+	cThreadSafetyQueue<int> tsqDestroyBuilding;
+
 	/////////////////////////////////////
 	// Set-Get
 	/////////////////////////////////////

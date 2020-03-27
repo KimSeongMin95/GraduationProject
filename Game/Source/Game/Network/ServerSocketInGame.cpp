@@ -149,6 +149,7 @@ cServerSocketInGame::cServerSocketInGame()
 	fnProcess[EPacketType::INFO_OF_PIONEER_STAT].funcProcessPacket = InfoOfPioneer_Stat;
 	fnProcess[EPacketType::INFO_OF_PROJECTILE].funcProcessPacket = InfoOfProjectile;
 	fnProcess[EPacketType::INFO_OF_BUILDING_SPAWN].funcProcessPacket = RecvInfoOfBuilding_Spawn;
+	fnProcess[EPacketType::INFO_OF_BUILDING_STAT].funcProcessPacket = SendInfoOfBuilding_Stat;
 }
 
 cServerSocketInGame::~cServerSocketInGame()
@@ -2301,4 +2302,29 @@ void cServerSocketInGame::SendInfoOfBuilding_Stat(stringstream& RecvStream, SOCK
 
 
 	printf_s("[Send to %d] <cServerSocketInGame::SendInfoOfBuilding_Stat(...)>\n\n", (int)Socket);
+}
+
+void cServerSocketInGame::SendDestroyBuilding(int IDOfBuilding)
+{
+	printf_s("[START] <cServerSocketInGame::SendDestroyBuilding(...)>\n");
+
+
+	EnterCriticalSection(&csInfoOfBuilding_Spawn);
+	InfoOfBuilding_Spawn.erase(IDOfBuilding);
+	LeaveCriticalSection(&csInfoOfBuilding_Spawn);
+
+	EnterCriticalSection(&csInfoOfBuilding_Stat);
+	InfoOfBuilding_Stat.erase(IDOfBuilding);
+	LeaveCriticalSection(&csInfoOfBuilding_Stat);
+
+
+	/// ¼Û½Å
+	stringstream sendStream;
+	sendStream << EPacketType::DESTROY_BUILDING << endl;
+	sendStream << IDOfBuilding << endl;
+
+	Broadcast(sendStream);
+
+
+	printf_s("[END] <cServerSocketInGame::SendDestroyBuilding(...)>\n");
 }

@@ -76,6 +76,7 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfRecvInfoOfBuilding_Spawned = 0.0f;
 	TimerOfSendInfoOfBuilding_Stat = 0.0f;
 	TimerOfRecvInfoOfBuilding_Stat = 0.0f;
+	TimerOfRecvDestroyBuilding = 0.0f;
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -874,6 +875,7 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 	RecvInfoOfBuilding_Spawned(DeltaTime);
 	SendInfoOfBuilding_Stat(DeltaTime);
 	RecvInfoOfBuilding_Stat(DeltaTime);
+	RecvDestroyBuilding(DeltaTime);
 }
 
 void AOnlineGameMode::SendScoreBoard(float DeltaTime)
@@ -1454,6 +1456,48 @@ void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
 
 
 	printf_s("[END] <AMainScreenGameMode::RecvInfoOfBuilding_Stat()>\n");
+}
+
+void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
+{
+	TimerOfRecvDestroyBuilding += DeltaTime;
+	if (TimerOfRecvDestroyBuilding < 0.2f)
+		return;
+	TimerOfRecvDestroyBuilding = 0.0f;
+
+	if (!BuildingManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvDestroyBuilding()> if (!BuildingManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqDestroyBuilding.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::RecvDestroyBuilding()>\n");
+
+
+	std::queue<int> copiedQueue = ClientSocketInGame->tsqDestroyBuilding.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		int id = copiedQueue.front();
+
+		if (BuildingManager->Buildings.Contains(id))
+		{
+
+			BuildingManager->Buildings[id]->Destroy();
+
+			BuildingManager->Buildings.Remove(id);
+		}
+
+		copiedQueue.pop();
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::RecvDestroyBuilding()>\n");
 }
 
 

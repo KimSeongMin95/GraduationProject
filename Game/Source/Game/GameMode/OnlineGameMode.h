@@ -162,6 +162,8 @@ private:
 	void SendInfoOfBuilding_Stat(float DeltaTime); float TimerOfSendInfoOfBuilding_Stat;
 	void RecvInfoOfBuilding_Stat(float DeltaTime); float TimerOfRecvInfoOfBuilding_Stat;
 
+	void RecvDestroyBuilding(float DeltaTime); float TimerOfRecvDestroyBuilding;
+
 protected:
 
 

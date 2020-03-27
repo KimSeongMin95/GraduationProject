@@ -272,6 +272,7 @@ void cClientSocketInGame::CloseSocket()
 	tsqInfoOfBuilding_Spawn.clear();
 	tsqInfoOfBuilding.clear();
 	tsqInfoOfBuilding_Stat.clear();
+	tsqDestroyBuilding.clear();
 
 	printf_s("[END] <cClientSocketInGame::CloseSocket()>\n");
 }
@@ -695,6 +696,11 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 	case EPacketType::INFO_OF_BUILDING_STAT:
 	{
 		RecvInfoOfBuilding_Stat(recvStream);
+	}
+	break;
+	case EPacketType::DESTROY_BUILDING:
+	{
+		RecvDestroyBuilding(recvStream);
 	}
 	break;
 
@@ -1395,6 +1401,23 @@ void cClientSocketInGame::RecvInfoOfBuilding_Stat(stringstream& RecvStream)
 	}
 
 	printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Stat(...)>\n");
+}
+
+void cClientSocketInGame::RecvDestroyBuilding(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvDestroyBuilding(...)>\n");
+
+
+	int id;
+
+	if (RecvStream >> id)
+	{
+		tsqDestroyBuilding.push(id);
+
+		printf_s("\t id: %d \n", id);
+	}
+
+	printf_s("[End] <cClientSocketInGame::RecvDestroyBuilding(...)>\n");
 }
 
 

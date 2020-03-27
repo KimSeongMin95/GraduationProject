@@ -211,6 +211,9 @@ public:
 
 	static void SendInfoOfBuilding_Stat(stringstream& RecvStream, SOCKET Socket);
 
+	static void SendDestroyBuilding(int IDOfBuilding);
+
+
 	////////////////////////////////////////////////
 	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
 	////////////////////////////////////////////////

@@ -101,6 +101,10 @@ void ABuilding::Tick(float DeltaTime)
 	TickHelthPointBar();
 
 	TickOfConsumeAndProduct(DeltaTime);
+
+
+	// юс╫ц
+	SetHealthPoint(NULL);
 }
 /*** Basic Function : End ***/
 
@@ -486,6 +490,22 @@ void ABuilding::SetHealthPoint(float Value)
 
 	BuildingState = EBuildingState::Destroying;
 
+	if (BuildingManager)
+	{
+		if (BuildingManager->Buildings.Contains(ID))
+		{
+			BuildingManager->Buildings.Remove(ID);
+		}
+	}
+
+	if (ServerSocketInGame)
+	{
+		if (ServerSocketInGame->IsServerOn())
+		{
+			ServerSocketInGame->SendDestroyBuilding(ID);
+		}
+	}
+
 	Destroy();
 }
 
@@ -737,17 +757,7 @@ void ABuilding::SetInfoOfBuilding_Stat(class cInfoOfBuilding_Stat& Stat)
 
 	HealthPoint = Stat.HealthPoint;
 
-	if (HealthPoint <= 0.0f)
-	{
-		if (BuildingManager)
-		{
-			if (BuildingManager->Buildings.Contains(ID))
-			{
-				BuildingManager->Buildings.Remove(ID);
-			}
-		}
-		Destroy();
-	}
+	SetHealthPoint(NULL);
 }
 class cInfoOfBuilding_Stat ABuilding::GetInfoOfBuilding_Stat()
 {
