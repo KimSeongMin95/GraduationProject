@@ -8,6 +8,12 @@
 
 #include "Character/Pioneer.h"
 #include "Building/Building.h"
+
+#include "Network/Packet.h"
+#include "Network/ServerSocketInGame.h"
+#include "Network/ClientSocketInGame.h"
+
+#include "EnemyManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -15,6 +21,15 @@
 AEnemy::AEnemy()
 {
 	InitFSM();
+
+	ServerSocketInGame = nullptr;
+	ClientSocketInGame = nullptr;
+
+	ID = 0;
+
+	EnemyManager = nullptr;
+
+	EnemyType = EEnemyType::None;
 }
 
 void AEnemy::BeginPlay()
@@ -25,6 +40,22 @@ void AEnemy::BeginPlay()
 
 	// Init()이 끝나고 AIController에 빙의합니다.
 	PossessAIController();
+
+	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+	ClientSocketInGame = cClientSocketInGame::GetSingleton();
+
+	if (!GetOwner())
+	{
+		// 게임클라이언트라면 게임서버에서 SpawnEnemy으로 생성하기 때문에 소멸시킵니다.
+		if (ClientSocketInGame)
+		{
+			if (ClientSocketInGame->IsClientSocketOn())
+			{
+				Destroy();
+				return;
+			}
+		}
+	}
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -254,7 +285,25 @@ void AEnemy::SetHealthPoint(float Delta)
 
 	Super::SetHealthPoint(Delta);
 
+	// 죽으면
+	if (bDying)
+	{
+		if (EnemyManager)
+		{
+			if (EnemyManager->Enemies.Contains(ID))
+			{
+				EnemyManager->Enemies.Remove(ID);
+			}
+		}
 
+		if (ServerSocketInGame)
+		{
+			if (ServerSocketInGame->IsServerOn())
+			{
+				ServerSocketInGame->SendDestroyBuilding(ID);
+			}
+		}
+	}
 }
 
 
@@ -445,5 +494,111 @@ void AEnemy::DamageToTargetActor()
 			return;
 		}
 	}
+}
+
+
+
+///////////
+// 네트워크
+///////////
+void AEnemy::SetInfoOfEnemy_Spawn(class cInfoOfEnemy_Spawn& Spawn)
+{
+	ID = Spawn.ID;
+
+	EnemyType = (EEnemyType)Spawn.EnemyType;
+}
+class cInfoOfEnemy_Spawn AEnemy::GetInfoOfEnemy_Spawn()
+{
+	cInfoOfEnemy_Spawn spawn;
+
+	spawn.ID = ID;
+
+	spawn.EnemyType = (int)EnemyType;
+
+	return spawn;
+}
+
+void AEnemy::SetInfoOfEnemy_Animation(class cInfoOfEnemy_Animation& Animation)
+{
+	SetActorTransform(Animation.GetActorTransform());
+
+	TargetRotation = FRotator(Animation.TargetRotX, Animation.TargetRotY, Animation.TargetRotZ);
+
+	// 이동
+	if (UCharacterMovementComponent* characterMovement = GetCharacterMovement())
+		characterMovement->Velocity = FVector(Animation.VelocityX, Animation.VelocityY, Animation.VelocityZ);
+
+	State = (EEnemyFSM)Animation.State;
+}
+class cInfoOfEnemy_Animation AEnemy::GetInfoOfEnemy_Animation()
+{
+	cInfoOfEnemy_Animation animation;
+
+	animation.ID = ID;
+
+	animation.SetActorTransform(GetActorTransform());
+
+	animation.TargetRotX = TargetRotation.Pitch;
+	animation.TargetRotY = TargetRotation.Yaw;
+	animation.TargetRotZ = TargetRotation.Roll;
+
+	FVector velocity = GetVelocity();
+	animation.VelocityX = velocity.X;
+	animation.VelocityY = velocity.Y;
+	animation.VelocityZ = velocity.Z;
+
+	animation.State = (int)State;
+
+	return animation;
+}
+
+void AEnemy::SetInfoOfEnemy_Stat(class cInfoOfEnemy_Stat& Stat)
+{
+	HealthPoint = Stat.HealthPoint;
+	SetHealthPoint(NULL);
+
+	MaxHealthPoint = Stat.MaxHealthPoint;
+
+	MoveSpeed = Stat.MoveSpeed;
+	AttackSpeed = Stat.AttackSpeed;
+
+	AttackPower = Stat.AttackPower;
+
+	SightRange = Stat.SightRange;
+	DetectRange = Stat.DetectRange;
+	AttackRange = Stat.AttackRange;
+}
+class cInfoOfEnemy_Stat AEnemy::GetInfoOfEnemy_Stat()
+{
+	cInfoOfEnemy_Stat stat;
+
+	stat.ID = ID;
+
+	stat.HealthPoint = HealthPoint;
+	stat.MaxHealthPoint = MaxHealthPoint;
+
+	stat.MoveSpeed = MoveSpeed;
+	stat.AttackSpeed = AttackSpeed;
+
+	stat.AttackPower = AttackPower;
+
+	stat.SightRange = SightRange;
+	stat.DetectRange = DetectRange;
+	stat.AttackRange = AttackRange;
+
+	return stat;
+}
+
+void AEnemy::SetInfoOfEnemy(class cInfoOfEnemy& InfoOfEnemy)
+{
+	SetInfoOfEnemy_Spawn(InfoOfEnemy.Spawn);
+	SetInfoOfEnemy_Animation(InfoOfEnemy.Animation);
+	SetInfoOfEnemy_Stat(InfoOfEnemy.Stat);
+}
+class cInfoOfEnemy AEnemy::GetInfoOfEnemy()
+{
+	cInfoOfEnemy infoOfEnemy(ID, GetInfoOfEnemy_Spawn(), GetInfoOfEnemy_Animation(), GetInfoOfEnemy_Stat());
+
+	return infoOfEnemy;
 }
 /*** AEnemy : End ***/

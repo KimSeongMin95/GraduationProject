@@ -12,15 +12,6 @@
 #include "GameFramework/Actor.h"
 #include "EnemySpawner.generated.h"
 
-//UENUM(BlueprintType)
-//enum class EEnemyType : uint8
-//{
-//	Type1,
-//	Type2,
-//	Type3,
-//	Type4
-//};
-
 
 UCLASS()
 class GAME_API AEnemySpawner : public AActor
@@ -38,26 +29,32 @@ public:
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
 
-//public:
-//	UPROPERTY(EditAnywhere)
-//		class USceneComponent* SceneComp = nullptr;
-//
-//	UPROPERTY(EditAnywhere)
-//		TArray<class AActor*> Enemies;
-//	UPROPERTY(EditAnywhere)
-//		EEnemyType Type;
-//	UPROPERTY(EditAnywhere)
-//		int SpawnNowLimit;
-//	UPROPERTY(EditAnywhere)
-//		int SpawnCount;
-//	UPROPERTY(EditAnywhere)
-//		int SpawnTotalLimit;
-//	UPROPERTY(EditAnywhere)
-//		float SpawnTimer;
-//	UPROPERTY(EditAnywhere)
-//		float SpawnTime;
-//
-//	void SpawnEnemy(float DeltaTime);
-//	void ClearDeadEnemy();
-//	bool bbb = false;
+/*** AEnemySpawner : Start ***/
+public:
+	UPROPERTY(EditAnywhere)
+		class USceneComponent* SceneComp = nullptr;
+
+	UPROPERTY(EditAnywhere)
+		int EnemyType;
+
+	UPROPERTY(EditAnywhere)
+		TArray<class AActor*> Enemies;
+
+	UPROPERTY(EditAnywhere)
+		int SpawnCount;
+	UPROPERTY(EditAnywhere)
+		int SpawnLimit;
+
+	UPROPERTY(EditAnywhere)
+		float SpawnTimer;
+	UPROPERTY(EditAnywhere)
+		float SpawnTime;
+
+	UPROPERTY(EditAnywhere)
+		bool TriggerOfSpawn;
+
+public:
+	void TickOfSpawnEnemy(float DeltaTime);
+
+/*** AEnemySpawner : End ***/
 };

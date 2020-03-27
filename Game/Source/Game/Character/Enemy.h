@@ -14,6 +14,16 @@ enum class EEnemyFSM : uint8
 	Attack = 2
 };
 
+UENUM(BlueprintType)
+enum class EEnemyType : uint8
+{
+	None = 0,
+	SlowZombie,
+	ParasiteZombie,
+	GiantZombie, 
+	RobotRaptor
+};
+
 UCLASS()
 class GAME_API AEnemy : public ABaseCharacter
 {
@@ -75,8 +85,21 @@ protected:
 
 
 public:
+public:
+	class cServerSocketInGame* ServerSocketInGame = nullptr;
+	class cClientSocketInGame* ClientSocketInGame = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Enemy")
+		int ID;
+
+	UPROPERTY(VisibleAnywhere, Category = "Type")
+		EEnemyType EnemyType;
+
 	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
 		EEnemyFSM State;
+
+	UPROPERTY(VisibleAnywhere, Category = "EnemyManager")
+		class AEnemyManager* EnemyManager = nullptr;
 
 private:
 
@@ -102,5 +125,23 @@ protected:
 public:
 	UFUNCTION(Category = "Damage")
 		void DamageToTargetActor();
+
+	FORCEINLINE void SetEnemyManager(class AEnemyManager* pEnemyManager) { this->EnemyManager = pEnemyManager; }
+
+
+	///////////
+	// 네트워크
+	///////////
+	void SetInfoOfEnemy_Spawn(class cInfoOfEnemy_Spawn& Spawn);
+	class cInfoOfEnemy_Spawn GetInfoOfEnemy_Spawn();
+
+	void SetInfoOfEnemy_Animation(class cInfoOfEnemy_Animation& Animation);
+	class cInfoOfEnemy_Animation GetInfoOfEnemy_Animation();
+
+	void SetInfoOfEnemy_Stat(class cInfoOfEnemy_Stat& Stat);
+	class cInfoOfEnemy_Stat GetInfoOfEnemy_Stat();
+
+	void SetInfoOfEnemy(class cInfoOfEnemy& InfoOfEnemy);
+	class cInfoOfEnemy GetInfoOfEnemy();
 /*** AEnemy : End ***/
 };

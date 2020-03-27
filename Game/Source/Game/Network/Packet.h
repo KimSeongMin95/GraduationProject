@@ -1694,3 +1694,318 @@ public:
 	}
 
 };
+
+
+class GAME_API cInfoOfEnemy_Spawn
+{
+public:
+	int ID;
+
+	int EnemyType;
+
+public:
+	cInfoOfEnemy_Spawn()
+	{
+		ID = 0;
+
+		EnemyType = 0;
+	}
+	~cInfoOfEnemy_Spawn()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy_Spawn& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.EnemyType << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfEnemy_Spawn& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.EnemyType;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfEnemy_Spawn> ID: %d, EnemyType : %d \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, EnemyType);
+	}
+};
+
+class GAME_API cInfoOfEnemy_Animation
+{
+public:
+	int ID;
+
+	float RotX;
+	float RotY;
+	float RotZ;
+
+	float LocX;
+	float LocY;
+	float LocZ;
+
+	float TargetRotX;
+	float TargetRotY;
+	float TargetRotZ;
+
+	// 애니메이션 변수들
+	float VelocityX;
+	float VelocityY;
+	float VelocityZ;
+
+	// FSM
+	int State;
+
+public:
+	cInfoOfEnemy_Animation()
+	{
+		ID = 0;
+
+		RotX = 0.0f;
+		RotY = 0.0f;
+		RotZ = 0.0f;
+
+		LocX = 0.0f;
+		LocY = 0.0f;
+		LocZ = 0.0f;
+
+		TargetRotX = 0.0f;
+		TargetRotY = 0.0f;
+		TargetRotZ = 0.0f;
+
+		VelocityX = 0.0f;
+		VelocityY = 0.0f;
+		VelocityZ = 0.0f;
+
+		State = 0;
+	}
+	~cInfoOfEnemy_Animation()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy_Animation& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.RotX << endl;
+		Stream << Info.RotY << endl;
+		Stream << Info.RotZ << endl;
+		Stream << Info.LocX << endl;
+		Stream << Info.LocY << endl;
+		Stream << Info.LocZ << endl;
+		Stream << Info.TargetRotX << endl;
+		Stream << Info.TargetRotY << endl;
+		Stream << Info.TargetRotZ << endl;
+
+		Stream << Info.VelocityX << endl;
+		Stream << Info.VelocityY << endl;
+		Stream << Info.VelocityZ << endl;
+		Stream << Info.State << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfEnemy_Animation& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.RotX;
+		Stream >> Info.RotY;
+		Stream >> Info.RotZ;
+		Stream >> Info.LocX;
+		Stream >> Info.LocY;
+		Stream >> Info.LocZ;
+		Stream >> Info.TargetRotX;
+		Stream >> Info.TargetRotY;
+		Stream >> Info.TargetRotZ;
+
+		Stream >> Info.VelocityX;
+		Stream >> Info.VelocityY;
+		Stream >> Info.VelocityZ;
+		Stream >> Info.State;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfEnemy_Animation> ID: %d, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
+		printf_s("%s%s<cInfoOfEnemy_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, State: %d \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), VelocityX, VelocityY, VelocityZ, State);
+	}
+
+	void SetActorTransform(const FTransform& Transform)
+	{
+		RotX = Transform.GetRotation().Rotator().Pitch;
+		RotY = Transform.GetRotation().Rotator().Yaw;
+		RotZ = Transform.GetRotation().Rotator().Roll;
+
+		LocX = Transform.GetLocation().X;
+		LocY = Transform.GetLocation().Y;
+		LocZ = Transform.GetLocation().Z;
+	}
+
+	FTransform GetActorTransform()
+	{
+		FTransform transform;
+		FQuat quat(FRotator(RotX, RotY, RotZ));
+		transform.SetRotation(quat);
+		transform.SetLocation(FVector(LocX, LocY, LocZ));
+
+		return transform;
+	}
+};
+
+class GAME_API cInfoOfEnemy_Stat
+{
+public:
+	int ID;
+
+	float HealthPoint;
+	float MaxHealthPoint;
+
+	float MoveSpeed;
+	float AttackSpeed;
+
+	float AttackPower;
+
+	float SightRange;
+	float DetectRange;
+	float AttackRange;
+
+public:
+	cInfoOfEnemy_Stat()
+	{
+		ID = 0;
+
+		HealthPoint = 100.0f;
+		MaxHealthPoint = 100.0f;
+
+		MoveSpeed = 10.0f;
+		AttackSpeed = 1.0f;
+
+		AttackPower = 10.0f;
+
+		SightRange = 32.0f;
+		DetectRange = 32.0f;
+		AttackRange = 4.0f;
+	}
+	~cInfoOfEnemy_Stat()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy_Stat& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.HealthPoint << endl;
+		Stream << Info.MaxHealthPoint << endl;
+		Stream << Info.MoveSpeed << endl;
+		Stream << Info.AttackSpeed << endl;
+		Stream << Info.AttackPower << endl;
+		Stream << Info.SightRange << endl;
+		Stream << Info.DetectRange << endl;
+		Stream << Info.AttackRange << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfEnemy_Stat& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.HealthPoint;
+		Stream >> Info.MaxHealthPoint;
+		Stream >> Info.MoveSpeed;
+		Stream >> Info.AttackSpeed;
+		Stream >> Info.AttackPower;
+		Stream >> Info.SightRange;
+		Stream >> Info.DetectRange;
+		Stream >> Info.AttackRange;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfEnemy_Stat> ID: %d, HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, HealthPoint, MaxHealthPoint, MoveSpeed, AttackSpeed, AttackPower, SightRange, DetectRange, AttackRange);
+	}
+
+};
+
+class GAME_API cInfoOfEnemy
+{
+public:
+	int ID;
+
+	cInfoOfEnemy_Spawn Spawn;
+	cInfoOfEnemy_Animation Animation;
+	cInfoOfEnemy_Stat Stat;
+
+public:
+	cInfoOfEnemy()
+	{
+		ID = 0;
+
+
+	}
+	cInfoOfEnemy(int ID, cInfoOfEnemy_Spawn Spawn, cInfoOfEnemy_Animation Animation, cInfoOfEnemy_Stat Stat)
+		: ID(ID), Spawn(Spawn), Animation(Animation), Stat(Stat)
+	{
+	}
+	~cInfoOfEnemy()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.Spawn << endl;
+		Stream << Info.Animation << endl;
+		Stream << Info.Stat << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfEnemy& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.Spawn;
+		Stream >> Info.Animation;
+		Stream >> Info.Stat;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		Spawn.PrintInfo();
+		Animation.PrintInfo();
+		Stat.PrintInfo();
+	}
+
+};

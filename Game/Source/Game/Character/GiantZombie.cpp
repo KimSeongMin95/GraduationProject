@@ -26,6 +26,7 @@ AGiantZombie::AGiantZombie()
 		"AnimBlueprint'/Game/Characters/Enemies/GiantZombie/Animations/GiantZombie_AnimBP.GiantZombie_AnimBP_C'", 
 		FVector(1.5f, 1.5f, 1.5f), FRotator(0.0f, -90.0f, 0.0f), FVector(0.0f, 0.0f, -142.0f));
 
+	EnemyType = EEnemyType::GiantZombie;
 }
 
 void AGiantZombie::BeginPlay()

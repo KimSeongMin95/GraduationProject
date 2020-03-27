@@ -25,6 +25,8 @@ ARobotRaptor::ARobotRaptor()
 	InitSkeletalAnimation(TEXT("SkeletalMesh'/Game/Characters/Enemies/RobotRaptor/Meshes/RobotRaptor.RobotRaptor'"), 
 		"AnimBlueprint'/Game/Characters/Enemies/RobotRaptor/Animations/RobotRaptor_AnimBP.RobotRaptor_AnimBP_C'", 
 		FVector(1.5f, 1.5f, 1.5f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, -142.0f));
+
+	EnemyType = EEnemyType::RobotRaptor;
 }
 
 void ARobotRaptor::BeginPlay()
