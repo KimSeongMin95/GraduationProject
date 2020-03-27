@@ -1303,11 +1303,13 @@ void APioneer::PlaceBuilding()
 		{
 			if (ServerSocketInGame->IsServerOn())
 			{
-				ServerSocketInGame->SendInfoOfBuilding_Spawn(Building->GetcInfoOfBuilding_Spawn());
+				if (BuildingManager)
+					BuildingManager->AddInBuildings(Building);
+
+				ServerSocketInGame->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
 
 				APioneerManager::Resources.NumOfMineral -= Building->NeedMineral;
 				APioneerManager::Resources.NumOfOrganic -= Building->NeedOrganicMatter;
-				
 			}
 		}
 		// 게임클라이언트라면
@@ -1316,7 +1318,7 @@ void APioneer::PlaceBuilding()
 			if (ClientSocketInGame->IsClientSocketOn())
 			{
 				// 요청을 서버에 보내고 서버에서 SpawnBuilding을 받으면 건설합니다.
-				ClientSocketInGame->SendInfoOfBuilding_Spawn(Building->GetcInfoOfBuilding_Spawn());
+				ClientSocketInGame->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
 
 				Building->Destroy();
 			}

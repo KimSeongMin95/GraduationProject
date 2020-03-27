@@ -139,6 +139,10 @@ protected:
 
 
 public:
+
+	UPROPERTY(VisibleAnywhere, Category = "BuildingManager")
+		class ABuildingManager* BuildingManager = nullptr;
+
 	UPROPERTY(VisibleAnywhere)
 		/** BuildingManager에서 관리할 고유한 식별자 */
 		int ID;
@@ -208,6 +212,8 @@ protected:
 	void TickOfConsumeAndProduct(float DeltaTime);
 
 public:
+	FORCEINLINE void SetBuildingManager(class ABuildingManager* pBuildingManager) { this->BuildingManager = pBuildingManager; }
+
 	UFUNCTION(Category = "Stat")
 		void SetHealthPoint(float Value);
 
@@ -230,6 +236,11 @@ public:
 		/** EBuildingState::Constructable -> Constructing */
 		bool Constructing();
 
+	UFUNCTION(Category = "Timer")
+		/** EBuildingState::Constructable -> Constructing */
+		void CheckConstructable();
+	FTimerHandle TimerOfConstructing;
+
 	UFUNCTION(Category = "ABuilding")
 		/** EBuildingState::Constructing -> Constructed */
 		void CompleteConstructing();
@@ -242,7 +253,13 @@ public:
 	///////////
 	// 네트워크
 	///////////
-	void SetcInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn);
-	class cInfoOfBuilding_Spawn GetcInfoOfBuilding_Spawn();
+	void SetInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn);
+	class cInfoOfBuilding_Spawn GetInfoOfBuilding_Spawn();
+
+	void SetInfoOfBuilding_Stat(class cInfoOfBuilding_Stat& Stat);
+	class cInfoOfBuilding_Stat GetInfoOfBuilding_Stat();
+
+	void SetInfoOfBuilding(class cInfoOfBuilding& InfoOfBuilding);
+	class cInfoOfBuilding GetInfoOfBuilding();
 /*** ABuilding : End ***/
 };

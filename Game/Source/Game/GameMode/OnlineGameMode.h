@@ -124,6 +124,9 @@ private:
 
 	void GetInfoOfBuilding_Spawn(float DeltaTime); float TimerOfGetInfoOfBuilding_Spawn;
 
+	void SetInfoOfBuilding_Stat(float DeltaTime); float TimerOfSetInfoOfBuilding_Stat;
+
+
 	/////////////////////////////////////////////////
 	// Tick (Client)
 	/////////////////////////////////////////////////
@@ -153,6 +156,11 @@ private:
 	void RecvInfoOfResources(float DeltaTime); float TimerOfRecvInfoOfResources;
 
 	void RecvInfoOfBuilding_Spawn(float DeltaTime); float TimerOfRecvInfoOfBuilding_Spawn;
+
+	void RecvInfoOfBuilding_Spawned(float DeltaTime); float TimerOfRecvInfoOfBuilding_Spawned;
+
+	void SendInfoOfBuilding_Stat(float DeltaTime); float TimerOfSendInfoOfBuilding_Stat;
+	void RecvInfoOfBuilding_Stat(float DeltaTime); float TimerOfRecvInfoOfBuilding_Stat;
 
 protected:
 

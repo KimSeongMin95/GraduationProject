@@ -37,6 +37,27 @@ void ABuildingManager::BeginPlay()
 	Super::BeginPlay();
 	
 	ServerSocketInGame = cServerSocketInGame::GetSingleton();
+
+	// 에디터에서 월드상에 배치한 Building들을 관리하기 위해 추가합니다.
+	if (ServerSocketInGame)
+	{
+		if (ServerSocketInGame->IsServerOn())
+		{
+			UWorld* const world = GetWorld();
+			if (!world)
+			{
+				printf_s("[ERROR] <ABuildingManager::BeginPlay()> if (!world)\n");
+				return;
+			}
+
+			for (TActorIterator<ABuilding> ActorItr(world); ActorItr; ++ActorItr)
+			{
+				AddInBuildings(*ActorItr);
+
+				ServerSocketInGame->SendInfoOfBuilding_Spawn((*ActorItr)->GetInfoOfBuilding_Spawn());
+			}
+		}
+	}
 }
 
 void ABuildingManager::Tick(float DeltaTime)
@@ -102,18 +123,9 @@ class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 		break;
 	}
 
-
-	// 서버만 Buildings에 저장합니다.
-	if (building && ServerSocketInGame)
+	if (building)
 	{
-		if (ServerSocketInGame->IsServerOn())
-		{
-			building->ID = ID;
-
-			Buildings.Add(ID, building);
-
-			ID++;
-		}
+		building->SetBuildingManager(this);
 	}
 
 	return building;
@@ -173,15 +185,40 @@ void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuil
 		break;
 	}
 
+
 	if (building)
 	{
 		building->ID = InfoOfBuilding_Spawn.ID;
 
 		if (Buildings.Contains(InfoOfBuilding_Spawn.ID) == false)
 			Buildings.Add(InfoOfBuilding_Spawn.ID, building);
-	}
 
-	building->Constructing();
+
+		building->SetBuildingManager(this);
+
+		building->CheckConstructable();
+	}
 }
 
+void ABuildingManager::AddInBuildings(class ABuilding* Building)
+{
+	if (!Building)
+	{
+
+		return;
+	}
+
+	// 서버만 Buildings에 저장합니다.
+	if (ServerSocketInGame)
+	{
+		if (ServerSocketInGame->IsServerOn())
+		{
+			Building->ID = ID;
+
+			Buildings.Add(ID, Building);
+
+			ID++;
+		}
+	}
+}
 /*** ABuildingManager : End ***/

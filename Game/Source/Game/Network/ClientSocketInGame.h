@@ -159,6 +159,13 @@ public:
 	void RecvInfoOfBuilding_Spawn(stringstream& RecvStream);
 	cThreadSafetyQueue<cInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
 
+	void RecvInfoOfBuilding_Spawned(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfBuilding> tsqInfoOfBuilding;
+
+	void SendInfoOfBuilding_Stat();
+	void RecvInfoOfBuilding_Stat(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfBuilding_Stat> tsqInfoOfBuilding_Stat;
+
 	/////////////////////////////////////
 	// Set-Get
 	/////////////////////////////////////

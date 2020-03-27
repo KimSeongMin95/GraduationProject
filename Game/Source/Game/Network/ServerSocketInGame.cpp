@@ -49,6 +49,17 @@ CRITICAL_SECTION cServerSocketInGame::csInfosOfPioneer_Animation;
 std::map<int, cInfoOfPioneer_Stat> cServerSocketInGame::InfosOfPioneer_Stat;
 CRITICAL_SECTION cServerSocketInGame::csInfosOfPioneer_Stat;
 
+
+///////////////////////////////////////////
+// Building 세분화
+///////////////////////////////////////////
+std::map<int, cInfoOfBuilding_Spawn> cServerSocketInGame::InfoOfBuilding_Spawn;
+CRITICAL_SECTION cServerSocketInGame::csInfoOfBuilding_Spawn;
+
+std::map<int, cInfoOfBuilding_Stat> cServerSocketInGame::InfoOfBuilding_Stat;
+CRITICAL_SECTION cServerSocketInGame::csInfoOfBuilding_Stat;
+
+
 cThreadSafetyQueue<int> cServerSocketInGame::tsqDiedPioneer;
 
 cThreadSafetyQueue<cInfoOfPioneer_Animation> cServerSocketInGame::tsqInfoOfPioneer_Animation;
@@ -118,6 +129,9 @@ cServerSocketInGame::cServerSocketInGame()
 	InitializeCriticalSection(&csInfosOfPioneer_Animation);
 	InitializeCriticalSection(&csInfosOfPioneer_Stat);
 
+	InitializeCriticalSection(&csInfoOfBuilding_Spawn);
+	InitializeCriticalSection(&csInfoOfBuilding_Stat);
+
 	tsqDiedPioneer.clear();
 	tsqInfoOfPioneer_Animation.clear();
 	tsqInfoOfPioneer_Socket.clear();
@@ -157,6 +171,9 @@ cServerSocketInGame::~cServerSocketInGame()
 	DeleteCriticalSection(&csInfosOfPioneer_Socket);
 	DeleteCriticalSection(&csInfosOfPioneer_Animation);
 	DeleteCriticalSection(&csInfosOfPioneer_Stat);
+
+	DeleteCriticalSection(&csInfoOfBuilding_Spawn);
+	DeleteCriticalSection(&csInfoOfBuilding_Stat);
 }
 
 bool cServerSocketInGame::Initialize()
@@ -652,6 +669,16 @@ void cServerSocketInGame::CloseServer()
 
 
 	/*********************************************************************************/
+		
+	// InfoOfBuilding_Stat 초기화
+	EnterCriticalSection(&csInfoOfBuilding_Stat);
+	InfoOfBuilding_Stat.clear();
+	LeaveCriticalSection(&csInfoOfBuilding_Stat);
+
+	// InfoOfBuilding_Spawn 초기화
+	EnterCriticalSection(&csInfoOfBuilding_Spawn);
+	InfoOfBuilding_Spawn.clear();
+	LeaveCriticalSection(&csInfoOfBuilding_Spawn);
 
 	// InfosOfPioneer_Stat 초기화
 	EnterCriticalSection(&csInfosOfPioneer_Stat);
@@ -1581,6 +1608,8 @@ void cServerSocketInGame::Connected(stringstream& RecvStream, SOCKET Socket)
 	// 이미 생성된 Pioneer를 스폰하도록 합니다.
 	SendSpawnedPioneer(Socket);
 
+	// 이미 생성된 Building을 스폰하도록 합니다.
+	SendInfoOfBuilding_Spawned(Socket);
 
 	printf_s("[Send to %d] <cServerSocketInGame::Connected(...)>\n\n", (int)Socket);
 }
@@ -2130,23 +2159,29 @@ void cServerSocketInGame::SendInfoOfResources(cInfoOfResources InfoOfResources)
 	sendStream << EPacketType::INFO_OF_RESOURCES << endl;
 	sendStream << InfoOfResources << endl;
 
-
 	Broadcast(sendStream);  
 
 
 	printf_s("[END] <cServerSocketInGame::SendInfoOfResources(...)>\n");
 }
 
-void cServerSocketInGame::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn)
+void cServerSocketInGame::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn Spawn)
 {
 	printf_s("[START] <cServerSocketInGame::SendInfoOfBuilding_Spawn(...)>\n");
 
 
+	EnterCriticalSection(&csInfoOfBuilding_Spawn);
+	InfoOfBuilding_Spawn[Spawn.ID] = Spawn;
+	LeaveCriticalSection(&csInfoOfBuilding_Spawn);
+
+	EnterCriticalSection(&csInfoOfBuilding_Stat);
+	InfoOfBuilding_Stat[Spawn.ID] = cInfoOfBuilding_Stat();
+	LeaveCriticalSection(&csInfoOfBuilding_Stat);
+
 	/// 송신
 	stringstream sendStream;
 	sendStream << EPacketType::INFO_OF_BUILDING_SPAWN << endl;
-	sendStream << InfoOfBuilding_Spawn << endl;
-
+	sendStream << Spawn << endl;
 
 	Broadcast(sendStream);
 
@@ -2154,6 +2189,51 @@ void cServerSocketInGame::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfB
 	printf_s("[END] <cServerSocketInGame::SendInfoOfBuilding_Spawn(...)>\n");
 }
 
+void cServerSocketInGame::SendInfoOfBuilding_Spawned(SOCKET Socket)
+{
+	printf_s("[START] <cServerSocketInGame::SendInfoOfBuilding_Spawned(...)>\n");
+
+
+
+	map<int, cInfoOfBuilding> copiedMap;
+
+	// 생성
+	EnterCriticalSection(&csInfoOfBuilding_Spawn);
+	for (auto& kvp : InfoOfBuilding_Spawn)
+	{
+		copiedMap[kvp.first] = cInfoOfBuilding();
+		copiedMap.at(kvp.first).ID = kvp.first;
+		copiedMap.at(kvp.first).Spawn = kvp.second;
+	}
+	LeaveCriticalSection(&csInfoOfBuilding_Spawn);
+
+	// 스텟
+	EnterCriticalSection(&csInfoOfBuilding_Stat);
+	for (auto& kvp : InfoOfBuilding_Stat)
+	{
+		if (copiedMap.find(kvp.first) != copiedMap.end())
+			copiedMap.at(kvp.first).Stat = kvp.second;
+	}
+	LeaveCriticalSection(&csInfoOfBuilding_Stat);
+
+
+	/// 송신
+	for (auto& kvp : copiedMap)
+	{
+		stringstream sendStream;
+		sendStream << EPacketType::INFO_OF_BUILDING << endl;
+		sendStream << kvp.second << endl;
+
+		Send(sendStream, Socket);
+
+		kvp.second.PrintInfo();
+
+		printf_s("[Sent to %d] <cServerSocketInGame::SendInfoOfBuilding_Spawned(...)>\n", (int)Socket);
+	}
+
+
+	printf_s("[End] <cServerSocketInGame::SendInfoOfBuilding_Spawned(...)>\n\n");
+}
 
 void cServerSocketInGame::RecvInfoOfBuilding_Spawn(stringstream& RecvStream, SOCKET Socket)
 {
@@ -2170,4 +2250,55 @@ void cServerSocketInGame::RecvInfoOfBuilding_Spawn(stringstream& RecvStream, SOC
 	}
 
 	printf_s("[END] <cServerSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
+}
+
+void cServerSocketInGame::SendInfoOfBuilding_Stat(stringstream& RecvStream, SOCKET Socket)
+{
+	printf_s("[Recv by %d] <cServerSocketInGame::SendInfoOfBuilding_Stat(...)>\n", (int)Socket);
+
+
+	queue<cInfoOfBuilding_Stat> copiedQueue;
+
+	EnterCriticalSection(&csInfoOfBuilding_Stat);
+	for (auto& kvp : InfoOfBuilding_Stat)
+	{
+		copiedQueue.push(kvp.second);
+
+		kvp.second.PrintInfo();
+	}
+	LeaveCriticalSection(&csInfoOfBuilding_Stat);
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_BUILDING_STAT << endl;
+
+	while (copiedQueue.empty() == false)
+	{
+		stringstream temp;
+		temp << copiedQueue.front() << endl;
+		size_t total = sendStream.str().length() + 2 + temp.str().length();
+
+		// size를 넣을 공간까지 생각해서 최대 크기를 벗어나면
+		if (total >= MAX_BUFFER - 5)
+		{
+			printf_s("\n\n\n\n\n");
+			printf_s("[INFO] <cServerSocketInGame::SendInfoOfBuilding_Stat(...)> if (total >= MAX_BUFFER) \n");
+			printf_s("[INFO] <cServerSocketInGame::SendInfoOfBuilding_Stat(...)> total: %d \n", (int)total);
+			printf_s("\n\n\n\n\n");
+
+			// 먼저 보냅니다.
+			Send(sendStream, Socket);
+
+			sendStream.str("");
+			sendStream << EPacketType::INFO_OF_BUILDING_STAT << endl;
+		}
+
+		sendStream << copiedQueue.front() << endl;
+		copiedQueue.pop();
+	}
+	Send(sendStream, Socket);
+
+
+	printf_s("[Send to %d] <cServerSocketInGame::SendInfoOfBuilding_Stat(...)>\n\n", (int)Socket);
 }

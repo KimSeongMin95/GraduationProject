@@ -270,6 +270,8 @@ void cClientSocketInGame::CloseSocket()
 	tsqInfoOfProjectile.clear();
 	tsqInfoOfResources.clear();
 	tsqInfoOfBuilding_Spawn.clear();
+	tsqInfoOfBuilding.clear();
+	tsqInfoOfBuilding_Stat.clear();
 
 	printf_s("[END] <cClientSocketInGame::CloseSocket()>\n");
 }
@@ -682,6 +684,17 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 	case EPacketType::INFO_OF_BUILDING_SPAWN:
 	{
 		RecvInfoOfBuilding_Spawn(recvStream);
+	}
+	break;
+	break;
+	case EPacketType::INFO_OF_BUILDING:
+	{
+		RecvInfoOfBuilding_Spawned(recvStream);
+	}
+	break;
+	case EPacketType::INFO_OF_BUILDING_STAT:
+	{
+		RecvInfoOfBuilding_Stat(recvStream);
 	}
 	break;
 
@@ -1325,16 +1338,63 @@ void cClientSocketInGame::RecvInfoOfBuilding_Spawn(stringstream& RecvStream)
 	printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
 
 
-	cInfoOfBuilding_Spawn infoOfBuilding_Spawn;
+	cInfoOfBuilding_Spawn spawn;
 
-	if (RecvStream >> infoOfBuilding_Spawn)
+	if (RecvStream >> spawn)
 	{
-		tsqInfoOfBuilding_Spawn.push(infoOfBuilding_Spawn);
+		tsqInfoOfBuilding_Spawn.push(spawn);
 
-		infoOfBuilding_Spawn.PrintInfo();
+		spawn.PrintInfo();
 	}
 
 	printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
+}
+
+void cClientSocketInGame::RecvInfoOfBuilding_Spawned(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Spawned(...)>\n");
+
+
+	cInfoOfBuilding infoOfBuilding;
+
+	if (RecvStream >> infoOfBuilding)
+	{
+		tsqInfoOfBuilding.push(infoOfBuilding);
+
+		infoOfBuilding.PrintInfo();
+	}
+
+	printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Spawned(...)>\n");
+}
+
+void cClientSocketInGame::SendInfoOfBuilding_Stat()
+{
+	printf_s("[Start] <cClientSocketInGame::SendInfoOfBuilding_Stat()>\n");
+
+
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_BUILDING_STAT << endl;
+
+	Send(sendStream);
+
+
+	printf_s("[End] <cClientSocketInGame::SendInfoOfBuilding_Stat()>\n");
+}
+void cClientSocketInGame::RecvInfoOfBuilding_Stat(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Stat(...)>\n");
+
+
+	cInfoOfBuilding_Stat stat;
+
+	while (RecvStream >> stat)
+	{
+		tsqInfoOfBuilding_Stat.push(stat);
+
+		stat.PrintInfo();
+	}
+
+	printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Stat(...)>\n");
 }
 
 

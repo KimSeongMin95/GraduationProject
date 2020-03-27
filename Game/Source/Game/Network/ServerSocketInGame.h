@@ -90,6 +90,14 @@ public:
 	static std::map<int, cInfoOfPioneer_Stat> InfosOfPioneer_Stat;
 	static CRITICAL_SECTION csInfosOfPioneer_Stat;
 
+	///////////////////////////////////////////
+	// Building 세분화
+	///////////////////////////////////////////
+	static std::map<int, cInfoOfBuilding_Spawn> InfoOfBuilding_Spawn;
+	static CRITICAL_SECTION csInfoOfBuilding_Spawn;
+
+	static std::map<int, cInfoOfBuilding_Stat> InfoOfBuilding_Stat;
+	static CRITICAL_SECTION csInfoOfBuilding_Stat;
 
 public:
 	////////////////////////
@@ -196,9 +204,12 @@ public:
 
 	static void SendInfoOfResources(cInfoOfResources InfoOfResources);
 
-	static void SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn);
+	static void SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn Spawn);
+	static void SendInfoOfBuilding_Spawned(SOCKET Socket);
 	static void RecvInfoOfBuilding_Spawn(stringstream& RecvStream, SOCKET Socket);
 	static cThreadSafetyQueue<cInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
+
+	static void SendInfoOfBuilding_Stat(stringstream& RecvStream, SOCKET Socket);
 
 	////////////////////////////////////////////////
 	// (임시) 패킷 사이즈와 실제 길이 검증용 함수

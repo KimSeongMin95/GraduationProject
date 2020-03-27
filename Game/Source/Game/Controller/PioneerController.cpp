@@ -411,6 +411,8 @@ void APioneerController::ArmOrDisArmWeapon()
 		Pioneer->Disarming();
 	else
 		Pioneer->Arming();
+
+	Pioneer->DestroyBuilding();
 }
 
 

@@ -11,6 +11,8 @@
 #include "Network/ClientSocketInGame.h"
 
 #include "PioneerManager.h"
+
+#include "BuildingManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -50,6 +52,8 @@ ABuilding::ABuilding()
 	ClientSocketInGame = nullptr;
 
 	ID = 0;
+
+	BuildingManager = nullptr;
 }
 
 void ABuilding::BeginPlay()
@@ -610,11 +614,29 @@ bool ABuilding::Constructing()
 		}
 	}
 
-	// 임시 코드: 시간 지나면 건설되도록 한 것으로 나중에 직접 건설하는 것으로 변경해야 함.
+	// CheckConstructable()으로 실행했다면 Timer를 종료합니다.
+	if (GetWorldTimerManager().IsTimerActive(TimerOfConstructing))
+		GetWorldTimerManager().ClearTimer(TimerOfConstructing);
+
+	// 건설완성 타이머를 실행합니다.
 	FTimerHandle timer;
 	GetWorldTimerManager().SetTimer(timer, this, &ABuilding::CompleteConstructing, ConstructionTime, false);
 
 	return true;
+}
+
+void ABuilding::CheckConstructable()
+{
+	if (GetWorldTimerManager().IsTimerActive(TimerOfConstructing))
+		GetWorldTimerManager().ClearTimer(TimerOfConstructing);
+
+	// 겹쳐서 건설할 수 없으면 계속 체크합니다.
+	if (Constructing() == false)
+	{
+		FTimerDelegate timerDel;
+		timerDel.BindUFunction(this, FName("Constructing"));
+		GetWorldTimerManager().SetTimer(TimerOfConstructing, timerDel, 0.5f, true);
+	}
 }
 
 void ABuilding::CompleteConstructing()
@@ -674,7 +696,7 @@ void ABuilding::Destroying()
 	Destroy();
 }
 
-void ABuilding::SetcInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn)
+void ABuilding::SetInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn)
 {
 	ID = Spawn.ID;
 
@@ -685,7 +707,7 @@ void ABuilding::SetcInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn)
 
 	SetActorTransform(Spawn.GetActorTransform());
 }
-class cInfoOfBuilding_Spawn ABuilding::GetcInfoOfBuilding_Spawn()
+class cInfoOfBuilding_Spawn ABuilding::GetInfoOfBuilding_Spawn()
 {
 	cInfoOfBuilding_Spawn infoOfBuilding_Spawn;
 
@@ -699,6 +721,57 @@ class cInfoOfBuilding_Spawn ABuilding::GetcInfoOfBuilding_Spawn()
 	infoOfBuilding_Spawn.SetActorTransform(GetActorTransform());
 
 	return infoOfBuilding_Spawn;
+}
+
+void ABuilding::SetInfoOfBuilding_Stat(class cInfoOfBuilding_Stat& Stat)
+{
+	
+	EBuildingState newBuildingState = (EBuildingState)Stat.BuildingState;
+
+	if (BuildingState != EBuildingState::Constructed && newBuildingState == EBuildingState::Constructed)
+	{
+		CompleteConstructing();
+	}
+
+	BuildingState = newBuildingState;
+
+	HealthPoint = Stat.HealthPoint;
+
+	if (HealthPoint <= 0.0f)
+	{
+		if (BuildingManager)
+		{
+			if (BuildingManager->Buildings.Contains(ID))
+			{
+				BuildingManager->Buildings.Remove(ID);
+			}
+		}
+		Destroy();
+	}
+}
+class cInfoOfBuilding_Stat ABuilding::GetInfoOfBuilding_Stat()
+{
+	cInfoOfBuilding_Stat Stat;
+
+	Stat.ID = ID;
+
+	Stat.BuildingState = (int)BuildingState;
+
+	Stat.HealthPoint = HealthPoint;
+
+	return Stat;
+}
+
+void ABuilding::SetInfoOfBuilding(class cInfoOfBuilding& InfoOfBuilding)
+{
+	SetInfoOfBuilding_Spawn(InfoOfBuilding.Spawn);
+	SetInfoOfBuilding_Stat(InfoOfBuilding.Stat);
+}
+class cInfoOfBuilding ABuilding::GetInfoOfBuilding()
+{
+	cInfoOfBuilding infoOfBuilding(ID, GetInfoOfBuilding_Spawn(), GetInfoOfBuilding_Stat());
+
+	return infoOfBuilding;
 }
 /*** ABuilding : End ***/
 

@@ -2,9 +2,16 @@
 
 #pragma once
 
+
+/*** 언리얼엔진 헤더 선언 : Start ***/
+#include "EngineUtils.h" // TActorIterator<>
+/*** 언리얼엔진 헤더 선언 : End ***/
+
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "BuildingManager.generated.h"
+
 
 UCLASS()
 class GAME_API ABuildingManager : public AActor
@@ -37,6 +44,8 @@ public:
 	class ABuilding* SpawnBuilding(int Value);
 
 	void RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuilding_Spawn);
+
+	void AddInBuildings(class ABuilding* Building);
 
 /*** ABuildingManager : End ***/
 };

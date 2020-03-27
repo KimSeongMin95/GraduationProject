@@ -27,6 +27,8 @@
 #include "Projectile/Splash/ProjectileRocketLauncher.h"
 
 #include "BuildingManager.h"
+
+#include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 const float AOnlineGameMode::CellSize = 64.0f;
@@ -55,6 +57,7 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfGetInfoOfProjectile = 0.0f;
 	TimerOfSendInfoOfResources = 0.0f;
 	TimerOfGetInfoOfBuilding_Spawn = 0.0f;
+	TimerOfSetInfoOfBuilding_Stat = 0.0f;
 
 	TimerOfSendScoreBoard = 0.0f;
 	TimerOfRecvScoreBoard = 0.0f;
@@ -70,6 +73,9 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfRecvInfoOfProjectile = 0.0f;
 	TimerOfRecvInfoOfResources = 0.0f;
 	TimerOfRecvInfoOfBuilding_Spawn = 0.0f;
+	TimerOfRecvInfoOfBuilding_Spawned = 0.0f;
+	TimerOfSendInfoOfBuilding_Stat = 0.0f;
+	TimerOfRecvInfoOfBuilding_Stat = 0.0f;
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -394,6 +400,7 @@ void AOnlineGameMode::TickOfServerSocketInGame(float DeltaTime)
 	GetInfoOfProjectile(DeltaTime);
 	SendInfoOfResources(DeltaTime);
 	GetInfoOfBuilding_Spawn(DeltaTime);
+	SetInfoOfBuilding_Stat(DeltaTime);
 }
 
 void AOnlineGameMode::GetScoreBoard(float DeltaTime)
@@ -799,6 +806,37 @@ void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
 	printf_s("[END] <AMainScreenGameMode::GetInfoOfBuilding_Spawn()>\n");
 }
 
+void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
+{
+	TimerOfSetInfoOfBuilding_Stat += DeltaTime;
+	if (TimerOfSetInfoOfBuilding_Stat < 0.1f)
+		return;
+	TimerOfSetInfoOfBuilding_Stat = 0.0f;
+
+	if (!BuildingManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SetInfoOfBuilding_Stat()> if (!BuildingManager)\n");
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AOnlineGameMode::SetInfoOfBuilding_Stat()>\n");
+
+
+	for (auto& kvp : BuildingManager->Buildings)
+	{
+		EnterCriticalSection(&ServerSocketInGame->csInfoOfBuilding_Stat);
+		if (ServerSocketInGame->InfoOfBuilding_Stat.find(kvp.Key) != ServerSocketInGame->InfoOfBuilding_Stat.end())
+		{
+			ServerSocketInGame->InfoOfBuilding_Stat.at(kvp.Key) = kvp.Value->GetInfoOfBuilding_Stat();
+		}
+		LeaveCriticalSection(&ServerSocketInGame->csInfoOfBuilding_Stat);
+	}
+
+	//ServerSocketInGame->SendInfoOfBuilding_Stat();
+
+	printf_s("[END] <AOnlineGameMode::SetInfoOfBuilding_Stat()>\n");
+}
+
 
 /////////////////////////////////////////////////
 // Tick (Client)
@@ -833,6 +871,9 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 	RecvInfoOfProjectile(DeltaTime);
 	RecvInfoOfResources(DeltaTime);
 	RecvInfoOfBuilding_Spawn(DeltaTime);
+	RecvInfoOfBuilding_Spawned(DeltaTime);
+	SendInfoOfBuilding_Stat(DeltaTime);
+	RecvInfoOfBuilding_Stat(DeltaTime);
 }
 
 void AOnlineGameMode::SendScoreBoard(float DeltaTime)
@@ -1318,6 +1359,101 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
 
 
 	printf_s("[END] <AMainScreenGameMode::RecvInfoOfBuilding_Spawn()>\n");
+}
+
+void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
+{
+	TimerOfRecvInfoOfBuilding_Spawned += DeltaTime;
+	if (TimerOfRecvInfoOfBuilding_Spawned < 0.1f)
+		return;
+	TimerOfRecvInfoOfBuilding_Spawned = 0.0f;
+
+	if (!BuildingManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfBuilding_Spawned()> if (!BuildingManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqInfoOfBuilding.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::RecvInfoOfBuilding_Spawned()>\n");
+
+
+	std::queue<cInfoOfBuilding> copiedQueue = ClientSocketInGame->tsqInfoOfBuilding.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		BuildingManager->RecvSpawnBuilding(copiedQueue.front().Spawn);
+
+		if (BuildingManager->Buildings.Contains(copiedQueue.front().ID))
+			BuildingManager->Buildings[copiedQueue.front().ID]->SetInfoOfBuilding_Stat(copiedQueue.front().Stat);
+
+		copiedQueue.pop();
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::RecvInfoOfBuilding_Spawned()>\n");
+}
+
+void AOnlineGameMode::SendInfoOfBuilding_Stat(float DeltaTime)
+{
+	TimerOfSendInfoOfBuilding_Stat += DeltaTime;
+	if (TimerOfSendInfoOfBuilding_Stat < 0.1f)
+		return;
+	TimerOfSendInfoOfBuilding_Stat = 0.0f;
+
+	if (!BuildingManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SendInfoOfBuilding_Stat()> if (!BuildingManager)\n");
+		return;
+	}
+
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::SendInfoOfBuilding_Stat()>\n");
+
+
+	ClientSocketInGame->SendInfoOfBuilding_Stat();
+
+
+	printf_s("[END] <AMainScreenGameMode::SendInfoOfBuilding_Stat()>\n");
+}
+
+void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
+{
+	TimerOfRecvInfoOfBuilding_Stat += DeltaTime;
+	if (TimerOfRecvInfoOfBuilding_Stat < 0.1f)
+		return;
+	TimerOfRecvInfoOfBuilding_Stat = 0.0f;
+
+	if (!BuildingManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfBuilding_Stat()> if (!BuildingManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqInfoOfBuilding_Stat.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::RecvInfoOfBuilding_Stat()>\n");
+
+
+	std::queue<cInfoOfBuilding_Stat> copiedQueue = ClientSocketInGame->tsqInfoOfBuilding_Stat.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		if (BuildingManager->Buildings.Contains(copiedQueue.front().ID))
+			BuildingManager->Buildings[copiedQueue.front().ID]->SetInfoOfBuilding_Stat(copiedQueue.front());
+
+		copiedQueue.pop();
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::RecvInfoOfBuilding_Stat()>\n");
 }
 
 

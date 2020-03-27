@@ -438,9 +438,38 @@ enum EPacketType
 		Recv [INFO_OF_BUILDING_SPAWN]: 건설 요청에 필요한 자원이 존재하면 건설하고
 		Send [INFO_OF_BUILDING_SPAWN]: 모든 플레이어에게 건설하라고 명령합니다.
 	*/
-	INFO_OF_BUILDING_SPAWN
+	INFO_OF_BUILDING_SPAWN,
+
+	/** 
+	Game Client:
+		Recv [INFO_OF_BUILDING_STAT]: 
+		Send [INFO_OF_BUILDING_STAT]: 
+	Game Server:
+		Recv [INFO_OF_BUILDING_STAT]: 
+		Send [INFO_OF_BUILDING_STAT]: 
+	*/
+	INFO_OF_BUILDING_STAT,
 
 
+	/** 게임클라이언트가 새로 들어오면
+	Game Client:
+		Recv [INFO_OF_BUILDING]:
+		Send [INFO_OF_BUILDING]:
+	Game Server:
+		Recv [INFO_OF_BUILDING]:
+		Send [INFO_OF_BUILDING]: 
+	*/
+	INFO_OF_BUILDING,
+
+	/** 
+	Game Client:
+		Recv [DESTROY_BUILDING]:
+		Send []:
+	Game Server:
+		Recv []:
+		Send [DESTROY_BUILDING]:
+	*/
+	DESTROY_BUILDING
 };
 
 
@@ -1424,7 +1453,7 @@ public:
 class GAME_API cInfoOfBuilding_Spawn
 {
 public:
-	int ID; // BuildingManager::???
+	int ID; // BuildingManager::ID
 
 	int Numbering; // 1~8
 
@@ -1554,4 +1583,114 @@ public:
 
 		return transform;
 	}
+};
+
+
+class GAME_API cInfoOfBuilding_Stat
+{
+public:
+	int ID; // BuildingManager::ID
+
+	int BuildingState; // EBuildingState
+
+	float HealthPoint;
+
+public:
+	cInfoOfBuilding_Stat()
+	{
+		ID = 0;
+
+		BuildingState = 1;
+
+		HealthPoint = 100.0f;
+	}
+	~cInfoOfBuilding_Stat()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfBuilding_Stat& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.BuildingState << endl;
+
+		Stream << Info.HealthPoint << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfBuilding_Stat& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.BuildingState;
+
+		Stream >> Info.HealthPoint;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		printf_s("%s%s<cInfoOfBuilding_Stat> ID: %d, BuildingState : %d, HealthPoint: %f \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, BuildingState, HealthPoint);
+	}
+
+};
+
+class GAME_API cInfoOfBuilding
+{
+public:
+	int ID;
+
+	cInfoOfBuilding_Spawn Spawn;
+	cInfoOfBuilding_Stat Stat;
+
+public:
+	cInfoOfBuilding()
+	{
+		ID = 0;
+
+
+	}
+	cInfoOfBuilding(int ID, cInfoOfBuilding_Spawn Spawn, cInfoOfBuilding_Stat Stat)
+		: ID(ID), Spawn(Spawn), Stat(Stat)
+	{
+	}
+	~cInfoOfBuilding()
+	{
+	}
+
+	// Send
+	friend ostream& operator<<(ostream& Stream, cInfoOfBuilding& Info)
+	{
+		Stream << Info.ID << endl;
+
+		Stream << Info.Spawn << endl;
+		Stream << Info.Stat << endl;
+
+		return Stream;
+	}
+
+	// Recv
+	friend istream& operator>>(istream& Stream, cInfoOfBuilding& Info)
+	{
+		Stream >> Info.ID;
+
+		Stream >> Info.Spawn;
+		Stream >> Info.Stat;
+
+		return Stream;
+	}
+
+	// Log
+	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
+	{
+		Spawn.PrintInfo();
+		Stat.PrintInfo();
+	}
+
 };
