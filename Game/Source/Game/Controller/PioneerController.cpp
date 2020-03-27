@@ -408,9 +408,15 @@ void APioneerController::ArmOrDisArmWeapon()
 		Pioneer->bConstructingMode = false;
 
 	if (Pioneer->GetCurrentWeapon())
+	{
 		Pioneer->Disarming();
+		Pioneer->bArmedWeapon = false;
+	}
 	else
+	{
 		Pioneer->Arming();
+		Pioneer->bArmedWeapon = true;
+	}
 
 	Pioneer->DestroyBuilding();
 }
@@ -535,6 +541,7 @@ void APioneerController::ConstructingMode()
 		return;
 
 	Pioneer->Disarming();
+	Pioneer->bArmedWeapon = false;
 
 	Pioneer->bConstructingMode = true;
 }

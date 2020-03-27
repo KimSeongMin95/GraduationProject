@@ -82,6 +82,8 @@ APioneer::APioneer()
 	//BaseLookUpRate = 45.0f;
 
 	BuildingManager = nullptr;
+
+	bArmedWeapon = true;
 }
 
 void APioneer::BeginPlay()
@@ -1177,13 +1179,9 @@ void APioneer::Arming()
 
 	if (!CurrentWeapon)
 	{
-		bArmedWeapon = false;
-
 		UE_LOG(LogTemp, Warning, TEXT("APioneer::Arming: if (!CurrentWeapon)"));
 		return;
 	}
-
-	bArmedWeapon = true;
 
 	CurrentWeapon->SetActorHiddenInGame(false);
 
@@ -1195,8 +1193,6 @@ void APioneer::Arming()
 
 void APioneer::Disarming()
 {
-	bArmedWeapon = false;
-
 	if (CurrentWeapon)
 		CurrentWeapon->SetActorHiddenInGame(true);
 
@@ -1382,14 +1378,12 @@ void APioneer::SetInfoOfPioneer_Animation(class cInfoOfPioneer_Animation& Animat
 	IdxOfCurrentWeapon = Animation.IdxOfCurrentWeapon;
 	Arming();
 
-	//bArmedWeapon = Animation.bArmedWeapon;
+	bArmedWeapon = Animation.bArmedWeapon;
 
-	//if (bArmedWeapon)
-	//{
-	//	//Disarming();
-	//	IdxOfCurrentWeapon = Animation.IdxOfCurrentWeapon;
-	//	Arming();
-	//}
+	if (bArmedWeapon == false)
+	{
+		Disarming();
+	}
 }
 class cInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
 {
@@ -1416,7 +1410,7 @@ class cInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
 
 	animation.IdxOfCurrentWeapon = IdxOfCurrentWeapon;
 
-	//animation.bArmedWeapon = bArmedWeapon;
+	animation.bArmedWeapon = bArmedWeapon;
 
 	return animation;
 }
