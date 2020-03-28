@@ -30,6 +30,7 @@
 
 #include "Building/Building.h"
 
+#include "Character/Enemy.h"
 #include "EnemyManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
@@ -60,6 +61,8 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfSendInfoOfResources = 0.0f;
 	TimerOfGetInfoOfBuilding_Spawn = 0.0f;
 	TimerOfSetInfoOfBuilding_Stat = 0.0f;
+	TimerOfSetInfoOfEnemy_Animation = 0.0f;
+	TimerOfSetInfoOfEnemy_Stat = 0.0f;
 
 	TimerOfSendScoreBoard = 0.0f;
 	TimerOfRecvScoreBoard = 0.0f;
@@ -79,6 +82,12 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfSendInfoOfBuilding_Stat = 0.0f;
 	TimerOfRecvInfoOfBuilding_Stat = 0.0f;
 	TimerOfRecvDestroyBuilding = 0.0f;
+	TimerOfRecvSpawnEnemy = 0.0f;
+	TimerOfSendInfoOfEnemy_Animation = 0.0f;
+	TimerOfRecvInfoOfEnemy_Animation = 0.0f;
+	TimerOfSendInfoOfEnemy_Stat = 0.0f;
+	TimerOfRecvInfoOfEnemy_Stat = 0.0f;
+	TimerOfRecvDestroyEnemy = 0.0f;
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -426,6 +435,8 @@ void AOnlineGameMode::TickOfServerSocketInGame(float DeltaTime)
 	SendInfoOfResources(DeltaTime);
 	GetInfoOfBuilding_Spawn(DeltaTime);
 	SetInfoOfBuilding_Stat(DeltaTime);
+	SetInfoOfEnemy_Animation(DeltaTime);
+	SetInfoOfEnemy_Stat(DeltaTime);
 }
 
 void AOnlineGameMode::GetScoreBoard(float DeltaTime)
@@ -862,6 +873,66 @@ void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 	printf_s("[END] <AOnlineGameMode::SetInfoOfBuilding_Stat()>\n");
 }
 
+void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
+{
+	TimerOfSetInfoOfEnemy_Animation += DeltaTime;
+	if (TimerOfSetInfoOfEnemy_Animation < 0.01f)
+		return;
+	TimerOfSetInfoOfEnemy_Animation = 0.0f;
+
+	if (!EnemyManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SetInfoOfEnemy_Animation()> if (!EnemyManager)\n");
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AOnlineGameMode::SetInfoOfEnemy_Animation()>\n");
+
+
+	for (auto& kvp : EnemyManager->Enemies)
+	{
+		EnterCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Animation);
+		if (ServerSocketInGame->InfoOfEnemies_Animation.find(kvp.Key) != ServerSocketInGame->InfoOfEnemies_Animation.end())
+		{
+			ServerSocketInGame->InfoOfEnemies_Animation.at(kvp.Key) = kvp.Value->GetInfoOfEnemy_Animation();
+		}
+		LeaveCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Animation);
+	}
+
+
+	printf_s("[END] <AOnlineGameMode::SetInfoOfEnemy_Animation()>\n");
+}
+
+void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
+{
+	TimerOfSetInfoOfEnemy_Stat += DeltaTime;
+	if (TimerOfSetInfoOfEnemy_Stat < 0.1f)
+		return;
+	TimerOfSetInfoOfEnemy_Stat = 0.0f;
+
+	if (!EnemyManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::SetInfoOfEnemy_Stat()> if (!EnemyManager)\n");
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AOnlineGameMode::SetInfoOfEnemy_Stat()>\n");
+
+
+	for (auto& kvp : EnemyManager->Enemies)
+	{
+		EnterCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Stat);
+		if (ServerSocketInGame->InfoOfEnemies_Stat.find(kvp.Key) != ServerSocketInGame->InfoOfEnemies_Stat.end())
+		{
+			ServerSocketInGame->InfoOfEnemies_Stat.at(kvp.Key) = kvp.Value->GetInfoOfEnemy_Stat();
+		}
+		LeaveCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Stat);
+	}
+
+
+	printf_s("[END] <AOnlineGameMode::SetInfoOfEnemy_Stat()>\n");
+}
+
 
 /////////////////////////////////////////////////
 // Tick (Client)
@@ -900,6 +971,12 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 	SendInfoOfBuilding_Stat(DeltaTime);
 	RecvInfoOfBuilding_Stat(DeltaTime);
 	RecvDestroyBuilding(DeltaTime);
+	RecvSpawnEnemy(DeltaTime);
+	SendInfoOfEnemy_Animation(DeltaTime);
+	RecvInfoOfEnemy_Animation(DeltaTime);
+	SendInfoOfEnemy_Stat(DeltaTime);
+	RecvInfoOfEnemy_Stat(DeltaTime);
+	RecvDestroyEnemy(DeltaTime);
 }
 
 void AOnlineGameMode::SendScoreBoard(float DeltaTime)
@@ -1523,6 +1600,199 @@ void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
 
 	printf_s("[END] <AMainScreenGameMode::RecvDestroyBuilding()>\n");
 }
+
+void AOnlineGameMode::RecvSpawnEnemy(float DeltaTime)
+{
+	TimerOfRecvSpawnEnemy += DeltaTime;
+	if (TimerOfRecvSpawnEnemy < 0.02f)
+		return;
+	TimerOfRecvSpawnEnemy = 0.0f;
+
+	if (!EnemyManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvSpawnEnemy()> if (!EnemyManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqSpawnEnemy.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::RecvSpawnEnemy()>\n");
+
+
+
+	std::queue<cInfoOfEnemy> copiedQueue = ClientSocketInGame->tsqSpawnEnemy.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		EnemyManager->RecvSpawnEnemy(copiedQueue.front());
+		copiedQueue.pop();
+		printf_s("[INFO] <AMainScreenGameMode::RecvSpawnEnemy()> copiedQueue.pop();\n");
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::RecvSpawnEnemy()>\n");
+}
+
+void AOnlineGameMode::SendInfoOfEnemy_Animation(float DeltaTime)
+{
+	TimerOfSendInfoOfEnemy_Animation += DeltaTime;
+	if (TimerOfSendInfoOfEnemy_Animation < 0.01f)
+		return;
+	TimerOfSendInfoOfEnemy_Animation = 0.0f;
+
+	/***********************************************************/
+	//printf_s("[START] <AMainScreenGameMode::SendInfoOfEnemy_Animation()>\n");
+
+
+	ClientSocketInGame->SendInfoOfEnemy_Animation();
+
+
+	//printf_s("[END] <AMainScreenGameMode::SendInfoOfEnemy_Animation()>\n");
+}
+void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
+{
+	TimerOfRecvInfoOfEnemy_Animation += DeltaTime;
+	if (TimerOfRecvInfoOfEnemy_Animation < 0.01f)
+		return;
+	TimerOfRecvInfoOfEnemy_Animation = 0.0f;
+
+	if (!EnemyManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfEnemy_Animation()> if (!EnemyManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqInfoOfPioneer_Animation.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	//printf_s("[START] <AMainScreenGameMode::RecvInfoOfEnemy_Animation()>\n");
+
+
+	std::queue<cInfoOfEnemy_Animation> copiedQueue = ClientSocketInGame->tsqInfoOfEnemy_Animation.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		int id = copiedQueue.front().ID;
+		if (EnemyManager->Enemies.Contains(id))
+		{
+			if (AEnemy* enemy = EnemyManager->Enemies[id])
+			{
+				enemy->SetInfoOfEnemy_Animation(copiedQueue.front());
+			}
+		}
+
+		copiedQueue.pop();
+	}
+
+
+	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfEnemy_Animation()>\n");
+}
+
+void AOnlineGameMode::SendInfoOfEnemy_Stat(float DeltaTime)
+{
+	TimerOfSendInfoOfEnemy_Stat += DeltaTime;
+	if (TimerOfSendInfoOfEnemy_Stat < 0.1f)
+		return;
+	TimerOfSendInfoOfEnemy_Stat = 0.0f;
+
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::SendInfoOfEnemy_Stat()>\n");
+
+
+	ClientSocketInGame->SendInfoOfEnemy_Stat();
+
+
+	printf_s("[END] <AMainScreenGameMode::SendInfoOfEnemy_Stat()>\n");
+}
+void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
+{
+	TimerOfRecvInfoOfEnemy_Stat += DeltaTime;
+	if (TimerOfRecvInfoOfEnemy_Stat < 0.1f)
+		return;
+	TimerOfRecvInfoOfEnemy_Stat = 0.0f;
+
+	if (!EnemyManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfEnemy_Stat()> if (!EnemyManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqInfoOfPioneer_Stat.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::RecvInfoOfEnemy_Stat()>\n");
+
+
+	std::queue<cInfoOfEnemy_Stat> copiedQueue = ClientSocketInGame->tsqInfoOfEnemy_Stat.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		int id = copiedQueue.front().ID;
+		if (EnemyManager->Enemies.Contains(id))
+		{
+			if (AEnemy* enemy = EnemyManager->Enemies[id])
+			{
+				enemy->SetInfoOfEnemy_Stat(copiedQueue.front());
+			}
+		}
+
+		copiedQueue.pop();
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::RecvInfoOfEnemy_Stat()>\n");
+}
+
+void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
+{
+	TimerOfRecvDestroyEnemy += DeltaTime;
+	if (TimerOfRecvDestroyEnemy < 0.1f)
+		return;
+	TimerOfRecvDestroyEnemy = 0.0f;
+
+	if (!EnemyManager)
+	{
+		printf_s("[INFO] <AOnlineGameMode::RecvDestroyEnemy()> if (!EnemyManager)\n");
+		return;
+	}
+
+	if (ClientSocketInGame->tsqDestroyEnemy.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+	printf_s("[START] <AMainScreenGameMode::RecvDestroyEnemy()>\n");
+
+
+	std::queue<int> copiedQueue = ClientSocketInGame->tsqDestroyEnemy.copy_clear();
+
+	while (copiedQueue.empty() == false)
+	{
+		int id = copiedQueue.front();
+
+		if (EnemyManager->Enemies.Contains(id))
+		{
+
+			EnemyManager->Enemies[id]->SetHealthPoint(-5000);
+
+			EnemyManager->Enemies.Remove(id);
+		}
+
+		copiedQueue.pop();
+	}
+
+
+	printf_s("[END] <AMainScreenGameMode::RecvDestroyEnemy()>\n");
+}
+
+
 
 
 /////////////////////////////////////////////////

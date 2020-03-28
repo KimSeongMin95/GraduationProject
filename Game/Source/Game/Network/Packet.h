@@ -469,7 +469,48 @@ enum EPacketType
 		Recv []:
 		Send [DESTROY_BUILDING]:
 	*/
-	DESTROY_BUILDING
+	DESTROY_BUILDING,
+
+
+	/** EnemyManager::SpawnEnemy(...) 호출되면
+	Game Client:
+		Recv [SPAWN_ENEMY]:
+		Send []:
+	Game Server:
+		Recv []:
+		Send [SPAWN_ENEMY]:
+	*/
+	SPAWN_ENEMY,
+
+	/** 
+	Game Client:
+		Recv [INFO_OF_ENEMY_ANIMATION]:
+		Send [INFO_OF_ENEMY_ANIMATION]: 요청
+	Game Server:
+		Recv [INFO_OF_ENEMY_ANIMATION]: 요청 확인
+		Send [INFO_OF_ENEMY_ANIMATION]:
+	*/
+	INFO_OF_ENEMY_ANIMATION,
+
+	/**
+	Game Client:
+		Recv [INFO_OF_ENEMY_STAT]:
+		Send [INFO_OF_ENEMY_STAT]: 요청
+	Game Server:
+		Recv [INFO_OF_ENEMY_STAT]: 요청 확인
+		Send [INFO_OF_ENEMY_STAT]:
+	*/
+	INFO_OF_ENEMY_STAT,
+
+	/** 
+	Game Client:
+		Recv [DESTROY_ENEMY]:
+		Send []:
+	Game Server:
+		Recv []:
+		Send [DESTROY_ENEMY]:
+	*/
+	DESTROY_ENEMY
 };
 
 

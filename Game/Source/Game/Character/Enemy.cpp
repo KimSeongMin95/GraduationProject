@@ -300,7 +300,7 @@ void AEnemy::SetHealthPoint(float Delta)
 		{
 			if (ServerSocketInGame->IsServerOn())
 			{
-				ServerSocketInGame->SendDestroyBuilding(ID);
+				ServerSocketInGame->SendDestroyEnemy(ID);
 			}
 		}
 	}

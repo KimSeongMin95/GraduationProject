@@ -55,7 +55,9 @@ void AEnemyManager::BeginPlay()
 
 				ID++;
 
-				//ServerSocketInGame->SendSpawnEnemy((*ActorItr)->GetInfoOfEnemy());
+				(*ActorItr)->SetEnemyManager(this);
+
+				ServerSocketInGame->SendSpawnEnemy((*ActorItr)->GetInfoOfEnemy());
 			}
 		}
 	}
@@ -124,6 +126,14 @@ class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 		ID++;
 
 		enemy->SetEnemyManager(this);
+
+		if (ServerSocketInGame)
+		{
+			if (ServerSocketInGame->IsServerOn())
+			{
+				ServerSocketInGame->SendSpawnEnemy(enemy->GetInfoOfEnemy());
+			}
+		}
 	}
 
 	return enemy;

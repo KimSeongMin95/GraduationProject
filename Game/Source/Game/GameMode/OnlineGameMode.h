@@ -131,6 +131,10 @@ private:
 
 	void SetInfoOfBuilding_Stat(float DeltaTime); float TimerOfSetInfoOfBuilding_Stat;
 
+	void SetInfoOfEnemy_Animation(float DeltaTime); float TimerOfSetInfoOfEnemy_Animation;
+
+	void SetInfoOfEnemy_Stat(float DeltaTime); float TimerOfSetInfoOfEnemy_Stat;
+
 
 	/////////////////////////////////////////////////
 	// Tick (Client)
@@ -168,6 +172,19 @@ private:
 	void RecvInfoOfBuilding_Stat(float DeltaTime); float TimerOfRecvInfoOfBuilding_Stat;
 
 	void RecvDestroyBuilding(float DeltaTime); float TimerOfRecvDestroyBuilding;
+
+
+	void RecvSpawnEnemy(float DeltaTime); float TimerOfRecvSpawnEnemy;
+
+	void SendInfoOfEnemy_Animation(float DeltaTime); float TimerOfSendInfoOfEnemy_Animation;
+	void RecvInfoOfEnemy_Animation(float DeltaTime); float TimerOfRecvInfoOfEnemy_Animation;
+
+	void SendInfoOfEnemy_Stat(float DeltaTime); float TimerOfSendInfoOfEnemy_Stat;
+	void RecvInfoOfEnemy_Stat(float DeltaTime); float TimerOfRecvInfoOfEnemy_Stat;
+
+
+	void RecvDestroyEnemy(float DeltaTime); float TimerOfRecvDestroyEnemy;
+
 
 protected:
 

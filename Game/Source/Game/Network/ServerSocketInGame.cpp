@@ -60,6 +60,19 @@ std::map<int, cInfoOfBuilding_Stat> cServerSocketInGame::InfoOfBuilding_Stat;
 CRITICAL_SECTION cServerSocketInGame::csInfoOfBuilding_Stat;
 
 
+///////////////////////////////////////////
+// Pioneer 세분화
+///////////////////////////////////////////
+std::map<int, cInfoOfEnemy_Spawn> cServerSocketInGame::InfoOfEnemies_Spawn;
+CRITICAL_SECTION cServerSocketInGame::csInfoOfEnemies_Spawn;
+
+std::map<int, cInfoOfEnemy_Animation> cServerSocketInGame::InfoOfEnemies_Animation;
+CRITICAL_SECTION cServerSocketInGame::csInfoOfEnemies_Animation;
+
+std::map<int, cInfoOfEnemy_Stat> cServerSocketInGame::InfoOfEnemies_Stat;
+CRITICAL_SECTION cServerSocketInGame::csInfoOfEnemies_Stat;
+
+
 cThreadSafetyQueue<int> cServerSocketInGame::tsqDiedPioneer;
 
 cThreadSafetyQueue<cInfoOfPioneer_Animation> cServerSocketInGame::tsqInfoOfPioneer_Animation;
@@ -132,6 +145,10 @@ cServerSocketInGame::cServerSocketInGame()
 	InitializeCriticalSection(&csInfoOfBuilding_Spawn);
 	InitializeCriticalSection(&csInfoOfBuilding_Stat);
 
+	InitializeCriticalSection(&csInfoOfEnemies_Spawn);
+	InitializeCriticalSection(&csInfoOfEnemies_Animation);
+	InitializeCriticalSection(&csInfoOfEnemies_Stat);
+
 	tsqDiedPioneer.clear();
 	tsqInfoOfPioneer_Animation.clear();
 	tsqInfoOfPioneer_Socket.clear();
@@ -150,6 +167,8 @@ cServerSocketInGame::cServerSocketInGame()
 	fnProcess[EPacketType::INFO_OF_PROJECTILE].funcProcessPacket = InfoOfProjectile;
 	fnProcess[EPacketType::INFO_OF_BUILDING_SPAWN].funcProcessPacket = RecvInfoOfBuilding_Spawn;
 	fnProcess[EPacketType::INFO_OF_BUILDING_STAT].funcProcessPacket = SendInfoOfBuilding_Stat;
+	fnProcess[EPacketType::INFO_OF_ENEMY_ANIMATION].funcProcessPacket = SendInfoOfEnemy_Animation;
+	fnProcess[EPacketType::INFO_OF_ENEMY_STAT].funcProcessPacket = SendInfoOfEnemy_Stat;
 }
 
 cServerSocketInGame::~cServerSocketInGame()
@@ -175,6 +194,10 @@ cServerSocketInGame::~cServerSocketInGame()
 
 	DeleteCriticalSection(&csInfoOfBuilding_Spawn);
 	DeleteCriticalSection(&csInfoOfBuilding_Stat);
+
+	DeleteCriticalSection(&csInfoOfEnemies_Spawn);
+	DeleteCriticalSection(&csInfoOfEnemies_Animation);
+	DeleteCriticalSection(&csInfoOfEnemies_Stat);
 }
 
 bool cServerSocketInGame::Initialize()
@@ -671,6 +694,22 @@ void cServerSocketInGame::CloseServer()
 
 	/*********************************************************************************/
 		
+	// InfoOfEnemies_Stat 초기화
+	EnterCriticalSection(&csInfoOfEnemies_Stat);
+	InfoOfEnemies_Stat.clear();
+	LeaveCriticalSection(&csInfoOfEnemies_Stat);
+
+	// InfoOfEnemies_Animation 초기화
+	EnterCriticalSection(&csInfoOfEnemies_Animation);
+	InfoOfEnemies_Animation.clear();
+	LeaveCriticalSection(&csInfoOfEnemies_Animation);
+
+	// InfoOfEnemies_Spawn 초기화
+	EnterCriticalSection(&csInfoOfEnemies_Spawn);
+	InfoOfEnemies_Spawn.clear();
+	LeaveCriticalSection(&csInfoOfEnemies_Spawn);
+
+
 	// InfoOfBuilding_Stat 초기화
 	EnterCriticalSection(&csInfoOfBuilding_Stat);
 	InfoOfBuilding_Stat.clear();
@@ -680,6 +719,7 @@ void cServerSocketInGame::CloseServer()
 	EnterCriticalSection(&csInfoOfBuilding_Spawn);
 	InfoOfBuilding_Spawn.clear();
 	LeaveCriticalSection(&csInfoOfBuilding_Spawn);
+
 
 	// InfosOfPioneer_Stat 초기화
 	EnterCriticalSection(&csInfosOfPioneer_Stat);
@@ -1612,6 +1652,9 @@ void cServerSocketInGame::Connected(stringstream& RecvStream, SOCKET Socket)
 	// 이미 생성된 Building을 스폰하도록 합니다.
 	SendInfoOfBuilding_Spawned(Socket);
 
+	// 이미 생성된 Enemy을 스폰하도록 합니다.
+	SendSpawnedEnemy(Socket);
+
 	printf_s("[Send to %d] <cServerSocketInGame::Connected(...)>\n\n", (int)Socket);
 }
 
@@ -2327,4 +2370,217 @@ void cServerSocketInGame::SendDestroyBuilding(int IDOfBuilding)
 
 
 	printf_s("[END] <cServerSocketInGame::SendDestroyBuilding(...)>\n");
+}
+
+void cServerSocketInGame::SendSpawnEnemy(cInfoOfEnemy InfoOfEnemy)
+{
+	printf_s("[START] <cServerSocketInGame::SendSpawnEnemy(...)>\n");
+
+
+	/// 송신
+	EnterCriticalSection(&csInfoOfEnemies_Spawn);
+	InfoOfEnemies_Spawn[InfoOfEnemy.ID] = InfoOfEnemy.Spawn;
+	LeaveCriticalSection(&csInfoOfEnemies_Spawn);
+
+	EnterCriticalSection(&csInfoOfEnemies_Animation);
+	InfoOfEnemies_Animation[InfoOfEnemy.ID] = InfoOfEnemy.Animation;
+	LeaveCriticalSection(&csInfoOfEnemies_Animation);
+
+	EnterCriticalSection(&csInfoOfEnemies_Stat);
+	InfoOfEnemies_Stat[InfoOfEnemy.ID] = InfoOfEnemy.Stat;
+	LeaveCriticalSection(&csInfoOfEnemies_Stat);
+
+
+	stringstream sendStream;
+	sendStream << EPacketType::SPAWN_ENEMY << endl;
+	sendStream << InfoOfEnemy << endl;
+
+	Broadcast(sendStream);
+
+	InfoOfEnemy.PrintInfo();
+
+
+	printf_s("[END] <cServerSocketInGame::SendSpawnEnemy(...)>\n\n");
+}
+void cServerSocketInGame::SendSpawnedEnemy(SOCKET Socket)
+{
+	printf_s("[START] <cServerSocketInGame::SendSpawnedEnemy(...)>\n");
+
+
+	map<int, cInfoOfEnemy> copiedMap;
+
+	// 생성
+	EnterCriticalSection(&csInfoOfEnemies_Spawn);
+	for (auto& kvp : InfoOfEnemies_Spawn)
+	{
+		copiedMap[kvp.first] = cInfoOfEnemy();
+		copiedMap.at(kvp.first).ID = kvp.first;
+		copiedMap.at(kvp.first).Spawn = kvp.second;
+	}
+	LeaveCriticalSection(&csInfoOfEnemies_Spawn);
+
+	// 애니메이션
+	EnterCriticalSection(&csInfoOfEnemies_Animation);
+	for (auto& kvp : InfoOfEnemies_Animation)
+	{
+		if (copiedMap.find(kvp.first) != copiedMap.end())
+			copiedMap.at(kvp.first).Animation = kvp.second;
+	}
+	LeaveCriticalSection(&csInfoOfEnemies_Animation);
+
+	// 스텟
+	EnterCriticalSection(&csInfoOfEnemies_Stat);
+	for (auto& kvp : InfoOfEnemies_Stat)
+	{
+		if (copiedMap.find(kvp.first) != copiedMap.end())
+			copiedMap.at(kvp.first).Stat = kvp.second;
+	}
+	LeaveCriticalSection(&csInfoOfEnemies_Stat);
+
+
+	/// 송신
+	for (auto& kvp : copiedMap)
+	{
+		stringstream sendStream;
+		sendStream << EPacketType::SPAWN_ENEMY << endl;
+		sendStream << kvp.second << endl;
+
+		Send(sendStream, Socket);
+
+		kvp.second.PrintInfo();
+
+		printf_s("[Sent to %d] <cServerSocketInGame::SendSpawnedEnemy(...)>\n", (int)Socket);
+	}
+
+
+	printf_s("[End] <cServerSocketInGame::SendSpawnedEnemy(...)>\n\n");
+}
+
+void cServerSocketInGame::SendInfoOfEnemy_Animation(stringstream& RecvStream, SOCKET Socket)
+{
+	printf_s("[Recv by %d] <cServerSocketInGame::SendInfoOfEnemy_Animation(...)>\n", (int)Socket);
+
+
+	queue<cInfoOfEnemy_Animation> copiedQueue;
+
+	EnterCriticalSection(&csInfoOfEnemies_Animation);
+	for (auto& kvp : InfoOfEnemies_Animation)
+	{
+		copiedQueue.push(kvp.second);
+	}
+	LeaveCriticalSection(&csInfoOfEnemies_Animation);
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_ENEMY_ANIMATION << endl;
+
+	while (copiedQueue.empty() == false)
+	{
+		stringstream temp;
+		temp << copiedQueue.front() << endl;
+		size_t total = sendStream.str().length() + 2 + temp.str().length();
+
+		// size를 넣을 공간까지 생각해서 최대 크기를 벗어나면
+		if (total >= MAX_BUFFER - 5)
+		{
+			printf_s("\n\n\n\n\n");
+			printf_s("[INFO] <cServerSocketInGame::SendInfoOfEnemy_Animation(...)> if (total >= MAX_BUFFER) \n");
+			printf_s("[INFO] <cServerSocketInGame::SendInfoOfEnemy_Animation(...)> total: %d \n", (int)total);
+			printf_s("\n\n\n\n\n");
+
+			// 먼저 보냅니다.
+			Send(sendStream, Socket);
+
+			sendStream.str("");
+			sendStream << EPacketType::INFO_OF_ENEMY_ANIMATION << endl;
+		}
+
+		sendStream << copiedQueue.front() << endl;
+		copiedQueue.pop();
+	}
+	Send(sendStream, Socket);
+
+
+	printf_s("[Send to %d] <cServerSocketInGame::SendInfoOfEnemy_Animation(...)>\n\n", (int)Socket);
+}
+
+void cServerSocketInGame::SendInfoOfEnemy_Stat(stringstream& RecvStream, SOCKET Socket)
+{
+	printf_s("[Recv by %d] <cServerSocketInGame::SendInfoOfEnemy_Stat(...)>\n", (int)Socket);
+
+
+	queue<cInfoOfEnemy_Stat> copiedQueue;
+
+	EnterCriticalSection(&csInfoOfEnemies_Stat);
+	for (auto& kvp : InfoOfEnemies_Stat)
+	{
+		copiedQueue.push(kvp.second);
+
+		kvp.second.PrintInfo();
+	}
+	LeaveCriticalSection(&csInfoOfEnemies_Stat);
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_ENEMY_STAT << endl;
+
+	while (copiedQueue.empty() == false)
+	{
+		stringstream temp;
+		temp << copiedQueue.front() << endl;
+		size_t total = sendStream.str().length() + 2 + temp.str().length();
+
+		// size를 넣을 공간까지 생각해서 최대 크기를 벗어나면
+		if (total >= MAX_BUFFER - 5)
+		{
+			printf_s("\n\n\n\n\n");
+			printf_s("[INFO] <cServerSocketInGame::SendInfoOfEnemy_Stat(...)> if (total >= MAX_BUFFER) \n");
+			printf_s("[INFO] <cServerSocketInGame::SendInfoOfEnemy_Stat(...)> total: %d \n", (int)total);
+			printf_s("\n\n\n\n\n");
+
+			// 먼저 보냅니다.
+			Send(sendStream, Socket);
+
+			sendStream.str("");
+			sendStream << EPacketType::INFO_OF_ENEMY_STAT << endl;
+		}
+
+		sendStream << copiedQueue.front() << endl;
+		copiedQueue.pop();
+	}
+	Send(sendStream, Socket);
+
+
+	printf_s("[Send to %d] <cServerSocketInGame::SendInfoOfEnemy_Stat(...)>\n\n", (int)Socket);
+}
+
+void cServerSocketInGame::SendDestroyEnemy(int IDOfEnemy)
+{
+	printf_s("[START] <cServerSocketInGame::SendDestroyEnemy(...)>\n");
+
+
+	EnterCriticalSection(&csInfoOfEnemies_Spawn);
+	InfoOfEnemies_Spawn.erase(IDOfEnemy);
+	LeaveCriticalSection(&csInfoOfEnemies_Spawn);
+
+	EnterCriticalSection(&csInfoOfEnemies_Animation);
+	InfoOfEnemies_Animation.erase(IDOfEnemy);
+	LeaveCriticalSection(&csInfoOfEnemies_Animation);
+
+	EnterCriticalSection(&csInfoOfEnemies_Stat);
+	InfoOfEnemies_Stat.erase(IDOfEnemy);
+	LeaveCriticalSection(&csInfoOfEnemies_Stat);
+
+
+	/// 송신
+	stringstream sendStream;
+	sendStream << EPacketType::DESTROY_ENEMY << endl;
+	sendStream << IDOfEnemy << endl;
+
+	Broadcast(sendStream);
+
+
+	printf_s("[END] <cServerSocketInGame::SendDestroyEnemy(...)>\n");
 }

@@ -90,6 +90,7 @@ public:
 	static std::map<int, cInfoOfPioneer_Stat> InfosOfPioneer_Stat;
 	static CRITICAL_SECTION csInfosOfPioneer_Stat;
 
+
 	///////////////////////////////////////////
 	// Building 세분화
 	///////////////////////////////////////////
@@ -98,6 +99,20 @@ public:
 
 	static std::map<int, cInfoOfBuilding_Stat> InfoOfBuilding_Stat;
 	static CRITICAL_SECTION csInfoOfBuilding_Stat;
+
+
+	///////////////////////////////////////////
+	// Pioneer 세분화
+	///////////////////////////////////////////
+	static std::map<int, cInfoOfEnemy_Spawn> InfoOfEnemies_Spawn;
+	static CRITICAL_SECTION csInfoOfEnemies_Spawn;
+
+	static std::map<int, cInfoOfEnemy_Animation> InfoOfEnemies_Animation;
+	static CRITICAL_SECTION csInfoOfEnemies_Animation;
+
+	static std::map<int, cInfoOfEnemy_Stat> InfoOfEnemies_Stat;
+	static CRITICAL_SECTION csInfoOfEnemies_Stat;
+
 
 public:
 	////////////////////////
@@ -212,6 +227,16 @@ public:
 	static void SendInfoOfBuilding_Stat(stringstream& RecvStream, SOCKET Socket);
 
 	static void SendDestroyBuilding(int IDOfBuilding);
+
+
+	static void SendSpawnEnemy(cInfoOfEnemy InfoOfEnemy);
+	static void SendSpawnedEnemy(SOCKET Socket);
+
+	static void SendInfoOfEnemy_Animation(stringstream& RecvStream, SOCKET Socket);
+
+	static void SendInfoOfEnemy_Stat(stringstream& RecvStream, SOCKET Socket);
+
+	static void SendDestroyEnemy(int IDOfEnemy);
 
 
 	////////////////////////////////////////////////

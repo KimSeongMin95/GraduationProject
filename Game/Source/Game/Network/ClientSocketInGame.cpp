@@ -273,6 +273,10 @@ void cClientSocketInGame::CloseSocket()
 	tsqInfoOfBuilding.clear();
 	tsqInfoOfBuilding_Stat.clear();
 	tsqDestroyBuilding.clear();
+	tsqSpawnEnemy.clear();
+	tsqInfoOfEnemy_Animation.clear();
+	tsqInfoOfEnemy_Stat.clear();
+	tsqDestroyEnemy.clear();
 
 	printf_s("[END] <cClientSocketInGame::CloseSocket()>\n");
 }
@@ -701,6 +705,26 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 	case EPacketType::DESTROY_BUILDING:
 	{
 		RecvDestroyBuilding(recvStream);
+	}
+	break;
+	case EPacketType::SPAWN_ENEMY:
+	{
+		RecvSpawnEnemy(recvStream);
+	}
+	break;
+	case EPacketType::INFO_OF_ENEMY_ANIMATION:
+	{
+		RecvInfoOfEnemy_Animation(recvStream);
+	}
+	break;
+	case EPacketType::INFO_OF_ENEMY_STAT:
+	{
+		RecvInfoOfEnemy_Stat(recvStream);
+	}
+	break;
+	case EPacketType::DESTROY_ENEMY:
+	{
+		RecvDestroyEnemy(recvStream);
 	}
 	break;
 
@@ -1218,7 +1242,7 @@ void cClientSocketInGame::RecvPossessPioneer(stringstream& RecvStream)
 
 void cClientSocketInGame::RecvInfoOfPioneer_Socket(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer_Socket(...)>\n");
+	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer_Socket(...)>\n");
 
 
 	cInfoOfPioneer_Socket socket;
@@ -1230,7 +1254,7 @@ void cClientSocketInGame::RecvInfoOfPioneer_Socket(stringstream& RecvStream)
 	socket.PrintInfo();
 
 
-	printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer_Socket(...)>\n");
+	//printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer_Socket(...)>\n");
 }
 
 void cClientSocketInGame::SendInfoOfPioneer_Stat(class APioneer* PioneerOfPlayer)
@@ -1276,7 +1300,7 @@ void cClientSocketInGame::RecvInfoOfPioneer_Stat(stringstream& RecvStream)
 
 void cClientSocketInGame::SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile)
 {
-	printf_s("[Start] <cClientSocketInGame::SendInfoOfProjectile()>\n");
+	//printf_s("[Start] <cClientSocketInGame::SendInfoOfProjectile()>\n");
 
 
 	stringstream sendStream;
@@ -1288,11 +1312,11 @@ void cClientSocketInGame::SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectil
 	InfoOfProjectile.PrintInfo();
 
 
-	printf_s("[End] <cClientSocketInGame::SendInfoOfProjectile()>\n");
+	//printf_s("[End] <cClientSocketInGame::SendInfoOfProjectile()>\n");
 }
 void cClientSocketInGame::RecvInfoOfProjectile(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvInfoOfProjectile(...)>\n");
+	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfProjectile(...)>\n");
 
 
 	cInfoOfProjectile infoOfProjectile;
@@ -1304,12 +1328,12 @@ void cClientSocketInGame::RecvInfoOfProjectile(stringstream& RecvStream)
 	infoOfProjectile.PrintInfo();
 
 
-	printf_s("[End] <cClientSocketInGame::RecvInfoOfProjectile(...)>\n");
+	//printf_s("[End] <cClientSocketInGame::RecvInfoOfProjectile(...)>\n");
 }
 
 void cClientSocketInGame::RecvInfoOfResources(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvInfoOfResources(...)>\n");
+	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfResources(...)>\n");
 
 
 	cInfoOfResources infoOfResources;
@@ -1320,12 +1344,12 @@ void cClientSocketInGame::RecvInfoOfResources(stringstream& RecvStream)
 	infoOfResources.PrintInfo();
 
 
-	printf_s("[End] <cClientSocketInGame::RecvInfoOfResources(...)>\n");
+	//printf_s("[End] <cClientSocketInGame::RecvInfoOfResources(...)>\n");
 }
 
 void cClientSocketInGame::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn)
 {
-	printf_s("[Start] <cClientSocketInGame::SendInfoOfBuilding_Spawn()>\n");
+	//printf_s("[Start] <cClientSocketInGame::SendInfoOfBuilding_Spawn()>\n");
 
 
 	stringstream sendStream;
@@ -1337,11 +1361,11 @@ void cClientSocketInGame::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfB
 	InfoOfBuilding_Spawn.PrintInfo();
 
 
-	printf_s("[End] <cClientSocketInGame::SendInfoOfBuilding_Spawn()>\n");
+	//printf_s("[End] <cClientSocketInGame::SendInfoOfBuilding_Spawn()>\n");
 }
 void cClientSocketInGame::RecvInfoOfBuilding_Spawn(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
+	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
 
 
 	cInfoOfBuilding_Spawn spawn;
@@ -1353,12 +1377,12 @@ void cClientSocketInGame::RecvInfoOfBuilding_Spawn(stringstream& RecvStream)
 		spawn.PrintInfo();
 	}
 
-	printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
+	//printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
 }
 
 void cClientSocketInGame::RecvInfoOfBuilding_Spawned(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Spawned(...)>\n");
+	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Spawned(...)>\n");
 
 
 	cInfoOfBuilding infoOfBuilding;
@@ -1370,12 +1394,12 @@ void cClientSocketInGame::RecvInfoOfBuilding_Spawned(stringstream& RecvStream)
 		infoOfBuilding.PrintInfo();
 	}
 
-	printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Spawned(...)>\n");
+	//printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Spawned(...)>\n");
 }
 
 void cClientSocketInGame::SendInfoOfBuilding_Stat()
 {
-	printf_s("[Start] <cClientSocketInGame::SendInfoOfBuilding_Stat()>\n");
+	//printf_s("[Start] <cClientSocketInGame::SendInfoOfBuilding_Stat()>\n");
 
 
 	stringstream sendStream;
@@ -1384,11 +1408,11 @@ void cClientSocketInGame::SendInfoOfBuilding_Stat()
 	Send(sendStream);
 
 
-	printf_s("[End] <cClientSocketInGame::SendInfoOfBuilding_Stat()>\n");
+	//printf_s("[End] <cClientSocketInGame::SendInfoOfBuilding_Stat()>\n");
 }
 void cClientSocketInGame::RecvInfoOfBuilding_Stat(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Stat(...)>\n");
+	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Stat(...)>\n");
 
 
 	cInfoOfBuilding_Stat stat;
@@ -1400,12 +1424,12 @@ void cClientSocketInGame::RecvInfoOfBuilding_Stat(stringstream& RecvStream)
 		stat.PrintInfo();
 	}
 
-	printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Stat(...)>\n");
+	//printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Stat(...)>\n");
 }
 
 void cClientSocketInGame::RecvDestroyBuilding(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvDestroyBuilding(...)>\n");
+	//printf_s("[Start] <cClientSocketInGame::RecvDestroyBuilding(...)>\n");
 
 
 	int id;
@@ -1414,10 +1438,106 @@ void cClientSocketInGame::RecvDestroyBuilding(stringstream& RecvStream)
 	{
 		tsqDestroyBuilding.push(id);
 
+		//printf_s("\t id: %d \n", id);
+	}
+
+	//printf_s("[End] <cClientSocketInGame::RecvDestroyBuilding(...)>\n");
+}
+
+void cClientSocketInGame::RecvSpawnEnemy(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvSpawnEnemy(...)>\n");
+
+
+	cInfoOfEnemy infoOfEnemy;
+
+	RecvStream >> infoOfEnemy;
+
+	tsqSpawnEnemy.push(infoOfEnemy);
+
+	infoOfEnemy.PrintInfo();
+
+
+	printf_s("[End] <cClientSocketInGame::RecvSpawnEnemy(...)>\n");
+}
+
+void cClientSocketInGame::SendInfoOfEnemy_Animation()
+{
+	printf_s("[Start] <cClientSocketInGame::SendInfoOfEnemy_Animation()>\n");
+
+
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_ENEMY_ANIMATION << endl;
+
+	Send(sendStream);
+
+
+	printf_s("[End] <cClientSocketInGame::SendInfoOfEnemy_Animation()>\n");
+}
+void cClientSocketInGame::RecvInfoOfEnemy_Animation(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvInfoOfEnemy_Animation(...)>\n");
+
+
+	cInfoOfEnemy_Animation animation;
+
+	while (RecvStream >> animation)
+	{
+		tsqInfoOfEnemy_Animation.push(animation);
+
+		animation.PrintInfo();
+	}
+
+
+	printf_s("[End] <cClientSocketInGame::RecvInfoOfEnemy_Animation(...)>\n");
+}
+
+void cClientSocketInGame::SendInfoOfEnemy_Stat()
+{
+	printf_s("[Start] <cClientSocketInGame::SendInfoOfEnemy_Stat()>\n");
+
+
+	stringstream sendStream;
+	sendStream << EPacketType::INFO_OF_ENEMY_STAT << endl;
+
+	Send(sendStream);
+
+
+	printf_s("[End] <cClientSocketInGame::SendInfoOfEnemy_Stat()>\n");
+}
+void cClientSocketInGame::RecvInfoOfEnemy_Stat(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvInfoOfEnemy_Stat(...)>\n");
+
+
+	cInfoOfEnemy_Stat stat;
+
+	while (RecvStream >> stat)
+	{
+		tsqInfoOfEnemy_Stat.push(stat);
+
+		stat.PrintInfo();
+	}
+
+
+	printf_s("[End] <cClientSocketInGame::RecvInfoOfEnemy_Stat(...)>\n");
+}
+
+void cClientSocketInGame::RecvDestroyEnemy(stringstream& RecvStream)
+{
+	printf_s("[Start] <cClientSocketInGame::RecvDestroyEnemy(...)>\n");
+
+
+	int id;
+
+	if (RecvStream >> id)
+	{
+		tsqDestroyEnemy.push(id);
+
 		printf_s("\t id: %d \n", id);
 	}
 
-	printf_s("[End] <cClientSocketInGame::RecvDestroyBuilding(...)>\n");
+	printf_s("[End] <cClientSocketInGame::RecvDestroyEnemy(...)>\n");
 }
 
 

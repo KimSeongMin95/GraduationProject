@@ -169,6 +169,22 @@ public:
 	void RecvDestroyBuilding(stringstream& RecvStream);
 	cThreadSafetyQueue<int> tsqDestroyBuilding;
 
+
+	void RecvSpawnEnemy(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfEnemy> tsqSpawnEnemy;
+
+	void SendInfoOfEnemy_Animation();
+	void RecvInfoOfEnemy_Animation(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfEnemy_Animation> tsqInfoOfEnemy_Animation;
+
+	void SendInfoOfEnemy_Stat();
+	void RecvInfoOfEnemy_Stat(stringstream& RecvStream);
+	cThreadSafetyQueue<cInfoOfEnemy_Stat> tsqInfoOfEnemy_Stat;
+
+	void RecvDestroyEnemy(stringstream& RecvStream);
+	cThreadSafetyQueue<int> tsqDestroyEnemy;
+
+
 	/////////////////////////////////////
 	// Set-Get
 	/////////////////////////////////////
