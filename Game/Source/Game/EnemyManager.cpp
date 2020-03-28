@@ -13,6 +13,8 @@
 
 #include "Network/Packet.h"
 #include "Network/ServerSocketInGame.h"
+
+#include "EnemySpawner.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -29,6 +31,15 @@ void AEnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		printf_s("[ERROR] <AEnemyManager::BeginPlay()> if (!world)\n");
+		return;
+	}
+
+
 	ServerSocketInGame = cServerSocketInGame::GetSingleton();
 
 	// 에디터에서 월드상에 배치한 Building들을 관리하기 위해 추가합니다.
@@ -36,13 +47,6 @@ void AEnemyManager::BeginPlay()
 	{
 		if (ServerSocketInGame->IsServerOn())
 		{
-			UWorld* const world = GetWorld();
-			if (!world)
-			{
-				printf_s("[ERROR] <AEnemyManager::BeginPlay()> if (!world)\n");
-				return;
-			}
-
 			for (TActorIterator<AEnemy> ActorItr(world); ActorItr; ++ActorItr)
 			{
 				(*ActorItr)->ID = ID;
@@ -54,6 +58,14 @@ void AEnemyManager::BeginPlay()
 				//ServerSocketInGame->SendSpawnEnemy((*ActorItr)->GetInfoOfEnemy());
 			}
 		}
+	}
+
+
+	for (TActorIterator<AEnemySpawner> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		(*ActorItr)->SetEnemyManager(this);
+
+		EnemySpawners.Add(*ActorItr);
 	}
 }
 

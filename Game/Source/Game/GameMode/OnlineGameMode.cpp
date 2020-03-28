@@ -29,6 +29,8 @@
 #include "BuildingManager.h"
 
 #include "Building/Building.h"
+
+#include "EnemyManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 const float AOnlineGameMode::CellSize = 64.0f;
@@ -182,6 +184,8 @@ void AOnlineGameMode::StartPlay()
 	SpawnPioneerManager();
 
 	SpawnBuildingManager();
+
+	SpawnEnemyManager();
 
 	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(-8064.093f, -7581.192f, 20000.0f)));
 	SpaceShip->SetInitLocation(FVector(-8064.093f, -7581.192f, 10000.0f));
@@ -356,6 +360,26 @@ void AOnlineGameMode::SpawnBuildingManager()
 	if (!world)
 	{
 		printf_s("[ERROR] <AOnlineGameMode::SpawnBuildingManager()> if (!world)\n");
+		return;
+	}
+
+	FTransform myTrans = FTransform::Identity;
+
+	FActorSpawnParameters SpawnParams;
+	//SpawnParams.Name = TEXT("Name");
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	EnemyManager = world->SpawnActor<AEnemyManager>(AEnemyManager::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+}
+
+void AOnlineGameMode::SpawnEnemyManager()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		printf_s("[ERROR] <AOnlineGameMode::SpawnEnemyManager()> if (!world)\n");
 		return;
 	}
 

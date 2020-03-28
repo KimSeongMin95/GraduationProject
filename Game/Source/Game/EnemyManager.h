@@ -39,6 +39,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "AEnemyManager")
 		TMap<int32, class AEnemy*> Enemies;
 
+	UPROPERTY(VisibleAnywhere, Category = "AEnemyManager")
+		TArray<class AEnemySpawner*> EnemySpawners;
+
 public:
 	class AEnemy* SpawnEnemy(int EnemyType, FTransform Transform);
 

@@ -8,6 +8,12 @@
 //#include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
 /*** 언리얼엔진 헤더 선언 : End ***/
 
+
+/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "Character/Enemy.h"
+/*** 직접 정의한 헤더 전방 선언 : End ***/
+
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "EnemySpawner.generated.h"
@@ -35,10 +41,7 @@ public:
 		class USceneComponent* SceneComp = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		int EnemyType;
-
-	UPROPERTY(EditAnywhere)
-		TArray<class AActor*> Enemies;
+		EEnemyType EnemyType;
 
 	UPROPERTY(EditAnywhere)
 		int SpawnCount;
@@ -51,10 +54,14 @@ public:
 		float SpawnTime;
 
 	UPROPERTY(EditAnywhere)
-		bool TriggerOfSpawn;
+		class AMyTriggerBox* TriggerBoxForSpawn = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "EnemyManager")
+		class AEnemyManager* EnemyManager = nullptr;
 
 public:
 	void TickOfSpawnEnemy(float DeltaTime);
 
+	void SetEnemyManager(class AEnemyManager* pEnemyManager);
 /*** AEnemySpawner : End ***/
 };

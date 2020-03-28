@@ -78,6 +78,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "BuildingManager")
 		class ABuildingManager* BuildingManager = nullptr;
 
+	UPROPERTY(VisibleAnywhere, Category = "EnemyManager")
+		class AEnemyManager* EnemyManager = nullptr;
+
 protected:
 
 
@@ -97,6 +100,8 @@ private:
 	void SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile);
 
 	void SpawnBuildingManager();
+
+	void SpawnEnemyManager();
 
 	/////////////////////////////////////////////////
 	// Tick (Server)

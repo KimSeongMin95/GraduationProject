@@ -4,11 +4,13 @@
 
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Character/Enemy.h"
+//#include "Character/Enemy.h"
 
 #include "EnemyManager.h"
 
 #include "Network/ClientSocketInGame.h"
+
+#include "Etc/MyTriggerBox.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -21,15 +23,17 @@ AEnemySpawner::AEnemySpawner()
 	SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	RootComponent = SceneComp;
 
-	EnemyType = (int)EEnemyType::None;
+	EnemyType = EEnemyType::None;
 
 	SpawnCount = 0;
-	SpawnLimit = 15;
+	SpawnLimit = 5;
 
 	SpawnTimer = 0.0f;
 	SpawnTime = 3.0f;
 
-	TriggerOfSpawn = false;
+	TriggerBoxForSpawn = nullptr;
+
+	EnemyManager = nullptr;
 }
 
 void AEnemySpawner::BeginPlay()
@@ -58,8 +62,19 @@ void AEnemySpawner::Tick(float DeltaTime)
 /*** AEnemySpawner : Start ***/
 void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 {
-	if (!TriggerOfSpawn)
+	if (!TriggerBoxForSpawn)
 		return;
+
+	// 트리거가 발동되지 않았다면 실행하지 않습니다.
+	if (!TriggerBoxForSpawn->IsTriggered())
+		return;
+	
+	if (!EnemyManager)
+	{
+		printf_s("[ERROR] <AEnemySpawner::TickOfSpawnEnemy(...)> if (!EnemyManager) \n");
+		return;
+	}
+
 
 	SpawnTimer += DeltaTime;
 	if (SpawnTimer < SpawnTime)
@@ -68,8 +83,18 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 
 	if (SpawnCount < SpawnLimit)
 	{
-		//EnemyManager->SpawnEnemy(EnemyType, GetActorTransform());
+		EnemyManager->SpawnEnemy((int)EnemyType, GetActorTransform());
 
 		SpawnCount++;
 	}
+	else
+	{
+		EnemyManager->EnemySpawners.Remove(this);
+		Destroy();
+	}
+}
+
+void AEnemySpawner::SetEnemyManager(class AEnemyManager* pEnemyManager)
+{
+	this->EnemyManager = pEnemyManager;
 }
