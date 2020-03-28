@@ -584,6 +584,12 @@ void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
 			if (APioneer* pioneer = PioneerManager->Pioneers[id])
 			{
 				pioneer->SetInfoOfPioneer_Animation(copiedQueue.front());
+
+				// AI가 아니면 AI Controller를 해제합니다.
+				if (pioneer->SocketID != 0)
+				{
+					pioneer->UnPossessAIController();
+				}
 			}
 		}
 
@@ -654,6 +660,12 @@ void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
 			if (APioneer* pioneer = PioneerManager->Pioneers[id])
 			{
 				pioneer->SetInfoOfPioneer_Socket(copiedQueue.front());
+
+				// AI가 아니면 AI Controller를 해제합니다.
+				if (pioneer->SocketID != 0)
+				{
+					pioneer->UnPossessAIController();
+				}
 			}
 		}
 
@@ -693,6 +705,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Stat(float DeltaTime)
 			if (APioneer* pioneer = PioneerManager->Pioneers[id])
 			{
 				pioneer->SetInfoOfPioneer_Stat(copiedQueue.front());
+
 			}
 		}
 
@@ -1197,6 +1210,12 @@ void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 			if (APioneer* pioneer = PioneerManager->Pioneers[id])
 			{
 				pioneer->SetInfoOfPioneer_Animation(copiedQueue.front());
+			
+				// AI가 아니면 AI Controller를 해제합니다.
+				if (pioneer->SocketID != 0)
+				{
+					pioneer->UnPossessAIController();
+				}
 			}
 		}
 
@@ -1289,6 +1308,12 @@ void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 			if (APioneer* pioneer = PioneerManager->Pioneers[id])
 			{
 				pioneer->SetInfoOfPioneer_Socket(copiedQueue.front());
+
+				// AI가 아니면 AI Controller를 해제합니다.
+				if (pioneer->SocketID != 0)
+				{
+					pioneer->UnPossessAIController();
+				}
 			}
 		}
 
@@ -1351,6 +1376,12 @@ void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 			if (APioneer* pioneer = PioneerManager->Pioneers[id])
 			{
 				pioneer->SetInfoOfPioneer_Stat(copiedQueue.front());
+
+				// AI가 아니면 AI Controller를 해제합니다.
+				if (pioneer->SocketID != 0)
+				{
+					pioneer->UnPossessAIController();
+				}
 			}
 		}
 

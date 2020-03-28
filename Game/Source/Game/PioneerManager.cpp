@@ -888,6 +888,8 @@ void APioneerManager::PossessObservingPioneer()
 
 	if (ServerSocketInGame->IsServerOn())
 	{
+		socket.SocketID = ServerSocketInGame->SocketID;
+
 		// 빙의 할 수 있는지 확인
 		bool result = ServerSocketInGame->PossessingPioneer(socket);
 
@@ -1007,6 +1009,9 @@ void APioneerManager::SetTimerForPossessPioneer(class APioneer* Pioneer)
 
 	// 카메라타겟 활성화를 자동관리하지 않도록 합니다. (true일 때, 폰에 빙의하면 자동으로 뷰타겟을 변경?)
 	PioneerController->bAutoManageActiveCameraTarget = true;
+	
+	// AI Controller를 해제합니다.
+	Pioneer->UnPossessAIController();
 
 	PioneerController->OnPossess(Pioneer);
 }

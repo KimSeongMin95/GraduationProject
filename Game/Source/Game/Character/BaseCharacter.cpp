@@ -337,6 +337,23 @@ void ABaseCharacter::PossessAIController()
 	// 그뒤 AI 컨트롤러를 빙의합니다.
 	AIController->Possess(this);
 }
+void ABaseCharacter::UnPossessAIController()
+{
+	if (!AIController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::PossessAIController(): !AIController"));
+		return;
+	}
+
+	// 그뒤 AI 컨트롤러 빙의를 해제합니다.
+	AIController->UnPossess();
+
+	AIController->SetPawn(nullptr);
+
+	AIController->Destroy();
+
+	AIController = nullptr;
+}
 
 
 void ABaseCharacter::LookAtTheLocation(FVector Location)

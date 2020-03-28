@@ -39,11 +39,12 @@ private:
 private:
 	bool CheckDying();
 
-	UFUNCTION(Category = "CharacterAI")
-		void RunCharacterAI();
+	float TimerOfRunCharacterAI;
 
 	UFUNCTION(Category = "CharacterAI")
-		void SetTimerOfRunCharacterAI(float Time);
+		void RunCharacterAI(float DeltaTime);
+
+
 
 public:
 	UFUNCTION()

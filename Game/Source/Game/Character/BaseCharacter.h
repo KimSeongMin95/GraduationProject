@@ -158,7 +158,7 @@ protected:
 
 public:
 	FORCEINLINE ECharacterAI GetCharacterAI() const { return CharacterAI; }
-
+	
 	FORCEINLINE USphereComponent* GetDetectRangeSphereComp() const { return DetectRangeSphereComp; }
 	FORCEINLINE USphereComponent* GetAttackRangeSphereComp() const { return AttackRangeSphereComp; }
 
@@ -170,6 +170,9 @@ public:
 		/** AIController에 Possess 합니다. */
 		virtual void PossessAIController();
 
+	UFUNCTION(Category = "AIController")
+		/** AIController에 Possess 합니다. */
+		virtual void UnPossessAIController();
 
 	UFUNCTION(Category = "Rotation")
 		/** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */

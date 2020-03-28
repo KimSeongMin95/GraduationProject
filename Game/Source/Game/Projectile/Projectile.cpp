@@ -64,18 +64,18 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/* 함수 실행순서
-	Owner가 Spawn()
-		AProjectile::AProjectile()
-		AProjectile::BeginPlay()
-		AProjectile::OnOverlapBegin()
-		AProjectile::OnOverlapBegin()
-	다시 Owner 코드로 되돌아감
-		AProjectile::Tick
-	*/
-	// 위의 실행순서에 의해 SetDamage()가 나중에 실행되므로 미리 값을 가져와서 적용.
-	if (GetOwner())
-		TotalDamage = static_cast<AWeapon*>(GetOwner())->AttackPower;
+	///* 함수 실행순서
+	//Owner가 Spawn()
+	//	AProjectile::AProjectile()
+	//	AProjectile::BeginPlay()
+	//	AProjectile::OnOverlapBegin()
+	//	AProjectile::OnOverlapBegin()
+	//다시 Owner 코드로 되돌아감
+	//	AProjectile::Tick
+	//*/
+	//// 위의 실행순서에 의해 SetDamage()가 나중에 실행되므로 미리 값을 가져와서 적용.
+	//if (GetOwner())
+	//	TotalDamage = static_cast<AWeapon*>(GetOwner())->AttackPower;
 }
 
 void AProjectile::Tick(float DeltaTime)

@@ -13,13 +13,12 @@ ABaseAIController::ABaseAIController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	TimerOfRunCharacterAI = 0.0f;
 }
 
 void ABaseAIController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetTimerOfRunCharacterAI(0.033f);
 }
 
 void ABaseAIController::Tick(float DeltaTime)
@@ -29,6 +28,8 @@ void ABaseAIController::Tick(float DeltaTime)
 		return;
 
 	Super::Tick(DeltaTime);
+
+	RunCharacterAI(DeltaTime);
 }
 /*** Basic Function : Start ***/
 
@@ -49,10 +50,15 @@ bool ABaseAIController::CheckDying()
 	return false;
 }
 
-void ABaseAIController::RunCharacterAI()
+void ABaseAIController::RunCharacterAI(float DeltaTime)
 {
 	if (CheckDying())
 		return;
+
+	TimerOfRunCharacterAI += DeltaTime;
+	if (TimerOfRunCharacterAI < 0.033f)
+		return;
+	TimerOfRunCharacterAI = 0.0f;
 
 	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
 	{
@@ -70,14 +76,7 @@ void ABaseAIController::RunCharacterAI()
 		}
 	}
 }
-void ABaseAIController::SetTimerOfRunCharacterAI(float Time)
-{
-	// 이미 실행되고 있으면 재설정합니다.
-	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfRunCharacterAI))
-		GetWorldTimerManager().ClearTimer(TimerHandleOfRunCharacterAI);
 
-	GetWorldTimerManager().SetTimer(TimerHandleOfRunCharacterAI, this, &ABaseAIController::RunCharacterAI, Time, true);
-}
 void ABaseAIController::MoveRandomlyInDetectionRange(bool bLookAtDestination)
 {
 	if (CheckDying())
