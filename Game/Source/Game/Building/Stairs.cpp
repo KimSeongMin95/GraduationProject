@@ -74,13 +74,9 @@ void AStairs::InitStat()
 
 void AStairs::InitConstructBuilding()
 {
-	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
-		TEXT("StaticMesh'/Game/Buildings/Stairs/SM_Stairs_A.SM_Stairs_A'"),
-		FVector(2.2f, 0.9198f, 1.1f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
-	
-	AddConstructBuildingSMC(&ConstructBuildingSMC_2, TEXT("ConstructBuildingSMC_2"),
-		TEXT("StaticMesh'/Game/Buildings/Stairs/SM_Stairs_A.SM_Stairs_A'"),
-		FVector(2.2f, 0.9198f, 1.1f), FRotator(0.0f, 0.0f, 0.0f), FVector(155.00f, 0.0f, 166.4f * 0.5f));
+	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
+		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
+		FVector(4.64f, 2.4075f, 4.6f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 
 void AStairs::InitBuilding()

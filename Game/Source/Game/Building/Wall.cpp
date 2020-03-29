@@ -74,13 +74,9 @@ void AWall::InitStat()
 
 void AWall::InitConstructBuilding()
 {
-	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
-		TEXT("StaticMesh'/Game/Buildings/Walls/SM_Intersection_Wall.SM_Intersection_Wall'"),
-		FVector(0.733f, 6.0f, 0.4f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
-	
-	AddConstructBuildingSMC(&ConstructBuildingSMC_2, TEXT("ConstructBuildingSMC_2"),
-		TEXT("StaticMesh'/Game/Buildings/Floors/SM_Floor_Below.SM_Floor_Below'"),
-		FVector(0.39500f, 0.264f, 1.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.3249f, -0.3365f, 376.0f * 0.5f));
+	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
+		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
+		FVector(3.295f, 2.41f, 4.86f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 
 void AWall::InitBuilding()

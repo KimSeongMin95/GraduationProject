@@ -6,6 +6,10 @@
 #include "Animation/Skeleton.h"
 #include "Animation/AnimSequence.h"
 #include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
+
+#include "Components/ArrowComponent.h"
+
+#include "EngineUtils.h" // TActorIterator<>
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
@@ -44,16 +48,22 @@ protected:
 
 
 /*** ATurret : Start ***/
+protected:
+	class cServerSocketInGame* ServerSocketInGame = nullptr;
+	class cClientSocketInGame* ClientSocketInGame = nullptr;
+
 public:
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
-		class UStaticMeshComponent* ConstructBuildingSMC_1 = nullptr;
-	//UPROPERTY(VisibleAnywhere, Category = "ATurret")
-	//	class USkeletalMeshComponent* ConstructBuildingSkMC_1;
+		class UStaticMeshComponent* ConstructBuildingSMC = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
-		class UStaticMeshComponent* BuildingSMC_1 = nullptr;
+		class UStaticMeshComponent* BuildingSMC_Tower = nullptr;
+
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
-		class USkeletalMeshComponent* BuildingSkMC_1 = nullptr;
+		class UStaticMeshComponent* BuildingSMC_Head = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "ATurret")
+		class USkeletalMeshComponent* BuildingSkMC_Head = nullptr;
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Animation")
@@ -62,7 +72,43 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Animation")
 		class UAnimSequence* AnimSequence = nullptr;
 
+
+	UPROPERTY(VisibleAnywhere, Category = "ATurret")
+		/** Projectile이 Spawn되는 방향을 표시 */
+		class UArrowComponent* ArrowComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "ATurret")
+		float FireCoolTime;
+
+	UPROPERTY(VisibleAnywhere, Category = "ATurret")
+		class AEnemyManager* EnemyManager = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "ATurret")
+		float AttackRange;
+
+	UPROPERTY(EditAnywhere, Category = "ATurret")
+		float TickOfFindEnemyTime;
+
+	UPROPERTY(VisibleAnywhere, Category = "ATurret")
+		TMap<int32, class AEnemy*> Targets;
+
+	UPROPERTY(EditAnywhere, Category = "Rotation")
+		FRotator TargetRotation;
+
+	UPROPERTY(EditAnywhere, Category = "ATurret")
+		int IdxOfTarget;
+
 protected:
 	void InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent);
+	void InitArrowComponent(FRotator Rotatation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+
+	float CheckEnemyInAttackRange(class AEnemy* Enemy);
+
+	void TickOfFindEnemy(float DeltaTime);
+
+	void RotateTargetRotation(float DeltaTime);
+
+	void Fire();
+	
 /*** ATurret : End ***/
 };

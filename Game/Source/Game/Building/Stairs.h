@@ -40,9 +40,7 @@ protected:
 /*** AStairs : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere, Category = "AStairs")
-		class UStaticMeshComponent* ConstructBuildingSMC_1 = nullptr;
-	UPROPERTY(VisibleAnywhere, Category = "AStairs")
-		class UStaticMeshComponent* ConstructBuildingSMC_2 = nullptr;
+		class UStaticMeshComponent* ConstructBuildingSMC = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "AStairs")
 		class UStaticMeshComponent* BuildingSMC_1 = nullptr;

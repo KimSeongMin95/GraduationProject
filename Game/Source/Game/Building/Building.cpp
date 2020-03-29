@@ -475,9 +475,22 @@ void ABuilding::TickOfConsumeAndProduct(float DeltaTime)
 	// 건설이 완료된 경우에만 실행합니다.
 	else if (BuildingState == EBuildingState::Constructed)
 	{
-		APioneerManager::Resources.NumOfMineral += ProductionMineral - ConsumeMineral;
-		APioneerManager::Resources.NumOfOrganic += ProductionOrganicMatter - ConsumeOrganicMatter;
-		APioneerManager::Resources.NumOfEnergy += ProductionElectricPower - ConsumeElectricPower;
+		// 저장된 전력이 소비 전력보다 많으면 생산할 수 있습니다.
+		if (APioneerManager::Resources.NumOfEnergy >= ConsumeElectricPower)
+		{
+			APioneerManager::Resources.NumOfMineral += ProductionMineral;
+			APioneerManager::Resources.NumOfOrganic += ProductionOrganicMatter;
+			APioneerManager::Resources.NumOfEnergy -= ConsumeElectricPower;
+		}
+
+		// 저장된 자원이 소비 자원보다 많으면 전기를 생산할 수 있습니다.
+		if (APioneerManager::Resources.NumOfMineral >= ConsumeMineral
+			&& APioneerManager::Resources.NumOfOrganic >= ConsumeOrganicMatter)
+		{
+			APioneerManager::Resources.NumOfMineral -= ConsumeMineral;
+			APioneerManager::Resources.NumOfOrganic -= ConsumeOrganicMatter;
+			APioneerManager::Resources.NumOfEnergy += ProductionElectricPower;
+		}
 	}
 }
 
@@ -686,11 +699,7 @@ void ABuilding::CompleteConstructing()
 			BuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 			BuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 
-			// SkeletalMesh가 하나라도 있으면 StaticMesh를 숨김
-			if (BuildingSkMCs.Num() == 0)
-				BuildingSMC->SetHiddenInGame(false);
-			else
-				BuildingSMC->SetHiddenInGame(true);
+			BuildingSMC->SetHiddenInGame(false);
 		}
 	}
 	for (auto& BuildingSkMC : BuildingSkMCs)

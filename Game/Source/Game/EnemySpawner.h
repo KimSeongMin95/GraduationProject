@@ -49,6 +49,10 @@ public:
 		int SpawnLimit;
 
 	UPROPERTY(EditAnywhere)
+		float WaitingTimer;
+	UPROPERTY(EditAnywhere)
+		float WaitingTime;
+	UPROPERTY(EditAnywhere)
 		float SpawnTimer;
 	UPROPERTY(EditAnywhere)
 		float SpawnTime;

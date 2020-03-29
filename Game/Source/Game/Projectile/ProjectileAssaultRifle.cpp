@@ -53,6 +53,8 @@ void AProjectileAssaultRifle::OnOverlapBegin_HitRange(class UPrimitiveComponent*
 	if (IgnoreOnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult))
 		return;
 
+
+
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
 		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))

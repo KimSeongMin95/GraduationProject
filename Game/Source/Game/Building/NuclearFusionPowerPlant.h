@@ -40,7 +40,7 @@ protected:
 /*** ANuclearFusionPowerPlant : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere, Category = "ANuclearFusionPowerPlant")
-		class UStaticMeshComponent* ConstructBuildingSMC_1 = nullptr;
+		class UStaticMeshComponent* ConstructBuildingSMC = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "ANuclearFusionPowerPlant")
 		class UStaticMeshComponent* BuildingSMC_1 = nullptr;

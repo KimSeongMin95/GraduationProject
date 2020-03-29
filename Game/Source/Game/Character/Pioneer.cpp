@@ -19,10 +19,10 @@
 
 #include "Building/Building.h"
 
-//#include "Building/Wall.h"
+#include "Building/Wall.h"
 //#include "Building/Floor.h"
 //#include "Building/Stairs.h"
-//#include "Building/Turret.h"
+#include "Building/Turret.h"
 //#include "Building/Gate.h"
 //#include "Building/OrganicMine.h"
 //#include "Building/InorganicMine.h"
@@ -1244,6 +1244,7 @@ void APioneer::OnConstructingMode()
 		return;
 	}
 
+
 	// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
 	if (UWorld* World = GetWorld())
 	{
@@ -1268,6 +1269,17 @@ void APioneer::OnConstructingMode()
 
 		for (auto& hit : hitResults)
 		{
+			// Building이 터렛이라면 Wall 위에 건설할 수 있도록 합니다.
+			if (Building->IsA(ATurret::StaticClass()))
+			{
+				if (hit.Actor->IsA(AWall::StaticClass()))
+				{
+					Building->SetActorLocation(hit.Location);
+
+					return;
+				}
+			}
+
 			//if (hit.Actor->GetClass() == ALandscape::StaticClass())
 			//if (Cast<ALandscape>(hit.Actor))
 			if (hit.Actor->IsA(ALandscape::StaticClass())) // hit한 Actor가 ALandscape면

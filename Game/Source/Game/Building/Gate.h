@@ -40,10 +40,7 @@ protected:
 /*** AGate : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere, Category = "AGate")
-		class UStaticMeshComponent* ConstructBuildingSMC_1 = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "AGate")
-		class UStaticMeshComponent* ConstructBuildingSMC_2 = nullptr;
+		class UStaticMeshComponent* ConstructBuildingSMC = nullptr;
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "AGate")

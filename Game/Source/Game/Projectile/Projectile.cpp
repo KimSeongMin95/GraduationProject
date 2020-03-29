@@ -8,6 +8,7 @@
 #include "Character/Enemy.h"
 #include "Character/Pioneer.h"
 #include "Building/Building.h"
+#include "Building/Turret.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -169,6 +170,12 @@ bool AProjectile::IgnoreOnOverlapBegin(class UPrimitiveComponent* OverlappedComp
 
 	// Collision의 기본인 ATriggerVolume은 무시합니다.
 	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+		return true;
+
+	if (this->GetOwner() && this->GetOwner() == OtherActor)
+		return true;
+
+	if (OtherActor->IsA(ATurret::StaticClass()))
 		return true;
 
 	//// owner가 없으면 충돌나기 때문에 체크합니다.

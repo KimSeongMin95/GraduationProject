@@ -28,6 +28,8 @@ AEnemySpawner::AEnemySpawner()
 	SpawnCount = 0;
 	SpawnLimit = 5;
 
+	WaitingTimer = 0.0f;
+	WaitingTime = 15.0f;
 	SpawnTimer = 0.0f;
 	SpawnTime = 3.0f;
 
@@ -75,6 +77,9 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 		return;
 	}
 
+	WaitingTimer += DeltaTime;
+	if (WaitingTimer < WaitingTime)
+		return;
 
 	SpawnTimer += DeltaTime;
 	if (SpawnTimer < SpawnTime)

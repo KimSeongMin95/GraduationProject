@@ -74,15 +74,15 @@ void ANuclearFusionPowerPlant::InitStat()
 
 void ANuclearFusionPowerPlant::InitConstructBuilding()
 {
-	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
-		TEXT("StaticMesh'/Game/Buildings/NuclearFusionPowerPlant/Temp_NuclearFusionPowerPlant.Temp_NuclearFusionPowerPlant'"),
-		FVector(25.0f, 25.0f, 4.0f), FRotator(0.0f, 0.0f, 0.0f));
+	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
+		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
+		FVector(5.47f, 3.702f, 4.29f), FRotator(0.0f, 0.0f, 0.0f));
 }
 
 void ANuclearFusionPowerPlant::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/NuclearFusionPowerPlant/Temp_NuclearFusionPowerPlant.Temp_NuclearFusionPowerPlant'"),
-		FVector(25.0f, 25.0f, 8.0f), FRotator(0.0f, 0.0f, 0.0f));
+		FVector(15.0f, 15.0f, 6.0f), FRotator(0.0f, 0.0f, 0.0f));
 }
 /*** ABuilding : End ***/

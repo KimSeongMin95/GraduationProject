@@ -40,9 +40,7 @@ protected:
 /*** AWall : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere, Category = "AWall")
-		class UStaticMeshComponent* ConstructBuildingSMC_1 = nullptr;
-	UPROPERTY(VisibleAnywhere, Category = "AWall")
-		class UStaticMeshComponent* ConstructBuildingSMC_2 = nullptr;
+		class UStaticMeshComponent* ConstructBuildingSMC = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "AWall")
 		class UStaticMeshComponent* BuildingSMC_1 = nullptr;
