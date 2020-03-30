@@ -86,7 +86,7 @@ void ATurret::InitHelthPointBar()
 /*** ABuilding : Start ***/
 void ATurret::InitStat()
 {
-	ConstructionTime = 20.0f;
+	ConstructionTime = 5.0f;
 
 	HealthPoint = 100.0f;
 	MaxHealthPoint = 300.0f;
@@ -94,12 +94,12 @@ void ATurret::InitStat()
 
 	Size = FVector2D(1.0f, 1.0f);
 
-	NeedMineral = 200.0f;
-	NeedOrganicMatter = 50.0f;
+	NeedMineral = 20.0f;
+	NeedOrganicMatter = 5.0f;
 
 	ConsumeMineral = 0.0f;
 	ConsumeOrganicMatter = 0.0f;
-	ConsumeElectricPower = 2.0f;
+	ConsumeElectricPower = 1.0f;
 
 	ProductionMineral = 0.0f;
 	ProductionOrganicMatter = 0.0f;
@@ -160,6 +160,8 @@ void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent)
 
 	SkeletalMeshComponent->SetGenerateOverlapEvents(false);
 	SkeletalMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SkeletalMeshComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	SkeletalMeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	SkeletalMeshComponent->BodyInstance.bLockXTranslation = true;
 	SkeletalMeshComponent->BodyInstance.bLockYTranslation = true;
 	SkeletalMeshComponent->BodyInstance.bLockZRotation = true;
@@ -337,6 +339,11 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 			direction.Rotation().Yaw,
 			0.0f);
 	}
+	else
+	{
+		IdxOfTarget = 0;
+		return;
+	}
 
 	FRotator CurrentRotation = BuildingSkMC_Head->GetComponentRotation(); // Normalized
 
@@ -414,7 +421,9 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 
 
 	// 변경된 각도로 다시 설정합니다.
-	BuildingSkMC_Head->SetWorldRotation(CurrentRotation);
+	BuildingSkMC_Head->SetWorldRotation(FQuat(CurrentRotation));
+
+
 }
 
 void ATurret::Fire()

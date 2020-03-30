@@ -406,6 +406,9 @@ void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedCom
 	if (OtherActor->GetFName() == this->GetFName())
 		return;
 
+	if (OtherComp->IsA(UWidgetComponent::StaticClass()))
+		return;
+
 	if (BuildingState == EBuildingState::Constructable)
 	{
 		//if (OtherActor->IsA(ABaseCharacter::StaticClass()))
@@ -677,17 +680,15 @@ void ABuilding::CompleteConstructing()
 	// Constructing --> Constructed
 	BuildingState = EBuildingState::Constructed;
 
-	// Constructing Building들 비활성화
+	// Constructing Building들 소멸
 	for (auto& ConstructBuildingSMC : ConstructBuildingSMCs)
 	{
 		if (ConstructBuildingSMC)
 		{
-			ConstructBuildingSMC->SetGenerateOverlapEvents(false);
-			ConstructBuildingSMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-			ConstructBuildingSMC->SetHiddenInGame(true);
+			ConstructBuildingSMC->DestroyComponent();
 		}
 	}
+	ConstructBuildingSMCs.Reset();
 
 	// Constructed Building들 활성화
 	for (auto& BuildingSMC : BuildingSMCs)
@@ -706,11 +707,6 @@ void ABuilding::CompleteConstructing()
 	{
 		if (BuildingSkMC)
 		{
-			BuildingSkMC->SetGenerateOverlapEvents(true);
-			BuildingSkMC->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			BuildingSkMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
-			BuildingSkMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-
 			BuildingSkMC->SetHiddenInGame(false);
 		}
 	}
