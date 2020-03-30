@@ -24,17 +24,20 @@
 UENUM()
 enum class EBuildingType : uint8
 {
-	Floor = 0,
+	Floor,
 
-	Wall = 1,
-	Stairs = 2,
-	Turret = 3,
-	Gate = 4,
-	OrganicMine = 5,
-	InorganicMine = 6,
-	NuclearFusionPowerPlant = 7,
-	ResearchInstitute = 8,
-	WeaponFactory = 9
+	Wall,
+	Stairs,
+	Gate,
+	InorganicMine,
+	OrganicMine,
+	NuclearFusionPowerPlant,
+	AssaultRifleTurret,
+	SniperRifleTurret,
+	RocketLauncherTurret,
+
+	ResearchInstitute,
+	WeaponFactory
 };
 
 UENUM()
@@ -147,8 +150,11 @@ public:
 		/** BuildingManager에서 관리할 고유한 식별자 */
 		int ID;
 
-	EBuildingState BuildingState;
-	EBuildingType BuildingType;
+	UPROPERTY(VisibleAnywhere)
+		EBuildingState BuildingState;
+
+	UPROPERTY(VisibleAnywhere)
+		EBuildingType BuildingType;
 
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
@@ -197,7 +203,7 @@ protected:
 	void AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 	
 	/** SubStaticMeshComp엔 먼저 AddBuildingSMC(SubStaticMeshComp) 하고 가져와야 함. */
-	void AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, UStaticMeshComponent** SubStaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	void AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
 
 	UFUNCTION(Category = "ConstructBuilding")

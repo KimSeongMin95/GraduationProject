@@ -76,7 +76,7 @@ void AStairs::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
-		FVector(4.64f, 2.4075f, 4.6f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+		FVector(4.64f, 2.4075f, 4.6f), FRotator(0.0f, 0.0f, 0.0f), FVector(78.0f, 0.0f, 0.0f));
 }
 
 void AStairs::InitBuilding()

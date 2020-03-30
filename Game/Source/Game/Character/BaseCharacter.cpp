@@ -66,6 +66,11 @@ void ABaseCharacter::InitHelthPointBar()
 	HelthPointBar->SetupAttachment(RootComponent);
 	HelthPointBar->bAbsoluteRotation = true; // 절대적인 회전값을 적용합니다.
 
+	HelthPointBar->SetGenerateOverlapEvents(false);
+	HelthPointBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HelthPointBar->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	HelthPointBar->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
 	HelthPointBar->SetOnlyOwnerSee(false);
 	//HelthPointBar->SetIsReplicated(false);
 

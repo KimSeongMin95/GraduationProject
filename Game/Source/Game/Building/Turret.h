@@ -10,6 +10,7 @@
 #include "Components/ArrowComponent.h"
 
 #include "EngineUtils.h" // TActorIterator<>
+#include "Components/SceneComponent.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
@@ -54,13 +55,13 @@ protected:
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
+		class USceneComponent* ParentOfHead = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "ATurret")
 		class UStaticMeshComponent* ConstructBuildingSMC = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
 		class UStaticMeshComponent* BuildingSMC_Tower = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "ATurret")
-		class UStaticMeshComponent* BuildingSMC_Head = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
 		class USkeletalMeshComponent* BuildingSkMC_Head = nullptr;
@@ -76,6 +77,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
 		/** Projectile이 Spawn되는 방향을 표시 */
 		class UArrowComponent* ArrowComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "ATurret")
+		float TickOfFireCoolTime;
 
 	UPROPERTY(EditAnywhere, Category = "ATurret")
 		float FireCoolTime;
@@ -98,8 +102,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "ATurret")
 		int IdxOfTarget;
 
+	UPROPERTY(EditAnywhere, Category = "ATurret")
+		/** Wall 위에 터렛을 건설할 때 아래의 Wall의 인덱스를 저장하는 용도 */
+		int IdxOfUnderWall;
+
 protected:
-	void InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent);
+	void InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent, const TCHAR* SkeletonToFind, const TCHAR* AnimSequenceToFind, float PlayRate = 1.0f);
 	void InitArrowComponent(FRotator Rotatation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
 	float CheckEnemyInAttackRange(class AEnemy* Enemy);
@@ -109,6 +117,8 @@ protected:
 	void RotateTargetRotation(float DeltaTime);
 
 	void Fire();
+
+	void TickOfUnderWall();
 	
 /*** ATurret : End ***/
 };

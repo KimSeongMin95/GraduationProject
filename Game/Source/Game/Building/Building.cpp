@@ -103,8 +103,8 @@ void ABuilding::Tick(float DeltaTime)
 	TickOfConsumeAndProduct(DeltaTime);
 
 
-	// 임시
-	SetHealthPoint(NULL);
+	//// 임시
+	//SetHealthPoint(NULL);
 }
 /*** Basic Function : End ***/
 
@@ -116,6 +116,11 @@ void ABuilding::InitHelthPointBar()
 	//HelthPointBar = NewObject<UWidgetComponent>(this, UWidgetComponent::StaticClass());
 	HelthPointBar->SetupAttachment(RootComponent);
 	HelthPointBar->bAbsoluteRotation = true; // 절대적인 회전값을 적용합니다.
+
+	HelthPointBar->SetGenerateOverlapEvents(false);
+	HelthPointBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HelthPointBar->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	HelthPointBar->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 	HelthPointBar->SetOnlyOwnerSee(false);
 	//HelthPointBar->SetIsReplicated(false);
@@ -317,7 +322,7 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 
 }
 
-void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, UStaticMeshComponent** SubStaticMeshComp,
+void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp,
 	const TCHAR* CompName, const TCHAR* ObjectToFind,
 	FVector Scale, FRotator Rotation, FVector Location)
 {
@@ -342,21 +347,9 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, UStat
 	{
 		(*SkeletalMeshComp)->SetSkeletalMesh(skeletalMeshComp.Object);
 
-		// StaticMesh의 원본 사이즈 측정
-		FVector minBounds, maxBounds;
-		(*SubStaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
-		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
-		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
-
-		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
-		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
 		(*SkeletalMeshComp)->SetRelativeScale3D(Scale);
 		(*SkeletalMeshComp)->SetRelativeRotation(Rotation);
-		FVector center;
-		center.X = -1.0f * ((maxBounds.X * Scale.X + minBounds.X * Scale.X) / 2.0f);
-		center.Y = -1.0f * ((maxBounds.Y * Scale.Y + minBounds.Y * Scale.Y) / 2.0f);
-		center.Z = -1.0f * (minBounds.Z * Scale.Z);
-		(*SkeletalMeshComp)->SetRelativeLocation(center + Location);
+		(*SkeletalMeshComp)->SetRelativeLocation(Location);
 
 		// 원본 머터리얼 저장
 		FTArrayOfUMaterialInterface TArrayOfUMaterialInterface;

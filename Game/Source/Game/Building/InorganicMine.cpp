@@ -75,14 +75,14 @@ void AInorganicMine::InitStat()
 void AInorganicMine::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
-		TEXT("StaticMesh'/Game/Buildings/InorganicMine/Temp_InorganicMine.Temp_InorganicMine'"),
-		FVector(1.3f, 1.3f, 0.65f), FRotator(0.0f, 0.0f, 0.0f));
+		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
+		FVector(6.042f, 4.417f, 3.727f), FRotator(0.0f, 0.0f, 0.0f));
 }
 
 void AInorganicMine::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
-		TEXT("StaticMesh'/Game/Buildings/InorganicMine/Temp_InorganicMine.Temp_InorganicMine'"),
-		FVector(1.3f, 1.3f, 1.3f), FRotator(0.0f, 0.0f, 0.0f));
+		TEXT("StaticMesh'/Game/ModularSciFiSeason2/ModSciInteriors/Meshes/SM_EnergyNode_A.SM_EnergyNode_A'"),
+		FVector(10.0f, 10.0f, 10.0f), FRotator(0.0f, 0.0f, 0.0f));
 }
 /*** ABuilding : End ***/

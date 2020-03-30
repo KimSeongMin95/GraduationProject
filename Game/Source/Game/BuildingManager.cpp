@@ -14,7 +14,10 @@
 #include "Building/OrganicMine.h"
 #include "Building/ResearchInstitute.h"
 #include "Building/Stairs.h"
-#include "Building/Turret.h"
+#include "Building/AssaultRifleTurret.h"
+#include "Building/SniperRifleTurret.h"
+#include "Building/RocketLauncherTurret.h"
+
 #include "Building/Wall.h"
 #include "Building/WeaponFactory.h"
 
@@ -52,6 +55,8 @@ void ABuildingManager::BeginPlay()
 
 			for (TActorIterator<ABuilding> ActorItr(world); ActorItr; ++ActorItr)
 			{
+				(*ActorItr)->SetBuildingManager(this);
+
 				AddInBuildings(*ActorItr);
 
 				ServerSocketInGame->SendInfoOfBuilding_Spawn((*ActorItr)->GetInfoOfBuilding_Spawn());
@@ -91,27 +96,35 @@ class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 	case EBuildingType::Floor:
 		building = World->SpawnActor<AFloor>(AFloor::StaticClass(), myTrans, SpawnParams);
 		break;
+
 	case EBuildingType::Wall:
 		building = World->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::Stairs:
 		building = World->SpawnActor<AStairs>(AStairs::StaticClass(), myTrans, SpawnParams);
 		break;
-	case EBuildingType::Turret:
-		building = World->SpawnActor<ATurret>(ATurret::StaticClass(), myTrans, SpawnParams);
-		break;
 	case EBuildingType::Gate:
 		building = World->SpawnActor<AGate>(AGate::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::OrganicMine:
-		building = World->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::InorganicMine:
 		building = World->SpawnActor<AInorganicMine>(AInorganicMine::StaticClass(), myTrans, SpawnParams);
 		break;
+	case EBuildingType::OrganicMine:
+		building = World->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
+		break;
 	case EBuildingType::NuclearFusionPowerPlant:
 		building = World->SpawnActor<ANuclearFusionPowerPlant>(ANuclearFusionPowerPlant::StaticClass(), myTrans, SpawnParams);
 		break;
+	case EBuildingType::AssaultRifleTurret:
+		building = World->SpawnActor<AAssaultRifleTurret>(AAssaultRifleTurret::StaticClass(), myTrans, SpawnParams);
+		break;
+	case EBuildingType::SniperRifleTurret:
+		building = World->SpawnActor<ASniperRifleTurret>(ASniperRifleTurret::StaticClass(), myTrans, SpawnParams);
+		break;
+	case EBuildingType::RocketLauncherTurret:
+		building = World->SpawnActor<ARocketLauncherTurret>(ARocketLauncherTurret::StaticClass(), myTrans, SpawnParams);
+		break;
+
 	case EBuildingType::ResearchInstitute:
 		building = World->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
 		break;
@@ -153,27 +166,35 @@ void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuil
 	case EBuildingType::Floor:
 		building = World->SpawnActor<AFloor>(AFloor::StaticClass(), myTrans, SpawnParams);
 		break;
+
 	case EBuildingType::Wall:
 		building = World->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::Stairs:
 		building = World->SpawnActor<AStairs>(AStairs::StaticClass(), myTrans, SpawnParams);
 		break;
-	case EBuildingType::Turret:
-		building = World->SpawnActor<ATurret>(ATurret::StaticClass(), myTrans, SpawnParams);
-		break;
 	case EBuildingType::Gate:
 		building = World->SpawnActor<AGate>(AGate::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::OrganicMine:
-		building = World->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::InorganicMine:
 		building = World->SpawnActor<AInorganicMine>(AInorganicMine::StaticClass(), myTrans, SpawnParams);
 		break;
+	case EBuildingType::OrganicMine:
+		building = World->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
+		break;
 	case EBuildingType::NuclearFusionPowerPlant:
 		building = World->SpawnActor<ANuclearFusionPowerPlant>(ANuclearFusionPowerPlant::StaticClass(), myTrans, SpawnParams);
 		break;
+	case EBuildingType::AssaultRifleTurret:
+		building = World->SpawnActor<AAssaultRifleTurret>(AAssaultRifleTurret::StaticClass(), myTrans, SpawnParams);
+		break;
+	case EBuildingType::SniperRifleTurret:
+		building = World->SpawnActor<ASniperRifleTurret>(ASniperRifleTurret::StaticClass(), myTrans, SpawnParams);
+		break;
+	case EBuildingType::RocketLauncherTurret:
+		building = World->SpawnActor<ARocketLauncherTurret>(ARocketLauncherTurret::StaticClass(), myTrans, SpawnParams);
+		break;
+
 	case EBuildingType::ResearchInstitute:
 		building = World->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
 		break;

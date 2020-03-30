@@ -551,7 +551,7 @@ void APioneer::SetCursorToWorld()
 	//			CursorToWorld->SetWorldRotation(CursorR);
 
 	//			// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
-	//			if (Weapon)
+	//			if (CurrentWeapon)
 	//			{ 
 	//				LookAtTheLocation(CursorToWorld->GetComponentLocation());
 	//			}
@@ -1270,14 +1270,22 @@ void APioneer::OnConstructingMode()
 		for (auto& hit : hitResults)
 		{
 			// Building이 터렛이라면 Wall 위에 건설할 수 있도록 합니다.
-			if (Building->IsA(ATurret::StaticClass()))
+			if (ATurret* turret = dynamic_cast<ATurret*>(Building))
 			{
-				if (hit.Actor->IsA(AWall::StaticClass()))
+				turret->IdxOfUnderWall = 0;
+
+				if (AWall* wall = Cast<AWall>(hit.Actor))
 				{
-					Building->SetActorLocation(hit.Location);
+					FVector location = hit.Actor->GetActorLocation();
+					location.Z = hit.Location.Z + 5.0f;
+
+					turret->SetActorLocation(location);
+
+					turret->IdxOfUnderWall = wall->ID;
 
 					return;
 				}
+				
 			}
 
 			//if (hit.Actor->GetClass() == ALandscape::StaticClass())
@@ -1285,6 +1293,8 @@ void APioneer::OnConstructingMode()
 			if (hit.Actor->IsA(ALandscape::StaticClass())) // hit한 Actor가 ALandscape면
 			{
 				Building->SetActorLocation(hit.Location);
+
+				return;
 			}
 		}
 	}

@@ -24,7 +24,7 @@ public:
 
 /*** IHealthPointBarInterface : Start ***/
 public:
-	virtual void InitHelthPointBar();
+	virtual void InitHelthPointBar() override;
 /*** IHealthPointBarInterface : End ***/
 
 

@@ -4,7 +4,11 @@
 #include "Turret.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "BuildingManager.h"
+
 #include "Projectile/ProjectileAssaultRifle.h"
+#include "Projectile/ProjectileSniperRifle.h"
+#include "Projectile/Splash/ProjectileRocketLauncher.h"
 
 #include "Network/ServerSocketInGame.h"
 #include "Network/ClientSocketInGame.h"
@@ -18,30 +22,18 @@
 /*** Basic Function : Start ***/
 ATurret::ATurret()
 {
-	InitStat();
-
-	InitHelthPointBar();
-
-	InitConstructBuilding();
-
-	InitBuilding();
-
-	BuildingType = EBuildingType::Turret;
-
-	InitArrowComponent(FRotator::ZeroRotator, FVector(189.998f, -1.117f, 55.461f));
-
 	ServerSocketInGame = nullptr;
 	ClientSocketInGame = nullptr;
 
-	FireCoolTime = 0.0f;
-
-	AttackRange = 4096.0f;
+	TickOfFireCoolTime = 0.0f;
 
 	TickOfFindEnemyTime = 0.0f;
 
 	TargetRotation = FRotator();
 
 	IdxOfTarget = 0;
+
+	IdxOfUnderWall = 0;
 }
 
 void ATurret::BeginPlay()
@@ -59,7 +51,7 @@ void ATurret::Tick(float DeltaTime)
 
 	if (BuildingState == EBuildingState::Constructed)
 	{
-		FireCoolTime += DeltaTime;
+		TickOfFireCoolTime += DeltaTime;
 
 		TickOfFindEnemy(DeltaTime);
 
@@ -67,6 +59,8 @@ void ATurret::Tick(float DeltaTime)
 
 		Fire();
 	}
+
+	TickOfUnderWall();
 }
 /*** Basic Function : End ***/
 
@@ -74,11 +68,7 @@ void ATurret::Tick(float DeltaTime)
 /*** IHealthPointBarInterface : Start ***/
 void ATurret::InitHelthPointBar()
 {
-	if (!HelthPointBar)
-		return;
-
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 350.0f));
-	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+	
 }
 /*** IHealthPointBarInterface : End ***/
 
@@ -86,72 +76,22 @@ void ATurret::InitHelthPointBar()
 /*** ABuilding : Start ***/
 void ATurret::InitStat()
 {
-	ConstructionTime = 5.0f;
-
-	HealthPoint = 100.0f;
-	MaxHealthPoint = 300.0f;
-	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
-
-	Size = FVector2D(1.0f, 1.0f);
-
-	NeedMineral = 20.0f;
-	NeedOrganicMatter = 5.0f;
-
-	ConsumeMineral = 0.0f;
-	ConsumeOrganicMatter = 0.0f;
-	ConsumeElectricPower = 1.0f;
-
-	ProductionMineral = 0.0f;
-	ProductionOrganicMatter = 0.0f;
-	ProductionElectricPower = 0.0f;
+	
 }
 
 void ATurret::InitConstructBuilding()
 {
-	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
-		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
-		FVector(4.357f, 2.987f, 3.56f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+
 }
 
 void ATurret::InitBuilding()
 {
-	AddBuildingSMC(&BuildingSMC_Tower, TEXT("BuildingSMC_Tower"),
-		TEXT("StaticMesh'/Game/CSC/Meshes/SM_CSC_Tower1.SM_CSC_Tower1'"),
-		FVector(0.7f, 0.7f, 0.7f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
-
-	BuildingSMC_Head = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BuildingSMC_Head"));
-
-	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshComp(TEXT("StaticMesh'/Game/CSC/Meshes/SM_CSC_Gun6.SM_CSC_Gun6'"));
-	if (staticMeshComp.Succeeded())
-	{
-		BuildingSMC_Head->SetStaticMesh(staticMeshComp.Object);
-
-		AddBuildingSkMC(&BuildingSkMC_Head, &BuildingSMC_Head, TEXT("BuildingSkMC_Head"),
-			TEXT("SkeletalMesh'/Game/CSC/Meshes/SK_CSC_Gun6.SK_CSC_Gun6'"),
-			FVector(0.7f, 0.7f, 0.7f), FRotator(0.0f, 0.0f, 0.0f), FVector(57.232f, 0.0f, 200.0f));
-	}
-
-	// AddBuildingSkMC에서 원본 사이즈만 넘겨주고 다시 소멸시킵니다.
-	BuildingSMC_Head->DestroyComponent();
-
-	InitAnimation(BuildingSkMC_Head);
-
-	//BuildingSMC_Tower->DetachFromParent(true);
-	//RootComponent->SetupAttachment(BuildingSMC_Tower);
-	//RootComponent = BuildingSMC_Tower;
-
-	//BuildingSMC_Tower->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	//BuildingSMC_Tower->BodyInstance.bLockXTranslation = true;
-	//BuildingSMC_Tower->BodyInstance.bLockYTranslation = true;
-	//BuildingSMC_Tower->BodyInstance.bLockXRotation = true;
-	//BuildingSMC_Tower->BodyInstance.bLockYRotation = true;
-	//BuildingSMC_Tower->BodyInstance.bLockZRotation = true;
-	//BuildingSMC_Tower->SetSimulatePhysics(true);
+	
 }
 /*** ABuilding : End ***/
 
 /*** ATurret : Start ***/
-void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent)
+void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent, const TCHAR* SkeletonToFind, const TCHAR* AnimSequenceToFind, float PlayRate)
 {
 	// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
 	SkeletalMeshComponent->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
@@ -168,7 +108,7 @@ void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent)
 	SkeletalMeshComponent->SetSimulatePhysics(false);
 
 	// Skeleton을 가져옵니다.
-	ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/CSC/Meshes/CSC_Gun6_Skeleton.CSC_Gun6_Skeleton'"));
+	ConstructorHelpers::FObjectFinder<USkeleton> skeleton(SkeletonToFind);
 	if (skeleton.Succeeded())
 	{
 		Skeleton = skeleton.Object;
@@ -180,7 +120,7 @@ void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent)
 	//	SkeletalMeshComponent->SetPhysicsAsset(physicsAsset.Object);
 	//}
 	// AnimInstance를 사용하지 않고 간단하게 애니메이션을 재생하려면 AnimSequence를 가져와서 Skeleton에 적용합니다.
-	ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/CSC/Animations/Anim_CSC_Gun6_Fire.Anim_CSC_Gun6_Fire'"));
+	ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(AnimSequenceToFind);
 	if (animSequence.Succeeded())
 	{
 		AnimSequence = animSequence.Object;
@@ -205,15 +145,15 @@ float ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 	if (!Enemy)
 	{
 		printf_s("[ERROR] <ATurret::CheckEnemyInAttackRange()> if (!Enemy) \n");
-		return 10000.0f;
+		return 100000.0f;
 	}
 
-	if (!ArrowComponent)
+	if (!ParentOfHead)
 		return 100000.0f;
 
 	if (UWorld* world = GetWorld())
 	{
-		FVector WorldOrigin = ArrowComponent->GetComponentLocation(); // 시작 위치
+		FVector WorldOrigin = ParentOfHead->GetComponentLocation(); // 시작 위치
 		FVector WorldDirection = Enemy->GetActorLocation() - WorldOrigin; // 방향
 		WorldDirection.Normalize();
 		FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
@@ -312,15 +252,9 @@ void ATurret::TickOfFindEnemy(float DeltaTime)
 
 void ATurret::RotateTargetRotation(float DeltaTime)
 {
-	if (!BuildingSkMC_Head)
+	if (!ParentOfHead)
 	{
-		printf_s("[ERROR] <ATurret::TickOfFindEnemy()> if (!BuildingSkMC_Head) \n");
-		return;
-	}
-
-	if (!ArrowComponent)
-	{
-		printf_s("[ERROR] <ATurret::TickOfFindEnemy()> if (!ArrowComponent) \n");
+		printf_s("[ERROR] <ATurret::TickOfFindEnemy()> if (!ParentOfHead) \n");
 		return;
 	}
 
@@ -330,14 +264,14 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 	if (EnemyManager->Enemies.Contains(IdxOfTarget))
 	{
 		FVector direction = EnemyManager->Enemies[IdxOfTarget]->GetActorLocation();
-		direction -= ArrowComponent->GetComponentLocation();
+		direction -= ParentOfHead->GetComponentLocation();
 
 		direction.Normalize();
 
 		TargetRotation = FRotator(
 			direction.Rotation().Pitch,
 			direction.Rotation().Yaw,
-			0.0f);
+			ParentOfHead->GetComponentRotation().Roll);
 	}
 	else
 	{
@@ -345,7 +279,7 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 		return;
 	}
 
-	FRotator CurrentRotation = BuildingSkMC_Head->GetComponentRotation(); // Normalized
+	FRotator CurrentRotation = ParentOfHead->GetComponentRotation(); // Normalized
 
 	FRotator DeltaRot = FRotator(540.0f * DeltaTime, 540.0f * DeltaTime, 0.0f);
 
@@ -421,25 +355,16 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 
 
 	// 변경된 각도로 다시 설정합니다.
-	BuildingSkMC_Head->SetWorldRotation(FQuat(CurrentRotation));
+	ParentOfHead->SetWorldRotation(FQuat(CurrentRotation));
 
 
 }
 
 void ATurret::Fire()
 {
-	// 게임클라이언트에서는 발사하지 않습니다.
-	if (ClientSocketInGame)
-	{
-		if (ClientSocketInGame->IsClientSocketOn())
-		{
-			return;
-		}
-	}
-
-	if (FireCoolTime < 0.2f)
+	if (TickOfFireCoolTime < FireCoolTime)
 		return;
-	FireCoolTime = 0.0f;
+	TickOfFireCoolTime = 0.0f;
 
 	if (!EnemyManager)
 		return;
@@ -448,8 +373,19 @@ void ATurret::Fire()
 		return;
 
 	// Fire 애니메이션 실행
-	if (BuildingSkMC_Head)
+	if (BuildingSkMC_Head && AnimSequence)
 		BuildingSkMC_Head->PlayAnimation(AnimSequence, false);
+
+
+	// 게임클라이언트에서는 애니메이션까지만 실행하고 실제로는 발사하지 않습니다.
+	if (ClientSocketInGame)
+	{
+		if (ClientSocketInGame->IsClientSocketOn())
+		{
+			return;
+		}
+	}
+
 
 	UWorld* const World = GetWorld();
 	if (!World)
@@ -469,8 +405,38 @@ void ATurret::Fire()
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+	
 
-	AProjectile* projectile = World->SpawnActor<AProjectileAssaultRifle>(AProjectileAssaultRifle::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+	AProjectile* projectile = nullptr;
+	int numbering = 0;
+
+	switch (BuildingType)
+	{
+	case EBuildingType::AssaultRifleTurret:
+	{
+		myTrans.SetScale3D(FVector(1.5f, 1.5f, 1.5f));
+		projectile = World->SpawnActor<AProjectileAssaultRifle>(AProjectileAssaultRifle::StaticClass(), myTrans, SpawnParams);
+		numbering = 2;
+	}
+	break;
+	case EBuildingType::SniperRifleTurret:
+	{
+		myTrans.SetScale3D(FVector(2.0f, 2.0f, 2.0f));
+		projectile = World->SpawnActor<AProjectileSniperRifle>(AProjectileSniperRifle::StaticClass(), myTrans, SpawnParams);
+		numbering = 4;
+	}
+	break;
+	case EBuildingType::RocketLauncherTurret:
+	{
+		myTrans.SetScale3D(FVector(2.0f, 2.0f, 2.0f));
+		projectile = World->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams);
+		numbering = 6;
+	}
+	break;
+	default:
+
+		break;
+	}
 
 
 	if (ServerSocketInGame)
@@ -479,7 +445,7 @@ void ATurret::Fire()
 		{
 			cInfoOfProjectile infoOfProjectile;
 			infoOfProjectile.ID = 0;
-			infoOfProjectile.Numbering = 2;
+			infoOfProjectile.Numbering = numbering;
 			infoOfProjectile.SetActorTransform(myTrans);
 
 			ServerSocketInGame->SendInfoOfProjectile(infoOfProjectile);
@@ -488,5 +454,39 @@ void ATurret::Fire()
 		}
 	}
 
+}
+
+void ATurret::TickOfUnderWall()
+{
+	if (IdxOfUnderWall == 0)
+		return;
+
+	if (!BuildingManager)
+		return;
+
+	if (BuildingManager->Buildings.Contains(IdxOfUnderWall))
+		return;
+
+
+	// 하단의 Wall이 소멸되면 상단의 Turret도 소멸되도록 합니다.
+	BuildingState = EBuildingState::Destroying;
+
+	if (BuildingManager)
+	{
+		if (BuildingManager->Buildings.Contains(ID))
+		{
+			BuildingManager->Buildings.Remove(ID);
+		}
+	}
+
+	if (ServerSocketInGame)
+	{
+		if (ServerSocketInGame->IsServerOn())
+		{
+			ServerSocketInGame->SendDestroyBuilding(ID);
+		}
+	}
+
+	Destroy();
 }
 /*** ATurret : End ***/
