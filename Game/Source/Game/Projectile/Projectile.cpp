@@ -178,6 +178,9 @@ bool AProjectile::IgnoreOnOverlapBegin(class UPrimitiveComponent* OverlappedComp
 	if (OtherActor->IsA(ATurret::StaticClass()))
 		return true;
 
+	if (OtherComp->IsA(USphereComponent::StaticClass()))
+		return true;
+
 	//// owner가 없으면 충돌나기 때문에 체크합니다.
 	//if (this->GetOwner() && this->GetOwner()->GetOwner())
 	//{

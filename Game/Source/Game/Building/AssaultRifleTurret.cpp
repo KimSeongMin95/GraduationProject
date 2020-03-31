@@ -61,9 +61,9 @@ void AAssaultRifleTurret::InitStat()
 {
 	BuildingType = EBuildingType::AssaultRifleTurret;
 
-	ConstructionTime = 15.0f;
+	ConstructionTime = 20.0f;
 
-	HealthPoint = 100.0f;
+	HealthPoint = 80.0f;
 	MaxHealthPoint = 300.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
@@ -80,7 +80,7 @@ void AAssaultRifleTurret::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 
-	FireCoolTime = 0.2f;
+	FireCoolTime = 0.33f;
 	AttackRange = 2048.0f;
 }
 

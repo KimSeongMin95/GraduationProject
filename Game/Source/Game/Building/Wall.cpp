@@ -60,7 +60,7 @@ void AWall::InitStat()
 
 	Size = FVector2D(1.0f, 1.0f);
 
-	NeedMineral = 200.0f;
+	NeedMineral = 150.0f;
 	NeedOrganicMatter = 0.0f;
 
 	ConsumeMineral = 0.0f;

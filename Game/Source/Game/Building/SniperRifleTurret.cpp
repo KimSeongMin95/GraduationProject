@@ -61,7 +61,7 @@ void ASniperRifleTurret::InitStat()
 {
 	BuildingType = EBuildingType::SniperRifleTurret;
 
-	ConstructionTime = 20.0f;
+	ConstructionTime = 25.0f;
 
 	HealthPoint = 150.0f;
 	MaxHealthPoint = 400.0f;
@@ -69,7 +69,7 @@ void ASniperRifleTurret::InitStat()
 
 	Size = FVector2D(1.0f, 1.0f);
 
-	NeedMineral = 300.0f;
+	NeedMineral = 350.0f;
 	NeedOrganicMatter = 150.0f;
 
 	ConsumeMineral = 0.0f;

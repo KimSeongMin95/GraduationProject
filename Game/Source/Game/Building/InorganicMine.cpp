@@ -65,9 +65,9 @@ void AInorganicMine::InitStat()
 
 	ConsumeMineral = 0.0f;
 	ConsumeOrganicMatter = 0.0f;
-	ConsumeElectricPower = 30.0f;
+	ConsumeElectricPower = 4.0f;
 
-	ProductionMineral = 15.0f;
+	ProductionMineral = 8.0f;
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }

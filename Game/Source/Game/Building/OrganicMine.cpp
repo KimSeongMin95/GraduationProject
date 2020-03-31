@@ -61,14 +61,14 @@ void AOrganicMine::InitStat()
 	Size = FVector2D(1.0f, 1.0f);
 
 	NeedMineral = 100.0f;
-	NeedOrganicMatter = 300.0f;
+	NeedOrganicMatter = 200.0f;
 
 	ConsumeMineral = 0.0f;
 	ConsumeOrganicMatter = 0.0f;
-	ConsumeElectricPower = 30.0f;
+	ConsumeElectricPower = 4.0f;
 
 	ProductionMineral = 0.0f;
-	ProductionOrganicMatter = 10.0f;
+	ProductionOrganicMatter = 6.0f;
 	ProductionElectricPower = 0.0f;
 }
 

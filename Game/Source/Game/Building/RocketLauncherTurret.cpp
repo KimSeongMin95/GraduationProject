@@ -63,14 +63,14 @@ void ARocketLauncherTurret::InitStat()
 
 	ConstructionTime = 30.0f;
 
-	HealthPoint = 200.0f;
+	HealthPoint = 150.0f;
 	MaxHealthPoint = 500.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
 	Size = FVector2D(1.0f, 1.0f);
 
-	NeedMineral = 400.0f;
-	NeedOrganicMatter = 200.0f;
+	NeedMineral = 500.0f;
+	NeedOrganicMatter = 250.0f;
 
 	ConsumeMineral = 0.0f;
 	ConsumeOrganicMatter = 0.0f;
@@ -80,7 +80,7 @@ void ARocketLauncherTurret::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 
-	FireCoolTime = 2.0f;
+	FireCoolTime = 1.5f;
 	AttackRange = 3072.0f;
 }
 
