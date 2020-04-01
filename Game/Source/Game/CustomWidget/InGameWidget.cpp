@@ -64,10 +64,14 @@ bool UInGameWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 	if (UWidgetBase::InitWidget(World, ReferencePath, bAddToViewport) == false)
 		return false;
 
-	if (WidgetTree == nullptr)
+	if (!WidgetTree)
 	{
-		printf_s("[Error] <UInGameWidget::InitWidget(...)> if (WidgetTree == nullptr)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UInGameWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::InitWidget(...)> if (!WidgetTree) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::InitWidget(...)> if (!WidgetTree)"));
+#endif		
 		return false;
 	}
 
@@ -116,7 +120,12 @@ void UInGameWidget::SetArrowButtonsVisibility(bool bVisible)
 {
 	if (!LeftArrowButton || !RightArrowButton)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetArrowButtonsVisibility(...)> if (!LeftArrowButton || !RightArrowButton) \n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetArrowButtonsVisibility(...)> if (!LeftArrowButton || !RightArrowButton) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetArrowButtonsVisibility(...)> if (!LeftArrowButton || !RightArrowButton)"));
+#endif		
 		return;
 	}
 
@@ -135,7 +144,12 @@ void UInGameWidget::SetPossessButtonVisibility(bool bVisible)
 {
 	if (!PossessButton)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetPossessButtonVisibility(...)> if (!PossessButton) \n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetPossessButtonVisibility(...)> if (!PossessButton) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetPossessButtonVisibility(...)> if (!PossessButton)"));
+#endif			
 		return;
 	}
 
@@ -152,7 +166,12 @@ void UInGameWidget::SetFreeViewpointButtonVisibility(bool bVisible)
 {
 	if (!FreeViewpointButton)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetFreeViewpointButtonVisibility(...)> if (!FreeViewpointButton) \n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetFreeViewpointButtonVisibility(...)> if (!FreeViewpointButton) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetFreeViewpointButtonVisibility(...)> if (!FreeViewpointButton)"));
+#endif			
 		return;
 	}
 
@@ -169,7 +188,12 @@ void UInGameWidget::SetObservingButtonVisibility(bool bVisible)
 {
 	if (!ObservingButton)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetObservingButtonVisibility(...)> if (!ObservingButton) \n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetObservingButtonVisibility(...)> if (!ObservingButton) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetObservingButtonVisibility(...)> if (!ObservingButton)"));
+#endif			
 		return;
 	}
 
@@ -187,7 +211,12 @@ void UInGameWidget::SetTextOfResources(int nPioneer, const class cInfoOfResource
 {
 	if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfResources(...)> if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy)\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetTextOfResources(...)> if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfResources(...)> if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy)"));
+#endif			
 		return;
 	}
 
@@ -201,7 +230,12 @@ void UInGameWidget::SetBuildingBoxVisibility(bool bVisible)
 {
 	if (!BuildingBox)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetBuildingBoxVisibility(...)> if (!BuildingBox) \n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetBuildingBoxVisibility(...)> if (!BuildingBox) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetBuildingBoxVisibility(...)> if (!BuildingBox)"));
+#endif				
 		return;
 	}
 
@@ -219,7 +253,12 @@ void UInGameWidget::SetPioneerBoxVisibility(bool bVisible)
 {
 	if (!PioneerBox)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetPioneerBoxVisibility(...)> if (!PioneerBox) \n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetPioneerBoxVisibility(...)> if (!PioneerBox) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetPioneerBoxVisibility(...)> if (!PioneerBox)"));
+#endif				
 		return;
 	}
 
@@ -236,13 +275,24 @@ void UInGameWidget::SetTextOfPioneerBox(class APioneer* Pioneer)
 {
 	if (!Pioneer)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfPioneerBox(...)> if (!Pioneer)\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetTextOfPioneerBox(...)> if (!Pioneer) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfPioneerBox(...)> if (!Pioneer)"));
+#endif			
 		return;
 	}
+
 	if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !AttackSpeedOfPioneer ||
 		!AttackPowerOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfPioneerBox(...)> if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !AttackSpeedOfPioneer || !AttackPowerOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer) \n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetTextOfPioneerBox(...)> if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !AttackSpeedOfPioneer ||!AttackPowerOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfPioneerBox(...)> if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !AttackSpeedOfPioneer ||!AttackPowerOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer)"));
+#endif			
 		return;
 	}
 
@@ -275,7 +325,12 @@ void UInGameWidget::SetWeaponBoxVisibility(bool bVisible)
 {
 	if (!WeaponBox)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetWeaponBoxVisibility(...)> if (!WeaponBox) \n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetWeaponBoxVisibility(...)> if (!WeaponBox) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetWeaponBoxVisibility(...)> if (!WeaponBox)"));
+#endif			
 		return;
 	}
 
@@ -292,17 +347,34 @@ void UInGameWidget::SetTextOfWeaponBox(class AWeapon* Weapon)
 {
 	if (!Weapon)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfWeaponBox(...)> if (!Weapon)\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetTextOfWeaponBox(...)> if (!Weapon) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfWeaponBox(...)> if (!Weapon)"));
+#endif			
 		return;
 	}
+
 	if (!ImageOfPistol || !ImageOfAssaultRifle || !ImageOfShotgun || !ImageOfSniperRifle || !ImageOfGrenadeLauncher || !ImageOfRocketLauncher)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfWeaponBox(...)> if (!ImageOfPistol || !ImageOfAssaultRifle || !ImageOfShotgun || !ImageOfSniperRifle || !ImageOfGrenadeLauncher || !ImageOfRocketLauncher) \n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetTextOfWeaponBox(...)> if (!ImageOfPistol || !ImageOfAssaultRifle || !ImageOfShotgun || !ImageOfSniperRifle || !ImageOfGrenadeLauncher || !ImageOfRocketLauncher) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfWeaponBox(...)> if (!ImageOfPistol || !ImageOfAssaultRifle || !ImageOfShotgun || !ImageOfSniperRifle || !ImageOfGrenadeLauncher || !ImageOfRocketLauncher)"));
+#endif			
 		return;
 	}
+
 	if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon)
 	{
-		printf_s("[ERROR] <UWaitingGameWidget::SetTextOfWeaponBox(...)>	if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon) \n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameWidget::SetTextOfWeaponBox(...)> if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfWeaponBox(...)> if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon)"));
+#endif			
 		return;
 	}
 

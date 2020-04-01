@@ -71,7 +71,9 @@ void ABaseAIController::RunCharacterAI(float DeltaTime)
 			baseCharacter->RunBehaviorTree();
 			break;
 		default:
-			UE_LOG(LogTemp, Warning, TEXT("ABaseAIController::RunCharacterAI: switch (baseCharacter->CharacterAI): default"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Warning, TEXT("<ABaseAIController::RunCharacterAI(...)> switch (baseCharacter->GetCharacterAI()) default:"));
+#endif			
 			break;
 		}
 	}

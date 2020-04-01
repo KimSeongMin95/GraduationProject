@@ -21,16 +21,24 @@ bool UWidgetBase::InitWidget(UWorld* const World, const FString ReferencePath, b
 {
 	if (!World)
 	{
-		printf_s("[Error] <UWidgetBase::InitWidget(...)> if (!World)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::InitWidget(...)> if (!World)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UWidgetBase::InitWidget(...)> if (!World) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::InitWidget(...)> if (!World)"));
+#endif		
 		return false;
 	}
 
 	UClass* widget = LoadObject<UClass>(this, *ReferencePath);
 	if (!widget)
 	{
-		printf_s("[Error] <UWidgetBase::InitWidget(...)> if (!widget)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::InitWidget(...)> if (!widget)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UWidgetBase::InitWidget(...)> if (!widget) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::InitWidget(...)> if (!widget)"));
+#endif				
 		return false;
 	}
 
@@ -38,8 +46,12 @@ bool UWidgetBase::InitWidget(UWorld* const World, const FString ReferencePath, b
 
 	if (!UserWidget)
 	{
-		printf_s("[Error] <UWidgetBase::InitWidget(...)> if (!UserWidget)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::InitWidget(...)> if (!UserWidget)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UWidgetBase::InitWidget(...)> if (!UserWidget) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::InitWidget(...)> if (!UserWidget)"));
+#endif			
 		return false;
 	}
 
@@ -55,8 +67,12 @@ void UWidgetBase::AddToViewport()
 {
 	if (!UserWidget)
 	{
-		printf_s("[Error] <UWidgetBase::AddToViewport()> if (!UserWidget)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::AddToViewport()> if (!UserWidget)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UWidgetBase::AddToViewport()> if (!UserWidget) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::AddToViewport()> if (!UserWidget)"));
+#endif			
 		return;
 	}
 
@@ -68,8 +84,12 @@ void UWidgetBase::RemoveFromViewport()
 {
 	if (!UserWidget)
 	{
-		printf_s("[Error] <UWidgetBase::RemoveFromViewport()> if (!UserWidget)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::RemoveFromViewport()> if (!UserWidget)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UWidgetBase::RemoveFromViewport()> if (!UserWidget) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::RemoveFromViewport()> if (!UserWidget)"));
+#endif			
 		return;
 	}
 
@@ -82,8 +102,12 @@ void UWidgetBase::ToggleViewport()
 {
 	if (!UserWidget)
 	{
-		printf_s("[Error] <UWidgetBase::ToggleViewport()> if (!UserWidget)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UWidgetBase::ToggleViewport()> if (!UserWidget)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UWidgetBase::ToggleViewport()> if (!UserWidget) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::ToggleViewport()> if (!UserWidget)"));
+#endif			
 		return;
 	}
 

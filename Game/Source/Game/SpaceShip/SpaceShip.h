@@ -70,10 +70,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "ASpaceShip")
 		class UArrowComponent* PioneerSpawnPoint = nullptr;
 
-	//UPROPERTY(VisibleAnywhere, Category = "Meshes")
-	//	/** 오로지 충돌에만 사용하고 보이지 않는 스태틱메시입니다. */
-	//	class UStaticMeshComponent* StaticMesh = nullptr;
-
 	UPROPERTY(VisibleAnywhere, Category = "Meshes")
 		/** 애니메이션을 수행하는 스켈레탈메시입니다. */
 		class USkeletalMeshComponent* SkeletalMesh = nullptr;

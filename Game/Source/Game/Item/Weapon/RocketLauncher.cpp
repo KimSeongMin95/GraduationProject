@@ -86,10 +86,12 @@ bool ARocketLauncher::Fire(int IDOfPioneer)
 	if (Super::Fire(IDOfPioneer) == false)
 		return false;
 
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<ARocketLauncher::Fire(...)> if (!world)"));
+#endif			
 		return false;
 	}
 
@@ -105,7 +107,7 @@ bool ARocketLauncher::Fire(int IDOfPioneer)
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	AProjectile* projectile = World->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+	AProjectile* projectile = world->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 
 
 	if (ServerSocketInGame)

@@ -47,9 +47,13 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 			// Owner가 ABaseCharacter이거나 ABaseCharacter의 하위클래스인지 확인합니다.
 			if (Owner->IsA(ABaseCharacter::StaticClass()))
 				BaseCharacter = Cast<ABaseCharacter>(Owner);
+
+			
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::NativeUpdateAnimation: !BaseCharacter"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!BaseCharacter)"));
+#endif
 		return;
 	}
 

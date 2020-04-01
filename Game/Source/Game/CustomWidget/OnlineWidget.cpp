@@ -24,10 +24,14 @@ bool UOnlineWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 	if (UWidgetBase::InitWidget(World, ReferencePath, bAddToViewport) == false)
 		return false;
 
-	if (WidgetTree == nullptr)
+	if (!WidgetTree)
 	{
-		printf_s("[Error] <UOnlineWidget::InitWidget(...)> if (WidgetTree == nullptr)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UOnlineWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UOnlineWidget::InitWidget(...)> if (!WidgetTree) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UOnlineWidget::InitWidget(...)> if (!WidgetTree)"));
+#endif
 		return false;
 	}
 
@@ -42,10 +46,14 @@ bool UOnlineWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 
 void UOnlineWidget::CheckTextOfID()
 {
-	if (ID == nullptr)
+	if (!ID)
 	{
-		printf_s("[ERROR] <UOnlineWidget::CheckTextOfID()> if (ID == nullptr)\n");
-		UE_LOG(LogTemp, Warning, TEXT("[ERROR] <UOnlineWidget::CheckTextOfID()> if (ID == nullptr)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UOnlineWidget::CheckTextOfID()> if (!ID) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UOnlineWidget::CheckTextOfID()> if (!ID)"));
+#endif		
 		return;
 	}
 
@@ -69,10 +77,14 @@ void UOnlineWidget::CheckTextOfID()
 
 void UOnlineWidget::CheckTextOfPort()
 {
-	if (Port == nullptr)
+	if (!Port)
 	{
-		printf_s("[ERROR] <UOnlineWidget::CheckTextOfPort()> if (Port == nullptr)\n");
-		UE_LOG(LogTemp, Warning, TEXT("[ERROR] <UOnlineWidget::CheckTextOfPort()> if (Port == nullptr)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UOnlineWidget::CheckTextOfPort()> if (!Port) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UOnlineWidget::CheckTextOfPort()> if (!Port)"));
+#endif			
 		return;
 	}
 

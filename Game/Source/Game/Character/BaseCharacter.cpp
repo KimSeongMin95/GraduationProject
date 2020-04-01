@@ -88,7 +88,9 @@ void ABaseCharacter::BeginPlayHelthPointBar()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar() Failed: UWorld* const World = GetWorld();"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!world)"));
+#endif
 		return;
 	}
 
@@ -110,16 +112,28 @@ void ABaseCharacter::BeginPlayHelthPointBar()
 			// ProgreeBar = Cast<UProgressBar>(HelthPointBarUserWidget->GetWidgetFromName(FName(TEXT("ProgressBar_153"))));
 
 			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
-			if (ProgressBar == nullptr)
-				UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar(): ProgressBar == nullptr"));
-		
+			if (!ProgressBar)
+			{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+				UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!ProgressBar)"));
+#endif
+			}
+
 			EditableTextBoxForID = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_147")));
 		}
 		else
-			UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar(): WidgetTree == nullptr"));
+		{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!WidgetTree)"));
+#endif
+		}
 	}
 	else
-		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar(): HelthPointBarUserWidget == nullptr"));
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
+#endif
+	}
 
 	HelthPointBar->SetWidget(HelthPointBarUserWidget);
 }
@@ -331,7 +345,9 @@ void ABaseCharacter::PossessAIController()
 {
 	if (!AIController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::PossessAIController(): !AIController"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::PossessAIController()> if (!AIController)"));
+#endif		
 		return;
 	}
 
@@ -346,7 +362,9 @@ void ABaseCharacter::UnPossessAIController()
 {
 	if (!AIController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::PossessAIController(): !AIController"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::UnPossessAIController()> if (!AIController)"));
+#endif		
 		return;
 	}
 

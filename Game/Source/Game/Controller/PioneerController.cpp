@@ -134,7 +134,9 @@ void APioneerController::OnPossess(APawn* InPawn)
 {
 	if (!InPawn)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::OnPossess: !InPawn"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::OnPossess(...)> if (!InPawn)"));
+#endif		
 		return;
 	}
 
@@ -152,7 +154,9 @@ void APioneerController::OnUnPossess()
 
 	if (!GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::OnUnPossess: !GetPawn()"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::OnUnPossess(...)> if (!GetPawn())"));
+#endif		
 		return;
 	}
 
@@ -170,8 +174,9 @@ void APioneerController::MoveToMouseCursor()
 {
 	if (!Pioneer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::MoveToMouseCursor: if (!Pioneer)"));
-		return;
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveToMouseCursor()> if (!Pioneer)"));
+#endif		return;
 	}
 
 	// VR 사용시
@@ -258,7 +263,9 @@ void APioneerController::MoveForward(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::MoveForward: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveForward(...)> if (!Pioneer || !GetPawn())"));
+#endif		
 		return;
 	}
 	
@@ -287,7 +294,9 @@ void APioneerController::MoveRight(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::MoveRight: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveRight(...)> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -321,7 +330,9 @@ void APioneerController::ZoomInOrZoomOut(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ZoomInOrZoomOut: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ZoomInOrZoomOut(...)> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -340,7 +351,9 @@ void APioneerController::FireWeapon(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::FireWeapon: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::FireWeapon(...)> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -356,7 +369,9 @@ void APioneerController::ChangePreviousWeapon()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ChangeWeapon: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ChangePreviousWeapon()> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -375,7 +390,9 @@ void APioneerController::ChangeNextWeapon()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ChangeWeapon: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ChangeNextWeapon()> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -394,7 +411,9 @@ void APioneerController::ArmOrDisArmWeapon()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ConstructingMode: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ArmOrDisArmWeapon()> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -428,12 +447,12 @@ void APioneerController::AcquireItem()
 	// 네트워크 동기화의 어려움 때문에 기능을 사용하지 않습니다.
 	return;
 
-	UE_LOG(LogTemp, Warning, TEXT("APioneerController::AcquireItem()"));
-
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ChangeWeapon: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::AcquireItem()> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -458,7 +477,6 @@ void APioneerController::AcquireItem()
 	if (!closestItem)
 		return;
 	
-	UE_LOG(LogTemp, Warning, TEXT("APioneerController::AcquireItem(): find"));
 
 	if (AWeapon* weapon = dynamic_cast<AWeapon*>(closestItem))
 	{
@@ -498,7 +516,9 @@ void APioneerController::AbandonWeapon()
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::ChangeWeapon: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::AbandonWeapon()> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -532,7 +552,9 @@ void APioneerController::ConstructingMode()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::PlaceBuilding: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ConstructingMode()> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -549,7 +571,9 @@ void APioneerController::ESC_ConstructingMode()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::PlaceBuilding: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ESC_ConstructingMode()> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -572,7 +596,9 @@ void APioneerController::SpawnBuilding(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::RotatingBuilding: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::SpawnBuilding(...)> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -591,7 +617,9 @@ void APioneerController::RotatingBuilding(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::RotatingBuilding: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::RotatingBuilding(...)> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -606,7 +634,9 @@ void APioneerController::PlaceBuilding()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneerController::PlaceBuilding: if (!Pioneer || !GetPawn())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::PlaceBuilding()> if (!Pioneer || !GetPawn())"));
+#endif
 		return;
 	}
 
@@ -635,7 +665,9 @@ void APioneerController::Menu()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <APioneerController::Menu()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerController::Menu()> if (!world)"));
+#endif		
 		return;
 	}
 
@@ -662,7 +694,9 @@ void APioneerController::ScoreBoard(float Value)
 			UWorld* const world = GetWorld();
 			if (!world)
 			{
-				printf_s("[ERROR] <APioneerController::ScoreBoardPressed()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+				UE_LOG(LogTemp, Error, TEXT("<APioneerController::ScoreBoard(...)> if (!world)"));
+#endif				
 				return;
 			}
 
@@ -689,7 +723,9 @@ void APioneerController::ScoreBoard(float Value)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <APioneerController::ScoreBoardPressed()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ScoreBoard(...)> if (!world)"));
+#endif		
 		return;
 	}
 
@@ -712,7 +748,9 @@ void APioneerController::ObservingLeft()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::ObservingLeft()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingLeft()> if (!PioneerManager)"));
+#endif		
 		return;
 	}
 
@@ -726,7 +764,9 @@ void APioneerController::ObservingRight()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::ObservingRight()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingRight()> if (!PioneerManager)"));
+#endif		
 		return;
 	}
 
@@ -740,7 +780,9 @@ void APioneerController::ObservingFree()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::ObservingFree()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingFree()> if (!PioneerManager)"));
+#endif		
 		return;
 	}
 
@@ -759,7 +801,9 @@ void APioneerController::ObservingPossess()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::ObservingPossess()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingPossess()> if (!PioneerManager)"));
+#endif		
 		return;
 	}
 
@@ -778,14 +822,15 @@ void APioneerController::FreeViewPoint_MoveForward(float Value)
 
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::FreeViewPoint_MoveForward(...)> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveForward(...)> if (!PioneerManager)"));
+#endif		
 		return;
 	}
 
 	// 자유시점 모드일때만 조종합니다.
 	if (PioneerManager->ViewpointState != EViewpointState::Free)
 	{
-		//printf_s("[INFO] <APioneerController::FreeViewPoint_MoveForward(...)> if (PioneerManager->ViewpointState == EViewpointState::Free) \n");
 		return;
 	}
 
@@ -805,14 +850,15 @@ void APioneerController::FreeViewPoint_MoveRight(float Value)
 
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::FreeViewPoint_MoveRight(...)> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveRight(...)> if (!PioneerManager)"));
+#endif		
 		return;
 	}
 
 	// 자유시점 모드일때만 조종합니다.
 	if (PioneerManager->ViewpointState != EViewpointState::Free)
 	{
-		//printf_s("[INFO] <APioneerController::FreeViewPoint_MoveRight(...)> if (PioneerManager->ViewpointState == EViewpointState::Free) \n");
 		return;
 	}
 
@@ -821,10 +867,6 @@ void APioneerController::FreeViewPoint_MoveRight(float Value)
 		FTransform transform = freeViewCamera->GetActorTransform();
 		transform.AddToTranslation(freeViewCamera->GetActorRightVector() * Value * 32.0f);
 		freeViewCamera->SetActorTransform(transform);
-	}
-	else
-	{
-		printf_s("[ERROR] <APioneerController::FreeViewPoint_MoveRight(...)> else \n");
 	}
 }
 
@@ -836,14 +878,15 @@ void APioneerController::FreeViewPoint_MoveUp(float Value)
 
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <APioneerController::FreeViewPoint_MoveUp(...)> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveUp(...)> if (!PioneerManager)"));
+#endif		
 		return;
 	}
 
 	// 자유시점 모드일때만 조종합니다.
 	if (PioneerManager->ViewpointState != EViewpointState::Free)
 	{
-		//printf_s("[INFO] <APioneerController::FreeViewPoint_MoveUp(...)> if (PioneerManager->ViewpointState == EViewpointState::Free) \n");
 		return;
 	}
 

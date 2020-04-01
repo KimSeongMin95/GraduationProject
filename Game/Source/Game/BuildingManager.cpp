@@ -49,7 +49,9 @@ void ABuildingManager::BeginPlay()
 			UWorld* const world = GetWorld();
 			if (!world)
 			{
-				printf_s("[ERROR] <ABuildingManager::BeginPlay()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+				UE_LOG(LogTemp, Warning, TEXT("<APioneer::BeginPlay()> if (!world)"));
+#endif
 				return;
 			}
 
@@ -76,10 +78,12 @@ void ABuildingManager::Tick(float DeltaTime)
 /*** ABuildingManager : Start ***/
 class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 {
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABuildingManager::SpawnBuilding: if (!World)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<ABuildingManager::SpawnBuilding(...)> if (!world)"));
+#endif
 		return nullptr;
 	}
 
@@ -94,45 +98,47 @@ class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 	switch ((EBuildingType)Value)
 	{
 	case EBuildingType::Floor:
-		building = World->SpawnActor<AFloor>(AFloor::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AFloor>(AFloor::StaticClass(), myTrans, SpawnParams);
 		break;
 
 	case EBuildingType::Wall:
-		building = World->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::Stairs:
-		building = World->SpawnActor<AStairs>(AStairs::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AStairs>(AStairs::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::Gate:
-		building = World->SpawnActor<AGate>(AGate::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AGate>(AGate::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::InorganicMine:
-		building = World->SpawnActor<AInorganicMine>(AInorganicMine::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AInorganicMine>(AInorganicMine::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::OrganicMine:
-		building = World->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::NuclearFusionPowerPlant:
-		building = World->SpawnActor<ANuclearFusionPowerPlant>(ANuclearFusionPowerPlant::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<ANuclearFusionPowerPlant>(ANuclearFusionPowerPlant::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::AssaultRifleTurret:
-		building = World->SpawnActor<AAssaultRifleTurret>(AAssaultRifleTurret::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AAssaultRifleTurret>(AAssaultRifleTurret::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::SniperRifleTurret:
-		building = World->SpawnActor<ASniperRifleTurret>(ASniperRifleTurret::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<ASniperRifleTurret>(ASniperRifleTurret::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::RocketLauncherTurret:
-		building = World->SpawnActor<ARocketLauncherTurret>(ARocketLauncherTurret::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<ARocketLauncherTurret>(ARocketLauncherTurret::StaticClass(), myTrans, SpawnParams);
 		break;
 
 	case EBuildingType::ResearchInstitute:
-		building = World->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::WeaponFactory:
-		building = World->SpawnActor<AWeaponFactory>(AWeaponFactory::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AWeaponFactory>(AWeaponFactory::StaticClass(), myTrans, SpawnParams);
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::SpawnBuilding: if (!World)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneer::SpawnBuilding(...)> switch ((EBuildingType)Value) default:"));
+#endif
 		break;
 	}
 
@@ -146,10 +152,12 @@ class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 
 void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuilding_Spawn)
 {
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABuildingManager::RecvSpawnBuilding: if (!World)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneer::RecvSpawnBuilding(...)> if (!world)"));
+#endif
 		return;
 	}
 
@@ -164,45 +172,47 @@ void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuil
 	switch ((EBuildingType)InfoOfBuilding_Spawn.Numbering)
 	{
 	case EBuildingType::Floor:
-		building = World->SpawnActor<AFloor>(AFloor::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AFloor>(AFloor::StaticClass(), myTrans, SpawnParams);
 		break;
 
 	case EBuildingType::Wall:
-		building = World->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::Stairs:
-		building = World->SpawnActor<AStairs>(AStairs::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AStairs>(AStairs::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::Gate:
-		building = World->SpawnActor<AGate>(AGate::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AGate>(AGate::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::InorganicMine:
-		building = World->SpawnActor<AInorganicMine>(AInorganicMine::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AInorganicMine>(AInorganicMine::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::OrganicMine:
-		building = World->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AOrganicMine>(AOrganicMine::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::NuclearFusionPowerPlant:
-		building = World->SpawnActor<ANuclearFusionPowerPlant>(ANuclearFusionPowerPlant::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<ANuclearFusionPowerPlant>(ANuclearFusionPowerPlant::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::AssaultRifleTurret:
-		building = World->SpawnActor<AAssaultRifleTurret>(AAssaultRifleTurret::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AAssaultRifleTurret>(AAssaultRifleTurret::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::SniperRifleTurret:
-		building = World->SpawnActor<ASniperRifleTurret>(ASniperRifleTurret::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<ASniperRifleTurret>(ASniperRifleTurret::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::RocketLauncherTurret:
-		building = World->SpawnActor<ARocketLauncherTurret>(ARocketLauncherTurret::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<ARocketLauncherTurret>(ARocketLauncherTurret::StaticClass(), myTrans, SpawnParams);
 		break;
 
 	case EBuildingType::ResearchInstitute:
-		building = World->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EBuildingType::WeaponFactory:
-		building = World->SpawnActor<AWeaponFactory>(AWeaponFactory::StaticClass(), myTrans, SpawnParams);
+		building = world->SpawnActor<AWeaponFactory>(AWeaponFactory::StaticClass(), myTrans, SpawnParams);
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::SpawnBuilding: if (!World)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneer::RecvSpawnBuilding(...)> switch ((EBuildingType)Value) default:"));
+#endif
 		break;
 	}
 

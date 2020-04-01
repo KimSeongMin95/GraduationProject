@@ -20,10 +20,14 @@ bool UMainScreenWidget::InitWidget(UWorld* const World, const FString ReferenceP
 	if (UWidgetBase::InitWidget(World, ReferencePath, bAddToViewport) == false)
 		return false;
 
-	if (WidgetTree == nullptr)
+	if (!WidgetTree)
 	{
-		printf_s("[Error] <UMainScreenWidget::InitWidget()> if (WidgetTree == nullptr)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UMainScreenWidget::InitWidget()> if (WidgetTree == nullptr)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UMainScreenWidget::InitWidget(...)> if (!WidgetTree) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UMainScreenWidget::InitWidget(...)> if (!WidgetTree)"));
+#endif
 		return false;
 	}
 

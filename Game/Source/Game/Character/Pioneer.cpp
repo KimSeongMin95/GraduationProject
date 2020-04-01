@@ -106,8 +106,6 @@ void APioneer::BeginPlay()
 
 void APioneer::Tick(float DeltaTime)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Test"));
-
 	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있음.
 	// 따라서, Tick 가장 앞에서 죽었는지 여부를 체크해야 함.
 	if (bDying)
@@ -186,10 +184,12 @@ void APioneer::InitAIController()
 	if (AIController)
 		return;
 
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::InitAIController(): !World"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::InitAIController()> if (!world)"));
+#endif
 		return;
 	}
 
@@ -199,7 +199,7 @@ void APioneer::InitAIController()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	AIController = World->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
+	AIController = world->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
 
 	// Controller는 Attach가 안됨.
 }
@@ -212,7 +212,9 @@ void APioneer::InitCharacterMovement()
 
 void APioneer::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+	UE_LOG(LogTemp, Log, TEXT("<APioneer::OnOverlapBegin_DetectRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
+#endif
 
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
@@ -238,9 +240,12 @@ void APioneer::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedC
 		//if (OverapedDetectRangeActors.Contains(OtherActor) == false)
 		{
 			OverapedDetectRangeActors.Add(OtherActor);
-			//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Num(): %d"), OverapedDetectRangeActors.Num());
-			//UE_LOG(LogTemp, Warning, TEXT("_______"));
+
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			//UE_LOG(LogTemp, Log, TEXT("OverapedDetectRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
+			//UE_LOG(LogTemp, Log, TEXT("OverapedDetectRangeActors.Num(): %d"), OverapedDetectRangeActors.Num());
+			//UE_LOG(LogTemp, Log, TEXT("_______"));
+#endif
 		}
 	}
 }
@@ -265,15 +270,20 @@ void APioneer::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedCom
 
 		//OverapedDetectRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
 		OverapedDetectRangeActors.RemoveSingle(OtherActor); // OtherActor 하나를 지웁니다.
+
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());
 		//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Num(): %d"), OverapedDetectRangeActors.Num());
 		//UE_LOG(LogTemp, Warning, TEXT("_______"));
+#endif
 	}
 }
 
 void APioneer::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+	UE_LOG(LogTemp, Log, TEXT("<APioneer::OnOverlapBegin_AttackRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
+#endif
 
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
@@ -299,9 +309,12 @@ void APioneer::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedC
 		//if (OverapedAttackRangeActors.Contains(OtherActor) == false)
 		{
 			OverapedAttackRangeActors.Add(OtherActor);
+
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 			//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
 			//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
 			//UE_LOG(LogTemp, Warning, TEXT("_______"));
+#endif
 		}
 	}
 }
@@ -326,9 +339,12 @@ void APioneer::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedCom
 
 		//OverapedAttackRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
 		OverapedAttackRangeActors.RemoveSingle(OtherActor); // OtherActor 하나만 지웁니다.
+
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());
 		//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
 		//UE_LOG(LogTemp, Warning, TEXT("_______"));
+#endif
 	}
 }
 
@@ -454,7 +470,9 @@ void APioneer::SetCameraBoomSettings()
 {
 	if (!CameraBoom)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneer::SetCameraBoomSettings()> if (!CameraBoom)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::SetCameraBoomSettings()> if (!CameraBoom)"));
+#endif
 		return;
 	}
 
@@ -604,7 +622,9 @@ void APioneer::InitSkeletalAnimation()
 	UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
 	if (!animBP)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("!animBP"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::InitSkeletalAnimation()> if (!animBP)"));
+#endif
 	}
 	else
 		GetMesh()->SetAnimInstanceClass(animBP);
@@ -692,10 +712,12 @@ void APioneer::InitCursor()
 
 void APioneer::InitWeapon()
 {
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::InitWeapon: !World"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::InitWeapon()> if (!world)"));
+#endif
 		return;
 	}
 
@@ -706,7 +728,7 @@ void APioneer::InitWeapon()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
 	// 개척자는 기본적으로 권총을 가지고 있음
-	APistol* Pistol = World->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
+	APistol* Pistol = world->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
 	Pistol->Acquired();
 	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	//Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
@@ -716,35 +738,35 @@ void APioneer::InitWeapon()
 		Arming();
 	}
 
-	AAssaultRifle* assaultRifle = World->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
+	AAssaultRifle* assaultRifle = world->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
 	assaultRifle->Acquired();
 	assaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	assaultRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(assaultRifle) == false)
 		Weapons.Add(assaultRifle);
 
-	AShotgun* shotgun = World->SpawnActor<AShotgun>(AShotgun::StaticClass(), myTrans, SpawnParams);
+	AShotgun* shotgun = world->SpawnActor<AShotgun>(AShotgun::StaticClass(), myTrans, SpawnParams);
 	shotgun->Acquired();
 	shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ShotgunSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	shotgun->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(shotgun) == false)
 		Weapons.Add(shotgun);
 
-	ASniperRifle* sniperRifle = World->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), myTrans, SpawnParams);
+	ASniperRifle* sniperRifle = world->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), myTrans, SpawnParams);
 	sniperRifle->Acquired();
 	sniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	sniperRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(sniperRifle) == false)
 		Weapons.Add(sniperRifle);
 
-	AGrenadeLauncher* grenadeLauncher = World->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
+	AGrenadeLauncher* grenadeLauncher = world->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
 	grenadeLauncher->Acquired();
 	grenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	grenadeLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(grenadeLauncher) == false)
 		Weapons.Add(grenadeLauncher);
 
-	ARocketLauncher* rocketLauncher = World->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
+	ARocketLauncher* rocketLauncher = world->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
 	rocketLauncher->Acquired();
 	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	rocketLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
@@ -933,7 +955,9 @@ void APioneer::DestroyCharacter()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneer::DestroyCharacter()> if (!PioneerManager)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::DestroyCharacter()> if (!PioneerManager)"));
+#endif
 	}
 
 	Destroy();
@@ -944,13 +968,17 @@ bool APioneer::CopyTopDownCameraTo(AActor* CameraToBeCopied)
 {
 	if (!TopDownCameraComponent)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneer::CopyTopDownCameraTo()> if (!TopDownCameraComponent)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::CopyTopDownCameraTo(...)> if (!TopDownCameraComponent)"));
+#endif
 		return false;
 	}
 
 	if (!CameraToBeCopied)
 	{
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneer::CopyTopDownCameraTo()> if (!CameraToBeCopied)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::CopyTopDownCameraTo(...)> if (!CameraToBeCopied)"));
+#endif
 		return false;
 	}
 
@@ -997,7 +1025,9 @@ void APioneer::AcquireWeapon(class AWeapon* weapon)
 {
 	if (!weapon || !GetMesh())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::AcquireWeapon: if (!weapon || !GetMesh())"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::AcquireWeapon(...)> if (!weapon || !GetMesh())"));
+#endif
 		return;
 	}
 
@@ -1020,7 +1050,9 @@ void APioneer::AbandonWeapon()
 {
 	if (!CurrentWeapon)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::AbandonWeapon: if (!CurrentWeapon)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::AbandonWeapon()> if (!CurrentWeapon)"));
+#endif
 		return;
 	}
 
@@ -1072,7 +1104,9 @@ void APioneer::SetWeaponType()
 	// 현재 무기를 든 상태여야 무기 변경 가능
 	if (!CurrentWeapon)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("APioneer::SetWeaponType: if (!CurrentWeapon)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::SetWeaponType()> if (!CurrentWeapon)"));
+#endif
 		return;
 	}
 
@@ -1089,7 +1123,9 @@ void APioneer::SetWeaponType()
 		bHasLauncherType = true;
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::SetWeaponType: switch (CurrentWeapon->WeaponType) default:"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneer::SetWeaponType()> switch (CurrentWeapon->WeaponType) default:"));
+#endif
 		break;
 	}
 }
@@ -1105,15 +1141,18 @@ void APioneer::ChangeWeapon(int Value)
 	// 현재 무기를 든 상태여야 무기 변경 가능
 	if (!CurrentWeapon)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::ChangeWeapon: if (!CurrentWeapon)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::ChangeWeapon(...)> if (!CurrentWeapon)"));
+#endif
 		return;
 	}
 
 	// Weapon이 2개 이상 있어야 무기 변경 가능
 	if (Weapons.Num() <= 1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::ChangeWeapon: if (Weapons.Num() == 0)"));
-		return;
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Log, TEXT("<APioneer::ChangeWeapon(...)> if (Weapons.Num() <= 1)"));
+#endif		return;
 	}
 
 	CurrentWeapon->SetActorHiddenInGame(true);
@@ -1143,7 +1182,9 @@ void APioneer::Arming()
 	// IdxOfCurrentWeapon가 유효하지 않으면
 	if (Weapons.IsValidIndex(IdxOfCurrentWeapon) == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::Arming: if (IdxOfCurrentWeapon == INDEX_NONE)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneer::Arming()> if (Weapons.IsValidIndex(IdxOfCurrentWeapon) == false)"));
+#endif
 
 		CurrentWeapon = nullptr;
 
@@ -1179,7 +1220,9 @@ void APioneer::Arming()
 
 	if (!CurrentWeapon)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::Arming: if (!CurrentWeapon)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneer::Arming()> if (!CurrentWeapon)"));
+#endif
 		return;
 	}
 
@@ -1215,8 +1258,9 @@ void APioneer::SpawnBuilding(int Value)
 		UWorld* const world = GetWorld();
 		if (!world)
 		{
-			printf_s("[ERROR] <APioneerManager::SpawnBuilding()> if (!world)\n");
-			return;
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<APioneer::SpawnBuilding(...)> if (!world)"));
+#endif			return;
 		}
 
 		for (TActorIterator<ABuildingManager> ActorItr(world); ActorItr; ++ActorItr)
@@ -1234,13 +1278,17 @@ void APioneer::OnConstructingMode()
 {
 	if (!bConstructingMode || !CursorToWorld || !Building)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("APioneer::OnConstructingMode: if (!bConstructingMode || !CursorToWorld || !Building)"));
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//		UE_LOG(LogTemp, Warning, TEXT("<APioneer::OnConstructingMode()> if (!bConstructingMode || !CursorToWorld || !Building)"));
+//#endif		
 		return;
 	}
 
 	if (GetController() == AIController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("APioneer::OnConstructingMode: if (GetController() == AIController)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneer::OnConstructingMode()> if (GetController() == AIController)"));
+#endif		
 		return;
 	}
 
@@ -1488,139 +1536,3 @@ class cInfoOfPioneer APioneer::GetInfoOfPioneer()
 }
 /*** APioneer : End ***/
 
-
-
-
-
-
-
-//void APioneer::PunchAttack()
-//{
-//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PunchAttack"));
-//	AttackInput(EAttackType::MELEE_FIST);
-//}
-//
-//void APioneer::KickAttack()
-//{
-//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("KickAttack"));
-//	AttackInput(EAttackType::MELEE_KICK);
-//}
-//
-//void APioneer::AttackInput(EAttackType AttackType)
-//{
-//	if (PlayerAttackDataTable)
-//	{
-//		static const FString ContextString(TEXT("Player Attack Montage Context"));
-//
-//		FName RowKey;
-//
-//		// attach collision components to sockets based on transformations definitions
-//		const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
-//
-//		switch (AttackType)
-//		{
-//		case EAttackType::MELEE_FIST:
-//			RowKey = FName(TEXT("Punch"));
-//
-//			//LeftMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_l_collision");
-//			//RightMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "fist_r_collision");
-//
-//			bIsKeyboardEnabled = true;
-//
-//			bIsAnimationBlended = true;
-//			break;
-//		case EAttackType::MELEE_KICK:
-//			RowKey = FName(TEXT("Kick"));
-//
-//			//LeftMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "foot_l_collision");
-//			//RightMeleeCollisionBox->AttachToComponent(GetMesh(), AttachmentRules, "foot_r_collision");
-//
-//			bIsKeyboardEnabled = false;
-//
-//			bIsAnimationBlended = false;
-//			break;
-//		default:
-//
-//			bIsAnimationBlended = true;
-//			break;
-//		}
-//
-//		AttackMontage = PlayerAttackDataTable->FindRow<FPlayerAttackMontage>(RowKey, ContextString, true);
-//
-//		if (AttackMontage)
-//		{
-//			// pick the correct montage section based on our attack type
-//			int MontageSectionIndex;
-//			MontageSectionIndex = 1;
-//
-//			// create a montage section
-//			FString MontageSection = "start_" + FString::FromInt(MontageSectionIndex);
-//
-//			PlayAnimMontage(AttackMontage->Montage, 1.f, FName(*MontageSection));
-//
-//			if (!bIsArmed)
-//			{
-//				bIsArmed = true;
-//			}
-//		}
-//	}
-//	else
-//		UE_LOG(LogTemp, Warning, TEXT("Failed: PlayerAttackDataTable"));
-//}
-
-//void APioneer::AttackStart()
-//{
-//	//Log(ELogLevel::INFO, __FUNCTION__);
-//
-//	/*LeftMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Enabled);
-//	LeftMeleeCollisionBox->SetNotifyRigidBodyCollision(true);
-//
-//	RightMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Enabled);
-//	RightMeleeCollisionBox->SetNotifyRigidBodyCollision(true);*/
-//}
-//
-//void APioneer::AttackEnd()
-//{
-//	//Log(ELogLevel::INFO, __FUNCTION__);
-//
-//	/*LeftMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Disabled);
-//	LeftMeleeCollisionBox->SetNotifyRigidBodyCollision(false);
-//
-//	RightMeleeCollisionBox->SetCollisionProfileName(MeleeCollisionProfile.Disabled);
-//	RightMeleeCollisionBox->SetNotifyRigidBodyCollision(false);*/
-//
-//	UWorld* const world = GetWorld();
-//	if (!world)
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-//		return;
-//	}
-//
-//	bool bIsActive = world->GetTimerManager().IsTimerActive(ArmedToIdleTimerHandle);
-//	if (bIsActive)
-//	{
-//		// reset the timer
-//		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
-//	}
-//
-//	CountdownToIdle = MaxCountdownToIdle;
-//
-//	// start timer from scratch
-//	world->GetTimerManager().SetTimer(ArmedToIdleTimerHandle, this, &APioneer::TriggerCountdownToIdle, 1.f, true);
-//}
-//void APioneer::TriggerCountdownToIdle()
-//{
-//	// count down to zero
-//	if (--CountdownToIdle <= 0) {
-//		bIsArmed = false;
-//		CountdownToIdle = MaxCountdownToIdle;
-//
-//		UWorld* const world = GetWorld();
-//		if (!world)
-//		{
-//			UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
-//			return;
-//		}
-//		world->GetTimerManager().ClearTimer(ArmedToIdleTimerHandle);
-//	}
-//}

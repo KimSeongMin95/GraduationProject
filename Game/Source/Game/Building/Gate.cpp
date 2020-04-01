@@ -153,7 +153,9 @@ void AGate::TickOfOpenAndCloseTheGate(float DeltaTime)
 {
 	if (!BuildingSMC_2)
 	{
-		printf_s("[ERROR] if (!BuildingSMC_2) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AGate::TickOfOpenAndCloseTheGate(...)> if (!BuildingSMC_2)"));
+#endif
 		return;
 	}
 

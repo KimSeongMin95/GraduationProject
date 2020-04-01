@@ -30,10 +30,14 @@ bool UInGameScoreBoardWidget::InitWidget(UWorld* const World, const FString Refe
 	if (UWidgetBase::InitWidget(World, ReferencePath, bAddToViewport) == false)
 		return false;
 
-	if (WidgetTree == nullptr)
+	if (!WidgetTree)
 	{
-		printf_s("[Error] <UInGameScoreBoardWidget::InitWidget(...)> if (WidgetTree == nullptr)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UInGameScoreBoardWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameScoreBoardWidget::InitWidget(...)> if (!WidgetTree) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameScoreBoardWidget::InitWidget(...)> if (!WidgetTree)"));
+#endif		
 		return false;
 	}
 
@@ -77,8 +81,12 @@ void UInGameScoreBoardWidget::SetServerDestroyedVisibility(bool bVisible)
 {
 	if (!ServerDestroyed)
 	{
-		printf_s("[ERROR] <UInGameScoreBoardWidget::SetServerDestroyedVisibility(...)> if (!ServerDestroyed)\n");
-		return;
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UInGameMenuWidget::SetServerDestroyedVisibility(...)> if (!ServerDestroyed) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UInGameMenuWidget::SetServerDestroyedVisibility(...)> if (!ServerDestroyed)"));
+#endif		return;
 	}
 
 	if (bVisible)

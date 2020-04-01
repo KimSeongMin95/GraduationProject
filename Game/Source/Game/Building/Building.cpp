@@ -139,7 +139,9 @@ void ABuilding::BeginPlayHelthPointBar()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::BeginPlayHelthPointBar() Failed: UWorld* const World = GetWorld();"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!world)"));
+#endif
 		return;
 	}
 
@@ -161,14 +163,26 @@ void ABuilding::BeginPlayHelthPointBar()
 			// ProgreeBar = Cast<UProgressBar>(HelthPointBarUserWidget->GetWidgetFromName(FName(TEXT("ProgressBar_153"))));
 
 			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
-			if (ProgressBar == nullptr)
-				UE_LOG(LogTemp, Warning, TEXT("ProgressBar == nullptr"));
+			if (!ProgressBar)
+			{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+				UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!ProgressBar)"));
+#endif
+			}
 		}
 		else
-			UE_LOG(LogTemp, Warning, TEXT("WidgetTree == nullptr"));
+		{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!WidgetTree)"));
+#endif
+		}
 	}
 	else
-		UE_LOG(LogTemp, Warning, TEXT("HelthPointBarUserWidget == nullptr"));
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
+#endif
+	}
 
 	HelthPointBar->SetWidget(HelthPointBarUserWidget);
 }
@@ -251,9 +265,6 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 		// StaticMesh의 원본 사이즈 측정
 		FVector minBounds, maxBounds;
 		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
-		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
-		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
-
 
 		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
 		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
@@ -265,7 +276,11 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 		center.Z = -1.0f * (minBounds.Z * Scale.Z);
 		(*StaticMeshComp)->SetRelativeLocation(center + Location);
 
-		//UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		//UE_LOG(LogTemp, Log, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		//UE_LOG(LogTemp, Log, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
+		//UE_LOG(LogTemp, Log, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
+#endif
 	}
 
 	ConstructBuildingSMCs.Add(*StaticMeshComp);
@@ -297,8 +312,6 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 		// StaticMesh의 원본 사이즈 측정
 		FVector minBounds, maxBounds;
 		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
-		//UE_LOG(LogTemp, Warning, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
-		//UE_LOG(LogTemp, Warning, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
 
 		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해줘야 함.
 		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않음.
@@ -315,7 +328,11 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 		TArrayOfUMaterialInterface.Object = (*StaticMeshComp)->GetMaterials();
 		BuildingSMCsMaterials.Add(TArrayOfUMaterialInterface);
 
-		//UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		//UE_LOG(LogTemp, Log, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		//UE_LOG(LogTemp, Log, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
+		//UE_LOG(LogTemp, Log, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
+#endif	
 	}
 
 	BuildingSMCs.Add(*StaticMeshComp);
@@ -355,8 +372,6 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp,
 		FTArrayOfUMaterialInterface TArrayOfUMaterialInterface;
 		TArrayOfUMaterialInterface.Object = (*SkeletalMeshComp)->GetMaterials();
 		BuildingSkMCsMaterials.Add(TArrayOfUMaterialInterface);
-
-		//UE_LOG(LogTemp, Warning, TEXT("%s center: %f, %f, %f"), *(*SkeletalMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
 	}
 
 	BuildingSkMCs.Add(*SkeletalMeshComp);
@@ -381,7 +396,9 @@ void ABuilding::OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* Over
 
 void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+	//UE_LOG(LogTemp, Log, TEXT("<ABuilding::OnOverlapBegin_Building(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
+#endif
 
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
@@ -541,7 +558,9 @@ void ABuilding::SetConstructableMaterial()
 {
 	if (!ConstructableMaterial)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABuilding::SetConstructableMaterial(): !ConstructableMaterial"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<ABuilding::SetConstructableMaterial()> if (!ConstructableMaterial)"));
+#endif
 		return;
 	}
 	for (auto& BuildingSMC : BuildingSMCs)
@@ -564,7 +583,9 @@ void ABuilding::SetUnConstructableMaterial()
 {
 	if (!UnConstructableMaterial)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ABuilding::SetUnConstructableMaterial(): !UnConstructableMaterial"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<ABuilding::SetUnConstructableMaterial()> if (!UnConstructableMaterial)"));
+#endif
 		return;
 	}
 	for (auto& BuildingSMC : BuildingSMCs)

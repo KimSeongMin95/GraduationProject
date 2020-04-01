@@ -53,7 +53,9 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 				Enemy = Cast<AEnemy>(Owner);
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::NativeUpdateAnimation: !Enemy"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!Enemy)"));
+#endif
 		return;
 	}
 
@@ -67,7 +69,9 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		SetBehaviorTree();
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::NativeUpdateAnimation: switch (CharacterAI): default"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> switch (CharacterAI): default"));
+#endif
 		break;
 	}
 }
@@ -79,7 +83,9 @@ void UEnemyAnimInstance::SetFSM()
 {
 	if (!Enemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::SetFSM: !Enemy"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::SetFSM()> if (!Enemy)"));
+#endif
 		return;
 	}
 
@@ -112,7 +118,9 @@ void UEnemyAnimInstance::DestroyCharacter()
 
 	if (!Enemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::DestroyCharacter: !Enemy"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::DestroyCharacter()> if (!Enemy)"));
+#endif
 		return;
 	}
 
@@ -134,7 +142,9 @@ void UEnemyAnimInstance::AttackEnd()
 {
 	if (!Enemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::AttackEnd: !Enemy"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::AttackEnd()> if (!Enemy)"));
+#endif
 		return;
 	}
 
@@ -145,7 +155,9 @@ void UEnemyAnimInstance::DamageToTargetActor()
 {
 	if (!Enemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UEnemyAnimInstance::DamageToTargetActor: !Enemy"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::DamageToTargetActor()> if (!Enemy)"));
+#endif
 		return;
 	}
 

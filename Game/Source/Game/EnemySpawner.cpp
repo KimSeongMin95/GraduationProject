@@ -73,7 +73,9 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 	
 	if (!EnemyManager)
 	{
-		printf_s("[ERROR] <AEnemySpawner::TickOfSpawnEnemy(...)> if (!EnemyManager) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AEnemySpawner::TickOfSpawnEnemy(...)> if (!EnemyManager)"));
+#endif
 		return;
 	}
 

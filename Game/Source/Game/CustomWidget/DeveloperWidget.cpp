@@ -19,13 +19,16 @@ bool UDeveloperWidget::InitWidget(UWorld* const World, const FString ReferencePa
 	if (UWidgetBase::InitWidget(World, ReferencePath, bAddToViewport) == false)
 		return false;
 
-	if (WidgetTree == nullptr)
+	if (!WidgetTree)
 	{
-		printf_s("[Error] <UDeveloperWidget::InitWidget(...)> if (WidgetTree == nullptr)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UDeveloperWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UDeveloperWidget::InitWidget(...)> if (!WidgetTree) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UDeveloperWidget::InitWidget(...)> if (!WidgetTree)"));
+#endif
 		return false;
 	}
-
 
 	return true;
 }

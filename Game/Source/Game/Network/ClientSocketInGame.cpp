@@ -23,7 +23,9 @@ unsigned int WINAPI CallMainThreadIncClientSocketInGame(LPVOID p)
 /////////////////////////////////////
 cClientSocketInGame::cClientSocketInGame()
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[START] <cClientSocketInGame::cClientSocketInGame()>\n");
+#endif
 
 
 	ServerSocket = NULL;
@@ -55,7 +57,10 @@ cClientSocketInGame::cClientSocketInGame()
 
 	PossessedID = 0;
 
+
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[END] <cClientSocketInGame::cClientSocketInGame()>\n");
+#endif
 }
 cClientSocketInGame::~cClientSocketInGame()
 {
@@ -77,19 +82,25 @@ bool cClientSocketInGame::InitSocket()
 
 	if (bIsInitialized == true)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[INFO] <cClientSocketInGame::InitSocket()> if (bIsInitialized == true)\n");
+#endif
 		return true;
 	}
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("\n\n/********** cClientSocketInGame **********/\n");
 	printf_s("[INFO] <cClientSocketInGame::InitSocket()>\n");
+#endif
 
 	WSADATA wsaData;
 
 	// 윈속 버전을 2.2로 초기화
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::InitSocket()> if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)\n");
+#endif
 		return false;
 	}
 
@@ -99,7 +110,9 @@ bool cClientSocketInGame::InitSocket()
 	{
 		WSACleanup();
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::InitSocket()> if (ServerSocket == INVALID_SOCKET)\n");
+#endif
 		return false;
 	}
 
@@ -114,17 +127,23 @@ bool cClientSocketInGame::Connect(const char * pszIP, int nPort)
 {
 	if (bIsInitialized == false)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[INFO] <cClientSocketInGame::Connect(...)> if (bIsInitialized == false)\n");
+#endif
 		return false;
 	}
 
 	if (bIsConnected == true)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[INFO] <cClientSocketInGame::Connect(...)> if (bIsConnected == true)\n");
+#endif
 		return true;
 	}
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[START] <cClientSocketInGame::Connect(...)>\n");
+#endif
 
 	// 접속할 서버 정보를 저장할 구조체
 	SOCKADDR_IN stServerAddr;
@@ -137,17 +156,22 @@ bool cClientSocketInGame::Connect(const char * pszIP, int nPort)
 
 	if (connect(ServerSocket, (sockaddr*)&stServerAddr, sizeof(sockaddr)) == SOCKET_ERROR)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::Connect(...)> if (connect(...) == SOCKET_ERROR)\n");
+#endif
 		return false;
 	}
-
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("\t Connect() Success.\n");
+#endif
 
 	SendConnected();
 
 	bIsConnected = true;
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[END] <cClientSocketInGame::Connect(...)>\n");
+#endif
 
 	return true;
 }
@@ -155,7 +179,9 @@ bool cClientSocketInGame::Connect(const char * pszIP, int nPort)
 
 void cClientSocketInGame::CloseSocket()
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[START] <cClientSocketInGame::CloseSocket()>\n");
+#endif
 
 
 	// 게임클라이언트를 종료하기 전에 조종하던 Pioneer가 죽게끔 알립니다.
@@ -177,7 +203,9 @@ void cClientSocketInGame::CloseSocket()
 
 	if (bIsInitialized == false)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[END] <cClientSocketInGame::CloseSocket()> if (bIsInitialized == false)\n");
+#endif
 		return;
 	}
 	bIsInitialized = false;
@@ -187,14 +215,18 @@ void cClientSocketInGame::CloseSocket()
 		closesocket(ServerSocket);
 		ServerSocket = NULL;
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("\t closesocket(ServerSocket);\n");
+#endif
 	}
 
 	WSACleanup();
 
 	if (bIsConnected == false)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[END] <cClientSocketInGame::CloseSocket()> if (bIsConnected == false)\n");
+#endif
 		return;
 	}
 	bIsConnected = false;
@@ -202,7 +234,9 @@ void cClientSocketInGame::CloseSocket()
 
 	if (bIsClientSocketOn == false)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[END] <cClientSocketInGame::CloseSocket()> if (bIsClientSocketOn == false)\n");
+#endif
 		return;
 	}
 	bIsClientSocketOn = false;
@@ -220,20 +254,28 @@ void cClientSocketInGame::CloseSocket()
 		{
 			CloseHandle(hMainHandle);
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			printf_s("\t CloseHandle(hMainHandle);\n");
+#endif
 		}
 		else if (result == WAIT_TIMEOUT)
 		{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			printf_s("[ERROR] WaitForSingleObject(...) result: WAIT_TIMEOUT\n");
+#endif
 
 			TerminateThread(hMainHandle, 0);
 			CloseHandle(hMainHandle);
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			printf_s("\t TerminateThread(hMainHandle, 0); CloseHandle(hMainHandle);\n");
+#endif
 		}
 		else
 		{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			printf_s("[ERROR] WaitForSingleObject(...) failed: %d\n", (int)GetLastError());
+#endif
 		}
 
 		hMainHandle = NULL;
@@ -278,7 +320,10 @@ void cClientSocketInGame::CloseSocket()
 	tsqInfoOfEnemy_Stat.clear();
 	tsqDestroyEnemy.clear();
 
+
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[END] <cClientSocketInGame::CloseSocket()>\n");
+#endif
 }
 
 void CALLBACK SendCompletionRoutineBycClientSocketInGame(
@@ -287,14 +332,20 @@ void CALLBACK SendCompletionRoutineBycClientSocketInGame(
 	IN LPWSAOVERLAPPED lpOverlapped,
 	IN DWORD dwFlags)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[START] <cClientSocketInGame::CompletionROUTINE(...)> \n");
+#endif
 
 
 	if (dwError != 0)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::CompletionROUTINE(...)> Fail to WSASend(...) : %d\n", WSAGetLastError());
+#endif
 	}
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[INFO] <cClientSocketInGame::CompletionROUTINE(...)> Success to WSASend(...)\n");
+#endif
 
 	stSOCKETINFO* socketInfo = (stSOCKETINFO*)lpOverlapped;
 	if (socketInfo)
@@ -302,19 +353,25 @@ void CALLBACK SendCompletionRoutineBycClientSocketInGame(
 		// 전송할 데이터 사이즈와 전송된 데이터 사이즈가 다르면
 		if (socketInfo->sendBytes != cbTransferred)
 		{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			printf_s("\n\n\n\n\n\n\n\n\n\n");
 			printf_s("[ERROR] <cClientSocketInGame::CompletionROUTINE(...)> if (socketInfo->sendBytes != cbTransferred) \n");
 			printf_s("[ERROR] <cClientSocketInGame::CompletionROUTINE(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
 			printf_s("[ERROR] <cClientSocketInGame::CompletionROUTINE(...)> cbTransferred: %d \n", (int)cbTransferred);
 			printf_s("\n\n\n\n\n\n\n\n\n\n");
+#endif
 		}
 
-		delete socketInfo;
+		delete socketInfo; 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		//printf_s("\t delete socketInfo; \n");
+#endif
 	}
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[END] <cClientSocketInGame::CompletionROUTINE(...)> \n");
+#endif
 }
 
 void cClientSocketInGame::Send(stringstream& SendStream)
@@ -329,16 +386,22 @@ void cClientSocketInGame::Send(stringstream& SendStream)
 	/////////////////////////////
 	if (ServerSocket == NULL || ServerSocket == INVALID_SOCKET)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::Send(...)> if (ServerSocket == NULL || ServerSocket == INVALID_SOCKET) \n");
+#endif
 		return;
 	}
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[START] <cClientSocketInGame::Send(...)> \n");
+#endif
 
 
 	stringstream finalStream;
 	if (AddSizeInStream(SendStream, finalStream) == false)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("\n\n\n\n\n [ERROR] <cClientSocketInGame::Send(...)> if (AddSizeInStream(SendStream, finalStream) == false) \n\n\n\n\n\n");
+#endif
 		return;
 	}
 
@@ -356,7 +419,9 @@ void cClientSocketInGame::Send(stringstream& SendStream)
 	socketInfo->recvBytes = 0;
 	socketInfo->sendBytes = socketInfo->dataBuf.len;
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[INFO] <cClientSocketInGame::Send(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
+#endif
 
 
 	////////////////////////////////////////////////
@@ -377,17 +442,24 @@ void cClientSocketInGame::Send(stringstream& SendStream)
 
 	if (nResult == 0)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		//printf_s("[INFO] <cClientSocketInGame::Send(...)> Success to WSASend(...) \n");
+#endif
 	}
 	if (nResult == SOCKET_ERROR)
 	{
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			printf_s("[ERROR] <cClientSocketInGame::Send(...)> Fail to WSASend(...) : %d \n", WSAGetLastError());
+#endif
 
 			delete socketInfo;
 			socketInfo = nullptr;
+
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			printf_s("[ERROR] <cClientSocketInGame::Send(...)> delete socketInfo; \n");
+#endif
 
 			/// 서버소켓을 닫아도 되는지 아직 확인이 안되었습니다.
 			///CloseSocket();
@@ -399,14 +471,18 @@ void cClientSocketInGame::Send(stringstream& SendStream)
 		}
 		else
 		{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			//printf_s("[INFO] <cClientSocketInGame::Send(...)> WSASend: WSA_IO_PENDING \n");
+#endif
 		}
 	}
 
 	//send(ServerSocket, (CHAR*)finalStream.str().c_str(), finalStream.str().length(), 0);
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[END] <cClientSocketInGame::Send(...)>\n");
+#endif
 }
 
 
@@ -429,7 +505,9 @@ void cClientSocketInGame::SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
 	TCP에선 send buffer와 recv buffer 모두 1048576 * 256까지 가능.
 	*/
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[START] <cClientSocketInGame::SetSockOpt(...)> \n");
+#endif
 
 
 	int optval;
@@ -438,35 +516,49 @@ void cClientSocketInGame::SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
 	// 성공시 0, 실패시 -1 반환
 	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+#endif
 	}
 	if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+#endif
 	}
 
 	optval = SendBuf;
 	if (setsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, sizeof(optval)) == 0)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("\t Socket: %d, setsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+#endif
 	}
 	optval = RecvBuf;
 	if (setsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, sizeof(optval)) == 0)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("\t Socket: %d, setsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+#endif
 	}
 
 	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+#endif
 	}
 	if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)& optval, &optlen) == 0)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+#endif
 	}
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[END] <cClientSocketInGame::SetSockOpt(...)> \n");
+#endif
 }
 
 
@@ -477,14 +569,18 @@ bool cClientSocketInGame::AddSizeInStream(stringstream& DataStream, stringstream
 {
 	if (DataStream.str().length() == 0)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::AddSizeInStream(...)> if (DataStream.str().length() == 0) \n");
+#endif
 		return false;
 	}
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[START] <cClientSocketInGame::AddSizeInStream(...)> \n");
 
-	// ex) DateStream의 크기 : 98
+	//// ex) DateStream의 크기 : 98
 	//printf_s("\t DataStream size: %d\n", (int)DataStream.str().length());
 	//printf_s("\t DataStream: %s\n", DataStream.str().c_str());
+#endif
 
 	// dataStreamLength의 크기 : 3 [98 ]
 	stringstream dataStreamLength;
@@ -499,8 +595,10 @@ bool cClientSocketInGame::AddSizeInStream(stringstream& DataStream, stringstream
 	FinalStream << sizeOfFinalStream << endl;
 	FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("\t FinalStream size: %d\n", (int)FinalStream.str().length());
 	//printf_s("\t FinalStream: %s\n", FinalStream.str().c_str());
+#endif
 
 
 	// 전송할 데이터가 최대 버퍼 크기보다 크거나 같으면 전송 불가능을 알립니다.
@@ -515,8 +613,9 @@ bool cClientSocketInGame::AddSizeInStream(stringstream& DataStream, stringstream
 		return false;
 	}
 
-
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[END] <v::AddSizeInStream(...)> \n");
+#endif
 
 	return true;
 }
@@ -529,7 +628,9 @@ void cClientSocketInGame::PushRecvBufferInDeque(char* RecvBuffer, int RecvLen)
 {
 	if (!RecvBuffer)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::PushRecvBufferInQueue(...)> if (!RecvBuffer) \n");
+#endif
 		return;
 	}
 
@@ -550,7 +651,9 @@ void cClientSocketInGame::GetDataInRecvDeque(char* DataBuffer)
 {
 	if (!DataBuffer)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::GetDataInRecvQueue(...)> if (!DataBuffer) \n");
+#endif
 		return;
 	}
 
@@ -602,7 +705,9 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 {
 	if (!DataBuffer)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::ProcessReceivedPacket(...)> if (!DataBuffer) \n");
+#endif
 		return;
 	}
 
@@ -622,12 +727,16 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 	// 사이즈 확인
 	int sizeOfRecvStream = 0;
 	recvStream >> sizeOfRecvStream;
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
+#endif
 
 	// 패킷 종류 확인
 	int packetType = -1;
 	recvStream >> packetType;
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("\t packetType: %d \n", packetType);
+#endif
 
 	switch (packetType)
 	{
@@ -730,8 +839,10 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 
 	default:
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::ProcessReceivedPacket()> unknown packet type! PacketType: %d \n", packetType);
 		printf_s("[ERROR] <cClientSocketInGame::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
+#endif
 	}
 	break;
 	}
@@ -742,7 +853,9 @@ bool cClientSocketInGame::BeginMainThread()
 {
 	if (bIsClientSocketOn == true)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[INFO] <cClientSocketInGame::BeginMainThread()> if (bIsClientSocketOn == true)\n");
+#endif
 		return true;
 	}
 
@@ -753,7 +866,9 @@ bool cClientSocketInGame::BeginMainThread()
 	bAccept = true;
 	LeaveCriticalSection(&csAccept);
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[INFO] <cClientSocketInGame::BeginMainThread()> Start main thread\n");
+#endif
 	unsigned int threadId;
 
 	// _beginthreadex()는 ::CloseHandle을 내부에서 호출하지 않기 때문에, 스레드 종료시 사용자가 직접 CloseHandle()해줘야 합니다.
@@ -761,7 +876,9 @@ bool cClientSocketInGame::BeginMainThread()
 	hMainHandle = (HANDLE*)_beginthreadex(NULL, 0, &CallMainThreadIncClientSocketInGame, this, CREATE_SUSPENDED, &threadId);
 	if (hMainHandle == NULL)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::BeginMainThread()> if (hMainHandle == NULL)\n");
+#endif
 		return false;
 	}
 	ResumeThread(hMainHandle);
@@ -811,7 +928,9 @@ void cClientSocketInGame::RunMainThread()
 		u_long amount = 0;
 		if (ioctlsocket(ServerSocket, FIONREAD, &amount) == -1)
 		{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			printf_s("[ERROR] if (ioctlsocket(ServerSocket, FIONREAD, &amount) == -1) \n");
+#endif
 			continue;
 		}
 
@@ -822,7 +941,9 @@ void cClientSocketInGame::RunMainThread()
 			if (amount == 0)
 				continue;
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			//printf_s("\n\n\n\n\n\n\n\n\n\n [ERROR] amount: %d \n\n\n\n\n\n\n\n\n\n\n", (int)amount);
+#endif
 			continue;
 		}
 
@@ -853,14 +974,18 @@ void cClientSocketInGame::RunMainThread()
 		/////////////////////////////////////////////
 		if (strlen(dataBuffer) == 0)
 		{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			//printf_s("\t if (strlen(dataBuffer) == 0) \n");
+#endif
 		}
 		/////////////////////////////////////////////
 		// 2. 데이터 버퍼 길이가 4미만이면
 		/////////////////////////////////////////////
 		if (strlen(dataBuffer) < 4)
 		{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			//printf_s("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
+#endif
 
 			// dataBuffer의 남은 데이터를 newBuffer에 복사합니다.
 			char* newBuffer = new char[MAX_BUFFER + 1];
@@ -875,20 +1000,26 @@ void cClientSocketInGame::RunMainThread()
 		/////////////////////////////////////////////
 		else if (strlen(dataBuffer) < MAX_BUFFER + 1)
 		{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			//printf_s("\t else if (strlen(dataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(dataBuffer));
+#endif
 
 			int idxOfStartInPacket = 0;
 			int lenOfDataBuffer = (int)strlen(dataBuffer);
 
 			while (idxOfStartInPacket < lenOfDataBuffer)
 			{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 				//printf_s("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
 				//printf_s("\t lenOfDataBuffer: %d \n", lenOfDataBuffer);
+#endif
 
 				// 버퍼 길이가 4이하면 아직 패킷이 전부 수신되지 않은것이므로
 				if ((lenOfDataBuffer - idxOfStartInPacket) < 4)
 				{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 					//printf_s("\t if (lenOfDataBuffer - idxOfStartInPacket < 4): %d \n", lenOfDataBuffer - idxOfStartInPacket);
+#endif
 
 					// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
 					char* newBuffer = new char[MAX_BUFFER + 1];
@@ -911,13 +1042,17 @@ void cClientSocketInGame::RunMainThread()
 				int sizeOfPacket = 0;
 				sizeStream >> sizeOfPacket;
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 				//printf_s("\t sizeOfPacket: %d \n", sizeOfPacket);
 				//printf_s("\t strlen(&dataBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&dataBuffer[idxOfStartInPacket]));
+#endif
 
 				// 필요한 데이터 사이즈가 버퍼에 남은 데이터 사이즈보다 크면 아직 패킷이 전부 수신되지 않은것이므로
 				if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket]))
 				{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 					//printf_s("\t if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket])) \n");
+#endif
 
 					// dataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
 					char* newBuffer = new char[MAX_BUFFER + 1];
@@ -934,9 +1069,11 @@ void cClientSocketInGame::RunMainThread()
 				/// 오류 확인
 				if (sizeOfPacket <= 0)
 				{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 					printf_s("\n\n\n\n\n\n\n\n\n\n");
 					printf_s("[ERROR] <MainServer::WorkerThread()> sizeOfPacket: %d \n", sizeOfPacket);
 					printf_s("\n\n\n\n\n\n\n\n\n\n");
+#endif
 					break;
 				}
 
@@ -984,11 +1121,14 @@ void cClientSocketInGame::SendConnected()
 
 	if (!ClientSocket)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::SendConnected()> if (!ClientSocket)\n");
+#endif
 		return;
 	}
-
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[Start] <cClientSocketInGame::SendConnected()>\n");
+#endif
 
 
 	cInfoOfPlayer infoOfPlayer = ClientSocket->CopyMyInfo();
@@ -1008,7 +1148,9 @@ void cClientSocketInGame::SendConnected()
 	infoOfScoreBoard.PrintInfo();
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[End] <cClientSocketInGame::SendConnected()>\n");
+#endif
 }
 void cClientSocketInGame::RecvConnected(stringstream& RecvStream)
 {
@@ -1016,11 +1158,14 @@ void cClientSocketInGame::RecvConnected(stringstream& RecvStream)
 
 	if (!ClientSocket)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::RecvConnected(...)> if (!ClientSocket)\n");
+#endif
 		return;
 	}
-
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[Start] <cClientSocketInGame::RecvConnected(...)>\n");
+#endif
 
 
 	cInfoOfPlayer infoOfPlayer;
@@ -1031,13 +1176,16 @@ void cClientSocketInGame::RecvConnected(stringstream& RecvStream)
 
 	infoOfPlayer.PrintInfo();
 
-
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	printf_s("[End] <cClientSocketInGame::RecvConnected(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::SendScoreBoard()
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::SendScoreBoard()>\n");
+#endif
 
 
 	cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
@@ -1055,11 +1203,15 @@ void cClientSocketInGame::SendScoreBoard()
 	Send(sendStream);
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::SendScoreBoard()>\n");
+#endif
 }
 void cClientSocketInGame::RecvScoreBoard(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvScoreBoard(...)>\n");
+#endif
 
 
 	cInfoOfScoreBoard infoOfScoreBoard;
@@ -1072,12 +1224,16 @@ void cClientSocketInGame::RecvScoreBoard(stringstream& RecvStream)
 	}
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvScoreBoard(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::RecvSpaceShip(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvSpaceShip(...)>\n");
+#endif
 
 
 	cInfoOfSpaceShip infoOfSpaceShip;
@@ -1089,7 +1245,9 @@ void cClientSocketInGame::RecvSpaceShip(stringstream& RecvStream)
 	//infoOfSpaceShip.PrintInfo();
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvSpaceShip(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::SendObservation()
@@ -1098,11 +1256,15 @@ void cClientSocketInGame::SendObservation()
 
 	if (!ClientSocket)
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[ERROR] <cClientSocketInGame::SendObservation()> if (!ClientSocket)\n");
+#endif
 		return;
 	}
 
-	printf_s("[Start] <cClientSocketInGame::SendObservation()>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::SendObservation()>\n");
+#endif
 
 
 	stringstream sendStream;
@@ -1111,12 +1273,16 @@ void cClientSocketInGame::SendObservation()
 	Send(sendStream);
 
 
-	printf_s("[End] <cClientSocketInGame::SendObservation()>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[End] <cClientSocketInGame::SendObservation()>\n");
+#endif
 }
 
 void cClientSocketInGame::RecvSpawnPioneer(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvSpawnPioneer(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::RecvSpawnPioneer(...)>\n");
+#endif
 
 
 	cInfoOfPioneer infoOfPioneer;
@@ -1128,12 +1294,16 @@ void cClientSocketInGame::RecvSpawnPioneer(stringstream& RecvStream)
 	infoOfPioneer.PrintInfo();
 
 
-	printf_s("[End] <cClientSocketInGame::RecvSpawnPioneer(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[End] <cClientSocketInGame::RecvSpawnPioneer(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::SendDiedPioneer(int ID)
 {
-	printf_s("[Start] <cClientSocketInGame::SendDiedPioneer()>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::SendDiedPioneer()>\n");
+#endif
 
 
 	stringstream sendStream;
@@ -1142,14 +1312,17 @@ void cClientSocketInGame::SendDiedPioneer(int ID)
 
 	Send(sendStream);
 
-	printf_s("\t ID: %d\n", ID);
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("\t ID: %d\n", ID);
 
-
-	printf_s("[End] <cClientSocketInGame::SendDiedPioneer()>\n");
+	//printf_s("[End] <cClientSocketInGame::SendDiedPioneer()>\n");
+#endif
 }
 void cClientSocketInGame::RecvDiedPioneer(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
+#endif
 
 
 	int id = 0;
@@ -1157,16 +1330,19 @@ void cClientSocketInGame::RecvDiedPioneer(stringstream& RecvStream)
 	RecvStream >> id;
 
 	tsqDiedPioneer.push(id);
-		
-	printf_s("\t ID: %d\n", id);
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("\t ID: %d\n", id);
 
-	printf_s("[End] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
+	//printf_s("[End] <cClientSocketInGame::RecvDiedPioneer(...)>\n");
+#endif	
 }
 
 void cClientSocketInGame::SendInfoOfPioneer_Animation(class APioneer* PioneerOfPlayer)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::SendInfoOfPioneer_Animation()>\n");
+#endif
 
 
 	cInfoOfPioneer_Animation animtion;
@@ -1183,11 +1359,15 @@ void cClientSocketInGame::SendInfoOfPioneer_Animation(class APioneer* PioneerOfP
 	Send(sendStream);
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::SendInfoOfPioneer_Animation()>\n");
+#endif
 }
 void cClientSocketInGame::RecvInfoOfPioneer_Animation(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer_Animation(...)>\n");
+#endif
 
 
 	cInfoOfPioneer_Animation animation;
@@ -1199,13 +1379,17 @@ void cClientSocketInGame::RecvInfoOfPioneer_Animation(stringstream& RecvStream)
 		//animation.PrintInfo();
 	}
 
-	
+
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer_Animation(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::SendPossessPioneer(cInfoOfPioneer_Socket Socket)
 {
-	printf_s("[Start] <cClientSocketInGame::SendPossessPioneer()>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::SendPossessPioneer()>\n");
+#endif
 
 
 	stringstream sendStream;
@@ -1217,11 +1401,15 @@ void cClientSocketInGame::SendPossessPioneer(cInfoOfPioneer_Socket Socket)
 	Socket.PrintInfo();
 
 
-	printf_s("[End] <cClientSocketInGame::SendPossessPioneer()>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[End] <cClientSocketInGame::SendPossessPioneer()>\n");
+#endif
 }
 void cClientSocketInGame::RecvPossessPioneer(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvPossessPioneer(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::RecvPossessPioneer(...)>\n");
+#endif
 
 
 	cInfoOfPioneer_Socket socket;
@@ -1237,12 +1425,16 @@ void cClientSocketInGame::RecvPossessPioneer(stringstream& RecvStream)
 		PossessedID = socket.ID;
 
 
-	printf_s("[End] <cClientSocketInGame::RecvPossessPioneer(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[End] <cClientSocketInGame::RecvPossessPioneer(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::RecvInfoOfPioneer_Socket(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer_Socket(...)>\n");
+#endif
 
 
 	cInfoOfPioneer_Socket socket;
@@ -1254,12 +1446,16 @@ void cClientSocketInGame::RecvInfoOfPioneer_Socket(stringstream& RecvStream)
 	socket.PrintInfo();
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer_Socket(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::SendInfoOfPioneer_Stat(class APioneer* PioneerOfPlayer)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::SendInfoOfPioneer_Stat()>\n");
+#endif
 
 
 	cInfoOfPioneer_Stat stat;
@@ -1275,14 +1471,18 @@ void cClientSocketInGame::SendInfoOfPioneer_Stat(class APioneer* PioneerOfPlayer
 
 	Send(sendStream);
 
-
 	//stat.PrintInfo();
 
+
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::SendInfoOfPioneer_Stat()>\n");
+#endif
 }
 void cClientSocketInGame::RecvInfoOfPioneer_Stat(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfPioneer_Stat(...)>\n");
+#endif
 
 
 	cInfoOfPioneer_Stat stat;
@@ -1295,12 +1495,16 @@ void cClientSocketInGame::RecvInfoOfPioneer_Stat(stringstream& RecvStream)
 	}
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvInfoOfPioneer_Stat(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::SendInfoOfProjectile()>\n");
+#endif
 
 
 	stringstream sendStream;
@@ -1312,11 +1516,15 @@ void cClientSocketInGame::SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectil
 	InfoOfProjectile.PrintInfo();
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::SendInfoOfProjectile()>\n");
+#endif
 }
 void cClientSocketInGame::RecvInfoOfProjectile(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfProjectile(...)>\n");
+#endif
 
 
 	cInfoOfProjectile infoOfProjectile;
@@ -1328,12 +1536,16 @@ void cClientSocketInGame::RecvInfoOfProjectile(stringstream& RecvStream)
 	infoOfProjectile.PrintInfo();
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvInfoOfProjectile(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::RecvInfoOfResources(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfResources(...)>\n");
+#endif
 
 
 	cInfoOfResources infoOfResources;
@@ -1344,12 +1556,16 @@ void cClientSocketInGame::RecvInfoOfResources(stringstream& RecvStream)
 	infoOfResources.PrintInfo();
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvInfoOfResources(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::SendInfoOfBuilding_Spawn()>\n");
+#endif
 
 
 	stringstream sendStream;
@@ -1361,11 +1577,15 @@ void cClientSocketInGame::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfB
 	InfoOfBuilding_Spawn.PrintInfo();
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::SendInfoOfBuilding_Spawn()>\n");
+#endif
 }
 void cClientSocketInGame::RecvInfoOfBuilding_Spawn(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
+#endif
 
 
 	cInfoOfBuilding_Spawn spawn;
@@ -1377,12 +1597,17 @@ void cClientSocketInGame::RecvInfoOfBuilding_Spawn(stringstream& RecvStream)
 		spawn.PrintInfo();
 	}
 
+
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Spawn(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::RecvInfoOfBuilding_Spawned(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Spawned(...)>\n");
+#endif
 
 
 	cInfoOfBuilding infoOfBuilding;
@@ -1394,12 +1619,17 @@ void cClientSocketInGame::RecvInfoOfBuilding_Spawned(stringstream& RecvStream)
 		infoOfBuilding.PrintInfo();
 	}
 
+
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Spawned(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::SendInfoOfBuilding_Stat()
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::SendInfoOfBuilding_Stat()>\n");
+#endif
 
 
 	stringstream sendStream;
@@ -1408,11 +1638,15 @@ void cClientSocketInGame::SendInfoOfBuilding_Stat()
 	Send(sendStream);
 
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::SendInfoOfBuilding_Stat()>\n");
+#endif
 }
 void cClientSocketInGame::RecvInfoOfBuilding_Stat(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfBuilding_Stat(...)>\n");
+#endif
 
 
 	cInfoOfBuilding_Stat stat;
@@ -1424,12 +1658,17 @@ void cClientSocketInGame::RecvInfoOfBuilding_Stat(stringstream& RecvStream)
 		stat.PrintInfo();
 	}
 
+
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvInfoOfBuilding_Stat(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::RecvDestroyBuilding(stringstream& RecvStream)
 {
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[Start] <cClientSocketInGame::RecvDestroyBuilding(...)>\n");
+#endif
 
 
 	int id;
@@ -1438,15 +1677,22 @@ void cClientSocketInGame::RecvDestroyBuilding(stringstream& RecvStream)
 	{
 		tsqDestroyBuilding.push(id);
 
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		//printf_s("\t id: %d \n", id);
+#endif
 	}
 
+
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 	//printf_s("[End] <cClientSocketInGame::RecvDestroyBuilding(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::RecvSpawnEnemy(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvSpawnEnemy(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::RecvSpawnEnemy(...)>\n");
+#endif
 
 
 	cInfoOfEnemy infoOfEnemy;
@@ -1458,12 +1704,16 @@ void cClientSocketInGame::RecvSpawnEnemy(stringstream& RecvStream)
 	infoOfEnemy.PrintInfo();
 
 
-	printf_s("[End] <cClientSocketInGame::RecvSpawnEnemy(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[End] <cClientSocketInGame::RecvSpawnEnemy(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::SendInfoOfEnemy_Animation()
 {
-	printf_s("[Start] <cClientSocketInGame::SendInfoOfEnemy_Animation()>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::SendInfoOfEnemy_Animation()>\n");
+#endif
 
 
 	stringstream sendStream;
@@ -1472,11 +1722,15 @@ void cClientSocketInGame::SendInfoOfEnemy_Animation()
 	Send(sendStream);
 
 
-	printf_s("[End] <cClientSocketInGame::SendInfoOfEnemy_Animation()>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[End] <cClientSocketInGame::SendInfoOfEnemy_Animation()>\n");
+#endif
 }
 void cClientSocketInGame::RecvInfoOfEnemy_Animation(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvInfoOfEnemy_Animation(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfEnemy_Animation(...)>\n");
+#endif
 
 
 	cInfoOfEnemy_Animation animation;
@@ -1489,12 +1743,16 @@ void cClientSocketInGame::RecvInfoOfEnemy_Animation(stringstream& RecvStream)
 	}
 
 
-	printf_s("[End] <cClientSocketInGame::RecvInfoOfEnemy_Animation(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[End] <cClientSocketInGame::RecvInfoOfEnemy_Animation(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::SendInfoOfEnemy_Stat()
 {
-	printf_s("[Start] <cClientSocketInGame::SendInfoOfEnemy_Stat()>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::SendInfoOfEnemy_Stat()>\n");
+#endif
 
 
 	stringstream sendStream;
@@ -1503,11 +1761,15 @@ void cClientSocketInGame::SendInfoOfEnemy_Stat()
 	Send(sendStream);
 
 
-	printf_s("[End] <cClientSocketInGame::SendInfoOfEnemy_Stat()>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[End] <cClientSocketInGame::SendInfoOfEnemy_Stat()>\n");
+#endif
 }
 void cClientSocketInGame::RecvInfoOfEnemy_Stat(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvInfoOfEnemy_Stat(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::RecvInfoOfEnemy_Stat(...)>\n");
+#endif
 
 
 	cInfoOfEnemy_Stat stat;
@@ -1520,12 +1782,16 @@ void cClientSocketInGame::RecvInfoOfEnemy_Stat(stringstream& RecvStream)
 	}
 
 
-	printf_s("[End] <cClientSocketInGame::RecvInfoOfEnemy_Stat(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[End] <cClientSocketInGame::RecvInfoOfEnemy_Stat(...)>\n");
+#endif
 }
 
 void cClientSocketInGame::RecvDestroyEnemy(stringstream& RecvStream)
 {
-	printf_s("[Start] <cClientSocketInGame::RecvDestroyEnemy(...)>\n");
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[Start] <cClientSocketInGame::RecvDestroyEnemy(...)>\n");
+#endif
 
 
 	int id;
@@ -1534,10 +1800,15 @@ void cClientSocketInGame::RecvDestroyEnemy(stringstream& RecvStream)
 	{
 		tsqDestroyEnemy.push(id);
 
-		printf_s("\t id: %d \n", id);
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		//printf_s("\t id: %d \n", id);
+#endif
 	}
 
-	printf_s("[End] <cClientSocketInGame::RecvDestroyEnemy(...)>\n");
+
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+	//printf_s("[End] <cClientSocketInGame::RecvDestroyEnemy(...)>\n");
+#endif
 }
 
 

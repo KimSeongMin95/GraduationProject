@@ -56,7 +56,12 @@ public:
 	{
 		if (!WidgetTree || !ScrollBox)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cInGameScoreBoardWidget::cInGameScoreBoardWidget(...)> if (!WidgetTree || !ScrollBox)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cInGameScoreBoardWidget::cInGameScoreBoardWidget(...)> if (!WidgetTree || !ScrollBox) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cInGameScoreBoardWidget::cInGameScoreBoardWidget(...)> if (!WidgetTree || !ScrollBox)"));
+#endif
 			return;
 		}
 
@@ -64,7 +69,12 @@ public:
 		Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cInGameScoreBoardWidget::cInGameScoreBoardWidget(...)> if (!Line)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cInGameScoreBoardWidget::cInGameScoreBoardWidget(...)> if (!Line) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cInGameScoreBoardWidget::cInGameScoreBoardWidget(...)> if (!Line)"));
+#endif			
 			return;
 		}
 		ScrollBox->AddChild(Line);
@@ -112,7 +122,12 @@ public:
 		*EditableTextBox = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
 		if (!*EditableTextBox)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cInGameScoreBoardWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cInGameScoreBoardWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cInGameScoreBoardWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox)"));
+#endif					
 			return;
 		}
 		Line->AddChild(*EditableTextBox);
@@ -151,7 +166,12 @@ public:
 	{
 		if (!Num)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cInGameScoreBoardWidget::SetNum(...)> if (!Num)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cInGameScoreBoardWidget::SetNum(...)> if (!Num) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cInGameScoreBoardWidget::SetNum(...)> if (!Num)"));
+#endif				
 			return;
 		}
 
@@ -162,7 +182,12 @@ public:
 	{
 		if (!Ping || !ID || !State || !Level || !Kill || !Death)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cInGameScoreBoardWidget::SetText(...)> if (!Ping || !ID || !State || !Level || !Kill || !Death)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cInGameScoreBoardWidget::SetText(...)> if (!Ping || !ID || !State || !Level || !Kill || !Death) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cInGameScoreBoardWidget::SetText(...)> if (!Ping || !ID || !State || !Level || !Kill || !Death)"));
+#endif				
 			return;
 		}
 
@@ -178,7 +203,12 @@ public:
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cInGameScoreBoardWidget::SetVisible(...)> if (!Line)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cInGameScoreBoardWidget::SetVisible(...)> if (!Line) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cInGameScoreBoardWidget::SetVisible(...)> if (!Line)"));
+#endif					
 			return;
 		}
 
@@ -191,7 +221,12 @@ public:
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cInGameScoreBoardWidget::SetVisible()> if (!Line)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cInGameScoreBoardWidget::IsVisible()> if (!Line) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cInGameScoreBoardWidget::IsVisible()> if (!Line)"));
+#endif					
 			return false;
 		}
 

@@ -36,7 +36,9 @@ void ATutorialGameMode::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AMainScreenGameMode::ATutorialGameMode() Failed: UWorld* const World = GetWorld();"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<ATutorialGameMode::BeginPlay()> if (!world)"));
+#endif	
 		return;
 	}
 
@@ -64,9 +66,11 @@ void ATutorialGameMode::InitWidget(UWorld* const World, class UUserWidget** User
 {
 	UClass* widget = LoadObject<UClass>(this, *ReferencePath);
 
-	if (widget == nullptr)
+	if (!widget)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ATutorialGameMode::InitWidget(): if (widget == nullptr)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<ATutorialGameMode::InitWidget(...)> if (!widget)"));
+#endif	
 		return;
 	}
 
@@ -81,7 +85,9 @@ void ATutorialGameMode::SpawnPioneerManager()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const world = GetWorld();"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<ATutorialGameMode::SpawnPioneerManager()> if (!world)"));
+#endif	
 		return;
 	}
 

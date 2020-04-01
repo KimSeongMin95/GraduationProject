@@ -48,9 +48,11 @@ void AProjectilePistol::OnOverlapBegin_HitRange(class UPrimitiveComponent* Overl
 	if (IgnoreOnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult))
 		return;
 
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_HitRange: OverlappedComp GetName %s"), *OverlappedComp->GetName());
 	//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_HitRange: OtherActor GetName %s"), *OtherActor->GetName());
 	//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_HitRange: OtherComp GetName %s"), *OtherComp->GetName());
+//#endif
 
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{

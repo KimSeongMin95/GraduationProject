@@ -66,7 +66,12 @@ public:
 	{
 		if (!WidgetTree || !ScrollBox)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::cOnlineGameWidget(...)> if (!WidgetTree || !ScrollBox)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cOnlineGameWidget::cOnlineGameWidget(...)> if (!WidgetTree || !ScrollBox) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cOnlineGameWidget::cOnlineGameWidget(...)> if (!WidgetTree || !ScrollBox)"));
+#endif	
 			return;
 		}
 
@@ -74,7 +79,12 @@ public:
 		Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::cOnlineGameWidget(...)> if (!Line)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cOnlineGameWidget::cOnlineGameWidget(...)> if (!Line) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cOnlineGameWidget::cOnlineGameWidget(...)> if (!Line)"));
+#endif			
 			return;
 		}
 		ScrollBox->AddChild(Line);
@@ -92,7 +102,12 @@ public:
 		Button = WidgetTree->ConstructWidget<UMyButton>(UMyButton::StaticClass());
 		if (!Button)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::cOnlineGameWidget(...)> if (!Button)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cOnlineGameWidget::cOnlineGameWidget(...)> if (!Button) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cOnlineGameWidget::cOnlineGameWidget(...)> if (!Button)"));
+#endif			
 			return;
 		}
 		Line->AddChild(Button);
@@ -134,7 +149,12 @@ public:
 		*EditableTextBox = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
 		if (!*EditableTextBox)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cOnlineGameWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cOnlineGameWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox)"));
+#endif				
 			return;
 		}
 		Line->AddChild(*EditableTextBox);
@@ -173,7 +193,12 @@ public:
 	{
 		if (!State || !Title || !Leader || !Stage || !Players || !Button)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::SetText(...)> if (!State || !Title || !Leader || !Stage || !Players || !Button)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cOnlineGameWidget::SetText(...)> if (!State || !Title || !Leader || !Stage || !Players || !Button) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cOnlineGameWidget::SetText(...)> if (!State || !Title || !Leader || !Stage || !Players || !Button)"));
+#endif					
 			return;
 		}
 
@@ -195,7 +220,12 @@ public:
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::SetVisible(...)> if (!Line)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cOnlineGameWidget::SetVisible(...)> if (!Line) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cOnlineGameWidget::SetVisible(...)> if (!Line)"));
+#endif				
 			return;
 		}
 
@@ -208,7 +238,12 @@ public:
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cOnlineGameWidget::SetVisible()> if (!Line)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cOnlineGameWidget::IsVisible(...)> if (!Line) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cOnlineGameWidget::IsVisible(...)> if (!Line)"));
+#endif				
 			return false;
 		}
 

@@ -105,14 +105,24 @@ public:
 	{
 		if (!WidgetTree || !UniformGridPanel)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cWaitingGameWidget::cWaitingGameWidget(...)> if (!WidgetTree || !UniformGridPanel)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cWaitingGameWidget::cWaitingGameWidget(...)> if (!WidgetTree || !UniformGridPanel) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cWaitingGameWidget::cWaitingGameWidget(...)> if (!WidgetTree || !UniformGridPanel)"));
+#endif			
 			return;
 		}
 
 		Player = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cWaitingGameWidget::cWaitingGameWidget(...)> if (!Player)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cWaitingGameWidget::cWaitingGameWidget(...)> if (!Player) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cWaitingGameWidget::cWaitingGameWidget(...)> if (!Player)"));
+#endif						
 			return;
 		}
 		UniformGridPanel->AddChild(Player);
@@ -156,7 +166,12 @@ public:
 	{
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cWaitingGameWidget::SetVisible(...)> if (!Player)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cWaitingGameWidget::SetText(...)> if (!Player) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cWaitingGameWidget::SetText(...)> if (!Player)"));
+#endif					
 			return;
 		}
 
@@ -166,7 +181,12 @@ public:
 	{
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cWaitingGameWidget::SetVisible(...)> if (!Player)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cWaitingGameWidget::SetVisible(...)> if (!Player) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cWaitingGameWidget::SetVisible(...)> if (!Player)"));
+#endif						
 			return;
 		}
 
@@ -179,7 +199,12 @@ public:
 	{
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Error, TEXT("[ERROR] <cWaitingGameWidget::IsVisible()> if (!Player)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <cWaitingGameWidget::IsVisible()> if (!Player) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<cWaitingGameWidget::IsVisible()> if (!Player)"));
+#endif				
 			return false;
 		}
 

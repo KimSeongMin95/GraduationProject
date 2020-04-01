@@ -98,11 +98,12 @@ void APioneerManager::Tick(float DeltaTime)
 /*** APioneerManager : Start ***/
 void APioneerManager::SpawnWorldViewCameraActor(class AWorldViewCameraActor** WorldViewCameraActor, FTransform Transform)
 {
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		printf_s("[ERROR] <APioneerManager::SpawnWorldViewCameraActor(...)> if (!World)\n");
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SpawnWorldViewCameraActor(...)> if (!World)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SpawnWorldViewCameraActor(...)> if (!world)"));
+#endif
 		return;
 	}
 
@@ -114,7 +115,7 @@ void APioneerManager::SpawnWorldViewCameraActor(class AWorldViewCameraActor** Wo
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	*WorldViewCameraActor = World->SpawnActor<AWorldViewCameraActor>(AWorldViewCameraActor::StaticClass(), myTrans, SpawnParams);
+	*WorldViewCameraActor = world->SpawnActor<AWorldViewCameraActor>(AWorldViewCameraActor::StaticClass(), myTrans, SpawnParams);
 
 	// 종횡비 제한을 끔으로써 화면이 깨지는 현상을 방지합니다.
 	if (*WorldViewCameraActor)
@@ -126,8 +127,9 @@ void APioneerManager::FindPioneersInWorld()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <APioneerManager::FindPioneersInWorld()> if (!world)\n");
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::FindPioneersInWorld()> if (!world)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::FindPioneersInWorld()> if (!world)"));
+#endif
 		return;
 	}
 
@@ -163,7 +165,9 @@ void APioneerManager::FindSceneCapture2D()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <APioneerManager::FindSceneCapture2D()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::FindSceneCapture2D()> if (!world)"));
+#endif
 		return;
 	}
 
@@ -414,34 +418,27 @@ void APioneerManager::FindSceneCapture2D()
 /////////////////////////////////////////
 void APioneerManager::SetPioneerController(class APioneerController* pPioneerController)
 {
-	printf_s("[INFO] <APioneerManager::SetPioneerController()>\n");
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SetPioneerController()>"));
-
 	this->PioneerController = pPioneerController;
 }
 
 void APioneerManager::SetBuildingManager(class ABuildingManager* pBuildingManager)
 {
-	printf_s("[INFO] <APioneerManager::SetBuildingManager()>\n");
-	UE_LOG(LogTemp, Warning, TEXT("[INFO] <APioneerManager::SetBuildingManager()>"));
-
 	this->BuildingManager = pBuildingManager;
 }
 
 void APioneerManager::SetInGameWidget(class UInGameWidget* pInGameWidget)
 {
-	printf_s("[INFO] <APioneerManager::SetInGameWidget()>\n");
-
 	this->InGameWidget = pInGameWidget;
 }
 
 void APioneerManager::SpawnPioneer(FTransform Transform)
 {
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		printf_s("[ERROR] <APioneerManager::SpawnPioneer(...)> if (!World)\n");
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <APioneerManager::SpawnPioneer(...)> if (!World)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SpawnPioneer(...)> if (!world)"));
+#endif
 		return;
 	}
 
@@ -469,7 +466,7 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	///** Actor will fail to spawn. */
 	//DontSpawnIfColliding					UMETA(DisplayName = "Do Not Spawn"),
 
-	APioneer* pioneer = World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
+	APioneer* pioneer = world->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
 
 	pioneer->SetPioneerManager(this);
 	
@@ -506,15 +503,19 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 	// 이미 존재하면 생성하지 않고 값만 설정합니다.
 	if (Pioneers.Contains(InfoOfPioneer.ID))
 	{
-		printf_s("[INFO] <APioneerManager::SpawnPioneerByRecv(...)> if (Pioneers.Contains(InfoOfPioneer.ID)) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerManager::SpawnPioneerByRecv(...)> if (Pioneers.Contains(InfoOfPioneer.ID))"));
+#endif
 		Pioneers[InfoOfPioneer.ID]->SetInfoOfPioneer(InfoOfPioneer);
 		return;
 	}
 
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		printf_s("[ERROR] <APioneerManager::SpawnPioneerByRecv(...)> if (!World)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SpawnPioneerByRecv(...)> if (!world)"));
+#endif
 		return;
 	}
 
@@ -529,7 +530,7 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 	//SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	APioneer* pioneer = World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
+	APioneer* pioneer = world->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
 
 	// 충돌나면 위치를 조정
 	while (!pioneer)
@@ -538,7 +539,7 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 		location.X += 100.0f;
 		myTrans.SetLocation(location);
 
-		pioneer = World->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
+		pioneer = world->SpawnActor<APioneer>(APioneer::StaticClass(), myTrans, SpawnParams);
 	}
 
 	pioneer->SetPioneerManager(this);
@@ -639,23 +640,25 @@ void APioneerManager::TickOfObservation()
 	// 빙의한 Pioneer가 있으면 실행하지 않습니다.
 	if (PioneerOfPlayer)
 	{
-		//printf_s("[INFO] <APioneerManager::TickOfObservation()> if (PioneerOfPlayer) \n");
 		return;
 	}
 
 	if (!ViewTarget)
 	{
-		//printf_s("[INFO] <APioneerManager::TickOfObservation()> if (!ViewTarget) \n");
 		return;
 	}
 	if (!PioneerController)
 	{
-		printf_s("[ERROR] <APioneerManager::TickOfObservation(...)> if (!PioneerController)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfObservation(...)> if (!PioneerController)"));
+#endif
 		return;
 	}
 	if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)
 	{
-		//printf_s("[ERROR] <APioneerManager::TickOfObservation()> if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfObservation(...)> if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)"));
+#endif		
 		return;
 	}
 	/***********************************************************************/
@@ -670,7 +673,9 @@ void APioneerManager::TickOfObservation()
 	}
 	else
 	{
-		printf_s("[ERROR] <APioneerManager::TickOfObservation(...)> if (!WorldViewCameraOfCurrentPioneer)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfObservation(...)> if (!WorldViewCameraOfCurrentPioneer)"));
+#endif	
 	}
 
 }
@@ -679,7 +684,9 @@ void APioneerManager::Observation()
 {
 	if (!PioneerController)
 	{
-		printf_s("[ERROR] <APioneerManager::Observation()> if (!PioneerController)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::Observation(...)> if (!PioneerController)"));
+#endif	
 		return;
 	}
 	/***********************************************************************/
@@ -736,7 +743,9 @@ void APioneerManager::ObserveLeft()
 {
 	if (!PioneerController)
 	{
-		printf_s("[ERROR] <APioneerManager::ObserveLeft()> if (!PioneerController)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveLeft(...)> if (!PioneerController)"));
+#endif	
 		return;
 	}
 	/***********************************************************************/
@@ -757,7 +766,11 @@ void APioneerManager::ObserveLeft()
 	if (keys.IsValidIndex(currentIdx))
 		IdCurrentlyBeingObserved = keys[currentIdx];
 	else
-		printf_s("[ERROR] <APioneerManager::ObserveLeft()> if (keys.IsValidIndex(currentIdx) == false)\n");
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveLeft(...)> if (keys.IsValidIndex(currentIdx) == false)"));
+#endif	
+	}
 
 	Observation();
 }
@@ -765,7 +778,9 @@ void APioneerManager::ObserveRight()
 {
 	if (!PioneerController)
 	{
-		printf_s("[ERROR] <APioneerManager::ObserveRight()> if (!PioneerController)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveRight(...)> if (!PioneerController)"));
+#endif	
 		return;
 	}
 	/***********************************************************************/
@@ -787,8 +802,11 @@ void APioneerManager::ObserveRight()
 	if (keys.IsValidIndex(currentIdx))
 		IdCurrentlyBeingObserved = keys[currentIdx];
 	else
-		printf_s("[ERROR] <APioneerManager::ObserveRight()> if (keys.IsValidIndex(currentIdx) == false)\n");
-
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveRight(...)> if (keys.IsValidIndex(currentIdx) == false)"));
+#endif	
+	}
 	Observation();
 }
 
@@ -797,31 +815,58 @@ void APioneerManager::SwitchToFreeViewpoint()
 	// 이미 자유시점이면 더이상 진행하지 않습니다.
 	if (ViewpointState == EViewpointState::Free)
 	{
-		printf_s("[INFO] <APioneerManager::SwitchToFreeViewpoint()> if (ViewpointState == EViewpointState::Free) \n");
 		return;
 	}
-
 	if (!PioneerController)
 	{
-		printf_s("[ERROR] <APioneerManager::SwitchToFreeViewpoint()> if (!PioneerController)\n");
-		return;
-	}
-	if (!ViewTarget)
-	{
-		//printf_s("[INFO] <APioneerManager::SwitchToFreeViewpoint()> if (!ViewTarget) \n");
-		return;
-	}
-	if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)
-	{
-		//printf_s("[ERROR] <APioneerManager::SwitchToFreeViewpoint()> if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (!PioneerController)"));
+#endif	
 		return;
 	}
 	if (!FreeViewCamera)
 	{
-		//printf_s("[ERROR] <APioneerManager::SwitchToFreeViewpoint()> if (!FreeViewCamera) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (!FreeViewCamera)"));
+#endif			
 		return;
 	}
+
 	/***********************************************************************/
+
+	FVector location;
+
+	if (ViewTarget)
+	{
+		if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)
+		{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)"));
+#endif	
+			return;
+		}
+
+		location = ViewTarget->GetActorLocation();
+	}
+	else
+	{
+		if (!PioneerController->GetViewTarget())
+		{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (!PioneerController->GetViewTarget())"));
+#endif	
+			return;
+		}
+
+		location = PioneerController->GetViewTarget()->GetActorLocation();
+	}
+
+	location.Z = 2500.0f;
+
+	FreeViewCamera->SetActorLocation(location);
+	FreeViewCamera->SetActorRotation(FRotator(-45.0f, 0.0f, 0.0f));
+
+	PioneerController->SetViewTargetWithBlend(FreeViewCamera, 1.0f);
 
 	// UI 설정
 	if (InGameWidget)
@@ -833,38 +878,38 @@ void APioneerManager::SwitchToFreeViewpoint()
 	}
 
 	ViewpointState = EViewpointState::Free;
-
-	FVector location = ViewTarget->GetActorLocation();
-	location.Z = 2500.0f;
-
-	FreeViewCamera->SetActorLocation(location);
-	FreeViewCamera->SetActorRotation(FRotator(-45.0f, 0.0f, 0.0f));
-
-	PioneerController->SetViewTargetWithBlend(FreeViewCamera, 1.0f);
 }
 
 void APioneerManager::PossessObservingPioneer()
 {
 	if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer(...)> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)"));
+#endif	
 		return;
 	}
 	if (!ViewTarget)
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!ViewTarget) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (!ViewTarget)"));
+#endif	
 		return;
 	}
 
 	if (!Pioneers.Contains(IdCurrentlyBeingObserved))
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (!Pioneers.Contains(IdCurrentlyBeingObserved)) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (!Pioneers.Contains(IdCurrentlyBeingObserved))"));
+#endif	
 		return;
 	}
 
 	if (Pioneers[IdCurrentlyBeingObserved]->bDying)
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneer()> if (Pioneers[IdCurrentlyBeingObserved]->bDying) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (Pioneers[IdCurrentlyBeingObserved]->bDying)"));
+#endif	
 		return;
 	}
 	/***********************************************************************/
@@ -934,17 +979,23 @@ void APioneerManager::PossessObservingPioneerByRecv(const class cInfoOfPioneer_S
 {
 	if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneerByRecv(...)> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneerByRecv(...)> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)"));
+#endif	
 		return;
 	}
 	if (!PioneerController)
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneerByRecv(...)> if (!PioneerController) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneerByRecv(...)> if (!PioneerController)"));
+#endif	
 		return;
 	}
 	if (!Pioneers.Contains(Socket.ID))
 	{
-		printf_s("[ERROR] <APioneerManager::PossessObservingPioneerByRecv(...)> if (!Pioneers.Contains(Socket.ID)) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneerByRecv(...)> if (!Pioneers.Contains(Socket.ID))"));
+#endif	
 		
 		// 존재하지 않으면 자유시점 모드로 전환합니다.
 		SwitchToFreeViewpoint();
@@ -998,12 +1049,16 @@ void APioneerManager::SetTimerForPossessPioneer(class APioneer* Pioneer)
 {
 	if (!Pioneer)
 	{
-		printf_s("[ERROR] <APioneerManager::SetTimerForPossessPioneer()> if (!Pioneer)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SetTimerForPossessPioneer(...)> if (!Pioneer)"));
+#endif	
 		return;
 	}
 	if (!PioneerController)
 	{
-		printf_s("[ERROR] <APioneerManager::SetTimerForPossessPioneer()> if (!PioneerController)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SetTimerForPossessPioneer(...)> if (!PioneerController)"));
+#endif	
 		return;
 	}
 
@@ -1020,12 +1075,13 @@ void APioneerManager::TickOfViewTarget()
 {
 	if (!InGameWidget)
 	{
-		printf_s("[ERROR] <APioneerManager::TickOfViewTarget()> if (!InGameWidget) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfViewTarget()> if (!InGameWidget)"));
+#endif	
 		return;
 	}
 	if (!ViewTarget)
 	{
-		//printf_s("[INFO] <APioneerManager::TickOfViewTarget()> if (!ViewTarget) \n");
 		InGameWidget->SetPioneerBoxVisibility(false);
 		InGameWidget->SetWeaponBoxVisibility(false);
 
@@ -1060,7 +1116,9 @@ void APioneerManager::TickOfResources()
 {
 	if (!InGameWidget)
 	{
-		printf_s("[ERROR] <APioneerManager::TickOfResources()> if (!InGameWidget) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfResources()> if (!InGameWidget)"));
+#endif	
 		return;
 	}
 

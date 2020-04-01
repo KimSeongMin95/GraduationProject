@@ -89,10 +89,12 @@ bool AShotgun::Fire(int IDOfPioneer)
 	if (Super::Fire(IDOfPioneer) == false)
 		return false;
 
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AShotgun::Fire(...)> if (!world)"));
+#endif	
 		return false;
 	}
 
@@ -115,7 +117,7 @@ bool AShotgun::Fire(int IDOfPioneer)
 		rotation.Yaw += FMath::RandRange(-10.0f, 10.0f);
 		myTrans.SetRotation(FQuat(rotation));
 
-		AProjectile* projectile = World->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
+		AProjectile* projectile = world->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 	
 		if (ServerSocketInGame)
 		{

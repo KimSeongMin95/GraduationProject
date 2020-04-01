@@ -77,9 +77,11 @@ void AProjectileSplash::SetSplashRange(float Radius)
 
 void AProjectileSplash::OnOverlapBegin_Splash(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_Splash: OverlappedComp GetName %s"), *OverlappedComp->GetName());
 	//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_Splash: OtherActor GetName %s"), *OtherActor->GetName());
 	//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_Splash: OtherComp GetName %s"), *OtherComp->GetName());
+//#endif
 
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{

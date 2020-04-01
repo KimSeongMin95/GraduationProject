@@ -109,10 +109,12 @@ void AEnemy::InitAIController()
 	if (AIController)
 		return;
 
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed: UWorld* const World = GetWorld();"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AEnemy::InitAIController()> if (!world)"));
+#endif
 		return;
 	}
 
@@ -122,7 +124,7 @@ void AEnemy::InitAIController()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	AIController = World->SpawnActor<AEnemyAIController>(AEnemyAIController::StaticClass(), myTrans, SpawnParams);
+	AIController = world->SpawnActor<AEnemyAIController>(AEnemyAIController::StaticClass(), myTrans, SpawnParams);
 }
 
 void AEnemy::InitCharacterMovement()
@@ -133,7 +135,9 @@ void AEnemy::InitCharacterMovement()
 
 void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+	UE_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_DetectRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
+#endif
 
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
@@ -166,9 +170,12 @@ void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedCom
 		//if (OverapedDetectRangeActors.Contains(OtherActor) == false)
 		{
 			OverapedDetectRangeActors.Add(OtherActor);
-			//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Num(): %d"), OverapedDetectRangeActors.Num());
-			//UE_LOG(LogTemp, Warning, TEXT("_______"));
+
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			//UE_LOG(LogTemp, Log, TEXT("OverapedDetectRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
+			//UE_LOG(LogTemp, Log, TEXT("OverapedDetectRangeActors.Num(): %d"), OverapedDetectRangeActors.Num());
+			//UE_LOG(LogTemp, Log, TEXT("_______"));
+#endif
 		}
 	}
 }
@@ -193,15 +200,20 @@ void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp,
 
 		//OverapedDetectRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
 		OverapedDetectRangeActors.RemoveSingle(OtherActor); // OtherActor 하나를 지웁니다.
-		//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());
-		//UE_LOG(LogTemp, Warning, TEXT("OverapedDetectRangeActors.Num(): %d"), OverapedDetectRangeActors.Num());
-		//UE_LOG(LogTemp, Warning, TEXT("_______"));
+
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			//UE_LOG(LogTemp, Log, TEXT("OverapedDetectRangeActors.RemoveSingle(OtherActor): %s"), *OtherActor->GetName());
+			//UE_LOG(LogTemp, Log, TEXT("OverapedDetectRangeActors.Num(): %d"), OverapedDetectRangeActors.Num());
+			//UE_LOG(LogTemp, Log, TEXT("_______"));
+#endif
 	}
 }
 
 void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//UE_LOG(LogTemp, Log, TEXT("Character FName :: %s"), *OtherActor->GetFName().ToString());
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+	UE_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_AttackRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
+#endif
 
 	// Other Actor is the actor that triggered the event. Check that is not ourself.  
 	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
@@ -234,9 +246,12 @@ void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedCom
 		//if (OverapedAttackRangeActors.Contains(OtherActor) == false)
 		{
 			OverapedAttackRangeActors.Add(OtherActor);
-			//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
-			//UE_LOG(LogTemp, Warning, TEXT("_______"));
+
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			//UE_LOG(LogTemp, Log, TEXT("OverapedAttackRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
+			//UE_LOG(LogTemp, Log, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
+			//UE_LOG(LogTemp, Log, TEXT("_______"));
+#endif
 		}
 	}
 }
@@ -261,9 +276,12 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 
 		//OverapedAttackRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
 		OverapedAttackRangeActors.RemoveSingle(OtherActor); // OtherActor 하나만 지웁니다.
-		//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());
-		//UE_LOG(LogTemp, Warning, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
-		//UE_LOG(LogTemp, Warning, TEXT("_______"));
+
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			//UE_LOG(LogTemp, Log, TEXT("OverapedAttackRangeActors.RemoveSingle(OtherActor): %s"), *OtherActor->GetName());
+			//UE_LOG(LogTemp, Log, TEXT("OverapedAttackRangeActors.Num(): %d"), OverapedAttackRangeActors.Num());
+			//UE_LOG(LogTemp, Log, TEXT("_______"));
+#endif
 	}
 }
 
@@ -359,7 +377,9 @@ void AEnemy::InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FStri
 		UClass* animBP = LoadObject<UClass>(NULL, *referencePathOfBP_AnimInstance);
 		if (!animBP)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("!animBP"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<AEnemy::InitSkeletalAnimation(...)> if (!animBP)"));
+#endif
 		}
 		else
 			GetMesh()->SetAnimInstanceClass(animBP);

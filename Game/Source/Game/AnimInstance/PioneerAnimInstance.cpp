@@ -53,7 +53,9 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 				Pioneer = Cast<APioneer>(Owner);
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::NativeUpdateAnimation: !Pioneer"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> if (!Pioneer)"));
+#endif
 		return;
 	}
 
@@ -71,7 +73,9 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		SetBehaviorTree();
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::NativeUpdateAnimation: switch (CharacterAI): default"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> switch (CharacterAI): default"));
+#endif
 		break;
 	}
 
@@ -99,7 +103,9 @@ void UPioneerAnimInstance::FireEnd()
 {
 	if (!Pioneer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::FireEnd: !Pioneer"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::FireEnd()> if (!Pioneer)"));
+#endif 
 		return;
 	}
 
@@ -112,7 +118,9 @@ void UPioneerAnimInstance::DestroyCharacter()
 
 	if (!Pioneer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UPioneerAnimInstance::DestroyCharacter: !Pioneer"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::DestroyCharacter()> if (!Pioneer)"));
+#endif 
 		return;
 	}
 

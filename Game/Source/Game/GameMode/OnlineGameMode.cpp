@@ -161,7 +161,9 @@ void AOnlineGameMode::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::BeginPlay()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::BeginPlay()> if (!world)"));
+#endif			
 		return;
 	}
 
@@ -253,14 +255,18 @@ void AOnlineGameMode::FindPioneerController()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::FindPioneerController()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::FindPioneerController()> if (!world)"));
+#endif				
 		return;
 	}
 
 	// UWorld에서 APioneerController를 찾습니다.
 	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
 	{
-		printf_s("[INFO] <AOnlineGameMode::FindPioneerController()> found APioneerController\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Log, TEXT("<AOnlineGameMode::FindPioneerController()> found APioneerController."));
+#endif			
 		PioneerController = *ActorItr;
 	}
 }
@@ -270,7 +276,9 @@ void AOnlineGameMode::SpawnPioneerManager()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::SpawnPioneerManager()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnPioneerManager()> if (!world)"));
+#endif		
 		return;
 	}
 
@@ -290,7 +298,9 @@ void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform T
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::SpawnSpaceShip(...)> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnSpaceShip(...)> if (!world)"));
+#endif			
 		return;
 	}
 
@@ -311,7 +321,9 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::SpawnProjectile(...)> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnProjectile(...)> if (!world)"));
+#endif			
 		return;
 	}
 
@@ -356,7 +368,9 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 	break;
 
 	default:
-		printf_s("[ERROR] <AOnlineGameMode::SpawnProjectile(...)> default: \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnProjectile(...)> switch (InfoOfProjectile.Numbering) default:"));
+#endif	
 		break;
 
 	}
@@ -368,7 +382,9 @@ void AOnlineGameMode::SpawnBuildingManager()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::SpawnBuildingManager()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnBuildingManager()> if (!world)"));
+#endif			
 		return;
 	}
 
@@ -388,7 +404,9 @@ void AOnlineGameMode::SpawnEnemyManager()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::SpawnEnemyManager()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnEnemyManager()> if (!world)"));
+#endif			
 		return;
 	}
 
@@ -411,14 +429,15 @@ void AOnlineGameMode::TickOfServerSocketInGame(float DeltaTime)
 {
 	if (!ServerSocketInGame)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::TickOfServerSocketInGame(...)> if (!ServerSocketInGame) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::TickOfServerSocketInGame(...)> if (!ServerSocketInGame)"));
+#endif			
 		return;
 	}
 
 	// 게임서버가 활성화되어 있지 않으면 더이상 실행하지 않습니다.
 	if (ServerSocketInGame->IsServerOn() == false)
 	{
-		//printf_s("[INFO] <AOnlineGameMode::TickOfServerSocketInGame(...)> if (ServerSocketInGame->IsServerOn() == false) \n");
 		return;
 	}
 	/***********************************************************/
@@ -448,12 +467,12 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::GetScoreBoard()> if (!InGameScoreBoardWidget)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetScoreBoard(...)> if (!InGameScoreBoardWidget)"));
+#endif			
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AOnlineGameMode::GetScoreBoard()>\n");
-
 
 	std::queue<cInfoOfScoreBoard> copiedQueue;
 
@@ -464,8 +483,6 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 
 	InGameScoreBoardWidget->RevealScores(copiedQueue);
 
-
-	//printf_s("[END] <AOnlineGameMode::GetScoreBoard()>\n");
 }
 
 void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
@@ -477,11 +494,12 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 
 	if (!SpaceShip)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfSpaceShip()> if (!SpaceShip)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfSpaceShip(...)> if (!SpaceShip)"));
+#endif			
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AOnlineGameMode::SendInfoOfSpaceShip()>\n");
 
 
 	switch (SpaceShip->State)
@@ -511,9 +529,6 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 
 	cInfoOfSpaceShip infoOfSpaceShip = SpaceShip->GetInfoOfSpaceShip();
 	ServerSocketInGame->SendSpaceShip(infoOfSpaceShip);
-
-
-	//printf_s("[END] <AOnlineGameMode::SendInfoOfSpaceShip()>\n");
 }
 
 void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
@@ -525,15 +540,15 @@ void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::GetDiedPioneer()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetDiedPioneer(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
 	if (ServerSocketInGame->tsqDiedPioneer.empty())
 		return;
 	/***********************************************************************/
-	printf_s("[START] <AMainScreenGameMode::GetDiedPioneer()>\n");
-
 
 	std::queue<int> copiedQueue = ServerSocketInGame->tsqDiedPioneer.copy_clear();
 
@@ -550,9 +565,6 @@ void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::GetDiedPioneer()>\n");
 }
 
 void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
@@ -564,15 +576,15 @@ void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer_Animation()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
 	if (ServerSocketInGame->tsqInfoOfPioneer_Animation.empty())
 		return;
 	/***********************************************************************/
-	//printf_s("[START] <AMainScreenGameMode::GetInfoOfPioneer_Animation()>\n");
-
 
 	std::queue<cInfoOfPioneer_Animation> copiedQueue = ServerSocketInGame->tsqInfoOfPioneer_Animation.copy_clear();
 
@@ -595,9 +607,6 @@ void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	//printf_s("[END] <AMainScreenGameMode::GetInfoOfPioneer_Animation()>\n");
 }
 void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 {
@@ -608,12 +617,12 @@ void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer_Animation()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
+#endif				
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AOnlineGameMode::SetInfoOfPioneer_Animation()>\n");
-
 
 	for (auto& kvp : PioneerManager->Pioneers)
 	{
@@ -626,9 +635,6 @@ void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Animation);
 	}
-
-
-	//printf_s("[END] <AOnlineGameMode::SetInfoOfPioneer_Animation()>\n");
 }
 
 void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
@@ -640,15 +646,15 @@ void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer_Socket()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfPioneer_Socket(...)> if (!PioneerManager)"));
+#endif	
 		return;
 	}
 
 	if (ServerSocketInGame->tsqInfoOfPioneer_Socket.empty())
 		return;
 	/***********************************************************************/
-	//printf_s("[START] <AMainScreenGameMode::GetInfoOfPioneer_Socket()>\n");
-
 
 	std::queue<cInfoOfPioneer_Socket> copiedQueue = ServerSocketInGame->tsqInfoOfPioneer_Socket.copy_clear();
 
@@ -671,9 +677,6 @@ void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	//printf_s("[END] <AMainScreenGameMode::GetInfoOfPioneer_Socket()>\n");
 }
 
 void AOnlineGameMode::GetInfoOfPioneer_Stat(float DeltaTime)
@@ -685,15 +688,15 @@ void AOnlineGameMode::GetInfoOfPioneer_Stat(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::GetInfoOfPioneer_Stat()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
 	if (ServerSocketInGame->tsqInfoOfPioneer_Stat.empty())
 		return;
 	/***********************************************************************/
-	printf_s("[START] <AMainScreenGameMode::GetInfoOfPioneer_Stat()>\n");
-
 
 	std::queue<cInfoOfPioneer_Stat> copiedQueue = ServerSocketInGame->tsqInfoOfPioneer_Stat.copy_clear();
 
@@ -711,9 +714,6 @@ void AOnlineGameMode::GetInfoOfPioneer_Stat(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::GetInfoOfPioneer_Stat()>\n");
 }
 void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 {
@@ -724,12 +724,12 @@ void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SetInfoOfPioneer_Stat()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AOnlineGameMode::SetInfoOfPioneer_Stat()>\n");
-
 
 	for (auto& kvp : PioneerManager->Pioneers)
 	{
@@ -742,9 +742,6 @@ void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Stat);
 	}
-
-
-	//printf_s("[END] <AOnlineGameMode::SetInfoOfPioneer_Stat()>\n");
 }
 
 void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
@@ -756,15 +753,15 @@ void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::GetInfoOfProjectile()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfProjectile(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
 	if (ServerSocketInGame->tsqInfoOfProjectile.empty())
 		return;
 	/***********************************************************************/
-	printf_s("[START] <AMainScreenGameMode::GetInfoOfProjectile()>\n");
-
 
 	std::queue<cInfoOfProjectile> copiedQueue = ServerSocketInGame->tsqInfoOfProjectile.copy_clear();
 
@@ -774,9 +771,6 @@ void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::GetInfoOfProjectile()>\n");
 }
 
 void AOnlineGameMode::SendInfoOfResources(float DeltaTime)
@@ -788,17 +782,14 @@ void AOnlineGameMode::SendInfoOfResources(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfResources()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfResources(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AOnlineGameMode::SendInfoOfResources()>\n");
-
 
 	ServerSocketInGame->SendInfoOfResources(PioneerManager->Resources);
-
-
-	//printf_s("[END] <AOnlineGameMode::SendInfoOfResources()>\n");
 }
 
 void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
@@ -810,21 +801,23 @@ void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::GetInfoOfBuilding_Spawn()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfBuilding_Spawn(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 	
 	if (!BuildingManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::GetInfoOfBuilding_Spawn()> if (!BuildingManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfBuilding_Spawn(...)> if (!BuildingManager)"));
+#endif			
 		return;
 	}
 
 	if (ServerSocketInGame->tsqInfoOfBuilding_Spawn.empty())
 		return;
 	/***********************************************************************/
-	printf_s("[START] <AMainScreenGameMode::GetInfoOfBuilding_Spawn()>\n");
-
 
 	std::queue<cInfoOfBuilding_Spawn> copiedQueue = ServerSocketInGame->tsqInfoOfBuilding_Spawn.copy_clear();
 
@@ -850,9 +843,6 @@ void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::GetInfoOfBuilding_Spawn()>\n");
 }
 
 void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
@@ -864,12 +854,12 @@ void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 
 	if (!BuildingManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SetInfoOfBuilding_Stat()> if (!BuildingManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
+#endif			
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AOnlineGameMode::SetInfoOfBuilding_Stat()>\n");
-
 
 	for (auto& kvp : BuildingManager->Buildings)
 	{
@@ -880,10 +870,6 @@ void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfoOfBuilding_Stat);
 	}
-
-	//ServerSocketInGame->SendInfoOfBuilding_Stat();
-
-	printf_s("[END] <AOnlineGameMode::SetInfoOfBuilding_Stat()>\n");
 }
 
 void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
@@ -895,12 +881,12 @@ void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
 
 	if (!EnemyManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SetInfoOfEnemy_Animation()> if (!EnemyManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Animation(...)> if (!EnemyManager)"));
+#endif				
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AOnlineGameMode::SetInfoOfEnemy_Animation()>\n");
-
 
 	for (auto& kvp : EnemyManager->Enemies)
 	{
@@ -911,9 +897,6 @@ void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Animation);
 	}
-
-
-	printf_s("[END] <AOnlineGameMode::SetInfoOfEnemy_Animation()>\n");
 }
 
 void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
@@ -925,12 +908,12 @@ void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
 
 	if (!EnemyManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SetInfoOfEnemy_Stat()> if (!EnemyManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Stat(...)> if (!EnemyManager)"));
+#endif				
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AOnlineGameMode::SetInfoOfEnemy_Stat()>\n");
-
 
 	for (auto& kvp : EnemyManager->Enemies)
 	{
@@ -941,9 +924,6 @@ void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Stat);
 	}
-
-
-	printf_s("[END] <AOnlineGameMode::SetInfoOfEnemy_Stat()>\n");
 }
 
 
@@ -954,14 +934,15 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 {
 	if (!ClientSocketInGame)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::TickOfClientSocketInGame(...)> if (!ClientSocketInGame) \n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::TickOfClientSocketInGame(...)> if (!ClientSocketInGame)"));
+#endif				
 		return;
 	}
 
 	// 게임클라이언트가 활성화되어 있지 않으면 더이상 실행하지 않습니다.
 	if (ClientSocketInGame->IsClientSocketOn() == false)
 	{
-		//printf_s("[INFO] <AOnlineGameMode::TickOfClientSocketInGame(...)> if (ClientSocketInGame->IsClientSocketOn() == false) \n");
 		return;
 	}
 	/***********************************************************/
@@ -1000,13 +981,9 @@ void AOnlineGameMode::SendScoreBoard(float DeltaTime)
 	TimerOfSendScoreBoard = 0.0f;
 
 	/***********************************************************/
-	//printf_s("[START] <AOnlineGameMode::RecvScoreBoard()>\n");
-
 
 	ClientSocketInGame->SendScoreBoard();
 
-
-	//printf_s("[END] <AOnlineGameMode::RecvScoreBoard()>\n");
 }
 void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 {
@@ -1017,7 +994,9 @@ void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::RecvScoreBoard()> if (!InGameScoreBoardWidget)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvScoreBoard(...)> if (!InGameScoreBoardWidget)"));
+#endif				
 		return;
 	}
 
@@ -1032,15 +1011,10 @@ void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AOnlineGameMode::RecvScoreBoard()>\n");
-
 
 	std::queue<cInfoOfScoreBoard> copiedQueue = ClientSocketInGame->tsqScoreBoard.copy_clear();
 
 	InGameScoreBoardWidget->RevealScores(copiedQueue);
-
-
-	//printf_s("[END] <AOnlineGameMode::RecvScoreBoard()>\n");
 }
 
 void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
@@ -1052,12 +1026,16 @@ void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 
 	if (!SpaceShip)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!SpaceShip)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfSpaceShip(...)> if (!SpaceShip)"));
+#endif			
 		return;
 	}
 	if (!PioneerController)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfSpaceShip()> if (!PioneerController)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfSpaceShip(...)> if (!PioneerController)"));
+#endif			
 		return;
 	}
 
@@ -1066,20 +1044,10 @@ void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AMainScreenGameMode::RecvInfoOfSpaceShip()>\n");
-
 
 	std::queue<cInfoOfSpaceShip> copiedQueue = ClientSocketInGame->tsqSpaceShip.copy_clear();
 
-	//while (copiedQueue.empty() == false)
-	//{
-	//	SpaceShip->SetInfoOfSpaceShip(copiedQueue.front());
-	//	copiedQueue.pop();
-	//}
 	SpaceShip->SetInfoOfSpaceShip(copiedQueue.back());
-
-
-	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfSpaceShip()>\n");
 }
 
 void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
@@ -1091,7 +1059,9 @@ void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvSpawnPioneer()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvSpawnPioneer(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
@@ -1100,9 +1070,6 @@ void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::RecvSpawnPioneer()>\n");
-
-
 
 	std::queue<cInfoOfPioneer> copiedQueue = ClientSocketInGame->tsqSpawnPioneer.copy_clear();
 
@@ -1110,11 +1077,7 @@ void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
 	{
 		PioneerManager->SpawnPioneerByRecv(copiedQueue.front());
 		copiedQueue.pop();
-		printf_s("[INFO] <AMainScreenGameMode::RecvSpawnPioneer()> copiedQueue.pop();\n");
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::RecvSpawnPioneer()>\n");
 }
 
 void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
@@ -1126,7 +1089,9 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvDiedPioneer()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvDiedPioneer(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
@@ -1135,8 +1100,6 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AMainScreenGameMode::RecvDiedPioneer()>\n");
-
 
 	std::queue<int> copiedQueue = ClientSocketInGame->tsqDiedPioneer.copy_clear();
 
@@ -1153,9 +1116,6 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	//printf_s("[END] <AMainScreenGameMode::RecvDiedPioneer()>\n");
 }
 
 void AOnlineGameMode::SendInfoOfPioneer_Animation(float DeltaTime)
@@ -1167,17 +1127,14 @@ void AOnlineGameMode::SendInfoOfPioneer_Animation(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer_Animation()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AMainScreenGameMode::SendInfoOfPioneer_Animation()>\n");
-
 
 	ClientSocketInGame->SendInfoOfPioneer_Animation(PioneerManager->PioneerOfPlayer);
-
-
-	//printf_s("[END] <AMainScreenGameMode::SendInfoOfPioneer_Animation()>\n");
 }
 void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 {
@@ -1188,7 +1145,9 @@ void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer_Animation()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
@@ -1197,8 +1156,6 @@ void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AMainScreenGameMode::RecvInfoOfPioneer_Animation()>\n");
-
 
 	std::queue<cInfoOfPioneer_Animation> copiedQueue = ClientSocketInGame->tsqInfoOfPioneer_Animation.copy_clear();
 
@@ -1221,9 +1178,6 @@ void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfPioneer_Animation()>\n");
 }
 
 void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
@@ -1235,7 +1189,9 @@ void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvPossessPioneer()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvPossessPioneer(...)> if (!PioneerManager)"));
+#endif				
 		return;
 	}
 
@@ -1244,8 +1200,6 @@ void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AMainScreenGameMode::RecvPossessPioneer()>\n");
-
 
 	std::queue<cInfoOfPioneer_Socket> copiedQueue = ClientSocketInGame->tsqPossessPioneer.copy_clear();
 
@@ -1272,9 +1226,6 @@ void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	//printf_s("[END] <AMainScreenGameMode::RecvPossessPioneer()>\n");
 }
 
 void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
@@ -1286,7 +1237,9 @@ void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer_Socket()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfPioneer_Socket(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
@@ -1295,8 +1248,6 @@ void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AMainScreenGameMode::RecvInfoOfPioneer_Socket()>\n");
-
 
 	std::queue<cInfoOfPioneer_Socket> copiedQueue = ClientSocketInGame->tsqInfoOfPioneer_Socket.copy_clear();
 
@@ -1319,9 +1270,6 @@ void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfPioneer_Socket()>\n");
 }
 
 void AOnlineGameMode::SendInfoOfPioneer_Stat(float DeltaTime)
@@ -1333,17 +1281,14 @@ void AOnlineGameMode::SendInfoOfPioneer_Stat(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfPioneer_Stat()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::SendInfoOfPioneer_Stat()>\n");
-
 
 	ClientSocketInGame->SendInfoOfPioneer_Stat(PioneerManager->PioneerOfPlayer);
-
-
-	printf_s("[END] <AMainScreenGameMode::SendInfoOfPioneer_Stat()>\n");
 }
 void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 {
@@ -1354,7 +1299,9 @@ void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfPioneer_Stat()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
@@ -1363,8 +1310,6 @@ void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::RecvInfoOfPioneer_Stat()>\n");
-
 
 	std::queue<cInfoOfPioneer_Stat> copiedQueue = ClientSocketInGame->tsqInfoOfPioneer_Stat.copy_clear();
 
@@ -1387,9 +1332,6 @@ void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::RecvInfoOfPioneer_Stat()>\n");
 }
 
 void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
@@ -1401,7 +1343,9 @@ void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfProjectile()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfProjectile(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
@@ -1410,8 +1354,6 @@ void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AMainScreenGameMode::RecvInfoOfProjectile()>\n");
-
 
 	std::queue<cInfoOfProjectile> copiedQueue = ClientSocketInGame->tsqInfoOfProjectile.copy_clear();
 
@@ -1421,9 +1363,6 @@ void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfProjectile()>\n");
 }
 
 void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
@@ -1435,7 +1374,9 @@ void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
 
 	if (!PioneerManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfResources()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfResources(...)> if (!PioneerManager)"));
+#endif			
 		return;
 	}
 
@@ -1444,8 +1385,6 @@ void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AMainScreenGameMode::RecvInfoOfResources()>\n");
-
 
 	std::queue<cInfoOfResources> copiedQueue = ClientSocketInGame->tsqInfoOfResources.copy_clear();
 
@@ -1456,9 +1395,6 @@ void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfResources()>\n");
 }
 
 void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
@@ -1470,7 +1406,9 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
 
 	if (!BuildingManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfBuilding_Spawn()> if (!BuildingManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfBuilding_Spawn(...)> if (!BuildingManager)"));
+#endif				
 		return;
 	}
 
@@ -1479,8 +1417,6 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::RecvInfoOfBuilding_Spawn()>\n");
-
 
 	std::queue<cInfoOfBuilding_Spawn> copiedQueue = ClientSocketInGame->tsqInfoOfBuilding_Spawn.copy_clear();
 
@@ -1490,9 +1426,6 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::RecvInfoOfBuilding_Spawn()>\n");
 }
 
 void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
@@ -1504,7 +1437,9 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
 
 	if (!BuildingManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfBuilding_Spawned()> if (!BuildingManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfBuilding_Spawned(...)> if (!BuildingManager)"));
+#endif			
 		return;
 	}
 
@@ -1513,8 +1448,6 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::RecvInfoOfBuilding_Spawned()>\n");
-
 
 	std::queue<cInfoOfBuilding> copiedQueue = ClientSocketInGame->tsqInfoOfBuilding.copy_clear();
 
@@ -1527,9 +1460,6 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::RecvInfoOfBuilding_Spawned()>\n");
 }
 
 void AOnlineGameMode::SendInfoOfBuilding_Stat(float DeltaTime)
@@ -1541,18 +1471,15 @@ void AOnlineGameMode::SendInfoOfBuilding_Stat(float DeltaTime)
 
 	if (!BuildingManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::SendInfoOfBuilding_Stat()> if (!BuildingManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
+#endif			
 		return;
 	}
 
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::SendInfoOfBuilding_Stat()>\n");
-
 
 	ClientSocketInGame->SendInfoOfBuilding_Stat();
-
-
-	printf_s("[END] <AMainScreenGameMode::SendInfoOfBuilding_Stat()>\n");
 }
 
 void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
@@ -1564,7 +1491,9 @@ void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
 
 	if (!BuildingManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfBuilding_Stat()> if (!BuildingManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
+#endif	
 		return;
 	}
 
@@ -1573,8 +1502,6 @@ void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::RecvInfoOfBuilding_Stat()>\n");
-
 
 	std::queue<cInfoOfBuilding_Stat> copiedQueue = ClientSocketInGame->tsqInfoOfBuilding_Stat.copy_clear();
 
@@ -1585,9 +1512,6 @@ void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::RecvInfoOfBuilding_Stat()>\n");
 }
 
 void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
@@ -1599,7 +1523,9 @@ void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
 
 	if (!BuildingManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvDestroyBuilding()> if (!BuildingManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvDestroyBuilding(...)> if (!BuildingManager)"));
+#endif		
 		return;
 	}
 
@@ -1608,8 +1534,6 @@ void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::RecvDestroyBuilding()>\n");
-
 
 	std::queue<int> copiedQueue = ClientSocketInGame->tsqDestroyBuilding.copy_clear();
 
@@ -1627,9 +1551,6 @@ void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::RecvDestroyBuilding()>\n");
 }
 
 void AOnlineGameMode::RecvSpawnEnemy(float DeltaTime)
@@ -1641,7 +1562,9 @@ void AOnlineGameMode::RecvSpawnEnemy(float DeltaTime)
 
 	if (!EnemyManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvSpawnEnemy()> if (!EnemyManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvSpawnEnemy(...)> if (!EnemyManager)"));
+#endif				
 		return;
 	}
 
@@ -1650,9 +1573,6 @@ void AOnlineGameMode::RecvSpawnEnemy(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::RecvSpawnEnemy()>\n");
-
-
 
 	std::queue<cInfoOfEnemy> copiedQueue = ClientSocketInGame->tsqSpawnEnemy.copy_clear();
 
@@ -1660,11 +1580,7 @@ void AOnlineGameMode::RecvSpawnEnemy(float DeltaTime)
 	{
 		EnemyManager->RecvSpawnEnemy(copiedQueue.front());
 		copiedQueue.pop();
-		printf_s("[INFO] <AMainScreenGameMode::RecvSpawnEnemy()> copiedQueue.pop();\n");
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::RecvSpawnEnemy()>\n");
 }
 
 void AOnlineGameMode::SendInfoOfEnemy_Animation(float DeltaTime)
@@ -1675,13 +1591,9 @@ void AOnlineGameMode::SendInfoOfEnemy_Animation(float DeltaTime)
 	TimerOfSendInfoOfEnemy_Animation = 0.0f;
 
 	/***********************************************************/
-	//printf_s("[START] <AMainScreenGameMode::SendInfoOfEnemy_Animation()>\n");
-
 
 	ClientSocketInGame->SendInfoOfEnemy_Animation();
 
-
-	//printf_s("[END] <AMainScreenGameMode::SendInfoOfEnemy_Animation()>\n");
 }
 void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
 {
@@ -1692,7 +1604,9 @@ void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
 
 	if (!EnemyManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfEnemy_Animation()> if (!EnemyManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfEnemy_Animation(...)> if (!EnemyManager)"));
+#endif			
 		return;
 	}
 
@@ -1701,8 +1615,6 @@ void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	//printf_s("[START] <AMainScreenGameMode::RecvInfoOfEnemy_Animation()>\n");
-
 
 	std::queue<cInfoOfEnemy_Animation> copiedQueue = ClientSocketInGame->tsqInfoOfEnemy_Animation.copy_clear();
 
@@ -1719,9 +1631,6 @@ void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	//printf_s("[END] <AMainScreenGameMode::RecvInfoOfEnemy_Animation()>\n");
 }
 
 void AOnlineGameMode::SendInfoOfEnemy_Stat(float DeltaTime)
@@ -1732,13 +1641,8 @@ void AOnlineGameMode::SendInfoOfEnemy_Stat(float DeltaTime)
 	TimerOfSendInfoOfEnemy_Stat = 0.0f;
 
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::SendInfoOfEnemy_Stat()>\n");
-
 
 	ClientSocketInGame->SendInfoOfEnemy_Stat();
-
-
-	printf_s("[END] <AMainScreenGameMode::SendInfoOfEnemy_Stat()>\n");
 }
 void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
 {
@@ -1749,7 +1653,9 @@ void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
 
 	if (!EnemyManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvInfoOfEnemy_Stat()> if (!EnemyManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfEnemy_Stat(...)> if (!EnemyManager)"));
+#endif	
 		return;
 	}
 
@@ -1758,8 +1664,6 @@ void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::RecvInfoOfEnemy_Stat()>\n");
-
 
 	std::queue<cInfoOfEnemy_Stat> copiedQueue = ClientSocketInGame->tsqInfoOfEnemy_Stat.copy_clear();
 
@@ -1776,9 +1680,6 @@ void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::RecvInfoOfEnemy_Stat()>\n");
 }
 
 void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
@@ -1790,7 +1691,9 @@ void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
 
 	if (!EnemyManager)
 	{
-		printf_s("[INFO] <AOnlineGameMode::RecvDestroyEnemy()> if (!EnemyManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvDestroyEnemy(...)> if (!EnemyManager)"));
+#endif	
 		return;
 	}
 
@@ -1799,8 +1702,6 @@ void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
 		return;
 	}
 	/***********************************************************/
-	printf_s("[START] <AMainScreenGameMode::RecvDestroyEnemy()>\n");
-
 
 	std::queue<int> copiedQueue = ClientSocketInGame->tsqDestroyEnemy.copy_clear();
 
@@ -1818,9 +1719,6 @@ void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
 
 		copiedQueue.pop();
 	}
-
-
-	printf_s("[END] <AMainScreenGameMode::RecvDestroyEnemy()>\n");
 }
 
 
@@ -1837,7 +1735,9 @@ void AOnlineGameMode::_ActivateInGameWidget()
 {
 	if (!InGameWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameWidget()> if (!InGameWidget)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateInGameWidget()> if (!InGameWidget)"));
+#endif	
 		return;
 	}
 
@@ -1851,7 +1751,9 @@ void AOnlineGameMode::_DeactivateInGameWidget()
 {
 	if (!InGameWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameWidget()> if (!InGameWidget)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateInGameWidget()> if (!InGameWidget)"));
+#endif	
 		return;
 	}
 
@@ -1866,7 +1768,9 @@ void AOnlineGameMode::_ActivateInGameMenuWidget()
 {
 	if (!InGameMenuWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameMenuWidget()> if (!InGameMenuWidget)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateInGameMenuWidget()> if (!InGameMenuWidget)"));
+#endif	
 		return;
 	}
 
@@ -1880,7 +1784,9 @@ void AOnlineGameMode::_DeactivateInGameMenuWidget()
 {
 	if (!InGameMenuWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameMenuWidget()> if (!InGameMenuWidget)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateInGameMenuWidget()> if (!InGameMenuWidget)"));
+#endif	
 		return;
 	}
 
@@ -1894,7 +1800,9 @@ void AOnlineGameMode::_ToggleInGameMenuWidget()
 {
 	if (!InGameMenuWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ToggleInGameMenuWidget()> if (!InGameMenuWidget)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ToggleInGameMenuWidget()> if (!InGameMenuWidget)"));
+#endif	
 		return;
 	}
 
@@ -1909,7 +1817,9 @@ void AOnlineGameMode::_ActivateInGameScoreBoardWidget()
 {
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ActivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
+#endif	
 		return;
 	}
 
@@ -1923,7 +1833,9 @@ void AOnlineGameMode::_DeactivateInGameScoreBoardWidget()
 {
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::DeactivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
+#endif	
 		return;
 	}
 
@@ -1937,7 +1849,9 @@ void AOnlineGameMode::_ToggleInGameScoreBoardWidget()
 {
 	if (!InGameScoreBoardWidget)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ToggleInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ToggleInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
+#endif	
 		return;
 	}
 
@@ -1952,7 +1866,9 @@ void AOnlineGameMode::_LeftArrowInGameWidget()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::LeftArrowInGameWidget()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_LeftArrowInGameWidget()> if (!PioneerManager)"));
+#endif	
 		return;
 	}
 
@@ -1966,7 +1882,9 @@ void AOnlineGameMode::_RightArrowInGameWidget()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::RightArrowInGameWidget()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_RightArrowInGameWidget()> if (!PioneerManager)"));
+#endif	
 		return;
 	}
 
@@ -1981,7 +1899,9 @@ void AOnlineGameMode::_PossessInGameWidget()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::PossessInGameWidget()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_PossessInGameWidget()> if (!PioneerManager)"));
+#endif	
 		return;
 	}
 
@@ -1996,7 +1916,9 @@ void AOnlineGameMode::_FreeViewpointInGameWidget()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::FreeViewpointInGameWidget()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_FreeViewpointInGameWidget()> if (!PioneerManager)"));
+#endif	
 		return;
 	}
 
@@ -2011,7 +1933,9 @@ void AOnlineGameMode::_ObservingInGameWidget()
 {
 	if (!PioneerManager)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::ObservingInGameWidget()> if (!PioneerManager)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ObservingInGameWidget()> if (!PioneerManager)"));
+#endif	
 		return;
 	}
 
@@ -2026,7 +1950,9 @@ void AOnlineGameMode::_SpawnBuildingInGameWidget(int Value)
 {
 	if (!PioneerController)
 	{
-		printf_s("[ERROR] <AOnlineGameMode::SpawnBuildingInGameWidget()> if (!PioneerController)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_SpawnBuildingInGameWidget(...)> if (!PioneerController)"));
+#endif			
 		return;
 	}
 

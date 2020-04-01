@@ -15,8 +15,6 @@
 #include "AllowWindowsPlatformTypes.h"
 #include "prewindowsapi.h"
 
-//printf_s("ししししししし\n");
-
 
 /*** 制亀酔綜 伯希 識情 : Start ***/
 #pragma comment(lib, "ws2_32.lib") // winsock2 紫遂聖 是背 蓄亜
@@ -44,6 +42,91 @@
 
 
 using namespace std;
+
+
+/*** Console for log : Start ***/
+class CustomLog
+{
+private:
+	static FILE* fp_console;
+
+public:
+	static void AllocConsole()
+	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+
+		// 戚耕 拝雁鞠嬢 赤生檎 嬬車聖 希 拝雁馬走 省柔艦陥.
+		if (fp_console)
+			return;
+
+		if (::AllocConsole())
+		{
+			freopen_s(&fp_console, "CONOUT$", "w", stdout);
+
+			//CheckBuildConriguration();
+		}
+#endif
+	}
+
+	static void FreeConsole()
+	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		// 戚耕 拝雁鞠嬢 赤聖 凶幻 社瑚獣典艦陥.
+		if (fp_console)
+		{
+			fclose(fp_console);
+			::FreeConsole();
+		}
+#endif
+	}
+
+	static void CheckBuildConriguration()
+	{
+		if (!fp_console)
+			return;
+
+		printf_s("\n\n\n\n\n");
+
+		char config[16];
+		switch (FApp::GetBuildConfiguration())
+		{
+		case 0:
+			strcpy_s(config, "Unknown");
+			break;
+		case 1:
+			strcpy_s(config, "Debug");
+			break;
+		case 2:
+			strcpy_s(config, "DebugGame");
+			break;
+		case 3:
+			strcpy_s(config, "Development");
+			break;
+		case 4:
+			strcpy_s(config, "Shipping");
+			break;
+		case 5:
+			strcpy_s(config, "Test");
+			break;
+		}
+
+		printf_s("GetBuildConfiguration: %s \n", config);
+		printf_s("UE_BUILD_DEBUG: %d \n", UE_BUILD_DEBUG);
+		printf_s("UE_BUILD_DEVELOPMENT: %d \n", UE_BUILD_DEVELOPMENT);
+		printf_s("UE_BUILD_SHIPPING: %d \n", UE_BUILD_SHIPPING);
+		printf_s("UE_GAME: %d \n", UE_GAME);
+		printf_s("UE_EDITOR: %d \n", UE_EDITOR);
+		printf_s("WITH_EDITOR: %d \n", WITH_EDITOR);
+		printf_s("UE_BUILD_SHIPPING_WITH_EDITOR: %d \n", UE_BUILD_SHIPPING_WITH_EDITOR);
+		printf_s("UE_SERVER: %d \n", UE_SERVER);
+		printf_s("UE_BUILD_TEST: %d \n", UE_BUILD_TEST);
+		printf_s("\n\n\n\n\n");
+
+	}
+	/*** Console for log : End ***/
+};
+
+FILE* CustomLog::fp_console = nullptr;
 
 
 #define	MAX_BUFFER 4096
@@ -580,8 +663,9 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByMainServer: %d, SocketByGameServer: %d, PortOfMainClient: %d, PortOfGameServer: %d, PortOfGameClient: %d, LeaderSocketByMainServer: %d\n", TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID.c_str(), IPv4Addr.c_str(), SocketByMainServer, SocketByGameServer, PortOfMainClient, PortOfGameServer, PortOfGameClient, LeaderSocketByMainServer);
-		//UE_LOG(LogTemp, Warning, TEXT("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByMainServer: %d, SocketByGameServer: %d, PortOfMainClient: %d, PortOfGameServer: %d, PortOfGameClient: %d, LeaderSocketByMainServer: %d"), Space, Space2, ANSI_TO_TCHAR(ID.c_str()), ANSI_TO_TCHAR(IPv4Addr.c_str()), SocketByMainServer, SocketByGameServer, PortOfMainClient, PortOfGameServer, PortOfGameClient, LeaderSocketByMainServer);
+#endif
 	}
 
 	// Convert
@@ -645,9 +729,10 @@ public:
 	{
 		for (auto& kvp : Players)
 		{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 			printf_s("%s%skey: %d, ", TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), kvp.first);
-			//UE_LOG(LogTemp, Warning, TEXT("%s%skey: %d"), Space, Space2, kvp.first);
 			kvp.second.PrintInfo(Space, Space2);
+#endif
 		}
 	}
 
@@ -720,15 +805,14 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T("    "))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s<cInfoOfGame> Start\n", TCHAR_TO_ANSI(Space));
-		//UE_LOG(LogTemp, Warning, TEXT("%s<cInfoOfGame> Start"), Space);
 		printf_s("%s%sState: %s, Title: %s, Stage: %d, nMax: %d\n", TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), State.c_str(), Title.c_str(), Stage, nMax);
-		//UE_LOG(LogTemp, Warning, TEXT("%s%sState: %s, Title: %s, Stage: %d, nMax: %d"), Space, Space2, ANSI_TO_TCHAR(State.c_str()), ANSI_TO_TCHAR(Title.c_str()), Stage, nMax);
 		Leader.PrintInfo(Space, Space2);
 		Players.PrintInfo(Space, Space2);
-		//UE_LOG(LogTemp, Warning, TEXT("%s<cInfoOfGame> End"), Space);
 		printf_s("%s<cInfoOfGame> End\n", TCHAR_TO_ANSI(Space));
 
+#endif
 	}
 
 	// Convert
@@ -744,38 +828,7 @@ public:
 	}
 };
 
-/*** Console for log : Start ***/
-class CustomLog
-{
-private:
-	static FILE* fp_console;
 
-public:
-	static void AllocConsole()
-	{
-		// 戚耕 拝雁鞠嬢 赤生檎 嬬車聖 希 拝雁馬走 省柔艦陥.
-		if (fp_console)
-			return;
-
-		if (::AllocConsole())
-		{
-			freopen_s(&fp_console, "CONOUT$", "w", stdout);
-		}
-	}
-
-	static void FreeConsole()
-	{
-		// 戚耕 拝雁鞠嬢 赤聖 凶幻 社瑚獣典艦陥.
-		if (fp_console)
-		{
-			fclose(fp_console);
-			::FreeConsole();
-		}
-	}
-	/*** Console for log : End ***/
-};
-
-FILE* CustomLog::fp_console = nullptr;
 
 
 class GAME_API cInfoOfScoreBoard
@@ -834,7 +887,9 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfScoreBoard> Ping: %d, ID: %s, State: %s, Level: %d, Kill: %d, Death: %d \n", TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), Ping, ID.c_str(), State.c_str(), Level, Kill, Death);
+#endif
 	}
 
 	// Convert
@@ -929,8 +984,10 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfSpaceShip> State: %d, LocX: %f, LocY: %f, LocZ: %f, bHiddenInGame: %s, bSimulatePhysics: %s, ScaleOfEngineParticleSystem: %f, AccelerationZ: %f, bEngine: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), State, LocX, LocY, LocZ, (bHiddenInGame == true) ? "true" : "false", (bSimulatePhysics == true) ? "true" : "false", ScaleOfEngineParticleSystem, AccelerationZ, (bEngine == true) ? "true" : "false");
+#endif
 	}
 
 	void SetInfo(int State_, FVector Location, bool bHiddenInGame_, bool bSimulatePhysics_, float ScaleOfEngineParticleSystem_, float AccelerationZ_, bool bEngine_)
@@ -1001,8 +1058,10 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfPioneer_Socket> ID: %d, SocketID : %d, NameOfID: %s\n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, SocketID, NameOfID.c_str());
+#endif
 	}
 
 	// Convert
@@ -1150,12 +1209,14 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfPioneer_Animation> ID: %d, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
 		printf_s("%s%s<cInfoOfPioneer_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, bHasPistolType: %s, bHasRifleType : %s, bHasLauncherType: %s, bFired: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), VelocityX, VelocityY, VelocityZ, (bHasPistolType == true) ? "true" : "false", (bHasRifleType == true) ? "true" : "false", (bHasLauncherType == true) ? "true" : "false", (bFired == true) ? "true" : "false");
 		printf_s("%s%s<cInfoOfPioneer_Animation> IdxOfCurrentWeapon: %d, bArmedWeapon: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), IdxOfCurrentWeapon, (bArmedWeapon == true) ? "true" : "false");
+#endif
 	}
 
 	void SetActorTransform(const FTransform& Transform)
@@ -1256,8 +1317,10 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfPioneer_Stat> ID: %d, HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, HealthPoint, MaxHealthPoint, MoveSpeed, AttackSpeed, AttackPower, SightRange, DetectRange, AttackRange);
+#endif
 	}
 
 };
@@ -1410,10 +1473,12 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfProjectile> ID: %d, Numbering : %d \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, Numbering);
 		printf_s("%s%s<cInfoOfProjectile> ScaleX: %f, ScaleY : %f, ScaleZ: %f, RotX: %f, RotY : %f, RotZ: %f, LocX: %f, LocY : %f, LocZ: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ScaleX, ScaleY, ScaleZ, RotX, RotY, RotZ, LocX, LocY, LocZ);
+#endif
 	}
 
 	void SetActorTransform(const FTransform& Transform)
@@ -1485,8 +1550,10 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfResources> NumOfMineral: %f, NumOfOrganic: %f, NumOfEnergy: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), NumOfMineral, NumOfOrganic, NumOfEnergy);
+#endif
 	}
 };
 
@@ -1592,10 +1659,12 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfBuilding_Spawn> ID: %d, Numbering : %d, NeedMineral: %f, NeedOrganicMatter: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, Numbering, NeedMineral, NeedOrganicMatter);
 		printf_s("%s%s<cInfoOfBuilding_Spawn> ScaleX: %f, ScaleY : %f, ScaleZ: %f, RotX: %f, RotY : %f, RotZ: %f, LocX: %f, LocY : %f, LocZ: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ScaleX, ScaleY, ScaleZ, RotX, RotY, RotZ, LocX, LocY, LocZ);
+#endif
 	}
 
 	void SetActorTransform(const FTransform& Transform)
@@ -1676,8 +1745,10 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfBuilding_Stat> ID: %d, BuildingState : %d, HealthPoint: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, BuildingState, HealthPoint);
+#endif
 	}
 
 };
@@ -1778,8 +1849,10 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfEnemy_Spawn> ID: %d, EnemyType : %d \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, EnemyType);
+#endif
 	}
 };
 
@@ -1884,10 +1957,12 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfEnemy_Animation> ID: %d, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
 		printf_s("%s%s<cInfoOfEnemy_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, State: %d \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), VelocityX, VelocityY, VelocityZ, State);
+#endif
 	}
 
 	void SetActorTransform(const FTransform& Transform)
@@ -1987,8 +2062,10 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
+#if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("%s%s<cInfoOfEnemy_Stat> ID: %d, HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, HealthPoint, MaxHealthPoint, MoveSpeed, AttackSpeed, AttackPower, SightRange, DetectRange, AttackRange);
+#endif
 	}
 
 };

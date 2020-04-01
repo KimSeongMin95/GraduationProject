@@ -35,7 +35,9 @@ void AEnemyManager::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		printf_s("[ERROR] <AEnemyManager::BeginPlay()> if (!world)\n");
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::BeginPlay()> if (!world)"));
+#endif
 		return;
 	}
 
@@ -82,10 +84,12 @@ void AEnemyManager::Tick(float DeltaTime)
 /*** AEnemyManager : Start ***/
 class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 {
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AEnemyManager::SpawnEnemy: if (!World)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::SpawnEnemy(...)> if (!world)"));
+#endif
 		return nullptr;
 	}
 
@@ -99,16 +103,16 @@ class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 	switch ((EEnemyType)EnemyType)
 	{
 	case EEnemyType::SlowZombie:
-		enemy = World->SpawnActor<ASlowZombie>(ASlowZombie::StaticClass(), Transform, SpawnParams);
+		enemy = world->SpawnActor<ASlowZombie>(ASlowZombie::StaticClass(), Transform, SpawnParams);
 		break;
 	case EEnemyType::ParasiteZombie:
-		enemy = World->SpawnActor<AParasiteZombie>(AParasiteZombie::StaticClass(), Transform, SpawnParams);
+		enemy = world->SpawnActor<AParasiteZombie>(AParasiteZombie::StaticClass(), Transform, SpawnParams);
 		break;
 	case EEnemyType::GiantZombie:
-		enemy = World->SpawnActor<AGiantZombie>(AGiantZombie::StaticClass(), Transform, SpawnParams);
+		enemy = world->SpawnActor<AGiantZombie>(AGiantZombie::StaticClass(), Transform, SpawnParams);
 		break;
 	case EEnemyType::RobotRaptor:
-		enemy = World->SpawnActor<ARobotRaptor>(ARobotRaptor::StaticClass(), Transform, SpawnParams);
+		enemy = world->SpawnActor<ARobotRaptor>(ARobotRaptor::StaticClass(), Transform, SpawnParams);
 		break;
 
 	default:
@@ -141,10 +145,12 @@ class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 
 void AEnemyManager::RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy)
 {
-	UWorld* const World = GetWorld();
-	if (!World)
+	UWorld* const world = GetWorld();
+	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AEnemyManager::RecvSpawnEnemy: if (!World)"));
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::RecvSpawnEnemy(...)> if (!world)"));
+#endif
 		return;
 	}
 
@@ -160,16 +166,16 @@ void AEnemyManager::RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy)
 	switch ((EEnemyType)InfoOfEnemy.Spawn.EnemyType)
 	{
 	case EEnemyType::SlowZombie:
-		enemy = World->SpawnActor<ASlowZombie>(ASlowZombie::StaticClass(), myTrans, SpawnParams);
+		enemy = world->SpawnActor<ASlowZombie>(ASlowZombie::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EEnemyType::ParasiteZombie:
-		enemy = World->SpawnActor<AParasiteZombie>(AParasiteZombie::StaticClass(), myTrans, SpawnParams);
+		enemy = world->SpawnActor<AParasiteZombie>(AParasiteZombie::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EEnemyType::GiantZombie:
-		enemy = World->SpawnActor<AGiantZombie>(AGiantZombie::StaticClass(), myTrans, SpawnParams);
+		enemy = world->SpawnActor<AGiantZombie>(AGiantZombie::StaticClass(), myTrans, SpawnParams);
 		break;
 	case EEnemyType::RobotRaptor:
-		enemy = World->SpawnActor<ARobotRaptor>(ARobotRaptor::StaticClass(), myTrans, SpawnParams);
+		enemy = world->SpawnActor<ARobotRaptor>(ARobotRaptor::StaticClass(), myTrans, SpawnParams);
 		break;
 
 	default:

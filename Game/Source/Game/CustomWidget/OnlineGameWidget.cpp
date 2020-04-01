@@ -31,13 +31,16 @@ bool UOnlineGameWidget::InitWidget(UWorld* const World, const FString ReferenceP
 	if (UWidgetBase::InitWidget(World, ReferencePath, bAddToViewport) == false)
 		return false;
 
-	if (WidgetTree == nullptr)
+	if (!WidgetTree)
 	{
-		printf_s("[Error] <UOnlineGameWidget::InitWidget(...)> if (WidgetTree == nullptr)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <UOnlineGameWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UOnlineGameWidget::InitWidget(...)> if (!WidgetTree) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UOnlineGameWidget::InitWidget(...)> if (!WidgetTree)"));
+#endif
 		return false;
 	}
-
 
 	ScrollBox = WidgetTree->FindWidget<UScrollBox>(FName(TEXT("ScrollBox_Games")));
 
@@ -86,8 +89,12 @@ UMyButton* UOnlineGameWidget::BindButton(cInfoOfGame& InfoOfGame)
 
 	if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())
 	{
-		printf_s("[ERROR] <UOnlineGameWidget::BindButton(...)> if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())\n");
-		UE_LOG(LogTemp, Error, TEXT("[ERROR] <UOnlineGameWidget::BindButton(...)> if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+		printf_s("[Error] <UOnlineGameWidget::BindButton(...)> if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end()) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UOnlineGameWidget::BindButton(...)> if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())"));
+#endif		
 		return nullptr;
 	}
 

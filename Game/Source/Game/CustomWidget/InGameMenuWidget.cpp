@@ -22,16 +22,16 @@ bool UInGameMenuWidget::InitWidget(UWorld* const World, const FString ReferenceP
 	if (UWidgetBase::InitWidget(World, ReferencePath, bAddToViewport) == false)
 		return false;
 
-	if (WidgetTree == nullptr)
+	if (!WidgetTree)
 	{
-		printf_s("[Error] <InGameMenuWidget::InitWidget(...)> if (WidgetTree == nullptr)\n");
-		UE_LOG(LogTemp, Error, TEXT("[Error] <InGameMenuWidget::InitWidget(...)> if (WidgetTree == nullptr)"));
+#if UE_BUILD_DEVELOPMENT && UE_GAME
+			printf_s("[Error] <UInGameMenuWidget::InitWidget(...)> if (!WidgetTree) \n");
+#endif
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Error, TEXT("<UInGameMenuWidget::InitWidget(...)> if (!WidgetTree)"));
+#endif
 		return false;
 	}
-
-
-	//ID = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_ID")));
-
 
 	return true;
 }
