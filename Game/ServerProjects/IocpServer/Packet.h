@@ -23,7 +23,7 @@ using namespace std;
 
 // 데이터는 크기는 최대 4095여야 마지막에 '\0'가 들어가서 오류가 나지 않음
 #define	MAX_BUFFER		4096
-#define SERVER_PORT		8000
+//#define SERVER_PORT		8000
 
 // IOCP 소켓 구조체
 struct stSOCKETINFO

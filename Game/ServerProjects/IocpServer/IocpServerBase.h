@@ -48,6 +48,9 @@ public:
 	IocpServerBase();
 	virtual ~IocpServerBase();
 
+	// 서버의 IP 주소와 Port 번호를 수동으로 입력 받습니다.
+	void SetIPv4AndPort(IN_ADDR& IPv4, USHORT& Port);
+
 	// 소켓 등록 및 서버 정보 설정
 	bool Initialize();
 

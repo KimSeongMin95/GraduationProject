@@ -43,6 +43,29 @@ IocpServerBase::~IocpServerBase()
 	DeleteCriticalSection(&csMapOfRecvDeque);
 }
 
+void IocpServerBase::SetIPv4AndPort(IN_ADDR& IPv4, USHORT& Port)
+{
+	printf_s("\n /*********************************************/ \n");
+
+	char serverIP[16] = "127.0.0.1";
+	printf_s("Server IPv4를 입력하세요. (예시: 58.125.236.74) \n");
+	printf_s("Server IPv4: ");
+	std::cin >> serverIP;
+	printf_s("입력받은 IPv4: %s \n", serverIP);
+	IPv4.S_un.S_addr = inet_addr(serverIP);
+	printf_s("실제 IPv4: %s \n\n", inet_ntoa(IPv4));
+
+	int serverPort = 8000;
+	printf_s("Server Port를 입력하세요. (예시: 8000) \n");
+	printf_s("Server Port: ");
+	std::cin >> serverPort;
+	printf_s("입력받은 Port: %d \n", serverPort);
+	Port = htons(serverPort);
+	printf_s("실제 Port: %d \n", ntohs(Port));
+
+	printf_s("/*********************************************/ \n\n");
+}
+
 bool IocpServerBase::Initialize()
 {
 	WSADATA wsaData;
@@ -68,19 +91,24 @@ bool IocpServerBase::Initialize()
 	// 서버 정보 설정
 	SOCKADDR_IN serverAddr;
 	serverAddr.sin_family = PF_INET;
-	serverAddr.sin_port = htons(SERVER_PORT);
-	serverAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+	//serverAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+	//serverAddr.sin_port = htons(SERVER_PORT);
+
+	SetIPv4AndPort(serverAddr.sin_addr, serverAddr.sin_port);
 
 	// 소켓 설정
 	// boost bind 와 구별짓기 위해 ::bind 사용
-	if (::bind(ListenSocket, (struct sockaddr*) & serverAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
+	while (::bind(ListenSocket, (struct sockaddr*) & serverAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
-		closesocket(ListenSocket);
-		ListenSocket = NULL;
-		WSACleanup();
-
 		printf_s("[ERROR] bind 실패\n");
-		return false;
+
+		SetIPv4AndPort(serverAddr.sin_addr, serverAddr.sin_port);
+
+		//closesocket(ListenSocket);
+		//ListenSocket = NULL;
+		//WSACleanup();
+		
+		//return false;
 	}
 
 	// 수신 대기열 생성
