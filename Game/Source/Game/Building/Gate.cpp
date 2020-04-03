@@ -113,6 +113,14 @@ void AGate::InitTriggerOfGate()
 
 	TriggerOfGate->SetSphereRadius(650.0f);
 
+	TriggerOfGate->SetGenerateOverlapEvents(true);
+	TriggerOfGate->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	TriggerOfGate->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel4);
+	TriggerOfGate->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+	TriggerOfGate->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	TriggerOfGate->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
+
 	TriggerOfGate->OnComponentBeginOverlap.AddDynamic(this, &AGate::OnOverlapBegin);
 	TriggerOfGate->OnComponentEndOverlap.AddDynamic(this, &AGate::OnOverlapEnd);
 }
@@ -180,38 +188,66 @@ void AGate::TickOfOpenAndCloseTheGate(float DeltaTime)
 
 void AGate::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if ((OtherActor == nullptr) || (OtherComp == nullptr))
+		return;
+
+	if (OtherActor == this)
+		return;
+
+	/**************************************************/
+
 	if (OtherActor->IsA(APioneer::StaticClass()))
 	{
-		if (OtherComp->IsA(UCapsuleComponent::StaticClass()))
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
-			OverlappedPioneers.Add(OtherActor);
+			if (pioneer->GetCapsuleComponent() == OtherComp)
+			{
+				//if (!OverlappedPioneers.Contains(OtherActor))
+					OverlappedPioneers.Add(OtherActor);
+			}
 		}
 	}
-
-	if (OtherActor->IsA(AEnemy::StaticClass()))
+	else if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
-		if (OtherComp->IsA(UCapsuleComponent::StaticClass()))
+		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 		{
-			OverlappedEnemies.Add(OtherActor);
+			if (enemy->GetCapsuleComponent() == OtherComp)
+			{
+				//if (!OverlappedEnemies.Contains(OtherActor))
+					OverlappedEnemies.Add(OtherActor);
+			}
 		}
 	}
 }
 
 void AGate::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if ((OtherActor == nullptr) || (OtherComp == nullptr))
+		return;
+
+	if (OtherActor == this)
+		return;
+
+	/**************************************************/
+
 	if (OtherActor->IsA(APioneer::StaticClass()))
 	{
-		if (OtherComp->IsA(UCapsuleComponent::StaticClass()))
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
-			OverlappedPioneers.RemoveSingle(OtherActor);
+			if (pioneer->GetCapsuleComponent() == OtherComp)
+			{
+				OverlappedPioneers.RemoveSingle(OtherActor);
+			}
 		}
 	}
-
-	if (OtherActor->IsA(AEnemy::StaticClass()))
+	else if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
-		if (OtherComp->IsA(UCapsuleComponent::StaticClass()))
+		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 		{
-			OverlappedEnemies.RemoveSingle(OtherActor);
+			if (enemy->GetCapsuleComponent() == OtherComp)
+			{
+				OverlappedEnemies.RemoveSingle(OtherActor);
+			}
 		}
 	}
 }

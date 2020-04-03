@@ -45,49 +45,43 @@ void AProjectilePistol::Tick(float DeltaTime)
 /*** AProjectile : Start ***/
 void AProjectilePistol::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (IgnoreOnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult))
+	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
 
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-	//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_HitRange: OverlappedComp GetName %s"), *OverlappedComp->GetName());
-	//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_HitRange: OtherActor GetName %s"), *OtherActor->GetName());
-	//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_HitRange: OtherComp GetName %s"), *OtherComp->GetName());
-//#endif
+	if (OtherActor == this)
+		return;
+
+	/**************************************************/
 
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
 		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 		{
-			// CollisionCylinder인 enemy의 CapsuleComponent에 충돌하면
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
 				enemy->SetHealthPoint(-TotalDamage);
 
 				ActiveToggleOfImpactParticleSystem();
 				SetTimerForDestroy(1.0f);
-				return;
 			}
 		}
 	}
-
-	if (OtherActor->IsA(ABuilding::StaticClass()))
+	else if (OtherActor->IsA(ABuilding::StaticClass()))
 	{
 		if (ABuilding* building = dynamic_cast<ABuilding*>(OtherActor))
 		{
-			if (building->BuildingState != EBuildingState::Constructable)
+			if (building->BuildingState == EBuildingState::Constructing ||
+				building->BuildingState == EBuildingState::Constructed)
 			{
 				ActiveToggleOfImpactParticleSystem();
 				SetTimerForDestroy(1.0f);
-				return;
 			}
 		}
 	}
-
-	if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
+	else if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
 	{
 		ActiveToggleOfImpactParticleSystem();
 		SetTimerForDestroy(1.0f);
-		return;
 	}
 }
 /*** AProjectile : End ***/

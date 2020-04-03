@@ -56,6 +56,11 @@ ASpaceShip::ASpaceShip()
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	SkeletalMesh->SetupAttachment(RootComponent);
 
+	
+	SkeletalMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SkeletalMesh->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+	SkeletalMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
 
 	InitSkeletalMesh(TEXT("SkeletalMesh'/Game/SpaceShip/SpaceShip.SpaceShip'"),
 		FVector(80.0f, 80.0f, 80.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(50.0f, 650.43f, -99.0f));

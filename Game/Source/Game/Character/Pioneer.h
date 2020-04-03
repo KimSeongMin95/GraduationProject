@@ -201,7 +201,7 @@ protected:
 	void InitBuilding();
 	void InitEquipments();
 	void InitFSM();
-	void InitItem();
+	//void InitItem();
 
 
 	UFUNCTION(Category = "CharacterAI")
@@ -217,10 +217,10 @@ protected:
 		void AttackingOfFSM();
 
 
-	UFUNCTION(Category = "Item")
-		virtual void OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION(Category = "Item")
-		virtual void OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	//UFUNCTION(Category = "Item")
+	//	virtual void OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	//UFUNCTION(Category = "Item")
+	//	virtual void OnOverlapEnd_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
 	FORCEINLINE void SetPioneerManager(class APioneerManager* pPioneerManager) { this->PioneerManager = pPioneerManager; }

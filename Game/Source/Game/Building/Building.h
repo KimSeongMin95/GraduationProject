@@ -103,7 +103,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		/** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
-		TArray<class AActor*> OverapedActors;
+		TArray<class AActor*> OverlappedActors;
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Building")
@@ -206,9 +206,6 @@ protected:
 	void AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
 
-	UFUNCTION(Category = "ConstructBuilding")
-		virtual void OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
 	UFUNCTION(Category = "Building")
 		virtual void OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	

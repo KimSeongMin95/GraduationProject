@@ -98,15 +98,6 @@ void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent, const
 	SkeletalMeshComponent->bCastDynamicShadow = true; // ???
 	SkeletalMeshComponent->CastShadow = true; // ???
 
-	SkeletalMeshComponent->SetGenerateOverlapEvents(false);
-	SkeletalMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SkeletalMeshComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	SkeletalMeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	SkeletalMeshComponent->BodyInstance.bLockXTranslation = true;
-	SkeletalMeshComponent->BodyInstance.bLockYTranslation = true;
-	SkeletalMeshComponent->BodyInstance.bLockZRotation = true;
-	SkeletalMeshComponent->SetSimulatePhysics(false);
-
 	// Skeleton을 가져옵니다.
 	ConstructorHelpers::FObjectFinder<USkeleton> skeleton(SkeletonToFind);
 	if (skeleton.Succeeded())

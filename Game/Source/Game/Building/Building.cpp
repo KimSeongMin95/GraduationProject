@@ -26,6 +26,8 @@ ABuilding::ABuilding()
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
 	SphereComponent->SetGenerateOverlapEvents(false);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
 	RootComponent = SphereComponent;
 
 
@@ -92,7 +94,7 @@ void ABuilding::Tick(float DeltaTime)
 
 	if (BuildingState == EBuildingState::Constructable)
 	{
-		if (OverapedActors.Num() > 0)
+		if (OverlappedActors.Num() > 0)
 			SetUnConstructableMaterial();
 		else
 			SetConstructableMaterial();
@@ -101,7 +103,6 @@ void ABuilding::Tick(float DeltaTime)
 	TickHelthPointBar();
 
 	TickOfConsumeAndProduct(DeltaTime);
-
 
 	//// 임시
 	//SetHealthPoint(NULL);
@@ -119,7 +120,7 @@ void ABuilding::InitHelthPointBar()
 
 	HelthPointBar->SetGenerateOverlapEvents(false);
 	HelthPointBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	HelthPointBar->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	HelthPointBar->SetCollisionObjectType(ECollisionChannel::ECC_Visibility);
 	HelthPointBar->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 	HelthPointBar->SetOnlyOwnerSee(false);
@@ -250,9 +251,17 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 	(*StaticMeshComp) = CreateDefaultSubobject<UStaticMeshComponent>(CompName);
 	(*StaticMeshComp)->SetupAttachment(RootComponent);
 
-	(*StaticMeshComp)->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_ConstructBuilding);
 	(*StaticMeshComp)->SetGenerateOverlapEvents(false);
 	(*StaticMeshComp)->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	(*StaticMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel4);
+	(*StaticMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
+
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap);
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Overlap);
 
 	(*StaticMeshComp)->SetHiddenInGame(true);
 
@@ -276,11 +285,11 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 		center.Z = -1.0f * (minBounds.Z * Scale.Z);
 		(*StaticMeshComp)->SetRelativeLocation(center + Location);
 
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		//UE_LOG(LogTemp, Log, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
 		//UE_LOG(LogTemp, Log, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
 		//UE_LOG(LogTemp, Log, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
-#endif
+//#endif
 	}
 
 	ConstructBuildingSMCs.Add(*StaticMeshComp);
@@ -297,8 +306,16 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 
 	(*StaticMeshComp)->SetGenerateOverlapEvents(true);
 	(*StaticMeshComp)->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	(*StaticMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	(*StaticMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	(*StaticMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel4);
+	(*StaticMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap);
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
+	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Overlap);
 
 	// (기본적으로 true로 되어 있음) NavMesh에 업데이트 되도록 CanEverAffectNavigation을 true로 변경.
 	//StaticMeshComp->SetCanEverAffectNavigation(true);
@@ -328,11 +345,11 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 		TArrayOfUMaterialInterface.Object = (*StaticMeshComp)->GetMaterials();
 		BuildingSMCsMaterials.Add(TArrayOfUMaterialInterface);
 
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		//UE_LOG(LogTemp, Log, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
 		//UE_LOG(LogTemp, Log, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
 		//UE_LOG(LogTemp, Log, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
-#endif	
+//#endif	
 	}
 
 	BuildingSMCs.Add(*StaticMeshComp);
@@ -350,10 +367,10 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp,
 	/*(*SkeletalMeshComp)->OnComponentBeginOverlap.AddDynamic(this, &ABuilding::OnOverlapBegin_Building);
 	(*SkeletalMeshComp)->OnComponentEndOverlap.AddDynamic(this, &ABuilding::OnOverlapEnd_Building);*/
 
-	(*SkeletalMeshComp)->SetGenerateOverlapEvents(true);
-	(*SkeletalMeshComp)->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	(*SkeletalMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	(*SkeletalMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	(*SkeletalMeshComp)->SetGenerateOverlapEvents(false);
+	(*SkeletalMeshComp)->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	(*SkeletalMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel4);
+	(*SkeletalMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 	//// (기본적으로 true로 되어 있음) NavMesh에 업데이트 되도록 CanEverAffectNavigation을 true로 변경.
 	////StaticMeshComp->SetCanEverAffectNavigation(true);
@@ -379,97 +396,88 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp,
 }
 
 
-void ABuilding::OnOverlapBegin_ConstructBuilding(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-		return;
-
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-		return;
-
-	// 투사체 무시 (충돌 주체인 AProjectile의 코드에서 처리할 것)
-	if (OtherActor->IsA(AProjectile::StaticClass()))
-		return;
-}
-
 void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	//UE_LOG(LogTemp, Log, TEXT("<ABuilding::OnOverlapBegin_Building(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
-#endif
-
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+//#endif
+ 
+	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
 
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	if (OtherActor == this)
 		return;
 
-	// 투사체 무시 (충돌 주체인 AProjectile의 코드에서 처리할 것)
-	if (OtherActor->IsA(AProjectile::StaticClass()))
+	if (BuildingState != EBuildingState::Constructable)
 		return;
 
-	// 자기 자신과 충돌하면 무시합니다.
-	if (OtherActor->GetFName() == this->GetFName())
-		return;
+	/**************************************************/
 
-	if (OtherComp->IsA(UWidgetComponent::StaticClass()))
-		return;
-
-	if (BuildingState == EBuildingState::Constructable)
+	if (OtherActor->IsA(ABaseCharacter::StaticClass()))
 	{
-		//if (OtherActor->IsA(ABaseCharacter::StaticClass()))
-		//{
-		//	if (ABaseCharacter* baseCharacter = dynamic_cast<ABaseCharacter*>(OtherActor))
-		//	{
-		//		// 만약 OtherActor가 ABaseCharacter이기는 하지만 DetactRangeSphereComp와 AttackRangeSphereComp에 충돌한 것이라면 무시합니다.
-		//		if (baseCharacter->DetactRangeSphereComp == OtherComp || baseCharacter->AttackRangeSphereComp == OtherComp)
-		//			return;
-		//	}
-		//}
-
-		// 충돌한 액터의 OtherComp가 SphereComponent라면 무시
-		if (OtherComp->IsA(USphereComponent::StaticClass()))
-			return;
-
-		// 충돌한 액터의 OtherComp가 UCapsuleComponent(사실상 SkeletalMeshComponent)나 UStaticMeshComponent면 추가
-		if (OtherComp->IsA(UCapsuleComponent::StaticClass()) ||
-			OtherComp->IsA(UStaticMeshComponent::StaticClass()))
+		if (ABaseCharacter* baseCharacter = dynamic_cast<ABaseCharacter*>(OtherActor))
 		{
-			OverapedActors.Add(OtherActor);
-		}
-		// StaticMesh 자체인 액터는 AStaticMeshActor인지 UStaticMesh인지 확인해봐야 함.
-		else if (OtherActor->IsA(AStaticMeshActor::StaticClass()) ||
-			OtherActor->IsA(UStaticMesh::StaticClass()))
-		{
-			OverapedActors.Add(OtherActor);
+			if (baseCharacter->GetCapsuleComponent() == OtherComp)
+			{
+				OverlappedActors.Add(OtherActor);
+			}
 		}
 	}
+	else if (OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		OverlappedActors.Add(OtherActor);
+	}
+	else if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
+	{
+		OverlappedActors.Add(OtherActor);
+	}
+
+	//// 충돌한 액터의 OtherComp가 UCapsuleComponent(사실상 SkeletalMeshComponent)나 UStaticMeshComponent면 추가
+	//else if (OtherComp->IsA(UCapsuleComponent::StaticClass()) ||
+	//	OtherComp->IsA(UStaticMeshComponent::StaticClass()))
+	//{
+	//	OverlappedActors.Add(OtherActor);
+	//}
+		
+	//// StaticMesh 자체인 액터는 AStaticMeshActor인지 UStaticMesh인지 확인해봐야 함.
+	//if (OtherActor->IsA(AStaticMeshActor::StaticClass()) ||
+	//	OtherActor->IsA(UStaticMesh::StaticClass()))
+	//{
+	//	OverlappedActors.Add(OtherActor);
+	//}
 }
 
 void ABuilding::OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
+	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
 
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
+	if (OtherActor == this)
 		return;
 
-	// 투사체 무시 (충돌 주체인 AProjectile의 코드에서 처리할 것)
-	if (OtherActor->IsA(AProjectile::StaticClass()))
+	if (BuildingState != EBuildingState::Constructable)
 		return;
 
-	// 자기 자신과 충돌하면 무시합니다.
-	if (OtherActor->GetFName() == this->GetFName())
-		return;
+	/**************************************************/
 
-	if (BuildingState == EBuildingState::Constructable)
-		OverapedActors.RemoveSingle(OtherActor);
+	if (OtherActor->IsA(ABaseCharacter::StaticClass()))
+	{
+		if (ABaseCharacter* baseCharacter = dynamic_cast<ABaseCharacter*>(OtherActor))
+		{
+			if (baseCharacter->GetCapsuleComponent() == OtherComp)
+			{
+				OverlappedActors.RemoveSingle(OtherActor);
+			}
+		}
+	}
+	else if (OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		OverlappedActors.RemoveSingle(OtherActor);
+	}
+	else if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
+	{
+		OverlappedActors.RemoveSingle(OtherActor);
+	}
 }
 
 void ABuilding::TickOfConsumeAndProduct(float DeltaTime)
@@ -621,7 +629,7 @@ void ABuilding::Rotating(float Value)
 
 bool ABuilding::Constructing()
 {
-	if (OverapedActors.Num() > 0)
+	if (OverlappedActors.Num() > 0)
 		return false;
 
 
@@ -657,8 +665,6 @@ bool ABuilding::Constructing()
 		{
 			ConstructBuildingSMC->SetGenerateOverlapEvents(true);
 			ConstructBuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			ConstructBuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
-			ConstructBuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 
 			ConstructBuildingSMC->SetHiddenInGame(false);
 		}
@@ -711,8 +717,8 @@ void ABuilding::CompleteConstructing()
 		{
 			BuildingSMC->SetGenerateOverlapEvents(true);
 			BuildingSMC->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			BuildingSMC->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
-			BuildingSMC->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+			BuildingSMC->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+			BuildingSMC->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 
 			BuildingSMC->SetHiddenInGame(false);
 		}

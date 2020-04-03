@@ -82,11 +82,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "DetectRange")
 		/** DetactRangeSphereComp와 Overlap된 액터들을 모두 저장하고 벗어나면 삭제 */
-		TArray<class AActor*> OverapedDetectRangeActors; 
+		TArray<class AActor*> OverlappedDetectRangeActors; 
 
 	UPROPERTY(EditAnywhere, Category = "AttackRange")
 		/** AttackRangeSphereComp와 Overlap된 액터들을 모두 저장하고 벗어나면 삭제 */
-		TArray<class AActor*> OverapedAttackRangeActors; 
+		TArray<class AActor*> OverlappedAttackRangeActors;
 
 
 	UPROPERTY(EditAnywhere, Category = "AIController")

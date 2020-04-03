@@ -27,23 +27,19 @@ AProjectile::AProjectile()
 
 	// Collision 카테고리에서 Collision Presets을 커스텀으로 적용
 	HitRange->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // 쿼리 전용 - 이 바디는 공간 쿼리(레이캐스트, 스윕, 오버랩)에만 사용됩니다. 시뮬레이션(리짓 바디, 컨스트레인트)에는 사용할 수 없습니다. 이 세팅은 물리 시뮬레이션이 필요치 않은 오브젝트와 캐릭터 동작에 좋습니다. 물리 시뮬레이션 트리 내 데이터를 감소시키는 것으로 퍼포먼스를 약간 개선시킬 수 있습니다.
-	HitRange->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); // 월드 다이내믹 - 애니메이션 또는 코드(키네마틱)의 영향 하에 움직이는 액터 유형에 쓰입니다. 리프트나 문이 WorldDynamic 액터의 좋은 예입니다.
-	HitRange->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap); // 모든 CollisionResponses에 대해서 Ignore를 일괄 적용.
-	//HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
-	//HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	//HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
-	//HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
-	//HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-	//HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Overlap);
-	//HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Overlap);
-	//HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Overlap);
-	
+	HitRange->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel5); // 월드 다이내믹 - 애니메이션 또는 코드(키네마틱)의 영향 하에 움직이는 액터 유형에 쓰입니다. 리프트나 문이 WorldDynamic 액터의 좋은 예입니다.
+	HitRange->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); // 모든 CollisionResponses에 대해서 Ignore를 일괄 적용.
+
+	HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
+	HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	HitRange->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
 
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>("ProjectileMesh");
 	ProjectileMesh->SetupAttachment(RootComponent);
 	ProjectileMesh->SetGenerateOverlapEvents(false);
 	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); // StaticMesh는 충돌하지 않도록 설정합니다.
-
+	ProjectileMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
 	
@@ -82,7 +78,6 @@ void AProjectile::BeginPlay()
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 
 }
 /*** Basic Function : End ***/
@@ -167,60 +162,6 @@ void AProjectile::InitParticleSystem(class UParticleSystemComponent* ParticleSys
 	}
 }
 
-
-bool AProjectile::IgnoreOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	// Other Actor is the actor that triggered the event. Check that is not ourself.  
-	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
-		return true;
-
-	// Collision의 기본인 ATriggerVolume은 무시합니다.
-	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
-		return true;
-
-	if (this->GetOwner() && this->GetOwner() == OtherActor)
-		return true;
-
-	if (OtherActor->IsA(ATurret::StaticClass()))
-		return true;
-
-	if (OtherComp->IsA(USphereComponent::StaticClass()))
-		return true;
-
-	//// owner가 없으면 충돌나기 때문에 체크합니다.
-	//if (this->GetOwner() && this->GetOwner()->GetOwner())
-	//{
-	//	// 충돌한 액터가 투사체의 소유자(Weapon) 또는 소유자의 소유자(Pioneer)면 무시합니다.
-	//	if (OtherActor == this->GetOwner() || OtherActor == this->GetOwner()->GetOwner())
-	//	{
-	//		return true;
-	//	}
-	//}
-
-	//// 개척자 끼리는 무시합니다.
-	//if (OtherActor->IsA(APioneer::StaticClass()))
-	//	return true;
-
-	//// 투사체 끼리는 무시합니다.
-	//if (OtherActor->IsA(AProjectile::StaticClass()))
-	//	return true;
-
-	//// 건물에서
-	//if (OtherActor->IsA(ABuilding::StaticClass()))
-	//{
-	//	// 건설할 수 있는 지 확인하는 상태면 무시합니다.
-	//	if (dynamic_cast<ABuilding*>(OtherActor)->BuildingState == EBuildingState::Constructable)
-	//		return true;
-	//}
-
-	//// 충돌한 액터의 OtherComp가 SphereComponent라면 무시
-	//if (OtherComp->IsA(USphereComponent::StaticClass()))
-	//	return true;
-
-
-	// 자식클래스의 OnOverlapBegin 함수 실행 가능
-	return false;
-}
 void AProjectile::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.

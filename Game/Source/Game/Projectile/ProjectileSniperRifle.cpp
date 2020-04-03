@@ -49,38 +49,43 @@ void AProjectileSniperRifle::Tick(float DeltaTime)
 /*** AProjectile : Start ***/
 void AProjectileSniperRifle::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (IgnoreOnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult))
+	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
+
+	if (OtherActor == this)
+		return;
+
+	/**************************************************/
 
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
 		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 		{
-			// CollisionCylinder인 enemy의 CapsuleComponent에 충돌하면
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
 				enemy->SetHealthPoint(-TotalDamage);
 
 				ActiveToggleOfImpactParticleSystem();
 				hitCount++;
+
+				if (hitCount >= 3)
+					SetTimerForDestroy(2.0f);
 			}
 		}
 	}
-
-	if (OtherActor->IsA(ABuilding::StaticClass()))
+	else if (OtherActor->IsA(ABuilding::StaticClass()))
 	{
 		if (ABuilding* building = dynamic_cast<ABuilding*>(OtherActor))
 		{
-			if (building->BuildingState != EBuildingState::Constructable)
-				hitCount = 3;
+			if (building->BuildingState == EBuildingState::Constructing ||
+				building->BuildingState == EBuildingState::Constructed)
+			{
+				ActiveToggleOfImpactParticleSystem();
+				SetTimerForDestroy(2.0f);
+			}
 		}
 	}
-
-	if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
-		hitCount = 3;
-
-
-	if (hitCount >= 3)
+	else if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
 	{
 		ActiveToggleOfImpactParticleSystem();
 		SetTimerForDestroy(2.0f);

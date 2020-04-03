@@ -18,12 +18,15 @@ AItem::AItem()
 	RootComponent = PhysicsBox;
 
 	PhysicsBox->SetGenerateOverlapEvents(false);
-	PhysicsBox->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	//PhysicsBox->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	//PhysicsBox->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+	//PhysicsBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	//PhysicsBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	PhysicsBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PhysicsBox->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
 	PhysicsBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	PhysicsBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 
-	PhysicsBox->SetSimulatePhysics(true);
+	PhysicsBox->SetSimulatePhysics(false);
 
 	// Detail의 Physics의 Constraints의 Lock Rotaion 활성화: 물리회전을 고정
 	PhysicsBox->BodyInstance.bLockXRotation = true;
@@ -35,7 +38,9 @@ AItem::AItem()
 	InteractionRange->SetupAttachment(RootComponent);
 
 	InteractionRange->SetGenerateOverlapEvents(true);
-	InteractionRange->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	//InteractionRange->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	InteractionRange->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	InteractionRange->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 
 	//InteractionRange->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnOverlapBegin_InteractionRange);
 	//InteractionRange->OnComponentEndOverlap.AddDynamic(this, &AItem::OnOverlapEnd_InteractionRange);
@@ -45,6 +50,8 @@ AItem::AItem()
 	ItemMesh->SetupAttachment(RootComponent);
 	ItemMesh->SetGenerateOverlapEvents(false);
 	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ItemMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 }
 
 void AItem::BeginPlay()

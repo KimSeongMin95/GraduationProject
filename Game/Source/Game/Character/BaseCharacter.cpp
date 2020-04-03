@@ -14,6 +14,18 @@ ABaseCharacter::ABaseCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	if (GetCapsuleComponent())
+	{
+		GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap); // RangeSphere
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block); // Building
+
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Ignore);
+	}
+
 
 	InitHelthPointBar();
 
@@ -68,7 +80,7 @@ void ABaseCharacter::InitHelthPointBar()
 
 	HelthPointBar->SetGenerateOverlapEvents(false);
 	HelthPointBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	HelthPointBar->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	HelthPointBar->SetCollisionObjectType(ECollisionChannel::ECC_Visibility);
 	HelthPointBar->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 	HelthPointBar->SetOnlyOwnerSee(false);
@@ -170,8 +182,9 @@ void ABaseCharacter::InitRanges()
 
 	DetectRangeSphereComp->SetGenerateOverlapEvents(true);
 	DetectRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	DetectRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	DetectRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	DetectRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
+	DetectRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	DetectRangeSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 
 	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
 	AttackRangeSphereComp->SetupAttachment(RootComponent);
@@ -179,8 +192,9 @@ void ABaseCharacter::InitRanges()
 
 	AttackRangeSphereComp->SetGenerateOverlapEvents(true);
 	AttackRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	AttackRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	AttackRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	AttackRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
+	AttackRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	AttackRangeSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
 void ABaseCharacter::InitAIController()

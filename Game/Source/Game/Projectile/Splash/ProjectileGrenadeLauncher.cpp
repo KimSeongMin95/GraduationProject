@@ -29,12 +29,12 @@ AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
 
 
 	PhysicsBoxComp = CreateDefaultSubobject<UBoxComponent>("PhysicsBoxComp");
-	PhysicsBoxComp->SetBoxExtent(FVector(10.0f, 5.0f, 5.0f), false);
+	PhysicsBoxComp->SetBoxExtent(FVector(20.0f, 10.0f, 10.0f), false);
 
 	PhysicsBoxComp->SetGenerateOverlapEvents(false);
 
 	PhysicsBoxComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	PhysicsBoxComp->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+	PhysicsBoxComp->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	PhysicsBoxComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	PhysicsBoxComp->SetSimulatePhysics(true);
 	//PhysicsBoxComp->SetLinearDamping(0.5f);
@@ -65,8 +65,13 @@ void AProjectileGrenadeLauncher::Tick(float DeltaTime)
 /*** AProjectile : Start ***/
 void AProjectileGrenadeLauncher::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (IgnoreOnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult))
+	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
+
+	if (OtherActor == this)
+		return;
+
+	/**************************************************/
 
 	if (OtherActor->IsA(AEnemy::StaticClass()))
 	{
@@ -79,7 +84,6 @@ void AProjectileGrenadeLauncher::OnOverlapBegin_HitRange(class UPrimitiveCompone
 
 				//ActiveToggleOfImpactParticleSystem(true); // AProjectileGrenadeLauncher에서는 SetTimerForDestroy에서 실행
 				SetTimerForDestroy(3.0f);
-				return;
 			}
 		}
 	}
