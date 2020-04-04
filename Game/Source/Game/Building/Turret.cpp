@@ -29,7 +29,9 @@ ATurret::ATurret()
 
 	TickOfFindEnemyTime = 0.0f;
 
-	TargetRotation = FRotator();
+	TimerOfRotateTargetRotation = 0.0f;
+	bRotateTargetRotation = false;
+	TargetRotation = FRotator::ZeroRotator;
 
 	IdxOfTarget = 0;
 
@@ -245,6 +247,8 @@ void ATurret::TickOfFindEnemy(float DeltaTime)
 		{
 			const int32* foundKey = EnemyManager->Enemies.FindKey(target);
 			IdxOfTarget = *foundKey;
+
+			LookAtTheLocation();
 		}
 	}
 	else
@@ -255,6 +259,14 @@ void ATurret::TickOfFindEnemy(float DeltaTime)
 
 void ATurret::RotateTargetRotation(float DeltaTime)
 {
+	if (!bRotateTargetRotation)
+		return;
+
+	TimerOfRotateTargetRotation += DeltaTime;
+	if (TimerOfRotateTargetRotation < 0.033f)
+		return;
+	TimerOfRotateTargetRotation = 0.0f;
+
 	if (!ParentOfHead)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
@@ -263,26 +275,7 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 		return;
 	}
 
-	if (!EnemyManager)
-		return;
-
-	if (EnemyManager->Enemies.Contains(IdxOfTarget))
-	{
-		FVector direction = EnemyManager->Enemies[IdxOfTarget]->GetActorLocation();
-		direction -= ParentOfHead->GetComponentLocation();
-
-		direction.Normalize();
-
-		TargetRotation = FRotator(
-			direction.Rotation().Pitch,
-			direction.Rotation().Yaw,
-			ParentOfHead->GetComponentRotation().Roll);
-	}
-	else
-	{
-		IdxOfTarget = 0;
-		return;
-	}
+	/*******************************************/
 
 	FRotator CurrentRotation = ParentOfHead->GetComponentRotation(); // Normalized
 
@@ -311,15 +304,19 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 		upper = true;
 	}
 
+	bool OverYaw = false;
+
 	// 작았었는데 커졌다면 넘어간 것이므로 회전을 바로 적용합니다.
 	if (upper && CurrentRotation.Yaw < TargetRotation.Yaw)
 	{
 		CurrentRotation.Yaw = TargetRotation.Yaw;
+		OverYaw = true;
 	}
 	// 컸었는데 작아졌다면 넘어간 것이므로 회전을 바로 적용합니다.
 	else if (under && CurrentRotation.Yaw > TargetRotation.Yaw)
 	{
 		CurrentRotation.Yaw = TargetRotation.Yaw;
+		OverYaw = true;
 	}
 
 
@@ -347,22 +344,61 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 		upper = true;
 	}
 
+	bool OverPitch = false;
+
 	// 작았었는데 커졌다면 넘어간 것이므로 회전을 바로 적용합니다.
 	if (upper && CurrentRotation.Pitch < TargetRotation.Pitch)
 	{
 		CurrentRotation.Pitch = TargetRotation.Pitch;
+		OverPitch = true;
 	}
 	// 컸었는데 작아졌다면 넘어간 것이므로 회전을 바로 적용합니다.
 	else if (under && CurrentRotation.Pitch > TargetRotation.Pitch)
 	{
 		CurrentRotation.Pitch = TargetRotation.Pitch;
+		OverPitch = true;
 	}
 
+	if (OverYaw && OverPitch)
+		bRotateTargetRotation = false;
 
 	// 변경된 각도로 다시 설정합니다.
 	ParentOfHead->SetWorldRotation(FQuat(CurrentRotation));
+}
 
+void ATurret::LookAtTheLocation()
+{
+	if (!ParentOfHead)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<ATurret::RotateTargetRotation(...)> if (!ParentOfHead)"));
+#endif
+		return;
+	}
 
+	if (!EnemyManager)
+		return;
+
+	/*******************************************/
+
+	if (EnemyManager->Enemies.Contains(IdxOfTarget))
+	{
+		FVector direction = EnemyManager->Enemies[IdxOfTarget]->GetActorLocation();
+		direction -= ParentOfHead->GetComponentLocation();
+
+		direction.Normalize();
+
+		TargetRotation = FRotator(
+			direction.Rotation().Pitch,
+			direction.Rotation().Yaw,
+			ParentOfHead->GetComponentRotation().Roll);
+
+		bRotateTargetRotation = true;
+	}
+	else
+	{
+		IdxOfTarget = 0;
+	}
 }
 
 void ATurret::Fire()

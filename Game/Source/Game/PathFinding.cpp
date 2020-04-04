@@ -19,7 +19,7 @@ void PathFinding::SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Con
 		if (APawn* const MyPawn = Controller->GetPawn())
 		{
 			// 현재 Pawn의 위치와 목적지 간의 거리를 구합니다.
-			float const Distance = FVector::Dist(DestLocation, MyPawn->GetActorLocation());
+			float const Distance = FVector::Distance(DestLocation, MyPawn->GetActorLocation());
 
 			// We need to issue move command only if far enough in order for walk animation to play correctly
 			// 걷기 애니메이션이 정확하게 플레이될 수 있도록 어느 정도 거리가 있어야 움직일 수 있게 합니다.
@@ -29,7 +29,6 @@ void PathFinding::SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Con
 				UAIBlueprintHelperLibrary::SimpleMoveToLocation(Controller, DestLocation);
 			}
 		}
-
 		break;
 	}
 	case PathFindAlgorithm::PFA_AStar:
@@ -44,9 +43,35 @@ void PathFinding::SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Con
 		break;
 	}
 	default:
+
+		break;
+	}
+}
+
+void PathFinding::SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Controller, const AActor* DestActor)
+{
+	switch (PFA_)
+	{
+	case PathFindAlgorithm::PFA_NaveMesh:
+	{
+		// UAIBlueprintHelperLibrary의 함수를 사용하여 움직입니다.
+		UAIBlueprintHelperLibrary::SimpleMoveToActor(Controller, DestActor);
+		
+		break;
+	}
+	case PathFindAlgorithm::PFA_AStar:
 	{
 
 		break;
 	}
+	case PathFindAlgorithm::PFA_BreadthFirstSearch:
+	{
+
+
+		break;
+	}
+	default:
+
+		break;
 	}
 }

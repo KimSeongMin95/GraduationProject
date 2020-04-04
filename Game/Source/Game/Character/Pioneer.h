@@ -58,11 +58,19 @@ public:
 	virtual void SetHealthPoint(float Value) final;
 
 
-	virtual void PossessAIController() final;
+	virtual void FindTheTargetActor(float DeltaTime) final;
 
 
-	virtual void FindTheTargetActor() final;
+	virtual void IdlingOfFSM(float DeltaTime) final;
 
+	virtual void TracingOfFSM(float DeltaTime) final;
+
+	virtual void AttackingOfFSM(float DeltaTime) final;
+
+	virtual void RunFSM(float DeltaTime) final;
+
+
+	virtual void RunBehaviorTree(float DeltaTime) final;
 
 /*** ABaseCharacter : End ***/
 
@@ -211,8 +219,7 @@ public:
 		bool CopyTopDownCameraTo(AActor* CameraToBeCopied); 
 
 
-	UFUNCTION(Category = "CharacterMovement")
-		void StopMovement();
+
 
 
 	UFUNCTION(BlueprintCallable, Category = "AnimInstance")
@@ -271,9 +278,6 @@ public:
 
 	UFUNCTION(Category = "Building")
 		void DestroyBuilding();
-
-
-	bool IsTargetActorInAttackRange();
 
 
 	///////////

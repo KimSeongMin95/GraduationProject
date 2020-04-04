@@ -28,21 +28,20 @@ void UPioneerAnimInstance::NativeInitializeAnimation()
 	{
 		if (BaseCharacter->IsA(APioneer::StaticClass()))
 			Pioneer = Cast<APioneer>(BaseCharacter);
-
-		return;
-	}
-	// else
-	if (APawn* Owner = TryGetPawnOwner())
-	{
-		// Owner가 APioneer이거나 APioneer의 하위클래스인지 확인합니다.
-		if (Owner->IsA(APioneer::StaticClass()))
-			Pioneer = Cast<APioneer>(Owner);
 	}
 }
 
 void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 {
 	Super::NativeUpdateAnimation(DeltaTimeX);
+
+	if (!TryGetPawnOwner())
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> if (!TryGetPawnOwner())"));
+#endif
+		return;
+	}
 
 	if (!Pioneer)
 	{
@@ -54,14 +53,11 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		}
 
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> if (!Pioneer)"));
+		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> if (!Pioneer)"));
 #endif
 		return;
 	}
 
-	//// bDying이 체크되었으면 무조건 체력을 0으로 만들어서 죽는 과정을 진행합니다.
-	//if (Pioneer->bDying)
-	//	Pioneer->SetHealthPoint(-Pioneer->HealthPoint);
 
 	/// CharacterAI
 	switch (CharacterAI)
@@ -101,6 +97,14 @@ void UPioneerAnimInstance::SetBehaviorTree()
 
 void UPioneerAnimInstance::FireEnd()
 {
+	if (!TryGetPawnOwner())
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::FireEnd()> if (!TryGetPawnOwner())"));
+#endif
+		return;
+	}
+
 	if (!Pioneer)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
@@ -114,7 +118,13 @@ void UPioneerAnimInstance::FireEnd()
 
 void UPioneerAnimInstance::DestroyCharacter()
 {
-	Super::DestroyCharacter();
+	if (!TryGetPawnOwner())
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::DestroyCharacter()> if (!TryGetPawnOwner())"));
+#endif
+		return;
+	}
 
 	if (!Pioneer)
 	{

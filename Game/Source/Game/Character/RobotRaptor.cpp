@@ -76,17 +76,4 @@ void ARobotRaptor::InitStat()
 	DetectRange = 32.0f;
 	SightRange = 32.0f;
 }
-
-
-void ARobotRaptor::RunFSM()
-{
-	Super::RunFSM();
-
-}
-
-void ARobotRaptor::RunBehaviorTree()
-{
-	Super::RunBehaviorTree();
-
-}
 /*** ABaseCharacter : End ***/

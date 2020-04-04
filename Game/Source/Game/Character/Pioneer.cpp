@@ -194,11 +194,14 @@ void APioneer::InitAIController()
 
 	AIController = world->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
 
-	// Controller는 Attach가 안됨.
+	AIController->SetBaseCharacter(this);
 }
 
 void APioneer::InitCharacterMovement()
 {
+	if (!GetCharacterMovement())
+		return;
+
 	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
 }
 
@@ -278,36 +281,36 @@ void APioneer::RotateTargetRotation(float DeltaTime)
 
 void APioneer::SetHealthPoint(float Value)
 {
-	Super::SetHealthPoint(Value);
+	if (bDying)
+		return;
+
+	HealthPoint += Value;
 
 	if (HealthPoint > 0.0f)
 		return;
 
-	if (CursorToWorld)
-	{
-		CursorToWorld->DestroyComponent();
-		CursorToWorld = nullptr;
-	}
+	if (bDyingFlag)
+		return;
+	else
+		bDyingFlag = true;
 
-	if (Building)
-	{
-		Building->Destroy();
-		Building = nullptr;
-	}
+	/************************************/
 
-	if (AIController)
+	if (!PioneerManager)
 	{
-		AIController->UnPossess();
-		AIController->Destroy();
-		AIController = nullptr;
+		UE_LOG(LogTemp, Fatal, TEXT("<APioneer::SetHealthPoint(...)> if (!PioneerManager)"));
 	}
-
 
 	if (PioneerManager)
 	{
 		// 1번만 실행하기 위해 Pioneers에 존재하는지 확인합니다.
 		if (PioneerManager->Pioneers.Contains(ID))
 		{
+			PioneerManager->Pioneers[ID] = nullptr;
+			PioneerManager->Pioneers.Remove(ID);
+			PioneerManager->Pioneers.Compact();
+			PioneerManager->Pioneers.Shrink();
+
 			//////////////////////////////////////////////////////////
 			// 게임서버는와 게임클라이언트는 자신의 죽음과 관전상태를 알림
 			//////////////////////////////////////////////////////////
@@ -338,16 +341,181 @@ void APioneer::SetHealthPoint(float Value)
 				}
 			}
 		}
+		else
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("<APioneer::SetHealthPoint(...)> if (!PioneerManager->Pioneers.Contains(ID))"));
+		}
+	}
 
-		PioneerManager->Pioneers.Remove(ID);
+	Super::SetHealthPoint(Value);
+
+	if (CursorToWorld)
+	{
+		CursorToWorld->DestroyComponent();
+		CursorToWorld = nullptr;
+	}
+
+	if (Building)
+	{
+		Building->Destroy();
+		Building = nullptr;
+	}
+
+	if (AIController)
+	{
+		AIController->UnPossess();
+		AIController->Destroy();
+		AIController = nullptr;
+	}
+
+	bDying = true;
+}
+
+void APioneer::FindTheTargetActor(float DeltaTime)
+{
+	TimerOfFindTheTargetActor += DeltaTime;
+	if (TimerOfFindTheTargetActor < 1.5f)
+		return;
+	TimerOfFindTheTargetActor = 0.0f;
+
+	/*******************************************/
+
+	TargetActor = nullptr;
+
+	// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
+	TSet<ABaseCharacter*> tset_Overlapped(OverlappedCharacterInDetectRange);
+
+	for (auto& enemy : tset_Overlapped)
+	{
+		if (enemy->bDying)
+			continue;
+
+		if (!TargetActor)
+		{
+			TargetActor = enemy;
+			continue;
+		}
+
+		if (DistanceToActor(enemy) < DistanceToActor(TargetActor))
+			TargetActor = enemy;
+	}
+
+
+	if (!TargetActor)
+	{
+		State = EFiniteState::Idle;
+		IdlingOfFSM(3.0f);
+	}
+	else if (DistanceToActor(TargetActor) > (AttackRange * AOnlineGameMode::CellSize))
+	{
+		State = EFiniteState::Tracing;
+		TracingOfFSM(0.5f);
+	}
+	else
+	{
+		State = EFiniteState::Attack;
+		AttackingOfFSM(0.2f);
 	}
 }
 
-
-void APioneer::PossessAIController()
+void APioneer::IdlingOfFSM(float DeltaTime)
 {
-	ABaseCharacter::PossessAIController();
+	TimerOfIdlingOfFSM += DeltaTime;
+	if (TimerOfIdlingOfFSM < 3.0f)
+		return;
+	TimerOfIdlingOfFSM = 0.0f;
 
+	/*******************************************/
+
+	StopMovement();
+
+	MoveRandomlyPosition();
+}
+
+void APioneer::TracingOfFSM(float DeltaTime)
+{
+	TimerOfTracingOfFSM += DeltaTime;
+	if (TimerOfTracingOfFSM < 0.5f)
+		return;
+	TimerOfTracingOfFSM = 0.0f;
+
+	if (!GetController())
+		return;
+
+	/*******************************************/
+
+	if (!TargetActor)
+	{
+		State = EFiniteState::Idle;
+		IdlingOfFSM(3.0f);
+	}
+	else if (DistanceToActor(TargetActor) > (AttackRange * AOnlineGameMode::CellSize))
+	{
+		TracingTargetActor();
+	}
+	else
+	{
+		State = EFiniteState::Attack;
+		AttackingOfFSM(0.2f);
+	}
+}
+
+void APioneer::AttackingOfFSM(float DeltaTime)
+{
+	TimerOfAttackingOfFSM += DeltaTime;
+	if (TimerOfAttackingOfFSM < 0.2f)
+		return;
+	TimerOfAttackingOfFSM = 0.0f;
+
+	if (!GetController())
+		return;
+
+	/*******************************************/
+		
+	if (!TargetActor)
+	{
+		State = EFiniteState::Idle;
+		IdlingOfFSM(3.0f);
+		return;
+	}
+
+	StopMovement();
+
+	LookAtTheLocation(TargetActor->GetActorLocation());
+
+	FireWeapon();
+}
+
+void APioneer::RunFSM(float DeltaTime)
+{
+	FindTheTargetActor(DeltaTime);
+
+	switch (State)
+	{
+	case EFiniteState::Idle:
+	{
+		IdlingOfFSM(DeltaTime);
+		break;
+	}
+	case EFiniteState::Tracing:
+	{
+		TracingOfFSM(DeltaTime);
+		break;
+	}
+	case EFiniteState::Attack:
+	{
+		AttackingOfFSM(DeltaTime);
+		break;
+	}
+	default:
+
+		break;
+	}
+}
+
+void APioneer::RunBehaviorTree(float DeltaTime)
+{
+	
 }
 /*** ABaseCharacter : End ***/
 
@@ -702,36 +870,6 @@ void APioneer::InitEquipments()
 //}
 
 
-void APioneer::FindTheTargetActor()
-{
-	ABaseCharacter::FindTheTargetActor();
-
-
-	TargetActor = nullptr;
-
-	// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
-	TSet<ABaseCharacter*> tset_Overlapped(OverlappedCharacterInDetectRange);
-
-	for (auto& enemy : tset_Overlapped)
-	{
-		if (enemy->bDying)
-			continue;
-
-		if (!TargetActor)
-		{
-			TargetActor = enemy;
-			continue;
-		}
-
-		if (DistanceToActor(enemy) < DistanceToActor(TargetActor))
-			TargetActor = enemy;
-	}
-
-	if (!TargetActor)
-		State = EFiniteState::Idle;
-	else
-		State = EFiniteState::Tracing;
-}
 
 //void APioneer::OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 //{
@@ -850,13 +988,6 @@ bool APioneer::CopyTopDownCameraTo(AActor* CameraToBeCopied)
 }
 
 
-void APioneer::StopMovement()
-{
-	if (GetController())
-		GetController()->StopMovement();
-}
-
-
 bool APioneer::HasPistolType()
 {
 	return bHasPistolType;
@@ -911,7 +1042,7 @@ void APioneer::AcquireWeapon(class AWeapon* weapon)
 
 void APioneer::AbandonWeapon()
 {
-	if (!CurrentWeapon)
+	if (!CurrentWeapon || !GetCharacterMovement())
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<APioneer::AbandonWeapon()> if (!CurrentWeapon)"));
@@ -1263,22 +1394,6 @@ void APioneer::DestroyBuilding()
 		Building->Destroying();
 		Building = nullptr;
 	}
-}
-
-bool APioneer::IsTargetActorInAttackRange()
-{
-	if (!TargetActor || !GetController())
-		return false;
-
-	if (DistanceToActor(TargetActor) > (AttackRange * AOnlineGameMode::CellSize))
-	{
-		//FindTheTargetActor();
-		return false;
-	}
-
-	GetController()->StopMovement();
-	
-	return true;
 }
 
 ///////////

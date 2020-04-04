@@ -76,17 +76,4 @@ void ASlowZombie::InitStat()
 	DetectRange = 32.0f;
 	SightRange = 32.0f;
 }
-
-
-void ASlowZombie::RunFSM()
-{
-	Super::RunFSM();
-
-}
-
-void ASlowZombie::RunBehaviorTree()
-{
-	Super::RunBehaviorTree();
-
-}
 /*** ABaseCharacter : End ***/

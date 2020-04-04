@@ -36,17 +36,19 @@ public:
 private:
 	FTimerHandle TimerHandleOfRunCharacterAI;
 
+	UPROPERTY(VisibleAnywhere)
+		class ABaseCharacter* BaseCharacter = nullptr;
+
 private:
 	UFUNCTION(Category = "CharacterAI")
-		void RunCharacterAI(float DeltaTime); float TimerOfRunCharacterAI;
+		void RunCharacterAI(float DeltaTime);
 
 protected:
 	bool CheckDying();
 
-	void LookAtTheTargetActor(float DeltaTime); float TimerOfLookAtTheTargetActor;
+	//void LookAtTheTargetActor(float DeltaTime); float TimerOfLookAtTheTargetActor;
 
 public:
-	UFUNCTION()
-		virtual void MoveRandomlyInDetectionRange(bool bLookAtDestination);
+	void SetBaseCharacter(class ABaseCharacter* pBaseCharacter);
 /*** ABaseAIController : End ***/
 };

@@ -76,17 +76,4 @@ void AGiantZombie::InitStat()
 	DetectRange = 32.0f;
 	SightRange = 32.0f;
 }
-
-
-void AGiantZombie::RunFSM()
-{
-	Super::RunFSM();
-
-}
-
-void AGiantZombie::RunBehaviorTree()
-{
-	Super::RunBehaviorTree();
-
-}
 /*** ABaseCharacter : End ***/

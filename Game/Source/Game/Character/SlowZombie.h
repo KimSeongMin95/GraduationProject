@@ -32,10 +32,5 @@ public:
 /*** ABaseCharacter : Start ***/
 protected:
 	virtual void InitStat() final;
-
-public:
-	virtual void RunFSM() final;
-
-	virtual void RunBehaviorTree() final;
 /*** ABaseCharacter : End ***/
 };

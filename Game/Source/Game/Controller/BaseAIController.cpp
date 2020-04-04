@@ -13,7 +13,7 @@ ABaseAIController::ABaseAIController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	TimerOfRunCharacterAI = 0.0f;
+	BaseCharacter = nullptr;
 }
 
 void ABaseAIController::BeginPlay()
@@ -42,82 +42,38 @@ bool ABaseAIController::CheckDying()
 	if (!GetPawn())
 		return true;
 
-	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
-	{
-		// 죽으면 함수를 실행하지 않음.
-		if (baseCharacter->bDying)
-			return true;
-	}
+	if (!BaseCharacter)
+		return true;
+
+	if (BaseCharacter->bDying)
+		return true;
 
 	return false;
 }
 
-void ABaseAIController::LookAtTheTargetActor(float DeltaTime)
-{
-	TimerOfLookAtTheTargetActor += DeltaTime;
-	if (TimerOfLookAtTheTargetActor < 0.2f)
-		return;
-	TimerOfLookAtTheTargetActor = 0.0f;
-
-	if (CheckDying())
-		return;
-
-	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
-	{
-		if (AActor* target = baseCharacter->GetTargetActor())
-		{
-			baseCharacter->LookAtTheLocation(target->GetActorLocation());
-		}
-	}
-}
-
 void ABaseAIController::RunCharacterAI(float DeltaTime)
 {
-	TimerOfRunCharacterAI += DeltaTime;
-	if (TimerOfRunCharacterAI < 1.0f)
-		return;
-	TimerOfRunCharacterAI = 0.0f;
-
 	if (CheckDying())
 		return;
 
-	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
+	switch (BaseCharacter->GetCharacterAI())
 	{
-		switch (baseCharacter->GetCharacterAI())
-		{
-		case ECharacterAI::FSM:
-			baseCharacter->FindTheTargetActor();
-			baseCharacter->RunFSM();
-			break;
-		case ECharacterAI::BehaviorTree:
-			baseCharacter->RunBehaviorTree();
-			break;
-		default:
+	case ECharacterAI::FSM:
+		BaseCharacter->RunFSM(DeltaTime);
+		break;
+	case ECharacterAI::BehaviorTree:
+		BaseCharacter->RunBehaviorTree(DeltaTime);
+		break;
+	default:
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-			UE_LOG(LogTemp, Warning, TEXT("<ABaseAIController::RunCharacterAI(...)> switch (baseCharacter->GetCharacterAI()) default:"));
+		UE_LOG(LogTemp, Warning, TEXT("<ABaseAIController::RunCharacterAI(...)> switch (baseCharacter->GetCharacterAI()) default:"));
 #endif			
-			break;
-		}
+		break;
 	}
 }
 
-void ABaseAIController::MoveRandomlyInDetectionRange(bool bLookAtDestination)
+void ABaseAIController::SetBaseCharacter(class ABaseCharacter* pBaseCharacter)
 {
-	if (CheckDying())
-		return;
-
-	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
-	{
-		FVector dest = FVector(FMath::RandRange(-500.0f, 500.0f), FMath::RandRange(-500.0f, 500.0f), 0.0f);
-		dest += baseCharacter->GetActorLocation();
-		PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, dest);
-
-		//FAIMoveRequest FAI;
-		//FAI.SetGoalLocation(dest);
-		//MoveTo(FAI);
-
-		if (bLookAtDestination)
-			baseCharacter->LookAtTheLocation(dest);
-	}
+	BaseCharacter = pBaseCharacter;
 }
 /*** ABaseAIController : End ***/

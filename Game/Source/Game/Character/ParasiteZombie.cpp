@@ -76,17 +76,4 @@ void AParasiteZombie::InitStat()
 	DetectRange = 32.0f;
 	SightRange = 32.0f;
 }
-
-
-void AParasiteZombie::RunFSM()
-{
-	Super::RunFSM();
-
-}
-
-void AParasiteZombie::RunBehaviorTree()
-{
-	Super::RunBehaviorTree();
-
-}
 /*** ABaseCharacter : End ***/

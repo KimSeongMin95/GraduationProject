@@ -31,6 +31,7 @@ public:
 
 	/** PioneerController에서 길찾기 알고리즘을 선택해서 실행합니다. */
 	static void SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Controller, const FVector DestLocation);
+	static void SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Controller, const AActor* DestActor);
 
 
 };

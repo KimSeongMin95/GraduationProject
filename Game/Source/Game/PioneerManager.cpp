@@ -691,17 +691,6 @@ void APioneerManager::Observation()
 	}
 	/***********************************************************************/
 
-	// UI 설정
-	if (InGameWidget)
-	{
-		InGameWidget->SetArrowButtonsVisibility(true);
-		InGameWidget->SetPossessButtonVisibility(true);
-		InGameWidget->SetFreeViewpointButtonVisibility(true);
-		InGameWidget->SetObservingButtonVisibility(false);
-
-		InGameWidget->SetBuildingBoxVisibility(false);
-	}
-
 	TArray<int32> keys;
 	Pioneers.GetKeys(keys);
 
@@ -712,6 +701,16 @@ void APioneerManager::Observation()
 		return;
 	}
 
+	// UI 설정
+	if (InGameWidget)
+	{
+		InGameWidget->SetArrowButtonsVisibility(true);
+		InGameWidget->SetPossessButtonVisibility(true);
+		InGameWidget->SetFreeViewpointButtonVisibility(true);
+		InGameWidget->SetObservingButtonVisibility(false);
+
+		InGameWidget->SetBuildingBoxVisibility(false);
+	}
 
 	if (Pioneers.Contains(IdCurrentlyBeingObserved) == false)
 	{

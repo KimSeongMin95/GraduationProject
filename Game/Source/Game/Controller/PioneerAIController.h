@@ -19,13 +19,4 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
-
-
-/*** ABaseAIController : Start ***/
-protected:
-	void AttackTheTargetActor(float DeltaTime); float TimerOfAttackTheTargetActor;
-
-public:
-	virtual void MoveRandomlyInDetectionRange(bool bLookAtDestination) override;
-/*** ABaseAIController : End ***/
 };

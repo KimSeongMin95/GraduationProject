@@ -41,10 +41,18 @@ ABaseCharacter::ABaseCharacter()
 
 	InitFSM();
 
+	bDyingFlag = false;
+
+	TimerOfRotateTargetRotation = 0.0f;
 	bRotateTargetRotation = false;
 	TargetRotation = FRotator::ZeroRotator;
 
 	TargetActor = nullptr;
+
+	TimerOfFindTheTargetActor = 1.0f;
+	TimerOfIdlingOfFSM = 0.0f;
+	TimerOfTracingOfFSM = 0.0f;
+	TimerOfAttackingOfFSM = 0.0f;
 }
 
 void ABaseCharacter::BeginPlay()
@@ -182,7 +190,6 @@ void ABaseCharacter::InitRanges()
 {
 	DetectRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetectRangeSphereComp"));
 	DetectRangeSphereComp->SetupAttachment(RootComponent);
-	DetectRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * DetectRange, true);
 
 	DetectRangeSphereComp->SetGenerateOverlapEvents(true);
 	DetectRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -237,12 +244,19 @@ void ABaseCharacter::OnOverlapEnd_DetectRange(class UPrimitiveComponent* Overlap
 
 void ABaseCharacter::RotateTargetRotation(float DeltaTime)
 {
-	if (!RootComponent || !GetCharacterMovement())
+	if (!bRotateTargetRotation)
 		return;
 
-	FRotator CurrentRotation = RootComponent->GetComponentRotation(); // Normalized
+	TimerOfRotateTargetRotation += DeltaTime;
+	if (TimerOfRotateTargetRotation < 0.033f)
+		return;
+	TimerOfRotateTargetRotation = 0.0f;
 
-	FRotator DeltaRot = GetCharacterMovement()->GetDeltaRotation(DeltaTime);
+	/*******************************************/
+
+	FRotator CurrentRotation = GetActorRotation(); // Normalized
+
+	FRotator DeltaRot = FRotator(720.0f * DeltaTime, 720.0f * DeltaTime, 0.0f);
 
 	float sign = 1.0f;
 	float DifferenceYaw = FMath::Abs(CurrentRotation.Yaw - TargetRotation.Yaw);
@@ -298,13 +312,6 @@ float ABaseCharacter::DistanceToActor(AActor* Actor)
 
 void ABaseCharacter::SetHealthPoint(float Value)
 {
-	HealthPoint += Value;
-
-	if (HealthPoint > 0.0f)
-		return;
-
-	bDying = true;
-
 	if (GetCharacterMovement())
 		GetCharacterMovement()->StopActiveMovement();
 
@@ -367,6 +374,12 @@ void ABaseCharacter::UnPossessAIController()
 		return;
 	}
 
+	if (DetectRangeSphereComp)
+	{
+		DetectRangeSphereComp->DestroyComponent();
+		DetectRangeSphereComp = nullptr;
+	}
+
 	// 그뒤 AI 컨트롤러 빙의를 해제합니다.
 	AIController->UnPossess();
 
@@ -377,20 +390,22 @@ void ABaseCharacter::UnPossessAIController()
 	AIController = nullptr;
 }
 
+void ABaseCharacter::StopMovement()
+{
+	if (GetController())
+		GetController()->StopMovement();
+}
 
 void ABaseCharacter::LookAtTheLocation(FVector Location)
 {
-	if (!RootComponent)
-		return;
-
-	// 현재 rootComponent 위치
-	FVector rootCompLocation = RootComponent->GetComponentLocation();
+	// 현재 Actor의 위치
+	FVector location = GetActorLocation();
 
 	// 방향을 구합니다.
 	FVector direction = FVector(
-		Location.X - rootCompLocation.X,
-		Location.Y - rootCompLocation.Y,
-		Location.Z - rootCompLocation.Z);
+		Location.X - location.X,
+		Location.Y - location.Y,
+		Location.Z - location.Z);
 
 	// 벡터를 정규화합니다.
 	direction.Normalize();
@@ -403,7 +418,7 @@ void ABaseCharacter::LookAtTheLocation(FVector Location)
 	bRotateTargetRotation = true;
 }
 
-void ABaseCharacter::FindTheTargetActor()
+void ABaseCharacter::FindTheTargetActor(float DeltaTime)
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
@@ -413,7 +428,9 @@ void ABaseCharacter::TracingTargetActor()
 	if (!TargetActor || !GetController())
 		return;
 
-	PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), TargetActor->GetActorLocation());
+	PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), TargetActor);
+
+	LookAtTheLocation(TargetActor->GetActorLocation());
 }
 
 void ABaseCharacter::MoveRandomlyPosition()
@@ -421,67 +438,35 @@ void ABaseCharacter::MoveRandomlyPosition()
 	if (!GetController())
 		return;
 
-	FVector newPosition = FVector(FMath::RandRange(-200.0f, 200.0f), FMath::RandRange(-200.0f, 200.0f), 0.0f);
+	FVector newPosition = FVector(FMath::RandRange(-500.0f, 500.0f), FMath::RandRange(-500.0f, 500.0f), 0.0f);
 	newPosition += GetActorLocation();
 	PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), newPosition);
 
 	LookAtTheLocation(newPosition);
 }
 
-void ABaseCharacter::IdlingOfFSM()
+
+void ABaseCharacter::IdlingOfFSM(float DeltaTime)
 {
-	MoveRandomlyPosition();
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
 
-void ABaseCharacter::TracingOfFSM()
+void ABaseCharacter::TracingOfFSM(float DeltaTime)
 {
-	if (!TargetActor || !GetController())
-	{
-		State = EFiniteState::Idle;
-	}
-	else if (DistanceToActor(TargetActor) > (AttackRange * AOnlineGameMode::CellSize))
-	{
-		State = EFiniteState::Tracing;
-		TracingTargetActor();
-	}
-	else
-	{
-		State = EFiniteState::Attack;
-		GetController()->StopMovement();
-	}
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
 
-void ABaseCharacter::AttackingOfFSM()
+void ABaseCharacter::AttackingOfFSM(float DeltaTime)
 {
-	
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
 
-void ABaseCharacter::RunFSM()
+void ABaseCharacter::RunFSM(float DeltaTime)
 {
-	switch (State)
-	{
-	case EFiniteState::Idle:
-	{
-		IdlingOfFSM();
-		break;
-	}
-	case EFiniteState::Tracing:
-	{
-		TracingOfFSM();
-		break;
-	}
-	case EFiniteState::Attack:
-	{
-		AttackingOfFSM();
-		break;
-	}
-	default:
-
-		break;
-	}
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
 
-void ABaseCharacter::RunBehaviorTree()
+void ABaseCharacter::RunBehaviorTree(float DeltaTime)
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }

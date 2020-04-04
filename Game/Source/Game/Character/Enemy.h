@@ -54,16 +54,41 @@ protected:
 	virtual void RotateTargetRotation(float DeltaTime) final;
 
 public:
-	virtual void SetHealthPoint(float Delta) final;
+	virtual void SetHealthPoint(float Value) final;
 
-	virtual void PossessAIController() override;
 
-	virtual void FindTheTargetActor() final;
+	virtual void FindTheTargetActor(float DeltaTime) final;
+
+
+	virtual void IdlingOfFSM(float DeltaTime) final;
+
+	virtual void TracingOfFSM(float DeltaTime) final;
+
+	virtual void AttackingOfFSM(float DeltaTime) final;
+
+	virtual void RunFSM(float DeltaTime) final;
+
+
+	virtual void RunBehaviorTree(float DeltaTime) final;
 
 /*** ABaseCharacter : End ***/
 
 
 /*** AEnemy : Start ***/
+protected:
+	UPROPERTY(EditAnywhere, Category = "AttackRange")
+		class USphereComponent* AttackRangeSphereComp = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "AttackRange")
+		/** AttackRangeSphereComp와 Overlap된 ABaseCharacter들을 모두 저장하고 벗어나면 삭제 */
+		TArray<ABaseCharacter*> OverlappedCharacterInAttackRange;
+
+	UPROPERTY(EditAnywhere, Category = "DetectRange")
+		TArray<class AActor*> OverlappedBuildingInDetectRange;
+
+	UPROPERTY(EditAnywhere, Category = "AttackRange")
+		TArray<class AActor*> OverlappedBuildingInAttackRange;
+
 public:
 	class cServerSocketInGame* ServerSocketInGame = nullptr;
 	class cClientSocketInGame* ClientSocketInGame = nullptr;
@@ -77,8 +102,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "EnemyManager")
 		class AEnemyManager* EnemyManager = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "DetectRange")
-		TArray<class AActor*> OverlappedBuildingInDetectRange;
+
 
 private:
 
@@ -89,6 +113,13 @@ protected:
 
 
 public:
+	UFUNCTION(Category = "AttackRange")
+		virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION(Category = "AttackRange")
+		virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	FORCEINLINE USphereComponent* GetAttackRangeSphereComp() const { return AttackRangeSphereComp; }
+
 	UFUNCTION(Category = "Damage")
 		void DamageToTargetActor();
 

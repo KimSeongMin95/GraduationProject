@@ -626,6 +626,12 @@ void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 
 	for (auto& kvp : PioneerManager->Pioneers)
 	{
+		if (!kvp.Value)
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Animation(...)> if (!kvp.Value)"));
+			continue;
+		}
+
 		EnterCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Animation);
 		if (ServerSocketInGame->InfosOfPioneer_Animation.find(kvp.Key) != ServerSocketInGame->InfosOfPioneer_Animation.end())
 		{
@@ -733,6 +739,12 @@ void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 
 	for (auto& kvp : PioneerManager->Pioneers)
 	{
+		if (!kvp.Value)
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Stat(...)> if (!kvp.Value)"));
+			continue;
+		}
+
 		EnterCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Stat);
 		if (ServerSocketInGame->InfosOfPioneer_Stat.find(kvp.Key) != ServerSocketInGame->InfosOfPioneer_Stat.end())
 		{
@@ -863,6 +875,12 @@ void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 
 	for (auto& kvp : BuildingManager->Buildings)
 	{
+		if (!kvp.Value)
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfBuilding_Stat(...)> if (!kvp.Value)"));
+			continue;
+		}
+
 		EnterCriticalSection(&ServerSocketInGame->csInfoOfBuilding_Stat);
 		if (ServerSocketInGame->InfoOfBuilding_Stat.find(kvp.Key) != ServerSocketInGame->InfoOfBuilding_Stat.end())
 		{
@@ -890,6 +908,12 @@ void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
 
 	for (auto& kvp : EnemyManager->Enemies)
 	{
+		if (!kvp.Value)
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Animation(...)> if (!kvp.Value)"));
+			continue;
+		}
+
 		EnterCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Animation);
 		if (ServerSocketInGame->InfoOfEnemies_Animation.find(kvp.Key) != ServerSocketInGame->InfoOfEnemies_Animation.end())
 		{
@@ -917,6 +941,12 @@ void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
 
 	for (auto& kvp : EnemyManager->Enemies)
 	{
+		if (!kvp.Value)
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Stat(...)> if (!kvp.Value)"));
+			continue;
+		}
+
 		EnterCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Stat);
 		if (ServerSocketInGame->InfoOfEnemies_Stat.find(kvp.Key) != ServerSocketInGame->InfoOfEnemies_Stat.end())
 		{
@@ -1712,7 +1742,7 @@ void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
 		if (EnemyManager->Enemies.Contains(id))
 		{
 
-			EnemyManager->Enemies[id]->SetHealthPoint(-5000);
+			EnemyManager->Enemies[id]->SetHealthPoint(-100000);
 
 			EnemyManager->Enemies.Remove(id);
 		}

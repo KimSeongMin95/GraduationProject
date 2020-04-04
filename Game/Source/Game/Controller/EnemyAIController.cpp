@@ -27,11 +27,3 @@ void AEnemyAIController::Tick(float DeltaTime)
 
 }
 /*** Basic Function : End ***/
-
-
-/*** ABaseAIController : Start ***/
-void AEnemyAIController::MoveRandomlyInDetectionRange(bool bLookAtDestination)
-{
-	Super::MoveRandomlyInDetectionRange(bLookAtDestination);
-}
-/*** ABaseAIController : End ***/

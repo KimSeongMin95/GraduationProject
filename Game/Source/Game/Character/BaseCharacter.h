@@ -90,9 +90,12 @@ protected:
 		TArray<ABaseCharacter*> OverlappedCharacterInDetectRange;
 
 
-	UPROPERTY(EditAnywhere, Category = "AIController")
+	UPROPERTY(VisibleAnywhere, Category = "AIController")
 		class ABaseAIController* AIController = nullptr;
 
+
+	UPROPERTY(VisibleAnywhere, Category = "Rotation")
+		float TimerOfRotateTargetRotation;
 
 	UPROPERTY(EditAnywhere, Category = "Rotation")
 		bool bRotateTargetRotation;
@@ -104,7 +107,24 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "CharacterAI")
 		class AActor* TargetActor = nullptr;
 
+	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
+		float TimerOfFindTheTargetActor;
+
+	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
+		float TimerOfIdlingOfFSM;
+	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
+		float TimerOfTracingOfFSM;
+	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
+		float TimerOfAttackingOfFSM;
+
+
+
+
+
 public:
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		bool bDyingFlag;
+
 	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
 		EFiniteState State;
 
@@ -165,11 +185,14 @@ public:
 
 	UFUNCTION(Category = "AIController")
 		/** AIController에 Possess 합니다. */
-		virtual void PossessAIController();
+		void PossessAIController();
 
 	UFUNCTION(Category = "AIController")
 		/** AIController에 Possess 합니다. */
-		virtual void UnPossessAIController();
+		void UnPossessAIController();
+
+	UFUNCTION(Category = "CharacterMovement")
+		void StopMovement();
 
 
 	UFUNCTION(Category = "Rotation")
@@ -178,7 +201,7 @@ public:
 
 	UFUNCTION(Category = "CharacterAI")
 		/** TargetActor를 찾기 */
-		virtual void FindTheTargetActor();
+		virtual void FindTheTargetActor(float DeltaTime);
 
 	UFUNCTION(Category = "CharacterAI")
 		/** TargetActor 위치로 이동 */
@@ -188,20 +211,25 @@ public:
 		/** 랜덤한 위치로 이동 */
 		void MoveRandomlyPosition();
 
-	UFUNCTION(Category = "CharacterAI")
-		void IdlingOfFSM();
 
-	UFUNCTION(Category = "CharacterAI")
-		void TracingOfFSM();
 
-	UFUNCTION(Category = "CharacterAI")
-		void AttackingOfFSM();
 
-	UFUNCTION(Category = "CharacterAI")
-		void RunFSM();
 
 
 	UFUNCTION(Category = "CharacterAI")
-		void RunBehaviorTree();
+		virtual void IdlingOfFSM(float DeltaTime);
+
+	UFUNCTION(Category = "CharacterAI")
+		virtual void TracingOfFSM(float DeltaTime);
+
+	UFUNCTION(Category = "CharacterAI")
+		virtual void AttackingOfFSM(float DeltaTime);
+
+	UFUNCTION(Category = "CharacterAI")
+		virtual void RunFSM(float DeltaTime);
+
+
+	UFUNCTION(Category = "CharacterAI")
+		virtual void RunBehaviorTree(float DeltaTime);
 /*** ABaseCharacter : End ***/
 };

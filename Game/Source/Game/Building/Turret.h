@@ -96,8 +96,17 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
 		TMap<int32, class AEnemy*> Targets;
 
+
+
+	UPROPERTY(VisibleAnywhere, Category = "Rotation")
+		float TimerOfRotateTargetRotation;
+
+	UPROPERTY(EditAnywhere, Category = "Rotation")
+		bool bRotateTargetRotation;
+
 	UPROPERTY(EditAnywhere, Category = "Rotation")
 		FRotator TargetRotation;
+
 
 	UPROPERTY(EditAnywhere, Category = "ATurret")
 		int IdxOfTarget;
@@ -115,6 +124,10 @@ protected:
 	void TickOfFindEnemy(float DeltaTime);
 
 	void RotateTargetRotation(float DeltaTime);
+
+	UFUNCTION(Category = "Rotation")
+		/** 포탑 방향을 Location을 바라보도록 회전합니다. */
+		void LookAtTheLocation();
 
 	void Fire();
 

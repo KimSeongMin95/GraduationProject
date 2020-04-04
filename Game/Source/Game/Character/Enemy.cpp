@@ -99,6 +99,19 @@ void AEnemy::InitRanges()
 	DetectRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
 	DetectRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * DetectRange, true);
 
+
+	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
+	AttackRangeSphereComp->SetupAttachment(RootComponent);
+
+	AttackRangeSphereComp->SetGenerateOverlapEvents(true);
+	AttackRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AttackRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
+	AttackRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	AttackRangeSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	AttackRangeSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
+	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
+	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
+	AttackRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * AttackRange, true);
 }
 
 void AEnemy::InitAIController()
@@ -125,19 +138,23 @@ void AEnemy::InitAIController()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
 	AIController = world->SpawnActor<AEnemyAIController>(AEnemyAIController::StaticClass(), myTrans, SpawnParams);
+
+	AIController->SetBaseCharacter(this);
 }
 
 void AEnemy::InitCharacterMovement()
 {
 	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
+	
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 
 
 void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-	UE_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_DetectRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
-#endif
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//	UE_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_DetectRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
+//#endif
 
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
@@ -210,6 +227,70 @@ void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp,
 //#endif
 }
 
+void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//	UE_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_AttackRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
+//#endif
+
+	if ((OtherActor == nullptr) || (OtherComp == nullptr))
+		return;
+
+	if (OtherActor == this)
+		return;
+
+	/**************************************************/
+
+	if (OtherActor->IsA(APioneer::StaticClass()))
+	{
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
+		{
+			if (pioneer->GetCapsuleComponent() == OtherComp)
+			{
+				OverlappedCharacterInAttackRange.Add(pioneer);
+			}
+		}
+	}
+	else if (OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		if (ABuilding* building = dynamic_cast<ABuilding*>(OtherActor))
+		{
+			if (building->BuildingState == EBuildingState::Constructing ||
+				building->BuildingState == EBuildingState::Constructed)
+			{
+				OverlappedBuildingInAttackRange.Add(OtherActor);
+			}
+		}
+	}
+}
+void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if ((OtherActor == nullptr) || (OtherComp == nullptr))
+		return;
+
+	if (OtherActor == this)
+		return;
+
+	/**************************************************/
+
+	if (OtherActor->IsA(APioneer::StaticClass()))
+	{
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
+		{
+			if (pioneer->GetCapsuleComponent() == OtherComp)
+			{
+				OverlappedCharacterInAttackRange.RemoveSingle(pioneer);
+			}
+		}
+
+	}
+	else if (OtherActor->IsA(ABuilding::StaticClass()))
+	{
+		OverlappedBuildingInAttackRange.RemoveSingle(OtherActor);
+	}
+}
+
+
 
 void AEnemy::RotateTargetRotation(float DeltaTime)
 {
@@ -221,41 +302,228 @@ void AEnemy::RotateTargetRotation(float DeltaTime)
 }
 
 
-void AEnemy::SetHealthPoint(float Delta)
+void AEnemy::SetHealthPoint(float Value)
 {
 	if (bDying)
 		return;
 
-	Super::SetHealthPoint(Delta);
+	HealthPoint += Value;
 
-	// 죽으면
-	if (bDying)
+	if (HealthPoint > 0.0f)
+		return;
+
+	if (bDyingFlag)
+		return;
+	else
+		bDyingFlag = true;
+
+	/************************************/
+
+	if (!EnemyManager)
 	{
-		if (EnemyManager)
+		UE_LOG(LogTemp, Fatal, TEXT("<AEnemy::SetHealthPoint(...)> if (!EnemyManager)"));
+	}
+
+	if (EnemyManager)
+	{
+		if (EnemyManager->Enemies.Contains(ID))
 		{
-			if (EnemyManager->Enemies.Contains(ID))
-			{
-				EnemyManager->Enemies.Remove(ID);
-			}
+			EnemyManager->Enemies[ID] = nullptr;
+			EnemyManager->Enemies.Remove(ID);
+			EnemyManager->Enemies.Compact();
+			EnemyManager->Enemies.Shrink();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("<AEnemy::SetHealthPoint(...)> if (!EnemyManager->Enemies.Contains(ID))"));
+		}
+	}
+
+	if (ServerSocketInGame)
+	{
+		if (ServerSocketInGame->IsServerOn())
+		{
+			ServerSocketInGame->SendDestroyEnemy(ID);
+		}
+	}
+
+	Super::SetHealthPoint(Value);
+
+	if (AttackRangeSphereComp)
+	{
+		AttackRangeSphereComp->DestroyComponent();
+		AttackRangeSphereComp = nullptr;
+	}
+
+	bDying = true;
+}
+
+void AEnemy::FindTheTargetActor(float DeltaTime)
+{
+	TimerOfFindTheTargetActor += DeltaTime;
+	if (TimerOfFindTheTargetActor < 1.5f)
+		return;
+	TimerOfFindTheTargetActor = 0.0f;
+
+	/*******************************************/
+
+	TargetActor = nullptr;
+
+	// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
+	TSet<ABaseCharacter*> tset_OverlappedCharacter(OverlappedCharacterInDetectRange);
+
+	for (auto& pioneer : tset_OverlappedCharacter)
+	{
+		if (pioneer->bDying)
+			continue;
+
+		if (!TargetActor)
+		{
+			TargetActor = pioneer;
+			continue;
 		}
 
-		if (ServerSocketInGame)
+		if (DistanceToActor(pioneer) < DistanceToActor(TargetActor))
+			TargetActor = pioneer;
+	}
+
+	//// 개척자를 발견하면 끝냄
+	//if (TargetActor)
+	//	return;
+
+	// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
+	TSet<AActor*> tset_OverlappedBuilding(OverlappedBuildingInDetectRange);
+
+	for (auto& building : tset_OverlappedBuilding)
+	{
+		if (!TargetActor)
 		{
-			if (ServerSocketInGame->IsServerOn())
-			{
-				ServerSocketInGame->SendDestroyEnemy(ID);
-			}
+			TargetActor = building;
+			continue;
 		}
+
+		if (DistanceToActor(building) < DistanceToActor(TargetActor))
+			TargetActor = building;
+	}
+
+
+	if (!TargetActor)
+	{
+		State = EFiniteState::Idle;
+		IdlingOfFSM(3.0f);
+	}
+	else if (!OverlappedCharacterInAttackRange.Contains(TargetActor) &&
+		!OverlappedBuildingInAttackRange.Contains(TargetActor))
+	{
+		State = EFiniteState::Tracing;
+		TracingOfFSM(0.5f);
+	}
+	else
+	{
+		State = EFiniteState::Attack;
+		AttackingOfFSM(1.0f);
 	}
 }
 
-
-void AEnemy::PossessAIController()
+void AEnemy::IdlingOfFSM(float DeltaTime)
 {
-	ABaseCharacter::PossessAIController();
+	TimerOfIdlingOfFSM += DeltaTime;
+	if (TimerOfIdlingOfFSM < 3.0f)
+		return;
+	TimerOfIdlingOfFSM = 0.0f;
 
+	/*******************************************/
+
+	StopMovement();
+
+	//MoveRandomlyPosition();
+}
+
+void AEnemy::TracingOfFSM(float DeltaTime)
+{
+	TimerOfTracingOfFSM += DeltaTime;
+	if (TimerOfTracingOfFSM < 0.5f)
+		return;
+	TimerOfTracingOfFSM = 0.0f;
+
+	if (!GetController())
+		return;
+
+	/*******************************************/
+
+	if (!TargetActor)
+	{
+		State = EFiniteState::Idle;
+		IdlingOfFSM(3.0f);
+	}
+	else if (!OverlappedCharacterInAttackRange.Contains(TargetActor) &&
+		!OverlappedBuildingInAttackRange.Contains(TargetActor))
+	{
+		TracingTargetActor();
+	}
+	else
+	{
+		State = EFiniteState::Attack;
+		AttackingOfFSM(1.0f);
+	}
+}
+
+void AEnemy::AttackingOfFSM(float DeltaTime)
+{
+	TimerOfAttackingOfFSM += DeltaTime;
+	if (TimerOfAttackingOfFSM < 1.0f)
+		return;
+	TimerOfAttackingOfFSM = 0.0f;
+
+	if (!GetController())
+		return;
+
+	/*******************************************/
+
+	if (!TargetActor)
+	{
+		State = EFiniteState::Idle;
+		IdlingOfFSM(3.0f);
+		return;
+	}
+
+	StopMovement();
+
+	LookAtTheLocation(TargetActor->GetActorLocation());
+}
+
+void AEnemy::RunFSM(float DeltaTime)
+{
+	FindTheTargetActor(DeltaTime);
+
+	switch (State)
+	{
+	case EFiniteState::Idle:
+	{
+		IdlingOfFSM(DeltaTime);
+		break;
+	}
+	case EFiniteState::Tracing:
+	{
+		TracingOfFSM(DeltaTime);
+		break;
+	}
+	case EFiniteState::Attack:
+	{
+		AttackingOfFSM(DeltaTime);
+		break;
+	}
+	default:
+
+		break;
+	}
+}
+
+void AEnemy::RunBehaviorTree(float DeltaTime)
+{
 
 }
+
 /*** ABaseCharacter : End ***/
 
 
@@ -296,55 +564,6 @@ void AEnemy::InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FStri
 	}
 }
 
-void AEnemy::FindTheTargetActor()
-{
-	ABaseCharacter::FindTheTargetActor();
-
-
-	TargetActor = nullptr;
-
-	// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
-	TSet<ABaseCharacter*> tset_OverlappedCharacter(OverlappedCharacterInDetectRange);
-
-	for (auto& pioneer : tset_OverlappedCharacter)
-	{
-		if (pioneer->bDying)
-			continue;	
-
-		if (!TargetActor)
-		{
-			TargetActor = pioneer;
-			continue;
-		}
-
-		if (DistanceToActor(pioneer) < DistanceToActor(TargetActor))
-			TargetActor = pioneer;
-	}
-
-	//// 개척자를 발견하면 끝냄
-	//if (TargetActor)
-	//	return;
-
-	// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
-	TSet<AActor*> tset_OverlappedBuilding(OverlappedBuildingInDetectRange);
-
-	for (auto& building : tset_OverlappedBuilding)
-	{
-		if (!TargetActor)
-		{
-			TargetActor = building;
-			continue;
-		}
-
-		if (DistanceToActor(building) < DistanceToActor(TargetActor))
-			TargetActor = building;
-	}
-
-	if (!TargetActor)
-		State = EFiniteState::Idle;
-	else
-		State = EFiniteState::Tracing;
-}
 
 void AEnemy::DamageToTargetActor()
 {

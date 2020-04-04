@@ -522,13 +522,30 @@ void ABuilding::SetHealthPoint(float Value)
 	if (HealthPoint > 0.0f)
 		return;
 
+	if (BuildingState == EBuildingState::Destroying)
+		return;
+
+	/************************************/
+
+	if (!BuildingManager)
+	{
+		UE_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager)"));
+	}
+
 	BuildingState = EBuildingState::Destroying;
 
 	if (BuildingManager)
 	{
 		if (BuildingManager->Buildings.Contains(ID))
 		{
+			BuildingManager->Buildings[ID] = nullptr;
 			BuildingManager->Buildings.Remove(ID);
+			BuildingManager->Buildings.Compact();
+			BuildingManager->Buildings.Shrink();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager->Buildings.Contains(ID))"));
 		}
 	}
 
