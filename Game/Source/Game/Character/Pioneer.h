@@ -14,15 +14,6 @@
 #include "Pioneer.generated.h" // 항상 마지막이어야 하는 헤더
 
 
-UENUM(BlueprintType)
-enum class EPioneerFSM : uint8
-{
-	Idle = 0,
-	Tracing = 1,
-	Attack = 2
-};
-
-
 UCLASS()
 class GAME_API APioneer : public ABaseCharacter
 {
@@ -60,9 +51,6 @@ protected:
 	virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
 	virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) final;
 
-	virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
-	virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) final;
-
 
 	virtual void RotateTargetRotation(float DeltaTime) final;
 
@@ -73,9 +61,9 @@ public:
 	virtual void PossessAIController() final;
 
 
-	virtual void RunFSM() final;
+	virtual void FindTheTargetActor() final;
 
-	virtual void RunBehaviorTree() final;
+
 /*** ABaseCharacter : End ***/
 
 
@@ -170,10 +158,6 @@ public:
 		bool bConstructingMode;
 
 
-	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
-		EPioneerFSM State;
-
-
 	UPROPERTY(EditAnywhere, Category = "Item")
 		/** 충돌한 AItem들을 모두 저장하고 벗어나면 삭제 */
 		TArray<class AItem*> OverlapedItems;
@@ -200,21 +184,7 @@ protected:
 	void InitWeapon();
 	void InitBuilding();
 	void InitEquipments();
-	void InitFSM();
 	//void InitItem();
-
-
-	UFUNCTION(Category = "CharacterAI")
-		void FindTheTargetActor();
-
-	UFUNCTION(Category = "CharacterAI")
-		void IdlingOfFSM();
-
-	UFUNCTION(Category = "CharacterAI")
-		void TracingOfFSM();
-
-	UFUNCTION(Category = "CharacterAI")
-		void AttackingOfFSM();
 
 
 	//UFUNCTION(Category = "Item")
@@ -301,6 +271,9 @@ public:
 
 	UFUNCTION(Category = "Building")
 		void DestroyBuilding();
+
+
+	bool IsTargetActorInAttackRange();
 
 
 	///////////

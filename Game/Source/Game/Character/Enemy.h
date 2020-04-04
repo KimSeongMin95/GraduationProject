@@ -7,14 +7,6 @@
 #include "Enemy.generated.h"
 
 UENUM(BlueprintType)
-enum class EEnemyFSM : uint8
-{
-	Idle = 0,
-	Tracing = 1,
-	Attack = 2
-};
-
-UENUM(BlueprintType)
 enum class EEnemyType : uint8
 {
 	None = 0,
@@ -58,33 +50,20 @@ protected:
 	virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
-	virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
-	virtual void OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
-
 
 	virtual void RotateTargetRotation(float DeltaTime) final;
 
 public:
 	virtual void SetHealthPoint(float Delta) final;
 
-
 	virtual void PossessAIController() override;
 
+	virtual void FindTheTargetActor() final;
 
-	virtual void RunFSM() override;
-
-	virtual void RunBehaviorTree() override;
 /*** ABaseCharacter : End ***/
 
 
 /*** AEnemy : Start ***/
-private:
-
-
-protected:
-
-
-public:
 public:
 	class cServerSocketInGame* ServerSocketInGame = nullptr;
 	class cClientSocketInGame* ClientSocketInGame = nullptr;
@@ -95,11 +74,11 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Type")
 		EEnemyType EnemyType;
 
-	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
-		EEnemyFSM State;
-
 	UPROPERTY(VisibleAnywhere, Category = "EnemyManager")
 		class AEnemyManager* EnemyManager = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "DetectRange")
+		TArray<class AActor*> OverlappedBuildingInDetectRange;
 
 private:
 
@@ -107,20 +86,7 @@ private:
 protected:
 	virtual void InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FString ReferencePathOfBP_AnimInstance, 
 		FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
-	void InitFSM();
 
-
-	UFUNCTION(Category = "CharacterAI")
-		void FindTheTargetActor();
-
-	UFUNCTION(Category = "CharacterAI")
-		void IdlingOfFSM();
-
-	UFUNCTION(Category = "CharacterAI")
-		void TracingOfFSM();
-
-	UFUNCTION(Category = "CharacterAI")
-		void AttackingOfFSM();
 
 public:
 	UFUNCTION(Category = "Damage")

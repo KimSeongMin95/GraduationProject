@@ -69,8 +69,6 @@ APioneer::APioneer()
 
 	InitEquipments();
 
-	InitFSM();
-
 	//InitItem();
 
 	ID = 0;
@@ -163,17 +161,12 @@ void APioneer::InitStat()
 
 void APioneer::InitRanges()
 {
-	if (!GetDetectRangeSphereComp() || !GetAttackRangeSphereComp())
+	if (!DetectRangeSphereComp)
 		return;
 
-	GetDetectRangeSphereComp()->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_DetectRange);
-	GetDetectRangeSphereComp()->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_DetectRange);
-
-	GetAttackRangeSphereComp()->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_AttackRange);
-	GetAttackRangeSphereComp()->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_AttackRange);
-
-	GetDetectRangeSphereComp()->SetSphereRadius(AOnlineGameMode::CellSize * DetectRange);
-	GetAttackRangeSphereComp()->SetSphereRadius(AOnlineGameMode::CellSize * AttackRange);
+	DetectRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_DetectRange);
+	DetectRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_DetectRange);
+	DetectRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * DetectRange, true);
 }
 
 void APioneer::InitAIController()
@@ -230,15 +223,15 @@ void APioneer::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedC
 		{
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
-				OverlappedDetectRangeActors.Add(OtherActor);
+				OverlappedCharacterInDetectRange.Add(enemy);
 			}
 		}
 	}
 
 
 //#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-	//UE_LOG(LogTemp, Log, TEXT("OverlappedDetectRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
-	//UE_LOG(LogTemp, Log, TEXT("OverlappedDetectRangeActors.Num(): %d"), OverlappedDetectRangeActors.Num());
+	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Add(OtherActor): %s"), *OtherActor->GetName());
+	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Num(): %d"), OverlappedCharacterInDetectRange.Num());
 	//UE_LOG(LogTemp, Log, TEXT("_______"));
 //#endif
 }
@@ -258,78 +251,16 @@ void APioneer::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedCom
 		{
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
-				//OverlappedDetectRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
-				OverlappedDetectRangeActors.RemoveSingle(OtherActor); // OtherActor 하나를 지웁니다.
+				//OverlappedCharacterInDetectRange.Remove(OtherActor); // OtherActor 전체를 지웁니다.
+				OverlappedCharacterInDetectRange.RemoveSingle(enemy); // OtherActor 하나를 지웁니다.
 			}
 		}
 	}
 
 
 //#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-	//UE_LOG(LogTemp, Warning, TEXT("OverlappedDetectRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());
-	//UE_LOG(LogTemp, Warning, TEXT("OverlappedDetectRangeActors.Num(): %d"), OverlappedDetectRangeActors.Num());
-	//UE_LOG(LogTemp, Warning, TEXT("_______"));
-//#endif
-}
-
-void APioneer::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-//	UE_LOG(LogTemp, Log, TEXT("<APioneer::OnOverlapBegin_AttackRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
-//#endif
-
-	if ((OtherActor == nullptr) || (OtherComp == nullptr))
-		return;
-
-	if (OtherActor == this)
-		return;
-
-	/**************************************************/
-
-	if (OtherActor->IsA(AEnemy::StaticClass()))
-	{
-		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
-		{
-			if (enemy->GetCapsuleComponent() == OtherComp)
-			{
-				OverlappedAttackRangeActors.Add(OtherActor);
-			}
-		}
-	}
-
-
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-	//UE_LOG(LogTemp, Warning, TEXT("OverlappedAttackRangeActors.Add(OtherActor): %s"), *OtherActor->GetName());
-	//UE_LOG(LogTemp, Warning, TEXT("OverlappedAttackRangeActors.Num(): %d"), OverlappedAttackRangeActors.Num());
-	//UE_LOG(LogTemp, Warning, TEXT("_______"));
-//#endif
-}
-void APioneer::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if ((OtherActor == nullptr) || (OtherComp == nullptr))
-		return;
-
-	if (OtherActor == this)
-		return;
-
-	/**************************************************/
-
-	if (OtherActor->IsA(AEnemy::StaticClass()))
-	{
-		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
-		{
-			if (enemy->GetCapsuleComponent() == OtherComp)
-			{
-				//OverlappedAttackRangeActors.Remove(OtherActor); // OtherActor 전체를 지웁니다.
-				OverlappedAttackRangeActors.RemoveSingle(OtherActor); // OtherActor 하나만 지웁니다.
-			}
-		}
-	}
-
-
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-	//UE_LOG(LogTemp, Warning, TEXT("OverlappedAttackRangeActors.Remove(OtherActor): %s"), *OtherActor->GetName());
-	//UE_LOG(LogTemp, Warning, TEXT("OverlappedAttackRangeActors.Num(): %d"), OverlappedAttackRangeActors.Num());
+	//UE_LOG(LogTemp, Warning, TEXT("OverlappedCharacterInDetectRange.Remove(OtherActor): %s"), *OtherActor->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("OverlappedCharacterInDetectRange.Num(): %d"), OverlappedCharacterInDetectRange.Num());
 	//UE_LOG(LogTemp, Warning, TEXT("_______"));
 //#endif
 }
@@ -416,36 +347,6 @@ void APioneer::SetHealthPoint(float Value)
 void APioneer::PossessAIController()
 {
 	ABaseCharacter::PossessAIController();
-
-}
-
-
-void APioneer::RunFSM()
-{
-	switch (State)
-	{
-	case EPioneerFSM::Idle:
-	{
-		IdlingOfFSM();
-		break;
-	}
-	case EPioneerFSM::Tracing:
-	{
-		TracingOfFSM();
-		break;
-	}
-	case EPioneerFSM::Attack:
-	{
-		// 공격 애니메이션이 끝난 후 AnimationBlueprint에서 EventGraph로 Atteck을 Idle로 바꿔줌
-		AttackingOfFSM();
-		break;
-	}
-	}
-}
-
-void APioneer::RunBehaviorTree()
-{
-	Super::RunBehaviorTree();
 
 }
 /*** ABaseCharacter : End ***/
@@ -791,11 +692,6 @@ void APioneer::InitEquipments()
 	}
 }
 
-void APioneer::InitFSM()
-{
-	State = EPioneerFSM::Idle;
-}
-
 //void APioneer::InitItem()
 //{
 //	if (!GetCapsuleComponent())
@@ -808,64 +704,34 @@ void APioneer::InitFSM()
 
 void APioneer::FindTheTargetActor()
 {
+	ABaseCharacter::FindTheTargetActor();
+
+
 	TargetActor = nullptr;
 
-	for (auto& actor : OverlappedDetectRangeActors)
+	// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
+	TSet<ABaseCharacter*> tset_Overlapped(OverlappedCharacterInDetectRange);
+
+	for (auto& enemy : tset_Overlapped)
 	{
-		if (actor->IsA(AEnemy::StaticClass()))
+		if (enemy->bDying)
+			continue;
+
+		if (!TargetActor)
 		{
-			// AEnemy가 죽어있다면 skip
-			if (AEnemy* enemy = Cast<AEnemy>(actor))
-			{
-				if (enemy->bDying)
-					continue;
-			}
-
-			if (!TargetActor)
-			{
-				TargetActor = actor;
-				continue;
-			}
-
-			if (DistanceToActor(actor) < DistanceToActor(TargetActor))
-				TargetActor = actor;
+			TargetActor = enemy;
+			continue;
 		}
+
+		if (DistanceToActor(enemy) < DistanceToActor(TargetActor))
+			TargetActor = enemy;
 	}
-}
-
-void APioneer::IdlingOfFSM()
-{
-	FindTheTargetActor();
-
-	if (TargetActor)
-		State = EPioneerFSM::Tracing;
-}
-
-void APioneer::TracingOfFSM()
-{
-	FindTheTargetActor();
-
-	TracingTargetActor();
 
 	if (!TargetActor)
-	{
-		State = EPioneerFSM::Idle;
-		GetController()->StopMovement();
-		return;
-	}
-	else if (OverlappedAttackRangeActors.Num() > 0)
-	{
-		State = EPioneerFSM::Attack;
-		GetController()->StopMovement();
-		return;
-	}
+		State = EFiniteState::Idle;
+	else
+		State = EFiniteState::Tracing;
 }
-
-void APioneer::AttackingOfFSM()
-{
-	FireWeapon();
-}
-
 
 //void APioneer::OnOverlapBegin_Item(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 //{
@@ -1085,8 +951,6 @@ void APioneer::FireWeapon()
 
 				bFired = true;
 			}
-
-			State = EPioneerFSM::Idle;
 		}
 	}
 }
@@ -1399,6 +1263,22 @@ void APioneer::DestroyBuilding()
 		Building->Destroying();
 		Building = nullptr;
 	}
+}
+
+bool APioneer::IsTargetActorInAttackRange()
+{
+	if (!TargetActor || !GetController())
+		return false;
+
+	if (DistanceToActor(TargetActor) > (AttackRange * AOnlineGameMode::CellSize))
+	{
+		//FindTheTargetActor();
+		return false;
+	}
+
+	GetController()->StopMovement();
+	
+	return true;
 }
 
 ///////////

@@ -16,7 +16,14 @@
 AMyTriggerBox::AMyTriggerBox()
 {
 	if (GetCollisionComponent())
+	{
+		GetCollisionComponent()->SetGenerateOverlapEvents(true);
+		GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		GetCollisionComponent()->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
+		GetCollisionComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		GetCollisionComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 		GetCollisionComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMyTriggerBox::OnOverlapBegin);
+	}
 
 	bIsTriggered = false;
 }
@@ -33,22 +40,25 @@ void AMyTriggerBox::BeginPlay()
 /*** AMyTriggerBox : Start ***/
 void AMyTriggerBox::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//UE_LOG(LogTemp, Log, TEXT("OtherActor FName :: %s"), *OtherActor->GetFName().ToString());
+	if ((OtherActor == nullptr) || (OtherComp == nullptr))
+		return;
 
-	// Pioneer
+	if (OtherActor == this)
+		return;
+
+	/**************************************************/
+
 	if (OtherActor->IsA(APioneer::StaticClass()))
 	{
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(OtherActor))
 		{
-			// 만약 OtherActor가 APioneer이기는 하지만 APioneer의 DetectRangeSphereComp 또는 AttackRangeSphereComp와 충돌한 것이라면 무시합니다.
-			if (pioneer->GetDetectRangeSphereComp() == OtherComp || pioneer->GetAttackRangeSphereComp() == OtherComp)
-				return;
+			if (pioneer->GetCapsuleComponent() == OtherComp)
+			{
+				bIsTriggered = true;
 
-
-			bIsTriggered = true;
-
-			GetCollisionComponent()->SetGenerateOverlapEvents(false);
-			GetCollisionComponent()->OnComponentBeginOverlap.Clear();
+				GetCollisionComponent()->SetGenerateOverlapEvents(false);
+				GetCollisionComponent()->OnComponentBeginOverlap.Clear();
+			}
 		}
 	}
 }

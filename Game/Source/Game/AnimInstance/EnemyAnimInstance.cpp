@@ -95,13 +95,13 @@ void UEnemyAnimInstance::SetFSM()
 
 	switch (Enemy->State)
 	{
-	case EEnemyFSM::Idle:
+	case EFiniteState::Idle:
 		bIdle = true;
 		break;
-	case EEnemyFSM::Tracing:
+	case EFiniteState::Tracing:
 		bTracing = true;
 		break;
-	case EEnemyFSM::Attack:
+	case EFiniteState::Attack:
 		bAttack = true;
 		break;
 	}
@@ -147,8 +147,6 @@ void UEnemyAnimInstance::AttackEnd()
 #endif
 		return;
 	}
-
-	Enemy->State = EEnemyFSM::Idle;
 }
 
 void UEnemyAnimInstance::DamageToTargetActor()

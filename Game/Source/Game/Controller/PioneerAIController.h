@@ -22,6 +22,9 @@ public:
 
 
 /*** ABaseAIController : Start ***/
+protected:
+	void AttackTheTargetActor(float DeltaTime); float TimerOfAttackTheTargetActor;
+
 public:
 	virtual void MoveRandomlyInDetectionRange(bool bLookAtDestination) override;
 /*** ABaseAIController : End ***/

@@ -37,14 +37,13 @@ private:
 	FTimerHandle TimerHandleOfRunCharacterAI;
 
 private:
+	UFUNCTION(Category = "CharacterAI")
+		void RunCharacterAI(float DeltaTime); float TimerOfRunCharacterAI;
+
+protected:
 	bool CheckDying();
 
-	float TimerOfRunCharacterAI;
-
-	UFUNCTION(Category = "CharacterAI")
-		void RunCharacterAI(float DeltaTime);
-
-
+	void LookAtTheTargetActor(float DeltaTime); float TimerOfLookAtTheTargetActor;
 
 public:
 	UFUNCTION()

@@ -30,6 +30,8 @@ void ABaseAIController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	RunCharacterAI(DeltaTime);
+
+	//LookAtTheTargetActor(DeltaTime);
 }
 /*** Basic Function : Start ***/
 
@@ -50,21 +52,41 @@ bool ABaseAIController::CheckDying()
 	return false;
 }
 
-void ABaseAIController::RunCharacterAI(float DeltaTime)
+void ABaseAIController::LookAtTheTargetActor(float DeltaTime)
 {
+	TimerOfLookAtTheTargetActor += DeltaTime;
+	if (TimerOfLookAtTheTargetActor < 0.2f)
+		return;
+	TimerOfLookAtTheTargetActor = 0.0f;
+
 	if (CheckDying())
 		return;
 
+	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
+	{
+		if (AActor* target = baseCharacter->GetTargetActor())
+		{
+			baseCharacter->LookAtTheLocation(target->GetActorLocation());
+		}
+	}
+}
+
+void ABaseAIController::RunCharacterAI(float DeltaTime)
+{
 	TimerOfRunCharacterAI += DeltaTime;
-	if (TimerOfRunCharacterAI < 0.033f)
+	if (TimerOfRunCharacterAI < 1.0f)
 		return;
 	TimerOfRunCharacterAI = 0.0f;
+
+	if (CheckDying())
+		return;
 
 	if (ABaseCharacter* baseCharacter = Cast<ABaseCharacter>(GetPawn()))
 	{
 		switch (baseCharacter->GetCharacterAI())
 		{
 		case ECharacterAI::FSM:
+			baseCharacter->FindTheTargetActor();
 			baseCharacter->RunFSM();
 			break;
 		case ECharacterAI::BehaviorTree:

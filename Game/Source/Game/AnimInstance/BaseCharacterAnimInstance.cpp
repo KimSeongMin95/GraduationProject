@@ -19,8 +19,6 @@ UBaseCharacterAnimInstance::UBaseCharacterAnimInstance()
 	bIsMoving = false;
 	Direction = 0.0f;
 	bDying = false;
-
-	CharacterAI = 0;
 }
 
 void UBaseCharacterAnimInstance::NativeInitializeAnimation()
