@@ -140,8 +140,10 @@ protected:
 	class cClientSocketInGame* ClientSocketInGame = nullptr;
 	
 
-
 public:
+	UPROPERTY(VisibleAnywhere)
+		/** 충돌한 액터들을 모두 저장하고 벗어나면 삭제 */
+		bool bDying;
 
 	UPROPERTY(VisibleAnywhere, Category = "BuildingManager")
 		class ABuildingManager* BuildingManager = nullptr;
@@ -188,6 +190,12 @@ public:
 		float ProductionOrganicMatter; /** 생산 유기물 (kg/h) */
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float ProductionElectricPower; /** 생산 전력 (MW) */
+
+
+	UPROPERTY(EditAnywhere, Category = "ATurret")
+		/** Wall 위에 터렛을 건설할 때 아래의 Wall의 인덱스를 저장하는 용도 */
+		int IdxOfUnderWall;
+
 
 private:
 

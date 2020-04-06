@@ -138,8 +138,12 @@ AOnlineGameMode::AOnlineGameMode()
 
 
 	// 콘솔
-	//CustomLog::FreeConsole();
-	CustomLog::AllocConsole();
+	cMyConsole* myConsole = cMyConsole::GetSingleton();
+	if (myConsole)
+	{
+		//myConsole->FreeConsole();
+		myConsole->AllocConsole();
+	}
 }
 
 void AOnlineGameMode::BeginPlay()
@@ -556,10 +560,14 @@ void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
 	{
 		if (PioneerManager->Pioneers.Contains(copiedQueue.front()))
 		{
-			// bDying을 바꿔주면 BaseCharacterAnimInstance에서 UPioneerAnimInstance::DestroyCharacter()를 호출하고
-			// Pioneer->DestroyCharacter();을 호출하여 알아서 소멸하게 됩니다.
-			PioneerManager->Pioneers[copiedQueue.front()]->bDying = true;
-			
+			if (PioneerManager->Pioneers[copiedQueue.front()])
+			{
+				// bDying을 바꿔주면 BaseCharacterAnimInstance에서 UPioneerAnimInstance::DestroyCharacter()를 호출하고
+				// Pioneer->DestroyCharacter();을 호출하여 알아서 소멸하게 됩니다.
+				PioneerManager->Pioneers[copiedQueue.front()]->bDyingFlag = true;
+				PioneerManager->Pioneers[copiedQueue.front()]->bDying = true;
+			}
+
 			PioneerManager->Pioneers.Remove(copiedQueue.front());
 		}
 
@@ -624,11 +632,15 @@ void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 	}
 	/***********************************************************/
 
+	queue<int> forRemove;
+
 	for (auto& kvp : PioneerManager->Pioneers)
 	{
 		if (!kvp.Value)
 		{
-			UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Animation(...)> if (!kvp.Value)"));
+			forRemove.push(kvp.Key);
+			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Animation(...)> if (!kvp.Value)"));
+			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Animation(...)> if (!kvp.Value)"));
 			continue;
 		}
 
@@ -640,6 +652,15 @@ void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 				ServerSocketInGame->InfosOfPioneer_Animation.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Animation();
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Animation);
+	}
+
+	while (!forRemove.empty())
+	{
+		if (PioneerManager->Pioneers.Contains(forRemove.front()))
+		{
+			PioneerManager->Pioneers.Remove(forRemove.front());
+		}
+		forRemove.pop();
 	}
 }
 
@@ -737,11 +758,15 @@ void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 	}
 	/***********************************************************/
 
+	queue<int> forRemove;
+
 	for (auto& kvp : PioneerManager->Pioneers)
 	{
 		if (!kvp.Value)
 		{
-			UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Stat(...)> if (!kvp.Value)"));
+			forRemove.push(kvp.Key);
+			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Stat(...)> if (!kvp.Value)"));
+			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Stat(...)> if (!kvp.Value)"));
 			continue;
 		}
 
@@ -753,6 +778,15 @@ void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 				ServerSocketInGame->InfosOfPioneer_Stat.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Stat();
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Stat);
+	}
+
+	while (!forRemove.empty())
+	{
+		if (PioneerManager->Pioneers.Contains(forRemove.front()))
+		{
+			PioneerManager->Pioneers.Remove(forRemove.front());
+		}
+		forRemove.pop();
 	}
 }
 
@@ -873,11 +907,15 @@ void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 	}
 	/***********************************************************/
 
+	queue<int> forRemove;
+
 	for (auto& kvp : BuildingManager->Buildings)
 	{
 		if (!kvp.Value)
 		{
-			UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfBuilding_Stat(...)> if (!kvp.Value)"));
+			forRemove.push(kvp.Key);
+			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfBuilding_Stat(...)> if (!kvp.Value)"));
+			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfBuilding_Stat(...)> if (!kvp.Value)"));
 			continue;
 		}
 
@@ -887,6 +925,15 @@ void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 			ServerSocketInGame->InfoOfBuilding_Stat.at(kvp.Key) = kvp.Value->GetInfoOfBuilding_Stat();
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfoOfBuilding_Stat);
+	}
+
+	while (!forRemove.empty())
+	{
+		if (BuildingManager->Buildings.Contains(forRemove.front()))
+		{
+			BuildingManager->Buildings.Remove(forRemove.front());
+		}
+		forRemove.pop();
 	}
 }
 
@@ -906,11 +953,17 @@ void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
 	}
 	/***********************************************************/
 
+	queue<int> forRemove;
+
 	for (auto& kvp : EnemyManager->Enemies)
 	{
 		if (!kvp.Value)
 		{
-			UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Animation(...)> if (!kvp.Value)"));
+			forRemove.push(kvp.Key);
+			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Animation(...)> if (!kvp.Value)"));
+			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Animation(...)> if (!kvp.Value)"));
+			
+			
 			continue;
 		}
 
@@ -920,6 +973,15 @@ void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
 			ServerSocketInGame->InfoOfEnemies_Animation.at(kvp.Key) = kvp.Value->GetInfoOfEnemy_Animation();
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Animation);
+	}
+
+	while (!forRemove.empty())
+	{
+		if (EnemyManager->Enemies.Contains(forRemove.front()))
+		{
+			EnemyManager->Enemies.Remove(forRemove.front());
+		}
+		forRemove.pop();
 	}
 }
 
@@ -939,11 +1001,15 @@ void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
 	}
 	/***********************************************************/
 
+	queue<int> forRemove;
+
 	for (auto& kvp : EnemyManager->Enemies)
 	{
 		if (!kvp.Value)
 		{
-			UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Stat(...)> if (!kvp.Value)"));
+			forRemove.push(kvp.Key);
+			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Stat(...)> if (!kvp.Value)"));
+			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Stat(...)> if (!kvp.Value)"));
 			continue;
 		}
 
@@ -953,6 +1019,15 @@ void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
 			ServerSocketInGame->InfoOfEnemies_Stat.at(kvp.Key) = kvp.Value->GetInfoOfEnemy_Stat();
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Stat);
+	}
+
+	while (!forRemove.empty())
+	{
+		if (EnemyManager->Enemies.Contains(forRemove.front()))
+		{
+			EnemyManager->Enemies.Remove(forRemove.front());
+		}
+		forRemove.pop();
 	}
 }
 
@@ -1137,9 +1212,13 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 	{
 		if (PioneerManager->Pioneers.Contains(copiedQueue.front()))
 		{
-			// bDying을 바꿔주면 BaseCharacterAnimInstance에서 UPioneerAnimInstance::DestroyCharacter()를 호출하고
-			// Pioneer->DestroyCharacter();을 호출하여 알아서 소멸하게 됩니다.
-			PioneerManager->Pioneers[copiedQueue.front()]->bDying = true;
+			if (PioneerManager->Pioneers[copiedQueue.front()])
+			{
+				// bDying을 바꿔주면 BaseCharacterAnimInstance에서 UPioneerAnimInstance::DestroyCharacter()를 호출하고
+				// Pioneer->DestroyCharacter();을 호출하여 알아서 소멸하게 됩니다.
+				PioneerManager->Pioneers[copiedQueue.front()]->bDyingFlag = true;
+				PioneerManager->Pioneers[copiedQueue.front()]->bDying = true;
+			}
 
 			PioneerManager->Pioneers.Remove(copiedQueue.front());
 		}
@@ -1486,7 +1565,10 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
 		BuildingManager->RecvSpawnBuilding(copiedQueue.front().Spawn);
 
 		if (BuildingManager->Buildings.Contains(copiedQueue.front().ID))
-			BuildingManager->Buildings[copiedQueue.front().ID]->SetInfoOfBuilding_Stat(copiedQueue.front().Stat);
+		{
+			if (BuildingManager->Buildings[copiedQueue.front().ID])
+				BuildingManager->Buildings[copiedQueue.front().ID]->SetInfoOfBuilding_Stat(copiedQueue.front().Stat);
+		}
 
 		copiedQueue.pop();
 	}
@@ -1538,7 +1620,10 @@ void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
 	while (copiedQueue.empty() == false)
 	{
 		if (BuildingManager->Buildings.Contains(copiedQueue.front().ID))
-			BuildingManager->Buildings[copiedQueue.front().ID]->SetInfoOfBuilding_Stat(copiedQueue.front());
+		{
+			if (BuildingManager->Buildings[copiedQueue.front().ID])
+				BuildingManager->Buildings[copiedQueue.front().ID]->SetInfoOfBuilding_Stat(copiedQueue.front());
+		}
 
 		copiedQueue.pop();
 	}
@@ -1573,10 +1658,18 @@ void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
 
 		if (BuildingManager->Buildings.Contains(id))
 		{
+			if (BuildingManager->Buildings[id])
+			{
+				BuildingManager->Buildings[id]->bDying = true;
 
-			BuildingManager->Buildings[id]->Destroy();
+				BuildingManager->Buildings[id]->Destroy();
+			}
 
 			BuildingManager->Buildings.Remove(id);
+		}
+		else
+		{
+			ClientSocketInGame->tsqDestroyBuilding.push(id);
 		}
 
 		copiedQueue.pop();
@@ -1741,10 +1834,16 @@ void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
 
 		if (EnemyManager->Enemies.Contains(id))
 		{
-
-			EnemyManager->Enemies[id]->SetHealthPoint(-100000);
+			if (EnemyManager->Enemies[id])
+			{
+				EnemyManager->Enemies[id]->SetHealthPoint(-100000);
+			}
 
 			EnemyManager->Enemies.Remove(id);
+		}
+		else
+		{
+			ClientSocketInGame->tsqDestroyEnemy.push(id);
 		}
 
 		copiedQueue.pop();

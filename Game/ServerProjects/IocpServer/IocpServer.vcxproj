@@ -151,13 +151,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="IocpServerBase.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainServer.cpp" />
     <ClCompile Include="Packet.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IocpServerBase.h" />
     <ClInclude Include="MainServer.h" />
     <ClInclude Include="Packet.h" />
   </ItemGroup>

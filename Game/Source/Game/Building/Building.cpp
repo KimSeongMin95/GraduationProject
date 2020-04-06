@@ -56,6 +56,11 @@ ABuilding::ABuilding()
 	ID = 0;
 
 	BuildingManager = nullptr;
+
+	bDying = false;
+
+
+	IdxOfUnderWall = 0;
 }
 
 void ABuilding::BeginPlay()
@@ -522,8 +527,9 @@ void ABuilding::SetHealthPoint(float Value)
 	if (HealthPoint > 0.0f)
 		return;
 
-	if (BuildingState == EBuildingState::Destroying)
+	if (bDying)
 		return;
+	bDying = true;
 
 	/************************************/
 
@@ -545,7 +551,9 @@ void ABuilding::SetHealthPoint(float Value)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager->Buildings.Contains(ID))"));
+			//UE_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager->Buildings.Contains(ID))"));
+			Destroy();
+			return;
 		}
 	}
 
@@ -768,6 +776,8 @@ void ABuilding::SetInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn)
 	NeedOrganicMatter = Spawn.NeedOrganicMatter;
 
 	SetActorTransform(Spawn.GetActorTransform());
+
+	IdxOfUnderWall = Spawn.IdxOfUnderWall;
 }
 class cInfoOfBuilding_Spawn ABuilding::GetInfoOfBuilding_Spawn()
 {
@@ -781,6 +791,8 @@ class cInfoOfBuilding_Spawn ABuilding::GetInfoOfBuilding_Spawn()
 	infoOfBuilding_Spawn.NeedOrganicMatter = NeedOrganicMatter;
 
 	infoOfBuilding_Spawn.SetActorTransform(GetActorTransform());
+
+	infoOfBuilding_Spawn.IdxOfUnderWall = IdxOfUnderWall;
 
 	return infoOfBuilding_Spawn;
 }

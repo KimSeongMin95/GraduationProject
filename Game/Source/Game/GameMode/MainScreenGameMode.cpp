@@ -30,10 +30,14 @@ AMainScreenGameMode::AMainScreenGameMode()
 
 	Count = 5;
 
-	// 콘솔
-	//CustomLog::FreeConsole();
-	CustomLog::AllocConsole();
 
+	// 콘솔
+	cMyConsole* myConsole = cMyConsole::GetSingleton();
+	if (myConsole)
+	{
+		//myConsole->FreeConsole();
+		myConsole->AllocConsole();
+	}
 }
 
 void AMainScreenGameMode::BeginPlay()

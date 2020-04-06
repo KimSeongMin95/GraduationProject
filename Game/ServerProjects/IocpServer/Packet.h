@@ -1,12 +1,14 @@
 #pragma once
 
-// 멀티바이트 집합 사용시 define
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
+//// 멀티바이트 집합 사용시 define
+//#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 // winsock2 사용을 위해 아래 코멘트 추가
 #pragma comment(lib, "ws2_32.lib")
 
 #include <WinSock2.h>
+#include <WS2tcpip.h> // For: inet_pton()
+
 #include <iostream>
 #include <process.h>
 #include <sstream>
@@ -23,21 +25,88 @@ using namespace std;
 
 // 데이터는 크기는 최대 4095여야 마지막에 '\0'가 들어가서 오류가 나지 않음
 #define	MAX_BUFFER		4096
-//#define SERVER_PORT		8000
+#define TEMP_BUILD_CONFIG_DEBUG 1
 
-// IOCP 소켓 구조체
-struct stSOCKETINFO
+
+/*** Console for log : Start ***/
+#include <stdarg.h>
+class cMyConsole
+{
+private:
+	FILE* fp_console = nullptr;
+
+public:
+	void AllocConsole()
+	{
+#if TEMP_BUILD_CONFIG_DEBUG
+
+		// 이미 할당되어 있으면 콘솔을 더 할당하지 않습니다.
+		if (fp_console)
+			return;
+
+		if (::AllocConsole())
+		{
+			freopen_s(&fp_console, "CONOUT$", "w", stdout);
+		}
+#endif
+	}
+
+	void FreeConsole()
+	{
+#if TEMP_BUILD_CONFIG_DEBUG
+		// 이미 할당되어 있을 때만 소멸시킵니다.
+		if (fp_console)
+		{
+			fclose(fp_console);
+			fp_console = nullptr;
+
+			::FreeConsole();
+		}
+#endif
+	}
+
+	static cMyConsole* GetSingleton()
+	{
+		static cMyConsole console;
+		return &console;
+	}
+
+	static void Log(const char* format, ...)
+	{
+#if TEMP_BUILD_CONFIG_DEBUG
+		char buff[MAX_BUFFER];
+
+		va_list arglist;
+		va_start(arglist, format);
+		vsprintf_s(buff, format, arglist);
+		va_end(arglist);
+
+		printf_s(buff);
+#endif
+	}
+};
+#define CONSOLE_LOG cMyConsole::Log
+/*** Console for log : End ***/
+
+
+// IOCP CompletionKey
+struct stCompletionKey
+{
+	SOCKET			socket;
+
+	string			IPv4Addr; // 메인 클라이언트의 IP 주소
+	int				Port;	  // 메인 클라이언트의 Port 주소
+};
+
+// IOCP OverlappedMsg
+struct stOverlappedMsg
 {
 	WSAOVERLAPPED	overlapped;
 	WSABUF			dataBuf;
-	SOCKET			socket;
 
 	char			messageBuffer[MAX_BUFFER];
 	int				recvBytes;
 	int				sendBytes; // WSASend로 전송할 데이터의 바이트 크기
-
-	string			IPv4Addr; // 메인 클라이언트의 IP 주소
-	int				Port;	  // 메인 클라이언트의 Port 주소
 };
 
 //// 쓰면 간단해지나 Custom이므로 유효성을 보장할 수 없으므로 아주 나중에 사용해볼 것.
@@ -339,7 +408,7 @@ public:
 	// Log
 	void PrintInfo(const char* Space = "    ", const char* Space2 = "")
 	{
-		printf_s("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByMainServer: %d, SocketByGameServer: %d, PortOfMainClient: %d, PortOfGameServer: %d, PortOfGameClient: %d, LeaderSocketByMainServer: %d\n", 
+		CONSOLE_LOG("%s%s<cInfoOfPlayer> ID: %s, IPv4Addr: %s, SocketByMainServer: %d, SocketByGameServer: %d, PortOfMainClient: %d, PortOfGameServer: %d, PortOfGameClient: %d, LeaderSocketByMainServer: %d\n", 
 			Space, Space2, ID.c_str(), IPv4Addr.c_str(), SocketByMainServer, SocketByGameServer, PortOfMainClient, PortOfGameServer, PortOfGameClient, LeaderSocketByMainServer);
 	}
 
@@ -404,7 +473,7 @@ public:
 	{
 		for (auto& kvp : Players)
 		{
-			printf_s("%s%skey: %d, ", Space, Space2, kvp.first);
+			CONSOLE_LOG("%s%skey: %d, ", Space, Space2, kvp.first);
 			kvp.second.PrintInfo();
 		}
 	}
@@ -478,11 +547,11 @@ public:
 	// Log
 	void PrintInfo(const char* Space = "    ", const char* Space2 = "    ")
 	{
-		printf_s("%s<cInfoOfGame> Start\n", Space);
-		printf_s("%s%sState: %s, Title: %s, Stage: %d, nMax: %d\n", Space, Space2, State.c_str(), Title.c_str(), Stage, nMax);
+		CONSOLE_LOG("%s<cInfoOfGame> Start\n", Space);
+		CONSOLE_LOG("%s%sState: %s, Title: %s, Stage: %d, nMax: %d\n", Space, Space2, State.c_str(), Title.c_str(), Stage, nMax);
 		Leader.PrintInfo(Space, Space2);
 		Players.PrintInfo(Space, Space2);
-		printf_s("%s<cInfoOfGame> End\n", Space);
+		CONSOLE_LOG("%s<cInfoOfGame> End\n", Space);
 	}
 
 	// Convert

@@ -335,7 +335,9 @@ void AEnemy::SetHealthPoint(float Value)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Fatal, TEXT("<AEnemy::SetHealthPoint(...)> if (!EnemyManager->Enemies.Contains(ID))"));
+			//UE_LOG(LogTemp, Fatal, TEXT("<AEnemy::SetHealthPoint(...)> if (!EnemyManager->Enemies.Contains(ID))"));
+			bDying = true;
+			return;
 		}
 	}
 

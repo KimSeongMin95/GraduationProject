@@ -43,11 +43,15 @@ APioneerController::APioneerController()
 	bShowMouseCursor = true; // 마우스를 보이게 합니다.
 	//DefaultMouseCursor = EMouseCursor::Default; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
 	DefaultMouseCursor = EMouseCursor::Crosshairs; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
+
+	PlayTickDeltaTime = 0.0f;
 }
 
 void APioneerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+
+	PlayTickDeltaTime = DeltaTime;
 
 	// keep updating the destination every tick while desired
 	if (bMoveToMouseCursor)
@@ -837,7 +841,7 @@ void APioneerController::FreeViewPoint_MoveForward(float Value)
 	if (AWorldViewCameraActor* freeViewCamera = PioneerManager->GetFreeViewCamera())
 	{
 		FTransform transform = freeViewCamera->GetActorTransform();
-		transform.AddToTranslation(freeViewCamera->GetActorForwardVector() * Value * 32.0f);
+		transform.AddToTranslation(freeViewCamera->GetActorForwardVector() * Value * 1024.0f * PlayTickDeltaTime);
 		freeViewCamera->SetActorTransform(transform);
 	}
 }
@@ -865,7 +869,7 @@ void APioneerController::FreeViewPoint_MoveRight(float Value)
 	if (AWorldViewCameraActor* freeViewCamera = PioneerManager->GetFreeViewCamera())
 	{
 		FTransform transform = freeViewCamera->GetActorTransform();
-		transform.AddToTranslation(freeViewCamera->GetActorRightVector() * Value * 32.0f);
+		transform.AddToTranslation(freeViewCamera->GetActorRightVector() * Value * 1024.0f * PlayTickDeltaTime);
 		freeViewCamera->SetActorTransform(transform);
 	}
 }
@@ -892,7 +896,7 @@ void APioneerController::FreeViewPoint_MoveUp(float Value)
 
 	if (AWorldViewCameraActor* freeViewCamera = PioneerManager->GetFreeViewCamera())
 	{
-		FVector moveUp = freeViewCamera->GetActorUpVector() * Value * 32.0f;
+		FVector moveUp = freeViewCamera->GetActorUpVector() * Value * 1024.0f * PlayTickDeltaTime;
 		FVector movedLocation = freeViewCamera->GetActorLocation() + moveUp;
 		freeViewCamera->SetActorLocation(movedLocation);
 	}

@@ -282,7 +282,10 @@ void APioneer::RotateTargetRotation(float DeltaTime)
 void APioneer::SetHealthPoint(float Value)
 {
 	if (bDying)
+	{
+		Super::SetHealthPoint(Value);
 		return;
+	}
 
 	HealthPoint += Value;
 
@@ -343,7 +346,9 @@ void APioneer::SetHealthPoint(float Value)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Fatal, TEXT("<APioneer::SetHealthPoint(...)> if (!PioneerManager->Pioneers.Contains(ID))"));
+			//UE_LOG(LogTemp, Fatal, TEXT("<APioneer::SetHealthPoint(...)> if (!PioneerManager->Pioneers.Contains(ID))"));
+			bDying = true;
+			return;
 		}
 	}
 

@@ -6,10 +6,24 @@
 
 int main()
 {
-	MainServer iocp_server;
+	MainServer* server = MainServer::GetSingleton();
 
-	if (iocp_server.Initialize())
-		iocp_server.StartServer();
+	if (!server)
+		return -1;
+
+	if (server->Initialize())
+	{
+		while (true);
+	}
+
+	//while (true)
+	//{
+	//	if (server->Initialize())
+	//	{
+	//		Sleep(10000);
+	//		server->CloseServer();
+	//	}
+	//}
 
 	return 0;
 }

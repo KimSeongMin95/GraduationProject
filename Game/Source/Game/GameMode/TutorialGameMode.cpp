@@ -27,6 +27,15 @@ ATutorialGameMode::ATutorialGameMode()
 	PlayerControllerClass = APioneerController::StaticClass();
 
 	DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
+
+
+	//// 콘솔
+	//cMyConsole* myConsole = cMyConsole::GetSingleton();
+	//if (myConsole)
+	//{
+	//	//myConsole->FreeConsole();
+	//	myConsole->AllocConsole();
+	//}
 }
 
 void ATutorialGameMode::BeginPlay()

@@ -220,6 +220,7 @@ void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuil
 	if (building)
 	{
 		building->ID = InfoOfBuilding_Spawn.ID;
+		building->IdxOfUnderWall = InfoOfBuilding_Spawn.IdxOfUnderWall;
 
 		if (Buildings.Contains(InfoOfBuilding_Spawn.ID) == false)
 			Buildings.Add(InfoOfBuilding_Spawn.ID, building);

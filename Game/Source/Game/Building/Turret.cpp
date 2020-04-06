@@ -34,8 +34,6 @@ ATurret::ATurret()
 	TargetRotation = FRotator::ZeroRotator;
 
 	IdxOfTarget = 0;
-
-	IdxOfUnderWall = 0;
 }
 
 void ATurret::BeginPlay()

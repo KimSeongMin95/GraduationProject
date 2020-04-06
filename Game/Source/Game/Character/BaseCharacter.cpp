@@ -313,10 +313,14 @@ float ABaseCharacter::DistanceToActor(AActor* Actor)
 void ABaseCharacter::SetHealthPoint(float Value)
 {
 	if (GetCharacterMovement())
+	{
 		GetCharacterMovement()->StopActiveMovement();
+	}
 
 	if (GetController())
+	{
 		GetController()->StopMovement();
+	}
 
 	if (GetMesh())
 	{

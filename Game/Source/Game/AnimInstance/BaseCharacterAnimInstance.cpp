@@ -65,6 +65,15 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 
 	bDying = BaseCharacter->bDying;
 
+	if (bDying)
+	{
+		if (BaseCharacter->HelthPointBar)
+		{
+			BaseCharacter->HelthPointBar->DestroyComponent();
+			BaseCharacter->HelthPointBar = nullptr;
+		}
+	}
+
 	CharacterAI = (int)BaseCharacter->GetCharacterAI();
 
 	Speed = BaseCharacter->GetVelocity().Size();

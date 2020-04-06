@@ -1,12 +1,55 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
-#include "IocpServerBase.h"
+#include "Packet.h"
 
-class MainServer : public IocpServerBase
+
+// 패킷 처리 함수 포인터
+struct FuncProcess
+{
+	// RecvStream은 수신한 정보, pSocket은 Overlapped I/O 작업이 발생한 IOCP 소켓 구조체 정보
+	void(*funcProcessPacket)(stringstream& RecvStream, SOCKET Socket);
+	FuncProcess()
+	{
+		funcProcessPacket = nullptr;
+	}
+};
+
+/**
+ * 게임 클라이언트와 접속 및 패킷 처리를 담당하는 클래스 (게임 서버)
+ */
+class MainServer
 {
 private:
 	FuncProcess	fnProcess[100];	// 패킷 처리 구조체
 
+protected:
+	SOCKET			 ListenSocket;			// 서버 리슨 소켓
+	HANDLE			 hIOCP;					// IOCP 객체 핸들
+
+	bool			 bAccept;				// 요청 동작 플래그
+	CRITICAL_SECTION csAccept;				//
+	HANDLE			 hAcceptThreadHandle;	// Accept 스레드 핸들	
+
+	HANDLE*			 hIOThreadHandle;		// IO 스레드 핸들		
+	DWORD			 nIOThreadCnt;			// IO 스레드 개수
+
+
+public:
+	// WSAAccept(...)한 모든 클라이언트의 new stCompletionKey()를 저장
+	static map<SOCKET, stCompletionKey*> Clients;
+	static CRITICAL_SECTION csClients;
+
+	// 수신한 데이터를 덱에 전부 적재
+	static map<SOCKET, deque<char*>*> MapOfRecvDeque;
+	static CRITICAL_SECTION csMapOfRecvDeque;
+
+	// WSASend(...)를 실행하면 ++, 실행이 완료되거나 실패하면 --
+	static unsigned int CountOfSend;
+	static CRITICAL_SECTION csCountOfSend;
+
+	/******************************************************/
 
 	// Login한 클라이언트의 InfoOfPlayer 저장
 	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
@@ -17,26 +60,54 @@ private:
 	static CRITICAL_SECTION csInfoOfGames;
 
 public:
+	////////////////////////
+	// 기본
+	////////////////////////
 	MainServer();
-	virtual ~MainServer();
+	~MainServer();
+
+	// 
+	void SetIPv4AndPort(IN_ADDR& IPv4, USHORT& Port);
+
+	// 초기화 실패시 실행
+	void CloseListenSocketAndCleanupWSA();
+
+	// 소켓 등록 및 서버 정보 설정
+	bool Initialize();
+
+	// Accept 스레드 생성
+	bool CreateAcceptThread();
 
 	// 서버 시작
-	virtual void StartServer() override;
+	void AcceptThread();
 
-	// 작업 스레드 생성
-	virtual bool CreateWorkerThread() override;
+	// IO 스레드 생성
+	bool CreateIOThread();
 
 	// 작업 스레드
-	virtual void WorkerThread() override;
+	void IOThread();
 
 	// 클라이언트 접속 종료
-	static void CloseSocket(SOCKET Socket);
+	static void CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg);
+
+	// 서버 종료
+	void CloseServer();
 
 	// 클라이언트에게 송신
 	static void Send(stringstream& SendStream, SOCKET Socket);
-	
+
 	// 클라이언트 수신 대기
-	static void Recv(SOCKET Socket);
+	static void Recv(SOCKET Socket, stOverlappedMsg* ReceivedOverlappedMsg);
+
+	///////////////////////////////////////////
+	// stringstream의 맨 앞에 size를 추가
+	///////////////////////////////////////////
+	static bool AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
+
+	///////////////////////////////////////////
+	// 소켓 버퍼 크기 변경
+	///////////////////////////////////////////
+	void SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf);
 
 	///////////////////////////////////////////
 	// 수신한 데이터를 저장하는 덱에서 데이터를 획득
@@ -48,17 +119,33 @@ public:
 	///////////////////////////////////////////
 	void ProcessReceivedPacket(char* DataBuffer, SOCKET Socket);
 
+	////////////////////////////////////////////////
+	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+	////////////////////////////////////////////////
+	static void VerifyPacket(char* DataBuffer, bool send);
+
+	// 싱글턴 객체 가져오기
+	static MainServer* GetSingleton()
+	{
+		static MainServer server;
+		return &server;
+	}
 
 
-private:
-	///////////////////////////////////////////
-	// Main Server / Main Clients
-	///////////////////////////////////////////
+	////////////////////////
+	// 확인
+	////////////////////////
+	bool IsServerOn();
+
+
+	////////////////////////
+	// Main Server / Min Clients
+	////////////////////////
 	static void Broadcast(stringstream& SendStream);
-	static void BroadcastExcept(stringstream& SendStream, SOCKET Except);
+	static void BroadcastExceptOne(stringstream& SendStream, SOCKET Except);
 
 	static void Login(stringstream& RecvStream, SOCKET Socket);
-	
+
 	static void CreateGame(stringstream& RecvStream, SOCKET Socket);
 
 	static void FindGames(stringstream& RecvStream, SOCKET Socket);
@@ -74,55 +161,9 @@ private:
 	static void StartWaitingGame(stringstream& RecvStream, SOCKET Socket);
 
 	///////////////////////////////////////////
-	// Game Server / Game Clients
+	// Main Server / Game Server, Game Clients
 	///////////////////////////////////////////
 	static void ActivateGameServer(stringstream& RecvStream, SOCKET Socket);
 
 	static void RequestInfoOfGameServer(stringstream& RecvStream, SOCKET Socket);
-
-
-
-	////////////////////////////////////////////////
-	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
-	////////////////////////////////////////////////
-	static void VerifyPacket(char* DataBuffer, bool send)
-	{
-		if (!DataBuffer)
-		{
-			printf_s("[ERROR] <MainServer::VerifyPacket(...)> if (!DataBuffer) \n");
-			return;
-		}
-
-		int len = (int)strlen(DataBuffer);
-
-		if (len < 4)
-		{
-			printf_s("[ERROR] <MainServer::VerifyPacket(...)> if (len < 4) \n");
-			return;
-		}
-
-		char buffer[MAX_BUFFER + 1];
-		CopyMemory(buffer, DataBuffer, len);
-		buffer[len] = '\0';
-
-		for (int i = 0; i < len; i++)
-		{
-			if (buffer[i] == '\n')
-				buffer[i] = '_';
-		}
-
-		char sizeBuffer[5]; // [1234\0]
-		CopyMemory(sizeBuffer, buffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
-		sizeBuffer[4] = '\0';
-
-		stringstream sizeStream;
-		sizeStream << sizeBuffer;
-		int sizeOfPacket = 0;
-		sizeStream >> sizeOfPacket;
-
-		if (sizeOfPacket != len)
-		{
-			printf_s("\n\n\n\n\n\n\n\n\n\n type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
-		}
-	}
 };

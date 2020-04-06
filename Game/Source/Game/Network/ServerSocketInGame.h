@@ -27,22 +27,19 @@ private:
 	FuncProcess	fnProcess[100];	// 패킷 처리 구조체
 
 	static int ServerPort;
-	bool bIsServerOn;
+	static CRITICAL_SECTION csServerPort;
 
 protected:
-	stSOCKETINFO*	 SocketInfo = nullptr;	  // 소켓 정보
-	SOCKET			 ListenSocket;			  // 서버 리슨 소켓
-	HANDLE			 hIOCP;					  // IOCP 객체 핸들
-	
-	bool			 bAccept;				  // 요청 동작 플래그 (메인 스레드)
-	CRITICAL_SECTION csAccept;
-	HANDLE			 hMainHandle;			  // 메인 스레드 핸들	
+	SOCKET			 ListenSocket;			// 서버 리슨 소켓
+	HANDLE			 hIOCP;					// IOCP 객체 핸들
 
-	bool			 bWorkerThread;			  // 작업 스레드 동작 플래그 (워커 스레드)
-	HANDLE*			 hWorkerHandle = nullptr; // 작업 스레드 핸들		
-	DWORD			 nThreadCnt;			  // 작업 스레드 개수
+	bool			 bAccept;				// 요청 동작 플래그
+	CRITICAL_SECTION csAccept;				//
+	HANDLE			 hAcceptThreadHandle;	// Accept 스레드 핸들	
 
-	//HANDLE			 hBroadcastHandle;			  //  브로드캐스팅 전용 핸들	
+	HANDLE*			 hIOThreadHandle;		// IO 스레드 핸들		
+	DWORD			 nIOThreadCnt;			// IO 스레드 개수
+
 
 public:
 	/** 게임서버의 임시 소켓 */
@@ -50,22 +47,19 @@ public:
 
 	class cClientSocket* ClientSocket = nullptr;
 
-	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장, (서버가 닫힐 때 할당 해제용도)
-	static map<SOCKET, stSOCKETINFO*> GC_SocketInfo;
-	static CRITICAL_SECTION csGC_SocketInfo;
-
-	// WSAAccept한 모든 클라이언트의 new stSOCKETINFO()를 저장, (delete 금지)
-	static std::map<SOCKET, stSOCKETINFO*> GameClients;
+	// WSAAccept(...)한 모든 클라이언트의 new stCompletionKey()를 저장
+	static std::map<SOCKET, stCompletionKey*> GameClients;
 	static CRITICAL_SECTION csGameClients;
 
 	// 수신한 데이터를 덱에 전부 적재
 	static map<SOCKET, deque<char*>*> MapOfRecvDeque;
 	static CRITICAL_SECTION csMapOfRecvDeque;
 
-
+	// WSASend(...)를 실행하면 ++, 실행이 완료되거나 실패하면 --
 	static unsigned int CountOfSend;
 	static CRITICAL_SECTION csCountOfSend;
 
+	/**************************************************/
 
 	// Connected 클라이언트의 InfoOfPlayer 저장
 	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
@@ -121,29 +115,35 @@ public:
 	cServerSocketInGame();
 	~cServerSocketInGame();
 
+	// 초기화 실패시 실행
+	void CloseListenSocketAndCleanupWSA();
+
 	// 소켓 등록 및 서버 정보 설정
 	bool Initialize();
 
+	// Accept 스레드 생성
+	bool CreateAcceptThread();
+
 	// 서버 시작
-	void StartServer();
+	void AcceptThread();
+
+	// IO 스레드 생성
+	bool CreateIOThread();
+
+	// 작업 스레드
+	void IOThread();
+
+	// 클라이언트 접속 종료
+	static void CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg);
 
 	// 서버 종료
 	void CloseServer();
-
-	// 작업 스레드 생성
-	bool CreateWorkerThread();
-
-	// 작업 스레드
-	void WorkerThread();
-
-	// 클라이언트 접속 종료
-	static void CloseSocket(SOCKET Socket);
 
 	// 클라이언트에게 송신
 	static void Send(stringstream& SendStream, SOCKET Socket);
 
 	// 클라이언트 수신 대기
-	static void Recv(SOCKET Socket);
+	static void Recv(SOCKET Socket, stOverlappedMsg* ReceivedOverlappedMsg);
 
 	///////////////////////////////////////////
 	// stringstream의 맨 앞에 size를 추가
@@ -165,21 +165,30 @@ public:
 	///////////////////////////////////////////
 	void ProcessReceivedPacket(char* DataBuffer, SOCKET Socket);
 
+	////////////////////////////////////////////////
+	// 대용량 패킷 분할 
+	////////////////////////////////////////////////
+	template<typename T>
+	static void DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPacketType PacketType, T& queue);
+
+	////////////////////////////////////////////////
+	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+	////////////////////////////////////////////////
+	static void VerifyPacket(char* DataBuffer, bool send);
 
 	// 싱글턴 객체 가져오기
 	static cServerSocketInGame* GetSingleton()
 	{
-		static cServerSocketInGame ins;
-		return &ins;
+		static cServerSocketInGame gameServer;
+		return &gameServer;
 	}
 
 
 	////////////////////////
 	// 확인
 	////////////////////////
-	bool IsServerOn() { return bIsServerOn; }
-	int GetServerPort() { return ServerPort; }
-
+	bool IsServerOn();
+	int GetServerPort();
 
 	////////////////////////
 	// 통신
@@ -237,49 +246,4 @@ public:
 	static void SendInfoOfEnemy_Stat(stringstream& RecvStream, SOCKET Socket);
 
 	static void SendDestroyEnemy(int IDOfEnemy);
-
-
-	////////////////////////////////////////////////
-	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
-	////////////////////////////////////////////////
-	static void VerifyPacket(char* DataBuffer, bool send)
-	{
-		if (!DataBuffer)
-		{
-			printf_s("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (!DataBuffer) \n");
-			return;
-		}
-
-		int len = (int)strlen(DataBuffer);
-
-		if (len < 4)
-		{
-			printf_s("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (len < 4) \n");
-			return;
-		}
-
-		char buffer[MAX_BUFFER + 1];
-		CopyMemory(buffer, DataBuffer, len);
-		buffer[len] = '\0';
-
-		for (int i = 0; i < len; i++)
-		{
-			if (buffer[i] == '\n')
-				buffer[i] = '_';
-		}
-
-		char sizeBuffer[5]; // [1234\0]
-		CopyMemory(sizeBuffer, buffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
-		sizeBuffer[4] = '\0';
-
-		stringstream sizeStream;
-		sizeStream << sizeBuffer;
-		int sizeOfPacket = 0;
-		sizeStream >> sizeOfPacket;
-
-		if (sizeOfPacket != len)
-		{
-			printf_s("\n\n\n\n\n\n\n\n\n\n type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
-		}
-	}
 };

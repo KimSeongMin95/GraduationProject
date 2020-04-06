@@ -111,9 +111,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "ATurret")
 		int IdxOfTarget;
 
-	UPROPERTY(EditAnywhere, Category = "ATurret")
-		/** Wall 위에 터렛을 건설할 때 아래의 Wall의 인덱스를 저장하는 용도 */
-		int IdxOfUnderWall;
+
 
 protected:
 	void InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent, const TCHAR* SkeletonToFind, const TCHAR* AnimSequenceToFind, float PlayRate = 1.0f);
