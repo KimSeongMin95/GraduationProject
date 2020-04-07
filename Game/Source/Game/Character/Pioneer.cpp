@@ -82,6 +82,9 @@ APioneer::APioneer()
 	BuildingManager = nullptr;
 
 	bArmedWeapon = true;
+
+	Level = 1;
+	Exp = 0.0f;
 }
 
 void APioneer::BeginPlay()
@@ -119,6 +122,10 @@ void APioneer::Tick(float DeltaTime)
 
 	// 회전시 떨림을 방지하기 위해 카메라 위치 조정은 가장 마지막에 실행합니다.
 	SetCameraBoomSettings();
+
+
+	//// 임시
+	//Level++;
 }
 
 void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -283,7 +290,7 @@ void APioneer::SetHealthPoint(float Value)
 {
 	if (bDying)
 	{
-		Super::SetHealthPoint(Value);
+		//Super::SetHealthPoint(Value);
 		return;
 	}
 
@@ -321,15 +328,19 @@ void APioneer::SetHealthPoint(float Value)
 			{
 				if (ServerSocketInGame->IsServerOn())
 				{
-					stringstream sendStream;
-					sendStream << ID << endl;
-
-					ServerSocketInGame->DiedPioneer(sendStream, NULL);
-
-					// 조종하던 Pioneer라면
-					if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
+					// AI와 게임서버가 조종하는 Pioneer만 알리기 위해
+					if (SocketID <= 1)
 					{
-						ServerSocketInGame->InsertAtObersers(ServerSocketInGame->SocketID);
+						stringstream sendStream;
+						sendStream << ID << endl;
+
+						ServerSocketInGame->DiedPioneer(sendStream, NULL);
+
+						// 조종하던 Pioneer라면
+						if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
+						{
+							ServerSocketInGame->InsertAtObersers(ServerSocketInGame->SocketID);
+						}
 					}
 				}
 				else if (ClientSocketInGame->IsClientSocketOn())
@@ -1162,6 +1173,10 @@ void APioneer::ChangeWeapon(int Value)
 		Weapons.IsValidIndex(idx); // 인덱스가 유효하지 않다면 건너띄기
 		idx += Value)
 	{
+		// 제한레벨보다 낮으면 건너띕니다.
+		if (Level < Weapons[idx]->LimitedLevel)
+			continue;
+
 		// 변경할 무기가 없거나 현재 무기라면 건너띄기
 		if (Weapons[idx] == nullptr || Weapons[idx] == CurrentWeapon)
 			continue;

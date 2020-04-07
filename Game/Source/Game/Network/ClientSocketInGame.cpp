@@ -43,10 +43,6 @@ cClientSocketInGame::cClientSocketInGame()
 
 	InitializeCriticalSection(&csServerOn);
 
-	InitializeCriticalSection(&csMyInfoOfScoreBoard);
-	EnterCriticalSection(&csMyInfoOfScoreBoard);
-	MyInfoOfScoreBoard = cInfoOfScoreBoard();
-	LeaveCriticalSection(&csMyInfoOfScoreBoard);
 
 	// Ping 시간 측정
 	StartTime = FDateTime::UtcNow();
@@ -55,7 +51,17 @@ cClientSocketInGame::cClientSocketInGame()
 	Ping = 0;
 	LeaveCriticalSection(&csPing);
 
+
+	InitializeCriticalSection(&csMyInfoOfScoreBoard);
+	EnterCriticalSection(&csMyInfoOfScoreBoard);
+	MyInfoOfScoreBoard = cInfoOfScoreBoard();
+	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+
+
+	InitializeCriticalSection(&csPossessedID);
+	EnterCriticalSection(&csPossessedID);
 	PossessedID = 0;
+	LeaveCriticalSection(&csPossessedID);
 
 
 
@@ -70,9 +76,11 @@ cClientSocketInGame::~cClientSocketInGame()
 
 	DeleteCriticalSection(&csServerOn);
 
+	DeleteCriticalSection(&csPing);
+
 	DeleteCriticalSection(&csMyInfoOfScoreBoard);
 
-	DeleteCriticalSection(&csPing);
+	DeleteCriticalSection(&csPossessedID);
 }
 
 bool cClientSocketInGame::InitSocket()
@@ -186,7 +194,14 @@ void cClientSocketInGame::CloseSocket()
 
 	// 게임클라이언트를 종료하기 전에 조종하던 Pioneer가 죽게끔 알립니다.
 	if (bIsClientSocketOn)
-		SendDiedPioneer(PossessedID);
+	{
+		EnterCriticalSection(&csPossessedID);
+		int possessedID = PossessedID;
+		PossessedID = 0;
+		LeaveCriticalSection(&csPossessedID);
+
+		SendDiedPioneer(possessedID);
+	}
 
 
 	// 게임클라이언트를 종료하면 남아있던 WSASend(...)를 다 보내기 위해 Alertable Wait 상태로 만듭니다.
@@ -299,7 +314,13 @@ void cClientSocketInGame::CloseSocket()
 	//////////////////////
 	//// 멤버변수들 초기화
 	//////////////////////
-	InitMyInfoOfScoreBoard();
+	EnterCriticalSection(&csMyInfoOfScoreBoard);
+	MyInfoOfScoreBoard = cInfoOfScoreBoard();
+	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+
+	EnterCriticalSection(&csPossessedID);
+	PossessedID = 0;
+	LeaveCriticalSection(&csPossessedID);
 
 	tsqScoreBoard.clear();
 	tsqSpaceShip.clear();
@@ -714,6 +735,9 @@ void cClientSocketInGame::ProcessReceivedPacket(char* DataBuffer)
 	double gap = (FDateTime::UtcNow() - StartTime).GetTotalMilliseconds();
 	if (gap > 10000.0)
 		gap = 9999.0;
+	else if (gap < 1.0)
+		gap = 1.0;
+
 	EnterCriticalSection(&csPing);
 	Ping = (int)gap;
 	LeaveCriticalSection(&csPing);
@@ -1136,11 +1160,10 @@ void cClientSocketInGame::SendConnected()
 
 	infoOfPlayer.PrintInfo();
 
-	cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
-	infoOfScoreBoard.ID = infoOfPlayer.ID;
-	SetMyInfoOfScoreBoard(infoOfScoreBoard);
 
-	infoOfScoreBoard.PrintInfo();
+	EnterCriticalSection(&csMyInfoOfScoreBoard);
+	MyInfoOfScoreBoard.ID = infoOfPlayer.ID;
+	LeaveCriticalSection(&csMyInfoOfScoreBoard);
 
 
 	CONSOLE_LOG("[End] <cClientSocketInGame::SendConnected()>\n");
@@ -1174,13 +1197,15 @@ void cClientSocketInGame::SendScoreBoard()
 	//CONSOLE_LOG("[Start] <cClientSocketInGame::SendScoreBoard()>\n");
 
 
-	cInfoOfScoreBoard infoOfScoreBoard = CopyMyInfoOfScoreBoard();
+	EnterCriticalSection(&csMyInfoOfScoreBoard);
 
 	EnterCriticalSection(&csPing);
-	infoOfScoreBoard.Ping = Ping;
+	MyInfoOfScoreBoard.Ping = Ping;
 	LeaveCriticalSection(&csPing);
 
-	SetMyInfoOfScoreBoard(infoOfScoreBoard);
+	cInfoOfScoreBoard infoOfScoreBoard = MyInfoOfScoreBoard;
+	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+
 
 	stringstream sendStream;
 	sendStream << EPacketType::SCORE_BOARD << endl;
@@ -1272,6 +1297,12 @@ void cClientSocketInGame::SendDiedPioneer(int ID)
 	CONSOLE_LOG("[Start] <cClientSocketInGame::SendDiedPioneer()>\n");
 
 
+	EnterCriticalSection(&csMyInfoOfScoreBoard);
+	MyInfoOfScoreBoard.Death++;
+	MyInfoOfScoreBoard.State = "Observation";
+	LeaveCriticalSection(&csMyInfoOfScoreBoard);
+
+
 	stringstream sendStream;
 	sendStream << EPacketType::DIED_PIONEER << endl;
 	sendStream << ID << endl;
@@ -1293,7 +1324,6 @@ void cClientSocketInGame::RecvDiedPioneer(stringstream& RecvStream)
 	RecvStream >> id;
 
 	tsqDiedPioneer.push(id);
-
 
 	CONSOLE_LOG("\t ID: %d\n", id);
 
@@ -1371,7 +1401,15 @@ void cClientSocketInGame::RecvPossessPioneer(stringstream& RecvStream)
 
 
 	if (socket.ID != 0)
+	{
+		EnterCriticalSection(&csPossessedID);
 		PossessedID = socket.ID;
+		LeaveCriticalSection(&csPossessedID);
+
+		EnterCriticalSection(&csMyInfoOfScoreBoard);
+		MyInfoOfScoreBoard.State = "Playing";
+		LeaveCriticalSection(&csMyInfoOfScoreBoard);
+	}
 
 
 	//CONSOLE_LOG("[End] <cClientSocketInGame::RecvPossessPioneer(...)>\n");
@@ -1681,31 +1719,3 @@ void cClientSocketInGame::RecvDestroyEnemy(stringstream& RecvStream)
 
 	CONSOLE_LOG("[End] <cClientSocketInGame::RecvDestroyEnemy(...)>\n");
 }
-
-
-/////////////////////////////////////
-// Set-Get
-/////////////////////////////////////
-void cClientSocketInGame::SetMyInfoOfScoreBoard(cInfoOfScoreBoard& InfoOfScoreBoard)
-{
-	EnterCriticalSection(&csMyInfoOfScoreBoard);
-	MyInfoOfScoreBoard = InfoOfScoreBoard;
-	LeaveCriticalSection(&csMyInfoOfScoreBoard);
-}
-cInfoOfScoreBoard cClientSocketInGame::CopyMyInfoOfScoreBoard()
-{
-	cInfoOfScoreBoard infoOfScoreBoard;
-
-	EnterCriticalSection(&csMyInfoOfScoreBoard);
-	infoOfScoreBoard = MyInfoOfScoreBoard;
-	LeaveCriticalSection(&csMyInfoOfScoreBoard);
-
-	return infoOfScoreBoard;
-}
-void cClientSocketInGame::InitMyInfoOfScoreBoard()
-{
-	EnterCriticalSection(&csMyInfoOfScoreBoard);
-	MyInfoOfScoreBoard = cInfoOfScoreBoard();
-	LeaveCriticalSection(&csMyInfoOfScoreBoard);
-}
-

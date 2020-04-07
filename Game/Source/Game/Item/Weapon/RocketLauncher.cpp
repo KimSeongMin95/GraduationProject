@@ -54,7 +54,7 @@ void ARocketLauncher::InitStat()
 	WeaponType = EWeaponType::Launcher;
 	WeaponNumbering = 6;
 
-	LimitedLevel = 10;
+	LimitedLevel = 11;
 
 	AttackPower = 30.0f;
 	AttackSpeed = 0.5f;

@@ -55,7 +55,7 @@ void ASniperRifle::InitStat()
 	WeaponType = EWeaponType::Rifle;
 	WeaponNumbering = 4;
 
-	LimitedLevel = 10;
+	LimitedLevel = 7;
 
 	AttackPower = 25.0f;
 	AttackSpeed = 1.0f;

@@ -55,7 +55,7 @@ void AAssaultRifle::InitStat()
 	WeaponType = EWeaponType::Rifle;
 	WeaponNumbering = 2;
 
-	LimitedLevel = 5;
+	LimitedLevel = 3;
 
 	AttackPower = 10.0f;
 	AttackSpeed = 5.0f;

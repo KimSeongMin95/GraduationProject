@@ -55,7 +55,7 @@ void AShotgun::InitStat()
 	WeaponType = EWeaponType::Launcher;
 	WeaponNumbering = 3;
 
-	LimitedLevel = 10;
+	LimitedLevel = 5;
 
 	AttackPower = 10.0f;
 	AttackSpeed = 0.8f;

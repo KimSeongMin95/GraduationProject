@@ -43,7 +43,11 @@ protected:
 
 public:
 	/** 게임서버의 임시 소켓 */
-	SOCKET SocketID;
+	static SOCKET SocketID;
+	static CRITICAL_SECTION csSocketID;
+
+	static int PossessedID;
+	static CRITICAL_SECTION csPossessedID;
 
 	class cClientSocket* ClientSocket = nullptr;
 

@@ -476,13 +476,40 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 #endif			
 		return;
 	}
+
+	if (!PioneerManager)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetScoreBoard(...)> if (!PioneerManager)"));
+#endif			
+		return;
+	}
 	/***********************************************************/
+
+	EnterCriticalSection(&ServerSocketInGame->csPossessedID);
+	int PossessedID = ServerSocketInGame->PossessedID;
+	LeaveCriticalSection(&ServerSocketInGame->csPossessedID);
 
 	std::queue<cInfoOfScoreBoard> copiedQueue;
 
 	EnterCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
 	for (auto& kvp : ServerSocketInGame->InfosOfScoreBoard)
+	{
+		EnterCriticalSection(&ServerSocketInGame->csSocketID);
+		if (kvp.first == ServerSocketInGame->SocketID)
+		{
+			if (PioneerManager->Pioneers.Contains(PossessedID))
+			{
+				if (APioneer* pioneer = PioneerManager->Pioneers[PossessedID])
+				{
+					kvp.second.Level = pioneer->Level;
+				}
+			}
+		}
+		LeaveCriticalSection(&ServerSocketInGame->csSocketID);
+
 		copiedQueue.push(kvp.second);
+	}
 	LeaveCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
 
 	InGameScoreBoardWidget->RevealScores(copiedQueue);
@@ -1085,10 +1112,30 @@ void AOnlineGameMode::SendScoreBoard(float DeltaTime)
 		return;
 	TimerOfSendScoreBoard = 0.0f;
 
+	if (!PioneerManager)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendScoreBoard(...)> if (!PioneerManager)"));
+#endif			
+		return;
+	}
 	/***********************************************************/
 
-	ClientSocketInGame->SendScoreBoard();
+	EnterCriticalSection(&ClientSocketInGame->csPossessedID);
+	int PossessedID = ClientSocketInGame->PossessedID;
+	LeaveCriticalSection(&ClientSocketInGame->csPossessedID);
 
+	if (PioneerManager->Pioneers.Contains(PossessedID))
+	{
+		if (APioneer* pioneer = PioneerManager->Pioneers[PossessedID])
+		{
+			EnterCriticalSection(&ClientSocketInGame->csMyInfoOfScoreBoard);
+			ClientSocketInGame->MyInfoOfScoreBoard.Level = pioneer->Level;
+			LeaveCriticalSection(&ClientSocketInGame->csMyInfoOfScoreBoard);
+		}
+	}
+	
+	ClientSocketInGame->SendScoreBoard();
 }
 void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 {

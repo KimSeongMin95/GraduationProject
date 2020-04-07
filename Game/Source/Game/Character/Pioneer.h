@@ -172,6 +172,12 @@ public:
 
 
 
+	UPROPERTY(VisibleAnywhere)
+		int Level;
+
+	UPROPERTY(VisibleAnywhere)
+		float Exp;
+
 private:
 	UFUNCTION(Category = Camera)
 		/** Tick()에서 호출합니다. */

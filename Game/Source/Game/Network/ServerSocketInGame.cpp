@@ -13,6 +13,12 @@
 int cServerSocketInGame::ServerPort;
 CRITICAL_SECTION cServerSocketInGame::csServerPort;
 
+SOCKET cServerSocketInGame::SocketID;
+CRITICAL_SECTION cServerSocketInGame::csSocketID;
+
+int cServerSocketInGame::PossessedID;
+CRITICAL_SECTION cServerSocketInGame::csPossessedID;
+
 
 std::map<SOCKET, stCompletionKey*> cServerSocketInGame::GameClients;
 CRITICAL_SECTION cServerSocketInGame::csGameClients;
@@ -119,6 +125,10 @@ cServerSocketInGame::cServerSocketInGame()
 	nIOThreadCnt = 0;
 
 	SocketID = 1;
+	InitializeCriticalSection(&csSocketID);
+
+	PossessedID = 0;
+	InitializeCriticalSection(&csPossessedID);
 
 	InitializeCriticalSection(&csGameClients);
 	InitializeCriticalSection(&csMapOfRecvDeque);
@@ -170,6 +180,10 @@ cServerSocketInGame::~cServerSocketInGame()
 	DeleteCriticalSection(&csServerPort);
 
 	DeleteCriticalSection(&csAccept);
+
+	DeleteCriticalSection(&csSocketID);
+
+	DeleteCriticalSection(&csPossessedID);
 
 	DeleteCriticalSection(&csGameClients);
 	DeleteCriticalSection(&csMapOfRecvDeque);
@@ -320,6 +334,10 @@ bool cServerSocketInGame::Initialize()
 
 		cInfoOfPlayer infoOfPlayer = ClientSocket->CopyMyInfo();
 
+		EnterCriticalSection(&csSocketID);
+
+		SocketID = 1;
+
 		EnterCriticalSection(&csInfoOfClients);
 		InfoOfClients[SocketID] = infoOfPlayer;
 		LeaveCriticalSection(&csInfoOfClients);
@@ -335,6 +353,8 @@ bool cServerSocketInGame::Initialize()
 		EnterCriticalSection(&csObservers);
 		Observers[SocketID] = SocketID;
 		LeaveCriticalSection(&csObservers);
+
+		LeaveCriticalSection(&csSocketID);
 	}
 
 
@@ -1276,6 +1296,10 @@ void cServerSocketInGame::CloseServer()
 	InfoOfClients.clear();
 	LeaveCriticalSection(&csInfoOfClients);
 
+	// PossessedID 초기화
+	EnterCriticalSection(&csPossessedID);
+	PossessedID = 0;
+	LeaveCriticalSection(&csPossessedID);
 
 	CONSOLE_LOG("[End] <cServerSocketInGame::CloseServer()>\n");
 }
@@ -2052,6 +2076,24 @@ void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, SOCKET Socket)
 	if (Socket == NULL || Socket == INVALID_SOCKET)
 	{
 		Broadcast(sendStream);
+
+		EnterCriticalSection(&csPossessedID);
+		int possessedID = PossessedID;
+		PossessedID = 0;
+		LeaveCriticalSection(&csPossessedID);
+
+		if (id == possessedID)
+		{
+			EnterCriticalSection(&csInfosOfScoreBoard);
+			EnterCriticalSection(&csSocketID);
+			if (InfosOfScoreBoard.find(SocketID) != InfosOfScoreBoard.end())
+			{
+				InfosOfScoreBoard.at(SocketID).Death++;
+				InfosOfScoreBoard.at(SocketID).State = "Observation";
+			}
+			LeaveCriticalSection(&csSocketID);
+			LeaveCriticalSection(&csInfosOfScoreBoard);
+		}
 	}
 	else
 	{
@@ -2197,7 +2239,7 @@ bool cServerSocketInGame::PossessingPioneer(cInfoOfPioneer_Socket Socket)
 				InfosOfPioneer_Socket.at(Socket.ID).NameOfID = InfoOfClients.at(SocketID).ID;
 			}
 			LeaveCriticalSection(&csInfoOfClients);
-
+			LeaveCriticalSection(&csInfosOfPioneer_Socket);
 
 			// 관전자에서 지웁니다.
 			EnterCriticalSection(&csObservers);
@@ -2205,7 +2247,21 @@ bool cServerSocketInGame::PossessingPioneer(cInfoOfPioneer_Socket Socket)
 			LeaveCriticalSection(&csObservers);
 
 
-			LeaveCriticalSection(&csInfosOfPioneer_Socket);
+			EnterCriticalSection(&csInfosOfScoreBoard);
+			EnterCriticalSection(&csSocketID);
+			if (InfosOfScoreBoard.find(SocketID) != InfosOfScoreBoard.end())
+			{
+				InfosOfScoreBoard.at(SocketID).State = "Playing";
+			}
+			LeaveCriticalSection(&csSocketID);
+			LeaveCriticalSection(&csInfosOfScoreBoard);
+
+
+			EnterCriticalSection(&csPossessedID);
+			PossessedID = Socket.ID;
+			LeaveCriticalSection(&csPossessedID);
+
+
 
 			//Socket.PrintInfo();
 

@@ -53,7 +53,7 @@ void AGrenadeLauncher::InitItem()
 void AGrenadeLauncher::InitStat()
 {
 	WeaponType = EWeaponType::Launcher;
-	WeaponNumbering = 5;
+	WeaponNumbering = 9;
 
 	LimitedLevel = 10;
 

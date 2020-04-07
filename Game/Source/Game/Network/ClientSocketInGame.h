@@ -35,18 +35,24 @@ private:
 	bool bServerOn;
 	CRITICAL_SECTION csServerOn;
 
-	class cInfoOfScoreBoard MyInfoOfScoreBoard;
-	CRITICAL_SECTION csMyInfoOfScoreBoard;
+
 
 	// Ping 시간 측정
 	FDateTime StartTime;
 	int Ping;
 	CRITICAL_SECTION csPing;
 
-	int PossessedID;
+	
 
 protected:
-	
+
+
+public:
+	cInfoOfScoreBoard MyInfoOfScoreBoard;
+	CRITICAL_SECTION csMyInfoOfScoreBoard;
+
+	int PossessedID;
+	CRITICAL_SECTION csPossessedID;
 
 public:
 	/////////////////////////////////////
@@ -183,16 +189,6 @@ public:
 
 	void RecvDestroyEnemy(stringstream& RecvStream);
 	cThreadSafetyQueue<int> tsqDestroyEnemy;
-
-
-	/////////////////////////////////////
-	// Set-Get
-	/////////////////////////////////////
-	void SetMyInfoOfScoreBoard(cInfoOfScoreBoard& InfoOfScoreBoard);
-	cInfoOfScoreBoard CopyMyInfoOfScoreBoard();
-	void InitMyInfoOfScoreBoard();
-
-
 
 
 	////////////////////////////////////////////////

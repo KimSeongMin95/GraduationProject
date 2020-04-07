@@ -85,7 +85,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
-		int LimitedLevel; /** 제한 전투력 */
+		int LimitedLevel; /** 제한 레벨 */
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackPower; /** 공격력 */

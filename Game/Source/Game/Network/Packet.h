@@ -1270,6 +1270,9 @@ public:
 	float DetectRange;
 	float AttackRange;
 
+
+
+
 public:
 	cInfoOfPioneer_Stat()
 	{
