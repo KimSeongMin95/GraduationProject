@@ -120,6 +120,12 @@ public:
 	void ProcessReceivedPacket(char* DataBuffer, SOCKET Socket);
 
 	////////////////////////////////////////////////
+	// 대용량 패킷 분할 
+	////////////////////////////////////////////////
+	template<typename T>
+	static void DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPacketType PacketType, T& queue);
+
+	////////////////////////////////////////////////
 	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
 	////////////////////////////////////////////////
 	static void VerifyPacket(char* DataBuffer, bool send);

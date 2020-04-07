@@ -196,6 +196,7 @@ void ABaseCharacter::InitRanges()
 	DetectRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
 	DetectRangeSphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	DetectRangeSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	DetectRangeSphereComp->SetCanEverAffectNavigation(false);
 }
 
 void ABaseCharacter::InitAIController()
@@ -213,6 +214,7 @@ void ABaseCharacter::InitCharacterMovement()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
+
 	// 캐릭터 이동&회전 관련 설정을 합니다.
 	GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향에 캐릭터 메시가 따라 회전합니다.
 	//GetCharacterMovement()->bOrientRotationToMovement = false; // 이동 방향에 캐릭터 메시가 따라 회전하지 않습니다.
@@ -224,6 +226,12 @@ void ABaseCharacter::InitCharacterMovement()
 	//GetCharacterMovement()->MaxWalkSpeed = 600.0f; // 움직일 때 걷는 속도
 	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed;
 	GetCharacterMovement()->MaxStepHeight = 45.0f; // 움직일 때 45.0f 높이는 올라갈 수 있도록 합니다. ex) 계단
+
+	//GetWorld()->ComponentOverlapMulti();
+	//AddActorWorldOffset()
+
+	GetCharacterMovement()->bSweepWhileNavWalking = false;
+	GetCharacterMovement()->bEnablePhysicsInteraction = false;
 }
 
 void ABaseCharacter::InitFSM()

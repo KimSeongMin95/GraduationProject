@@ -662,7 +662,7 @@ void APioneer::InitSkeletalAnimation()
 		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 		GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-
+		GetMesh()->SetCanEverAffectNavigation(false);
 	}
 	//// 2. Skeleton을 가져옵니다.
 	//static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Character/Mesh/UE4_Mannequin_Skeleton.UE4_Mannequin_Skeleton'"));
@@ -862,6 +862,7 @@ void APioneer::InitEquipments()
 		HelmetMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		HelmetMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 		HelmetMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		HelmetMesh->SetCanEverAffectNavigation(false);
 	}
 }
 

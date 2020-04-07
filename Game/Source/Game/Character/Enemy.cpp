@@ -112,6 +112,8 @@ void AEnemy::InitRanges()
 	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
 	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
 	AttackRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * AttackRange, true);
+	AttackRangeSphereComp->SetCanEverAffectNavigation(false);
+
 }
 
 void AEnemy::InitAIController()
@@ -563,6 +565,7 @@ void AEnemy::InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FStri
 		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 		GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		GetMesh()->SetCanEverAffectNavigation(false);
 	}
 }
 

@@ -1511,6 +1511,37 @@ void MainServer::ProcessReceivedPacket(char* DataBuffer, SOCKET Socket)
 
 
 ////////////////////////////////////////////////
+// 대용량 패킷 분할 
+////////////////////////////////////////////////
+template<typename T>
+void MainServer::DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPacketType PacketType, T& queue)
+{
+	while (queue.empty() == false)
+	{
+		stringstream temp;
+		temp << queue.front() << endl;
+		size_t total = SendStream.str().length() + 2 + temp.str().length();
+
+		// size를 넣을 공간까지 생각해서 최대 크기를 벗어나면
+		if (total >= MAX_BUFFER - 5)
+		{
+			//CONSOLE_LOG("[Info] <cServerSocketInGame::DivideHugePacket(...)> if (total >= MAX_BUFFER) \n");
+			//CONSOLE_LOG("[Info] <cServerSocketInGame::DivideHugePacket(...)> total: %d \n", (int)total);
+
+			// 먼저 보냅니다.
+			Send(SendStream, Socket);
+
+			SendStream.str("");
+			SendStream << PacketType << endl;
+		}
+
+		SendStream << queue.front() << endl;
+		queue.pop();
+	}
+}
+
+
+////////////////////////////////////////////////
 // (임시) 패킷 사이즈와 실제 길이 검증용 함수
 ////////////////////////////////////////////////
 void MainServer::VerifyPacket(char* DataBuffer, bool send)
