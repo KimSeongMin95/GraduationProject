@@ -57,7 +57,7 @@ void ASniperRifle::InitStat()
 
 	LimitedLevel = 7;
 
-	AttackPower = 25.0f;
+	AttackPower = 40.0f;
 	AttackSpeed = 1.0f;
 	AttackRange = 10.0f * AOnlineGameMode::CellSize;
 
@@ -110,6 +110,7 @@ bool ASniperRifle::Fire(int IDOfPioneer)
 
 	AProjectile* projectile = world->SpawnActor<AProjectileSniperRifle>(AProjectileSniperRifle::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 
+	projectile->IDOfPioneer = IDOfPioneer;
 
 	if (ServerSocketInGame)
 	{

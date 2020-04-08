@@ -184,7 +184,7 @@ private:
 
 
 	void RecvDestroyEnemy(float DeltaTime); float TimerOfRecvDestroyEnemy;
-
+	void RecvExp(float DeltaTime); float TimerOfRecvExp;
 
 protected:
 

@@ -57,7 +57,7 @@ void AShotgun::InitStat()
 
 	LimitedLevel = 5;
 
-	AttackPower = 10.0f;
+	AttackPower = 15.0f;
 	AttackSpeed = 0.8f;
 	AttackRange = 10.0f * AOnlineGameMode::CellSize;
 
@@ -113,12 +113,14 @@ bool AShotgun::Fire(int IDOfPioneer)
 			myTrans.SetIdentity();
 
 		FRotator rotation = myTrans.GetRotation().Rotator(); // GetRotation()으로 얻은 FQuat의 Rotator()로 FRotator를 획득.
-		rotation.Pitch += FMath::RandRange(-10.0f, 10.0f);
-		rotation.Yaw += FMath::RandRange(-10.0f, 10.0f);
+		rotation.Pitch += FMath::RandRange(-20.0f, 20.0f);
+		rotation.Yaw += FMath::RandRange(-20.0f, 20.0f);
 		myTrans.SetRotation(FQuat(rotation));
 
 		AProjectile* projectile = world->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 	
+		projectile->IDOfPioneer = IDOfPioneer;
+
 		if (ServerSocketInGame)
 		{
 			if (ServerSocketInGame->IsServerOn())

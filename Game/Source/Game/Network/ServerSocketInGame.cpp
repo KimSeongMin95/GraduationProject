@@ -2089,7 +2089,7 @@ void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, SOCKET Socket)
 			if (InfosOfScoreBoard.find(SocketID) != InfosOfScoreBoard.end())
 			{
 				InfosOfScoreBoard.at(SocketID).Death++;
-				InfosOfScoreBoard.at(SocketID).State = "Observation";
+				InfosOfScoreBoard.at(SocketID).State = "Observing";
 			}
 			LeaveCriticalSection(&csSocketID);
 			LeaveCriticalSection(&csInfosOfScoreBoard);
@@ -2678,7 +2678,7 @@ void cServerSocketInGame::SendInfoOfEnemy_Stat(stringstream& RecvStream, SOCKET 
 	//CONSOLE_LOG("[Send to %d] <cServerSocketInGame::SendInfoOfEnemy_Stat(...)>\n\n", (int)Socket);
 }
 
-void cServerSocketInGame::SendDestroyEnemy(int IDOfEnemy)
+void cServerSocketInGame::SendDestroyEnemy(int IDOfEnemy, int IDOfPioneer, int Exp)
 {
 	CONSOLE_LOG("[Start] <cServerSocketInGame::SendDestroyEnemy(...)>\n");
 
@@ -2695,12 +2695,38 @@ void cServerSocketInGame::SendDestroyEnemy(int IDOfEnemy)
 	InfoOfEnemies_Stat.erase(IDOfEnemy);
 	LeaveCriticalSection(&csInfoOfEnemies_Stat);
 
-	CONSOLE_LOG("\t IDOfEnemy: %d \n", IDOfEnemy);
 
-	/// 송신
+	if (IDOfPioneer != 0)
+	{
+		
+		EnterCriticalSection(&csPossessedID);
+		int possessedID = PossessedID;
+		LeaveCriticalSection(&csPossessedID);
+
+		if (IDOfPioneer == possessedID)
+		{
+			EnterCriticalSection(&csInfosOfScoreBoard);
+			EnterCriticalSection(&csSocketID);
+			if (InfosOfScoreBoard.find(SocketID) != InfosOfScoreBoard.end())
+			{
+				InfosOfScoreBoard.at(SocketID).Kill++;
+			}
+			LeaveCriticalSection(&csSocketID);
+			LeaveCriticalSection(&csInfosOfScoreBoard);
+		}
+	}
+
+
+	CONSOLE_LOG("\t IDOfEnemy: %d \n", IDOfEnemy);
+	CONSOLE_LOG("\t IDOfPioneer: %d \n", IDOfPioneer);
+	CONSOLE_LOG("\t Exp: %d \n", Exp);
+
+	/// 송신SendDestroyEnemy
 	stringstream sendStream;
 	sendStream << EPacketType::DESTROY_ENEMY << endl;
 	sendStream << IDOfEnemy << endl;
+	sendStream << IDOfPioneer << endl;
+	sendStream << Exp << endl;
 
 	Broadcast(sendStream);
 

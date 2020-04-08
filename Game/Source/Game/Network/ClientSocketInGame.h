@@ -189,7 +189,7 @@ public:
 
 	void RecvDestroyEnemy(stringstream& RecvStream);
 	cThreadSafetyQueue<int> tsqDestroyEnemy;
-
+	cThreadSafetyQueue<int> tsqExp;
 
 	////////////////////////////////////////////////
 	// (임시) 패킷 사이즈와 실제 길이 검증용 함수

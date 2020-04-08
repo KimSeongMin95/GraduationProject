@@ -249,5 +249,5 @@ public:
 
 	static void SendInfoOfEnemy_Stat(stringstream& RecvStream, SOCKET Socket);
 
-	static void SendDestroyEnemy(int IDOfEnemy);
+	static void SendDestroyEnemy(int IDOfEnemy, int IDOfPioneer, int Exp);
 };

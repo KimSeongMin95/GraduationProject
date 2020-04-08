@@ -29,7 +29,7 @@ AProjectileAssaultRifle::AProjectileAssaultRifle()
 
 	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Impact_Wood_Medium_Light.P_Impact_Wood_Medium_Light'"));
 
-	TotalDamage = 10.0f;
+	TotalDamage = 16.0f;
 }
 
 void AProjectileAssaultRifle::BeginPlay()
@@ -64,7 +64,7 @@ void AProjectileAssaultRifle::OnOverlapBegin_HitRange(class UPrimitiveComponent*
 		{
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
-				enemy->SetHealthPoint(-TotalDamage);
+				enemy->SetHealthPoint(-TotalDamage, IDOfPioneer);
 
 				ActiveToggleOfImpactParticleSystem();
 				SetTimerForDestroy(1.0f);

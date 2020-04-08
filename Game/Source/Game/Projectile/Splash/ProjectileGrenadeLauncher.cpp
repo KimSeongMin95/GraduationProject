@@ -44,7 +44,7 @@ AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()
 	RootComponent->SetupAttachment(PhysicsBoxComp);
 	RootComponent = PhysicsBoxComp;
 
-	TotalDamage = 40.0f;
+	TotalDamage = 75.0f;
 }
 
 void AProjectileGrenadeLauncher::BeginPlay()
@@ -80,7 +80,7 @@ void AProjectileGrenadeLauncher::OnOverlapBegin_HitRange(class UPrimitiveCompone
 			// CollisionCylinder인 enemy의 CapsuleComponent에 충돌하면
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
-				enemy->SetHealthPoint(-TotalDamage);
+				enemy->SetHealthPoint(-TotalDamage, IDOfPioneer);
 
 				//ActiveToggleOfImpactParticleSystem(true); // AProjectileGrenadeLauncher에서는 SetTimerForDestroy에서 실행
 				SetTimerForDestroy(3.0f);

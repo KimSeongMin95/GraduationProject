@@ -50,9 +50,9 @@ protected:
 	UPROPERTY()
 		class UEditableTextBox* MoveSpeedOfPioneer = nullptr;
 	UPROPERTY()
-		class UEditableTextBox* AttackSpeedOfPioneer = nullptr;
+		class UEditableTextBox* LevelOfPioneer = nullptr;
 	UPROPERTY()
-		class UEditableTextBox* AttackPowerOfPioneer = nullptr;
+		class UEditableTextBox* ExpOfPioneer = nullptr;
 	UPROPERTY()
 		class UEditableTextBox* SightRangeOfPioneer = nullptr;
 	UPROPERTY()

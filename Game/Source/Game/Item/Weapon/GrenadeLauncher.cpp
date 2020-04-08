@@ -53,11 +53,11 @@ void AGrenadeLauncher::InitItem()
 void AGrenadeLauncher::InitStat()
 {
 	WeaponType = EWeaponType::Launcher;
-	WeaponNumbering = 9;
+	WeaponNumbering = 5;
 
-	LimitedLevel = 10;
+	LimitedLevel = 9;
 
-	AttackPower = 40.0f;
+	AttackPower = 75.0f;
 	AttackSpeed = 0.5f;
 	AttackRange = 10.0f * AOnlineGameMode::CellSize;
 
@@ -110,6 +110,7 @@ bool AGrenadeLauncher::Fire(int IDOfPioneer)
 
 	AProjectile* projectile = world->SpawnActor<AProjectileGrenadeLauncher>(AProjectileGrenadeLauncher::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 
+	projectile->IDOfPioneer = IDOfPioneer;
 
 	if (ServerSocketInGame)
 	{

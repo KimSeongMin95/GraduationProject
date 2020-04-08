@@ -14,6 +14,7 @@
 #include "Network/ClientSocketInGame.h"
 
 #include "EnemyManager.h"
+#include "PioneerManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -26,6 +27,8 @@ AEnemy::AEnemy()
 	ID = 0;
 
 	EnemyManager = nullptr;
+
+	PioneerManager = nullptr;
 
 	EnemyType = EEnemyType::None;
 
@@ -58,6 +61,21 @@ void AEnemy::BeginPlay()
 				return;
 			}
 		}
+	}
+
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AEnemy::BeginPlay()> if (!world)"));
+#endif				
+		return;
+	}
+
+	// UWorld에서 APioneerController를 찾습니다.
+	for (TActorIterator<APioneerManager> ActorItr(world); ActorItr; ++ActorItr)
+	{	
+		PioneerManager = *ActorItr;
 	}
 }
 
@@ -304,7 +322,7 @@ void AEnemy::RotateTargetRotation(float DeltaTime)
 }
 
 
-void AEnemy::SetHealthPoint(float Value)
+void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 {
 	if (bDying)
 		return;
@@ -347,9 +365,45 @@ void AEnemy::SetHealthPoint(float Value)
 	{
 		if (ServerSocketInGame->IsServerOn())
 		{
-			ServerSocketInGame->SendDestroyEnemy(ID);
+			ServerSocketInGame->SendDestroyEnemy(ID, IDOfPioneer, Exp);
+
+			if (PioneerManager)
+			{
+				if (PioneerManager->Pioneers.Contains(IDOfPioneer))
+				{
+					if (APioneer* pioneer = PioneerManager->Pioneers[IDOfPioneer])
+					{
+						pioneer->Exp += Exp;
+
+						pioneer->CalculateLevel();
+					}
+				}
+			}
 		}
 	}
+
+
+	if (ClientSocketInGame && ServerSocketInGame)
+	{
+		if (!ServerSocketInGame->IsServerOn() && !ClientSocketInGame->IsClientSocketOn())
+		{
+			if (PioneerManager)
+			{
+				if (PioneerManager->Pioneers.Contains(IDOfPioneer))
+				{
+					if (APioneer* pioneer = PioneerManager->Pioneers[IDOfPioneer])
+					{
+						pioneer->Exp += Exp;
+
+						// 임시
+						pioneer->Level += Exp;
+					}
+				}
+			}
+		}
+	}
+
+
 
 	Super::SetHealthPoint(Value);
 

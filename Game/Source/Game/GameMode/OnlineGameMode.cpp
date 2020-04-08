@@ -88,6 +88,7 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfSendInfoOfEnemy_Stat = 0.0f;
 	TimerOfRecvInfoOfEnemy_Stat = 0.0f;
 	TimerOfRecvDestroyEnemy = 0.0f;
+	TimerOfRecvExp = 0.0f;
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -338,36 +339,38 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
+	AProjectile* projectile = nullptr;
+
 	switch (InfoOfProjectile.Numbering)
 	{
 	case 1:
 	{
-		world->SpawnActor<AProjectilePistol>(AProjectilePistol::StaticClass(), myTrans, SpawnParams);
+		projectile = world->SpawnActor<AProjectilePistol>(AProjectilePistol::StaticClass(), myTrans, SpawnParams);
 	}
 	break;
 	case 2:
 	{
-		world->SpawnActor<AProjectileAssaultRifle>(AProjectileAssaultRifle::StaticClass(), myTrans, SpawnParams);
+		projectile = world->SpawnActor<AProjectileAssaultRifle>(AProjectileAssaultRifle::StaticClass(), myTrans, SpawnParams);
 	}
 	break;
 	case 3:
 	{
-		world->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams);
+		projectile = world->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams);
 	}
 	break;
 	case 4:
 	{
-		world->SpawnActor<AProjectileSniperRifle>(AProjectileSniperRifle::StaticClass(), myTrans, SpawnParams);
+		projectile = world->SpawnActor<AProjectileSniperRifle>(AProjectileSniperRifle::StaticClass(), myTrans, SpawnParams);
 	}
 	break;
 	case 5:
 	{
-		world->SpawnActor<AProjectileGrenadeLauncher>(AProjectileGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
+		projectile = world->SpawnActor<AProjectileGrenadeLauncher>(AProjectileGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
 	}
 	break;
 	case 6:
 	{
-		world->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams);
+		projectile = world->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams);
 	}
 	break;
 
@@ -379,6 +382,10 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 
 	}
 
+	if (projectile)
+	{
+		projectile->IDOfPioneer = InfoOfProjectile.ID;
+	}
 }
 
 void AOnlineGameMode::SpawnBuildingManager()
@@ -490,7 +497,7 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 	int PossessedID = ServerSocketInGame->PossessedID;
 	LeaveCriticalSection(&ServerSocketInGame->csPossessedID);
 
-	std::queue<cInfoOfScoreBoard> copiedQueue;
+	vector<cInfoOfScoreBoard> copiedVec;
 
 	EnterCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
 	for (auto& kvp : ServerSocketInGame->InfosOfScoreBoard)
@@ -508,12 +515,21 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 		}
 		LeaveCriticalSection(&ServerSocketInGame->csSocketID);
 
-		copiedQueue.push(kvp.second);
+		copiedVec.push_back(kvp.second);
 	}
 	LeaveCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
 
-	InGameScoreBoardWidget->RevealScores(copiedQueue);
+	std::sort(copiedVec.begin(), copiedVec.end());
 
+
+	queue<cInfoOfScoreBoard> copiedQueue;
+
+	for (auto& vec : copiedVec)
+	{
+		copiedQueue.push(vec);
+	}
+
+	InGameScoreBoardWidget->RevealScores(copiedQueue);
 }
 
 void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
@@ -1103,6 +1119,7 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 	SendInfoOfEnemy_Stat(DeltaTime);
 	RecvInfoOfEnemy_Stat(DeltaTime);
 	RecvDestroyEnemy(DeltaTime);
+	RecvExp(DeltaTime);
 }
 
 void AOnlineGameMode::SendScoreBoard(float DeltaTime)
@@ -1897,6 +1914,48 @@ void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
 	}
 }
 
+void AOnlineGameMode::RecvExp(float DeltaTime)
+{
+	TimerOfRecvExp += DeltaTime;
+	if (TimerOfRecvExp < 0.1f)
+		return;
+	TimerOfRecvExp = 0.0f;
+
+	if (!PioneerManager)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvExp(...)> if (!PioneerManager)"));
+#endif	
+		return;
+	}
+
+	if (ClientSocketInGame->tsqExp.empty())
+	{
+		return;
+	}
+	/***********************************************************/
+
+	std::queue<int> copiedQueue = ClientSocketInGame->tsqExp.copy_clear();
+
+	EnterCriticalSection(&ClientSocketInGame->csPossessedID);
+	int PossessedID = ClientSocketInGame->PossessedID;
+	LeaveCriticalSection(&ClientSocketInGame->csPossessedID);
+
+	while (copiedQueue.empty() == false)
+	{
+		if (PioneerManager->Pioneers.Contains(PossessedID))
+		{
+			if (APioneer* pioneer = PioneerManager->Pioneers[PossessedID])
+			{
+				pioneer->Exp += copiedQueue.front();
+
+				pioneer->CalculateLevel();
+			}
+		}
+		
+		copiedQueue.pop();
+	}
+}
 
 
 

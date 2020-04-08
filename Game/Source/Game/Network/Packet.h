@@ -926,9 +926,9 @@ public:
 	bool operator<(cInfoOfScoreBoard& other) const
 	{
 		if (this->Kill == other.Kill)
-			return this->Level < other.Level;
+			return this->Level > other.Level;
 		else
-			return this->Kill < other.Kill;
+			return this->Kill > other.Kill;
 	}
 };
 
@@ -1270,7 +1270,8 @@ public:
 	float DetectRange;
 	float AttackRange;
 
-
+	float Exp;
+	int Level;
 
 
 public:
@@ -1289,6 +1290,9 @@ public:
 		SightRange = 32.0f;
 		DetectRange = 32.0f;
 		AttackRange = 16.0f;
+
+		Exp = 0.0f;
+		Level = 1;
 	}
 	~cInfoOfPioneer_Stat()
 	{
@@ -1308,6 +1312,9 @@ public:
 		Stream << Info.DetectRange << endl;
 		Stream << Info.AttackRange << endl;
 
+		Stream << Info.Exp << endl;
+		Stream << Info.Level << endl;
+
 		return Stream;
 	}
 
@@ -1325,6 +1332,8 @@ public:
 		Stream >> Info.DetectRange;
 		Stream >> Info.AttackRange;
 
+		Stream >> Info.Exp;
+		Stream >> Info.Level;
 
 		return Stream;
 	}
@@ -1332,8 +1341,8 @@ public:
 	// Log
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfPioneer_Stat> ID: %d, HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f \n",
-			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, HealthPoint, MaxHealthPoint, MoveSpeed, AttackSpeed, AttackPower, SightRange, DetectRange, AttackRange);
+		CONSOLE_LOG("%s%s<cInfoOfPioneer_Stat> ID: %d, HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f, Exp: %f, Level: %d \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, HealthPoint, MaxHealthPoint, MoveSpeed, AttackSpeed, AttackPower, SightRange, DetectRange, AttackRange, Exp, Level);
 	}
 
 };

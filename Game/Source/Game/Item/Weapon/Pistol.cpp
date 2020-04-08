@@ -58,7 +58,7 @@ void APistol::InitStat()
 
 	LimitedLevel = 1;
 
-	AttackPower = 5.0f;
+	AttackPower = 8.0f;
 	AttackSpeed = 3.0f;
 	AttackRange = 8.0f * AOnlineGameMode::CellSize;
 
@@ -110,7 +110,8 @@ bool APistol::Fire(int IDOfPioneer)
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
 	AProjectile* projectile = world->SpawnActor<AProjectilePistol>(AProjectilePistol::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
-
+	
+	projectile->IDOfPioneer = IDOfPioneer;
 
 	if (ServerSocketInGame)
 	{

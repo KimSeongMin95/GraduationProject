@@ -64,6 +64,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "AProjectile")
 		float TotalDamage;
 
+	UPROPERTY(VisibleAnywhere, Category = "AProjectile")
+		int IDOfPioneer;
+
 protected:
 	virtual void InitProjectile();
 	void InitHitRange(float Radius);

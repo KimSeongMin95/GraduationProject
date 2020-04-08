@@ -340,7 +340,7 @@ void cClientSocketInGame::CloseSocket()
 	tsqInfoOfEnemy_Animation.clear();
 	tsqInfoOfEnemy_Stat.clear();
 	tsqDestroyEnemy.clear();
-
+	tsqExp.clear();
 
 
 	CONSOLE_LOG("[END] <cClientSocketInGame::CloseSocket()>\n");
@@ -1299,7 +1299,7 @@ void cClientSocketInGame::SendDiedPioneer(int ID)
 
 	EnterCriticalSection(&csMyInfoOfScoreBoard);
 	MyInfoOfScoreBoard.Death++;
-	MyInfoOfScoreBoard.State = "Observation";
+	MyInfoOfScoreBoard.State = "Observing";
 	LeaveCriticalSection(&csMyInfoOfScoreBoard);
 
 
@@ -1707,15 +1707,35 @@ void cClientSocketInGame::RecvDestroyEnemy(stringstream& RecvStream)
 	CONSOLE_LOG("[Start] <cClientSocketInGame::RecvDestroyEnemy(...)>\n");
 
 
-	int id;
+	int idOfEnemy;
+	int idOfPioneer;
+	int exp;
 
-	if (RecvStream >> id)
+	RecvStream >> idOfEnemy;
+	RecvStream >> idOfPioneer;
+	RecvStream >> exp;
+
+	tsqDestroyEnemy.push(idOfEnemy);
+
+	CONSOLE_LOG("\t idOfEnemy: %d \n", idOfEnemy);
+	CONSOLE_LOG("\t idOfPioneer: %d \n", idOfPioneer);
+	CONSOLE_LOG("\t exp: %d \n", exp);
+
+	if (idOfPioneer != 0)
 	{
-		tsqDestroyEnemy.push(id);
+		EnterCriticalSection(&csPossessedID);
+		int possessedID = PossessedID;
+		LeaveCriticalSection(&csPossessedID);
 
-		CONSOLE_LOG("\t id: %d \n", id);
+		if (idOfPioneer == possessedID)
+		{
+			EnterCriticalSection(&csMyInfoOfScoreBoard);
+			MyInfoOfScoreBoard.Kill++;
+			LeaveCriticalSection(&csMyInfoOfScoreBoard);
+
+			tsqExp.push(exp);
+		}
 	}
-
 
 	CONSOLE_LOG("[End] <cClientSocketInGame::RecvDestroyEnemy(...)>\n");
 }

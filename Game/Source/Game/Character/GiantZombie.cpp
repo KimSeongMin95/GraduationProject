@@ -75,5 +75,7 @@ void AGiantZombie::InitStat()
 	AttackRange = 4.0f;
 	DetectRange = 32.0f;
 	SightRange = 32.0f;
+
+	Exp = 9.0f;
 }
 /*** ABaseCharacter : End ***/

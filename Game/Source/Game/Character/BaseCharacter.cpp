@@ -184,6 +184,8 @@ void ABaseCharacter::InitStat()
 	AttackRange = 8.0f;
 	DetectRange = 16.0f;
 	SightRange = 32.0f;
+
+	Exp = 0.0f;
 }
 
 void ABaseCharacter::InitRanges()
@@ -318,7 +320,7 @@ float ABaseCharacter::DistanceToActor(AActor* Actor)
 }
 
 
-void ABaseCharacter::SetHealthPoint(float Value)
+void ABaseCharacter::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 {
 	if (GetCharacterMovement())
 	{

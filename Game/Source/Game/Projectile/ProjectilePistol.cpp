@@ -24,7 +24,7 @@ AProjectilePistol::AProjectilePistol()
 
 	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Impact_Stone_Small_Light.P_Impact_Stone_Small_Light'"));
 
-	TotalDamage = 5.0f;
+	TotalDamage = 8000.0f;
 }
 
 void AProjectilePistol::BeginPlay()
@@ -59,7 +59,7 @@ void AProjectilePistol::OnOverlapBegin_HitRange(class UPrimitiveComponent* Overl
 		{
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
-				enemy->SetHealthPoint(-TotalDamage);
+				enemy->SetHealthPoint(-TotalDamage, IDOfPioneer);
 
 				ActiveToggleOfImpactParticleSystem();
 				SetTimerForDestroy(1.0f);

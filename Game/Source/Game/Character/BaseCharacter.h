@@ -150,6 +150,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackRange;
 
+	UPROPERTY(EditAnywhere, Category = "Stat")
+		float Exp;
+
 private:
 
 
@@ -180,7 +183,7 @@ public:
 	FORCEINLINE USphereComponent* GetDetectRangeSphereComp() const { return DetectRangeSphereComp; }
 
 	UFUNCTION(Category = "Stat")
-		virtual void SetHealthPoint(float Value);
+		virtual void SetHealthPoint(float Value, int IDOfPioneer = 0);
 
 
 	UFUNCTION(Category = "AIController")

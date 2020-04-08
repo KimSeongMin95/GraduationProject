@@ -56,7 +56,7 @@ void ARocketLauncher::InitStat()
 
 	LimitedLevel = 11;
 
-	AttackPower = 30.0f;
+	AttackPower = 100.0f;
 	AttackSpeed = 0.5f;
 	AttackRange = 10.0f * AOnlineGameMode::CellSize;
 
@@ -109,6 +109,7 @@ bool ARocketLauncher::Fire(int IDOfPioneer)
 
 	AProjectile* projectile = world->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 
+	projectile->IDOfPioneer = IDOfPioneer;
 
 	if (ServerSocketInGame)
 	{

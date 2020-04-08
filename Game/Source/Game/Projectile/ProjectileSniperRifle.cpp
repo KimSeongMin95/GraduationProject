@@ -28,7 +28,7 @@ AProjectileSniperRifle::AProjectileSniperRifle()
 
 	hitCount = 0;
 
-	TotalDamage = 25.0f;
+	TotalDamage = 40.0f;
 }
 
 void AProjectileSniperRifle::BeginPlay()
@@ -63,7 +63,7 @@ void AProjectileSniperRifle::OnOverlapBegin_HitRange(class UPrimitiveComponent* 
 		{
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
-				enemy->SetHealthPoint(-TotalDamage);
+				enemy->SetHealthPoint(-TotalDamage, IDOfPioneer);
 
 				ActiveToggleOfImpactParticleSystem();
 				hitCount++;

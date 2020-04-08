@@ -24,7 +24,7 @@ AProjectileRocketLauncher::AProjectileRocketLauncher()
 
 	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_RocketLauncher_Explosion_Light.P_RocketLauncher_Explosion_Light'"));
 
-	TotalDamage = 30.0f;
+	TotalDamage = 100.0f;
 }
 
 void AProjectileRocketLauncher::BeginPlay()
@@ -59,7 +59,7 @@ void AProjectileRocketLauncher::OnOverlapBegin_HitRange(class UPrimitiveComponen
 		{
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
-				enemy->SetHealthPoint(-TotalDamage);
+				enemy->SetHealthPoint(-TotalDamage, IDOfPioneer);
 
 				ActiveToggleOfImpactParticleSystem();
 				SetTimerForDestroy(3.0f);

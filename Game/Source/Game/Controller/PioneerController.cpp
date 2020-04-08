@@ -111,7 +111,7 @@ void APioneerController::SetupInputComponent()
 
 	// F10키: 메뉴
 	InputComponent->BindAction("Menu", IE_Pressed, this, &APioneerController::Menu);
-	// Tab키: 스코어 보드
+	// Shift키: 스코어 보드
 	InputComponent->BindAxis("ScoreBoard", this, &APioneerController::ScoreBoard);
 
 	// Left Arrow키: 관전 변경

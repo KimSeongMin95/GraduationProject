@@ -34,8 +34,8 @@ UInGameWidget::UInGameWidget()
 	HealthOfPioneer = nullptr;
 	IDOfPioneer = nullptr;
 	MoveSpeedOfPioneer = nullptr;
-	AttackSpeedOfPioneer = nullptr;
-	AttackPowerOfPioneer = nullptr;
+	LevelOfPioneer = nullptr;
+	ExpOfPioneer = nullptr;
 	SightRangeOfPioneer = nullptr;
 	DetectRangeOfPioneer = nullptr;
 	AttackRangeOfPioneer = nullptr;
@@ -94,8 +94,8 @@ bool UInGameWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 	HealthOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_Health")));
 	IDOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_ID")));
 	MoveSpeedOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_MoveSpeed")));
-	AttackSpeedOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_AttackSpeed")));
-	AttackPowerOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_AttackPower")));
+	LevelOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_Level")));
+	ExpOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_Exp")));
 	SightRangeOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_SightRange")));
 	DetectRangeOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_DetectRange")));
 	AttackRangeOfPioneer = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_Pioneer_AttackRange")));
@@ -284,14 +284,14 @@ void UInGameWidget::SetTextOfPioneerBox(class APioneer* Pioneer)
 		return;
 	}
 
-	if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !AttackSpeedOfPioneer ||
-		!AttackPowerOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer)
+	if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !LevelOfPioneer ||
+		!ExpOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_GAME
-		printf_s("[Error] <UInGameWidget::SetTextOfPioneerBox(...)> if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !AttackSpeedOfPioneer ||!AttackPowerOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer) \n");
+		printf_s("[Error] <UInGameWidget::SetTextOfPioneerBox(...)> if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !LevelOfPioneer ||!ExpOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer) \n");
 #endif
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfPioneerBox(...)> if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !AttackSpeedOfPioneer ||!AttackPowerOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer)"));
+		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfPioneerBox(...)> if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !LevelOfPioneer ||!ExpOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer)"));
 #endif			
 		return;
 	}
@@ -305,11 +305,11 @@ void UInGameWidget::SetTextOfPioneerBox(class APioneer* Pioneer)
 	FString tMoveSpeed = "MoveSpeed: " + FString::SanitizeFloat(Pioneer->MoveSpeed);
 	MoveSpeedOfPioneer->SetText(FText::FromString(tMoveSpeed));
 
-	FString tAttackSpeed = "AttackSpeed: " + FString::SanitizeFloat(Pioneer->AttackSpeed);
-	AttackSpeedOfPioneer->SetText(FText::FromString(tAttackSpeed));
+	FString tLevel = "Level: " + FString::FromInt(Pioneer->Level);
+	LevelOfPioneer->SetText(FText::FromString(tLevel));
 
-	FString tAttackPower = "AttackPower: " + FString::SanitizeFloat(Pioneer->AttackPower);
-	AttackPowerOfPioneer->SetText(FText::FromString(tAttackPower));
+	FString tExp = "Exp: " + FString::SanitizeFloat(Pioneer->Exp);
+	ExpOfPioneer->SetText(FText::FromString(tExp));
 
 	FString tSightRange = "SightRange: " + FString::SanitizeFloat(Pioneer->SightRange);
 	SightRangeOfPioneer->SetText(FText::FromString(tSightRange));

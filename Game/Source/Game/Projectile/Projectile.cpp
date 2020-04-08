@@ -55,6 +55,8 @@ AProjectile::AProjectile()
 
 	
 	TotalDamage = 0.0f;
+
+	IDOfPioneer = 0;
 }
 
 void AProjectile::BeginPlay()

@@ -84,7 +84,6 @@ APioneer::APioneer()
 	bArmedWeapon = true;
 
 	Level = 1;
-	Exp = 0.0f;
 }
 
 void APioneer::BeginPlay()
@@ -164,6 +163,8 @@ void APioneer::InitStat()
 	AttackRange = 16.0f;
 	DetectRange = 32.0f;
 	SightRange = 32.0f;
+
+	Exp = 0.0f;
 }
 
 void APioneer::InitRanges()
@@ -286,7 +287,7 @@ void APioneer::RotateTargetRotation(float DeltaTime)
 }
 
 
-void APioneer::SetHealthPoint(float Value)
+void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 {
 	if (bDying)
 	{
@@ -1417,6 +1418,21 @@ void APioneer::DestroyBuilding()
 	}
 }
 
+void APioneer::CalculateLevel()
+{
+	if (Exp >= Level * 26)
+	{
+		Exp -= Level * 26;
+		Level++;
+
+		// AI가 레벨업하면 자동으로 좋은 무기로 변경합니다.
+		if (SocketID == 0)
+		{
+			ChangeWeapon(1.0f);
+		}
+	}
+}
+
 ///////////
 // 네트워크
 ///////////
@@ -1513,6 +1529,9 @@ void APioneer::SetInfoOfPioneer_Stat(class cInfoOfPioneer_Stat& Stat)
 	SightRange = Stat.SightRange;
 	DetectRange = Stat.DetectRange;
 	AttackRange = Stat.AttackRange;
+
+	Exp = Stat.Exp;
+	Level = Stat.Level;
 }
 class cInfoOfPioneer_Stat APioneer::GetInfoOfPioneer_Stat()
 {
@@ -1531,6 +1550,9 @@ class cInfoOfPioneer_Stat APioneer::GetInfoOfPioneer_Stat()
 	stat.SightRange = SightRange;
 	stat.DetectRange = DetectRange;
 	stat.AttackRange = AttackRange;
+
+	stat.Exp = Exp;
+	stat.Level = Level;
 
 	return stat;
 }

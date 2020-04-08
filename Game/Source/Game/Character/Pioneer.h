@@ -55,7 +55,7 @@ protected:
 	virtual void RotateTargetRotation(float DeltaTime) final;
 
 public:
-	virtual void SetHealthPoint(float Value) final;
+	virtual void SetHealthPoint(float Value, int IDOfPioneer = 0) final;
 
 
 	virtual void FindTheTargetActor(float DeltaTime) final;
@@ -175,9 +175,6 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		int Level;
 
-	UPROPERTY(VisibleAnywhere)
-		float Exp;
-
 private:
 	UFUNCTION(Category = Camera)
 		/** Tick()에서 호출합니다. */
@@ -285,6 +282,11 @@ public:
 	UFUNCTION(Category = "Building")
 		void DestroyBuilding();
 
+
+
+
+	UFUNCTION(Category = "Level")
+		void CalculateLevel();
 
 	///////////
 	// 네트워크

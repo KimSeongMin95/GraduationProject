@@ -94,7 +94,7 @@ void AProjectileSplash::OnOverlapBegin_Splash(class UPrimitiveComponent* Overlap
 		if (AEnemy* enemy = dynamic_cast<AEnemy*>(OtherActor))
 		{
 			if (enemy->GetCapsuleComponent() == OtherComp)
-				enemy->SetHealthPoint(-TotalDamage);
+				enemy->SetHealthPoint(-TotalDamage, IDOfPioneer);
 		}
 	}
 }

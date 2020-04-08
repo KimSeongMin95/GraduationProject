@@ -57,7 +57,7 @@ void AAssaultRifle::InitStat()
 
 	LimitedLevel = 3;
 
-	AttackPower = 10.0f;
+	AttackPower = 16.0f;
 	AttackSpeed = 5.0f;
 	AttackRange = 12.0f * AOnlineGameMode::CellSize;
 
@@ -110,6 +110,7 @@ bool AAssaultRifle::Fire(int IDOfPioneer)
 
 	AProjectile* projectile = world->SpawnActor<AProjectileAssaultRifle>(AProjectileAssaultRifle::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 
+	projectile->IDOfPioneer = IDOfPioneer;
 
 	if (ServerSocketInGame)
 	{

@@ -54,8 +54,7 @@ protected:
 	virtual void RotateTargetRotation(float DeltaTime) final;
 
 public:
-	virtual void SetHealthPoint(float Value) final;
-
+	virtual void SetHealthPoint(float Value, int IDOfPioneer = 0) final;
 
 	virtual void FindTheTargetActor(float DeltaTime) final;
 
@@ -102,7 +101,8 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "EnemyManager")
 		class AEnemyManager* EnemyManager = nullptr;
 
-
+	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
+		class APioneerManager* PioneerManager = nullptr;
 
 private:
 
