@@ -13,17 +13,13 @@ int main()
 
 	if (server->Initialize())
 	{
-		while (true);
+		while (true)
+		{
+			// 서버 초기화 실패를 감지합니다.
+			if (server->IsServerOn() == false)
+				break;
+		}
 	}
-
-	//while (true)
-	//{
-	//	if (server->Initialize())
-	//	{
-	//		Sleep(10000);
-	//		server->CloseServer();
-	//	}
-	//}
 
 	return 0;
 }

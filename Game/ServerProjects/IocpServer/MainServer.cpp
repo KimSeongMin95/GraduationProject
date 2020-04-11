@@ -278,9 +278,6 @@ bool MainServer::CreateAcceptThread()
 		CONSOLE_LOG("[Error] <MainServer::Initialize()> if (hAcceptThreadHandle == NULL)\n");
 		return false;
 	}
-	// 스레드 재개
-	ResumeThread(hAcceptThreadHandle);
-
 	// 서버 구동
 	EnterCriticalSection(&csAccept);
 	bAccept = true;
@@ -290,6 +287,9 @@ bool MainServer::CreateAcceptThread()
 	EnterCriticalSection(&csCountOfSend);
 	CountOfSend = 0;
 	LeaveCriticalSection(&csCountOfSend);
+
+	// 스레드 재개
+	ResumeThread(hAcceptThreadHandle);
 
 	return true;
 }
@@ -314,6 +314,8 @@ void MainServer::AcceptThread()
 		EnterCriticalSection(&csAccept);
 		bAccept = false;
 		LeaveCriticalSection(&csAccept);
+
+		CloseListenSocketAndCleanupWSA();
 
 		return;
 	}
@@ -455,6 +457,8 @@ void MainServer::AcceptThread()
 
 bool MainServer::CreateIOThread()
 {
+	bIOThread = false;
+
 	unsigned int threadCount = 0;
 	unsigned int threadId;
 
@@ -483,11 +487,14 @@ bool MainServer::CreateIOThread()
 			// 생성한 스레드들을 종료하고 핸들을 초기화합니다.
 			for (unsigned int idx = 0; idx < threadCount; idx++)
 			{
-				// CREATE_SUSPENDED로 스레드를 생성했기 때문에 TerminateThread(...)를 사용해도 괜찮을 것 같습니다.
-				TerminateThread(hIOThreadHandle[idx], 0);
+				//// CREATE_SUSPENDED로 스레드를 생성했기 때문에 TerminateThread(...)를 사용해도 괜찮을 것 같습니다.
+				//TerminateThread(hIOThreadHandle[idx], 0);
+				ResumeThread(hIOThreadHandle[idx]);
 				CloseHandle(hIOThreadHandle[idx]);
 				hIOThreadHandle[idx] = NULL;
 			}
+
+			nIOThreadCnt = 0;
 
 			return false;
 		}
@@ -498,6 +505,7 @@ bool MainServer::CreateIOThread()
 	CONSOLE_LOG("[Info] <MainServer::CreateIOThread()> Start Worker %d Threads\n", threadCount);
 
 	// 스레드들을 재개합니다.
+	bIOThread = true;
 	for (DWORD i = 0; i < nIOThreadCnt; i++)
 	{
 		ResumeThread(hIOThreadHandle[i]);
@@ -756,10 +764,10 @@ void MainServer::IOThread()
 				cutBuffer[sizeOfPacket] = '\0';
 
 
-				////////////////////////////////////////////////
-				// (임시) 패킷 사이즈와 실제 길이 검증용 함수
-				////////////////////////////////////////////////
-				VerifyPacket(cutBuffer, false);
+				//////////////////////////////////////////////////
+				//// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+				//////////////////////////////////////////////////
+				//VerifyPacket(cutBuffer, false);
 
 
 				///////////////////////////////////////////
@@ -922,18 +930,17 @@ void MainServer::CloseServer()
 	//tsqDiedPioneer.clear();
 
 
-	if (IsServerOn() == false)
+	// 서버 종료
+	EnterCriticalSection(&csAccept);
+	if (!bAccept)
 	{
-		CONSOLE_LOG("[Info] <MainServer::CloseServer()> if (bIsServerOn == false)\n");
+		CONSOLE_LOG("[Info] <MainServer::CloseServer()> if (!bAccept) \n");
+		LeaveCriticalSection(&csAccept);
 		return;
 	}
-	CONSOLE_LOG("[START] <MainServer::CloseServer()>\n");
-
-
-	// 메인스레드 종료
-	EnterCriticalSection(&csAccept);
 	bAccept = false;
 	LeaveCriticalSection(&csAccept);
+	CONSOLE_LOG("[START] <MainServer::CloseServer()> \n");
 
 
 	// 서버 리슨 소켓 닫기
@@ -1149,7 +1156,6 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 	if (Clients.find(Socket) == Clients.end())
 	{
 		CONSOLE_LOG("[Error] <MainServer::Send(...)> if (Clients.find(Socket) == Clients.end()) \n");
-
 		LeaveCriticalSection(&csClients);
 		return;
 	}
@@ -1163,7 +1169,6 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 	if (AddSizeInStream(SendStream, finalStream) == false)
 	{
 		CONSOLE_LOG("\n\n\n\n\n [Error] <MainServer::Send(...)> if (AddSizeInStream(SendStream, finalStream) == false) \n\n\n\n\n\n");
-
 		return;
 	}
 
@@ -1183,10 +1188,10 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 	//CONSOLE_LOG("[Info] <MainServer::Send(...)> overlappedMsg->sendBytes: %d \n", overlappedMsg->sendBytes);
 
 
-	////////////////////////////////////////////////
-	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
-	////////////////////////////////////////////////
-	VerifyPacket(overlappedMsg->messageBuffer, true);
+	//////////////////////////////////////////////////
+	//// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+	//////////////////////////////////////////////////
+	//VerifyPacket(overlappedMsg->messageBuffer, true);
 
 
 	int nResult = WSASend(
@@ -1213,7 +1218,6 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 		{
 			CONSOLE_LOG("[Error] <MainServer::Send(...)> Fail to WSASend(...) : %d \n", WSAGetLastError());
 
-			// -- (테스트) 게임서버가 에디터에서는 이상은 없는데 패키징해서 실행할 때만, 게임클라이언트가 나가면 UE4 Fatal Error 메세지를 발생하는 문제가 있음.
 			// 송신에 실패한 클라이언트의 소켓을 닫아줍니다.
 			CloseSocket(Socket, overlappedMsg);
 		}
@@ -1315,7 +1319,7 @@ bool MainServer::AddSizeInStream(stringstream & DataStream, stringstream & Final
 	stringstream lengthOfFinalStream;
 	lengthOfFinalStream << (dataStreamLength.str().length() + DataStream.str().length()) << endl;
 
-	// FinalStream의 크기 : 101 [101 DataStream]
+	// FinalStream의 크기 : 102 [101 DataStream]
 	int sizeOfFinalStream = (int)(lengthOfFinalStream.str().length() + DataStream.str().length());
 	FinalStream << sizeOfFinalStream << endl;
 	FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
@@ -1541,49 +1545,49 @@ void MainServer::DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPack
 }
 
 
-////////////////////////////////////////////////
-// (임시) 패킷 사이즈와 실제 길이 검증용 함수
-////////////////////////////////////////////////
-void MainServer::VerifyPacket(char* DataBuffer, bool send)
-{
-	if (!DataBuffer)
-	{
-		CONSOLE_LOG("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (!DataBuffer) \n");
-		return;
-	}
-
-	int len = (int)strlen(DataBuffer);
-
-	if (len < 4)
-	{
-		CONSOLE_LOG("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (len < 4) \n");
-		return;
-	}
-
-	char buffer[MAX_BUFFER + 1];
-	CopyMemory(buffer, DataBuffer, len);
-	buffer[len] = '\0';
-
-	for (int i = 0; i < len; i++)
-	{
-		if (buffer[i] == '\n')
-			buffer[i] = '_';
-	}
-
-	char sizeBuffer[5]; // [1234\0]
-	CopyMemory(sizeBuffer, buffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
-	sizeBuffer[4] = '\0';
-
-	stringstream sizeStream;
-	sizeStream << sizeBuffer;
-	int sizeOfPacket = 0;
-	sizeStream >> sizeOfPacket;
-
-	if (sizeOfPacket != len)
-	{
-		CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
-	}
-}
+//////////////////////////////////////////////////
+//// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+//////////////////////////////////////////////////
+//void MainServer::VerifyPacket(char* DataBuffer, bool send)
+//{
+//	if (!DataBuffer)
+//	{
+//		CONSOLE_LOG("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (!DataBuffer) \n");
+//		return;
+//	}
+//
+//	int len = (int)strlen(DataBuffer);
+//
+//	if (len < 4)
+//	{
+//		CONSOLE_LOG("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (len < 4) \n");
+//		return;
+//	}
+//
+//	char buffer[MAX_BUFFER + 1];
+//	CopyMemory(buffer, DataBuffer, len);
+//	buffer[len] = '\0';
+//
+//	for (int i = 0; i < len; i++)
+//	{
+//		if (buffer[i] == '\n')
+//			buffer[i] = '_';
+//	}
+//
+//	char sizeBuffer[5]; // [1234\0]
+//	CopyMemory(sizeBuffer, buffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
+//	sizeBuffer[4] = '\0';
+//
+//	stringstream sizeStream;
+//	sizeStream << sizeBuffer;
+//	int sizeOfPacket = 0;
+//	sizeStream >> sizeOfPacket;
+//
+//	if (sizeOfPacket != len)
+//	{
+//		CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
+//	}
+//}
 
 
 ////////////////////////

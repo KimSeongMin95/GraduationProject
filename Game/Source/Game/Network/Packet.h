@@ -658,14 +658,14 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfPlayer& Info)
 	{
-		Stream << ReplaceCharInString(Info.ID, ' ', '_') << endl;
-		Stream << ReplaceCharInString(Info.IPv4Addr, ' ', '_') << endl;
-		Stream << Info.SocketByMainServer << endl;
-		Stream << Info.SocketByGameServer << endl;
-		Stream << Info.PortOfMainClient << endl;
-		Stream << Info.PortOfGameServer << endl;
-		Stream << Info.PortOfGameClient << endl;
-		Stream << Info.LeaderSocketByMainServer << endl;
+		Stream << ReplaceCharInString(Info.ID, ' ', '_') << ' ';
+		Stream << ReplaceCharInString(Info.IPv4Addr, ' ', '_') << ' ';
+		Stream << Info.SocketByMainServer << ' ';
+		Stream << Info.SocketByGameServer << ' ';
+		Stream << Info.PortOfMainClient << ' ';
+		Stream << Info.PortOfGameServer << ' ';
+		Stream << Info.PortOfGameClient << ' ';
+		Stream << Info.LeaderSocketByMainServer << ' ';
 
 		return Stream;
 	}
@@ -718,11 +718,11 @@ public:
 	// Send
 	friend ostream& operator<<(ostream &Stream, cInfoOfPlayers& Info)
 	{
-		Stream << Info.Players.size() << endl;
+		Stream << Info.Players.size() << ' ';
 		for (auto& kvp : Info.Players)
 		{
-			Stream << kvp.first << endl;
-			Stream << kvp.second << endl;
+			Stream << kvp.first << ' ';
+			Stream << kvp.second << ' ';
 		}
 
 		return Stream;
@@ -800,12 +800,12 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfGame& Info)
 	{
-		Stream << ReplaceCharInString(Info.State, ' ', '_') << endl;
-		Stream << ReplaceCharInString(Info.Title, ' ', '_') << endl;
-		Stream << Info.Stage << endl;
-		Stream << Info.nMax << endl;
-		Stream << Info.Leader << endl;
-		Stream << Info.Players << endl;
+		Stream << ReplaceCharInString(Info.State, ' ', '_') << ' ';
+		Stream << ReplaceCharInString(Info.Title, ' ', '_') << ' ';
+		Stream << Info.Stage << ' ';
+		Stream << Info.nMax << ' ';
+		Stream << Info.Leader << ' ';
+		Stream << Info.Players << ' ';
 
 		return Stream;
 	}
@@ -879,12 +879,12 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfScoreBoard& Info)
 	{
-		Stream << Info.Ping << endl;
-		Stream << ReplaceCharInString(Info.ID, ' ', '_') << endl;
-		Stream << ReplaceCharInString(Info.State, ' ', '_') << endl;
-		Stream << Info.Level << endl;
-		Stream << Info.Kill << endl;
-		Stream << Info.Death << endl;
+		Stream << Info.Ping << ' ';
+		Stream << ReplaceCharInString(Info.ID, ' ', '_') << ' ';
+		Stream << ReplaceCharInString(Info.State, ' ', '_') << ' ';
+		Stream << Info.Level << ' ';
+		Stream << Info.Kill << ' ';
+		Stream << Info.Death << ' ';
 
 		return Stream;
 	}
@@ -970,15 +970,15 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfSpaceShip& Info)
 	{
-		Stream << Info.State << endl;
-		Stream << Info.LocX << endl;
-		Stream << Info.LocY << endl;
-		Stream << Info.LocZ << endl;
-		Stream << Info.bHiddenInGame << endl;
-		Stream << Info.bSimulatePhysics << endl;
-		Stream << Info.ScaleOfEngineParticleSystem << endl;
-		Stream << Info.AccelerationZ << endl;
-		Stream << Info.bEngine << endl;
+		Stream << Info.State << ' ';
+		Stream << Info.LocX << ' ';
+		Stream << Info.LocY << ' ';
+		Stream << Info.LocZ << ' ';
+		Stream << Info.bHiddenInGame << ' ';
+		Stream << Info.bSimulatePhysics << ' ';
+		Stream << Info.ScaleOfEngineParticleSystem << ' ';
+		Stream << Info.AccelerationZ << ' ';
+		Stream << Info.bEngine << ' ';
 
 		return Stream;
 	}
@@ -1048,12 +1048,12 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer_Socket& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.SocketID << endl;
-		Stream << ReplaceCharInString(Info.NameOfID, ' ', '_') << endl;
-		Stream << Info.NameOfID << endl;
-		//Stream << Info.bDying << endl;
+		Stream << Info.SocketID << ' ';
+		Stream << ReplaceCharInString(Info.NameOfID, ' ', '_') << ' ';
+		Stream << Info.NameOfID << ' ';
+		//Stream << Info.bDying << ' ';
 
 		return Stream;
 	}
@@ -1163,29 +1163,29 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer_Animation& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.RotX << endl;
-		Stream << Info.RotY << endl;
-		Stream << Info.RotZ << endl;
-		Stream << Info.LocX << endl;
-		Stream << Info.LocY << endl;
-		Stream << Info.LocZ << endl;
-		Stream << Info.TargetRotX << endl;
-		Stream << Info.TargetRotY << endl;
-		Stream << Info.TargetRotZ << endl;
+		Stream << Info.RotX << ' ';
+		Stream << Info.RotY << ' ';
+		Stream << Info.RotZ << ' ';
+		Stream << Info.LocX << ' ';
+		Stream << Info.LocY << ' ';
+		Stream << Info.LocZ << ' ';
+		Stream << Info.TargetRotX << ' ';
+		Stream << Info.TargetRotY << ' ';
+		Stream << Info.TargetRotZ << ' ';
 
-		Stream << Info.VelocityX << endl;
-		Stream << Info.VelocityY << endl;
-		Stream << Info.VelocityZ << endl;
-		Stream << Info.bHasPistolType << endl;
-		Stream << Info.bHasRifleType << endl;
-		Stream << Info.bHasLauncherType << endl;
-		Stream << Info.bFired << endl;
+		Stream << Info.VelocityX << ' ';
+		Stream << Info.VelocityY << ' ';
+		Stream << Info.VelocityZ << ' ';
+		Stream << Info.bHasPistolType << ' ';
+		Stream << Info.bHasRifleType << ' ';
+		Stream << Info.bHasLauncherType << ' ';
+		Stream << Info.bFired << ' ';
 
-		Stream << Info.IdxOfCurrentWeapon << endl;
+		Stream << Info.IdxOfCurrentWeapon << ' ';
 
-		Stream << Info.bArmedWeapon << endl;
+		Stream << Info.bArmedWeapon << ' ';
 
 		return Stream;
 	}
@@ -1301,19 +1301,19 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer_Stat& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.HealthPoint << endl;
-		Stream << Info.MaxHealthPoint << endl;
-		Stream << Info.MoveSpeed << endl;
-		Stream << Info.AttackSpeed << endl;
-		Stream << Info.AttackPower << endl;
-		Stream << Info.SightRange << endl;
-		Stream << Info.DetectRange << endl;
-		Stream << Info.AttackRange << endl;
+		Stream << Info.HealthPoint << ' ';
+		Stream << Info.MaxHealthPoint << ' ';
+		Stream << Info.MoveSpeed << ' ';
+		Stream << Info.AttackSpeed << ' ';
+		Stream << Info.AttackPower << ' ';
+		Stream << Info.SightRange << ' ';
+		Stream << Info.DetectRange << ' ';
+		Stream << Info.AttackRange << ' ';
 
-		Stream << Info.Exp << endl;
-		Stream << Info.Level << endl;
+		Stream << Info.Exp << ' ';
+		Stream << Info.Level << ' ';
 
 		return Stream;
 	}
@@ -1375,11 +1375,11 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.Socket << endl;
-		Stream << Info.Animation << endl;
-		Stream << Info.Stat << endl;
+		Stream << Info.Socket << ' ';
+		Stream << Info.Animation << ' ';
+		Stream << Info.Stat << ' ';
 
 		return Stream;
 	}
@@ -1451,21 +1451,21 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfProjectile& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.Numbering << endl;
+		Stream << Info.Numbering << ' ';
 
-		Stream << Info.ScaleX << endl;
-		Stream << Info.ScaleY << endl;
-		Stream << Info.ScaleZ << endl;
+		Stream << Info.ScaleX << ' ';
+		Stream << Info.ScaleY << ' ';
+		Stream << Info.ScaleZ << ' ';
 
-		Stream << Info.RotX << endl;
-		Stream << Info.RotY << endl;
-		Stream << Info.RotZ << endl;
+		Stream << Info.RotX << ' ';
+		Stream << Info.RotY << ' ';
+		Stream << Info.RotZ << ' ';
 
-		Stream << Info.LocX << endl;
-		Stream << Info.LocY << endl;
-		Stream << Info.LocZ << endl;
+		Stream << Info.LocX << ' ';
+		Stream << Info.LocY << ' ';
+		Stream << Info.LocZ << ' ';
 
 		return Stream;
 	}
@@ -1550,9 +1550,9 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfResources& Info)
 	{
-		Stream << Info.NumOfMineral << endl;
-		Stream << Info.NumOfOrganic << endl;
-		Stream << Info.NumOfEnergy << endl;
+		Stream << Info.NumOfMineral << ' ';
+		Stream << Info.NumOfOrganic << ' ';
+		Stream << Info.NumOfEnergy << ' ';
 
 		return Stream;
 	}
@@ -1633,26 +1633,26 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfBuilding_Spawn& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.Numbering << endl;
+		Stream << Info.Numbering << ' ';
 
-		Stream << Info.NeedMineral << endl;
-		Stream << Info.NeedOrganicMatter << endl;
+		Stream << Info.NeedMineral << ' ';
+		Stream << Info.NeedOrganicMatter << ' ';
 
-		Stream << Info.ScaleX << endl;
-		Stream << Info.ScaleY << endl;
-		Stream << Info.ScaleZ << endl;
+		Stream << Info.ScaleX << ' ';
+		Stream << Info.ScaleY << ' ';
+		Stream << Info.ScaleZ << ' ';
 
-		Stream << Info.RotX << endl;
-		Stream << Info.RotY << endl;
-		Stream << Info.RotZ << endl;
+		Stream << Info.RotX << ' ';
+		Stream << Info.RotY << ' ';
+		Stream << Info.RotZ << ' ';
 
-		Stream << Info.LocX << endl;
-		Stream << Info.LocY << endl;
-		Stream << Info.LocZ << endl;
+		Stream << Info.LocX << ' ';
+		Stream << Info.LocY << ' ';
+		Stream << Info.LocZ << ' ';
 
-		Stream << Info.IdxOfUnderWall << endl;
+		Stream << Info.IdxOfUnderWall << ' ';
 
 		return Stream;
 	}
@@ -1747,11 +1747,11 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfBuilding_Stat& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.BuildingState << endl;
+		Stream << Info.BuildingState << ' ';
 
-		Stream << Info.HealthPoint << endl;
+		Stream << Info.HealthPoint << ' ';
 
 		return Stream;
 	}
@@ -1803,10 +1803,10 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfBuilding& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.Spawn << endl;
-		Stream << Info.Stat << endl;
+		Stream << Info.Spawn << ' ';
+		Stream << Info.Stat << ' ';
 
 		return Stream;
 	}
@@ -1853,9 +1853,9 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy_Spawn& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.EnemyType << endl;
+		Stream << Info.EnemyType << ' ';
 
 		return Stream;
 	}
@@ -1933,22 +1933,22 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy_Animation& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.RotX << endl;
-		Stream << Info.RotY << endl;
-		Stream << Info.RotZ << endl;
-		Stream << Info.LocX << endl;
-		Stream << Info.LocY << endl;
-		Stream << Info.LocZ << endl;
-		Stream << Info.TargetRotX << endl;
-		Stream << Info.TargetRotY << endl;
-		Stream << Info.TargetRotZ << endl;
+		Stream << Info.RotX << ' ';
+		Stream << Info.RotY << ' ';
+		Stream << Info.RotZ << ' ';
+		Stream << Info.LocX << ' ';
+		Stream << Info.LocY << ' ';
+		Stream << Info.LocZ << ' ';
+		Stream << Info.TargetRotX << ' ';
+		Stream << Info.TargetRotY << ' ';
+		Stream << Info.TargetRotZ << ' ';
 
-		Stream << Info.VelocityX << endl;
-		Stream << Info.VelocityY << endl;
-		Stream << Info.VelocityZ << endl;
-		Stream << Info.State << endl;
+		Stream << Info.VelocityX << ' ';
+		Stream << Info.VelocityY << ' ';
+		Stream << Info.VelocityZ << ' ';
+		Stream << Info.State << ' ';
 
 		return Stream;
 	}
@@ -2048,16 +2048,16 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy_Stat& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.HealthPoint << endl;
-		Stream << Info.MaxHealthPoint << endl;
-		Stream << Info.MoveSpeed << endl;
-		Stream << Info.AttackSpeed << endl;
-		Stream << Info.AttackPower << endl;
-		Stream << Info.SightRange << endl;
-		Stream << Info.DetectRange << endl;
-		Stream << Info.AttackRange << endl;
+		Stream << Info.HealthPoint << ' ';
+		Stream << Info.MaxHealthPoint << ' ';
+		Stream << Info.MoveSpeed << ' ';
+		Stream << Info.AttackSpeed << ' ';
+		Stream << Info.AttackPower << ' ';
+		Stream << Info.SightRange << ' ';
+		Stream << Info.DetectRange << ' ';
+		Stream << Info.AttackRange << ' ';
 
 		return Stream;
 	}
@@ -2115,11 +2115,11 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy& Info)
 	{
-		Stream << Info.ID << endl;
+		Stream << Info.ID << ' ';
 
-		Stream << Info.Spawn << endl;
-		Stream << Info.Animation << endl;
-		Stream << Info.Stat << endl;
+		Stream << Info.Spawn << ' ';
+		Stream << Info.Animation << ' ';
+		Stream << Info.Stat << ' ';
 
 		return Stream;
 	}

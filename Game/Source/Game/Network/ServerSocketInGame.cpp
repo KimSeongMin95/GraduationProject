@@ -383,9 +383,6 @@ bool cServerSocketInGame::CreateAcceptThread()
 		CONSOLE_LOG("[Error] <cServerSocketInGame::Initialize()> if (hAcceptThreadHandle == NULL)\n");
 		return false;
 	}
-	// 스레드 재개
-	ResumeThread(hAcceptThreadHandle);
-
 	// 서버 구동
 	EnterCriticalSection(&csAccept);
 	bAccept = true;
@@ -395,6 +392,9 @@ bool cServerSocketInGame::CreateAcceptThread()
 	EnterCriticalSection(&csCountOfSend);
 	CountOfSend = 0;
 	LeaveCriticalSection(&csCountOfSend);
+
+	// 스레드 재개
+	ResumeThread(hAcceptThreadHandle);
 
 	return true;
 }
@@ -418,6 +418,8 @@ void cServerSocketInGame::AcceptThread()
 		EnterCriticalSection(&csAccept);
 		bAccept = false;
 		LeaveCriticalSection(&csAccept);
+
+		CloseListenSocketAndCleanupWSA();
 
 		return;
 	}
@@ -558,6 +560,8 @@ void cServerSocketInGame::AcceptThread()
 
 bool cServerSocketInGame::CreateIOThread()
 {
+	bIOThread = false;
+
 	unsigned int threadCount = 0;
 	unsigned int threadId;
 
@@ -586,11 +590,13 @@ bool cServerSocketInGame::CreateIOThread()
 			// 생성한 스레드들을 종료하고 핸들을 초기화합니다.
 			for (unsigned int idx = 0; idx < threadCount; idx++)
 			{
-				// CREATE_SUSPENDED로 스레드를 생성했기 때문에 TerminateThread(...)를 사용해도 괜찮을 것 같습니다.
-				TerminateThread(hIOThreadHandle[idx], 0);
+				ResumeThread(hIOThreadHandle[idx]);
+				WaitForSingleObject(hIOThreadHandle[idx], INFINITE);
 				CloseHandle(hIOThreadHandle[idx]);
 				hIOThreadHandle[idx] = NULL;
 			}
+
+			nIOThreadCnt = 0;
 
 			return false;
 		}
@@ -601,6 +607,7 @@ bool cServerSocketInGame::CreateIOThread()
 	CONSOLE_LOG("[Info] <cServerSocketInGame::CreateIOThread()> Start Worker %d Threads\n", threadCount);
 
 	// 스레드들을 재개합니다.
+	bIOThread = true;
 	for (DWORD i = 0; i < nIOThreadCnt; i++)
 	{
 		ResumeThread(hIOThreadHandle[i]);
@@ -859,10 +866,10 @@ void cServerSocketInGame::IOThread()
 				cutBuffer[sizeOfPacket] = '\0';
 
 
-				////////////////////////////////////////////////
-				// (임시) 패킷 사이즈와 실제 길이 검증용 함수
-				////////////////////////////////////////////////
-				VerifyPacket(cutBuffer, false);
+				//////////////////////////////////////////////////
+				//// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+				//////////////////////////////////////////////////
+				//VerifyPacket(cutBuffer, false);
 
 
 				///////////////////////////////////////////
@@ -1030,18 +1037,18 @@ void cServerSocketInGame::CloseServer()
 	tsqInfoOfProjectile.clear();
 	tsqInfoOfBuilding_Spawn.clear();
 
-	if (!IsServerOn())
+
+	// 서버 종료
+	EnterCriticalSection(&csAccept);
+	if (!bAccept)
 	{
-		CONSOLE_LOG("[Info] <cServerSocketInGame::CloseServer()> if (!IsServerOn())\n");
+		CONSOLE_LOG("[Info] <cServerSocketInGame::CloseServer()> if (!bAccept) \n");
+		LeaveCriticalSection(&csAccept);
 		return;
 	}
-	CONSOLE_LOG("[START] <cServerSocketInGame::CloseServer()>\n");
-
-
-	// 메인스레드 종료
-	EnterCriticalSection(&csAccept);
 	bAccept = false;
 	LeaveCriticalSection(&csAccept);
+	CONSOLE_LOG("[START] <cServerSocketInGame::CloseServer()> \n");
 
 
 	// 서버 리슨 소켓 닫기
@@ -1356,10 +1363,10 @@ void cServerSocketInGame::Send(stringstream& SendStream, SOCKET Socket)
 	//CONSOLE_LOG("[Info] <cServerSocketInGame::Send(...)> socketInfo->sendBytes: %d \n", socketInfo->sendBytes);
 
 
-	////////////////////////////////////////////////
-	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
-	////////////////////////////////////////////////
-	VerifyPacket(overlappedMsg->messageBuffer, true);
+	//////////////////////////////////////////////////
+	//// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+	//////////////////////////////////////////////////
+	//VerifyPacket(overlappedMsg->messageBuffer, true);
 
 
 	int nResult = WSASend(
@@ -1484,7 +1491,7 @@ bool cServerSocketInGame::AddSizeInStream(stringstream& DataStream, stringstream
 	stringstream lengthOfFinalStream;
 	lengthOfFinalStream << (dataStreamLength.str().length() + DataStream.str().length()) << endl;
 
-	// FinalStream의 크기 : 101 [101 DataStream]
+	// FinalStream의 크기 : 102 [101 DataStream]
 	int sizeOfFinalStream = (int)(lengthOfFinalStream.str().length() + DataStream.str().length());
 	FinalStream << sizeOfFinalStream << endl;
 	FinalStream << DataStream.str(); // 이미 DataStream.str() 마지막에 endl;를 사용했으므로 여기선 다시 사용하지 않습니다.
@@ -1686,49 +1693,49 @@ void cServerSocketInGame::DivideHugePacket(SOCKET Socket, stringstream& SendStre
 }
 
 
-////////////////////////////////////////////////
-// (임시) 패킷 사이즈와 실제 길이 검증용 함수
-////////////////////////////////////////////////
-void cServerSocketInGame::VerifyPacket(char* DataBuffer, bool send)
-{
-	if (!DataBuffer)
-	{
-		printf_s("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (!DataBuffer) \n");
-		return;
-	}
-
-	int len = (int)strlen(DataBuffer);
-
-	if (len < 4)
-	{
-		printf_s("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (len < 4) \n");
-		return;
-	}
-
-	char buffer[MAX_BUFFER + 1];
-	CopyMemory(buffer, DataBuffer, len);
-	buffer[len] = '\0';
-
-	for (int i = 0; i < len; i++)
-	{
-		if (buffer[i] == '\n')
-			buffer[i] = '_';
-	}
-
-	char sizeBuffer[5]; // [1234\0]
-	CopyMemory(sizeBuffer, buffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
-	sizeBuffer[4] = '\0';
-
-	stringstream sizeStream;
-	sizeStream << sizeBuffer;
-	int sizeOfPacket = 0;
-	sizeStream >> sizeOfPacket;
-
-	if (sizeOfPacket != len)
-	{
-		printf_s("\n\n\n\n\n\n\n\n\n\n type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
-	}
-}
+//////////////////////////////////////////////////
+//// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+//////////////////////////////////////////////////
+//void cServerSocketInGame::VerifyPacket(char* DataBuffer, bool send)
+//{
+//	if (!DataBuffer)
+//	{
+//		printf_s("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (!DataBuffer) \n");
+//		return;
+//	}
+//
+//	int len = (int)strlen(DataBuffer);
+//
+//	if (len < 4)
+//	{
+//		printf_s("[ERROR] <cServerSocketInGame::VerifyPacket(...)> if (len < 4) \n");
+//		return;
+//	}
+//
+//	char buffer[MAX_BUFFER + 1];
+//	CopyMemory(buffer, DataBuffer, len);
+//	buffer[len] = '\0';
+//
+//	for (int i = 0; i < len; i++)
+//	{
+//		if (buffer[i] == '\n')
+//			buffer[i] = '_';
+//	}
+//
+//	char sizeBuffer[5]; // [1234\0]
+//	CopyMemory(sizeBuffer, buffer, 4); // 앞 4자리 데이터만 sizeBuffer에 복사합니다.
+//	sizeBuffer[4] = '\0';
+//
+//	stringstream sizeStream;
+//	sizeStream << sizeBuffer;
+//	int sizeOfPacket = 0;
+//	sizeStream >> sizeOfPacket;
+//
+//	if (sizeOfPacket != len)
+//	{
+//		printf_s("\n\n\n\n\n\n\n\n\n\n type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
+//	}
+//}
 
 
 ////////////////////////

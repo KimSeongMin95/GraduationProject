@@ -37,6 +37,7 @@ protected:
 	CRITICAL_SECTION csAccept;				//
 	HANDLE			 hAcceptThreadHandle;	// Accept 스레드 핸들	
 
+	bool			 bIOThread;
 	HANDLE*			 hIOThreadHandle;		// IO 스레드 핸들		
 	DWORD			 nIOThreadCnt;			// IO 스레드 개수
 
@@ -175,10 +176,10 @@ public:
 	template<typename T>
 	static void DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPacketType PacketType, T& queue);
 
-	////////////////////////////////////////////////
-	// (임시) 패킷 사이즈와 실제 길이 검증용 함수
-	////////////////////////////////////////////////
-	static void VerifyPacket(char* DataBuffer, bool send);
+	//////////////////////////////////////////////////
+	//// (임시) 패킷 사이즈와 실제 길이 검증용 함수
+	//////////////////////////////////////////////////
+	//static void VerifyPacket(char* DataBuffer, bool send);
 
 	// 싱글턴 객체 가져오기
 	static cServerSocketInGame* GetSingleton()

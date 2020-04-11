@@ -376,14 +376,14 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfPlayer& Info)
 	{
-		Stream << ReplaceCharInString(Info.ID, ' ', '_') << endl;
-		Stream << ReplaceCharInString(Info.IPv4Addr, ' ', '_') << endl;
-		Stream << Info.SocketByMainServer << endl;
-		Stream << Info.SocketByGameServer << endl;
-		Stream << Info.PortOfMainClient << endl;
-		Stream << Info.PortOfGameServer << endl;
-		Stream << Info.PortOfGameClient << endl;
-		Stream << Info.LeaderSocketByMainServer << endl;
+		Stream << ReplaceCharInString(Info.ID, ' ', '_') << ' ';
+		Stream << ReplaceCharInString(Info.IPv4Addr, ' ', '_') << ' ';
+		Stream << Info.SocketByMainServer << ' ';
+		Stream << Info.SocketByGameServer << ' ';
+		Stream << Info.PortOfMainClient << ' ';
+		Stream << Info.PortOfGameServer << ' ';
+		Stream << Info.PortOfGameClient << ' ';
+		Stream << Info.LeaderSocketByMainServer << ' ';
 
 		return Stream;
 	}
@@ -437,11 +437,11 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfPlayers& Info)
 	{
-		Stream << Info.Players.size() << endl;
+		Stream << Info.Players.size() << ' ';
 		for (auto& kvp : Info.Players)
 		{
-			Stream << kvp.first << endl;
-			Stream << kvp.second << endl;
+			Stream << kvp.first << ' ';
+			Stream << kvp.second << ' ';
 		}
 
 		return Stream;
@@ -519,12 +519,12 @@ public:
 	// Send
 	friend ostream& operator<<(ostream& Stream, cInfoOfGame& Info)
 	{
-		Stream << ReplaceCharInString(Info.State, ' ', '_') << endl;
-		Stream << ReplaceCharInString(Info.Title, ' ', '_') << endl;
-		Stream << Info.Stage << endl;
-		Stream << Info.nMax << endl;
-		Stream << Info.Leader << endl;
-		Stream << Info.Players << endl;
+		Stream << ReplaceCharInString(Info.State, ' ', '_') << ' ';
+		Stream << ReplaceCharInString(Info.Title, ' ', '_') << ' ';
+		Stream << Info.Stage << ' ';
+		Stream << Info.nMax << ' ';
+		Stream << Info.Leader << ' ';
+		Stream << Info.Players << ' ';
 
 		return Stream;
 	}

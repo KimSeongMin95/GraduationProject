@@ -23,9 +23,7 @@ unsigned int WINAPI CallMainThreadIncClientSocketInGame(LPVOID p)
 /////////////////////////////////////
 cClientSocketInGame::cClientSocketInGame()
 {
-
 	CONSOLE_LOG("[START] <cClientSocketInGame::cClientSocketInGame()>\n");
-
 
 
 	ServerSocket = NULL;
@@ -64,9 +62,7 @@ cClientSocketInGame::cClientSocketInGame()
 	LeaveCriticalSection(&csPossessedID);
 
 
-
 	CONSOLE_LOG("[END] <cClientSocketInGame::cClientSocketInGame()>\n");
-
 }
 cClientSocketInGame::~cClientSocketInGame()
 {

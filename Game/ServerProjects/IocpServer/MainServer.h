@@ -32,6 +32,7 @@ protected:
 	CRITICAL_SECTION csAccept;				//
 	HANDLE			 hAcceptThreadHandle;	// Accept 스레드 핸들	
 
+	bool			 bIOThread;
 	HANDLE*			 hIOThreadHandle;		// IO 스레드 핸들		
 	DWORD			 nIOThreadCnt;			// IO 스레드 개수
 
