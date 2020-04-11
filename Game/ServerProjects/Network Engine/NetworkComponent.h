@@ -28,7 +28,7 @@ public:
 	bool Initialize(const char* IPv4, USHORT Port);
 	void Close();
 	void Send(stringstream& SendStream, SOCKET Socket = 0); // 0이면 클라이언트
-	void SendHugePacket(stringstream& SendStream, SOCKET Socket = 0); // 0이면 클라이언트
+	void SendHugeData(stringstream& SendStream, SOCKET Socket = 0); // 0이면 클라이언트
 	bool IsNetworkOn();
 
 

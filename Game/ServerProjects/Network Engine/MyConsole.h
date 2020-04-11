@@ -6,7 +6,7 @@
 
 #define TEMP_BUILD_CONFIG_DEBUG 1
 
-class MyConsole
+class CMyConsole
 {
 private:
 	FILE* fp_console = nullptr;
@@ -16,10 +16,10 @@ public:
 
 	void FreeConsole();
 
-	static MyConsole* GetSingleton();
+	static CMyConsole* GetSingleton();
 
 	/** 4096 크기 만큼의 버퍼 사이즈를 출력할 수 있습니다.
 	주의: 크기가 초과하면 에러가 발생합니다. */
 	static void Log(const char* format, ...);
 };
-#define CONSOLE_LOG MyConsole::Log
+#define CONSOLE_LOG CMyConsole::Log

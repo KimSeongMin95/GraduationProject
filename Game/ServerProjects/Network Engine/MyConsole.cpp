@@ -3,7 +3,7 @@
 #include "MyConsole.h"
 
 
-void MyConsole::AllocConsole()
+void CMyConsole::AllocConsole()
 {
 #if TEMP_BUILD_CONFIG_DEBUG
 
@@ -18,7 +18,7 @@ void MyConsole::AllocConsole()
 #endif
 }
 
-void MyConsole::FreeConsole()
+void CMyConsole::FreeConsole()
 {
 #if TEMP_BUILD_CONFIG_DEBUG
 	// 이미 할당되어 있을 때만 소멸시킵니다.
@@ -32,13 +32,13 @@ void MyConsole::FreeConsole()
 #endif
 }
 
-MyConsole* MyConsole::GetSingleton()
+CMyConsole* CMyConsole::GetSingleton()
 {
-	static MyConsole console;
+	static CMyConsole console;
 	return &console;
 }
 
-void MyConsole::Log(const char* format, ...)
+void CMyConsole::Log(const char* format, ...)
 {
 #if TEMP_BUILD_CONFIG_DEBUG
 	char buff[8192];

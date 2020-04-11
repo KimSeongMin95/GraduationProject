@@ -125,7 +125,7 @@ void CNetworkComponent::Send(stringstream& SendStream, SOCKET Socket /*= 0*/)
 	}
 }
 
-void CNetworkComponent::SendHugePacket(stringstream& SendStream, SOCKET Socket /*= 0*/)
+void CNetworkComponent::SendHugeData(stringstream& SendStream, SOCKET Socket /*= 0*/)
 {
 	switch (NCT)
 	{
@@ -133,7 +133,7 @@ void CNetworkComponent::SendHugePacket(stringstream& SendStream, SOCKET Socket /
 	{
 		if (Server)
 		{
-			Server->SendHugePacket(SendStream, Socket);
+			Server->SendHugeData(SendStream, Socket);
 		}
 		break;
 	}
@@ -141,13 +141,13 @@ void CNetworkComponent::SendHugePacket(stringstream& SendStream, SOCKET Socket /
 	{
 		if (Client)
 		{
-			Client->SendHugePacket(SendStream);
+			Client->SendHugeData(SendStream);
 		}
 		break;
 	}
 	default:
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::SendHugePacket(...)> default: \n");
+		CONSOLE_LOG("[Error] <CNetworkComponent::SendHugeData(...)> default: \n");
 		break;
 	}
 	}

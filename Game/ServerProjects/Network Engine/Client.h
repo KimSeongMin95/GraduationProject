@@ -49,8 +49,8 @@ private:
 	/// public: 서버에게 송신
 	/// void Send(stringstream& SendStream);
 
-	/// public: 패킷의 크기가 (MAX_BUFFER - 6)를 넘을 것 같을 때 사용합니다.
-	///void SendHugePacket(stringstream& SendStream, SOCKET Socket);
+	/// public: 송신하려는 데이터의 크기가 (MAX_BUFFER - 6)를 넘을 것 같을 때 사용합니다.
+	///void SendHugeData(stringstream& SendStream);
 
 
 	///////////////////////////////////////////
@@ -103,8 +103,8 @@ public:
 	// 서버에게 송신
 	void Send(stringstream& SendStream);
 
-	// 패킷의 크기가 (MAX_BUFFER - 6)를 넘을 것 같을 때 사용합니다.
-	void SendHugePacket(stringstream& SendStream);
+	// 송신하려는 데이터의 크기가 (MAX_BUFFER - 6)를 넘을 것 같을 때 사용합니다.
+	void SendHugeData(stringstream& SendStream);
 
 	// 클라이언트의 CCompletionKey을 획득
 	CCompletionKey GetCompletionKey();

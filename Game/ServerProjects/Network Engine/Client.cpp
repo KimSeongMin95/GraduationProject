@@ -428,14 +428,14 @@ void CClient::Send(stringstream& SendStream)
 	//CONSOLE_LOG("[END] <CClient::Send(...)>\n");
 }
 
-void CClient::SendHugePacket(stringstream& SendStream)
+void CClient::SendHugeData(stringstream& SendStream)
 {
 	/*
 	참고: Send할 때 sendStream << 데이터 << endl;로 인해 각 데이터는 '\n'로 구분이 됩니다.
 	데이터의 집합체인 클래스형 데이터는 operator<<(...) 함수에서 << endl; 대신에 << ' ';를 사용하여 데이터가 계속 이어지고
 	최종적으로 '\n'로 구분이 되도록 합니다.
 
-	보내려는 데이터의 크기가
+	송신하려는 데이터의 크기가
 	[MAX_BUFFER -6(5바이트의 패킷사이즈를 넣을 공간 + 마지막에 '\0'을 넣어줘야 하는 공간)]
 	보다 크다면 데이터를 분할하여 전송합니다.
 
@@ -701,18 +701,18 @@ void CClient::DivideDataToPacketAndProcessThePacket(char* DataBuffer)
 	{
 		//CONSOLE_LOG("\t else if (strlen(DataBuffer) < MAX_BUFFER + 1): %d \n", (int)strlen(DataBuffer));
 
-		int idxOfStartInPacket = 0;
-		int lenOfDataBuffer = (int)strlen(DataBuffer);
+		size_t idxOfStartInPacket = 0;
+		size_t lenOfDataBuffer = strlen(DataBuffer);
 
 		while (idxOfStartInPacket < lenOfDataBuffer)
 		{
-			//CONSOLE_LOG("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
-			//CONSOLE_LOG("\t lenOfDataBuffer: %d \n", lenOfDataBuffer);
+			//CONSOLE_LOG("\t idxOfStartInPacket: %d \n", (int)idxOfStartInPacket);
+			//CONSOLE_LOG("\t lenOfDataBuffer: %d \n", (int)lenOfDataBuffer);
 
 			// 버퍼 길이가 4이하면 아직 패킷이 전부 수신되지 않은것이므로
 			if ((lenOfDataBuffer - idxOfStartInPacket) < 4)
 			{
-				//CONSOLE_LOG("\t if (lenOfDataBuffer - idxOfStartInPacket < 4): %d \n", lenOfDataBuffer - idxOfStartInPacket);
+				//CONSOLE_LOG("\t if (lenOfDataBuffer - idxOfStartInPacket < 4): %d \n", (int)(lenOfDataBuffer - idxOfStartInPacket));
 
 				// DataBuffer의 남은 데이터를 remainingBuffer에 복사합니다.
 				char* newBuffer = new char[MAX_BUFFER + 1];
@@ -735,7 +735,7 @@ void CClient::DivideDataToPacketAndProcessThePacket(char* DataBuffer)
 			size_t sizeOfPacket = 0;
 			sizeStream >> sizeOfPacket;
 
-			//CONSOLE_LOG("\t sizeOfPacket: %d \n", sizeOfPacket);
+			//CONSOLE_LOG("\t sizeOfPacket: %d \n", (int)sizeOfPacket);
 			//CONSOLE_LOG("\t strlen(&DataBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&DataBuffer[idxOfStartInPacket]));
 
 			// 필요한 데이터 사이즈가 버퍼에 남은 데이터 사이즈보다 크면 아직 패킷이 전부 수신되지 않은것이므로
@@ -759,7 +759,7 @@ void CClient::DivideDataToPacketAndProcessThePacket(char* DataBuffer)
 			if (sizeOfPacket == 0)
 			{
 				CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n");
-				CONSOLE_LOG("[Error] <MainServer::WorkerThread()> sizeOfPacket: %d \n", sizeOfPacket);
+				CONSOLE_LOG("[Error] <MainServer::WorkerThread()> sizeOfPacket: %d \n", (int)sizeOfPacket);
 				CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n");
 				break;
 			}

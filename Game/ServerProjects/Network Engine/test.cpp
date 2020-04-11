@@ -38,7 +38,7 @@ void test::SampleServer(CNetworkComponent* NC, stringstream& RecvStream, SOCKET 
 	sendStream << CPacket::GetNumberOfType("Sample") << endl;
 	sendStream << idx << endl;
 
-	NC->SendHugePacket(sendStream, Socket);
+	NC->SendHugeData(sendStream, Socket);
 
 
 	CONSOLE_LOG("[Send to %d] <test::SampleServer(...)>\n\n", (int)Socket);
@@ -138,7 +138,7 @@ void test::SampleHugeServer(CNetworkComponent* NC, stringstream& RecvStream, SOC
 	//}
 	//sendStream << endl;
 
-	NC->SendHugePacket(sendStream, Socket);
+	NC->SendHugeData(sendStream, Socket);
 
 
 	CONSOLE_LOG("[Send to %d] <test::SampleHugeServer(...)>\n\n", (int)Socket);

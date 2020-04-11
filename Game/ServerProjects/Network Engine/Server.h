@@ -74,8 +74,8 @@ private:
 	/// public: 클라이언트에게 송신
 	///void Send(stringstream& SendStream, SOCKET Socket);
 
-	/// public: 패킷의 크기가 (MAX_BUFFER - 6)를 넘을 것 같을 때 사용합니다.
-	///void SendHugePacket(stringstream& SendStream, SOCKET Socket);
+	/// public: 송신하려는 데이터의 크기가 (MAX_BUFFER - 6)를 넘을 것 같을 때 사용합니다.
+	///void SendHugeData(stringstream& SendStream, SOCKET Socket);
 
 	// 클라이언트 수신 대기
 	void Recv(SOCKET Socket, class COverlappedMsg* ReceivedOverlappedMsg);
@@ -134,8 +134,8 @@ public:
 	// 클라이언트에게 송신
 	void Send(stringstream& SendStream, SOCKET Socket);
 
-	// 패킷의 크기가 (MAX_BUFFER - 6)를 넘을 것 같을 때 사용합니다.
-	void SendHugePacket(stringstream& SendStream, SOCKET Socket);
+	// 송신하려는 데이터의 크기가 (MAX_BUFFER - 6)를 넘을 것 같을 때 사용합니다.
+	void SendHugeData(stringstream& SendStream, SOCKET Socket);
 
 	// Socket에 해당하는 클라이언트의 CCompletionKey을 획득
 	CCompletionKey GetCompletionKey(SOCKET Socket);
