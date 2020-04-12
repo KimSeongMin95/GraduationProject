@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GiantZombie.h"
+#include "WarrokWKurniawan.h"
+
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 
@@ -9,10 +10,10 @@
 
 
 /*** Basic Function : Start ***/
-AGiantZombie::AGiantZombie()
+AWarrokWKurniawan::AWarrokWKurniawan()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(190.0f, 190.0f);
+	GetCapsuleComponent()->InitCapsuleSize(220.0f, 210.0f);
 
 	InitHelthPointBar();
 
@@ -22,20 +23,20 @@ AGiantZombie::AGiantZombie()
 
 	AEnemy::InitCharacterMovement();
 
-	InitSkeletalAnimation(TEXT("SkeletalMesh'/Game/Characters/Enemies/GiantZombie/Meshes/GiantZombie.GiantZombie'"), 
-		"AnimBlueprint'/Game/Characters/Enemies/GiantZombie/Animations/GiantZombie_AnimBP.GiantZombie_AnimBP_C'", 
-		FVector(2.0f, 2.0f, 2.0f), FRotator(0.0f, -90.0f, 0.0f), FVector(0.0f, 0.0f, -192.0f));
+	InitSkeletalAnimation(TEXT("SkeletalMesh'/Game/Characters/Enemies/WarrokWKurniawan/Meshes/WarrokWKurniawan.WarrokWKurniawan'"),
+		"AnimBlueprint'/Game/Characters/Enemies/WarrokWKurniawan/Animations/WarrokWKurniawan_AnimBP.WarrokWKurniawan_AnimBP_C'",
+		FVector(2.0f, 2.0f, 2.0f), FRotator(0.0f, -90.0f, 0.0f), FVector(0.0f, 0.0f, -225.0f));
 
-	EnemyType = EEnemyType::GiantZombie;
+	EnemyType = EEnemyType::WarrokWKurniawan;
 }
 
-void AGiantZombie::BeginPlay()
+void AWarrokWKurniawan::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
-void AGiantZombie::Tick(float DeltaTime)
+void AWarrokWKurniawan::Tick(float DeltaTime)
 {
 	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있음.
 	// 따라서, Tick 가장 앞에서 죽었는지 여부를 체크해야 함.
@@ -49,19 +50,19 @@ void AGiantZombie::Tick(float DeltaTime)
 
 
 /*** IHealthPointBarInterface : Start ***/
-void AGiantZombie::InitHelthPointBar()
+void AWarrokWKurniawan::InitHelthPointBar()
 {
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 300.0f));
-	HelthPointBar->SetDrawSize(FVector2D(180, 35));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 400.0f));
+	HelthPointBar->SetDrawSize(FVector2D(200, 40));
 }
 /*** IHealthPointBarInterface : End ***/
 
 
 /*** ABaseCharacter : Start ***/
-void AGiantZombie::InitStat()
+void AWarrokWKurniawan::InitStat()
 {
 	HealthPoint = 300.0f;
 	MaxHealthPoint = 300.0f;
@@ -72,7 +73,7 @@ void AGiantZombie::InitStat()
 
 	AttackPower = 50.0f;
 
-	AttackRange = 5.5f;
+	AttackRange = 5.8f;
 	DetectRange = 32.0f;
 	SightRange = 32.0f;
 

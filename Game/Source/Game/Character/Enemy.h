@@ -13,7 +13,12 @@ enum class EEnemyType : uint8
 	SlowZombie,
 	ParasiteZombie,
 	GiantZombie, 
-	RobotRaptor
+	RobotRaptor,
+	WarrokWKurniawan,
+	TreeMan,
+	Mutant,
+	Maynard,
+	AlienAnimal
 };
 
 UCLASS()

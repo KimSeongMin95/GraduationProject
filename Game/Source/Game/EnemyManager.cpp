@@ -10,6 +10,11 @@
 #include "Character/ParasiteZombie.h"
 #include "Character/GiantZombie.h"
 #include "Character/RobotRaptor.h"
+#include "Character/WarrokWKurniawan.h"
+#include "Character/TreeMan.h"
+#include "Character/Mutant.h"
+#include "Character/Maynard.h"
+#include "Character/AlienAnimal.h"
 
 #include "Network/Packet.h"
 #include "Network/ServerSocketInGame.h"
@@ -114,6 +119,21 @@ class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 	case EEnemyType::RobotRaptor:
 		enemy = world->SpawnActor<ARobotRaptor>(ARobotRaptor::StaticClass(), Transform, SpawnParams);
 		break;
+	case EEnemyType::WarrokWKurniawan:
+		enemy = world->SpawnActor<AWarrokWKurniawan>(AWarrokWKurniawan::StaticClass(), Transform, SpawnParams);
+		break;
+	case EEnemyType::TreeMan:
+		enemy = world->SpawnActor<ATreeMan>(ATreeMan::StaticClass(), Transform, SpawnParams);
+		break;
+	case EEnemyType::Mutant:
+		enemy = world->SpawnActor<AMutant>(AMutant::StaticClass(), Transform, SpawnParams);
+		break;
+	case EEnemyType::Maynard:
+		enemy = world->SpawnActor<AMaynard>(AMaynard::StaticClass(), Transform, SpawnParams);
+		break;
+	case EEnemyType::AlienAnimal:
+		enemy = world->SpawnActor<AAlienAnimal>(AAlienAnimal::StaticClass(), Transform, SpawnParams);
+		break;
 
 	default:
 		
@@ -177,6 +197,22 @@ void AEnemyManager::RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy)
 	case EEnemyType::RobotRaptor:
 		enemy = world->SpawnActor<ARobotRaptor>(ARobotRaptor::StaticClass(), myTrans, SpawnParams);
 		break;
+	case EEnemyType::WarrokWKurniawan:
+		enemy = world->SpawnActor<AWarrokWKurniawan>(AWarrokWKurniawan::StaticClass(), myTrans, SpawnParams);
+		break;
+	case EEnemyType::TreeMan:
+		enemy = world->SpawnActor<ATreeMan>(ATreeMan::StaticClass(), myTrans, SpawnParams);
+		break;
+	case EEnemyType::Mutant:
+		enemy = world->SpawnActor<AMutant>(AMutant::StaticClass(), myTrans, SpawnParams);
+		break;
+	case EEnemyType::Maynard:
+		enemy = world->SpawnActor<AMaynard>(AMaynard::StaticClass(), myTrans, SpawnParams);
+		break;
+	case EEnemyType::AlienAnimal:
+		enemy = world->SpawnActor<AAlienAnimal>(AAlienAnimal::StaticClass(), myTrans, SpawnParams);
+		break;
+
 
 	default:
 

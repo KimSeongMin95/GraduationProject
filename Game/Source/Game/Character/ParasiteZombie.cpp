@@ -12,7 +12,7 @@
 AParasiteZombie::AParasiteZombie()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(80.0f, 50.0f);
+	GetCapsuleComponent()->InitCapsuleSize(120.0f, 90.0f);
 
 	InitHelthPointBar();
 
@@ -24,7 +24,7 @@ AParasiteZombie::AParasiteZombie()
 
 	InitSkeletalAnimation(TEXT("SkeletalMesh'/Game/Characters/Enemies/ParasiteZombie/Meshes/ParasiteZombie.ParasiteZombie'"), 
 		"AnimBlueprint'/Game/Characters/Enemies/ParasiteZombie/Animations/ParasiteZombie_AnimBP.ParasiteZombie_AnimBP_C'", 
-		FVector(0.8f, 0.8f, 0.8f), FRotator(0.0f, -90.0f, 0.0f), FVector(0.0f, 0.0f, -76.0f));
+		FVector(1.1f, 1.1f, 1.1f), FRotator(0.0f, -90.0f, 0.0f), FVector(0.0f, 0.0f, -118.0f));
 
 	EnemyType = EEnemyType::ParasiteZombie;
 }

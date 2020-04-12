@@ -4,17 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Character/Enemy.h"
-#include "GiantZombie.generated.h"
+#include "Mutant.generated.h"
 
-
+/**
+ * 
+ */
 UCLASS()
-class GAME_API AGiantZombie : public AEnemy
+class GAME_API AMutant : public AEnemy
 {
 	GENERATED_BODY()
-
+	
 /*** Basic Function : Start ***/
 public:
-	AGiantZombie();
+	AMutant();
 
 protected:
 	virtual void BeginPlay() final;
