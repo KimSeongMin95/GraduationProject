@@ -43,8 +43,8 @@ void AInorganicMine::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 450.0f));
-	HelthPointBar->SetDrawSize(FVector2D(100, 20));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 400.0f));
+	HelthPointBar->SetDrawSize(FVector2D(120, 25));
 }
 /*** IHealthPointBarInterface : End ***/
 

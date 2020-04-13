@@ -54,8 +54,8 @@ void AGiantZombie::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 300.0f));
-	HelthPointBar->SetDrawSize(FVector2D(180, 35));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
+	HelthPointBar->SetDrawSize(FVector2D(160, 30));
 }
 /*** IHealthPointBarInterface : End ***/
 
@@ -63,8 +63,8 @@ void AGiantZombie::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AGiantZombie::InitStat()
 {
-	HealthPoint = 300.0f;
-	MaxHealthPoint = 300.0f;
+	HealthPoint = 500.0f;
+	MaxHealthPoint = 500.0f;
 	bDying = false;
 
 	MoveSpeed = 8.0f;

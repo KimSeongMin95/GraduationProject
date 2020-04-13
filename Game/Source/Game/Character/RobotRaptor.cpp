@@ -54,8 +54,8 @@ void ARobotRaptor::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
-	HelthPointBar->SetDrawSize(FVector2D(80, 20));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 135.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 25));
 }
 /*** IHealthPointBarInterface : End ***/
 
@@ -67,7 +67,7 @@ void ARobotRaptor::InitStat()
 	MaxHealthPoint = 250.0f;
 	bDying = false;
 
-	MoveSpeed = 8.0f;
+	MoveSpeed = 9.0f;
 	AttackSpeed = 1.0f;
 
 	AttackPower = 40.0f;

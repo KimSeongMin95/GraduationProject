@@ -54,7 +54,7 @@ void ASlowZombie::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 	HelthPointBar->SetDrawSize(FVector2D(80, 20));
 }
 /*** IHealthPointBarInterface : End ***/
@@ -67,7 +67,7 @@ void ASlowZombie::InitStat()
 	MaxHealthPoint = 200.0f;
 	bDying = false;
 
-	MoveSpeed = 60.0f;
+	MoveSpeed = 6.0f;
 	AttackSpeed = 0.5f;
 
 	AttackPower = 20.0f;

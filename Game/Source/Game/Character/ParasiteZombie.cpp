@@ -54,8 +54,8 @@ void AParasiteZombie::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
-	HelthPointBar->SetDrawSize(FVector2D(60, 20));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 105.0f));
+	HelthPointBar->SetDrawSize(FVector2D(80, 20));
 }
 /*** IHealthPointBarInterface : End ***/
 
@@ -67,7 +67,7 @@ void AParasiteZombie::InitStat()
 	MaxHealthPoint = 60.0f;
 	bDying = false;
 
-	MoveSpeed = 12.0f;
+	MoveSpeed = 10.0f;
 	AttackSpeed = 2.0f;
 
 	AttackPower = 10.0f;

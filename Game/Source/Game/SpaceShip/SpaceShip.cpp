@@ -80,7 +80,7 @@ ASpaceShip::ASpaceShip()
 	SpringArmComp->bEnableCameraLag = false; // 이동시 부드러운 카메라 전환을 끕니다.
 	//SpringArmComp->CameraLagSpeed = 1.0f; // 카메라 이동속도입니다.
 
-	InitSpringArmComp(2500.0f, FRotator(-30.0f, 150.0f, 0.0f), FVector(-20.0f, -870.0f, 190.0f));
+	InitSpringArmComp(2500.0f, FRotator(-30.0f, 45.0f, 0.0f), FVector(-20.0f, -870.0f, 190.0f));
 
 
 	// 따라다니는 카메라를 생성합니다.

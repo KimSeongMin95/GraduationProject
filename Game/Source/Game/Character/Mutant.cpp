@@ -54,8 +54,8 @@ void AMutant::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 190.0f));
-	HelthPointBar->SetDrawSize(FVector2D(120, 20));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 140.0f));
+	HelthPointBar->SetDrawSize(FVector2D(100, 30));
 }
 /*** IHealthPointBarInterface : End ***/
 
@@ -63,11 +63,11 @@ void AMutant::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AMutant::InitStat()
 {
-	HealthPoint = 300.0f;
-	MaxHealthPoint = 300.0f;
+	HealthPoint = 400.0f;
+	MaxHealthPoint = 400.0f;
 	bDying = false;
 
-	MoveSpeed = 8.0f;
+	MoveSpeed = 7.0f;
 	AttackSpeed = 0.5f;
 
 	AttackPower = 50.0f;

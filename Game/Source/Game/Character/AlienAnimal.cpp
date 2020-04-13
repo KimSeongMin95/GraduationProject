@@ -54,8 +54,8 @@ void AAlienAnimal::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
-	HelthPointBar->SetDrawSize(FVector2D(120, 20));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 80.0f));
+	HelthPointBar->SetDrawSize(FVector2D(90, 20));
 }
 /*** IHealthPointBarInterface : End ***/
 
@@ -63,14 +63,14 @@ void AAlienAnimal::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AAlienAnimal::InitStat()
 {
-	HealthPoint = 300.0f;
-	MaxHealthPoint = 300.0f;
+	HealthPoint = 200.0f;
+	MaxHealthPoint = 200.0f;
 	bDying = false;
 
-	MoveSpeed = 8.0f;
+	MoveSpeed = 9.0f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 50.0f;
+	AttackPower = 30.0f;
 
 	AttackRange = 2.5f;
 	DetectRange = 32.0f;

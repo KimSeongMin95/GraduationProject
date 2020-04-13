@@ -54,8 +54,8 @@ void ATreeMan::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 400.0f));
-	HelthPointBar->SetDrawSize(FVector2D(200, 40));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 220.0f));
+	HelthPointBar->SetDrawSize(FVector2D(140, 30));
 }
 /*** IHealthPointBarInterface : End ***/
 
@@ -63,14 +63,14 @@ void ATreeMan::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void ATreeMan::InitStat()
 {
-	HealthPoint = 300.0f;
-	MaxHealthPoint = 300.0f;
+	HealthPoint = 800.0f;
+	MaxHealthPoint = 800.0f;
 	bDying = false;
 
-	MoveSpeed = 8.0f;
+	MoveSpeed = 5.0f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 50.0f;
+	AttackPower = 80.0f;
 
 	AttackRange = 4.5f;
 	DetectRange = 32.0f;

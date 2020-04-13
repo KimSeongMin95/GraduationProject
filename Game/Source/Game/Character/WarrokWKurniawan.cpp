@@ -55,8 +55,8 @@ void AWarrokWKurniawan::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 400.0f));
-	HelthPointBar->SetDrawSize(FVector2D(200, 40));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 220.0f));
+	HelthPointBar->SetDrawSize(FVector2D(150, 35));
 }
 /*** IHealthPointBarInterface : End ***/
 
@@ -64,14 +64,14 @@ void AWarrokWKurniawan::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AWarrokWKurniawan::InitStat()
 {
-	HealthPoint = 300.0f;
-	MaxHealthPoint = 300.0f;
+	HealthPoint = 1000.0f;
+	MaxHealthPoint = 1000.0f;
 	bDying = false;
 
 	MoveSpeed = 8.0f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 50.0f;
+	AttackPower = 100.0f;
 
 	AttackRange = 5.8f;
 	DetectRange = 32.0f;
