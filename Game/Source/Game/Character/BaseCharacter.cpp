@@ -442,9 +442,25 @@ void ABaseCharacter::TracingTargetActor()
 	if (!TargetActor || !GetController())
 		return;
 
-	PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), TargetActor);
+	if (ABaseCharacter* baseCharacter = dynamic_cast<ABaseCharacter*>(TargetActor))
+	{
+		FVector DestLocation = baseCharacter->GetActorLocation();
 
-	LookAtTheLocation(TargetActor->GetActorLocation());
+		if (UCapsuleComponent* CC = baseCharacter->GetCapsuleComponent())
+		{
+			DestLocation.Z -= CC->GetScaledCapsuleHalfHeight();
+		}
+
+		PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), DestLocation);
+
+		LookAtTheLocation(DestLocation);
+	}
+	else
+	{
+		PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), TargetActor);
+
+		LookAtTheLocation(TargetActor->GetActorLocation());
+	}
 }
 
 void ABaseCharacter::MoveRandomlyPosition()

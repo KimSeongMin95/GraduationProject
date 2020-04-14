@@ -489,34 +489,24 @@ float ASpaceShip::CalculateDistanceToLand()
 		FVector WorldOrigin = GetActorLocation(); // 시작 위치
 		FVector WorldDirection = FVector::DownVector; // 방향
 		float HitResultTraceDistance = 30000.f; // WorlDirection과 곱하여 끝 위치를 설정
-		FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
 
 		TArray<FHitResult> hitResults; // 결과를 저장
+
+		FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllStaticObjects); // 모든 오브젝트
 		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
-
-		int temp = 0;
-
+		
 		for (auto& hit : hitResults)
 		{
-			//// SpaceShip 자기자신은 무시
-			//if (hit.GetActor() == this)
-			//	continue;
-
-			//// ATriggerVolume은 무시
-			//if (hit.GetActor()->IsA(ATriggerVolume::StaticClass()))
-			//	continue;
-
-			//// 이 로그들로 적절한 LandingHeight를 구할 수 있습니다.
 //#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-			//UE_LOG(LogTemp, Warning, TEXT("___________%d"), temp);
-			//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_HitRange: OtherActor GetName %s"), *hit.GetActor()->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin_HitRange: OtherComp GetName %s"), *hit.GetComponent()->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+//			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+//			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
 //#endif
-			//temp++;
 
 			// 지면과 충돌하는 것만 구합니다.
-			if (hit.Actor->GetClass() == ALandscape::StaticClass())
+			if (hit.Actor->IsA(ALandscape::StaticClass()))
 			{
 				// 가장 먼저 맞은 액터까지의 거리를 반환
 				return hit.Distance;

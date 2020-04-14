@@ -42,6 +42,8 @@
 #include "Network/ClientSocketInGame.h"
 
 #include "Etc/WorldViewCameraActor.h"
+
+#include "Projectile/Projectile.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -151,8 +153,8 @@ void APioneer::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void APioneer::InitStat()
 {
-	HealthPoint = 100.0f;
-	MaxHealthPoint = 100.0f;
+	HealthPoint = 10000.0f;
+	MaxHealthPoint = 10000.0f;
 	bDying = false;
 
 	MoveSpeed = 10.0f;
@@ -388,6 +390,81 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 	bDying = true;
 }
 
+bool APioneer::CheckNoObstacle(AActor* Target)
+{
+	if (!CurrentWeapon || !Target)
+	{
+		//
+		return false;
+	}
+
+	if (UWorld* world = GetWorld())
+	{
+		FVector WorldOrigin = CurrentWeapon->GetActorLocation(); // 시작 위치
+		FVector WorldDirection = Target->GetActorLocation() - WorldOrigin; // 방향
+		WorldDirection.Normalize();
+
+		TArray<FHitResult> hitResults; // 결과를 저장
+
+		//FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
+		//world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, ObjectQueryParams);
+		
+		//FCollisionResponseParams collisionResponseParams(ECollisionResponse::ECR_Overlap);
+		world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, ECollisionChannel::ECC_WorldStatic);
+
+		if (hitResults.Num() == 0)
+			return false;
+
+		for (auto& hit : hitResults)
+		{
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+//			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+//			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//#endif
+			if (hit.Actor == this)
+				continue;
+
+			if (hit.Actor->IsA(AProjectile::StaticClass()))
+				continue;
+
+			if (hit.Actor->IsA(ATriggerVolume::StaticClass()))
+				continue;
+
+			//if (hit.Actor->IsA(ALandscape::StaticClass()))
+			//	continue;
+
+			if (hit.Actor->IsA(ATurret::StaticClass()))
+				continue;
+
+			// 충돌하는 것이 해당 Enemy면
+			if (hit.Actor == Target)
+			{
+				if (AEnemy* enemy = dynamic_cast<AEnemy*>(Target))
+				{
+					if (hit.Component == enemy->GetCapsuleComponent())
+					{
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//						UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//						UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+//						UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+//						UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+//						UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//#endif
+						return true;
+					}
+				}
+			}
+			else
+				return false;
+		}
+	}
+
+	return false;
+}
+
 void APioneer::FindTheTargetActor(float DeltaTime)
 {
 	TimerOfFindTheTargetActor += DeltaTime;
@@ -399,6 +476,8 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 
 	TargetActor = nullptr;
 
+	AActor* closestActor = nullptr;
+
 	// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
 	TSet<ABaseCharacter*> tset_Overlapped(OverlappedCharacterInDetectRange);
 
@@ -409,12 +488,35 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 
 		if (!TargetActor)
 		{
-			TargetActor = enemy;
+			if (CheckNoObstacle(enemy))
+			{
+				TargetActor = enemy;
+			}
+			closestActor = enemy;
+
 			continue;
 		}
 
+		// 더 가까이 있고
 		if (DistanceToActor(enemy) < DistanceToActor(TargetActor))
-			TargetActor = enemy;
+		{
+			// 장애물이 없다면
+			if (CheckNoObstacle(enemy))
+			{
+				TargetActor = enemy;
+			}
+			closestActor = enemy;
+		}
+	}
+
+
+	if (tset_Overlapped.Num() >= 1 && TargetActor == nullptr)
+	{
+		TargetActor = closestActor;
+	}
+	else
+	{
+		closestActor = nullptr;
 	}
 
 
@@ -423,15 +525,16 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 		State = EFiniteState::Idle;
 		IdlingOfFSM(3.0f);
 	}
-	else if (DistanceToActor(TargetActor) > (AttackRange * AOnlineGameMode::CellSize))
-	{
-		State = EFiniteState::Tracing;
-		TracingOfFSM(0.5f);
-	}
-	else
+	else if (DistanceToActor(TargetActor) < (AttackRange * AOnlineGameMode::CellSize)
+		&& CheckNoObstacle(TargetActor))
 	{
 		State = EFiniteState::Attack;
 		AttackingOfFSM(0.2f);
+	}
+	else
+	{
+		State = EFiniteState::Tracing;
+		TracingOfFSM(0.5f);
 	}
 }
 
@@ -466,14 +569,15 @@ void APioneer::TracingOfFSM(float DeltaTime)
 		State = EFiniteState::Idle;
 		IdlingOfFSM(3.0f);
 	}
-	else if (DistanceToActor(TargetActor) > (AttackRange * AOnlineGameMode::CellSize))
-	{
-		TracingTargetActor();
-	}
-	else
+	else if (DistanceToActor(TargetActor) < (AttackRange * AOnlineGameMode::CellSize)
+		&& CheckNoObstacle(TargetActor))
 	{
 		State = EFiniteState::Attack;
 		AttackingOfFSM(0.2f);
+	}
+	else
+	{
+		TracingTargetActor();
 	}
 }
 
@@ -575,14 +679,14 @@ void APioneer::SetCursorToWorld()
 
 	/*if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
 	{
-		if (UWorld* World = GetWorld())
+		if (UWorld* world = GetWorld())
 		{
 			FHitResult HitResult;
 			FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
 			FVector StartLocation = TopDownCameraComponent->GetComponentLocation();
 			FVector EndLocation = TopDownCameraComponent->GetComponentRotation().Vector() * 2000.0f;
 			Params.AddIgnoredActor(this);
-			World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+			world->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
 			FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
 			CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
 		}
@@ -608,7 +712,7 @@ void APioneer::SetCursorToWorld()
 	}
 
 	//// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
-	//if (UWorld* World = GetWorld())
+	//if (UWorld* world = GetWorld())
 	//{
 	//	// 현재 Player의 뷰포트의 마우스포지션을 가져옵니다.
 	//	APlayerController* PC = Cast<APlayerController>(GetController());
@@ -627,7 +731,7 @@ void APioneer::SetCursorToWorld()
 	//	//FCollisionQueryParams& CollisionQueryParams()
 
 	//	TArray<FHitResult> hitResults; // 결과를 저장
-	//	World->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
+	//	world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
 
 	//	for (auto& hit : hitResults)
 	//	{
@@ -1308,7 +1412,7 @@ void APioneer::OnConstructingMode()
 
 
 	// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
-	if (UWorld* World = GetWorld())
+	if (UWorld* world = GetWorld())
 	{
 		// 현재 Player의 뷰포트의 마우스포지션을 가져옵니다.
 		APlayerController* PC = Cast<APlayerController>(GetController());
@@ -1323,14 +1427,24 @@ void APioneer::OnConstructingMode()
 		FVector WorldDirection; // 방향
 		float HitResultTraceDistance = 100000.f; // WorldDirection과 곱하여 끝 위치를 설정
 		UGameplayStatics::DeprojectScreenToWorld(PC, MousePosition, WorldOrigin, WorldDirection);
-		FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
-		//FCollisionQueryParams& CollisionQueryParams()
 
 		TArray<FHitResult> hitResults; // 결과를 저장
-		World->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
+		
+		//FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
+		//world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
+		
+		world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ECollisionChannel::ECC_GameTraceChannel4);
 
 		for (auto& hit : hitResults)
 		{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+#endif
+
 			// Building이 터렛이라면 Wall 위에 건설할 수 있도록 합니다.
 			if (ATurret* turret = dynamic_cast<ATurret*>(Building))
 			{

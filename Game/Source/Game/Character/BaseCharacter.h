@@ -118,9 +118,6 @@ protected:
 		float TimerOfAttackingOfFSM;
 
 
-
-
-
 public:
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		bool bDyingFlag;

@@ -47,15 +47,27 @@ public:
 		int SpawnCount;
 	UPROPERTY(EditAnywhere)
 		int SpawnLimit;
+	UPROPERTY(EditAnywhere)
+		int IncreaseSpawnLimit;
 
 	UPROPERTY(EditAnywhere)
 		float WaitingTimer;
 	UPROPERTY(EditAnywhere)
 		float WaitingTime;
+
 	UPROPERTY(EditAnywhere)
 		float SpawnTimer;
 	UPROPERTY(EditAnywhere)
 		float SpawnTime;
+	UPROPERTY(EditAnywhere)
+		float DecreaseSpawnTime;
+
+	UPROPERTY(EditAnywhere)
+		float InitTimer;
+	UPROPERTY(EditAnywhere)
+		float InitTime;
+	UPROPERTY(EditAnywhere)
+		float DecreaseInitTime;
 
 	UPROPERTY(EditAnywhere)
 		class AMyTriggerBox* TriggerBoxForSpawn = nullptr;

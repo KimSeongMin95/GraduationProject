@@ -27,11 +27,18 @@ AEnemySpawner::AEnemySpawner()
 
 	SpawnCount = 0;
 	SpawnLimit = 5;
+	IncreaseSpawnLimit = 1;
 
 	WaitingTimer = 0.0f;
-	WaitingTime = 15.0f;
+	WaitingTime = 10.0f;
+
 	SpawnTimer = 0.0f;
 	SpawnTime = 3.0f;
+	DecreaseSpawnTime = 0.25f;
+
+	InitTimer = 0.0f;
+	InitTime = 120.0f;
+	DecreaseInitTime = 10.0f;
 
 	TriggerBoxForSpawn = nullptr;
 
@@ -86,18 +93,43 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 	SpawnTimer += DeltaTime;
 	if (SpawnTimer < SpawnTime)
 		return;
-	SpawnTimer = 0.0f;
+	
 
 	if (SpawnCount < SpawnLimit)
 	{
-		EnemyManager->SpawnEnemy((int)EnemyType, GetActorTransform());
+		// 생성되면
+		if (EnemyManager->SpawnEnemy((int)EnemyType, GetActorTransform()))
+		{
+			SpawnCount++;
 
-		SpawnCount++;
+			SpawnTimer = 0.0f;
+		}
 	}
 	else
 	{
-		EnemyManager->EnemySpawners.Remove(this);
-		Destroy();
+		//EnemyManager->EnemySpawners.Remove(this);
+		//Destroy();
+
+		//////////
+		// 레벨링
+		//////////
+		InitTimer += DeltaTime;
+		if (InitTimer < InitTime)
+			return;
+	
+		SpawnCount = 0;
+		SpawnLimit += IncreaseSpawnLimit;
+
+		WaitingTimer = 0.0f;
+		SpawnTimer = 0;
+		SpawnTime -= DecreaseSpawnTime;
+		if (SpawnTime < 1.0f)
+			SpawnTime = 1.0f;
+
+		InitTimer = 0.0f;
+		InitTime -= DecreaseInitTime;
+		if (InitTime < 60.0f)
+			InitTime = 60.0f;
 	}
 }
 

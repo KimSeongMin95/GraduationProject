@@ -42,6 +42,10 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "AEnemyManager")
 		TArray<class AEnemySpawner*> EnemySpawners;
 
+	UPROPERTY(EditAnywhere)
+		/** 적을 생성할 수 있는 최대 개수를 제한합니다. */
+		int LimitOfEnemySpawn;
+
 public:
 	class AEnemy* SpawnEnemy(int EnemyType, FTransform Transform);
 

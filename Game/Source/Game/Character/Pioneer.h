@@ -58,8 +58,9 @@ public:
 	virtual void SetHealthPoint(float Value, int IDOfPioneer = 0) final;
 
 
-	virtual void FindTheTargetActor(float DeltaTime) final;
+	bool CheckNoObstacle(AActor* Target);
 
+	virtual void FindTheTargetActor(float DeltaTime) final;
 
 	virtual void IdlingOfFSM(float DeltaTime) final;
 

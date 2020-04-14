@@ -30,6 +30,8 @@ AEnemyManager::AEnemyManager()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ID = 1;
+
+	LimitOfEnemySpawn = 128;
 }
 
 void AEnemyManager::BeginPlay()
@@ -89,6 +91,16 @@ void AEnemyManager::Tick(float DeltaTime)
 /*** AEnemyManager : Start ***/
 class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 {
+	// 적을 생성할 수 있는 최대 개수를 제한합니다.
+	if (Enemies.Num() >= LimitOfEnemySpawn)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::SpawnEnemy(...)> if (Enemies.Num() >= LimitOfEnemySpawn)"));
+#endif
+		return nullptr;
+	}
+
+
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
