@@ -58,7 +58,7 @@ public:
 	virtual void SetHealthPoint(float Value, int IDOfPioneer = 0) final;
 
 
-	bool CheckNoObstacle(AActor* Target);
+	virtual bool CheckNoObstacle(AActor* Target) final;
 
 	virtual void FindTheTargetActor(float DeltaTime) final;
 
@@ -176,6 +176,12 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		int Level;
 
+
+	UPROPERTY(VisibleAnywhere)
+		float TimerOfSetCursorToWorld;
+	UPROPERTY(VisibleAnywhere)
+		float TimerOfOnConstructingMode;
+
 private:
 	UFUNCTION(Category = Camera)
 		/** Tick()에서 호출합니다. */
@@ -184,7 +190,7 @@ private:
 
 	UFUNCTION(Category = "Cursor")
 		/** CursorToWorld의 월드좌표와 월드회전을 설정합니다. */
-		void SetCursorToWorld(); 
+		void SetCursorToWorld(float DeltaTime); 
 
 
 protected:
@@ -272,7 +278,7 @@ public:
 		void SpawnBuilding(int Value);
 
 	UFUNCTION(Category = "Building")
-		void OnConstructingMode();
+		void OnConstructingMode(float DeltaTime);
 
 	UFUNCTION(Category = "Building")
 		void RotatingBuilding(float Value);

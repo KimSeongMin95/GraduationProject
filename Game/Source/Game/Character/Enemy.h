@@ -61,6 +61,8 @@ protected:
 public:
 	virtual void SetHealthPoint(float Value, int IDOfPioneer = 0) final;
 
+	virtual bool CheckNoObstacle(AActor* Target) final;
+
 	virtual void FindTheTargetActor(float DeltaTime) final;
 
 

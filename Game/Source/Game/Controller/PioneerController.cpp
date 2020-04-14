@@ -632,7 +632,7 @@ void APioneerController::RotatingBuilding(float Value)
 	if (Pioneer->bDying)
 		return;
 
-	Pioneer->RotatingBuilding(Value);
+	Pioneer->RotatingBuilding(Value * 256.0f * PlayTickDeltaTime);
 }
 void APioneerController::PlaceBuilding()
 {

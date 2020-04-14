@@ -18,12 +18,13 @@ ABaseCharacter::ABaseCharacter()
 	{
 		GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap); // RangeSphere
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block); // Building
-
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Ignore);
 	}
 
 
@@ -430,6 +431,12 @@ void ABaseCharacter::LookAtTheLocation(FVector Location)
 		RootComponent->GetComponentRotation().Roll);
 
 	bRotateTargetRotation = true;
+}
+
+bool ABaseCharacter::CheckNoObstacle(AActor* Target)
+{
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	return false;
 }
 
 void ABaseCharacter::FindTheTargetActor(float DeltaTime)

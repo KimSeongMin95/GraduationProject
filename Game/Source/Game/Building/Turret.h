@@ -117,7 +117,7 @@ protected:
 	void InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent, const TCHAR* SkeletonToFind, const TCHAR* AnimSequenceToFind, float PlayRate = 1.0f);
 	void InitArrowComponent(FRotator Rotatation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
-	float CheckEnemyInAttackRange(class AEnemy* Enemy);
+	bool CheckEnemyInAttackRange(class AEnemy* Enemy);
 
 	void TickOfFindEnemy(float DeltaTime);
 

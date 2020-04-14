@@ -15,6 +15,12 @@
 
 #include "EnemyManager.h"
 #include "PioneerManager.h"
+
+#include "Projectile/Projectile.h"
+
+#include "Building/Gate.h"
+
+#include "Landscape.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -416,6 +422,86 @@ void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 	bDying = true;
 }
 
+bool AEnemy::CheckNoObstacle(AActor* Target)
+{
+	if (!Target || !GetCapsuleComponent())
+	{
+		//
+		return false;
+	}
+
+	if (UWorld* world = GetWorld())
+	{
+		FVector WorldOrigin = GetActorLocation(); // 시작 위치
+		WorldOrigin.Z += 10.0f - GetCapsuleComponent()->GetScaledCapsuleRadius();
+		FVector WorldDirection = Target->GetActorLocation() - WorldOrigin; // 방향 
+		WorldDirection.Normalize();
+
+		TArray<FHitResult> hitResults; // 결과를 저장
+
+		FCollisionObjectQueryParams collisionObjectQueryParams;
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn); // Pioneer
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel4); // Building
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic); // 
+		//FCollisionQueryParams collisionQueryParams;
+		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, collisionObjectQueryParams);
+
+		if (hitResults.Num() == 0)
+			return false;
+
+		for (auto& hit : hitResults)
+		{
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//			UE_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
+//			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+//			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+//			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//#endif
+
+			if (hit.Actor == this)
+				continue;
+
+			if (hit.Actor->IsA(ATriggerVolume::StaticClass()))
+				continue;
+
+			//if (hit.Actor->IsA(AProjectile::StaticClass()))
+			//	continue;
+
+			if (hit.Actor->IsA(AEnemy::StaticClass()))
+				continue;
+
+			if (hit.Actor->IsA(ALandscape::StaticClass()))
+				continue;
+
+
+			// 충돌하는 것이 해당 Enemy면
+			if (hit.Actor == Target)
+			{
+				if (APioneer* pioneer = dynamic_cast<APioneer*>(Target))
+				{
+					if (hit.Component == pioneer->GetCapsuleComponent())
+					{
+						return true;
+					}
+				}
+			}
+			else if (hit.Actor->IsA(AGate::StaticClass()) && 
+				hit.Component->IsA(USphereComponent::StaticClass()))
+			{
+				continue;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+
+	return false;
+}
+
 void AEnemy::FindTheTargetActor(float DeltaTime)
 {
 	TimerOfFindTheTargetActor += DeltaTime;
@@ -437,49 +523,58 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 
 		if (!TargetActor)
 		{
-			TargetActor = pioneer;
+			if (CheckNoObstacle(pioneer))
+			{
+				TargetActor = pioneer;
+			}
+
 			continue;
 		}
 
 		if (DistanceToActor(pioneer) < DistanceToActor(TargetActor))
-			TargetActor = pioneer;
-	}
-
-	//// 개척자를 발견하면 끝냄
-	//if (TargetActor)
-	//	return;
-
-	// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
-	TSet<AActor*> tset_OverlappedBuilding(OverlappedBuildingInDetectRange);
-
-	for (auto& building : tset_OverlappedBuilding)
-	{
-		if (!TargetActor)
 		{
-			TargetActor = building;
-			continue;
+			if (CheckNoObstacle(pioneer))
+			{
+				TargetActor = pioneer;
+			}
 		}
-
-		if (DistanceToActor(building) < DistanceToActor(TargetActor))
-			TargetActor = building;
 	}
 
+	// Pioneer를 발견하지 못하면
+	if (!TargetActor)
+	{
+
+		// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
+		TSet<AActor*> tset_OverlappedBuilding(OverlappedBuildingInDetectRange);
+
+		for (auto& building : tset_OverlappedBuilding)
+		{
+			if (!TargetActor)
+			{
+				TargetActor = building;
+				continue;
+			}
+
+			if (DistanceToActor(building) < DistanceToActor(TargetActor))
+				TargetActor = building;
+		}
+	}
 
 	if (!TargetActor)
 	{
 		State = EFiniteState::Idle;
 		IdlingOfFSM(3.0f);
 	}
-	else if (!OverlappedCharacterInAttackRange.Contains(TargetActor) &&
-		!OverlappedBuildingInAttackRange.Contains(TargetActor))
-	{
-		State = EFiniteState::Tracing;
-		TracingOfFSM(0.5f);
-	}
-	else
+	else if (OverlappedCharacterInAttackRange.Contains(TargetActor) ||
+		OverlappedBuildingInAttackRange.Contains(TargetActor))
 	{
 		State = EFiniteState::Attack;
 		AttackingOfFSM(1.0f);
+	}
+	else
+	{
+		State = EFiniteState::Tracing;
+		TracingOfFSM(0.5f);
 	}
 }
 
@@ -514,15 +609,15 @@ void AEnemy::TracingOfFSM(float DeltaTime)
 		State = EFiniteState::Idle;
 		IdlingOfFSM(3.0f);
 	}
-	else if (!OverlappedCharacterInAttackRange.Contains(TargetActor) &&
-		!OverlappedBuildingInAttackRange.Contains(TargetActor))
-	{
-		TracingTargetActor();
-	}
-	else
+	else if (OverlappedCharacterInAttackRange.Contains(TargetActor) ||
+		OverlappedBuildingInAttackRange.Contains(TargetActor))
 	{
 		State = EFiniteState::Attack;
 		AttackingOfFSM(1.0f);
+	}
+	else
+	{
+		TracingTargetActor();
 	}
 }
 

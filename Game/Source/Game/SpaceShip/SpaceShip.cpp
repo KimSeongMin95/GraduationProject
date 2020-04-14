@@ -306,7 +306,7 @@ void ASpaceShip::StartLanding()
 
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 		GetWorldTimerManager().ClearTimer(TimerHandle);
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::Landing, 0.0166f, true);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::Landing, 0.1f, true);
 }
 void ASpaceShip::Landing()
 {
@@ -435,7 +435,7 @@ void ASpaceShip::StartTakingOff()
 
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 		GetWorldTimerManager().ClearTimer(TimerHandle);
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::TakingOff, 0.0166f, true, 4.0f);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASpaceShip::TakingOff, 0.1f, true, 4.0f);
 }
 void ASpaceShip::TakingOff()
 {
@@ -492,8 +492,10 @@ float ASpaceShip::CalculateDistanceToLand()
 
 		TArray<FHitResult> hitResults; // 결과를 저장
 
-		FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllStaticObjects); // 모든 오브젝트
-		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
+		FCollisionObjectQueryParams collisionObjectQueryParams;
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic); // 
+		//FCollisionQueryParams collisionQueryParams;
+		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, collisionObjectQueryParams);
 		
 		for (auto& hit : hitResults)
 		{

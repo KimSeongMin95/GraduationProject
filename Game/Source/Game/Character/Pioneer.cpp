@@ -23,7 +23,7 @@
 //#include "Building/Floor.h"
 //#include "Building/Stairs.h"
 #include "Building/Turret.h"
-//#include "Building/Gate.h"
+#include "Building/Gate.h"
 //#include "Building/OrganicMine.h"
 //#include "Building/InorganicMine.h"
 //#include "Building/NuclearFusionPowerPlant.h"
@@ -86,6 +86,10 @@ APioneer::APioneer()
 	bArmedWeapon = true;
 
 	Level = 1;
+
+	TimerOfSetCursorToWorld = 0.0f;
+	TimerOfOnConstructingMode = 0.0f;
+
 }
 
 void APioneer::BeginPlay()
@@ -115,9 +119,9 @@ void APioneer::Tick(float DeltaTime)
 
 	Super::Tick(DeltaTime);
 
-	SetCursorToWorld();
+	SetCursorToWorld(DeltaTime);
 
-	OnConstructingMode();
+	OnConstructingMode(DeltaTime);
 
 	RotateTargetRotation(DeltaTime);
 
@@ -406,11 +410,15 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 
 		TArray<FHitResult> hitResults; // 결과를 저장
 
-		//FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
-		//world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, ObjectQueryParams);
-		
+		FCollisionObjectQueryParams collisionObjectQueryParams;
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn); // Pioneer
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel4); // Building
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic); // 
+		//FCollisionQueryParams collisionQueryParams;
+		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, collisionObjectQueryParams);
+
 		//FCollisionResponseParams collisionResponseParams(ECollisionResponse::ECR_Overlap);
-		world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, ECollisionChannel::ECC_WorldStatic);
+		//world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, ECollisionChannel::ECC_WorldStatic);
 
 		if (hitResults.Num() == 0)
 			return false;
@@ -419,25 +427,28 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 		{
 //#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 //			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//			UE_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
 //			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
 //			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
 //			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
 //			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
 //#endif
-			if (hit.Actor == this)
-				continue;
 
-			if (hit.Actor->IsA(AProjectile::StaticClass()))
+			if (hit.Actor == this)
 				continue;
 
 			if (hit.Actor->IsA(ATriggerVolume::StaticClass()))
 				continue;
 
-			//if (hit.Actor->IsA(ALandscape::StaticClass()))
+			//if (hit.Actor->IsA(AProjectile::StaticClass()))
 			//	continue;
-
-			if (hit.Actor->IsA(ATurret::StaticClass()))
+			
+			if (hit.Actor->IsA(APioneer::StaticClass()))
 				continue;
+
+			if (hit.Actor->IsA(ALandscape::StaticClass()))
+				continue;
+
 
 			// 충돌하는 것이 해당 Enemy면
 			if (hit.Actor == Target)
@@ -446,19 +457,19 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 				{
 					if (hit.Component == enemy->GetCapsuleComponent())
 					{
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-//						UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-//						UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
-//						UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
-//						UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
-//						UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-//#endif
 						return true;
 					}
 				}
 			}
+			else if (hit.Actor->IsA(AGate::StaticClass()) &&
+				hit.Component->IsA(USphereComponent::StaticClass()))
+			{
+				continue;
+			}
 			else
+			{
 				return false;
+			}
 		}
 	}
 
@@ -665,7 +676,7 @@ void APioneer::SetCameraBoomSettings()
 }
 
 
-void APioneer::SetCursorToWorld()
+void APioneer::SetCursorToWorld(float DeltaTime)
 {
 	if (!CursorToWorld || !GetController())
 		return;
@@ -675,6 +686,11 @@ void APioneer::SetCursorToWorld()
 		CursorToWorld->SetVisibility(false);
 		return;
 	}
+
+	TimerOfSetCursorToWorld += DeltaTime;
+	if (TimerOfSetCursorToWorld < 0.033f)
+		return;
+	TimerOfSetCursorToWorld = 0.0f;
 
 
 	/*if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
@@ -1392,7 +1408,7 @@ void APioneer::SpawnBuilding(int Value)
 		Building = BuildingManager->SpawnBuilding(Value);
 }
 
-void APioneer::OnConstructingMode()
+void APioneer::OnConstructingMode(float DeltaTime)
 {
 	if (!bConstructingMode || !CursorToWorld || !Building)
 	{
@@ -1410,6 +1426,11 @@ void APioneer::OnConstructingMode()
 		return;
 	}
 
+	TimerOfOnConstructingMode += DeltaTime;
+	if (TimerOfOnConstructingMode < 0.033f)
+		return;
+	TimerOfOnConstructingMode = 0.0f;
+
 
 	// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
 	if (UWorld* world = GetWorld())
@@ -1425,25 +1446,28 @@ void APioneer::OnConstructingMode()
 
 		FVector WorldOrigin; // 시작 위치
 		FVector WorldDirection; // 방향
-		float HitResultTraceDistance = 100000.f; // WorldDirection과 곱하여 끝 위치를 설정
+		float HitResultTraceDistance = 10000.f; // WorldDirection과 곱하여 끝 위치를 설정
 		UGameplayStatics::DeprojectScreenToWorld(PC, MousePosition, WorldOrigin, WorldDirection);
 
 		TArray<FHitResult> hitResults; // 결과를 저장
 		
-		//FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
-		//world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
-		
-		world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ECollisionChannel::ECC_GameTraceChannel4);
+		FCollisionObjectQueryParams collisionObjectQueryParams;
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel4); // Building
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic); // 
+		//FCollisionQueryParams collisionQueryParams;
+		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, collisionObjectQueryParams);
+
+		//world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ECollisionChannel::ECC_WorldStatic);
 
 		for (auto& hit : hitResults)
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
-			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
-			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
-			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-#endif
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+//			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+//			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//#endif
 
 			// Building이 터렛이라면 Wall 위에 건설할 수 있도록 합니다.
 			if (ATurret* turret = dynamic_cast<ATurret*>(Building))
@@ -1464,8 +1488,6 @@ void APioneer::OnConstructingMode()
 				
 			}
 
-			//if (hit.Actor->GetClass() == ALandscape::StaticClass())
-			//if (Cast<ALandscape>(hit.Actor))
 			if (hit.Actor->IsA(ALandscape::StaticClass())) // hit한 Actor가 ALandscape면
 			{
 				Building->SetActorLocation(hit.Location);

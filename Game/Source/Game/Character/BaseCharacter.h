@@ -200,6 +200,9 @@ public:
 		void LookAtTheLocation(FVector Location);
 
 	UFUNCTION(Category = "CharacterAI")
+		virtual bool CheckNoObstacle(AActor* Target);
+
+	UFUNCTION(Category = "CharacterAI")
 		/** TargetActor¸¦ Ã£±â */
 		virtual void FindTheTargetActor(float DeltaTime);
 

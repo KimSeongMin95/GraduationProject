@@ -16,6 +16,12 @@
 #include "EnemyManager.h"
 
 #include "Character/Enemy.h"
+
+#include "Character/Pioneer.h"
+
+#include "Landscape.h"
+
+#include "Building/Gate.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -131,14 +137,14 @@ void ATurret::InitArrowComponent(FRotator Rotatation, FVector Location)
 }
 
 
-float ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
+bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 {
 	if (!Enemy)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<ATurret::CheckEnemyInAttackRange(...)> if (!Enemy)"));
 #endif
-		return 100000.0f;
+		return false;
 	}
 
 	if (!ParentOfHead)
@@ -146,55 +152,80 @@ float ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::CheckEnemyInAttackRange(...)> if (!ParentOfHead)"));
 #endif
-		return 100000.0f;
+		return false;
 	}
 
-//	if (UWorld* world = GetWorld())
-//	{
-//		FVector WorldOrigin = ParentOfHead->GetComponentLocation(); // 시작 위치
-//		FVector WorldDirection = Enemy->GetActorLocation() - WorldOrigin; // 방향
-//		WorldDirection.Normalize();
-//		FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // 모든 오브젝트
-//
-//		TArray<FHitResult> hitResults; // 결과를 저장
-//		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * AttackRange, ObjectQueryParams);
-//
-//		if (hitResults.Num() == 0)
-//			return 100000.0f;
-//
-//		for (auto& hit : hitResults)
-//		{
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-//
-//			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-//			//UE_LOG(LogTemp, Warning, TEXT("GetName %s"), *hit.GetActor()->GetName());
-//			//UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
-//			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-//#endif
-//
-//			//if (hit.Distance == 0.0f)
-//			//	continue;
-//
-//			if (hit.Actor == this)
-//				continue;
-//
-//			if (hit.Actor->IsA(AProjectile::StaticClass()))
-//				continue;
-//
-//			if (hit.Actor->IsA(ATriggerVolume::StaticClass()))
-//				continue;
-//
-//			// 충돌하는 것이 해당 Enemy면
-//			if (hit.Actor == Enemy)
-//			{
-//				if (hit.Component->IsA(USkeletalMeshComponent::StaticClass()))
-//					return hit.Distance;
-//			}
-//		}
-//	}
 
-	// 임시
-	return FVector::Distance(ParentOfHead->GetComponentLocation(), Enemy->GetActorLocation());
+	if (UWorld* world = GetWorld())
+	{
+		FVector WorldOrigin = ParentOfHead->GetComponentLocation(); // 시작 위치
+		FVector WorldDirection = Enemy->GetActorLocation() - WorldOrigin; // 방향
+		WorldDirection.Normalize();
+
+		TArray<FHitResult> hitResults; // 결과를 저장
+
+		FCollisionObjectQueryParams collisionObjectQueryParams;
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn); // Pioneer
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel4); // Building
+		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic); // 
+		//FCollisionQueryParams collisionQueryParams;
+		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * AttackRange, collisionObjectQueryParams);
+
+		//FCollisionResponseParams collisionResponseParams(ECollisionResponse::ECR_Overlap);
+		//world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, ECollisionChannel::ECC_WorldStatic);
+
+		if (hitResults.Num() == 0)
+			return false;
+
+		for (auto& hit : hitResults)
+		{
+			//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//			UE_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
+			//			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+			//			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+			//			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+			//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//#endif
+
+			if (hit.Actor == this)
+				continue;
+
+			if (hit.Actor->IsA(ATriggerVolume::StaticClass()))
+				continue;
+
+			//if (hit.Actor->IsA(AProjectile::StaticClass()))
+			//	continue;
+
+			if (hit.Actor->IsA(APioneer::StaticClass()))
+				continue;
+
+			if (hit.Actor->IsA(ALandscape::StaticClass()))
+				continue;
+
+
+			// 충돌하는 것이 해당 Enemy면
+			if (hit.Actor == Enemy)
+			{
+				if (hit.Component == Enemy->GetCapsuleComponent())
+				{
+					return true;
+				}
+			}
+			else if (hit.Actor->IsA(AGate::StaticClass()) &&
+				hit.Component->IsA(USphereComponent::StaticClass()))
+			{
+				continue;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+
+
+	return false;
 }
 
 void ATurret::TickOfFindEnemy(float DeltaTime)
@@ -226,11 +257,18 @@ void ATurret::TickOfFindEnemy(float DeltaTime)
 	float distance = 0.0f;
 	for (auto& kvp : EnemyManager->Enemies)
 	{
-		distance = CheckEnemyInAttackRange(kvp.Value);
+		if (!kvp.Value)
+			continue;
+
+	
+		distance = FVector::Distance(ParentOfHead->GetComponentLocation(), kvp.Value->GetActorLocation());
 
 		if (distance <= AttackRange)
 		{
-			Targets.Add((int)distance, kvp.Value);
+			if (CheckEnemyInAttackRange(kvp.Value))
+			{
+				Targets.Add((int)distance, kvp.Value);
+			}
 		}
 	}
 
