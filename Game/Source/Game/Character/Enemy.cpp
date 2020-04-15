@@ -21,6 +21,8 @@
 #include "Building/Gate.h"
 
 #include "Landscape.h"
+
+#include "Etc/MyTriggerBox.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -42,6 +44,8 @@ AEnemy::AEnemy()
 	{
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Overlap); // Projectile
 	}
+
+	TriggerBoxForSpawn = nullptr;
 }
 
 void AEnemy::BeginPlay()
@@ -432,8 +436,18 @@ bool AEnemy::CheckNoObstacle(AActor* Target)
 	if (UWorld* world = GetWorld())
 	{
 		FVector WorldOrigin = GetActorLocation(); // 시작 위치
-		WorldOrigin.Z += 10.0f - GetCapsuleComponent()->GetScaledCapsuleRadius();
-		FVector WorldDirection = Target->GetActorLocation() - WorldOrigin; // 방향 
+		//WorldOrigin.Z += 10.0f - GetCapsuleComponent()->GetScaledCapsuleRadius();
+
+		//FVector WorldDirection = Target->GetActorLocation() - WorldOrigin; // 방향 
+		FVector WorldDirection = Target->GetActorLocation(); // 방향
+		if (APioneer* pioneer = dynamic_cast<APioneer*>(Target))
+		{
+			if (pioneer->GetCapsuleComponent())
+			{
+				WorldDirection.Z += 0.0f - pioneer->GetCapsuleComponent()->GetScaledCapsuleRadius();
+			}
+		}
+		WorldDirection -= WorldOrigin;
 		WorldDirection.Normalize();
 
 		TArray<FHitResult> hitResults; // 결과를 저장
@@ -559,10 +573,18 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 		}
 	}
 
+	if (!TargetActor && TriggerBoxForSpawn)
+	{
+		float dist = FVector::Distance(TriggerBoxForSpawn->GetActorLocation(), GetActorLocation());
+
+		if (dist >= (DetectRange * AOnlineGameMode::CellSize - 256.0f))
+			TargetActor = TriggerBoxForSpawn;
+	}
+
 	if (!TargetActor)
 	{
 		State = EFiniteState::Idle;
-		IdlingOfFSM(3.0f);
+		IdlingOfFSM(5.0f);
 	}
 	else if (OverlappedCharacterInAttackRange.Contains(TargetActor) ||
 		OverlappedBuildingInAttackRange.Contains(TargetActor))
@@ -580,15 +602,13 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 void AEnemy::IdlingOfFSM(float DeltaTime)
 {
 	TimerOfIdlingOfFSM += DeltaTime;
-	if (TimerOfIdlingOfFSM < 3.0f)
+	if (TimerOfIdlingOfFSM < 5.0f)
 		return;
 	TimerOfIdlingOfFSM = 0.0f;
 
 	/*******************************************/
 
 	StopMovement();
-
-	//MoveRandomlyPosition();
 }
 
 void AEnemy::TracingOfFSM(float DeltaTime)
@@ -606,7 +626,7 @@ void AEnemy::TracingOfFSM(float DeltaTime)
 	if (!TargetActor)
 	{
 		State = EFiniteState::Idle;
-		IdlingOfFSM(3.0f);
+		IdlingOfFSM(5.0f);
 	}
 	else if (OverlappedCharacterInAttackRange.Contains(TargetActor) ||
 		OverlappedBuildingInAttackRange.Contains(TargetActor))
@@ -635,7 +655,7 @@ void AEnemy::AttackingOfFSM(float DeltaTime)
 	if (!TargetActor)
 	{
 		State = EFiniteState::Idle;
-		IdlingOfFSM(3.0f);
+		IdlingOfFSM(5.0f);
 		return;
 	}
 

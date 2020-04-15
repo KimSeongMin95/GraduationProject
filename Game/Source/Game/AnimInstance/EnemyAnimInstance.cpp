@@ -90,6 +90,9 @@ void UEnemyAnimInstance::SetFSM()
 	case EFiniteState::Idle:
 		bIdle = true;
 		break;
+	case EFiniteState::Moving:
+		bTracing = true;
+		break;
 	case EFiniteState::Tracing:
 		bTracing = true;
 		break;

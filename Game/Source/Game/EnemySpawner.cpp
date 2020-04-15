@@ -98,8 +98,10 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 	if (SpawnCount < SpawnLimit)
 	{
 		// 생성되면
-		if (EnemyManager->SpawnEnemy((int)EnemyType, GetActorTransform()))
+		if (AEnemy* enemy = EnemyManager->SpawnEnemy((int)EnemyType, GetActorTransform()))
 		{
+			enemy->SetTriggerBoxForSpawn(TriggerBoxForSpawn);
+
 			SpawnCount++;
 
 			SpawnTimer = 0.0f;
@@ -111,7 +113,7 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 		//Destroy();
 
 		//////////
-		// 레벨링
+		// 레벨디자인
 		//////////
 		InitTimer += DeltaTime;
 		if (InitTimer < InitTime)

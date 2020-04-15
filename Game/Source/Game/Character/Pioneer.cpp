@@ -166,8 +166,8 @@ void APioneer::InitStat()
 
 	AttackPower = 1.0f;
 
-	AttackRange = 16.0f;
-	DetectRange = 32.0f;
+	AttackRange = 32.0f;
+	DetectRange = 64.0f;
 	SightRange = 32.0f;
 
 	Exp = 0.0f;

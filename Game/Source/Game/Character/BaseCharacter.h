@@ -39,8 +39,9 @@ UENUM(BlueprintType)
 enum class EFiniteState : uint8
 {
 	Idle = 0,
-	Tracing = 1,
-	Attack = 2
+	Moving,
+	Tracing,
+	Attack,
 };
 
 
@@ -214,7 +215,9 @@ public:
 		/** 랜덤한 위치로 이동 */
 		void MoveRandomlyPosition();
 
-
+	UFUNCTION(Category = "CharacterAI")
+		/** 지정한 위치로 이동 */
+		void MoveThePosition(FVector newPosition);
 
 
 

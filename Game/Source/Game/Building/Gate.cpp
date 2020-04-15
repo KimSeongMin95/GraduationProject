@@ -104,6 +104,8 @@ void AGate::InitBuilding()
 	AddBuildingSMC(&Ceiling, TEXT("Ceiling"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularSci_Int/Meshes/SM_Ceiling_B_2.SM_Ceiling_B_2'"),
 		FVector(4.085f, 0.272f, 1.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 611.258f));
+
+	SetActorScale3D(FVector(1.3f, 1.3f, 1.3f));
 }
 
 void AGate::InitTriggerOfGate()
@@ -178,8 +180,8 @@ void AGate::TickOfOpenAndCloseTheGate(float DeltaTime)
 	{
 		float distance = FVector::Distance(GetActorLocation(), enemy->GetActorLocation());
 
-		// Gate와의 거리가 300.0f 이하면 문에 깔릴 수 있으므로 닫지 않습니다.
-		if (distance < 300.0f)
+		// Gate와의 거리가 400.0f 이하면 문에 깔릴 수 있으므로 닫지 않습니다.
+		if (distance < 400.0f)
 			return;
 	}
 	

@@ -482,6 +482,15 @@ void ABaseCharacter::MoveRandomlyPosition()
 	LookAtTheLocation(newPosition);
 }
 
+void ABaseCharacter::MoveThePosition(FVector newPosition)
+{
+	if (!GetController())
+		return;
+
+	PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), newPosition);
+
+	LookAtTheLocation(newPosition);
+}
 
 void ABaseCharacter::IdlingOfFSM(float DeltaTime)
 {

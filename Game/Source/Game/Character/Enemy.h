@@ -95,6 +95,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AttackRange")
 		TArray<class AActor*> OverlappedBuildingInAttackRange;
 
+
+	UPROPERTY(VisibleAnywhere)
+		/** 이동 지점 */
+		class AMyTriggerBox* TriggerBoxForSpawn = nullptr;
+
 public:
 	class cServerSocketInGame* ServerSocketInGame = nullptr;
 	class cClientSocketInGame* ClientSocketInGame = nullptr;
@@ -131,6 +136,7 @@ public:
 		void DamageToTargetActor();
 
 	FORCEINLINE void SetEnemyManager(class AEnemyManager* pEnemyManager) { this->EnemyManager = pEnemyManager; }
+	FORCEINLINE void SetTriggerBoxForSpawn(class AMyTriggerBox* pTriggerBoxForSpawn) { this->TriggerBoxForSpawn = pTriggerBoxForSpawn; }
 
 
 	///////////

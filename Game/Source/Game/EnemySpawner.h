@@ -75,6 +75,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "EnemyManager")
 		class AEnemyManager* EnemyManager = nullptr;
 
+
+
+
 public:
 	void TickOfSpawnEnemy(float DeltaTime);
 

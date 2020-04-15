@@ -523,6 +523,7 @@ void ATurret::Fire()
 		break;
 	}
 
+	projectile->SetGenerateOverlapEventsOfHitRange(true);
 
 	if (ServerSocketInGame)
 	{
