@@ -157,8 +157,8 @@ void APioneer::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void APioneer::InitStat()
 {
-	HealthPoint = 10000.0f;
-	MaxHealthPoint = 10000.0f;
+	HealthPoint = 1000.0f;
+	MaxHealthPoint = 1000.0f;
 	bDying = false;
 
 	MoveSpeed = 10.0f;

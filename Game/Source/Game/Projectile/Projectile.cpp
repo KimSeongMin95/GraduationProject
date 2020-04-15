@@ -22,7 +22,8 @@ AProjectile::AProjectile()
 	HitRange = CreateDefaultSubobject<USphereComponent>(TEXT("HitRange"));
 	RootComponent = HitRange;
 	HitRange->SetCollisionProfileName(TEXT("CollisionOfHitRange"));
-	HitRange->SetGenerateOverlapEvents(true);
+	//HitRange->SetGenerateOverlapEvents(true);
+	HitRange->SetGenerateOverlapEvents(false);
 	HitRange->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin_HitRange);
 
 	// Collision 카테고리에서 Collision Presets을 커스텀으로 적용
@@ -189,6 +190,12 @@ void AProjectile::SetTimerForDestroy(float Time)
 void AProjectile::DestroyByTimer()
 {
 	Destroy();
+}
+
+void AProjectile::SetGenerateOverlapEventsOfHitRange(bool bGenerate)
+{
+	if (HitRange)
+		HitRange->SetGenerateOverlapEvents(bGenerate);
 }
 
 void AProjectile::SetDamage(float Damage)

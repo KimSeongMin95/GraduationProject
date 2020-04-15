@@ -112,6 +112,8 @@ bool AGrenadeLauncher::Fire(int IDOfPioneer)
 
 	projectile->IDOfPioneer = IDOfPioneer;
 
+	projectile->SetGenerateOverlapEventsOfHitRange(true);
+
 	if (ServerSocketInGame)
 	{
 		if (ServerSocketInGame->IsServerOn())

@@ -88,6 +88,8 @@ protected:
 		void DestroyByTimer();
 
 public:
+	void SetGenerateOverlapEventsOfHitRange(bool bGenerate);
+
 	FORCEINLINE class UParticleSystemComponent* GetTrailParticleSystem() const { return TrailParticleSystem; }
 
 	FORCEINLINE class UParticleSystemComponent* GetImpactParticleSystem() const { return ImpactParticleSystem; }

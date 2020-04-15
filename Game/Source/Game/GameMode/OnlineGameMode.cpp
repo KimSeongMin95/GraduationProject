@@ -385,7 +385,11 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 	if (projectile)
 	{
 		projectile->IDOfPioneer = InfoOfProjectile.ID;
+
+		projectile->SetGenerateOverlapEventsOfHitRange(true);
 	}
+
+
 }
 
 void AOnlineGameMode::SpawnBuildingManager()

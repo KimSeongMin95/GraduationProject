@@ -401,8 +401,7 @@ void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 					{
 						pioneer->Exp += Exp;
 
-						// юс╫ц
-						pioneer->Level += Exp;
+						pioneer->CalculateLevel();
 					}
 				}
 			}
