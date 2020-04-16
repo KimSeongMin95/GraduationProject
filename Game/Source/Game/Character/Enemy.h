@@ -65,7 +65,6 @@ public:
 
 	virtual void FindTheTargetActor(float DeltaTime) final;
 
-
 	virtual void IdlingOfFSM(float DeltaTime) final;
 
 	virtual void TracingOfFSM(float DeltaTime) final;

@@ -203,8 +203,8 @@ void AOnlineGameMode::StartPlay()
 
 	SpawnEnemyManager();
 
-	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(-8064.093f, -7581.192f, 20000.0f)));
-	SpaceShip->SetInitLocation(FVector(-8064.093f, -7581.192f, 10000.0f));
+	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(-7907.8f, -8044.8f, 20000.0f)));
+	SpaceShip->SetInitLocation(FVector(-7907.8f, -8044.8f, 20000.0f));
 	SpaceShip->SetPioneerManager(PioneerManager);
 
 	if (PioneerController)

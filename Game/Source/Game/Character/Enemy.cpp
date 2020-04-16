@@ -577,14 +577,14 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 	{
 		float dist = FVector::Distance(TriggerBoxForSpawn->GetActorLocation(), GetActorLocation());
 
-		if (dist >= (5.0f * AttackRange * AOnlineGameMode::CellSize))
+		if (dist >= (0.75f * DetectRange * AOnlineGameMode::CellSize))
 			TargetActor = TriggerBoxForSpawn;
 	}
 
 	if (!TargetActor)
 	{
 		State = EFiniteState::Idle;
-		IdlingOfFSM(5.0f);
+		IdlingOfFSM(1.5f);
 	}
 	else if (OverlappedCharacterInAttackRange.Contains(TargetActor) ||
 		OverlappedBuildingInAttackRange.Contains(TargetActor))
@@ -602,13 +602,15 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 void AEnemy::IdlingOfFSM(float DeltaTime)
 {
 	TimerOfIdlingOfFSM += DeltaTime;
-	if (TimerOfIdlingOfFSM < 5.0f)
+	if (TimerOfIdlingOfFSM < 10.0f)
 		return;
 	TimerOfIdlingOfFSM = 0.0f;
 
 	/*******************************************/
 
 	StopMovement();
+
+	MoveRandomlyPosition();
 }
 
 void AEnemy::TracingOfFSM(float DeltaTime)

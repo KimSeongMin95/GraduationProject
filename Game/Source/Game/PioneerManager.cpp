@@ -496,6 +496,8 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	{
 		Observation();
 	}
+
+	pioneer->SetGenerateOverlapEventsOfCapsuleComp(true);
 }
 
 void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
@@ -553,6 +555,8 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 	{
 		Observation();
 	}
+
+	pioneer->SetGenerateOverlapEventsOfCapsuleComp(true);
 }
 
 //void APioneerManager::SwitchOtherPioneer(class APioneer* CurrentPioneer, float BlendTime, EViewTargetBlendFunction blendFunc, float BlendExp, bool bLockOutgoing)

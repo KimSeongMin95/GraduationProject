@@ -174,6 +174,8 @@ protected:
 		float DistanceToActor(AActor* Actor);
 
 public:
+	void SetGenerateOverlapEventsOfCapsuleComp(bool bGenerate);
+
 	FORCEINLINE AActor* GetTargetActor() const { return TargetActor; }
 
 	FORCEINLINE ECharacterAI GetCharacterAI() const { return CharacterAI; }

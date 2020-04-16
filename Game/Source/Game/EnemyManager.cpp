@@ -172,6 +172,8 @@ class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 		}
 	}
 
+	enemy->SetGenerateOverlapEventsOfCapsuleComp(true);
+
 	return enemy;
 }
 
@@ -241,5 +243,7 @@ void AEnemyManager::RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy)
 
 		enemy->SetEnemyManager(this);
 	}
+
+	enemy->SetGenerateOverlapEventsOfCapsuleComp(true);
 }
 /*** AEnemyManager : End ***/

@@ -16,7 +16,7 @@ ABaseCharacter::ABaseCharacter()
 
 	if (GetCapsuleComponent())
 	{
-		GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+		GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -320,6 +320,11 @@ float ABaseCharacter::DistanceToActor(AActor* Actor)
 	return FVector::Distance(this->GetActorLocation(), Actor->GetActorLocation());
 }
 
+void ABaseCharacter::SetGenerateOverlapEventsOfCapsuleComp(bool bGenerate)
+{
+	if (GetCapsuleComponent())
+		GetCapsuleComponent()->SetGenerateOverlapEvents(bGenerate);
+}
 
 void ABaseCharacter::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 {

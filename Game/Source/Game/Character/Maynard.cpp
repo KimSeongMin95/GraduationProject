@@ -63,11 +63,11 @@ void AMaynard::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AMaynard::InitStat()
 {
-	HealthPoint = 120.0f;
-	MaxHealthPoint = 120.0f;
+	HealthPoint = 1200.0f;
+	MaxHealthPoint = 1200.0f;
 	bDying = false;
 
-	MoveSpeed = 15.0f;
+	MoveSpeed = 20.0f;
 	AttackSpeed = 0.5f;
 
 	AttackPower = 50.0f;

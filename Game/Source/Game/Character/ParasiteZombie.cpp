@@ -63,8 +63,8 @@ void AParasiteZombie::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AParasiteZombie::InitStat()
 {
-	HealthPoint = 60.0f;
-	MaxHealthPoint = 60.0f;
+	HealthPoint = 6000.0f;
+	MaxHealthPoint = 6000.0f;
 	bDying = false;
 
 	MoveSpeed = 10.0f;

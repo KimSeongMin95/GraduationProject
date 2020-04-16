@@ -63,11 +63,11 @@ void ASlowZombie::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void ASlowZombie::InitStat()
 {
-	HealthPoint = 200.0f;
-	MaxHealthPoint = 200.0f;
+	HealthPoint = 2000.0f;
+	MaxHealthPoint = 2000.0f;
 	bDying = false;
 
-	MoveSpeed = 6.0f;
+	MoveSpeed = 3.0f;
 	AttackSpeed = 0.5f;
 
 	AttackPower = 20.0f;

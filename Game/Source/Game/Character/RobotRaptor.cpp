@@ -63,8 +63,8 @@ void ARobotRaptor::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void ARobotRaptor::InitStat()
 {
-	HealthPoint = 250.0f;
-	MaxHealthPoint = 250.0f;
+	HealthPoint = 2500.0f;
+	MaxHealthPoint = 2500.0f;
 	bDying = false;
 
 	MoveSpeed = 9.0f;

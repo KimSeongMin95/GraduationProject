@@ -483,6 +483,14 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 
 	TargetActor = nullptr;
 
+	// AI는 기지를 벗어나지 못하도록 합니다.
+	if (FVector::Distance(FVector(-7859.1f, -8184.9f, 178.8f), GetActorLocation()) > (DetectRange * AOnlineGameMode::CellSize))
+	{
+		State = EFiniteState::Idle;
+		MoveThePosition(FVector(-7859.1f, -8184.9f, 178.8f));
+		return;
+	}
+
 	AActor* closestActor = nullptr;
 
 	// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
@@ -530,7 +538,7 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 	if (!TargetActor)
 	{
 		State = EFiniteState::Idle;
-		IdlingOfFSM(3.0f);
+		IdlingOfFSM(1.5f);
 	}
 	else if (DistanceToActor(TargetActor) < (AttackRange * AOnlineGameMode::CellSize)
 		&& CheckNoObstacle(TargetActor))

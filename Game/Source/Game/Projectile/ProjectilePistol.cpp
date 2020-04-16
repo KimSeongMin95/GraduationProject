@@ -24,7 +24,7 @@ AProjectilePistol::AProjectilePistol()
 
 	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Impact_Stone_Small_Light.P_Impact_Stone_Small_Light'"));
 
-	TotalDamage = 50.0f;
+	TotalDamage = 50000.0f;
 }
 
 void AProjectilePistol::BeginPlay()

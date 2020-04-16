@@ -63,8 +63,8 @@ void AGiantZombie::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AGiantZombie::InitStat()
 {
-	HealthPoint = 500.0f;
-	MaxHealthPoint = 500.0f;
+	HealthPoint = 5000.0f;
+	MaxHealthPoint = 5000.0f;
 	bDying = false;
 
 	MoveSpeed = 8.0f;

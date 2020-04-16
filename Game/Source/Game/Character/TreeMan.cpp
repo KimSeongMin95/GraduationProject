@@ -63,11 +63,11 @@ void ATreeMan::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void ATreeMan::InitStat()
 {
-	HealthPoint = 800.0f;
-	MaxHealthPoint = 800.0f;
+	HealthPoint = 8000.0f;
+	MaxHealthPoint = 8000.0f;
 	bDying = false;
 
-	MoveSpeed = 5.0f;
+	MoveSpeed = 4.0f;
 	AttackSpeed = 0.5f;
 
 	AttackPower = 80.0f;
