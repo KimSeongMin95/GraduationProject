@@ -73,8 +73,8 @@ void ATreeMan::InitStat()
 	AttackPower = 80.0f;
 
 	AttackRange = 4.5f;
-	DetectRange = 32.0f;
-	SightRange = 32.0f;
+	DetectRange = 48.0f;
+	SightRange = 48.0f;
 
 	Exp = 9.0f;
 }

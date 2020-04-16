@@ -127,10 +127,6 @@ void APioneer::Tick(float DeltaTime)
 
 	// 회전시 떨림을 방지하기 위해 카메라 위치 조정은 가장 마지막에 실행합니다.
 	SetCameraBoomSettings();
-
-
-	//// 임시
-	//Level++;
 }
 
 void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -157,8 +153,8 @@ void APioneer::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void APioneer::InitStat()
 {
-	HealthPoint = 1000.0f;
-	MaxHealthPoint = 1000.0f;
+	HealthPoint = 100.0f;
+	MaxHealthPoint = 100.0f;
 	bDying = false;
 
 	MoveSpeed = 10.0f;
@@ -1566,6 +1562,11 @@ void APioneer::CalculateLevel()
 		{
 			ChangeWeapon(1.0f);
 		}
+
+		HealthPoint += 20.0f;
+		MaxHealthPoint += 20.0f;
+
+		MoveSpeed += 0.5f;
 	}
 }
 

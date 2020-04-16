@@ -577,7 +577,7 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 	{
 		float dist = FVector::Distance(TriggerBoxForSpawn->GetActorLocation(), GetActorLocation());
 
-		if (dist >= (DetectRange * AOnlineGameMode::CellSize - 256.0f))
+		if (dist >= (5.0f * AttackRange * AOnlineGameMode::CellSize))
 			TargetActor = TriggerBoxForSpawn;
 	}
 
