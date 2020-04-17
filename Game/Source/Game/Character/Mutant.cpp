@@ -12,7 +12,7 @@
 AMutant::AMutant()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(130.0f, 130.0f);
+	GetCapsuleComponent()->InitCapsuleSize(100.0f, 130.0f);
 
 	InitHelthPointBar();
 
@@ -63,19 +63,19 @@ void AMutant::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AMutant::InitStat()
 {
-	HealthPoint = 400.0f;
-	MaxHealthPoint = 400.0f;
+	HealthPoint = 800.0f;
+	MaxHealthPoint = 800.0f;
 	bDying = false;
 
 	MoveSpeed = 7.0f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 50.0f;
+	AttackPower = 25.0f;
 
-	AttackRange = 4.0f;
+	AttackRange = 4.5f;
 	DetectRange = 48.0f;
 	SightRange = 48.0f;
 
-	Exp = 9.0f;
+	Exp = 17.0f;
 }
 /*** ABaseCharacter : End ***/

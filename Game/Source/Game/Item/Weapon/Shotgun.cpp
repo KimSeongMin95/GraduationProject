@@ -57,7 +57,7 @@ void AShotgun::InitStat()
 
 	LimitedLevel = 5;
 
-	AttackPower = 15.0f;
+	AttackPower = 12.0f;
 	AttackSpeed = 0.8f;
 	AttackRange = 10.0f * AOnlineGameMode::CellSize;
 
@@ -69,7 +69,7 @@ void AShotgun::InitStat()
 
 	SocketName = TEXT("ShotgunSocket");
 
-	NumOfSlugs = 6;
+	NumOfSlugs = 5;
 }
 
 void AShotgun::InitWeapon()
@@ -113,8 +113,8 @@ bool AShotgun::Fire(int IDOfPioneer)
 			myTrans.SetIdentity();
 
 		FRotator rotation = myTrans.GetRotation().Rotator(); // GetRotation()으로 얻은 FQuat의 Rotator()로 FRotator를 획득.
-		rotation.Pitch += FMath::RandRange(-20.0f, 20.0f);
-		rotation.Yaw += FMath::RandRange(-20.0f, 20.0f);
+		rotation.Pitch += FMath::RandRange(-5.0f, 5.0f);
+		rotation.Yaw += FMath::RandRange(-5.0f, 5.0f);
 		myTrans.SetRotation(FQuat(rotation));
 
 		AProjectile* projectile = world->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
@@ -133,8 +133,6 @@ bool AShotgun::Fire(int IDOfPioneer)
 				infoOfProjectile.SetActorTransform(myTrans);
 
 				ServerSocketInGame->SendInfoOfProjectile(infoOfProjectile);
-
-				return true;
 			}
 		}
 		if (ClientSocketInGame)
@@ -147,8 +145,6 @@ bool AShotgun::Fire(int IDOfPioneer)
 				infoOfProjectile.SetActorTransform(myTrans);
 
 				ClientSocketInGame->SendInfoOfProjectile(infoOfProjectile);
-
-				return true;
 			}
 		}
 	}

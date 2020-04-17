@@ -60,14 +60,14 @@ void AInorganicMine::InitStat()
 
 	Size = FVector2D(1.0f, 1.0f);
 
-	NeedMineral = 300.0f;
-	NeedOrganicMatter = 100.0f;
+	NeedMineral = 480.0f;
+	NeedOrganicMatter = 240.0f;
 
 	ConsumeMineral = 0.0f;
 	ConsumeOrganicMatter = 0.0f;
 	ConsumeElectricPower = 4.0f;
 
-	ProductionMineral = 8.0f;
+	ProductionMineral = 4.0f;
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }

@@ -51,7 +51,7 @@
 APioneer::APioneer()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);
+	GetCapsuleComponent()->InitCapsuleSize(33.0f, 96.0f);
 
 	InitHelthPointBar();
 
@@ -108,6 +108,10 @@ void APioneer::BeginPlay()
 
 	if (EditableTextBoxForID)
 		EditableTextBoxForID->SetText(FText::FromString(NameOfID));
+
+
+	// 일정시간마다 체력을 회복합니다.
+	StartTimerOfHealSelf();
 }
 
 void APioneer::Tick(float DeltaTime)
@@ -153,8 +157,8 @@ void APioneer::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void APioneer::InitStat()
 {
-	HealthPoint = 100.0f;
-	MaxHealthPoint = 100.0f;
+	HealthPoint = 150.0f;
+	MaxHealthPoint = 150.0f;
 	bDying = false;
 
 	MoveSpeed = 10.0f;
@@ -163,7 +167,7 @@ void APioneer::InitStat()
 	AttackPower = 1.0f;
 
 	AttackRange = 32.0f;
-	DetectRange = 64.0f;
+	DetectRange = 59.25f;
 	SightRange = 32.0f;
 
 	Exp = 0.0f;
@@ -1571,11 +1575,26 @@ void APioneer::CalculateLevel()
 			ChangeWeapon(1.0f);
 		}
 
-		HealthPoint += 20.0f;
-		MaxHealthPoint += 20.0f;
+		HealthPoint += 25.0f;
+		MaxHealthPoint += 25.0f;
 
-		MoveSpeed += 0.5f;
+		MoveSpeed += 0.25f;
+		if (GetCharacterMovement())
+			GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
 	}
+}
+
+void APioneer::StartTimerOfHealSelf()
+{
+	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfHealSelf))
+		GetWorldTimerManager().ClearTimer(TimerHandleOfHealSelf);
+	GetWorldTimerManager().SetTimer(TimerHandleOfHealSelf, this, &APioneer::HealSelf, 1.0f, true);
+}
+void APioneer::HealSelf()
+{
+	HealthPoint += 1.0f;
+	if (HealthPoint > MaxHealthPoint)
+		HealthPoint = MaxHealthPoint;
 }
 
 ///////////

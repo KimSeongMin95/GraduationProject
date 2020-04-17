@@ -84,6 +84,8 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "BuildingManager")
 		class ABuildingManager* BuildingManager = nullptr;
 
+	FTimerHandle TimerHandleOfHealSelf;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		/** 캐릭터 뒤편에서 카메라의 위치를 조정합니다. */
@@ -173,7 +175,7 @@ public:
 
 
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		int Level;
 
 
@@ -290,10 +292,14 @@ public:
 		void DestroyBuilding();
 
 
+	UFUNCTION(Category = "Level")
+		void CalculateLevel();
 
 
 	UFUNCTION(Category = "Level")
-		void CalculateLevel();
+		void StartTimerOfHealSelf();
+	UFUNCTION(Category = "Level")
+		void HealSelf();
 
 	///////////
 	// 네트워크

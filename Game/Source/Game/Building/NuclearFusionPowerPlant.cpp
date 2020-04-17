@@ -60,16 +60,16 @@ void ANuclearFusionPowerPlant::InitStat()
 
 	Size = FVector2D(1.0f, 1.0f);
 
-	NeedMineral = 500.0f;
-	NeedOrganicMatter = 250.0f;
+	NeedMineral = 600.0f;
+	NeedOrganicMatter = 300.0f;
 
-	ConsumeMineral = 3.0f;
-	ConsumeOrganicMatter = 1.0f;
+	ConsumeMineral = 4.0f;
+	ConsumeOrganicMatter = 2.0f;
 	ConsumeElectricPower = 0.0f;
 
 	ProductionMineral = 0.0f;
 	ProductionOrganicMatter = 0.0f;
-	ProductionElectricPower = 30.0f;
+	ProductionElectricPower = 20.0f;
 }
 
 void ANuclearFusionPowerPlant::InitConstructBuilding()

@@ -595,7 +595,7 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 	else
 	{
 		State = EFiniteState::Tracing;
-		TracingOfFSM(0.5f);
+		TracingOfFSM(0.33f);
 	}
 }
 
@@ -616,7 +616,7 @@ void AEnemy::IdlingOfFSM(float DeltaTime)
 void AEnemy::TracingOfFSM(float DeltaTime)
 {
 	TimerOfTracingOfFSM += DeltaTime;
-	if (TimerOfTracingOfFSM < 0.5f)
+	if (TimerOfTracingOfFSM < 0.33f)
 		return;
 	TimerOfTracingOfFSM = 0.0f;
 
@@ -627,8 +627,10 @@ void AEnemy::TracingOfFSM(float DeltaTime)
 
 	if (!TargetActor)
 	{
+		StopMovement();
+
 		State = EFiniteState::Idle;
-		IdlingOfFSM(5.0f);
+		IdlingOfFSM(0.33f);
 	}
 	else if (OverlappedCharacterInAttackRange.Contains(TargetActor) ||
 		OverlappedBuildingInAttackRange.Contains(TargetActor))

@@ -24,7 +24,7 @@ AProjectileShotgun::AProjectileShotgun()
 
 	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Impact_Wood_Medium_Light.P_Impact_Wood_Medium_Light'"));
 
-	TotalDamage = 15.0f;
+	TotalDamage = 12.0f;
 }
 
 void AProjectileShotgun::BeginPlay()

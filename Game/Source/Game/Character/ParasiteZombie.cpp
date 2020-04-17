@@ -12,7 +12,7 @@
 AParasiteZombie::AParasiteZombie()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(120.0f, 90.0f);
+	GetCapsuleComponent()->InitCapsuleSize(90.0f, 120.0f);
 
 	InitHelthPointBar();
 
@@ -63,19 +63,19 @@ void AParasiteZombie::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AParasiteZombie::InitStat()
 {
-	HealthPoint = 6000.0f;
-	MaxHealthPoint = 6000.0f;
+	HealthPoint = 250.0f;
+	MaxHealthPoint = 250.0f;
 	bDying = false;
 
 	MoveSpeed = 10.0f;
 	AttackSpeed = 2.0f;
 
-	AttackPower = 10.0f;
+	AttackPower = 12.0f;
 
-	AttackRange = 3.0f;
+	AttackRange = 3.5f;
 	DetectRange = 48.0f;
 	SightRange = 48.0f;
 
-	Exp = 5.0f;
+	Exp = 9.0f;
 }
 /*** ABaseCharacter : End ***/

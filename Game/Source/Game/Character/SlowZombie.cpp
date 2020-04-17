@@ -12,7 +12,7 @@
 ASlowZombie::ASlowZombie()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(110.0f, 90.0f);
+	GetCapsuleComponent()->InitCapsuleSize(80.0f, 110.0f);
 
 	InitHelthPointBar();
 
@@ -63,19 +63,19 @@ void ASlowZombie::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void ASlowZombie::InitStat()
 {
-	HealthPoint = 2000.0f;
-	MaxHealthPoint = 2000.0f;
+	HealthPoint = 400.0f;
+	MaxHealthPoint = 400.0f;
 	bDying = false;
 
 	MoveSpeed = 3.0f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 20.0f;
+	AttackPower = 15.0f;
 
-	AttackRange = 3.0f;
+	AttackRange = 3.5f;
 	DetectRange = 48.0f;
 	SightRange = 48.0f;
 
-	Exp = 3.0f;
+	Exp = 11.0f;
 }
 /*** ABaseCharacter : End ***/

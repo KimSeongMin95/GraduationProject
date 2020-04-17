@@ -12,7 +12,7 @@
 ARobotRaptor::ARobotRaptor()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(140.0f, 80.0f);
+	GetCapsuleComponent()->InitCapsuleSize(90.0f, 140.0f);
 
 	InitHelthPointBar();
 
@@ -63,19 +63,19 @@ void ARobotRaptor::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void ARobotRaptor::InitStat()
 {
-	HealthPoint = 2500.0f;
-	MaxHealthPoint = 2500.0f;
+	HealthPoint = 600.0f;
+	MaxHealthPoint = 600.0f;
 	bDying = false;
 
 	MoveSpeed = 9.0f;
 	AttackSpeed = 1.0f;
 
-	AttackPower = 40.0f;
+	AttackPower = 20.0f;
 
-	AttackRange = 4.0f;
+	AttackRange = 4.25f;
 	DetectRange = 48.0f;
 	SightRange = 48.0f;
 
-	Exp = 7.0f;
+	Exp = 15.0f;
 }
 /*** ABaseCharacter : End ***/

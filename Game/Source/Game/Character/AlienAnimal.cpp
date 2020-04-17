@@ -12,7 +12,7 @@
 AAlienAnimal::AAlienAnimal()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(100.0f, 100.0f);
+	GetCapsuleComponent()->InitCapsuleSize(90.0f, 100.0f);
 
 	InitHelthPointBar();
 
@@ -63,19 +63,19 @@ void AAlienAnimal::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AAlienAnimal::InitStat()
 {
-	HealthPoint = 2000.0f;
-	MaxHealthPoint = 2000.0f;
+	HealthPoint = 500.0f;
+	MaxHealthPoint = 500.0f;
 	bDying = false;
 
 	MoveSpeed = 9.5f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 30.0f;
+	AttackPower = 18.0f;
 
-	AttackRange = 2.5f;
+	AttackRange = 3.0f;
 	DetectRange = 48.0f;
 	SightRange = 48.0f;
 
-	Exp = 9.0f;
+	Exp = 13.0f;
 }
 /*** ABaseCharacter : End ***/

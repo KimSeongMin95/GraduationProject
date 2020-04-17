@@ -29,7 +29,7 @@ AProjectileAssaultRifle::AProjectileAssaultRifle()
 
 	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Impact_Wood_Medium_Light.P_Impact_Wood_Medium_Light'"));
 
-	TotalDamage = 16000.0f;
+	TotalDamage = 18.0f;
 }
 
 void AProjectileAssaultRifle::BeginPlay()

@@ -125,13 +125,13 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 		WaitingTimer = 0.0f;
 		SpawnTimer = 0;
 		SpawnTime -= DecreaseSpawnTime;
-		if (SpawnTime < 1.0f)
-			SpawnTime = 1.0f;
+		if (SpawnTime < 0.5f)
+			SpawnTime = 0.5f;
 
 		InitTimer = 0.0f;
 		InitTime -= DecreaseInitTime;
-		if (InitTime < 60.0f)
-			InitTime = 60.0f;
+		if (InitTime < 30.0f)
+			InitTime = 30.0f;
 	}
 }
 

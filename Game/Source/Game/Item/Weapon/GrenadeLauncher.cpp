@@ -57,7 +57,7 @@ void AGrenadeLauncher::InitStat()
 
 	LimitedLevel = 9;
 
-	AttackPower = 75.0f;
+	AttackPower = 80.0f;
 	AttackSpeed = 0.5f;
 	AttackRange = 10.0f * AOnlineGameMode::CellSize;
 

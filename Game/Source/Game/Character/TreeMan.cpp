@@ -12,7 +12,7 @@
 ATreeMan::ATreeMan()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(220.0f, 140.0f);
+	GetCapsuleComponent()->InitCapsuleSize(110.0f, 220.0f);
 
 	InitHelthPointBar();
 
@@ -63,19 +63,19 @@ void ATreeMan::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void ATreeMan::InitStat()
 {
-	HealthPoint = 8000.0f;
-	MaxHealthPoint = 8000.0f;
+	HealthPoint = 1500.0f;
+	MaxHealthPoint = 1500.0f;
 	bDying = false;
 
-	MoveSpeed = 4.0f;
+	MoveSpeed = 12.0f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 80.0f;
+	AttackPower = 40.0f;
 
-	AttackRange = 4.5f;
+	AttackRange = 5.5f;
 	DetectRange = 48.0f;
 	SightRange = 48.0f;
 
-	Exp = 9.0f;
+	Exp = 21.0f;
 }
 /*** ABaseCharacter : End ***/

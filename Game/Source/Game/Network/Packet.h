@@ -1539,9 +1539,9 @@ public:
 public:
 	cInfoOfResources()
 	{
-		NumOfMineral = 1000.0f;
-		NumOfOrganic = 1000.0f;
-		NumOfEnergy = 1000.0f;
+		NumOfMineral = 100.0f;
+		NumOfOrganic = 50.0f;
+		NumOfEnergy = 100.0f;
 	}
 	~cInfoOfResources()
 	{

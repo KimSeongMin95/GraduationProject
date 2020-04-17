@@ -61,16 +61,16 @@ void ARocketLauncherTurret::InitStat()
 {
 	BuildingType = EBuildingType::RocketLauncherTurret;
 
-	ConstructionTime = 30.0f;
+	ConstructionTime = 40.0f;
 
-	HealthPoint = 150.0f;
-	MaxHealthPoint = 500.0f;
+	HealthPoint = 80.0f;
+	MaxHealthPoint = 800.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
 	Size = FVector2D(1.0f, 1.0f);
 
-	NeedMineral = 500.0f;
-	NeedOrganicMatter = 250.0f;
+	NeedMineral = 760.0f;
+	NeedOrganicMatter = 320.0f;
 
 	ConsumeMineral = 0.0f;
 	ConsumeOrganicMatter = 0.0f;

@@ -12,7 +12,7 @@
 AMaynard::AMaynard()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(90.0f, 80.0f);
+	GetCapsuleComponent()->InitCapsuleSize(80.0f, 90.0f);
 
 	InitHelthPointBar();
 
@@ -63,19 +63,19 @@ void AMaynard::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AMaynard::InitStat()
 {
-	HealthPoint = 1200.0f;
-	MaxHealthPoint = 1200.0f;
+	HealthPoint = 160.0f;
+	MaxHealthPoint = 160.0f;
 	bDying = false;
 
 	MoveSpeed = 20.0f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 50.0f;
+	AttackPower = 8.0f;
 
-	AttackRange = 2.5f;
+	AttackRange = 3.0f;
 	DetectRange = 48.0f;
 	SightRange = 48.0f;
 
-	Exp = 9.0f;
+	Exp = 7.0f;
 }
 /*** ABaseCharacter : End ***/

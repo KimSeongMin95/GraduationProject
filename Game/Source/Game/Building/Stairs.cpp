@@ -54,13 +54,13 @@ void AStairs::InitStat()
 {
 	ConstructionTime = 10.0f;
 
-	HealthPoint = 50.0f;
+	HealthPoint = 25.0f;
 	MaxHealthPoint = 250.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
 	Size = FVector2D(1.0f, 1.0f);
 
-	NeedMineral = 100.0f;
+	NeedMineral = 30.0f;
 	NeedOrganicMatter = 0.0f;
 
 	ConsumeMineral = 0.0f;

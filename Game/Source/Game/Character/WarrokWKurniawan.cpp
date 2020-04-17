@@ -13,7 +13,7 @@
 AWarrokWKurniawan::AWarrokWKurniawan()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(220.0f, 210.0f);
+	GetCapsuleComponent()->InitCapsuleSize(220.0f, 160.0f);
 
 	InitHelthPointBar();
 
@@ -64,19 +64,19 @@ void AWarrokWKurniawan::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AWarrokWKurniawan::InitStat()
 {
-	HealthPoint = 2000.0f;
-	MaxHealthPoint = 2000.0f;
+	HealthPoint = 5000.0f;
+	MaxHealthPoint = 5000.0f;
 	bDying = false;
 
-	MoveSpeed = 8.0f;
+	MoveSpeed = 7.0f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 100.0f;
+	AttackPower = 80.0f;
 
-	AttackRange = 5.8f;
+	AttackRange = 6.5f;
 	DetectRange = 48.0f;
 	SightRange = 48.0f;
 
-	Exp = 9.0f;
+	Exp = 100.0f;
 }
 /*** ABaseCharacter : End ***/

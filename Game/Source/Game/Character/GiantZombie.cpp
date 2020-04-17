@@ -12,7 +12,7 @@
 AGiantZombie::AGiantZombie()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(190.0f, 190.0f);
+	GetCapsuleComponent()->InitCapsuleSize(120.0f, 190.0f);
 
 	InitHelthPointBar();
 
@@ -63,19 +63,19 @@ void AGiantZombie::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AGiantZombie::InitStat()
 {
-	HealthPoint = 5000.0f;
-	MaxHealthPoint = 5000.0f;
+	HealthPoint = 1000.0f;
+	MaxHealthPoint = 1000.0f;
 	bDying = false;
 
 	MoveSpeed = 8.0f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 50.0f;
+	AttackPower = 35.0f;
 
-	AttackRange = 5.5f;
+	AttackRange = 5.75f;
 	DetectRange = 48.0f;
 	SightRange = 48.0f;
 
-	Exp = 9.0f;
+	Exp = 19.0f;
 }
 /*** ABaseCharacter : End ***/
