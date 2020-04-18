@@ -67,7 +67,7 @@ void AGiantZombie::InitStat()
 	MaxHealthPoint = 1000.0f;
 	bDying = false;
 
-	MoveSpeed = 8.0f;
+	MoveSpeed = 10.5f;
 	AttackSpeed = 0.5f;
 
 	AttackPower = 35.0f;

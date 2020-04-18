@@ -67,7 +67,7 @@ void AAlienAnimal::InitStat()
 	MaxHealthPoint = 500.0f;
 	bDying = false;
 
-	MoveSpeed = 9.5f;
+	MoveSpeed = 9.0f;
 	AttackSpeed = 0.5f;
 
 	AttackPower = 18.0f;

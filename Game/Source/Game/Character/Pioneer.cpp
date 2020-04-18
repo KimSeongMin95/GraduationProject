@@ -1564,9 +1564,9 @@ void APioneer::DestroyBuilding()
 
 void APioneer::CalculateLevel()
 {
-	if (Exp >= Level * 26)
+	if (Exp >= Level * 13)
 	{
-		Exp -= Level * 26;
+		Exp -= Level * 13;
 		Level++;
 
 		// AI가 레벨업하면 자동으로 좋은 무기로 변경합니다.

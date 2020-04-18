@@ -550,6 +550,14 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 #endif			
 		return;
 	}
+
+	if (!PioneerManager)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfSpaceShip(...)> if (!PioneerManager)"));
+#endif			
+		return;
+	}
 	/***********************************************************/
 
 
@@ -562,7 +570,11 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 	break;
 	case ESpaceShipState::Landed:
 	{
-		SpaceShip->StartSpawning(5 + ServerSocketInGame->SizeOfObservers() * 1.00);
+		// Pioneer ¼ö Á¦ÇÑ
+		if (PioneerManager->Pioneers.Num() < 30)
+		{
+			SpaceShip->StartSpawning(5 + ServerSocketInGame->SizeOfObservers() * 1.00);
+		}
 	}
 	break;
 	case ESpaceShipState::Spawned:

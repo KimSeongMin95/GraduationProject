@@ -67,7 +67,7 @@ void ATreeMan::InitStat()
 	MaxHealthPoint = 1500.0f;
 	bDying = false;
 
-	MoveSpeed = 12.0f;
+	MoveSpeed = 11.0f;
 	AttackSpeed = 0.5f;
 
 	AttackPower = 40.0f;

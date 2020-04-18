@@ -67,7 +67,7 @@ void AParasiteZombie::InitStat()
 	MaxHealthPoint = 250.0f;
 	bDying = false;
 
-	MoveSpeed = 10.0f;
+	MoveSpeed = 8.0f;
 	AttackSpeed = 2.0f;
 
 	AttackPower = 12.0f;

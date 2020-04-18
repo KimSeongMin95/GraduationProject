@@ -67,7 +67,7 @@ void ARobotRaptor::InitStat()
 	MaxHealthPoint = 600.0f;
 	bDying = false;
 
-	MoveSpeed = 9.0f;
+	MoveSpeed = 9.5f;
 	AttackSpeed = 1.0f;
 
 	AttackPower = 20.0f;

@@ -64,11 +64,11 @@ void AWarrokWKurniawan::InitHelthPointBar()
 /*** ABaseCharacter : Start ***/
 void AWarrokWKurniawan::InitStat()
 {
-	HealthPoint = 5000.0f;
-	MaxHealthPoint = 5000.0f;
+	HealthPoint = 10000.0f;
+	MaxHealthPoint = 10000.0f;
 	bDying = false;
 
-	MoveSpeed = 7.0f;
+	MoveSpeed = 10.5f;
 	AttackSpeed = 0.5f;
 
 	AttackPower = 80.0f;

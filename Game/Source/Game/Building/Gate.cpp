@@ -80,32 +80,30 @@ void AGate::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
-		FVector(16.907f, 1.0f, 8.3f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+		FVector(21.979f, 1.3f, 10.79f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
 
 void AGate::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
 		TEXT("StaticMesh'/Game/Buildings/Gate/SM_Doorway_L.SM_Doorway_L'"),
-		FVector(1.5f, 1.5f, 1.5f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+		FVector(1.95f, 1.95f, 1.95f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 	
 	AddBuildingSMC(&BuildingSMC_2, TEXT("BuildingSMC_2"),
 		TEXT("StaticMesh'/Game/Buildings/Gate/SM_Door_L.SM_Door_L'"),
-		FVector(1.5f, 1.5f, 1.5f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
+		FVector(1.95f, 1.95f, 1.95f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
 	AddBuildingSMC(&LeftSideWall, TEXT("LeftSideWall"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Hall_Win_Det_A.SM_Hall_Win_Det_A'"),
-		FVector(1.5f, 2.092f, 1.745f), FRotator(0.0f, 0.0f, 0.0f), FVector(-665.136f, 0.0f, 0.0f));
+		FVector(1.95f, 2.719f, 2.268f), FRotator(0.0f, 0.0f, 0.0f), FVector(-864.6768, 0.0f, 0.0f));
 
 	AddBuildingSMC(&RightSideWall, TEXT("RightSideWall"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Hall_Win_Det_A.SM_Hall_Win_Det_A'"),
-		FVector(1.5f, 2.092f, 1.745f), FRotator(0.0f, 180.0f, 0.0f), FVector(642.864f, -105.086f, 0.0f));
+		FVector(1.95f, 2.719f, 2.268f), FRotator(0.0f, 180.0f, 0.0f), FVector(835.723f, -136.611f, 0.0f));
 
 	AddBuildingSMC(&Ceiling, TEXT("Ceiling"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularSci_Int/Meshes/SM_Ceiling_B_2.SM_Ceiling_B_2'"),
-		FVector(4.085f, 0.272f, 1.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 611.258f));
-
-	SetActorScale3D(FVector(1.3f, 1.3f, 1.3f));
+		FVector(5.310f, 0.353f, 1.3f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 794.635f));
 }
 
 void AGate::InitTriggerOfGate()

@@ -67,7 +67,7 @@ void AMutant::InitStat()
 	MaxHealthPoint = 800.0f;
 	bDying = false;
 
-	MoveSpeed = 7.0f;
+	MoveSpeed = 10.0f;
 	AttackSpeed = 0.5f;
 
 	AttackPower = 25.0f;
