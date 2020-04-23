@@ -57,7 +57,7 @@ void AAssaultRifle::InitStat()
 
 	LimitedLevel = 3;
 
-	AttackPower = 18.0f;
+	AttackPower = 180.0f;
 	AttackSpeed = 5.0f;
 	AttackRange = 12.0f * AOnlineGameMode::CellSize;
 

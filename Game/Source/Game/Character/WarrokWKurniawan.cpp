@@ -5,7 +5,8 @@
 
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-
+#include "GameMode/TutorialGameMode.h"
+#include "GameMode/OnlineGameMode.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -13,7 +14,7 @@
 AWarrokWKurniawan::AWarrokWKurniawan()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(220.0f, 160.0f);
+	GetCapsuleComponent()->InitCapsuleSize(200.0f, 330.0f);
 
 	InitHelthPointBar();
 
@@ -25,7 +26,7 @@ AWarrokWKurniawan::AWarrokWKurniawan()
 
 	InitSkeletalAnimation(TEXT("SkeletalMesh'/Game/Characters/Enemies/WarrokWKurniawan/Meshes/WarrokWKurniawan.WarrokWKurniawan'"),
 		"AnimBlueprint'/Game/Characters/Enemies/WarrokWKurniawan/Animations/WarrokWKurniawan_AnimBP.WarrokWKurniawan_AnimBP_C'",
-		FVector(2.0f, 2.0f, 2.0f), FRotator(0.0f, -90.0f, 0.0f), FVector(0.0f, 0.0f, -225.0f));
+		FVector(3.0f, 3.0f, 3.0f), FRotator(0.0f, -90.0f, 0.0f), FVector(0.0f, 0.0f, -330.99f));
 
 	EnemyType = EEnemyType::WarrokWKurniawan;
 }
@@ -68,15 +69,42 @@ void AWarrokWKurniawan::InitStat()
 	MaxHealthPoint = 10000.0f;
 	bDying = false;
 
-	MoveSpeed = 10.5f;
+	MoveSpeed = 11.0f;
 	AttackSpeed = 0.5f;
 
-	AttackPower = 80.0f;
+	AttackPower = 100.0f;
 
-	AttackRange = 6.5f;
+	AttackRange = 7.5f;
 	DetectRange = 48.0f;
 	SightRange = 48.0f;
 
 	Exp = 100.0f;
 }
 /*** ABaseCharacter : End ***/
+
+
+/*** AEnemy : Start ***/
+void AWarrokWKurniawan::Victory()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AWarrokWKurniawan::Victory()> if (!world)"));
+#endif				
+		return;
+	}
+
+	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
+	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
+
+	if (tutorialGameMode)
+	{
+
+	}
+	else if (onlineGameMode)
+	{
+		onlineGameMode->ActivateInGameVictoryWidget();
+	}
+}
+/*** AEnemy : End ***/

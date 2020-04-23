@@ -23,6 +23,9 @@
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 
@@ -100,6 +103,15 @@ private:
 		class APioneerManager* PioneerManager = nullptr;
 
 	FVector InitLocation;
+
+
+	///////////
+	// 사운드
+	///////////
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		class UAudioComponent* AudioComponent = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+		class USoundCue* SoundCue = nullptr;
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "ASpaceShip")

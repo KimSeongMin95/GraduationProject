@@ -65,6 +65,12 @@ private:
 		/** 인게임 플레이어들의 상황판 */
 		class UInGameScoreBoardWidget* InGameScoreBoardWidget = nullptr;
 	
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 게임 승리 */
+		class UInGameVictoryWidget* InGameVictoryWidget = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 게임 패배 */
+		class UInGameDefeatWidget* InGameDefeatWidget = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
 		class APioneerController* PioneerController = nullptr;
@@ -186,6 +192,11 @@ private:
 	void RecvDestroyEnemy(float DeltaTime); float TimerOfRecvDestroyEnemy;
 	void RecvExp(float DeltaTime); float TimerOfRecvExp;
 
+	/////////////////////////////////////////////////
+	// 패배 조건 확인
+	/////////////////////////////////////////////////
+	void CheckDefeatCondition(float DeltaTime); float TimerOfCheckDefeatCondition;
+
 protected:
 
 
@@ -226,6 +237,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SpawnBuildingInGameWidget(int Value); void _SpawnBuildingInGameWidget(int Value);
+
+
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateInGameVictoryWidget(); void _ActivateInGameVictoryWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateInGameVictoryWidget(); void _DeactivateInGameVictoryWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateInGameDefeatWidget(); void _ActivateInGameDefeatWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateInGameDefeatWidget(); void _DeactivateInGameDefeatWidget();
 
 	/////////////////////////////////////////////////
 	// 타이틀 화면으로 되돌아가기

@@ -137,6 +137,8 @@ public:
 	FORCEINLINE void SetEnemyManager(class AEnemyManager* pEnemyManager) { this->EnemyManager = pEnemyManager; }
 	FORCEINLINE void SetTriggerBoxForSpawn(class AMyTriggerBox* pTriggerBoxForSpawn) { this->TriggerBoxForSpawn = pTriggerBoxForSpawn; }
 
+	virtual void Victory() {}
+
 
 	///////////
 	// 네트워크

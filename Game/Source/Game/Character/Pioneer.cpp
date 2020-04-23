@@ -1413,7 +1413,10 @@ void APioneer::SpawnBuilding(int Value)
 	}
 	
 	if (BuildingManager)
+	{
 		Building = BuildingManager->SpawnBuilding(Value);
+		Building->SetActorLocation(GetActorLocation());
+	}
 }
 
 void APioneer::OnConstructingMode(float DeltaTime)

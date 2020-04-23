@@ -11,6 +11,8 @@
 #include "CustomWidget/InGameWidget.h"
 #include "CustomWidget/InGameMenuWidget.h"
 #include "CustomWidget/InGameScoreBoardWidget.h"
+#include "CustomWidget/InGameVictoryWidget.h"
+#include "CustomWidget/InGameDefeatWidget.h"
 
 #include "Controller/PioneerController.h"
 #include "Character/Pioneer.h"
@@ -91,6 +93,8 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfRecvExp = 0.0f;
 
 	PrimaryActorTick.bCanEverTick = true;
+
+	TimerOfCheckDefeatCondition = 0.0f;
 
 	/***** 필수! 꼭 읽어주세요. : Start *****/
 	/*
@@ -181,13 +185,18 @@ void AOnlineGameMode::BeginPlay()
 	InGameScoreBoardWidget = NewObject<UInGameScoreBoardWidget>(this, FName("InGameScoreBoardWidget"));
 	InGameScoreBoardWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameScoreBoard.InGameScoreBoard_C'", false);
 	InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
-
-
 	if (ServerSocketInGame)
 	{
 		if (ServerSocketInGame->IsServerOn())
 			InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
 	}
+
+	InGameVictoryWidget = NewObject<UInGameVictoryWidget>(this, FName("InGameVictoryWidget"));
+	InGameVictoryWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameVictory.InGameVictory_C'", false);
+
+	InGameDefeatWidget = NewObject<UInGameDefeatWidget>(this, FName("InGameDefeatWidget"));
+	InGameDefeatWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameDefeat.InGameDefeat_C'", false);
+
 }
 
 void AOnlineGameMode::StartPlay()
@@ -246,6 +255,7 @@ void AOnlineGameMode::Tick(float DeltaTime)
 		}
 	}
 
+	CheckDefeatCondition(DeltaTime);
 }
 /*** Basic Function : End ***/
 
@@ -1974,6 +1984,29 @@ void AOnlineGameMode::RecvExp(float DeltaTime)
 }
 
 
+/////////////////////////////////////////////////
+// 패배 조건 확인
+/////////////////////////////////////////////////
+void AOnlineGameMode::CheckDefeatCondition(float DeltaTime)
+{
+	TimerOfCheckDefeatCondition += DeltaTime;
+	if (TimerOfCheckDefeatCondition < 1.0f)
+		return;
+	TimerOfCheckDefeatCondition = 0.0f;
+
+	if (!BuildingManager)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::CheckDefeatCondition(...)> if (!BuildingManager)"));
+#endif			
+		return;
+	}
+	/***********************************************************/
+
+	if (BuildingManager->Buildings.Num() == 0)
+		_ActivateInGameDefeatWidget();
+}
+
 
 /////////////////////////////////////////////////
 // 위젯 활성화 / 비활성화
@@ -2210,6 +2243,72 @@ void AOnlineGameMode::_SpawnBuildingInGameWidget(int Value)
 	PioneerController->ConstructingMode();
 
 	PioneerController->SpawnBuilding(Value);
+}
+
+
+void AOnlineGameMode::ActivateInGameVictoryWidget()
+{
+	_ActivateInGameVictoryWidget();
+}
+void AOnlineGameMode::_ActivateInGameVictoryWidget()
+{
+	if (!InGameVictoryWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateInGameVictoryWidget()> if (!InGameVictoryWidget)"));
+#endif	
+		return;
+	}
+
+	InGameVictoryWidget->AddToViewport();
+}
+void AOnlineGameMode::DeactivateInGameVictoryWidget()
+{
+	_DeactivateInGameVictoryWidget();
+}
+void AOnlineGameMode::_DeactivateInGameVictoryWidget()
+{
+	if (!InGameVictoryWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateInGameVictoryWidget()> if (!InGameVictoryWidget)"));
+#endif	
+		return;
+	}
+
+	InGameVictoryWidget->RemoveFromViewport();
+}
+void AOnlineGameMode::ActivateInGameDefeatWidget()
+{
+	_ActivateInGameDefeatWidget();
+}
+void AOnlineGameMode::_ActivateInGameDefeatWidget()
+{
+	if (!InGameDefeatWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateInGameDefeatWidget()> if (!InGameDefeatWidget)"));
+#endif	
+		return;
+	}
+
+	InGameDefeatWidget->AddToViewport();
+}
+void AOnlineGameMode::DeactivateInGameDefeatWidget()
+{
+	_DeactivateInGameDefeatWidget();
+}
+void AOnlineGameMode::_DeactivateInGameDefeatWidget()
+{
+	if (!InGameDefeatWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateInGameDefeatWidget()> if (!InGameDefeatWidget)"));
+#endif	
+		return;
+	}
+
+	InGameDefeatWidget->RemoveFromViewport();
 }
 
 

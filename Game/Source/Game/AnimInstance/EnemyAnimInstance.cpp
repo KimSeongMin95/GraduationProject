@@ -134,6 +134,9 @@ void UEnemyAnimInstance::DestroyCharacter()
 	//if (Enemy->GetController()) {}
 
 	Enemy->Destroy();
+	
+	// 보스인 AWarrokWKurniawan가 죽으면 빅토리 화면이 나타나도록 합니다.
+	Enemy->Victory();
 }
 /*** UBaseCharacterAnimInstance : End ***/
 

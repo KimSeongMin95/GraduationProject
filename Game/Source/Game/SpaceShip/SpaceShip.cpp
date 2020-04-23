@@ -118,6 +118,29 @@ ASpaceShip::ASpaceShip()
 	ScaleOfEngineParticleSystem = 0.010f;
 	bEngine = false;
 
+
+
+
+	///////////
+	// »ç¿îµå
+	///////////
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	AudioComponent->bAutoActivate = false;
+	AudioComponent->SetupAttachment(RootComponent);
+	
+	ConstructorHelpers::FObjectFinder<USoundCue> soundCueAsset(TEXT("SoundCue'/Game/Sounds/SpaceShip/SpaceShip_SCue.SpaceShip_SCue'"));
+	if (soundCueAsset.Succeeded())
+	{
+		SoundCue = soundCueAsset.Object;
+
+		if (SoundCue->IsValidLowLevelFast() && AudioComponent)
+		{
+			AudioComponent->SetSound(SoundCue);
+			AudioComponent->SetBoolParameter("EngineOn", false);
+			AudioComponent->SetBoolParameter("Landing", false);
+			AudioComponent->SetBoolParameter("TakingOff", false);
+		}
+	}
 }
 
 void ASpaceShip::BeginPlay()
@@ -377,6 +400,11 @@ void ASpaceShip::Landing()
 
 void ASpaceShip::StartSpawning(int NumOfSpawn /*= 8*/)
 {
+	if (AudioComponent)
+	{
+		AudioComponent->SetBoolParameter("Landing", false);
+		AudioComponent->Stop();
+	}
 	State = ESpaceShipState::Spawning;
 
 	PioneerNum = NumOfSpawn;
@@ -458,6 +486,9 @@ void ASpaceShip::TakingOff()
 	{
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
+
+		if (AudioComponent)
+			AudioComponent->SetBoolParameter("TakingOff", false);
 
 		SetActorLocation(InitLocation);
 
@@ -561,6 +592,12 @@ void ASpaceShip::OnEngines()
 	//EngineParticleSystem2->ToggleActive();
 
 	bEngine = true;
+
+	if (AudioComponent)
+	{
+		AudioComponent->SetBoolParameter("EngineOn", true);
+		AudioComponent->FadeIn(0.5f, 1.0f, 0.0f);
+	}
 }
 void ASpaceShip::OffEngines()
 {
@@ -578,6 +615,12 @@ void ASpaceShip::OffEngines()
 	EngineParticleSystem2->Deactivate();
 
 	bEngine = false;
+
+	if (AudioComponent)
+	{
+		AudioComponent->SetBoolParameter("EngineOn", false);
+		//AudioComponent->StopDelayed(0.2f);
+	}
 }
 
 void ASpaceShip::SetScaleOfEngineParticleSystem(float Scale /*= 0.015f*/)
@@ -616,6 +659,13 @@ void ASpaceShip::PlayLandingAnimation()
 	SkeletalMesh->SetPosition(130.0f);
 	SkeletalMesh->SetPlayRate(-3.0f);
 	SkeletalMesh->Play(false);
+
+	if (AudioComponent)
+	{
+		AudioComponent->SetBoolParameter("Landing", true);
+		//AudioComponent->FadeIn(0.5f, 1.0f, 0.0f);
+		AudioComponent->Play(0.0f);
+	}
 }
 
 void ASpaceShip::PlayTakingOffAnimation()
@@ -632,6 +682,12 @@ void ASpaceShip::PlayTakingOffAnimation()
 	SkeletalMesh->SetPosition(0.0f);
 	SkeletalMesh->SetPlayRate(1.0f);
 	SkeletalMesh->Play(false);
+
+	if (AudioComponent)
+	{
+		AudioComponent->SetBoolParameter("TakingOff", true);
+		AudioComponent->FadeIn(0.5f, 1.0f, 0.0f);
+	}
 }
 
 void ASpaceShip::SetInitLocation(FVector Location)

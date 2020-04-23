@@ -47,8 +47,8 @@ void AGate::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 700.0f));
-	HelthPointBar->SetDrawSize(FVector2D(160, 30));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 900.0f));
+	HelthPointBar->SetDrawSize(FVector2D(180, 40));
 }
 /*** IHealthPointBarInterface : End ***/
 

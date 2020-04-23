@@ -34,4 +34,10 @@ public:
 protected:
 	virtual void InitStat() final;
 /*** ABaseCharacter : End ***/
+
+
+/*** AEnemy : Start ***/
+public:
+	virtual void Victory() final;
+/*** AEnemy : End ***/
 };
