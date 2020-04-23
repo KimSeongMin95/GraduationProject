@@ -463,15 +463,23 @@ void ABaseCharacter::TracingTargetActor()
 			DestLocation.Z -= CC->GetScaledCapsuleHalfHeight();
 		}
 
+		// 위치 조정
+		DestLocation += FVector(FMath::RandRange(-50.0f, 50.0f), FMath::RandRange(-50.0f, 50.0f), 0.0f);
+
 		PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), DestLocation);
 
 		LookAtTheLocation(DestLocation);
 	}
 	else
 	{
-		PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), TargetActor);
+		FVector DestLocation = TargetActor->GetActorLocation();
 
-		LookAtTheLocation(TargetActor->GetActorLocation());
+		// 위치 조정
+		DestLocation += FVector(FMath::RandRange(-50.0f, 50.0f), FMath::RandRange(-50.0f, 50.0f), 0.0f);
+
+		PathFinding::SetNewMoveDestination(PFA_NaveMesh, GetController(), DestLocation);
+
+		LookAtTheLocation(DestLocation);
 	}
 }
 

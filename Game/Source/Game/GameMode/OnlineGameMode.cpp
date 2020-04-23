@@ -1823,7 +1823,7 @@ void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfPioneer_Animation.empty())
+	if (ClientSocketInGame->tsqInfoOfEnemy_Animation.empty())
 	{
 		return;
 	}
@@ -1839,6 +1839,7 @@ void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
 			if (AEnemy* enemy = EnemyManager->Enemies[id])
 			{
 				enemy->SetInfoOfEnemy_Animation(copiedQueue.front());
+				copiedQueue.front().PrintInfo();
 			}
 		}
 
@@ -1872,7 +1873,7 @@ void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfPioneer_Stat.empty())
+	if (ClientSocketInGame->tsqInfoOfEnemy_Stat.empty())
 	{
 		return;
 	}
@@ -1990,7 +1991,7 @@ void AOnlineGameMode::RecvExp(float DeltaTime)
 void AOnlineGameMode::CheckDefeatCondition(float DeltaTime)
 {
 	TimerOfCheckDefeatCondition += DeltaTime;
-	if (TimerOfCheckDefeatCondition < 1.0f)
+	if (TimerOfCheckDefeatCondition < 0.33f)
 		return;
 	TimerOfCheckDefeatCondition = 0.0f;
 
@@ -2005,6 +2006,8 @@ void AOnlineGameMode::CheckDefeatCondition(float DeltaTime)
 
 	if (BuildingManager->Buildings.Num() == 0)
 		_ActivateInGameDefeatWidget();
+	else
+		_DeactivateInGameDefeatWidget();
 }
 
 

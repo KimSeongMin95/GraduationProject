@@ -2640,6 +2640,7 @@ void cServerSocketInGame::SendInfoOfEnemy_Animation(stringstream& RecvStream, SO
 	for (auto& kvp : InfoOfEnemies_Animation)
 	{
 		copiedQueue.push(kvp.second);
+		//kvp.second.PrintInfo();
 	}
 	LeaveCriticalSection(&csInfoOfEnemies_Animation);
 
