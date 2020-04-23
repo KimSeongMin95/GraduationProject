@@ -1,4 +1,4 @@
-[Delegate]
+[Delegate] 
     - 참고: https://docs.unrealengine.com/ko/Programming/UnrealArchitecture/Delegates/index.html
     - 참고: https://m.blog.naver.com/PostView.nhn?blogId=destiny9720&logNo=220945441201&proxyReferer=https%3A%2F%2Fwww.google.com%2F
 
