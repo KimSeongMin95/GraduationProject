@@ -58,7 +58,7 @@ void APistol::InitStat()
 
 	LimitedLevel = 1;
 
-	AttackPower = 100.0f;
+	AttackPower = 10.0f;
 	AttackSpeed = 3.0f;
 	AttackRange = 8.0f * AOnlineGameMode::CellSize;
 

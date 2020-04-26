@@ -69,7 +69,7 @@ void ANuclearFusionPowerPlant::InitStat()
 
 	ProductionMineral = 0.0f;
 	ProductionOrganicMatter = 0.0f;
-	ProductionElectricPower = 20.0f;
+	ProductionElectricPower = 25.0f;
 }
 
 void ANuclearFusionPowerPlant::InitConstructBuilding()
