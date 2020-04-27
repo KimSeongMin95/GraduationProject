@@ -1,20 +1,20 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "TutorialGameMode.h"
 
-/*** Á÷Á¢ Á¤ÀÇÇÑ Çì´õ Àü¹æ ¼±¾ğ : Start ***/
+/*** ì§ì ‘ ì •ì˜í•œ í—¤ë” ì „ë°© ì„ ì–¸ : Start ***/
 #include "Controller/PioneerController.h"
 #include "PioneerManager.h"
 #include "MyHUD.h"
-/*** Á÷Á¢ Á¤ÀÇÇÑ Çì´õ Àü¹æ ¼±¾ğ : End ***/
+/*** ì§ì ‘ ì •ì˜í•œ í—¤ë” ì „ë°© ì„ ì–¸ : End ***/
 
 
 /*** Basic Function : Start ***/
 ATutorialGameMode::ATutorialGameMode()
 {
 	///////////
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	///////////
 	TutorialWidget = nullptr;
 	PioneerManager = nullptr;
@@ -26,10 +26,10 @@ ATutorialGameMode::ATutorialGameMode()
 
 	PlayerControllerClass = APioneerController::StaticClass();
 
-	DefaultPawnClass = nullptr; // DefaultPawnÀÌ »ı¼ºµÇÁö ¾Ê°Ô ÇÕ´Ï´Ù.
+	DefaultPawnClass = nullptr; // DefaultPawnì´ ìƒì„±ë˜ì§€ ì•Šê²Œ í•©ë‹ˆë‹¤.
 
 
-	//// ÄÜ¼Ö
+	//// ì½˜ì†”
 	//cMyConsole* myConsole = cMyConsole::GetSingleton();
 	//if (myConsole)
 	//{
@@ -106,8 +106,8 @@ void ATutorialGameMode::SpawnPioneerManager()
 	//SpawnParams.Name = TEXT("Name");
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn À§Ä¡¿¡¼­ Ãæµ¹ÀÌ ¹ß»ıÇßÀ» ¶§ Ã³¸®¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ìœ„ì¹˜ì—ì„œ ì¶©ëŒì´ ë°œìƒí–ˆì„ ë•Œ ì²˜ë¦¬ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 
-	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // ¾×ÅÍ¸¦ °´Ã¼È­ ÇÕ´Ï´Ù.
+	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // ì•¡í„°ë¥¼ ê°ì²´í™” í•©ë‹ˆë‹¤.
 }
 /*** ATutorialGameMode : End ***/

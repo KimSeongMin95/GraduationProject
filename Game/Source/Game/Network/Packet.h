@@ -1,12 +1,12 @@
-#pragma once
+ï»¿#pragma once
 
 #define WIN32_LEAN_AND_MEAN
 
 ////////////////////////////////////////////////////////////////
-// ¾ğ¸®¾ó¿£Áøµµ Windows.h¸¦ »ç¿ëÇÏ±â ¶§¹®¿¡ naming Ãæµ¹À» ÇÇÇÏ±â À§ÇØ
-// AllowWindowsPlatformTypes.h°ú prewindowsapi.h¸¦ ¼±¾ğÇÏ°í
-// À©µµ¿ìÁî Çì´õµéÀ» ¼±¾ğÇÑ µÚ¿¡
-// PostWindowsApi.h¿Í HideWindowsPlatformTypes.h¸¦ ¼±¾ğÇØ¾ß µË´Ï´Ù.
+// ì–¸ë¦¬ì–¼ì—”ì§„ë„ Windows.hë¥¼ ì‚¬ìš©í•˜ê¸° ë•Œë¬¸ì— naming ì¶©ëŒì„ í”¼í•˜ê¸° ìœ„í•´
+// AllowWindowsPlatformTypes.hê³¼ prewindowsapi.hë¥¼ ì„ ì–¸í•˜ê³ 
+// ìœˆë„ìš°ì¦ˆ í—¤ë”ë“¤ì„ ì„ ì–¸í•œ ë’¤ì—
+// PostWindowsApi.hì™€ HideWindowsPlatformTypes.hë¥¼ ì„ ì–¸í•´ì•¼ ë©ë‹ˆë‹¤.
 ////////////////////////////////////////////////////////////////
 
 // put this at the top of your .h file above #includes
@@ -16,8 +16,8 @@
 #include "prewindowsapi.h"
 
 
-/*** À©µµ¿ìÁî Çì´õ ¼±¾ğ : Start ***/
-#pragma comment(lib, "ws2_32.lib") // winsock2 »ç¿ëÀ» À§ÇØ Ãß°¡
+/*** ìœˆë„ìš°ì¦ˆ í—¤ë” ì„ ì–¸ : Start ***/
+#pragma comment(lib, "ws2_32.lib") // winsock2 ì‚¬ìš©ì„ ìœ„í•´ ì¶”ê°€
 
 #include <WinSock2.h>
 #include <WS2tcpip.h> // For: inet_pton()
@@ -32,8 +32,8 @@
 #include <algorithm>
 #include <string>
 
-#include <stdarg.h> // For: °¡º¯ÀÎÀÚ ÇÔ¼ö
-/*** À©µµ¿ìÁî Çì´õ ¼±¾ğ : End ***/
+#include <stdarg.h> // For: ê°€ë³€ì¸ì í•¨ìˆ˜
+/*** ìœˆë„ìš°ì¦ˆ í—¤ë” ì„ ì–¸ : End ***/
 
 
 // put this at the bottom of the .h file
@@ -59,7 +59,7 @@ public:
 	{
 #if UE_BUILD_DEVELOPMENT && UE_GAME
 
-		// ÀÌ¹Ì ÇÒ´çµÇ¾î ÀÖÀ¸¸é ÄÜ¼ÖÀ» ´õ ÇÒ´çÇÏÁö ¾Ê½À´Ï´Ù.
+		// ì´ë¯¸ í• ë‹¹ë˜ì–´ ìˆìœ¼ë©´ ì½˜ì†”ì„ ë” í• ë‹¹í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 		if (fp_console)
 			return;
 
@@ -75,7 +75,7 @@ public:
 	void FreeConsole()
 	{
 #if UE_BUILD_DEVELOPMENT && UE_GAME
-		// ÀÌ¹Ì ÇÒ´çµÇ¾î ÀÖÀ» ¶§¸¸ ¼Ò¸ê½ÃÅµ´Ï´Ù.
+		// ì´ë¯¸ í• ë‹¹ë˜ì–´ ìˆì„ ë•Œë§Œ ì†Œë©¸ì‹œí‚µë‹ˆë‹¤.
 		if (fp_console)
 		{
 			fclose(fp_console);
@@ -159,8 +159,8 @@ struct stCompletionKey
 {
 	SOCKET			socket;
 
-	string			IPv4Addr; // ¸ŞÀÎ Å¬¶óÀÌ¾ğÆ®ÀÇ IP ÁÖ¼Ò
-	int				Port;	  // ¸ŞÀÎ Å¬¶óÀÌ¾ğÆ®ÀÇ Port ÁÖ¼Ò
+	string			IPv4Addr; // ë©”ì¸ í´ë¼ì´ì–¸íŠ¸ì˜ IP ì£¼ì†Œ
+	int				Port;	  // ë©”ì¸ í´ë¼ì´ì–¸íŠ¸ì˜ Port ì£¼ì†Œ
 };
 
 // IOCP OverlappedMsg
@@ -171,7 +171,7 @@ struct stOverlappedMsg
 
 	char			messageBuffer[MAX_BUFFER];
 	int				recvBytes;
-	int				sendBytes; // WSASend·Î Àü¼ÛÇÒ µ¥ÀÌÅÍÀÇ ¹ÙÀÌÆ® Å©±â
+	int				sendBytes; // WSASendë¡œ ì „ì†¡í•  ë°ì´í„°ì˜ ë°”ì´íŠ¸ í¬ê¸°
 };
 
 
@@ -271,16 +271,16 @@ public:
 
 enum EPacketType
 {
-	/** ÆĞÅ¶ ±¸Á¶
+	/** íŒ¨í‚· êµ¬ì¡°
 	int PacketSize;
 	int EPacketType;
 	... Data;
 	*/
 
-	// ÃÖ¼Ò [1 1 ] »çÀÌÁî¿Í Å¸ÀÔ±îÁö 4¹ÙÀÌÆ®?
-	// ÃÖ´ë [4096(MAX_BUFFER) 1 ] »çÀÌÁî¸¸ 4¹ÙÀÌÆ®?
+	// ìµœì†Œ [1 1 ] ì‚¬ì´ì¦ˆì™€ íƒ€ì…ê¹Œì§€ 4ë°”ì´íŠ¸?
+	// ìµœëŒ€ [4096(MAX_BUFFER) 1 ] ì‚¬ì´ì¦ˆë§Œ 4ë°”ì´íŠ¸?
 
-	/** ¼³¸í
+	/** ì„¤ëª…
 	Main Client:
 		Send [EPacketType]:
 		Recv [EPacketType]:
@@ -294,110 +294,110 @@ enum EPacketType
 	// Main Server / Main Clients
 	///////////////////////////////////////////
 
-	/** ÇÃ·¹ÀÌ¾î°¡ OnlineWidget¿¡¼­ LOGIN ÇÏ¸é
+	/** í”Œë ˆì´ì–´ê°€ OnlineWidgetì—ì„œ LOGIN í•˜ë©´
 	Main Client:
-		Send [LOGIN]: ÀÓ½Ã °´Ã¼ÀÎ cInfoOfPlayer infoOfPlayer¿¡ ID¸¦ ÀúÀåÈÄ ¼Û½Å
-		Recv [LOGIN]: ¹ŞÀº cInfoOfPlayer¸¦ MyInfo¿¡ ´ëÀÔ
+		Send [LOGIN]: ì„ì‹œ ê°ì²´ì¸ cInfoOfPlayer infoOfPlayerì— IDë¥¼ ì €ì¥í›„ ì†¡ì‹ 
+		Recv [LOGIN]: ë°›ì€ cInfoOfPlayerë¥¼ MyInfoì— ëŒ€ì…
 	Main Server:
-		Recv [LOGIN]: ¹ŞÀº cInfoOfPlayer¿¡ IPv4Addr, SocketByServer, PortByServer¸¦ ÀúÀåÇÏ°í InfoOfClients¿¡ »ğÀÔ
+		Recv [LOGIN]: ë°›ì€ cInfoOfPlayerì— IPv4Addr, SocketByServer, PortByServerë¥¼ ì €ì¥í•˜ê³  InfoOfClientsì— ì‚½ì…
 		Send [LOGIN]: cInfoOfPlayer
 	*/
 	LOGIN,
 
-	/** OnlineGameWidget¿¡¼­ (Create Game)¹öÆ°À» ´­·¯ ´ë±â¹æÀ» »ı¼ºÇÏ¸é
+	/** OnlineGameWidgetì—ì„œ (Create Game)ë²„íŠ¼ì„ ëˆŒëŸ¬ ëŒ€ê¸°ë°©ì„ ìƒì„±í•˜ë©´
 	Main Client:
-		Send [CREATE_GAME]: MyInfoOfGame.Leader¿¡ MyInfo¸¦ ÀúÀåÇÏ°í ¼Û½Å
+		Send [CREATE_GAME]: MyInfoOfGame.Leaderì— MyInfoë¥¼ ì €ì¥í•˜ê³  ì†¡ì‹ 
 		Recv []: X
 	Main Server:
-		Recv [CREATE_GAME]: ¹ŞÀº cInfoOfGame¸¦ InfoOfGames¿¡ »ğÀÔ
+		Recv [CREATE_GAME]: ë°›ì€ cInfoOfGameë¥¼ InfoOfGamesì— ì‚½ì…
 		Send []: X
 	*/
 	CREATE_GAME,
 
-	/** ÇÃ·¹ÀÌ¾î°¡ MainScreenWidget¿¡¼­ Online ¹öÆ°À» ´­·¯ ÁøÀÔÇÏ¸é
+	/** í”Œë ˆì´ì–´ê°€ MainScreenWidgetì—ì„œ Online ë²„íŠ¼ì„ ëˆŒëŸ¬ ì§„ì…í•˜ë©´
 	Main Client:
-		Send [FIND_GAMES]: ´ë±â¹æ Á¤º¸ ¿ä±¸
-		Recv [FIND_GAMES]: ¸ğµç ´ë±â¹æµéÀÇ Á¤º¸
+		Send [FIND_GAMES]: ëŒ€ê¸°ë°© ì •ë³´ ìš”êµ¬
+		Recv [FIND_GAMES]: ëª¨ë“  ëŒ€ê¸°ë°©ë“¤ì˜ ì •ë³´
 	Main Server:
 		Recv [FIND_GAMES]: O
-		Send [FIND_GAMES]: InfoOfGames¿¡ »ğÀÔµÇ¾î ÀÖ´Â ¸ğµç cInfoOfGameÀÇ Á¤º¸
+		Send [FIND_GAMES]: InfoOfGamesì— ì‚½ì…ë˜ì–´ ìˆëŠ” ëª¨ë“  cInfoOfGameì˜ ì •ë³´
 	*/
 	FIND_GAMES,
 
-	/** ´ë±â¹æ Á¤º¸ º¯°æ½Ã */
+	/** ëŒ€ê¸°ë°© ì •ë³´ ë³€ê²½ì‹œ */
 	WAITING_GAME,
 
-	/** ÇÃ·¹ÀÌ¾î°¡ Join ¹öÆ°À¸·Î °ÔÀÓ¹æ¿¡ µé¾î°¡¸é
+	/** í”Œë ˆì´ì–´ê°€ Join ë²„íŠ¼ìœ¼ë¡œ ê²Œì„ë°©ì— ë“¤ì–´ê°€ë©´
 	Main Client:
-		Send [JOIN_ONLINE_GAME]: JoinÇÑ °ÔÀÓ¹æ LeaderÀÇ SocketID¸¦ ´ëÀÔÇÑ MyInfo
-		Recv [WAITING_GAME]: ¹ŞÀº cInfoOfGameÀ» MyInfoOfGame¿¡ ´ëÀÔ
+		Send [JOIN_ONLINE_GAME]: Joiní•œ ê²Œì„ë°© Leaderì˜ SocketIDë¥¼ ëŒ€ì…í•œ MyInfo
+		Recv [WAITING_GAME]: ë°›ì€ cInfoOfGameì„ MyInfoOfGameì— ëŒ€ì…
 	Main Server:
-		Recv [JOIN_ONLINE_GAME]: InfoOfClients¿¡ LeaderSocketByMainServer¸¦ ´ëÀÔÇÏ°í InfoOfGamesÀÇ Players¿¡ ÇØ´ç Å¬¶óÀÌ¾ğÆ® »ğÀÔ
-		Send [WAITING_GAME] to ¹æÀå: ÇØ´ç °ÔÀÓ¹æÀÇ cInfoOfGame
-		Send [WAITING_GAME] to °ÔÀÓ¹æÀÇ ´Ù¸¥ ÇÃ·¹ÀÌ¾îµé: ÇØ´ç °ÔÀÓ¹æÀÇ cInfoOfGame
+		Recv [JOIN_ONLINE_GAME]: InfoOfClientsì— LeaderSocketByMainServerë¥¼ ëŒ€ì…í•˜ê³  InfoOfGamesì˜ Playersì— í•´ë‹¹ í´ë¼ì´ì–¸íŠ¸ ì‚½ì…
+		Send [WAITING_GAME] to ë°©ì¥: í•´ë‹¹ ê²Œì„ë°©ì˜ cInfoOfGame
+		Send [WAITING_GAME] to ê²Œì„ë°©ì˜ ë‹¤ë¥¸ í”Œë ˆì´ì–´ë“¤: í•´ë‹¹ ê²Œì„ë°©ì˜ cInfoOfGame
 	*/
 	JOIN_ONLINE_GAME,
 
-	/** ¹æÀåÀÌ ´ë±â¹æ¿¡¼­ Back ¹öÆ°À» ´­·¯ ´ë±â¹æÀ» Á¾·áÇÏ¸é
+	/** ë°©ì¥ì´ ëŒ€ê¸°ë°©ì—ì„œ Back ë²„íŠ¼ì„ ëˆŒëŸ¬ ëŒ€ê¸°ë°©ì„ ì¢…ë£Œí•˜ë©´
 	Main Client:
 		Send [DESTROY_WAITING_ROOM]: O, InitMyInfoOfGame();
-		Recv [DESTROY_WAITING_ROOM]: ´ë±â¹æ Á¾·á ¾Ë¸²¿¡ µÚ·Î°¡±â ¹öÆ° È°¼ºÈ­, MyInfoÀÇ Æ¯Á¤ ¸â¹öº¯¼öµé ÃÊ±âÈ­, InitMyInfoOfGame();
+		Recv [DESTROY_WAITING_ROOM]: ëŒ€ê¸°ë°© ì¢…ë£Œ ì•Œë¦¼ì— ë’¤ë¡œê°€ê¸° ë²„íŠ¼ í™œì„±í™”, MyInfoì˜ íŠ¹ì • ë©¤ë²„ë³€ìˆ˜ë“¤ ì´ˆê¸°í™”, InitMyInfoOfGame();
 	Main Server:
-		Recv [DESTROY_WAITING_ROOM] by ¹æÀå: InfoOfClientsÀÇ ÇØ´ç Å¬¶óÀÌ¾ğÆ®ÀÇ Æ¯Á¤ ¸â¹öº¯¼öµé ÃÊ±âÈ­, InfoOfGames.erase(pSocketInfo->socket);
-		Send [DESTROY_WAITING_ROOM] to ÇÃ·¹ÀÌ¾îµé(¹æÀå Á¦¿Ü): O
+		Recv [DESTROY_WAITING_ROOM] by ë°©ì¥: InfoOfClientsì˜ í•´ë‹¹ í´ë¼ì´ì–¸íŠ¸ì˜ íŠ¹ì • ë©¤ë²„ë³€ìˆ˜ë“¤ ì´ˆê¸°í™”, InfoOfGames.erase(pSocketInfo->socket);
+		Send [DESTROY_WAITING_ROOM] to í”Œë ˆì´ì–´ë“¤(ë°©ì¥ ì œì™¸): O
 	*/
 	DESTROY_WAITING_GAME,
 
-	/** ¹æÀåÀÌ ¾Æ´Ñ ´ë±â¹æÀÎ ÇÃ·¹ÀÌ¾î°¡ ´ë±â¹æ¿¡¼­ ³ª°¡¸é
+	/** ë°©ì¥ì´ ì•„ë‹Œ ëŒ€ê¸°ë°©ì¸ í”Œë ˆì´ì–´ê°€ ëŒ€ê¸°ë°©ì—ì„œ ë‚˜ê°€ë©´
 	Main Client:
-		Send [EXIT_WAITING_ROOM]: O, MyInfoÀÇ Æ¯Á¤ ¸â¹öº¯¼öµé ÃÊ±âÈ­, InitMyInfoOfGame();
-		Recv [WAITING_GAME]: ´ë±â¹æ cInfoOfGame
+		Send [EXIT_WAITING_ROOM]: O, MyInfoì˜ íŠ¹ì • ë©¤ë²„ë³€ìˆ˜ë“¤ ì´ˆê¸°í™”, InitMyInfoOfGame();
+		Recv [WAITING_GAME]: ëŒ€ê¸°ë°© cInfoOfGame
 	Main Server:
-		Recv [EXIT_WAITING_ROOM]: InfoOfClientsÀÇ ÇØ´ç Å¬¶óÀÌ¾ğÆ®ÀÇ Æ¯Á¤ ¸â¹öº¯¼öµé ÃÊ±âÈ­, InfoOfGamesÀÇ Players¿¡ ÇØ´ç Å¬¶óÀÌ¾ğÆ® Á¦°Å
-		Send [WAITING_GAME] to ¹æÀå: ÇØ´ç ´ë±â¹æÀÇ cInfoOfGame
-		Send [WAITING_GAME] to ÇÃ·¹ÀÌ¾îµé(ÇØ´ç Å¬¶óÀÌ¾ğÆ® ¹ÌÆ÷ÇÔ): ÇØ´ç ´ë±â¹æÀÇ cInfoOfGame
+		Recv [EXIT_WAITING_ROOM]: InfoOfClientsì˜ í•´ë‹¹ í´ë¼ì´ì–¸íŠ¸ì˜ íŠ¹ì • ë©¤ë²„ë³€ìˆ˜ë“¤ ì´ˆê¸°í™”, InfoOfGamesì˜ Playersì— í•´ë‹¹ í´ë¼ì´ì–¸íŠ¸ ì œê±°
+		Send [WAITING_GAME] to ë°©ì¥: í•´ë‹¹ ëŒ€ê¸°ë°©ì˜ cInfoOfGame
+		Send [WAITING_GAME] to í”Œë ˆì´ì–´ë“¤(í•´ë‹¹ í´ë¼ì´ì–¸íŠ¸ ë¯¸í¬í•¨): í•´ë‹¹ ëŒ€ê¸°ë°©ì˜ cInfoOfGame
 	*/
 	EXIT_WAITING_GAME,
 
-	/** ¹æÀåÀÌ ´ë±â¹æ¿¡¼­ TitleÀÌ³ª Stage³ª MaximumÀ» ¼öÁ¤ÇÏ¸é
+	/** ë°©ì¥ì´ ëŒ€ê¸°ë°©ì—ì„œ Titleì´ë‚˜ Stageë‚˜ Maximumì„ ìˆ˜ì •í•˜ë©´
 	Main Client:
 		Send [MODIFY_WAITING_GAME]: cInfoOfGame(Title, Stage, Maximum)
 		Recv [MODIFY_WAITING_GAME]: cInfoOfGame(Title, Stage, Maximum)
 	Main Server:
-		Recv [MODIFY_WAITING_GAME]: InfoOfGames¿¡ cInfoOfGame(Title, Stage, Maximum) Àû¿ë
-		Send [MODIFY_WAITING_GAME] to ÇÃ·¹ÀÌ¾îµé(¹æÀå Á¦¿Ü): cInfoOfGame(Title, Stage, Maximum)
+		Recv [MODIFY_WAITING_GAME]: InfoOfGamesì— cInfoOfGame(Title, Stage, Maximum) ì ìš©
+		Send [MODIFY_WAITING_GAME] to í”Œë ˆì´ì–´ë“¤(ë°©ì¥ ì œì™¸): cInfoOfGame(Title, Stage, Maximum)
 	*/
 	MODIFY_WAITING_GAME,
 
-	/** ¹æÀåÀÌ ´ë±â¹æ¿¡¼­ °ÔÀÓÀ» ½ÃÀÛÇÏ¸é
+	/** ë°©ì¥ì´ ëŒ€ê¸°ë°©ì—ì„œ ê²Œì„ì„ ì‹œì‘í•˜ë©´
 	Main Client:
 		Send [START_WAITING_GAME]: O
 		Recv [START_WAITING_GAME]: O
 	Main Server:
-		Recv [START_WAITING_GAME] by ¹æÀå: O
-		Send [START_WAITING_GAME] to ÇÃ·¹ÀÌ¾îµé(¹æÀå Á¦¿Ü): O
+		Recv [START_WAITING_GAME] by ë°©ì¥: O
+		Send [START_WAITING_GAME] to í”Œë ˆì´ì–´ë“¤(ë°©ì¥ ì œì™¸): O
 	*/
 	START_WAITING_GAME,
 
 
-	/** ¹æÀåÀÌ ´ë±â¹æ¿¡¼­ °ÔÀÓÀ» ½ÃÀÛÇÏ°í CountStartedGame()¿¡¼­ °ÔÀÓ ¼­¹ö ÃÊ±âÈ­¿¡ ¼º°øÇÏ¸é
+	/** ë°©ì¥ì´ ëŒ€ê¸°ë°©ì—ì„œ ê²Œì„ì„ ì‹œì‘í•˜ê³  CountStartedGame()ì—ì„œ ê²Œì„ ì„œë²„ ì´ˆê¸°í™”ì— ì„±ê³µí•˜ë©´
 	Main Client:
-		Send [ACTIVATE_GAME_SERVER]: MyInfo¿¡ PortOfGameServer¸¦ ÀúÀåÇÏ°í MyInfo¸¦ Àü¼Û, MyInfoOfGame.State = string("Playing");
-		Recv [WAITING_GAME]: ´ë±â¹æ cInfoOfGame
+		Send [ACTIVATE_GAME_SERVER]: MyInfoì— PortOfGameServerë¥¼ ì €ì¥í•˜ê³  MyInfoë¥¼ ì „ì†¡, MyInfoOfGame.State = string("Playing");
+		Recv [WAITING_GAME]: ëŒ€ê¸°ë°© cInfoOfGame
 	Main Server:
-		Recv [ACTIVATE_GAME_SERVER] by ¹æÀå: ¼ö½ÅÇÑ cInfoOfPlayer¸¦ InfoOfClients¿Í InfoOfGamesÀÇ Leader¿¡ Àû¿ë
-		Send [WAITING_GAME] to ¹æÀå: ÇØ´ç ´ë±â¹æÀÇ cInfoOfGame
-		Send [WAITING_GAME] to ÇÃ·¹ÀÌ¾îµé: ÇØ´ç ´ë±â¹æÀÇ cInfoOfGame
+		Recv [ACTIVATE_GAME_SERVER] by ë°©ì¥: ìˆ˜ì‹ í•œ cInfoOfPlayerë¥¼ InfoOfClientsì™€ InfoOfGamesì˜ Leaderì— ì ìš©
+		Send [WAITING_GAME] to ë°©ì¥: í•´ë‹¹ ëŒ€ê¸°ë°©ì˜ cInfoOfGame
+		Send [WAITING_GAME] to í”Œë ˆì´ì–´ë“¤: í•´ë‹¹ ëŒ€ê¸°ë°©ì˜ cInfoOfGame
 	*/
 	ACTIVATE_GAME_SERVER,
 
-	/** Âü°¡ÀÚ°¡ °ÔÀÓ Å¬¶óÀÌ¾ğÆ®¸¦ °ÔÀÓ ¼­¹ö¿Í ¿¬°á½ÃÅ°±â À§ÇØ °ÔÀÓ ¼­¹ö Á¤º¸¸¦ ¿äÃ»
+	/** ì°¸ê°€ìê°€ ê²Œì„ í´ë¼ì´ì–¸íŠ¸ë¥¼ ê²Œì„ ì„œë²„ì™€ ì—°ê²°ì‹œí‚¤ê¸° ìœ„í•´ ê²Œì„ ì„œë²„ ì •ë³´ë¥¼ ìš”ì²­
 	Main Client:
 		Send [REQUEST_INFO_OF_GAME_SERVER]: O
-		Recv [REQUEST_INFO_OF_GAME_SERVER]: cInfoOfPlayer¸¦ ¹Ş°í IPv4Addr¿Í PortOfGameServer¸¦ È¹µæ
+		Recv [REQUEST_INFO_OF_GAME_SERVER]: cInfoOfPlayerë¥¼ ë°›ê³  IPv4Addrì™€ PortOfGameServerë¥¼ íšë“
 	Main Server:
 		Recv [REQUEST_INFO_OF_GAME_SERVER]: O
-		Send [REQUEST_INFO_OF_GAME_SERVER]: cInfoOfPlayer infoOfPlayer = InfoOfClients.at(leaderSocket);ÇÏ°í infoOfPlayer Àü¼Û
+		Send [REQUEST_INFO_OF_GAME_SERVER]: cInfoOfPlayer infoOfPlayer = InfoOfClients.at(leaderSocket);í•˜ê³  infoOfPlayer ì „ì†¡
 	*/
 	REQUEST_INFO_OF_GAME_SERVER,
 
@@ -406,17 +406,17 @@ enum EPacketType
 	// Game Server / Game Clients
 	///////////////////////////////////////////
 
-	/** °ÔÀÓ¼­¹ö¿Í °ÔÀÓÅ¬¶óÀÌ¾ğÆ®°¡ ¿¬°áµÇ¾ú´Ù¸é 
+	/** ê²Œì„ì„œë²„ì™€ ê²Œì„í´ë¼ì´ì–¸íŠ¸ê°€ ì—°ê²°ë˜ì—ˆë‹¤ë©´ 
 	Game Client:
-		Recv [CONNECTED]: (¼ø¼­4) ¹ŞÀº cInfoOfPlayer¸¦ ClientSocket::MyInfo¿¡ ÀúÀå
-		Send [CONNECTED]: (¼ø¼­1) ClientSocket::MyInfo¸¦ Àü¼Û
+		Recv [CONNECTED]: (ìˆœì„œ4) ë°›ì€ cInfoOfPlayerë¥¼ ClientSocket::MyInfoì— ì €ì¥
+		Send [CONNECTED]: (ìˆœì„œ1) ClientSocket::MyInfoë¥¼ ì „ì†¡
 	Game Server:
-		Recv [CONNECTED]: (¼ø¼­2) ¹ŞÀº cInfoOfPlayer¿¡ SocketByGameServer, PortOfGameServer, PortOfGameClient¸¦ ´ëÀÔÇÏ°í InfoOfClients¿¡ »ğÀÔ
-		Send [CONNECTED]: (¼ø¼­3) InfoOfClients¿¡ »ğÀÔÇÑ cInfoOfPlayer
+		Recv [CONNECTED]: (ìˆœì„œ2) ë°›ì€ cInfoOfPlayerì— SocketByGameServer, PortOfGameServer, PortOfGameClientë¥¼ ëŒ€ì…í•˜ê³  InfoOfClientsì— ì‚½ì…
+		Send [CONNECTED]: (ìˆœì„œ3) InfoOfClientsì— ì‚½ì…í•œ cInfoOfPlayer
 	*/
 	CONNECTED,
 
-	/** °ÔÀÓ¼­¹ö°¡ Á¾·áµÇ¸é
+	/** ê²Œì„ì„œë²„ê°€ ì¢…ë£Œë˜ë©´
 	Game Client:
 		Recv [DISCONNECTED]:
 		Send [X]:
@@ -426,7 +426,7 @@ enum EPacketType
 	*/
 	DISCONNECT,
 
-	/** Å¬¶óÀÌ¾ğÆ®°¡ ÀÏÁ¤½Ã°£¸¶´Ù ScoreBoard Á¤º¸¸¦ ¿äÃ»
+	/** í´ë¼ì´ì–¸íŠ¸ê°€ ì¼ì •ì‹œê°„ë§ˆë‹¤ ScoreBoard ì •ë³´ë¥¼ ìš”ì²­
 	Game Client:
 		Recv [SCORE_BOARD]: 
 		Send [SCORE_BOARD]: 
@@ -436,7 +436,7 @@ enum EPacketType
 	*/
 	SCORE_BOARD,
 
-	/** °ÔÀÓ¼­¹ö°¡ SpaceShip Á¤º¸¸¦ °è¼Ó °ÔÀÓÅ¬¶óÀÌ¾ğÆ®µé¿¡°Ô Àü¼Û
+	/** ê²Œì„ì„œë²„ê°€ SpaceShip ì •ë³´ë¥¼ ê³„ì† ê²Œì„í´ë¼ì´ì–¸íŠ¸ë“¤ì—ê²Œ ì „ì†¡
 	Game Client:
 		Recv [SPACE_SHIP]:
 		Send [X]:
@@ -446,7 +446,7 @@ enum EPacketType
 	*/
 	SPACE_SHIP,
 
-	/** Å¬¶óÀÌ¾ğÆ®°¡ °üÀü»óÅÂ°¡ µÇ¸é
+	/** í´ë¼ì´ì–¸íŠ¸ê°€ ê´€ì „ìƒíƒœê°€ ë˜ë©´
 	Game Client:
 		Recv []:
 		Send [OBSERVATION]:
@@ -457,7 +457,7 @@ enum EPacketType
 	OBSERVATION,
 
 
-	/** PioneerManager::SpawnPioneer(...) È£ÃâµÇ¸é
+	/** PioneerManager::SpawnPioneer(...) í˜¸ì¶œë˜ë©´
 	Game Client:
 		Recv [SPAWN_PIONNER]:
 		Send []:
@@ -467,7 +467,7 @@ enum EPacketType
 	*/
 	SPAWN_PIONEER,
 
-	/** Pioneer°¡ Á×À¸¸é
+	/** Pioneerê°€ ì£½ìœ¼ë©´
 	Game Client:
 		Recv [DIED_PIONEER]:
 		Send [DIED_PIONEER]:
@@ -477,7 +477,7 @@ enum EPacketType
 	*/
 	DIED_PIONEER,
 
-	/** °ÔÀÓÅ¬¶óÀÌ¾ğÆ®°¡ ÀÚ½ÅÀÌ Á¶Á¾ÁßÀÎ PioneerÀÇ ¾Ö´Ï¸ŞÀÌ¼Ç Á¤º¸¸¦ º¸³»¸é °ÔÀÓ¼­¹ö´Â ÇØ´ç Pioneer¸¦ Á¦¿ÜÇÑ ´Ù¸¥ PioneerµéÀÇ Á¤º¸¸¦ ºê·ÎµåÄ³½ºÆÃ
+	/** ê²Œì„í´ë¼ì´ì–¸íŠ¸ê°€ ìì‹ ì´ ì¡°ì¢…ì¤‘ì¸ Pioneerì˜ ì• ë‹ˆë©”ì´ì…˜ ì •ë³´ë¥¼ ë³´ë‚´ë©´ ê²Œì„ì„œë²„ëŠ” í•´ë‹¹ Pioneerë¥¼ ì œì™¸í•œ ë‹¤ë¥¸ Pioneerë“¤ì˜ ì •ë³´ë¥¼ ë¸Œë¡œë“œìºìŠ¤íŒ…
 	Game Client:
 		Recv [INFO_OF_PIONEER_ANIMATION]:
 		Send [INFO_OF_PIONEER_ANIMATION]:
@@ -487,17 +487,17 @@ enum EPacketType
 	*/
 	INFO_OF_PIONEER_ANIMATION,
 
-	/** °ÔÀÓÅ¬¶óÀÌ¾ğÆ®°¡ °üÀüÁßÀÎ Pioneer¿¡ ºùÀÇÇÏ·Á´Â ¿äÃ»À» º¸³»¸é
+	/** ê²Œì„í´ë¼ì´ì–¸íŠ¸ê°€ ê´€ì „ì¤‘ì¸ Pioneerì— ë¹™ì˜í•˜ë ¤ëŠ” ìš”ì²­ì„ ë³´ë‚´ë©´
 	Game Client:
 		Recv [POSSESS_PIONEER]:
 		Send [POSSESS_PIONEER]:
 	Game Server:
 		Recv [POSSESS_PIONEER]:
-		Send [POSSESS_PIONEER]: ÀÌ¹Ì ´©±º°¡°¡ ºùÀÇÁßÀÌ°Å³ª Á×À¸¸é 0À» º¸³À´Ï´Ù.
+		Send [POSSESS_PIONEER]: ì´ë¯¸ ëˆ„êµ°ê°€ê°€ ë¹™ì˜ì¤‘ì´ê±°ë‚˜ ì£½ìœ¼ë©´ 0ì„ ë³´ëƒ…ë‹ˆë‹¤.
 	*/
 	POSSESS_PIONEER,
 
-	/** POSSESS_PIONEER¶§ ºê·ÎµåÄ³½ºÆÃÀ¸·Î Àü¼Û
+	/** POSSESS_PIONEERë•Œ ë¸Œë¡œë“œìºìŠ¤íŒ…ìœ¼ë¡œ ì „ì†¡
 	Game Client:
 		Recv [INFO_OF_PIONEER_SOCKET]:
 		Send []:
@@ -534,19 +534,19 @@ enum EPacketType
 		Send []:
 	Game Server:
 		Recv []:
-		Send [INFO_OF_RESOURCES]: ÇöÀç ÀÚ¿ø·®À» º¸³À´Ï´Ù.
+		Send [INFO_OF_RESOURCES]: í˜„ì¬ ìì›ëŸ‰ì„ ë³´ëƒ…ë‹ˆë‹¤.
 	*/
 	INFO_OF_RESOURCES,
 
 
 
-	/** °Ç¹°À» °Ç¼³ÇÏ¸é
+	/** ê±´ë¬¼ì„ ê±´ì„¤í•˜ë©´
 	Game Client:
-		Recv [INFO_OF_BUILDING_SPAWN]: °Ç¼³À» ÇÕ´Ï´Ù.
-		Send [INFO_OF_BUILDING_SPAWN]: °Ç¼³ ¿äÃ»À» ¼­¹ö¿¡°Ô º¸³À´Ï´Ù.
+		Recv [INFO_OF_BUILDING_SPAWN]: ê±´ì„¤ì„ í•©ë‹ˆë‹¤.
+		Send [INFO_OF_BUILDING_SPAWN]: ê±´ì„¤ ìš”ì²­ì„ ì„œë²„ì—ê²Œ ë³´ëƒ…ë‹ˆë‹¤.
 	Game Server:
-		Recv [INFO_OF_BUILDING_SPAWN]: °Ç¼³ ¿äÃ»¿¡ ÇÊ¿äÇÑ ÀÚ¿øÀÌ Á¸ÀçÇÏ¸é °Ç¼³ÇÏ°í
-		Send [INFO_OF_BUILDING_SPAWN]: ¸ğµç ÇÃ·¹ÀÌ¾î¿¡°Ô °Ç¼³ÇÏ¶ó°í ¸í·ÉÇÕ´Ï´Ù.
+		Recv [INFO_OF_BUILDING_SPAWN]: ê±´ì„¤ ìš”ì²­ì— í•„ìš”í•œ ìì›ì´ ì¡´ì¬í•˜ë©´ ê±´ì„¤í•˜ê³ 
+		Send [INFO_OF_BUILDING_SPAWN]: ëª¨ë“  í”Œë ˆì´ì–´ì—ê²Œ ê±´ì„¤í•˜ë¼ê³  ëª…ë ¹í•©ë‹ˆë‹¤.
 	*/
 	INFO_OF_BUILDING_SPAWN,
 
@@ -561,7 +561,7 @@ enum EPacketType
 	INFO_OF_BUILDING_STAT,
 
 
-	/** °ÔÀÓÅ¬¶óÀÌ¾ğÆ®°¡ »õ·Î µé¾î¿À¸é
+	/** ê²Œì„í´ë¼ì´ì–¸íŠ¸ê°€ ìƒˆë¡œ ë“¤ì–´ì˜¤ë©´
 	Game Client:
 		Recv [INFO_OF_BUILDING]:
 		Send [INFO_OF_BUILDING]:
@@ -582,7 +582,7 @@ enum EPacketType
 	DESTROY_BUILDING,
 
 
-	/** EnemyManager::SpawnEnemy(...) È£ÃâµÇ¸é
+	/** EnemyManager::SpawnEnemy(...) í˜¸ì¶œë˜ë©´
 	Game Client:
 		Recv [SPAWN_ENEMY]:
 		Send []:
@@ -595,9 +595,9 @@ enum EPacketType
 	/** 
 	Game Client:
 		Recv [INFO_OF_ENEMY_ANIMATION]:
-		Send [INFO_OF_ENEMY_ANIMATION]: ¿äÃ»
+		Send [INFO_OF_ENEMY_ANIMATION]: ìš”ì²­
 	Game Server:
-		Recv [INFO_OF_ENEMY_ANIMATION]: ¿äÃ» È®ÀÎ
+		Recv [INFO_OF_ENEMY_ANIMATION]: ìš”ì²­ í™•ì¸
 		Send [INFO_OF_ENEMY_ANIMATION]:
 	*/
 	INFO_OF_ENEMY_ANIMATION,
@@ -605,9 +605,9 @@ enum EPacketType
 	/**
 	Game Client:
 		Recv [INFO_OF_ENEMY_STAT]:
-		Send [INFO_OF_ENEMY_STAT]: ¿äÃ»
+		Send [INFO_OF_ENEMY_STAT]: ìš”ì²­
 	Game Server:
-		Recv [INFO_OF_ENEMY_STAT]: ¿äÃ» È®ÀÎ
+		Recv [INFO_OF_ENEMY_STAT]: ìš”ì²­ í™•ì¸
 		Send [INFO_OF_ENEMY_STAT]:
 	*/
 	INFO_OF_ENEMY_STAT,
@@ -628,16 +628,16 @@ class GAME_API cInfoOfPlayer
 {
 public:
 	string ID;
-	string IPv4Addr; // IP ¹øÈ£
+	string IPv4Addr; // IP ë²ˆí˜¸
 
-	int SocketByMainServer; // ¸ŞÀÎ ¼­¹ö·ÎºÎÅÍ ºÎ¿©µÈ Å¬¶óÀÌ¾ğÆ®ÀÇ ¼ÒÄÏ ¹øÈ£
-	int SocketByGameServer; // °ÔÀÓ ¼­¹ö¸¦ ±¸µ¿ÇÏ´Â ¹æÀåÀ¸·ÎºÎÅÍ ºÎ¿©µÈ ¼ÒÄÏ ¹øÈ£
+	int SocketByMainServer; // ë©”ì¸ ì„œë²„ë¡œë¶€í„° ë¶€ì—¬ëœ í´ë¼ì´ì–¸íŠ¸ì˜ ì†Œì¼“ ë²ˆí˜¸
+	int SocketByGameServer; // ê²Œì„ ì„œë²„ë¥¼ êµ¬ë™í•˜ëŠ” ë°©ì¥ìœ¼ë¡œë¶€í„° ë¶€ì—¬ëœ ì†Œì¼“ ë²ˆí˜¸
 
-	int PortOfMainClient; // ¸ŞÀÎ Å¬¶óÀÌ¾ğÆ®°¡ ¸ŞÀÎ ¼­¹ö¿Í ¿¬°áµÈ Æ÷Æ® ¹øÈ£
-	int PortOfGameServer; // ¹æÀåÀ¸·ÎºÎÅÍ ±¸µ¿µÈ °ÔÀÓ ¼­¹öÀÇ Æ÷Æ® ¹øÈ£
-	int PortOfGameClient; // °ÔÀÓ Å¬¶óÀÌ¾ğÆ®°¡ °ÔÀÓ ¼­¹ö¿Í ¿¬°áµÈ Æ÷Æ® ¹øÈ£
+	int PortOfMainClient; // ë©”ì¸ í´ë¼ì´ì–¸íŠ¸ê°€ ë©”ì¸ ì„œë²„ì™€ ì—°ê²°ëœ í¬íŠ¸ ë²ˆí˜¸
+	int PortOfGameServer; // ë°©ì¥ìœ¼ë¡œë¶€í„° êµ¬ë™ëœ ê²Œì„ ì„œë²„ì˜ í¬íŠ¸ ë²ˆí˜¸
+	int PortOfGameClient; // ê²Œì„ í´ë¼ì´ì–¸íŠ¸ê°€ ê²Œì„ ì„œë²„ì™€ ì—°ê²°ëœ í¬íŠ¸ ë²ˆí˜¸
 
-	int LeaderSocketByMainServer; // ¸ŞÀÎ ¼­¹ö·ÎºÎÅÍ ºÎ¿©µÈ ¹æÀåÀÇ ¼ÒÄÏ ¹øÈ£
+	int LeaderSocketByMainServer; // ë©”ì¸ ì„œë²„ë¡œë¶€í„° ë¶€ì—¬ëœ ë°©ì¥ì˜ ì†Œì¼“ ë²ˆí˜¸
 
 public:
 	cInfoOfPlayer()
@@ -735,7 +735,7 @@ public:
 		int socketID = 0;
 		cInfoOfPlayer Player;
 
-		// ÃÊ±âÈ­
+		// ì´ˆê¸°í™”
 		Info.Players.clear();
 
 		Stream >> nPlayers;
@@ -782,18 +782,18 @@ public:
 	string State;
 	string Title;
 	int Stage;
-	int nMax; // ÃÖ´ë ÇÃ·¹ÀÌ¾î ¼ö Á¦ÇÑ
+	int nMax; // ìµœëŒ€ í”Œë ˆì´ì–´ ìˆ˜ ì œí•œ
 
-	cInfoOfPlayer Leader; // ¹æÀå
-	cInfoOfPlayers Players; // ¹æÀåÀ» Á¦¿ÜÇÑ Âü°¡ÀÚµé
+	cInfoOfPlayer Leader; // ë°©ì¥
+	cInfoOfPlayers Players; // ë°©ì¥ì„ ì œì™¸í•œ ì°¸ê°€ìë“¤
 
 public:
 	cInfoOfGame() 
 	{
-		State = "Waiting";
-		Title = "Let's_go_together!";
+		State = "ëŒ€ê¸°ì¤‘";
+		Title = "í•¨ê»˜_ì¬ë°Œê²Œ_ê²Œì„ì„_í•´ë³´ì•„ìš”!";
 		Stage = 1;
-		nMax = 100;
+		nMax = 30;
 	}
 	~cInfoOfGame() {}
 
@@ -866,7 +866,7 @@ public:
 	{
 		Ping = 0;
 		ID = "NULL";
-		State = "Observing";
+		State = "ê´€ì „ì¤‘";
 		Level = 1;
 		Kill = 0;
 		Death = 0;
@@ -1030,7 +1030,7 @@ public:
 
 	int SocketID;
 	string NameOfID;
-	//bool bDying; // µüÈ÷ ÇÊ¿ä¾ø´Â µí ÇÕ´Ï´Ù.
+	//bool bDying; // ë”±íˆ í•„ìš”ì—†ëŠ” ë“¯ í•©ë‹ˆë‹¤.
 
 public:
 	cInfoOfPioneer_Socket()
@@ -1109,7 +1109,7 @@ public:
 	float TargetRotZ;
 
 
-	// ¾Ö´Ï¸ŞÀÌ¼Ç º¯¼öµé
+	// ì• ë‹ˆë©”ì´ì…˜ ë³€ìˆ˜ë“¤
 	float VelocityX;
 	float VelocityY;
 	float VelocityZ;
@@ -1120,7 +1120,7 @@ public:
 
 	bool bFired;
 
-	// ¹«±â
+	// ë¬´ê¸°
 	int IdxOfCurrentWeapon;
 
 	bool bArmedWeapon;
@@ -1347,7 +1347,7 @@ public:
 
 };
 
-// ÀüºÎ ÇÕÄ£°Å
+// ì „ë¶€ í•©ì¹œê±°
 class GAME_API cInfoOfPioneer
 {
 public:
@@ -1599,7 +1599,7 @@ public:
 	float LocZ;
 
 
-	// ÅÍ·¿¿¡¼­¸¸ »ç¿ë
+	// í„°ë ›ì—ì„œë§Œ ì‚¬ìš©
 	int IdxOfUnderWall;
 
 public:
@@ -1895,7 +1895,7 @@ public:
 	float TargetRotY;
 	float TargetRotZ;
 
-	// ¾Ö´Ï¸ŞÀÌ¼Ç º¯¼öµé
+	// ì• ë‹ˆë©”ì´ì…˜ ë³€ìˆ˜ë“¤
 	float VelocityX;
 	float VelocityY;
 	float VelocityZ;

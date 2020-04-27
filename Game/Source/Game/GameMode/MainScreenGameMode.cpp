@@ -16,6 +16,7 @@
 #include "CustomWidget/DeveloperWidget.h"
 #include "CustomWidget/OnlineGameWidget.h"
 #include "CustomWidget/WaitingGameWidget.h"
+#include "CustomWidget/CopyRightWidget.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -84,6 +85,9 @@ void AMainScreenGameMode::BeginPlay()
 
 	WaitingGameWidget = NewObject<UWaitingGameWidget>(this, FName("WaitingGameWidget"));
 	WaitingGameWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/WaitingGame.WaitingGame_C'", false);
+
+	CopyRightWidget = NewObject<UCopyRightWidget>(this, FName("CopyRightWidget"));
+	CopyRightWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/CopyRight.CopyRight_C'", false);
 }
 
 void AMainScreenGameMode::StartPlay()
@@ -348,6 +352,39 @@ void AMainScreenGameMode::_DeactivateWaitingGameWidget()
 	WaitingGameWidget->RemoveFromViewport();
 }
 
+void AMainScreenGameMode::ActivateCopyRightWidget()
+{
+	_ActivateCopyRightWidget();
+}
+void AMainScreenGameMode::_ActivateCopyRightWidget()
+{
+	if (!CopyRightWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateCopyRightWidget()> if (!CopyRightWidget)"));
+#endif			
+		return;
+	}
+
+	CopyRightWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateCopyRightWidget()
+{
+	_DeactivateCopyRightWidget();
+}
+void AMainScreenGameMode::_DeactivateCopyRightWidget()
+{
+	if (!CopyRightWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateCopyRightWidget()> if (!CopyRightWidget)"));
+#endif			
+		return;
+	}
+
+	CopyRightWidget->RemoveFromViewport();
+}
+
 
 /////////////////////////////////////////////////
 // 변환 함수
@@ -587,9 +624,9 @@ void AMainScreenGameMode::RecvFindGames()
 			continue;
 
 		// 버튼에 함수를 바인딩
-		if (copiedQueue.front().State._Equal("Waiting"))
+		if (copiedQueue.front().State._Equal("대기중"))
 			button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinWaitingGame);
-		else if (copiedQueue.front().State._Equal("Playing"))
+		else if (copiedQueue.front().State._Equal("진행중"))
 			button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinPlayingGame);
 		else
 		{
@@ -682,7 +719,7 @@ void AMainScreenGameMode::RecvWaitingGame()
 	// 게임방이 시작 카운트다운 중일때 새로 들어온 사람을 위해 Join 버튼을 활성화 시킵니다.
 	if (OnlineState == EOnlineState::PlayerOfWaitingGame)
 	{
-		if (copiedQueue.back().State == string("Playing"))
+		if (copiedQueue.back().State == string("진행중"))
 		{
 			// Join 버튼을 눌렀는데 다시 활성화되지 않도록 OnlineState를 Counting으로 변경합니다.
 			OnlineState = EOnlineState::Counting;

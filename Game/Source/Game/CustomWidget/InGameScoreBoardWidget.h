@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -89,7 +89,7 @@ public:
 			HorSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Top);
 		}
 
-		// ±âº»ÀûÀ¸·Î ¼û±è »óÅÂ
+		// ê¸°ë³¸ì ìœ¼ë¡œ ìˆ¨ê¹€ ìƒíƒœ
 		Line->SetVisibility(ESlateVisibility::Hidden);
 
 		ConstructEditableTextBox(WidgetTree, &Num);
@@ -144,12 +144,12 @@ public:
 		EditableTextBox->Justification = Justification;
 		EditableTextBox->SetIsReadOnly(true);
 
-		// ÆùÆ®¸¦ Àû¿ëÇÏ´Â ¹æ¹ý
-		// ÆùÆ® ÆÄÀÏÀÎ .ttf´Â ±âº»ÀûÀ¸·Î Engine Content/Slate/Fonts/¿¡ Á¸ÀçÇÕ´Ï´Ù.
+		// í°íŠ¸ë¥¼ ì ìš©í•˜ëŠ” ë°©ë²•
+		// í°íŠ¸ íŒŒì¼ì¸ .ttfëŠ” ê¸°ë³¸ì ìœ¼ë¡œ Engine Content/Slate/Fonts/ì— ì¡´ìž¬í•©ë‹ˆë‹¤.
 		// EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(GEngine->GetLargeFont(), 24);
 		// EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 24));
 
-		EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 36));
+		EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::ProjectDir() / TEXT("Content/Fonts/neodgm.ttf"), 36));
 
 		FMargin padding;
 		padding.Top = 2.0f;
@@ -192,8 +192,8 @@ public:
 		}
 
 		Ping->SetText(FText::FromString(FString::FromInt(infoOfScoreBoard.Ping)));
-		ID->SetText(FText::FromString(FString(infoOfScoreBoard.ID.c_str())));
-		State->SetText(FText::FromString(FString(infoOfScoreBoard.State.c_str())));
+		ID->SetText(FText::FromString(FString(UTF8_TO_TCHAR(infoOfScoreBoard.ID.c_str()))));
+		State->SetText(FText::FromString(FString(UTF8_TO_TCHAR(infoOfScoreBoard.State.c_str()))));
 		Level->SetText(FText::FromString(FString::FromInt(infoOfScoreBoard.Level)));
 		Kill->SetText(FText::FromString(FString::FromInt(infoOfScoreBoard.Kill)));
 		Death->SetText(FText::FromString(FString::FromInt(infoOfScoreBoard.Death)));

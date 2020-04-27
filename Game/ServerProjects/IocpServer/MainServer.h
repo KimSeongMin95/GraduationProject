@@ -1,14 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "Packet.h"
 
 
-// ÆĞÅ¶ Ã³¸® ÇÔ¼ö Æ÷ÀÎÅÍ
+// íŒ¨í‚· ì²˜ë¦¬ í•¨ìˆ˜ í¬ì¸í„°
 struct FuncProcess
 {
-	// RecvStreamÀº ¼ö½ÅÇÑ Á¤º¸, pSocketÀº Overlapped I/O ÀÛ¾÷ÀÌ ¹ß»ıÇÑ IOCP ¼ÒÄÏ ±¸Á¶Ã¼ Á¤º¸
+	// RecvStreamì€ ìˆ˜ì‹ í•œ ì •ë³´, pSocketì€ Overlapped I/O ì‘ì—…ì´ ë°œìƒí•œ IOCP ì†Œì¼“ êµ¬ì¡°ì²´ ì •ë³´
 	void(*funcProcessPacket)(stringstream& RecvStream, SOCKET Socket);
 	FuncProcess()
 	{
@@ -17,52 +17,52 @@ struct FuncProcess
 };
 
 /**
- * °ÔÀÓ Å¬¶óÀÌ¾ğÆ®¿Í Á¢¼Ó ¹× ÆĞÅ¶ Ã³¸®¸¦ ´ã´çÇÏ´Â Å¬·¡½º (°ÔÀÓ ¼­¹ö)
+ * ê²Œì„ í´ë¼ì´ì–¸íŠ¸ì™€ ì ‘ì† ë° íŒ¨í‚· ì²˜ë¦¬ë¥¼ ë‹´ë‹¹í•˜ëŠ” í´ë˜ìŠ¤ (ê²Œì„ ì„œë²„)
  */
 class MainServer
 {
 private:
-	FuncProcess	fnProcess[100];	// ÆĞÅ¶ Ã³¸® ±¸Á¶Ã¼
+	FuncProcess	fnProcess[100];	// íŒ¨í‚· ì²˜ë¦¬ êµ¬ì¡°ì²´
 
 protected:
-	SOCKET			 ListenSocket;			// ¼­¹ö ¸®½¼ ¼ÒÄÏ
-	HANDLE			 hIOCP;					// IOCP °´Ã¼ ÇÚµé
+	SOCKET			 ListenSocket;			// ì„œë²„ ë¦¬ìŠ¨ ì†Œì¼“
+	HANDLE			 hIOCP;					// IOCP ê°ì²´ í•¸ë“¤
 
-	bool			 bAccept;				// ¿äÃ» µ¿ÀÛ ÇÃ·¡±×
+	bool			 bAccept;				// ìš”ì²­ ë™ì‘ í”Œë˜ê·¸
 	CRITICAL_SECTION csAccept;				//
-	HANDLE			 hAcceptThreadHandle;	// Accept ½º·¹µå ÇÚµé	
+	HANDLE			 hAcceptThreadHandle;	// Accept ìŠ¤ë ˆë“œ í•¸ë“¤	
 
 	bool			 bIOThread;
-	HANDLE*			 hIOThreadHandle;		// IO ½º·¹µå ÇÚµé		
-	DWORD			 nIOThreadCnt;			// IO ½º·¹µå °³¼ö
+	HANDLE*			 hIOThreadHandle;		// IO ìŠ¤ë ˆë“œ í•¸ë“¤		
+	DWORD			 nIOThreadCnt;			// IO ìŠ¤ë ˆë“œ ê°œìˆ˜
 
 
 public:
-	// WSAAccept(...)ÇÑ ¸ğµç Å¬¶óÀÌ¾ğÆ®ÀÇ new stCompletionKey()¸¦ ÀúÀå
+	// WSAAccept(...)í•œ ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì˜ new stCompletionKey()ë¥¼ ì €ì¥
 	static map<SOCKET, stCompletionKey*> Clients;
 	static CRITICAL_SECTION csClients;
 
-	// ¼ö½ÅÇÑ µ¥ÀÌÅÍ¸¦ µ¦¿¡ ÀüºÎ ÀûÀç
+	// ìˆ˜ì‹ í•œ ë°ì´í„°ë¥¼ ë±ì— ì „ë¶€ ì ì¬
 	static map<SOCKET, deque<char*>*> MapOfRecvDeque;
 	static CRITICAL_SECTION csMapOfRecvDeque;
 
-	// WSASend(...)¸¦ ½ÇÇàÇÏ¸é ++, ½ÇÇàÀÌ ¿Ï·áµÇ°Å³ª ½ÇÆĞÇÏ¸é --
+	// WSASend(...)ë¥¼ ì‹¤í–‰í•˜ë©´ ++, ì‹¤í–‰ì´ ì™„ë£Œë˜ê±°ë‚˜ ì‹¤íŒ¨í•˜ë©´ --
 	static unsigned int CountOfSend;
 	static CRITICAL_SECTION csCountOfSend;
 
 	/******************************************************/
 
-	// LoginÇÑ Å¬¶óÀÌ¾ğÆ®ÀÇ InfoOfPlayer ÀúÀå
+	// Loginí•œ í´ë¼ì´ì–¸íŠ¸ì˜ InfoOfPlayer ì €ì¥
 	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
 	static CRITICAL_SECTION csInfoOfClients;
 
-	// CreateGameÇÑ Å¬¶óÀÌ¾ğÆ®ÀÇ cInfoOfGame ÀúÀå
+	// CreateGameí•œ í´ë¼ì´ì–¸íŠ¸ì˜ cInfoOfGame ì €ì¥
 	static std::map<SOCKET, cInfoOfGame> InfoOfGames;
 	static CRITICAL_SECTION csInfoOfGames;
 
 public:
 	////////////////////////
-	// ±âº»
+	// ê¸°ë³¸
 	////////////////////////
 	MainServer();
 	~MainServer();
@@ -70,68 +70,68 @@ public:
 	// 
 	void SetIPv4AndPort(IN_ADDR& IPv4, USHORT& Port);
 
-	// ÃÊ±âÈ­ ½ÇÆĞ½Ã ½ÇÇà
+	// ì´ˆê¸°í™” ì‹¤íŒ¨ì‹œ ì‹¤í–‰
 	void CloseListenSocketAndCleanupWSA();
 
-	// ¼ÒÄÏ µî·Ï ¹× ¼­¹ö Á¤º¸ ¼³Á¤
+	// ì†Œì¼“ ë“±ë¡ ë° ì„œë²„ ì •ë³´ ì„¤ì •
 	bool Initialize();
 
-	// Accept ½º·¹µå »ı¼º
+	// Accept ìŠ¤ë ˆë“œ ìƒì„±
 	bool CreateAcceptThread();
 
-	// ¼­¹ö ½ÃÀÛ
+	// ì„œë²„ ì‹œì‘
 	void AcceptThread();
 
-	// IO ½º·¹µå »ı¼º
+	// IO ìŠ¤ë ˆë“œ ìƒì„±
 	bool CreateIOThread();
 
-	// ÀÛ¾÷ ½º·¹µå
+	// ì‘ì—… ìŠ¤ë ˆë“œ
 	void IOThread();
 
-	// Å¬¶óÀÌ¾ğÆ® Á¢¼Ó Á¾·á
+	// í´ë¼ì´ì–¸íŠ¸ ì ‘ì† ì¢…ë£Œ
 	static void CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg);
 
-	// ¼­¹ö Á¾·á
+	// ì„œë²„ ì¢…ë£Œ
 	void CloseServer();
 
-	// Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¼Û½Å
+	// í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì†¡ì‹ 
 	static void Send(stringstream& SendStream, SOCKET Socket);
 
-	// Å¬¶óÀÌ¾ğÆ® ¼ö½Å ´ë±â
+	// í´ë¼ì´ì–¸íŠ¸ ìˆ˜ì‹  ëŒ€ê¸°
 	static void Recv(SOCKET Socket, stOverlappedMsg* ReceivedOverlappedMsg);
 
 	///////////////////////////////////////////
-	// stringstreamÀÇ ¸Ç ¾Õ¿¡ size¸¦ Ãß°¡
+	// stringstreamì˜ ë§¨ ì•ì— sizeë¥¼ ì¶”ê°€
 	///////////////////////////////////////////
 	static bool AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
 
 	///////////////////////////////////////////
-	// ¼ÒÄÏ ¹öÆÛ Å©±â º¯°æ
+	// ì†Œì¼“ ë²„í¼ í¬ê¸° ë³€ê²½
 	///////////////////////////////////////////
 	void SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf);
 
 	///////////////////////////////////////////
-	// ¼ö½ÅÇÑ µ¥ÀÌÅÍ¸¦ ÀúÀåÇÏ´Â µ¦¿¡¼­ µ¥ÀÌÅÍ¸¦ È¹µæ
+	// ìˆ˜ì‹ í•œ ë°ì´í„°ë¥¼ ì €ì¥í•˜ëŠ” ë±ì—ì„œ ë°ì´í„°ë¥¼ íšë“
 	///////////////////////////////////////////
 	void GetDataInRecvDeque(deque<char*>* RecvDeque, char* DataBuffer);
 
 	///////////////////////////////////////////
-	// ÆĞÅ¶À» Ã³¸®ÇÕ´Ï´Ù.
+	// íŒ¨í‚·ì„ ì²˜ë¦¬í•©ë‹ˆë‹¤.
 	///////////////////////////////////////////
 	void ProcessReceivedPacket(char* DataBuffer, SOCKET Socket);
 
 	////////////////////////////////////////////////
-	// ´ë¿ë·® ÆĞÅ¶ ºĞÇÒ 
+	// ëŒ€ìš©ëŸ‰ íŒ¨í‚· ë¶„í•  
 	////////////////////////////////////////////////
 	template<typename T>
 	static void DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPacketType PacketType, T& queue);
 
 	////////////////////////////////////////////////
-	// (ÀÓ½Ã) ÆĞÅ¶ »çÀÌÁî¿Í ½ÇÁ¦ ±æÀÌ °ËÁõ¿ë ÇÔ¼ö
+	// (ì„ì‹œ) íŒ¨í‚· ì‚¬ì´ì¦ˆì™€ ì‹¤ì œ ê¸¸ì´ ê²€ì¦ìš© í•¨ìˆ˜
 	////////////////////////////////////////////////
 	static void VerifyPacket(char* DataBuffer, bool send);
 
-	// ½Ì±ÛÅÏ °´Ã¼ °¡Á®¿À±â
+	// ì‹±ê¸€í„´ ê°ì²´ ê°€ì ¸ì˜¤ê¸°
 	static MainServer* GetSingleton()
 	{
 		static MainServer server;
@@ -140,7 +140,7 @@ public:
 
 
 	////////////////////////
-	// È®ÀÎ
+	// í™•ì¸
 	////////////////////////
 	bool IsServerOn();
 

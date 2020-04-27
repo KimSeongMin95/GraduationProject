@@ -1,8 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "OnlineGameMode.h"
 
-/*** Á÷Á¢ Á¤ÀÇÇÑ Çì´õ Àü¹æ ¼±¾ğ : Start ***/
+/*** ì§ì ‘ ì •ì˜í•œ í—¤ë” ì „ë°© ì„ ì–¸ : Start ***/
 #include "Network/ClientSocket.h"
 
 #include "Network/ServerSocketInGame.h"
@@ -34,7 +34,7 @@
 
 #include "Character/Enemy.h"
 #include "EnemyManager.h"
-/*** Á÷Á¢ Á¤ÀÇÇÑ Çì´õ Àü¹æ ¼±¾ğ : End ***/
+/*** ì§ì ‘ ì •ì˜í•œ í—¤ë” ì „ë°© ì„ ì–¸ : End ***/
 
 const float AOnlineGameMode::CellSize = 64.0f;
 
@@ -42,7 +42,7 @@ const float AOnlineGameMode::CellSize = 64.0f;
 AOnlineGameMode::AOnlineGameMode()
 {
 	///////////
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	///////////
 	ClientSocket = nullptr;
 	ServerSocketInGame = nullptr;
@@ -96,28 +96,28 @@ AOnlineGameMode::AOnlineGameMode()
 
 	TimerOfCheckDefeatCondition = 0.0f;
 
-	/***** ÇÊ¼ö! ²À ÀĞ¾îÁÖ¼¼¿ä. : Start *****/
+	/***** í•„ìˆ˜! ê¼­ ì½ì–´ì£¼ì„¸ìš”. : Start *****/
 	/*
-	Edit -> Project Settings -> Project -> Maps & Modes -> Default Modes¿¡¼­
-	DefaultGameMode: ½ÇÇàÇÒ °ÔÀÓ¸ğµå·Î .cpp ÆÄÀÏ·Î ÁöÁ¤
-	DefaultPawnClass: APawn Å¬·¡½º¸¦ ³Ö¾îÁÖ¸é µË´Ï´Ù.
+	Edit -> Project Settings -> Project -> Maps & Modes -> Default Modesì—ì„œ
+	DefaultGameMode: ì‹¤í–‰í•  ê²Œì„ëª¨ë“œë¡œ .cpp íŒŒì¼ë¡œ ì§€ì •
+	DefaultPawnClass: APawn í´ë˜ìŠ¤ë¥¼ ë„£ì–´ì£¼ë©´ ë©ë‹ˆë‹¤.
 		static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDownCPP/Blueprints/TopDownCharacter"));
 		if (PlayerPawnBPClass.Class != NULL)
 		{
 			DefaultPawnClass = PlayerPawnBPClass.Class;
 		}
 	HUDClass:
-	PlayerControllerClass: PlayerController Å¬·¡½º¸¦ ³Ö¾îÁÖ¸é µË´Ï´Ù.
+	PlayerControllerClass: PlayerController í´ë˜ìŠ¤ë¥¼ ë„£ì–´ì£¼ë©´ ë©ë‹ˆë‹¤.
 		PlayerControllerClass = APioneerController::StaticClass();
 	GameStateClass:
 	PlayerStateClass:
 	SpectatorClass:
 	*/
-	/***** ÇÊ¼ö! ²À ÀĞ¾îÁÖ¼¼¿ä. : End *****/
+	/***** í•„ìˆ˜! ê¼­ ì½ì–´ì£¼ì„¸ìš”. : End *****/
 
 	//HUDClass = AMyHUD::StaticClass();
 
-	// DefaultPawnÀÌ »ı¼ºµÇÁö ¾Ê°Ô ÇÕ´Ï´Ù.
+	// DefaultPawnì´ ìƒì„±ë˜ì§€ ì•Šê²Œ í•©ë‹ˆë‹¤.
 	DefaultPawnClass = nullptr; 
 
 	// use our custom PlayerController class
@@ -125,24 +125,24 @@ AOnlineGameMode::AOnlineGameMode()
 
 	
 
-	///*** ºí·çÇÁ¸°Æ®¸¦ ÀÌ¿ëÇÑ ¹æ¹ı : Start ***/
+	///*** ë¸”ë£¨í”„ë¦°íŠ¸ë¥¼ ì´ìš©í•œ ë°©ë²• : Start ***/
 	//// set default pawn class to our Blueprinted character
 	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDownCPP/Blueprints/TopDownCharacter"));
 	//if (PlayerPawnBPClass.Class != NULL)
 	//{
 	//	DefaultPawnClass = PlayerPawnBPClass.Class;
 	//}
-	///*** ºí·çÇÁ¸°Æ®¸¦ ÀÌ¿ëÇÑ ¹æ¹ı : End ***/
+	///*** ë¸”ë£¨í”„ë¦°íŠ¸ë¥¼ ì´ìš©í•œ ë°©ë²• : End ***/
 
 
 
-	//// Default·Î ºñÈ°¼ºÈ­µÇ¾îÀÖ´Â Tick()À» È°¼ºÈ­ ÇÕ´Ï´Ù.
+	//// Defaultë¡œ ë¹„í™œì„±í™”ë˜ì–´ìˆëŠ” Tick()ì„ í™œì„±í™” í•©ë‹ˆë‹¤.
 	//PrimaryActorTick.SetTickFunctionEnable(true);
 	//PrimaryActorTick.bStartWithTickEnabled = true;
 
 
 
-	// ÄÜ¼Ö
+	// ì½˜ì†”
 	cMyConsole* myConsole = cMyConsole::GetSingleton();
 	if (myConsole)
 	{
@@ -156,7 +156,7 @@ void AOnlineGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	//////////////////////////
-	// ³×Æ®¿öÅ©
+	// ë„¤íŠ¸ì›Œí¬
 	//////////////////////////
 	ClientSocket = cClientSocket::GetSingleton();
 
@@ -226,7 +226,7 @@ void AOnlineGameMode::StartPlay()
 
 		PioneerManager->SetInGameWidget(InGameWidget);
 
-		// ÃÊ±â¿£ ¿ìÁÖ¼±À» º¸µµ·Ï ÇÕ´Ï´Ù.
+		// ì´ˆê¸°ì—” ìš°ì£¼ì„ ì„ ë³´ë„ë¡ í•©ë‹ˆë‹¤.
 		PioneerController->SetViewTargetWithBlend(SpaceShip);
 
 		PioneerManager->ViewpointState = EViewpointState::SpaceShip;
@@ -244,7 +244,7 @@ void AOnlineGameMode::Tick(float DeltaTime)
 	TickOfClientSocketInGame(DeltaTime);
 
 
-	// ÀÓ½Ã
+	// ì„ì‹œ
 	TickOfSpaceShip += DeltaTime;
 	if (TickOfSpaceShip >= 120.0f)
 	{
@@ -263,7 +263,7 @@ void AOnlineGameMode::Tick(float DeltaTime)
 /*** AOnlineGameMode : Start ***/
 
 /////////////////////////////////////////////////
-// ÇÊ¼ö
+// í•„ìˆ˜
 /////////////////////////////////////////////////
 void AOnlineGameMode::FindPioneerController()
 {
@@ -276,7 +276,7 @@ void AOnlineGameMode::FindPioneerController()
 		return;
 	}
 
-	// UWorld¿¡¼­ APioneerController¸¦ Ã£½À´Ï´Ù.
+	// UWorldì—ì„œ APioneerControllerë¥¼ ì°¾ìŠµë‹ˆë‹¤.
 	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
@@ -303,9 +303,9 @@ void AOnlineGameMode::SpawnPioneerManager()
 	//SpawnParams.Name = TEXT("Name");
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn À§Ä¡¿¡¼­ Ãæµ¹ÀÌ ¹ß»ıÇßÀ» ¶§ Ã³¸®¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ìœ„ì¹˜ì—ì„œ ì¶©ëŒì´ ë°œìƒí–ˆì„ ë•Œ ì²˜ë¦¬ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 
-	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // ¾×ÅÍ¸¦ °´Ã¼È­ ÇÕ´Ï´Ù.
+	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // ì•¡í„°ë¥¼ ê°ì²´í™” í•©ë‹ˆë‹¤.
 }
 
 void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform)
@@ -322,10 +322,10 @@ void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform T
 	FTransform myTrans = Transform;
 
 	FActorSpawnParameters SpawnParams;
-	//SpawnParams.Name = TEXT("Name"); // NameÀ» ¼³Á¤ÇÕ´Ï´Ù. World Outliner¿¡ Ç¥±âµÇ´Â Label°ú´Â ´Ù¸¨´Ï´Ù.
+	//SpawnParams.Name = TEXT("Name"); // Nameì„ ì„¤ì •í•©ë‹ˆë‹¤. World Outlinerì— í‘œê¸°ë˜ëŠ” Labelê³¼ëŠ” ë‹¤ë¦…ë‹ˆë‹¤.
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn À§Ä¡¿¡¼­ Ãæµ¹ÀÌ ¹ß»ıÇßÀ» ¶§ Ã³¸®¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn ìœ„ì¹˜ì—ì„œ ì¶©ëŒì´ ë°œìƒí–ˆì„ ë•Œ ì²˜ë¦¬ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 
 	*pSpaceShip = world->SpawnActor<ASpaceShip>(ASpaceShip::StaticClass(), myTrans, SpawnParams);
 
@@ -347,7 +347,7 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn À§Ä¡¿¡¼­ Ãæµ¹ÀÌ ¹ß»ıÇßÀ» ¶§ Ã³¸®¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn ìœ„ì¹˜ì—ì„œ ì¶©ëŒì´ ë°œìƒí–ˆì„ ë•Œ ì²˜ë¦¬ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 
 	AProjectile* projectile = nullptr;
 
@@ -419,9 +419,9 @@ void AOnlineGameMode::SpawnBuildingManager()
 	//SpawnParams.Name = TEXT("Name");
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn À§Ä¡¿¡¼­ Ãæµ¹ÀÌ ¹ß»ıÇßÀ» ¶§ Ã³¸®¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ìœ„ì¹˜ì—ì„œ ì¶©ëŒì´ ë°œìƒí–ˆì„ ë•Œ ì²˜ë¦¬ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 
-	EnemyManager = world->SpawnActor<AEnemyManager>(AEnemyManager::StaticClass(), myTrans, SpawnParams); // ¾×ÅÍ¸¦ °´Ã¼È­ ÇÕ´Ï´Ù.
+	EnemyManager = world->SpawnActor<AEnemyManager>(AEnemyManager::StaticClass(), myTrans, SpawnParams); // ì•¡í„°ë¥¼ ê°ì²´í™” í•©ë‹ˆë‹¤.
 }
 
 void AOnlineGameMode::SpawnEnemyManager()
@@ -441,9 +441,9 @@ void AOnlineGameMode::SpawnEnemyManager()
 	//SpawnParams.Name = TEXT("Name");
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn À§Ä¡¿¡¼­ Ãæµ¹ÀÌ ¹ß»ıÇßÀ» ¶§ Ã³¸®¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ìœ„ì¹˜ì—ì„œ ì¶©ëŒì´ ë°œìƒí–ˆì„ ë•Œ ì²˜ë¦¬ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 
-	BuildingManager = world->SpawnActor<ABuildingManager>(ABuildingManager::StaticClass(), myTrans, SpawnParams); // ¾×ÅÍ¸¦ °´Ã¼È­ ÇÕ´Ï´Ù.
+	BuildingManager = world->SpawnActor<ABuildingManager>(ABuildingManager::StaticClass(), myTrans, SpawnParams); // ì•¡í„°ë¥¼ ê°ì²´í™” í•©ë‹ˆë‹¤.
 }
 
 
@@ -460,7 +460,7 @@ void AOnlineGameMode::TickOfServerSocketInGame(float DeltaTime)
 		return;
 	}
 
-	// °ÔÀÓ¼­¹ö°¡ È°¼ºÈ­µÇ¾î ÀÖÁö ¾ÊÀ¸¸é ´õÀÌ»ó ½ÇÇàÇÏÁö ¾Ê½À´Ï´Ù.
+	// ê²Œì„ì„œë²„ê°€ í™œì„±í™”ë˜ì–´ ìˆì§€ ì•Šìœ¼ë©´ ë”ì´ìƒ ì‹¤í–‰í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 	if (ServerSocketInGame->IsServerOn() == false)
 	{
 		return;
@@ -573,14 +573,14 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 
 	switch (SpaceShip->State)
 	{
-	case ESpaceShipState::Idling: // »õ·Î¿î °ÔÀÓÅ¬¶óÀÌ¾ğÆ®°¡ Á¢¼ÓÇÏ¸é IdlingÀ¸·Î ¹Ù²ã¼­ ÁøÇà
+	case ESpaceShipState::Idling: // ìƒˆë¡œìš´ ê²Œì„í´ë¼ì´ì–¸íŠ¸ê°€ ì ‘ì†í•˜ë©´ Idlingìœ¼ë¡œ ë°”ê¿”ì„œ ì§„í–‰
 	{
 		SpaceShip->StartLanding();
 	}
 	break;
 	case ESpaceShipState::Landed:
 	{
-		// Pioneer ¼ö Á¦ÇÑ
+		// Pioneer ìˆ˜ ì œí•œ
 		if (PioneerManager->Pioneers.Num() < 30)
 		{
 			SpaceShip->StartSpawning(5 + ServerSocketInGame->SizeOfObservers() * 1.00);
@@ -631,8 +631,8 @@ void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
 		{
 			if (PioneerManager->Pioneers[copiedQueue.front()])
 			{
-				// bDyingÀ» ¹Ù²ãÁÖ¸é BaseCharacterAnimInstance¿¡¼­ UPioneerAnimInstance::DestroyCharacter()¸¦ È£ÃâÇÏ°í
-				// Pioneer->DestroyCharacter();À» È£ÃâÇÏ¿© ¾Ë¾Æ¼­ ¼Ò¸êÇÏ°Ô µË´Ï´Ù.
+				// bDyingì„ ë°”ê¿”ì£¼ë©´ BaseCharacterAnimInstanceì—ì„œ UPioneerAnimInstance::DestroyCharacter()ë¥¼ í˜¸ì¶œí•˜ê³ 
+				// Pioneer->DestroyCharacter();ì„ í˜¸ì¶œí•˜ì—¬ ì•Œì•„ì„œ ì†Œë©¸í•˜ê²Œ ë©ë‹ˆë‹¤.
 				PioneerManager->Pioneers[copiedQueue.front()]->bDyingFlag = true;
 				PioneerManager->Pioneers[copiedQueue.front()]->bDying = true;
 			}
@@ -674,7 +674,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
 			{
 				pioneer->SetInfoOfPioneer_Animation(copiedQueue.front());
 
-				// AI°¡ ¾Æ´Ï¸é AI Controller¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+				// AIê°€ ì•„ë‹ˆë©´ AI Controllerë¥¼ í•´ì œí•©ë‹ˆë‹¤.
 				if (pioneer->SocketID != 0)
 				{
 					pioneer->UnPossessAIController();
@@ -716,7 +716,7 @@ void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 		EnterCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Animation);
 		if (ServerSocketInGame->InfosOfPioneer_Animation.find(kvp.Key) != ServerSocketInGame->InfosOfPioneer_Animation.end())
 		{
-			// AI°Å³ª °ÔÀÓ¼­¹ö°¡ Á¶Á¾ÇÏ´Â Pioneer¸¸ Á¤º¸¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+			// AIê±°ë‚˜ ê²Œì„ì„œë²„ê°€ ì¡°ì¢…í•˜ëŠ” Pioneerë§Œ ì •ë³´ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 			if (kvp.Value->SocketID <= 1)
 				ServerSocketInGame->InfosOfPioneer_Animation.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Animation();
 		}
@@ -763,7 +763,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
 			{
 				pioneer->SetInfoOfPioneer_Socket(copiedQueue.front());
 
-				// AI°¡ ¾Æ´Ï¸é AI Controller¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+				// AIê°€ ì•„ë‹ˆë©´ AI Controllerë¥¼ í•´ì œí•©ë‹ˆë‹¤.
 				if (pioneer->SocketID != 0)
 				{
 					pioneer->UnPossessAIController();
@@ -842,7 +842,7 @@ void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 		EnterCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Stat);
 		if (ServerSocketInGame->InfosOfPioneer_Stat.find(kvp.Key) != ServerSocketInGame->InfosOfPioneer_Stat.end())
 		{
-			// AI°Å³ª °ÔÀÓ¼­¹ö°¡ Á¶Á¾ÇÏ´Â Pioneer¸¸ Á¤º¸¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+			// AIê±°ë‚˜ ê²Œì„ì„œë²„ê°€ ì¡°ì¢…í•˜ëŠ” Pioneerë§Œ ì •ë³´ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 			if (kvp.Value->SocketID <= 1)
 				ServerSocketInGame->InfosOfPioneer_Stat.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Stat();
 		}
@@ -941,7 +941,7 @@ void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
 		float needMineral = copiedQueue.front().NeedMineral;
 		float needOrganicMatter = copiedQueue.front().NeedOrganicMatter;
 
-		// ÀÚ¿øÀÌ °Ç¹°À» °Ç¼³ÇÏ±â¿¡ ÃæºĞÇÏ´Ù¸é
+		// ìì›ì´ ê±´ë¬¼ì„ ê±´ì„¤í•˜ê¸°ì— ì¶©ë¶„í•˜ë‹¤ë©´
 		if (PioneerManager->Resources.NumOfMineral > needMineral &&
 			PioneerManager->Resources.NumOfOrganic > needOrganicMatter)
 		{
@@ -1114,7 +1114,7 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 		return;
 	}
 
-	// °ÔÀÓÅ¬¶óÀÌ¾ğÆ®°¡ È°¼ºÈ­µÇ¾î ÀÖÁö ¾ÊÀ¸¸é ´õÀÌ»ó ½ÇÇàÇÏÁö ¾Ê½À´Ï´Ù.
+	// ê²Œì„í´ë¼ì´ì–¸íŠ¸ê°€ í™œì„±í™”ë˜ì–´ ìˆì§€ ì•Šìœ¼ë©´ ë”ì´ìƒ ì‹¤í–‰í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 	if (ClientSocketInGame->IsClientSocketOn() == false)
 	{
 		return;
@@ -1195,7 +1195,7 @@ void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 		return;
 	}
 
-	// ¼­¹ö ¿¬°á»óÅÂ È®ÀÎ
+	// ì„œë²„ ì—°ê²°ìƒíƒœ í™•ì¸
 	if (ClientSocketInGame->IsServerOn())
 		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
 	else
@@ -1304,8 +1304,8 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 		{
 			if (PioneerManager->Pioneers[copiedQueue.front()])
 			{
-				// bDyingÀ» ¹Ù²ãÁÖ¸é BaseCharacterAnimInstance¿¡¼­ UPioneerAnimInstance::DestroyCharacter()¸¦ È£ÃâÇÏ°í
-				// Pioneer->DestroyCharacter();À» È£ÃâÇÏ¿© ¾Ë¾Æ¼­ ¼Ò¸êÇÏ°Ô µË´Ï´Ù.
+				// bDyingì„ ë°”ê¿”ì£¼ë©´ BaseCharacterAnimInstanceì—ì„œ UPioneerAnimInstance::DestroyCharacter()ë¥¼ í˜¸ì¶œí•˜ê³ 
+				// Pioneer->DestroyCharacter();ì„ í˜¸ì¶œí•˜ì—¬ ì•Œì•„ì„œ ì†Œë©¸í•˜ê²Œ ë©ë‹ˆë‹¤.
 				PioneerManager->Pioneers[copiedQueue.front()]->bDyingFlag = true;
 				PioneerManager->Pioneers[copiedQueue.front()]->bDying = true;
 			}
@@ -1367,7 +1367,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 			{
 				pioneer->SetInfoOfPioneer_Animation(copiedQueue.front());
 			
-				// AI°¡ ¾Æ´Ï¸é AI Controller¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+				// AIê°€ ì•„ë‹ˆë©´ AI Controllerë¥¼ í•´ì œí•©ë‹ˆë‹¤.
 				if (pioneer->SocketID != 0)
 				{
 					pioneer->UnPossessAIController();
@@ -1408,7 +1408,7 @@ void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
 		{
 			PioneerManager->ViewpointState = EViewpointState::Observation;
 
-			// UI ¼³Á¤
+			// UI ì„¤ì •
 			if (InGameWidget)
 			{
 				InGameWidget->SetArrowButtonsVisibility(true);
@@ -1459,7 +1459,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 			{
 				pioneer->SetInfoOfPioneer_Socket(copiedQueue.front());
 
-				// AI°¡ ¾Æ´Ï¸é AI Controller¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+				// AIê°€ ì•„ë‹ˆë©´ AI Controllerë¥¼ í•´ì œí•©ë‹ˆë‹¤.
 				if (pioneer->SocketID != 0)
 				{
 					pioneer->UnPossessAIController();
@@ -1521,7 +1521,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 			{
 				pioneer->SetInfoOfPioneer_Stat(copiedQueue.front());
 
-				// AI°¡ ¾Æ´Ï¸é AI Controller¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+				// AIê°€ ì•„ë‹ˆë©´ AI Controllerë¥¼ í•´ì œí•©ë‹ˆë‹¤.
 				if (pioneer->SocketID != 0)
 				{
 					pioneer->UnPossessAIController();
@@ -1589,7 +1589,7 @@ void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
 
 	while (copiedQueue.empty() == false)
 	{
-		// Á¦ÀÏ ¸¶Áö¸·¿¡ ¹ŞÀº °Í¸¸ Àû¿ëÇÕ´Ï´Ù.
+		// ì œì¼ ë§ˆì§€ë§‰ì— ë°›ì€ ê²ƒë§Œ ì ìš©í•©ë‹ˆë‹¤.
 		PioneerManager->Resources = copiedQueue.back();
 
 		copiedQueue.pop();
@@ -1986,7 +1986,7 @@ void AOnlineGameMode::RecvExp(float DeltaTime)
 
 
 /////////////////////////////////////////////////
-// ÆĞ¹è Á¶°Ç È®ÀÎ
+// íŒ¨ë°° ì¡°ê±´ í™•ì¸
 /////////////////////////////////////////////////
 void AOnlineGameMode::CheckDefeatCondition(float DeltaTime)
 {
@@ -2012,7 +2012,7 @@ void AOnlineGameMode::CheckDefeatCondition(float DeltaTime)
 
 
 /////////////////////////////////////////////////
-// À§Á¬ È°¼ºÈ­ / ºñÈ°¼ºÈ­
+// ìœ„ì ¯ í™œì„±í™” / ë¹„í™œì„±í™”
 /////////////////////////////////////////////////
 void AOnlineGameMode::ActivateInGameWidget()
 {
@@ -2316,7 +2316,7 @@ void AOnlineGameMode::_DeactivateInGameDefeatWidget()
 
 
 /////////////////////////////////////////////////
-// Å¸ÀÌÆ² È­¸éÀ¸·Î µÇµ¹¾Æ°¡±â
+// íƒ€ì´í‹€ í™”ë©´ìœ¼ë¡œ ë˜ëŒì•„ê°€ê¸°
 /////////////////////////////////////////////////
 void AOnlineGameMode::BackToTitle()
 {
@@ -2328,7 +2328,7 @@ void AOnlineGameMode::_BackToTitle()
 }
 
 /////////////////////////////////////////////////
-// °ÔÀÓÁ¾·á
+// ê²Œì„ì¢…ë£Œ
 /////////////////////////////////////////////////
 void AOnlineGameMode::TerminateGame()
 {

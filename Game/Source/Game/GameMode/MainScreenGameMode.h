@@ -81,6 +81,11 @@ private:
 		/**  */
 		class UWaitingGameWidget* WaitingGameWidget = nullptr;
 
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 저작권 정보 */
+		class UCopyRightWidget* CopyRightWidget = nullptr;
+
+
 	int Count;
 
 private:
@@ -128,6 +133,11 @@ public:
 		void ActivateWaitingGameWidget(); void _ActivateWaitingGameWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void DeactivateWaitingGameWidget(); void _DeactivateWaitingGameWidget();
+
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateCopyRightWidget(); void _ActivateCopyRightWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateCopyRightWidget(); void _DeactivateCopyRightWidget();
 
 	/////////////////////////////////////////////////
 	// 게임종료

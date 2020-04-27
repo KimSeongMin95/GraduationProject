@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "WaitingGameWidget.h"
 
@@ -6,7 +6,7 @@
 UWaitingGameWidget::UWaitingGameWidget()
 {
 	///////////
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	///////////	
 	State = nullptr;
 	Title = nullptr;
@@ -88,17 +88,17 @@ void UWaitingGameWidget::SetText(cInfoOfGame& InfoOfGame)
 		return;
 	}
 
-	State->SetText(FText::FromString(FString(InfoOfGame.State.c_str())));
+	State->SetText(FText::FromString(FString(UTF8_TO_TCHAR(InfoOfGame.State.c_str()))));
 
-	Leader->SetText(FText::FromString(FString(InfoOfGame.Leader.ID.c_str())));
+	Leader->SetText(FText::FromString(FString(UTF8_TO_TCHAR(InfoOfGame.Leader.ID.c_str()))));
 
 	Players->SetText(FText::FromString(FString::FromInt(InfoOfGame.Players.Size() + 1)));
 
-	// ¹æÀåÀÌ ¾Æ´Ï¸é Àû¿ë
+	// ë°©ìž¥ì´ ì•„ë‹ˆë©´ ì ìš©
 	if (bIsLeader == false)
 	{
-		FString title(InfoOfGame.Title.c_str());
-		title.ReplaceCharInline('_', ' ');
+		FString title(UTF8_TO_TCHAR(InfoOfGame.Title.c_str()));
+		title.ReplaceCharInline(_T('_'), _T(' '));
 		Title->SetText(FText::FromString(title));
 
 		Stage->SetText(FText::FromString(FString::FromInt(InfoOfGame.Stage)));
@@ -206,21 +206,21 @@ void UWaitingGameWidget::ShowLeader(cInfoOfPlayer CopiedMyInfo)
 		return;
 	}
 
-	Leader->SetText(FText::FromString(FString(CopiedMyInfo.ID.c_str())));
+	Leader->SetText(FText::FromString(FString(UTF8_TO_TCHAR(CopiedMyInfo.ID.c_str()))));
 }
 
 void UWaitingGameWidget::RevealGame(cInfoOfGame& InfoOfGame)
 {
 	SetText(InfoOfGame);
 
-	// ¸ÕÀú ÃÊ±âÈ­
+	// ë¨¼ì € ì´ˆê¸°í™”
 	for (auto& wgw : vecWaitingGameWidget)
 	{
 		if (wgw->IsVisible())
 			wgw->SetVisible(false);
 	}
 
-	// »õ·Î Àû¿ë
+	// ìƒˆë¡œ ì ìš©
 	ShowLeader(InfoOfGame.Leader);
 
 	int idx = 1;
@@ -257,12 +257,12 @@ void UWaitingGameWidget::Clear()
 
 	bIsLeader = false;
 
-	State->SetText(FText::FromString(FString("Waiting")));
-	Title->SetText(FText::FromString(FString("Let's go together!")));
-	Leader->SetText(FText::FromString(FString("ID")));
-	Players->SetText(FText::FromString(FString("1")));
-	Stage->SetText(FText::FromString(FString("1")));
-	Maximum->SetText(FText::FromString(FString("100")));
+	State->SetText(FText::FromString(TEXT("ëŒ€ê¸°ì¤‘")));
+	Title->SetText(FText::FromString(TEXT("í•¨ê»˜ ìž¬ë°Œê²Œ ê²Œìž„ì„ í•´ë³´ì•„ìš”!")));
+	Leader->SetText(FText::FromString(TEXT("ID")));
+	Players->SetText(FText::FromString("1"));
+	Stage->SetText(FText::FromString("1"));
+	Maximum->SetText(FText::FromString("30"));
 
 	for (auto& wgw : vecWaitingGameWidget)
 	{
@@ -316,15 +316,15 @@ void UWaitingGameWidget::CheckTextOfTitle()
 
 	FString textOfTitle = Title->GetText().ToString();
 
-	// ÅØ½ºÆ®°¡ ¾²¿©ÁöÁö ¾Ê¾Ò´Ù¸é ½ÇÇàÇÏÁö ¾Ê½À´Ï´Ù.
+	// í…ìŠ¤íŠ¸ê°€ ì“°ì—¬ì§€ì§€ ì•Šì•˜ë‹¤ë©´ ì‹¤í–‰í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 	if (textOfTitle.Len() == 0)
 	{
 		Title->SetText(FText::FromString(FString("NULL")));
 		return;
 	}
 
-	// ÅØ½ºÆ®°¡ 20°³¸¦ ³Ñ¾î°¡¸é 20°³±îÁö Áö¿ó´Ï´Ù.
-	while (textOfTitle.Len() > 20)
+	// í…ìŠ¤íŠ¸ê°€ 20ê°œë¥¼ ë„˜ì–´ê°€ë©´ 15ê°œê¹Œì§€ ì§€ì›ë‹ˆë‹¤.
+	while (textOfTitle.Len() > 15)
 		textOfTitle.RemoveAt(textOfTitle.Len() - 1);
 
 	Title->SetText(FText::FromString(textOfTitle));
@@ -350,8 +350,8 @@ void UWaitingGameWidget::CheckTextOfStage()
 
 		if (stage <= 0)
 			stage = 1;
-		else if (stage > 10)
-			stage = 10;
+		else if (stage > 3)
+			stage = 3;
 	}
 	Stage->SetText(FText::FromString(FString::FromInt(stage)));
 }
@@ -369,15 +369,15 @@ void UWaitingGameWidget::CheckTextOfMaximum()
 		return;
 	}
 
-	int max = 100;
+	int max = 30;
 	if (Maximum->GetText().IsNumeric())
 	{
 		max = FCString::Atoi(*Maximum->GetText().ToString());
 
 		if (max <= 0)
 			max = 1;
-		else if (max > 100)
-			max = 100;
+		else if (max > 30)
+			max = 30;
 	}
 	Maximum->SetText(FText::FromString(FString::FromInt(max)));
 }
@@ -417,8 +417,8 @@ void UWaitingGameWidget::SetModifiedInfo(cInfoOfGame& InfoOfGame)
 		return;
 	}
 
-	FString title(InfoOfGame.Title.c_str());
-	title.ReplaceCharInline('_', ' ');
+	FString title(UTF8_TO_TCHAR(InfoOfGame.Title.c_str()));
+	title.ReplaceCharInline(_T('_'), _T(' '));
 	Title->SetText(FText::FromString(title));
 
 	Stage->SetText(FText::FromString(FString::FromInt(InfoOfGame.Stage)));

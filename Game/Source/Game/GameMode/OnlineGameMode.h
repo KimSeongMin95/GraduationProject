@@ -72,6 +72,7 @@ private:
 		/** 게임 패배 */
 		class UInGameDefeatWidget* InGameDefeatWidget = nullptr;
 
+
 	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
 		class APioneerController* PioneerController = nullptr;
 

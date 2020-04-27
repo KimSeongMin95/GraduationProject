@@ -1,13 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include <vector>
 #include <map>
 
-/*** ¾ð¸®¾ó¿£Áø Çì´õ ¼±¾ð : Start ***/
+/*** ì–¸ë¦¬ì–¼ì—”ì§„ í—¤ë” ì„ ì–¸ : Start ***/
 
-/*** ¾ð¸®¾ó¿£Áø Çì´õ ¼±¾ð : End ***/
+/*** ì–¸ë¦¬ì–¼ì—”ì§„ í—¤ë” ì„ ì–¸ : End ***/
 
 #include "CoreMinimal.h"
 #include "CustomWidget/WidgetBase.h"
@@ -154,7 +154,8 @@ public:
 
 		Player->SetIsReadOnly(true);
 
-		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 42));
+		//Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 42));
+		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::ProjectDir() / TEXT("Content/Fonts/neodgm.ttf"), 36));
 
 		if (class UUniformGridSlot* gridSlot = Cast<class UUniformGridSlot>(Player->Slot))
 		{
@@ -175,7 +176,7 @@ public:
 			return;
 		}
 
-		Player->SetText(FText::FromString(FString(InfoOfPlayer.ID.c_str())));
+		Player->SetText(FText::FromString(FString(UTF8_TO_TCHAR(InfoOfPlayer.ID.c_str()))));
 	}
 	void SetVisible(bool bVisible)
 	{

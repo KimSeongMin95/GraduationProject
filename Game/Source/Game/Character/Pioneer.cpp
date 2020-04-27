@@ -1,8 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Pioneer.h"
 
-/*** Á÷Á¢ Á¤ÀÇÇÑ Çì´õ Àü¹æ ¼±¾ğ : Start ***/
+/*** ì§ì ‘ ì •ì˜í•œ í—¤ë” ì „ë°© ì„ ì–¸ : Start ***/
 #include "AnimInstance/PioneerAnimInstance.h"
 
 #include "Controller/PioneerController.h"
@@ -44,13 +44,13 @@
 #include "Etc/WorldViewCameraActor.h"
 
 #include "Projectile/Projectile.h"
-/*** Á÷Á¢ Á¤ÀÇÇÑ Çì´õ Àü¹æ ¼±¾ğ : End ***/
+/*** ì§ì ‘ ì •ì˜í•œ í—¤ë” ì „ë°© ì„ ì–¸ : End ***/
 
 
 /*** Basic Function : Start ***/
 APioneer::APioneer()
 {
-	// Ãæµ¹ Ä¸½¶ÀÇ Å©±â¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+	// ì¶©ëŒ ìº¡ìŠì˜ í¬ê¸°ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 	GetCapsuleComponent()->InitCapsuleSize(33.0f, 96.0f);
 
 	InitHelthPointBar();
@@ -77,7 +77,7 @@ APioneer::APioneer()
 	SocketID = 0;
 	NameOfID = "AI";
 
-	//// ÀÔ·Â Ã³¸®¸¦ À§ÇÑ ¼±È¸À²À» ¼³Á¤ÇÕ´Ï´Ù.
+	//// ì…ë ¥ ì²˜ë¦¬ë¥¼ ìœ„í•œ ì„ íšŒìœ¨ì„ ì„¤ì •í•©ë‹ˆë‹¤.
 	//BaseTurnRate = 45.0f;
 	//BaseLookUpRate = 45.0f;
 
@@ -110,14 +110,14 @@ void APioneer::BeginPlay()
 		EditableTextBoxForID->SetText(FText::FromString(NameOfID));
 
 
-	// ÀÏÁ¤½Ã°£¸¶´Ù Ã¼·ÂÀ» È¸º¹ÇÕ´Ï´Ù.
+	// ì¼ì •ì‹œê°„ë§ˆë‹¤ ì²´ë ¥ì„ íšŒë³µí•©ë‹ˆë‹¤.
 	StartTimerOfHealSelf();
 }
 
 void APioneer::Tick(float DeltaTime)
 {
-	// Á×¾î¼­ DestroyÇÑ Componentµé ¶§¹®¿¡ Tick¿¡¼­ ¿¡·¯°¡ ¹ß»ıÇÒ ¼ö ÀÖÀ½.
-	// µû¶ó¼­, Tick °¡Àå ¾Õ¿¡¼­ Á×¾ú´ÂÁö ¿©ºÎ¸¦ Ã¼Å©ÇØ¾ß ÇÔ.
+	// ì£½ì–´ì„œ Destroyí•œ Componentë“¤ ë•Œë¬¸ì— Tickì—ì„œ ì—ëŸ¬ê°€ ë°œìƒí•  ìˆ˜ ìˆìŒ.
+	// ë”°ë¼ì„œ, Tick ê°€ì¥ ì•ì—ì„œ ì£½ì—ˆëŠ”ì§€ ì—¬ë¶€ë¥¼ ì²´í¬í•´ì•¼ í•¨.
 	if (bDying)
 		return;
 
@@ -129,7 +129,7 @@ void APioneer::Tick(float DeltaTime)
 
 	RotateTargetRotation(DeltaTime);
 
-	// È¸Àü½Ã ¶³¸²À» ¹æÁöÇÏ±â À§ÇØ Ä«¸Ş¶ó À§Ä¡ Á¶Á¤Àº °¡Àå ¸¶Áö¸·¿¡ ½ÇÇàÇÕ´Ï´Ù.
+	// íšŒì „ì‹œ ë–¨ë¦¼ì„ ë°©ì§€í•˜ê¸° ìœ„í•´ ì¹´ë©”ë¼ ìœ„ì¹˜ ì¡°ì •ì€ ê°€ì¥ ë§ˆì§€ë§‰ì— ì‹¤í–‰í•©ë‹ˆë‹¤.
 	SetCameraBoomSettings();
 }
 
@@ -187,7 +187,7 @@ void APioneer::InitAIController()
 {
 	Super::InitAIController();
 
-	// ÀÌ¹Ì AIController¸¦ °¡Áö°í ÀÖÀ¸¸é »ı¼ºÇÏÁö ¾ÊÀ½.
+	// ì´ë¯¸ AIControllerë¥¼ ê°€ì§€ê³  ìˆìœ¼ë©´ ìƒì„±í•˜ì§€ ì•ŠìŒ.
 	if (AIController)
 		return;
 
@@ -204,7 +204,7 @@ void APioneer::InitAIController()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn À§Ä¡¿¡¼­ Ãæµ¹ÀÌ ¹ß»ıÇßÀ» ¶§ Ã³¸®¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ìœ„ì¹˜ì—ì„œ ì¶©ëŒì´ ë°œìƒí–ˆì„ ë•Œ ì²˜ë¦¬ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 
 	AIController = world->SpawnActor<APioneerAIController>(APioneerAIController::StaticClass(), myTrans, SpawnParams);
 
@@ -216,7 +216,7 @@ void APioneer::InitCharacterMovement()
 	if (!GetCharacterMovement())
 		return;
 
-	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // ¿òÁ÷ÀÏ ¶§ °È´Â ¼Óµµ
+	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // ì›€ì§ì¼ ë•Œ ê±·ëŠ” ì†ë„
 }
 
 
@@ -268,8 +268,8 @@ void APioneer::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedCom
 		{
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
-				//OverlappedCharacterInDetectRange.Remove(OtherActor); // OtherActor ÀüÃ¼¸¦ Áö¿ó´Ï´Ù.
-				OverlappedCharacterInDetectRange.RemoveSingle(enemy); // OtherActor ÇÏ³ª¸¦ Áö¿ó´Ï´Ù.
+				//OverlappedCharacterInDetectRange.Remove(OtherActor); // OtherActor ì „ì²´ë¥¼ ì§€ì›ë‹ˆë‹¤.
+				OverlappedCharacterInDetectRange.RemoveSingle(enemy); // OtherActor í•˜ë‚˜ë¥¼ ì§€ì›ë‹ˆë‹¤.
 			}
 		}
 	}
@@ -285,7 +285,7 @@ void APioneer::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedCom
 
 void APioneer::RotateTargetRotation(float DeltaTime)
 {
-	// ¹«±â°¡ ¾ø°Å³ª È¸ÀüÀ» ÇÒ ÇÊ¿ä°¡ ¾øÀ¸¸é ½ÇÇàÇÏÁö ¾Ê½À´Ï´Ù.
+	// ë¬´ê¸°ê°€ ì—†ê±°ë‚˜ íšŒì „ì„ í•  í•„ìš”ê°€ ì—†ìœ¼ë©´ ì‹¤í–‰í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 	if (!CurrentWeapon || !bRotateTargetRotation)
 		return;
 
@@ -320,7 +320,7 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 
 	if (PioneerManager)
 	{
-		// 1¹ø¸¸ ½ÇÇàÇÏ±â À§ÇØ Pioneers¿¡ Á¸ÀçÇÏ´ÂÁö È®ÀÎÇÕ´Ï´Ù.
+		// 1ë²ˆë§Œ ì‹¤í–‰í•˜ê¸° ìœ„í•´ Pioneersì— ì¡´ì¬í•˜ëŠ”ì§€ í™•ì¸í•©ë‹ˆë‹¤.
 		if (PioneerManager->Pioneers.Contains(ID))
 		{
 			PioneerManager->Pioneers[ID] = nullptr;
@@ -329,13 +329,13 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 			PioneerManager->Pioneers.Shrink();
 
 			//////////////////////////////////////////////////////////
-			// °ÔÀÓ¼­¹ö´Â¿Í °ÔÀÓÅ¬¶óÀÌ¾ğÆ®´Â ÀÚ½ÅÀÇ Á×À½°ú °üÀü»óÅÂ¸¦ ¾Ë¸²
+			// ê²Œì„ì„œë²„ëŠ”ì™€ ê²Œì„í´ë¼ì´ì–¸íŠ¸ëŠ” ìì‹ ì˜ ì£½ìŒê³¼ ê´€ì „ìƒíƒœë¥¼ ì•Œë¦¼
 			//////////////////////////////////////////////////////////
 			if (ServerSocketInGame && ClientSocketInGame)
 			{
 				if (ServerSocketInGame->IsServerOn())
 				{
-					// AI¿Í °ÔÀÓ¼­¹ö°¡ Á¶Á¾ÇÏ´Â Pioneer¸¸ ¾Ë¸®±â À§ÇØ
+					// AIì™€ ê²Œì„ì„œë²„ê°€ ì¡°ì¢…í•˜ëŠ” Pioneerë§Œ ì•Œë¦¬ê¸° ìœ„í•´
 					if (SocketID <= 1)
 					{
 						stringstream sendStream;
@@ -343,7 +343,7 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 
 						ServerSocketInGame->DiedPioneer(sendStream, NULL);
 
-						// Á¶Á¾ÇÏ´ø Pioneer¶ó¸é
+						// ì¡°ì¢…í•˜ë˜ Pioneerë¼ë©´
 						if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 						{
 							ServerSocketInGame->InsertAtObersers(ServerSocketInGame->SocketID);
@@ -352,7 +352,7 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 				}
 				else if (ClientSocketInGame->IsClientSocketOn())
 				{
-					// Á¶Á¾ÇÏ´ø Pioneer¶ó¸é
+					// ì¡°ì¢…í•˜ë˜ Pioneerë¼ë©´
 					if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 					{
 						ClientSocketInGame->SendDiedPioneer(ID);
@@ -404,11 +404,11 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 
 	if (UWorld* world = GetWorld())
 	{
-		FVector WorldOrigin = CurrentWeapon->GetActorLocation(); // ½ÃÀÛ À§Ä¡
-		FVector WorldDirection = Target->GetActorLocation() - WorldOrigin; // ¹æÇâ
+		FVector WorldOrigin = CurrentWeapon->GetActorLocation(); // ì‹œì‘ ìœ„ì¹˜
+		FVector WorldDirection = Target->GetActorLocation() - WorldOrigin; // ë°©í–¥
 		WorldDirection.Normalize();
 
-		TArray<FHitResult> hitResults; // °á°ú¸¦ ÀúÀå
+		TArray<FHitResult> hitResults; // ê²°ê³¼ë¥¼ ì €ì¥
 
 		FCollisionObjectQueryParams collisionObjectQueryParams;
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn); // Pioneer
@@ -450,7 +450,7 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 				continue;
 
 
-			// Ãæµ¹ÇÏ´Â °ÍÀÌ ÇØ´ç Enemy¸é
+			// ì¶©ëŒí•˜ëŠ” ê²ƒì´ í•´ë‹¹ Enemyë©´
 			if (hit.Actor == Target)
 			{
 				if (AEnemy* enemy = dynamic_cast<AEnemy*>(Target))
@@ -487,7 +487,7 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 
 	TargetActor = nullptr;
 
-	// AI´Â ±âÁö¸¦ ¹ş¾î³ªÁö ¸øÇÏµµ·Ï ÇÕ´Ï´Ù.
+	// AIëŠ” ê¸°ì§€ë¥¼ ë²—ì–´ë‚˜ì§€ ëª»í•˜ë„ë¡ í•©ë‹ˆë‹¤.
 	if (FVector::Distance(FVector(-7859.1f, -8184.9f, 178.8f), GetActorLocation()) > (DetectRange * AOnlineGameMode::CellSize))
 	{
 		State = EFiniteState::Idle;
@@ -497,7 +497,7 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 
 	AActor* closestActor = nullptr;
 
-	// Áßº¹µÈ Actor¸¦ Ã³¸®ÇÏ´Â ¿À¹öÇìµå¸¦ ÁÙÀÌ±â À§ÇØ TSetÀ¸·Î ÇÒ´çÇÕ´Ï´Ù.
+	// ì¤‘ë³µëœ Actorë¥¼ ì²˜ë¦¬í•˜ëŠ” ì˜¤ë²„í—¤ë“œë¥¼ ì¤„ì´ê¸° ìœ„í•´ TSetìœ¼ë¡œ í• ë‹¹í•©ë‹ˆë‹¤.
 	TSet<ABaseCharacter*> tset_Overlapped(OverlappedCharacterInDetectRange);
 
 	for (auto& enemy : tset_Overlapped)
@@ -516,10 +516,10 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 			continue;
 		}
 
-		// ´õ °¡±îÀÌ ÀÖ°í
+		// ë” ê°€ê¹Œì´ ìˆê³ 
 		if (DistanceToActor(enemy) < DistanceToActor(TargetActor))
 		{
-			// Àå¾Ö¹°ÀÌ ¾ø´Ù¸é
+			// ì¥ì• ë¬¼ì´ ì—†ë‹¤ë©´
 			if (CheckNoObstacle(enemy))
 			{
 				TargetActor = enemy;
@@ -671,15 +671,15 @@ void APioneer::SetCameraBoomSettings()
 		return;
 	}
 
-	// °³Ã´¹Î ÇöÀç À§Ä¡¸¦ Ã£½À´Ï´Ù.
+	// ê°œì²™ë¯¼ í˜„ì¬ ìœ„ì¹˜ë¥¼ ì°¾ìŠµë‹ˆë‹¤.
 	FVector rootComponentLocation = RootComponent->GetComponentLocation();
 
-	// PioneerÀÇ ÇöÀç À§Ä¡¿¡¼­ position ¸¸Å­ ´õÇÏ°í rotationÀ» ¼³Á¤ÇÕ´Ï´Ù.
+	// Pioneerì˜ í˜„ì¬ ìœ„ì¹˜ì—ì„œ position ë§Œí¼ ë”í•˜ê³  rotationì„ ì„¤ì •í•©ë‹ˆë‹¤.
 	CameraBoom->SetWorldLocationAndRotation(
 		FVector(rootComponentLocation.X + CameraBoomLocation.X, rootComponentLocation.Y + CameraBoomLocation.Y, rootComponentLocation.Z + CameraBoomLocation.Z),
 		CameraBoomRotation);
 
-	CameraBoom->TargetArmLength = TargetArmLength; // Ä³¸¯ÅÍ µÚ¿¡¼­ ÇØ´ç °£°İÀ¸·Î µû¶ó´Ù´Ï´Â Ä«¸Ş¶ó
+	CameraBoom->TargetArmLength = TargetArmLength; // ìºë¦­í„° ë’¤ì—ì„œ í•´ë‹¹ ê°„ê²©ìœ¼ë¡œ ë”°ë¼ë‹¤ë‹ˆëŠ” ì¹´ë©”ë¼
 	CameraBoom->CameraLagSpeed = CameraLagSpeed;
 }
 
@@ -715,7 +715,7 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 			CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
 		}
 	}*/
-	//// ÀÌ ÄÚµå´Â CollisionÃ¤³ÎÀÌ ECC_VisibilityÀÎ °¡Àå »ó´ÜÀÇ ¾×ÅÍ Á¤º¸¸¦ °¡Á®¿È.
+	//// ì´ ì½”ë“œëŠ” Collisionì±„ë„ì´ ECC_Visibilityì¸ ê°€ì¥ ìƒë‹¨ì˜ ì•¡í„° ì •ë³´ë¥¼ ê°€ì ¸ì˜´.
 	//else if (APlayerController* PC = Cast<APlayerController>(GetController()))
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
@@ -726,7 +726,7 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 		CursorToWorld->SetWorldLocation(TraceHitResult.Location);
 		CursorToWorld->SetWorldRotation(CursorR);
 
-		// ¹«±â°¡ ÀÖ´Ù¸é Ä¿¼­ À§Ä¡¸¦ ¹Ù¶óº¾´Ï´Ù. ¾øÀ¸¸é ¹Ù¶óº¸Áö ¾Ê½À´Ï´Ù.
+		// ë¬´ê¸°ê°€ ìˆë‹¤ë©´ ì»¤ì„œ ìœ„ì¹˜ë¥¼ ë°”ë¼ë´…ë‹ˆë‹¤. ì—†ìœ¼ë©´ ë°”ë¼ë³´ì§€ ì•ŠìŠµë‹ˆë‹¤.
 		if (CurrentWeapon)
 		{
 			LookAtTheLocation(CursorToWorld->GetComponentLocation());
@@ -735,10 +735,10 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 		CursorToWorld->SetVisibility(true);
 	}
 
-	//// ÀÌ ÄÚµå´Â LineTraceÇÒ ¶§ ¸ğµç ¾×ÅÍ¸¦ hitÇÏ°í ±× Áß LandScape¸¸ °¡Á®¿Í¼­ ¸¶¿ì½º Ä¿¼­ Transform Á¤º¸¸¦ ¾òÀ½.
+	//// ì´ ì½”ë“œëŠ” LineTraceí•  ë•Œ ëª¨ë“  ì•¡í„°ë¥¼ hití•˜ê³  ê·¸ ì¤‘ LandScapeë§Œ ê°€ì ¸ì™€ì„œ ë§ˆìš°ìŠ¤ ì»¤ì„œ Transform ì •ë³´ë¥¼ ì–»ìŒ.
 	//if (UWorld* world = GetWorld())
 	//{
-	//	// ÇöÀç PlayerÀÇ ºäÆ÷Æ®ÀÇ ¸¶¿ì½ºÆ÷Áö¼ÇÀ» °¡Á®¿É´Ï´Ù.
+	//	// í˜„ì¬ Playerì˜ ë·°í¬íŠ¸ì˜ ë§ˆìš°ìŠ¤í¬ì§€ì…˜ì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
 	//	APlayerController* PC = Cast<APlayerController>(GetController());
 	//	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PC->Player);
 	//	FVector2D MousePosition;
@@ -747,28 +747,28 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 	//		LocalPlayer->ViewportClient->GetMousePosition(MousePosition);
 	//	}
 
-	//	FVector WorldOrigin; // ½ÃÀÛ À§Ä¡
-	//	FVector WorldDirection; // ¹æÇâ
-	//	float HitResultTraceDistance = 100000.f; // WorldDirection°ú °öÇÏ¿© ³¡ À§Ä¡¸¦ ¼³Á¤
+	//	FVector WorldOrigin; // ì‹œì‘ ìœ„ì¹˜
+	//	FVector WorldDirection; // ë°©í–¥
+	//	float HitResultTraceDistance = 100000.f; // WorldDirectionê³¼ ê³±í•˜ì—¬ ë ìœ„ì¹˜ë¥¼ ì„¤ì •
 	//	UGameplayStatics::DeprojectScreenToWorld(PC, MousePosition, WorldOrigin, WorldDirection);
-	//	FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // ¸ğµç ¿ÀºêÁ§Æ®
+	//	FCollisionObjectQueryParams ObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects); // ëª¨ë“  ì˜¤ë¸Œì íŠ¸
 	//	//FCollisionQueryParams& CollisionQueryParams()
 
-	//	TArray<FHitResult> hitResults; // °á°ú¸¦ ÀúÀå
+	//	TArray<FHitResult> hitResults; // ê²°ê³¼ë¥¼ ì €ì¥
 	//	world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, ObjectQueryParams);
 
 	//	for (auto& hit : hitResults)
 	//	{
 	//		//if (hit.Actor->GetClass() == ALandscape::StaticClass())
 	//		//if (Cast<ALandscape>(hit.Actor))
-	//		if (hit.Actor->IsA(ALandscape::StaticClass())) // hitÇÑ Actor°¡ ALandscape¸é
+	//		if (hit.Actor->IsA(ALandscape::StaticClass())) // hití•œ Actorê°€ ALandscapeë©´
 	//		{
 	//			FVector CursorFV = hit.ImpactNormal;
 	//			FRotator CursorR = CursorFV.Rotation();
 	//			CursorToWorld->SetWorldLocation(hit.Location);
 	//			CursorToWorld->SetWorldRotation(CursorR);
 
-	//			// ¹«±â°¡ ÀÖ´Ù¸é Ä¿¼­ À§Ä¡¸¦ ¹Ù¶óº¾´Ï´Ù. ¾øÀ¸¸é ¹Ù¶óº¸Áö ¾Ê½À´Ï´Ù.
+	//			// ë¬´ê¸°ê°€ ìˆë‹¤ë©´ ì»¤ì„œ ìœ„ì¹˜ë¥¼ ë°”ë¼ë´…ë‹ˆë‹¤. ì—†ìœ¼ë©´ ë°”ë¼ë³´ì§€ ì•ŠìŠµë‹ˆë‹¤.
 	//			if (CurrentWeapon)
 	//			{ 
 	//				LookAtTheLocation(CursorToWorld->GetComponentLocation());
@@ -784,12 +784,12 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 
 void APioneer::InitSkeletalAnimation()
 {
-	// 1. USkeletalMeshComponent¿¡ USkeletalMeshÀ» ¼³Á¤ÇÕ´Ï´Ù.
+	// 1. USkeletalMeshComponentì— USkeletalMeshì„ ì„¤ì •í•©ë‹ˆë‹¤.
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Characters/Pioneer/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (skeletalMeshAsset.Succeeded())
 	{
-		// Character·Î ºÎÅÍ »ó¼Ó ¹ŞÀº USkeletalMeshComponent* Mesh¸¦ »ç¿ëÇÕ´Ï´Ù.
-		GetMesh()->SetOnlyOwnerSee(false); // ¼ÒÀ¯ÀÚ¸¸ º¼ ¼ö ÀÖ°Ô ÇÏÁö ¾Ê½À´Ï´Ù.
+		// Characterë¡œ ë¶€í„° ìƒì† ë°›ì€ USkeletalMeshComponent* Meshë¥¼ ì‚¬ìš©í•©ë‹ˆë‹¤.
+		GetMesh()->SetOnlyOwnerSee(false); // ì†Œìœ ìë§Œ ë³¼ ìˆ˜ ìˆê²Œ í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 		GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
 		GetMesh()->bCastDynamicShadow = true; // ???
 		GetMesh()->CastShadow = true; // ???
@@ -804,26 +804,26 @@ void APioneer::InitSkeletalAnimation()
 		GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		GetMesh()->SetCanEverAffectNavigation(false);
 	}
-	//// 2. SkeletonÀ» °¡Á®¿É´Ï´Ù.
+	//// 2. Skeletonì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
 	//static ConstructorHelpers::FObjectFinder<USkeleton> skeleton(TEXT("Skeleton'/Game/Character/Mesh/UE4_Mannequin_Skeleton.UE4_Mannequin_Skeleton'"));
 	//if (skeleton.Succeeded())
 	//{
 	//	Skeleton = skeleton.Object;
 	//}
-	//// 3. PhysicsAssetÀ» °¡Á®¿É´Ï´Ù.
+	//// 3. PhysicsAssetì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
 	//static ConstructorHelpers::FObjectFinder<UPhysicsAsset> physicsAsset(TEXT("PhysicsAsset'/Game/Character/Mesh/SK_Mannequin_PhysicsAsset.SK_Mannequin_PhysicsAsset'"));
 	//if (physicsAsset.Succeeded())
 	//{
 	//	GetMesh()->SetPhysicsAsset(physicsAsset.Object);
 	//}
-	//// 4.1 AnimInstance´Â ½ÇÇàÁßÀÎ ¾Ö´Ï¸ŞÀÌ¼Ç / ¸ùÅ¸ÁÖ¿Í »óÈ£ ÀÛ¿ëÇÏ¸ç °ü¸®ÇÏ´Â Å¬·¡½ºÀÎ °Í °°½À´Ï´Ù.
+	//// 4.1 AnimInstanceëŠ” ì‹¤í–‰ì¤‘ì¸ ì• ë‹ˆë©”ì´ì…˜ / ëª½íƒ€ì£¼ì™€ ìƒí˜¸ ì‘ìš©í•˜ë©° ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤ì¸ ê²ƒ ê°™ìŠµë‹ˆë‹¤.
 	//static ConstructorHelpers::FClassFinder<UPioneerAnimInstance> pioneerAnimInstance(TEXT("Class'/Script/Game.PioneerAnimInstance'"));
 	//if (pioneerAnimInstance.Succeeded())
 	//{
 	//	GetMesh()->SetAnimInstanceClass(pioneerAnimInstance.Class);
 	//}
-	// 4.2 AnimInstance¿Í AnimationBlueprint´Â AnimClass·Î½á °°Àº ¿ªÇÒÀ» ÇÕ´Ï´Ù.
-	// ÀÏ´Ü ºí·çÇÁ¸°Æ®¸¦ »ç¿ëÇÏ°Ú½À´Ï´Ù. (ÁÖÀÇÇÒ Á¡Àº .BP_PioneerAnimation_C·Î UAnimBluprint°¡ ¾Æ´Ñ UClass¸¦ ºÒ·¯¿ÈÀ¸·Î½á ¹Ù·Î Àû¿ëÇÏ´Â °ÍÀÔ´Ï´Ù.)
+	// 4.2 AnimInstanceì™€ AnimationBlueprintëŠ” AnimClassë¡œì¨ ê°™ì€ ì—­í• ì„ í•©ë‹ˆë‹¤.
+	// ì¼ë‹¨ ë¸”ë£¨í”„ë¦°íŠ¸ë¥¼ ì‚¬ìš©í•˜ê² ìŠµë‹ˆë‹¤. (ì£¼ì˜í•  ì ì€ .BP_PioneerAnimation_Cë¡œ UAnimBluprintê°€ ì•„ë‹Œ UClassë¥¼ ë¶ˆëŸ¬ì˜´ìœ¼ë¡œì¨ ë°”ë¡œ ì ìš©í•˜ëŠ” ê²ƒì…ë‹ˆë‹¤.)
 	FString animBP_Reference = "UClass'/Game/Characters/Pioneer/Animations/BP_PioneerAnimation.BP_PioneerAnimation_C'";
 	UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
 	if (!animBP)
@@ -841,15 +841,15 @@ void APioneer::InitSkeletalAnimation()
 
 	bFired = false;
 
-	//// 5.1 AnimInstance¸¦ »ç¿ëÇÏÁö ¾Ê°í °£´ÜÇÏ°Ô ¾Ö´Ï¸ŞÀÌ¼ÇÀ» Àç»ıÇÏ·Á¸é AnimSequence¸¦ °¡Á®¿Í¼­ Skeleton¿¡ Àû¿ëÇÕ´Ï´Ù.
+	//// 5.1 AnimInstanceë¥¼ ì‚¬ìš©í•˜ì§€ ì•Šê³  ê°„ë‹¨í•˜ê²Œ ì• ë‹ˆë©”ì´ì…˜ì„ ì¬ìƒí•˜ë ¤ë©´ AnimSequenceë¥¼ ê°€ì ¸ì™€ì„œ Skeletonì— ì ìš©í•©ë‹ˆë‹¤.
 	//static ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(TEXT("AnimSequence'/Game/Mannequin/Animations/ThirdPersonRun.ThirdPersonRun'"));
 	//if (animSequence.Succeeded())
 	//{
 	//	AnimSequence = animSequence.Object;
 	//	AnimSequence->SetSkeleton(Skeleton);
-	//	GetMesh()->PlayAnimation(AnimSequence, true); // SkeletalMeshComp·Î AnimSequence¿¡ ÇØ´çÇÏ´Â ¾Ö´Ï¸ŞÀÌ¼ÇÀ» Àç»ıÇÕ´Ï´Ù. 2¹øÂ° ÀÎÀÚ´Â ·çÇÁ¿©ºÎ ÀÔ´Ï´Ù.
+	//	GetMesh()->PlayAnimation(AnimSequence, true); // SkeletalMeshCompë¡œ AnimSequenceì— í•´ë‹¹í•˜ëŠ” ì• ë‹ˆë©”ì´ì…˜ì„ ì¬ìƒí•©ë‹ˆë‹¤. 2ë²ˆì§¸ ì¸ìëŠ” ë£¨í”„ì—¬ë¶€ ì…ë‹ˆë‹¤.
 	//}
-	//// 5.2 ¸ùÅ¸ÁÖ¸¦ »ç¿ëÇÏ¿© ´õ º¹ÀâÇÑ ¾Ö´Ï¸ŞÀÌ¼ÇÀ» »ç¿ëÇÒ ¼ö ÀÖ½À´Ï´Ù. UAnimMontage* AnimMontage;
+	//// 5.2 ëª½íƒ€ì£¼ë¥¼ ì‚¬ìš©í•˜ì—¬ ë” ë³µì¡í•œ ì• ë‹ˆë©”ì´ì…˜ì„ ì‚¬ìš©í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤. UAnimMontage* AnimMontage;
 	//{
 	//	PlayAnimMontage();
 	//	GetMesh()->GetAnimInstance()->Montage_Play();
@@ -872,30 +872,30 @@ void APioneer::InitSkeletalAnimation()
 
 void APioneer::InitCamera()
 {
-	/*** Ä«¸Ş¶ó ¼³Á¤À» PIE¶§ º¯°æÇÕ´Ï´Ù. : Start ***/
-	CameraBoomLocation = FVector(-300.0f, 0.0f, 300.0f); // ArmSpringÀÇ World ÁÂÇ¥ÀÔ´Ï´Ù.
-	CameraBoomRotation = FRotator(-60.f, 0.f, 0.f); // ArmSpringÀÇ World È¸ÀüÀÔ´Ï´Ù.
-	TargetArmLength = 1500.0f; // ArmSpring°ú CameraComponent°£ÀÇ °Å¸®ÀÔ´Ï´Ù.
-	CameraLagSpeed = 3.0f; // ºÎµå·¯¿î Ä«¸Ş¶ó ÀüÈ¯ ¼ÓµµÀÔ´Ï´Ù.
-	/*** Ä«¸Ş¶ó ¼³Á¤À» PIE¶§ º¯°æÇÕ´Ï´Ù. : End ***/
+	/*** ì¹´ë©”ë¼ ì„¤ì •ì„ PIEë•Œ ë³€ê²½í•©ë‹ˆë‹¤. : Start ***/
+	CameraBoomLocation = FVector(-300.0f, 0.0f, 300.0f); // ArmSpringì˜ World ì¢Œí‘œì…ë‹ˆë‹¤.
+	CameraBoomRotation = FRotator(-60.f, 0.f, 0.f); // ArmSpringì˜ World íšŒì „ì…ë‹ˆë‹¤.
+	TargetArmLength = 1500.0f; // ArmSpringê³¼ CameraComponentê°„ì˜ ê±°ë¦¬ì…ë‹ˆë‹¤.
+	CameraLagSpeed = 3.0f; // ë¶€ë“œëŸ¬ìš´ ì¹´ë©”ë¼ ì „í™˜ ì†ë„ì…ë‹ˆë‹¤.
+	/*** ì¹´ë©”ë¼ ì„¤ì •ì„ PIEë•Œ ë³€ê²½í•©ë‹ˆë‹¤. : End ***/
 
-	// CameraboomÀ» »ı¼ºÇÕ´Ï´Ù. (Ãæµ¹ ½Ã ÇÃ·¹ÀÌ¾î ÂÊÀ¸·Î ´Ù°¡¿Í À§Ä¡ÇÕ´Ï´Ù.)
+	// Cameraboomì„ ìƒì„±í•©ë‹ˆë‹¤. (ì¶©ëŒ ì‹œ í”Œë ˆì´ì–´ ìª½ìœ¼ë¡œ ë‹¤ê°€ì™€ ìœ„ì¹˜í•©ë‹ˆë‹¤.)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->bAbsoluteRotation = true; // Ä³¸¯ÅÍ°¡ È¸ÀüÇÒ ¶§ ArmÀ» È¸Àü½ÃÅ°Áö ¾Ê½À´Ï´Ù. ¿ùµå ÁÂÇ¥°èÀÇ È¸ÀüÀ» µû¸£µµ·Ï ÇÕ´Ï´Ù.
-	CameraBoom->TargetArmLength = 1500.0f; // ÇØ´ç °£°İÀ¸·Î Ä«¸Ş¶ó°¡ ArmÀ» µû¶ó´Ù´Õ´Ï´Ù.
+	CameraBoom->bAbsoluteRotation = true; // ìºë¦­í„°ê°€ íšŒì „í•  ë•Œ Armì„ íšŒì „ì‹œí‚¤ì§€ ì•ŠìŠµë‹ˆë‹¤. ì›”ë“œ ì¢Œí‘œê³„ì˜ íšŒì „ì„ ë”°ë¥´ë„ë¡ í•©ë‹ˆë‹¤.
+	CameraBoom->TargetArmLength = 1500.0f; // í•´ë‹¹ ê°„ê²©ìœ¼ë¡œ ì¹´ë©”ë¼ê°€ Armì„ ë”°ë¼ë‹¤ë‹™ë‹ˆë‹¤.
 	CameraBoom->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 	CameraBoom->SetRelativeRotation(FRotator(-60.0f, 0.0f, 0.0f));
 	CameraBoom->SetRelativeLocation(FVector(-300.0f, 0.0f, 300.0f));
 
-	//CameraBoom->bUsePawnControlRotation = false; // ÄÁÆ®·Ñ·¯ ±â¹İÀ¸·Î Ä«¸Ş¶ó ¾ÏÀ» È¸Àü½ÃÅ°Áö ¾Ê½À´Ï´Ù.
-	CameraBoom->bDoCollisionTest = false; // Arm°ú Ä«¸Ş¶ó »çÀÌÀÇ ¼±ºĞÀÌ ¾î¶² ¹°Ã¼¿Í Ãæµ¹ÇßÀ» ¶§ ¶ÕÁö ¾Êµµ·Ï Ä«¸Ş¶ó¸¦ ´ç±âÁö ¾Ê½À´Ï´Ù.
-	CameraBoom->bEnableCameraLag = true; // ÀÌµ¿½Ã ºÎµå·¯¿î Ä«¸Ş¶ó ÀüÈ¯À» À§ÇØ ¼³Á¤ÇÕ´Ï´Ù.
-	CameraBoom->CameraLagSpeed = 3.0f; // Ä«¸Ş¶ó ÀÌµ¿¼ÓµµÀÔ´Ï´Ù.
+	//CameraBoom->bUsePawnControlRotation = false; // ì»¨íŠ¸ë¡¤ëŸ¬ ê¸°ë°˜ìœ¼ë¡œ ì¹´ë©”ë¼ ì•”ì„ íšŒì „ì‹œí‚¤ì§€ ì•ŠìŠµë‹ˆë‹¤.
+	CameraBoom->bDoCollisionTest = false; // Armê³¼ ì¹´ë©”ë¼ ì‚¬ì´ì˜ ì„ ë¶„ì´ ì–´ë–¤ ë¬¼ì²´ì™€ ì¶©ëŒí–ˆì„ ë•Œ ëš«ì§€ ì•Šë„ë¡ ì¹´ë©”ë¼ë¥¼ ë‹¹ê¸°ì§€ ì•ŠìŠµë‹ˆë‹¤.
+	CameraBoom->bEnableCameraLag = true; // ì´ë™ì‹œ ë¶€ë“œëŸ¬ìš´ ì¹´ë©”ë¼ ì „í™˜ì„ ìœ„í•´ ì„¤ì •í•©ë‹ˆë‹¤.
+	CameraBoom->CameraLagSpeed = 3.0f; // ì¹´ë©”ë¼ ì´ë™ì†ë„ì…ë‹ˆë‹¤.
 
-	// µû¶ó´Ù´Ï´Â Ä«¸Ş¶ó¸¦ »ı¼ºÇÕ´Ï´Ù.
+	// ë”°ë¼ë‹¤ë‹ˆëŠ” ì¹´ë©”ë¼ë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // boomÀÇ ¸Ç µÚÂÊ¿¡ ÇØ´ç Ä«¸Ş¶ó¸¦ ºÙÀÌ°í, ÄÁÆ®·Ñ·¯ÀÇ ¹æÇâ¿¡ ¸Â°Ô boomÀ» Àû¿ëÇÕ´Ï´Ù.
+	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // boomì˜ ë§¨ ë’¤ìª½ì— í•´ë‹¹ ì¹´ë©”ë¼ë¥¼ ë¶™ì´ê³ , ì»¨íŠ¸ë¡¤ëŸ¬ì˜ ë°©í–¥ì— ë§ê²Œ boomì„ ì ìš©í•©ë‹ˆë‹¤.
 	TopDownCameraComponent->bUsePawnControlRotation = false;
 }
 
@@ -903,8 +903,8 @@ void APioneer::InitCursor()
 {
 	// Create a decal in the world to show the cursor's location
 	// A material that is rendered onto the surface of a mesh. A kind of 'bumper sticker' for a model.
-	// ¿ùµå»óÀÇ Ä¿¼­ÀÇ À§Ä¡¸¦ Ç¥½ÃÇÒ µ¥Ä®À» »ı¼ºÇÕ´Ï´Ù.
-	// µ¥Ä®Àº ¸Ş½ÃÀÇ Ç¥¸é¿¡ ·»´õ¸µµÉ ¸ÓÅÍ¸®¾óÀÔ´Ï´Ù.
+	// ì›”ë“œìƒì˜ ì»¤ì„œì˜ ìœ„ì¹˜ë¥¼ í‘œì‹œí•  ë°ì¹¼ì„ ìƒì„±í•©ë‹ˆë‹¤.
+	// ë°ì¹¼ì€ ë©”ì‹œì˜ í‘œë©´ì— ë Œë”ë§ë  ë¨¸í„°ë¦¬ì–¼ì…ë‹ˆë‹¤.
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
 	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/BluePrints/M_Cursor_Decal.M_Cursor_Decal'"));
@@ -931,13 +931,13 @@ void APioneer::InitWeapon()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn À§Ä¡¿¡¼­ Ãæµ¹ÀÌ ¹ß»ıÇßÀ» ¶§ Ã³¸®¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ìœ„ì¹˜ì—ì„œ ì¶©ëŒì´ ë°œìƒí–ˆì„ ë•Œ ì²˜ë¦¬ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 
-	// °³Ã´ÀÚ´Â ±âº»ÀûÀ¸·Î ±ÇÃÑÀ» °¡Áö°í ÀÖÀ½
+	// ê°œì²™ìëŠ” ê¸°ë³¸ì ìœ¼ë¡œ ê¶Œì´ì„ ê°€ì§€ê³  ìˆìŒ
 	APistol* Pistol = world->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
 	Pistol->Acquired();
-	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent ¶§¹®¿¡ »ı¼ºÀÚ°¡ ¾Æ´Ñ BeginPlay()¿¡¼­ ½ÇÇàÇØ¾ß ÇÔ
-	//Pistol->SetActorHiddenInGame(true); // º¸ÀÌÁö ¾Ê°Ô ¼û±é´Ï´Ù.
+	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent ë•Œë¬¸ì— ìƒì„±ìê°€ ì•„ë‹Œ BeginPlay()ì—ì„œ ì‹¤í–‰í•´ì•¼ í•¨
+	//Pistol->SetActorHiddenInGame(true); // ë³´ì´ì§€ ì•Šê²Œ ìˆ¨ê¹ë‹ˆë‹¤.
 	if (Weapons.Contains(Pistol) == false)
 	{
 		IdxOfCurrentWeapon = Weapons.Add(Pistol);
@@ -946,36 +946,36 @@ void APioneer::InitWeapon()
 
 	AAssaultRifle* assaultRifle = world->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
 	assaultRifle->Acquired();
-	assaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket")); // AttachToComponent ¶§¹®¿¡ »ı¼ºÀÚ°¡ ¾Æ´Ñ BeginPlay()¿¡¼­ ½ÇÇàÇØ¾ß ÇÔ
-	assaultRifle->SetActorHiddenInGame(true); // º¸ÀÌÁö ¾Ê°Ô ¼û±é´Ï´Ù.
+	assaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket")); // AttachToComponent ë•Œë¬¸ì— ìƒì„±ìê°€ ì•„ë‹Œ BeginPlay()ì—ì„œ ì‹¤í–‰í•´ì•¼ í•¨
+	assaultRifle->SetActorHiddenInGame(true); // ë³´ì´ì§€ ì•Šê²Œ ìˆ¨ê¹ë‹ˆë‹¤.
 	if (Weapons.Contains(assaultRifle) == false)
 		Weapons.Add(assaultRifle);
 
 	AShotgun* shotgun = world->SpawnActor<AShotgun>(AShotgun::StaticClass(), myTrans, SpawnParams);
 	shotgun->Acquired();
-	shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ShotgunSocket")); // AttachToComponent ¶§¹®¿¡ »ı¼ºÀÚ°¡ ¾Æ´Ñ BeginPlay()¿¡¼­ ½ÇÇàÇØ¾ß ÇÔ
-	shotgun->SetActorHiddenInGame(true); // º¸ÀÌÁö ¾Ê°Ô ¼û±é´Ï´Ù.
+	shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ShotgunSocket")); // AttachToComponent ë•Œë¬¸ì— ìƒì„±ìê°€ ì•„ë‹Œ BeginPlay()ì—ì„œ ì‹¤í–‰í•´ì•¼ í•¨
+	shotgun->SetActorHiddenInGame(true); // ë³´ì´ì§€ ì•Šê²Œ ìˆ¨ê¹ë‹ˆë‹¤.
 	if (Weapons.Contains(shotgun) == false)
 		Weapons.Add(shotgun);
 
 	ASniperRifle* sniperRifle = world->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), myTrans, SpawnParams);
 	sniperRifle->Acquired();
-	sniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket")); // AttachToComponent ¶§¹®¿¡ »ı¼ºÀÚ°¡ ¾Æ´Ñ BeginPlay()¿¡¼­ ½ÇÇàÇØ¾ß ÇÔ
-	sniperRifle->SetActorHiddenInGame(true); // º¸ÀÌÁö ¾Ê°Ô ¼û±é´Ï´Ù.
+	sniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket")); // AttachToComponent ë•Œë¬¸ì— ìƒì„±ìê°€ ì•„ë‹Œ BeginPlay()ì—ì„œ ì‹¤í–‰í•´ì•¼ í•¨
+	sniperRifle->SetActorHiddenInGame(true); // ë³´ì´ì§€ ì•Šê²Œ ìˆ¨ê¹ë‹ˆë‹¤.
 	if (Weapons.Contains(sniperRifle) == false)
 		Weapons.Add(sniperRifle);
 
 	AGrenadeLauncher* grenadeLauncher = world->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
 	grenadeLauncher->Acquired();
-	grenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket")); // AttachToComponent ¶§¹®¿¡ »ı¼ºÀÚ°¡ ¾Æ´Ñ BeginPlay()¿¡¼­ ½ÇÇàÇØ¾ß ÇÔ
-	grenadeLauncher->SetActorHiddenInGame(true); // º¸ÀÌÁö ¾Ê°Ô ¼û±é´Ï´Ù.
+	grenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket")); // AttachToComponent ë•Œë¬¸ì— ìƒì„±ìê°€ ì•„ë‹Œ BeginPlay()ì—ì„œ ì‹¤í–‰í•´ì•¼ í•¨
+	grenadeLauncher->SetActorHiddenInGame(true); // ë³´ì´ì§€ ì•Šê²Œ ìˆ¨ê¹ë‹ˆë‹¤.
 	if (Weapons.Contains(grenadeLauncher) == false)
 		Weapons.Add(grenadeLauncher);
 
 	ARocketLauncher* rocketLauncher = world->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
 	rocketLauncher->Acquired();
-	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent ¶§¹®¿¡ »ı¼ºÀÚ°¡ ¾Æ´Ñ BeginPlay()¿¡¼­ ½ÇÇàÇØ¾ß ÇÔ
-	rocketLauncher->SetActorHiddenInGame(true); // º¸ÀÌÁö ¾Ê°Ô ¼û±é´Ï´Ù.
+	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent ë•Œë¬¸ì— ìƒì„±ìê°€ ì•„ë‹Œ BeginPlay()ì—ì„œ ì‹¤í–‰í•´ì•¼ í•¨
+	rocketLauncher->SetActorHiddenInGame(true); // ë³´ì´ì§€ ì•Šê²Œ ìˆ¨ê¹ë‹ˆë‹¤.
 	if (Weapons.Contains(rocketLauncher) == false)
 		Weapons.Add(rocketLauncher);
 }
@@ -989,7 +989,7 @@ void APioneer::InitEquipments()
 {
 	HelmetMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HelmetMesh"));
 
-	// (ÆĞÅ°Â¡ ¿À·ù ÁÖÀÇ: ´Ù¸¥ ¾×ÅÍ¸¦ ºÙÀÏ ¶© AttachToComponent¸¦ »ç¿ëÇÏÁö¸¸ ÄÄÆÛ³ÍÆ®¸¦ ºÙÀÏ ¶© SetupAttachment¸¦ »ç¿ëÇØ¾ß ÇÑ´Ù.)
+	// (íŒ¨í‚¤ì§• ì˜¤ë¥˜ ì£¼ì˜: ë‹¤ë¥¸ ì•¡í„°ë¥¼ ë¶™ì¼ ë• AttachToComponentë¥¼ ì‚¬ìš©í•˜ì§€ë§Œ ì»´í¼ë„ŒíŠ¸ë¥¼ ë¶™ì¼ ë• SetupAttachmentë¥¼ ì‚¬ìš©í•´ì•¼ í•œë‹¤.)
 	//HelmetMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), TEXT("HeadSocket"));
 	HelmetMesh->SetupAttachment(GetMesh(), TEXT("HeadSocket"));
 
@@ -1023,7 +1023,7 @@ void APioneer::InitEquipments()
 //	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
 //		return;
 //
-//	// CollisionÀÇ ±âº»ÀÎ ATriggerVolumeÀº ¹«½ÃÇÕ´Ï´Ù.
+//	// Collisionì˜ ê¸°ë³¸ì¸ ATriggerVolumeì€ ë¬´ì‹œí•©ë‹ˆë‹¤.
 //	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
 //		return;
 //
@@ -1042,7 +1042,7 @@ void APioneer::InitEquipments()
 //	if ((OtherActor == nullptr) && (OtherActor == this) && (OtherComp == nullptr))
 //		return;
 //
-//	// CollisionÀÇ ±âº»ÀÎ ATriggerVolumeÀº ¹«½ÃÇÕ´Ï´Ù.
+//	// Collisionì˜ ê¸°ë³¸ì¸ ATriggerVolumeì€ ë¬´ì‹œí•©ë‹ˆë‹¤.
 //	if (OtherActor->IsA(ATriggerVolume::StaticClass()))
 //		return;
 //
@@ -1076,24 +1076,24 @@ void APioneer::DestroyCharacter()
 
 	if (PioneerManager)
 	{
-		// Á¶Á¤ÇÏ´ø Pioneer¶ó¸é
+		// ì¡°ì •í•˜ë˜ Pioneerë¼ë©´
 		if (PioneerManager->PioneerOfPlayer == this)
 		{
-			// ÀÏ´Ü CameraOfCurrentPioneer·Î Ä«¸Ş¶ó ÀüÈ¯
+			// ì¼ë‹¨ CameraOfCurrentPioneerë¡œ ì¹´ë©”ë¼ ì „í™˜
 			if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 			{
 				CopyTopDownCameraTo(PioneerManager->GetCameraOfCurrentPioneer());
 
-				// ¸ÕÀú Ä«¸Ş¶ó º¯°æ
+				// ë¨¼ì € ì¹´ë©”ë¼ ë³€ê²½
 				pioneerController->SetViewTarget(PioneerManager->GetCameraOfCurrentPioneer());
 
-				// Ä«¸Ş¶óÅ¸°Ù È°¼ºÈ­¸¦ ÀÚµ¿°ü¸®ÇÏÁö ¾Êµµ·Ï ÇÕ´Ï´Ù. (trueÀÏ ¶§, Æù¿¡ ºùÀÇÇÏ¸é ÀÚµ¿À¸·Î ºäÅ¸°ÙÀ» º¯°æ?)
+				// ì¹´ë©”ë¼íƒ€ê²Ÿ í™œì„±í™”ë¥¼ ìë™ê´€ë¦¬í•˜ì§€ ì•Šë„ë¡ í•©ë‹ˆë‹¤. (trueì¼ ë•Œ, í°ì— ë¹™ì˜í•˜ë©´ ìë™ìœ¼ë¡œ ë·°íƒ€ê²Ÿì„ ë³€ê²½?)
 				pioneerController->bAutoManageActiveCameraTarget = false;
 
-				// ºùÀÇ ÇØÁ¦
+				// ë¹™ì˜ í•´ì œ
 				pioneerController->OnUnPossess();
 
-				// °üÀü¸ğµå ½ÃÀÛ
+				// ê´€ì „ëª¨ë“œ ì‹œì‘
 				PioneerManager->Observation();
 			}
 
@@ -1171,7 +1171,7 @@ void APioneer::AcquireWeapon(class AWeapon* weapon)
 		return;
 	}
 
-	// ¸ÕÀú ¹«ÀåÇØÁ¦
+	// ë¨¼ì € ë¬´ì¥í•´ì œ
 	Disarming();
 
 	OverlapedItems.RemoveSingle(weapon);
@@ -1182,7 +1182,7 @@ void APioneer::AcquireWeapon(class AWeapon* weapon)
 	CurrentWeapon = weapon;
 	IdxOfCurrentWeapon = Weapons.Add(CurrentWeapon);
 
-	// ´Ù½Ã È¹µæÇÑ ¹«±â·Î ¹«Àå
+	// ë‹¤ì‹œ íšë“í•œ ë¬´ê¸°ë¡œ ë¬´ì¥
 	Arming();
 }
 
@@ -1204,7 +1204,7 @@ void APioneer::AbandonWeapon()
 
 	SetWeaponType();
 
-	GetCharacterMovement()->bOrientRotationToMovement = true; // ¹«±â¸¦ µéÁö ¾ÊÀ¸¸é ÀÌµ¿ ¹æÇâ¿¡ Ä³¸¯ÅÍ ¸Ş½Ã°¡ µû¶ó È¸ÀüÇÕ´Ï´Ù.
+	GetCharacterMovement()->bOrientRotationToMovement = true; // ë¬´ê¸°ë¥¼ ë“¤ì§€ ì•Šìœ¼ë©´ ì´ë™ ë°©í–¥ì— ìºë¦­í„° ë©”ì‹œê°€ ë”°ë¼ íšŒì „í•©ë‹ˆë‹¤.
 
 	Arming();
 }
@@ -1213,13 +1213,13 @@ void APioneer::FireWeapon()
 {
 	if (CurrentWeapon)
 	{
-		// ÄğÅ¸ÀÓÀÌ µ¹¾Æ¿Í¼­ ¹ß»ç°¡ µÇ¾ú´Ù¸é UPioneerAnimInstance¿¡ ¾Ë·ÁÁİ´Ï´Ù.
+		// ì¿¨íƒ€ì„ì´ ëŒì•„ì™€ì„œ ë°œì‚¬ê°€ ë˜ì—ˆë‹¤ë©´ UPioneerAnimInstanceì— ì•Œë ¤ì¤ë‹ˆë‹¤.
 		if (CurrentWeapon->Fire(ID))
 		{
-			// PistolÀº Fire ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ¾ø¾î¼­ Á¦¿ÜÇÕ´Ï´Ù.
+			// Pistolì€ Fire ì• ë‹ˆë©”ì´ì…˜ì´ ì—†ì–´ì„œ ì œì™¸í•©ë‹ˆë‹¤.
 			if (CurrentWeapon->IsA(APistol::StaticClass()) == false)
 			{
-				//// »ç¿ëÁßÀÎ BP_PioneerAnimationÀ» °¡Á®¿Í¼­ bFired º¯¼ö¸¦ Á¶Á¤ÇÕ´Ï´Ù.
+				//// ì‚¬ìš©ì¤‘ì¸ BP_PioneerAnimationì„ ê°€ì ¸ì™€ì„œ bFired ë³€ìˆ˜ë¥¼ ì¡°ì •í•©ë‹ˆë‹¤.
 				//if (GetMesh())
 				//{
 				//	if (UPioneerAnimInstance* PAnimInst = dynamic_cast<UPioneerAnimInstance*>(GetMesh()->GetAnimInstance()))
@@ -1234,12 +1234,12 @@ void APioneer::FireWeapon()
 
 void APioneer::SetWeaponType()
 {
-	// ±âº»ÀûÀ¸·Î BP_PioneerAnimation¿¡¼­ ¹«±â ³»·Á³õ°í
+	// ê¸°ë³¸ì ìœ¼ë¡œ BP_PioneerAnimationì—ì„œ ë¬´ê¸° ë‚´ë ¤ë†“ê³ 
 	bHasPistolType = false;
 	bHasRifleType = false;
 	bHasLauncherType = false;
 
-	// ÇöÀç ¹«±â¸¦ µç »óÅÂ¿©¾ß ¹«±â º¯°æ °¡´É
+	// í˜„ì¬ ë¬´ê¸°ë¥¼ ë“  ìƒíƒœì—¬ì•¼ ë¬´ê¸° ë³€ê²½ ê°€ëŠ¥
 	if (!CurrentWeapon)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
@@ -1248,7 +1248,7 @@ void APioneer::SetWeaponType()
 		return;
 	}
 
-	// ¸Â´Â ¹«±â¸¦ µé°Ô²û ÇÏ±â
+	// ë§ëŠ” ë¬´ê¸°ë¥¼ ë“¤ê²Œë” í•˜ê¸°
 	switch (CurrentWeapon->WeaponType)
 	{
 	case EWeaponType::Pistol:
@@ -1276,7 +1276,7 @@ void APioneer::ChangeWeapon(int Value)
 		JoinedStr += TEXT(" ");
 	}*/
 
-	// ÇöÀç ¹«±â¸¦ µç »óÅÂ¿©¾ß ¹«±â º¯°æ °¡´É
+	// í˜„ì¬ ë¬´ê¸°ë¥¼ ë“  ìƒíƒœì—¬ì•¼ ë¬´ê¸° ë³€ê²½ ê°€ëŠ¥
 	if (!CurrentWeapon)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
@@ -1285,7 +1285,7 @@ void APioneer::ChangeWeapon(int Value)
 		return;
 	}
 
-	// WeaponÀÌ 2°³ ÀÌ»ó ÀÖ¾î¾ß ¹«±â º¯°æ °¡´É
+	// Weaponì´ 2ê°œ ì´ìƒ ìˆì–´ì•¼ ë¬´ê¸° ë³€ê²½ ê°€ëŠ¥
 	if (Weapons.Num() <= 1)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
@@ -1299,14 +1299,14 @@ void APioneer::ChangeWeapon(int Value)
 	int32 end = (Value == 1) ? Weapons.Num() : 0;
 
 	for (int32 idx{ start };
-		Weapons.IsValidIndex(idx); // ÀÎµ¦½º°¡ À¯È¿ÇÏÁö ¾Ê´Ù¸é °Ç³Ê¶ç±â
+		Weapons.IsValidIndex(idx); // ì¸ë±ìŠ¤ê°€ ìœ íš¨í•˜ì§€ ì•Šë‹¤ë©´ ê±´ë„ˆë„ê¸°
 		idx += Value)
 	{
-		// Á¦ÇÑ·¹º§º¸´Ù ³·À¸¸é °Ç³Ê¶ë´Ï´Ù.
+		// ì œí•œë ˆë²¨ë³´ë‹¤ ë‚®ìœ¼ë©´ ê±´ë„ˆë•ë‹ˆë‹¤.
 		if (Level < Weapons[idx]->LimitedLevel)
 			continue;
 
-		// º¯°æÇÒ ¹«±â°¡ ¾ø°Å³ª ÇöÀç ¹«±â¶ó¸é °Ç³Ê¶ç±â
+		// ë³€ê²½í•  ë¬´ê¸°ê°€ ì—†ê±°ë‚˜ í˜„ì¬ ë¬´ê¸°ë¼ë©´ ê±´ë„ˆë„ê¸°
 		if (Weapons[idx] == nullptr || Weapons[idx] == CurrentWeapon)
 			continue;
 
@@ -1321,7 +1321,7 @@ void APioneer::ChangeWeapon(int Value)
 
 void APioneer::Arming()
 {
-	// IdxOfCurrentWeapon°¡ À¯È¿ÇÏÁö ¾ÊÀ¸¸é
+	// IdxOfCurrentWeaponê°€ ìœ íš¨í•˜ì§€ ì•Šìœ¼ë©´
 	if (Weapons.IsValidIndex(IdxOfCurrentWeapon) == false)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
@@ -1330,7 +1330,7 @@ void APioneer::Arming()
 
 		CurrentWeapon = nullptr;
 
-		// Weapons¿¡ Á¸ÀçÇÏ´Â °¡Àå ¾ÕÀÇ WeaponÀ» ¼³Á¤
+		// Weaponsì— ì¡´ì¬í•˜ëŠ” ê°€ì¥ ì•ì˜ Weaponì„ ì„¤ì •
 		for (auto& weapon : Weapons)
 		{
 			if (weapon)
@@ -1341,13 +1341,13 @@ void APioneer::Arming()
 			}
 		}
 	}
-	else // IdxOfCurrentWeapon°¡ À¯È¿ÇÏ¸é
+	else // IdxOfCurrentWeaponê°€ ìœ íš¨í•˜ë©´
 	{
 		if (Weapons[IdxOfCurrentWeapon])
 			CurrentWeapon = Weapons[IdxOfCurrentWeapon];
 		else
 		{
-			// Weapons¿¡ Á¸ÀçÇÏ´Â °¡Àå ¾ÕÀÇ WeaponÀ» ¼³Á¤
+			// Weaponsì— ì¡´ì¬í•˜ëŠ” ê°€ì¥ ì•ì˜ Weaponì„ ì„¤ì •
 			for (auto& weapon : Weapons)
 			{
 				if (weapon)
@@ -1373,7 +1373,7 @@ void APioneer::Arming()
 	SetWeaponType();
 
 	if (GetCharacterMovement())
-		GetCharacterMovement()->bOrientRotationToMovement = false; // ¹«±â¸¦ µé¸é ÀÌµ¿ ¹æÇâ¿¡ Ä³¸¯ÅÍ ¸Ş½Ã°¡ µû¶ó È¸ÀüÇÏÁö ¾Ê½À´Ï´Ù.
+		GetCharacterMovement()->bOrientRotationToMovement = false; // ë¬´ê¸°ë¥¼ ë“¤ë©´ ì´ë™ ë°©í–¥ì— ìºë¦­í„° ë©”ì‹œê°€ ë”°ë¼ íšŒì „í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 }
 
 void APioneer::Disarming()
@@ -1386,7 +1386,7 @@ void APioneer::Disarming()
 	SetWeaponType();
 
 	if (GetCharacterMovement())
-		GetCharacterMovement()->bOrientRotationToMovement = true; // ¹«±â¸¦ µéÁö ¾ÊÀ¸¸é ÀÌµ¿ ¹æÇâ¿¡ Ä³¸¯ÅÍ ¸Ş½Ã°¡ µû¶ó È¸ÀüÇÕ´Ï´Ù.
+		GetCharacterMovement()->bOrientRotationToMovement = true; // ë¬´ê¸°ë¥¼ ë“¤ì§€ ì•Šìœ¼ë©´ ì´ë™ ë°©í–¥ì— ìºë¦­í„° ë©”ì‹œê°€ ë”°ë¼ íšŒì „í•©ë‹ˆë‹¤.
 }
 
 
@@ -1443,10 +1443,10 @@ void APioneer::OnConstructingMode(float DeltaTime)
 	TimerOfOnConstructingMode = 0.0f;
 
 
-	// ÀÌ ÄÚµå´Â LineTraceÇÒ ¶§ ¸ğµç ¾×ÅÍ¸¦ hitÇÏ°í ±× Áß LandScape¸¸ °¡Á®¿Í¼­ ¸¶¿ì½º Ä¿¼­ Transform Á¤º¸¸¦ ¾òÀ½.
+	// ì´ ì½”ë“œëŠ” LineTraceí•  ë•Œ ëª¨ë“  ì•¡í„°ë¥¼ hití•˜ê³  ê·¸ ì¤‘ LandScapeë§Œ ê°€ì ¸ì™€ì„œ ë§ˆìš°ìŠ¤ ì»¤ì„œ Transform ì •ë³´ë¥¼ ì–»ìŒ.
 	if (UWorld* world = GetWorld())
 	{
-		// ÇöÀç PlayerÀÇ ºäÆ÷Æ®ÀÇ ¸¶¿ì½ºÆ÷Áö¼ÇÀ» °¡Á®¿É´Ï´Ù.
+		// í˜„ì¬ Playerì˜ ë·°í¬íŠ¸ì˜ ë§ˆìš°ìŠ¤í¬ì§€ì…˜ì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PC->Player);
 		FVector2D MousePosition;
@@ -1455,12 +1455,12 @@ void APioneer::OnConstructingMode(float DeltaTime)
 			LocalPlayer->ViewportClient->GetMousePosition(MousePosition);
 		}
 
-		FVector WorldOrigin; // ½ÃÀÛ À§Ä¡
-		FVector WorldDirection; // ¹æÇâ
-		float HitResultTraceDistance = 10000.f; // WorldDirection°ú °öÇÏ¿© ³¡ À§Ä¡¸¦ ¼³Á¤
+		FVector WorldOrigin; // ì‹œì‘ ìœ„ì¹˜
+		FVector WorldDirection; // ë°©í–¥
+		float HitResultTraceDistance = 10000.f; // WorldDirectionê³¼ ê³±í•˜ì—¬ ë ìœ„ì¹˜ë¥¼ ì„¤ì •
 		UGameplayStatics::DeprojectScreenToWorld(PC, MousePosition, WorldOrigin, WorldDirection);
 
-		TArray<FHitResult> hitResults; // °á°ú¸¦ ÀúÀå
+		TArray<FHitResult> hitResults; // ê²°ê³¼ë¥¼ ì €ì¥
 		
 		FCollisionObjectQueryParams collisionObjectQueryParams;
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel4); // Building
@@ -1480,7 +1480,7 @@ void APioneer::OnConstructingMode(float DeltaTime)
 //			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
 //#endif
 
-			// BuildingÀÌ ÅÍ·¿ÀÌ¶ó¸é Wall À§¿¡ °Ç¼³ÇÒ ¼ö ÀÖµµ·Ï ÇÕ´Ï´Ù.
+			// Buildingì´ í„°ë ›ì´ë¼ë©´ Wall ìœ„ì— ê±´ì„¤í•  ìˆ˜ ìˆë„ë¡ í•©ë‹ˆë‹¤.
 			if (ATurret* turret = dynamic_cast<ATurret*>(Building))
 			{
 				turret->IdxOfUnderWall = 0;
@@ -1499,7 +1499,7 @@ void APioneer::OnConstructingMode(float DeltaTime)
 				
 			}
 
-			if (hit.Actor->IsA(ALandscape::StaticClass())) // hitÇÑ Actor°¡ ALandscape¸é
+			if (hit.Actor->IsA(ALandscape::StaticClass())) // hití•œ Actorê°€ ALandscapeë©´
 			{
 				Building->SetActorLocation(hit.Location);
 
@@ -1525,7 +1525,7 @@ void APioneer::PlaceBuilding()
 	bool success = Building->Constructing();
 	if (success)
 	{
-		// °ÔÀÓ¼­¹ö¶ó¸é
+		// ê²Œì„ì„œë²„ë¼ë©´
 		if (ServerSocketInGame)
 		{
 			if (ServerSocketInGame->IsServerOn())
@@ -1539,12 +1539,12 @@ void APioneer::PlaceBuilding()
 				APioneerManager::Resources.NumOfOrganic -= Building->NeedOrganicMatter;
 			}
 		}
-		// °ÔÀÓÅ¬¶óÀÌ¾ğÆ®¶ó¸é
+		// ê²Œì„í´ë¼ì´ì–¸íŠ¸ë¼ë©´
 		if (ClientSocketInGame)
 		{
 			if (ClientSocketInGame->IsClientSocketOn())
 			{
-				// ¿äÃ»À» ¼­¹ö¿¡ º¸³»°í ¼­¹ö¿¡¼­ SpawnBuildingÀ» ¹ŞÀ¸¸é °Ç¼³ÇÕ´Ï´Ù.
+				// ìš”ì²­ì„ ì„œë²„ì— ë³´ë‚´ê³  ì„œë²„ì—ì„œ SpawnBuildingì„ ë°›ìœ¼ë©´ ê±´ì„¤í•©ë‹ˆë‹¤.
 				ClientSocketInGame->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
 
 				Building->Destroy();
@@ -1572,7 +1572,7 @@ void APioneer::CalculateLevel()
 		Exp -= Level * 13;
 		Level++;
 
-		// AI°¡ ·¹º§¾÷ÇÏ¸é ÀÚµ¿À¸·Î ÁÁÀº ¹«±â·Î º¯°æÇÕ´Ï´Ù.
+		// AIê°€ ë ˆë²¨ì—…í•˜ë©´ ìë™ìœ¼ë¡œ ì¢‹ì€ ë¬´ê¸°ë¡œ ë³€ê²½í•©ë‹ˆë‹¤.
 		if (SocketID == 0)
 		{
 			ChangeWeapon(1.0f);
@@ -1583,7 +1583,7 @@ void APioneer::CalculateLevel()
 
 		MoveSpeed += 0.25f;
 		if (GetCharacterMovement())
-			GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // ¿òÁ÷ÀÏ ¶§ °È´Â ¼Óµµ
+			GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // ì›€ì§ì¼ ë•Œ ê±·ëŠ” ì†ë„
 	}
 }
 
@@ -1601,12 +1601,12 @@ void APioneer::HealSelf()
 }
 
 ///////////
-// ³×Æ®¿öÅ©
+// ë„¤íŠ¸ì›Œí¬
 ///////////
 void APioneer::SetInfoOfPioneer_Socket(class cInfoOfPioneer_Socket& Socket)
 {
 	SocketID = Socket.SocketID;
-	NameOfID = FString(Socket.NameOfID.c_str());
+	NameOfID = FString(UTF8_TO_TCHAR(Socket.NameOfID.c_str()));
 
 	if (EditableTextBoxForID)
 		EditableTextBoxForID->SetText(FText::FromString(NameOfID));
@@ -1629,7 +1629,7 @@ void APioneer::SetInfoOfPioneer_Animation(class cInfoOfPioneer_Animation& Animat
 
 	TargetRotation = FRotator(Animation.TargetRotX, Animation.TargetRotY, Animation.TargetRotZ);
 
-	// ÀÌµ¿
+	// ì´ë™
 	if (UCharacterMovementComponent* characterMovement = GetCharacterMovement())
 		characterMovement->Velocity = FVector(Animation.VelocityX, Animation.VelocityY, Animation.VelocityZ);
 

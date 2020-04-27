@@ -1,13 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include <vector>
 #include <map>
 
-/*** ¾ğ¸®¾ó¿£Áø Çì´õ ¼±¾ğ : Start ***/
+/*** ì–¸ë¦¬ì–¼ì—”ì§„ í—¤ë” ì„ ì–¸ : Start ***/
 
-/*** ¾ğ¸®¾ó¿£Áø Çì´õ ¼±¾ğ : End ***/
+/*** ì–¸ë¦¬ì–¼ì—”ì§„ í—¤ë” ì„ ì–¸ : End ***/
 
 
 #include "CoreMinimal.h"
@@ -32,7 +32,7 @@ protected:
 
 public:
 	std::vector<class cOnlineGameWidget*> vecOnlineGameWidget;
-	std::map<int, int> mapOnlineGameWidget; // <LeaderÀÇ SocketID, vecOnlineGameWidgetÀÇ ÀÎµ¦½º>
+	std::map<int, int> mapOnlineGameWidget; // <Leaderì˜ SocketID, vecOnlineGameWidgetì˜ ì¸ë±ìŠ¤>
 
 	int RevealableIndex;
 
@@ -89,7 +89,7 @@ public:
 		}
 		ScrollBox->AddChild(Line);
 
-		// ±âº»ÀûÀ¸·Î ¼û±è »óÅÂ
+		// ê¸°ë³¸ì ìœ¼ë¡œ ìˆ¨ê¹€ ìƒíƒœ
 		Line->SetVisibility(ESlateVisibility::Hidden);
 
 		ConstructEditableTextBox(WidgetTree, &State);
@@ -173,12 +173,12 @@ public:
 
 		EditableTextBox->SetIsReadOnly(true);
 
-		// ÆùÆ®¸¦ Àû¿ëÇÏ´Â ¹æ¹ı
-		// ÆùÆ® ÆÄÀÏÀÎ .ttf´Â ±âº»ÀûÀ¸·Î Engine Content/Slate/Fonts/¿¡ Á¸ÀçÇÕ´Ï´Ù.
+		// í°íŠ¸ë¥¼ ì ìš©í•˜ëŠ” ë°©ë²•
+		// í°íŠ¸ íŒŒì¼ì¸ .ttfëŠ” ê¸°ë³¸ì ìœ¼ë¡œ Engine Content/Slate/Fonts/ì— ì¡´ì¬í•©ë‹ˆë‹¤.
 		// EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(GEngine->GetLargeFont(), 24);
-		// EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 24));
+		// EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 32));
 		
-		EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 32));
+		EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::ProjectDir() / TEXT("Content/Fonts/neodgm.ttf"), 32));
 
 		FMargin padding;
 		padding.Left = 10.0f;
@@ -202,13 +202,13 @@ public:
 			return;
 		}
 
-		State->SetText(FText::FromString(FString(InfoOfGame.State.c_str())));
+		State->SetText(FText::FromString(FString(UTF8_TO_TCHAR(InfoOfGame.State.c_str()))));
 
-		FString title(InfoOfGame.Title.c_str());
-		title.ReplaceCharInline('_', ' ');
+		FString title(UTF8_TO_TCHAR(InfoOfGame.Title.c_str()));
+		title.ReplaceCharInline(_T('_'), _T(' '));
 		Title->SetText(FText::FromString(title));
 
-		Leader->SetText(FText::FromString(FString(InfoOfGame.Leader.ID.c_str())));
+		Leader->SetText(FText::FromString(FString(UTF8_TO_TCHAR(InfoOfGame.Leader.ID.c_str()))));
 
 		Stage->SetText(FText::FromString(FString::FromInt(InfoOfGame.Stage)));
 

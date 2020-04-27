@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "MainServer.h"
@@ -49,20 +49,20 @@ unsigned int WINAPI CallIOThread(LPVOID p)
 //	CONSOLE_LOG("\n /*********************************************/ \n");
 //
 //	char serverIP[16] = "127.0.0.1";
-//	CONSOLE_LOG("Server IPv4¸¦ ÀÔ·ÂÇÏ¼¼¿ä. (¿¹½Ã: 58.125.236.74) \n");
+//	CONSOLE_LOG("Server IPv4ë¥¼ ì…ë ¥í•˜ì„¸ìš”. (ì˜ˆì‹œ: 58.125.236.74) \n");
 //	CONSOLE_LOG("Server IPv4: ");
 //	std::cin >> serverIP;
-//	CONSOLE_LOG("ÀÔ·Â¹ŞÀº IPv4: %s \n", serverIP);
+//	CONSOLE_LOG("ì…ë ¥ë°›ì€ IPv4: %s \n", serverIP);
 //	IPv4.S_un.S_addr = inet_addr(serverIP);
-//	CONSOLE_LOG("½ÇÁ¦ IPv4: %s \n\n", inet_ntoa(IPv4));
+//	CONSOLE_LOG("ì‹¤ì œ IPv4: %s \n\n", inet_ntoa(IPv4));
 //
 //	int serverPort = 8000;
-//	CONSOLE_LOG("Server Port¸¦ ÀÔ·ÂÇÏ¼¼¿ä. (¿¹½Ã: 8000) \n");
+//	CONSOLE_LOG("Server Portë¥¼ ì…ë ¥í•˜ì„¸ìš”. (ì˜ˆì‹œ: 8000) \n");
 //	CONSOLE_LOG("Server Port: ");
 //	std::cin >> serverPort;
-//	CONSOLE_LOG("ÀÔ·Â¹ŞÀº Port: %d \n", serverPort);
+//	CONSOLE_LOG("ì…ë ¥ë°›ì€ Port: %d \n", serverPort);
 //	Port = htons(serverPort);
-//	CONSOLE_LOG("½ÇÁ¦ Port: %d \n", ntohs(Port));
+//	CONSOLE_LOG("ì‹¤ì œ Port: %d \n", ntohs(Port));
 //
 //	CONSOLE_LOG("/*********************************************/ \n\n");
 //}
@@ -70,7 +70,7 @@ unsigned int WINAPI CallIOThread(LPVOID p)
 MainServer::MainServer()
 {
 	///////////////////
-	// ¸â¹ö º¯¼ö ÃÊ±âÈ­
+	// ë©¤ë²„ ë³€ìˆ˜ ì´ˆê¸°í™”
 	///////////////////
 	ListenSocket = NULL;
 	hIOCP = NULL;
@@ -100,7 +100,7 @@ MainServer::MainServer()
 	LeaveCriticalSection(&csInfoOfGames);
 
 
-	// ÆĞÅ¶ ÇÔ¼ö Æ÷ÀÎÅÍ¿¡ ÇÔ¼ö ÁöÁ¤
+	// íŒ¨í‚· í•¨ìˆ˜ í¬ì¸í„°ì— í•¨ìˆ˜ ì§€ì •
 	fnProcess[EPacketType::LOGIN].funcProcessPacket = Login;
 	fnProcess[EPacketType::CREATE_GAME].funcProcessPacket = CreateGame;
 	fnProcess[EPacketType::FIND_GAMES].funcProcessPacket = FindGames;
@@ -133,29 +133,29 @@ void MainServer::SetIPv4AndPort(IN_ADDR& IPv4, USHORT& Port)
 	CONSOLE_LOG("\n /*********************************************/ \n");
 
 	char serverIP[16] = "127.0.0.1";
-	CONSOLE_LOG("Server IPv4¸¦ ÀÔ·ÂÇÏ¼¼¿ä. (¿¹½Ã: 58.125.236.74) \n");
+	CONSOLE_LOG("Server IPv4ë¥¼ ì…ë ¥í•˜ì„¸ìš”. (ì˜ˆì‹œ: 58.125.236.74) \n");
 	CONSOLE_LOG("Server IPv4: ");
 	std::cin >> serverIP;
-	CONSOLE_LOG("ÀÔ·Â¹ŞÀº IPv4: %s \n", serverIP);
+	CONSOLE_LOG("ì…ë ¥ë°›ì€ IPv4: %s \n", serverIP);
 	while (inet_pton(AF_INET, serverIP, &IPv4.S_un.S_addr) != 1)
 	{
 		CONSOLE_LOG("[Fail] <MainServer::SetIPv4AndPort(...)> inet_pton(...) \n");
 
-		CONSOLE_LOG("Server IPv4¸¦ ÀÔ·ÂÇÏ¼¼¿ä. (¿¹½Ã: 58.125.236.74) \n");
+		CONSOLE_LOG("Server IPv4ë¥¼ ì…ë ¥í•˜ì„¸ìš”. (ì˜ˆì‹œ: 58.125.236.74) \n");
 		CONSOLE_LOG("Server IPv4: ");
 		std::cin >> serverIP;
-		CONSOLE_LOG("ÀÔ·Â¹ŞÀº IPv4: %s \n", serverIP);
+		CONSOLE_LOG("ì…ë ¥ë°›ì€ IPv4: %s \n", serverIP);
 	}
 	char bufOfIPv4Addr[32] = { 0, };
-	CONSOLE_LOG("½ÇÁ¦ IPv4: %s \n\n", inet_ntop(AF_INET, &IPv4, bufOfIPv4Addr, sizeof(bufOfIPv4Addr)));
+	CONSOLE_LOG("ì‹¤ì œ IPv4: %s \n\n", inet_ntop(AF_INET, &IPv4, bufOfIPv4Addr, sizeof(bufOfIPv4Addr)));
 
 	int serverPort = 8000;
-	CONSOLE_LOG("Server Port¸¦ ÀÔ·ÂÇÏ¼¼¿ä. (¿¹½Ã: 8000) \n");
+	CONSOLE_LOG("Server Portë¥¼ ì…ë ¥í•˜ì„¸ìš”. (ì˜ˆì‹œ: 8000) \n");
 	CONSOLE_LOG("Server Port: ");
 	std::cin >> serverPort;
-	CONSOLE_LOG("ÀÔ·Â¹ŞÀº Port: %d \n", serverPort);
+	CONSOLE_LOG("ì…ë ¥ë°›ì€ Port: %d \n", serverPort);
 	Port = htons(serverPort);
-	CONSOLE_LOG("½ÇÁ¦ Port: %d \n", ntohs(Port));
+	CONSOLE_LOG("ì‹¤ì œ Port: %d \n", ntohs(Port));
 
 	CONSOLE_LOG("/*********************************************/ \n\n");
 }
@@ -173,7 +173,7 @@ void MainServer::CloseListenSocketAndCleanupWSA()
 
 bool MainServer::Initialize()
 {
-	/// ¾ÈÁ¤¼ºÀ» º¸ÀåÇÏ±â À§ÇÏ¿©, ÀÛµ¿ÁßÀÎ ¼­¹ö¸¦ ´İ¾ÆÁİ´Ï´Ù.
+	/// ì•ˆì •ì„±ì„ ë³´ì¥í•˜ê¸° ìœ„í•˜ì—¬, ì‘ë™ì¤‘ì¸ ì„œë²„ë¥¼ ë‹«ì•„ì¤ë‹ˆë‹¤.
 	CloseServer();
 
 	if (IsServerOn())
@@ -189,7 +189,7 @@ bool MainServer::Initialize()
 
 	WSADATA wsaData;
 
-	// winsock 2.2 ¹öÀüÀ¸·Î ÃÊ±âÈ­
+	// winsock 2.2 ë²„ì „ìœ¼ë¡œ ì´ˆê¸°í™”
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
 		CONSOLE_LOG("[Fail] WSAStartup(...); \n");
@@ -199,7 +199,7 @@ bool MainServer::Initialize()
 	CONSOLE_LOG("[Success] WSAStartup(...)\n");
 
 
-	// ¼ÒÄÏ »ı¼º
+	// ì†Œì¼“ ìƒì„±
 	ListenSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (ListenSocket == INVALID_SOCKET)
 	{
@@ -211,7 +211,7 @@ bool MainServer::Initialize()
 	}
 	CONSOLE_LOG("[Success] WSASocket(...)\n");
 
-	// ¼­¹ö Á¤º¸ ¼³Á¤
+	// ì„œë²„ ì •ë³´ ì„¤ì •
 	SOCKADDR_IN serverAddr;
 	serverAddr.sin_family = AF_INET;
 	//serverAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
@@ -219,8 +219,8 @@ bool MainServer::Initialize()
 
 	SetIPv4AndPort(serverAddr.sin_addr, serverAddr.sin_port);
 
-	// ¼ÒÄÏ ¼³Á¤
-	// boost bind ¿Í ±¸º°Áş±â À§ÇØ ::bind »ç¿ë
+	// ì†Œì¼“ ì„¤ì •
+	// boost bind ì™€ êµ¬ë³„ì§“ê¸° ìœ„í•´ ::bind ì‚¬ìš©
 	while (::bind(ListenSocket, (struct sockaddr*) & serverAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
 		CONSOLE_LOG("[Fail] ::bind(...) \n");
@@ -230,7 +230,7 @@ bool MainServer::Initialize()
 	CONSOLE_LOG("[Success] ::bind(...) \n");
 
 
-	// ¼ö½Å ´ë±â¿­ »ı¼º
+	// ìˆ˜ì‹  ëŒ€ê¸°ì—´ ìƒì„±
 	if (listen(ListenSocket, SOMAXCONN) == SOCKET_ERROR)
 	{
 		CONSOLE_LOG("[Fail] listen(...) \n");
@@ -258,7 +258,7 @@ bool MainServer::Initialize()
 
 bool MainServer::CreateAcceptThread()
 {
-	// IOCP ÃÊ±âÈ­
+	// IOCP ì´ˆê¸°í™”
 	if (hIOCP != NULL && hIOCP != INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(hIOCP);
@@ -267,8 +267,8 @@ bool MainServer::CreateAcceptThread()
 
 	unsigned int threadId;
 
-	// _beginthreadex()´Â ::CloseHandleÀ» ³»ºÎ¿¡¼­ È£ÃâÇÏÁö ¾Ê±â ¶§¹®¿¡, ½º·¹µå Á¾·á½Ã »ç¿ëÀÚ°¡ Á÷Á¢ CloseHandle()ÇØÁà¾ß ÇÕ´Ï´Ù.
-	// ½º·¹µå°¡ Á¾·áµÇ¸é _endthreadex()°¡ ÀÚµ¿È£ÃâµË´Ï´Ù.
+	// _beginthreadex()ëŠ” ::CloseHandleì„ ë‚´ë¶€ì—ì„œ í˜¸ì¶œí•˜ì§€ ì•Šê¸° ë•Œë¬¸ì—, ìŠ¤ë ˆë“œ ì¢…ë£Œì‹œ ì‚¬ìš©ìê°€ ì§ì ‘ CloseHandle()í•´ì¤˜ì•¼ í•©ë‹ˆë‹¤.
+	// ìŠ¤ë ˆë“œê°€ ì¢…ë£Œë˜ë©´ _endthreadex()ê°€ ìë™í˜¸ì¶œë©ë‹ˆë‹¤.
 	if (hAcceptThreadHandle != NULL && hAcceptThreadHandle != INVALID_HANDLE_VALUE)
 		CloseHandle(hAcceptThreadHandle);
 
@@ -278,17 +278,17 @@ bool MainServer::CreateAcceptThread()
 		CONSOLE_LOG("[Error] <MainServer::Initialize()> if (hAcceptThreadHandle == NULL)\n");
 		return false;
 	}
-	// ¼­¹ö ±¸µ¿
+	// ì„œë²„ êµ¬ë™
 	EnterCriticalSection(&csAccept);
 	bAccept = true;
 	LeaveCriticalSection(&csAccept);
 
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	EnterCriticalSection(&csCountOfSend);
 	CountOfSend = 0;
 	LeaveCriticalSection(&csCountOfSend);
 
-	// ½º·¹µå Àç°³
+	// ìŠ¤ë ˆë“œ ì¬ê°œ
 	ResumeThread(hAcceptThreadHandle);
 
 	return true;
@@ -297,16 +297,16 @@ bool MainServer::CreateAcceptThread()
 
 void MainServer::AcceptThread()
 {
-	// Å¬¶óÀÌ¾ğÆ® Á¤º¸
+	// í´ë¼ì´ì–¸íŠ¸ ì •ë³´
 	SOCKET clientSocket;
 	SOCKADDR_IN clientAddr;
 	int addrLen = sizeof(SOCKADDR_IN);
 	DWORD flags = 0;
 
-	// Completion Port °´Ã¼ »ı¼º
+	// Completion Port ê°ì²´ ìƒì„±
 	hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 
-	// IO Thread »ı¼º
+	// IO Thread ìƒì„±
 	if (hIOCP == NULL || hIOCP == INVALID_HANDLE_VALUE || !CreateIOThread())
 	{
 		CONSOLE_LOG("[Error] <MainServer::AcceptThread()> if (hIOCP == NULL || hIOCP == INVALID_HANDLE_VALUE || !CreateIOThread()) \n");
@@ -322,10 +322,10 @@ void MainServer::AcceptThread()
 	CONSOLE_LOG("[Info] <MainServer::AcceptThread()> Server started.\n");
 
 
-	// Å¬¶óÀÌ¾ğÆ® Á¢¼ÓÀ» ¹ŞÀ½
+	// í´ë¼ì´ì–¸íŠ¸ ì ‘ì†ì„ ë°›ìŒ
 	while (true)
 	{
-		// Accept½º·¹µå Á¾·á È®ÀÎ
+		// AcceptìŠ¤ë ˆë“œ ì¢…ë£Œ í™•ì¸
 		EnterCriticalSection(&csAccept);
 		if (!bAccept)
 		{
@@ -349,7 +349,7 @@ void MainServer::AcceptThread()
 		{
 			CONSOLE_LOG("[Success] <MainServer::AcceptThread()> WSAAccept(...), SocketID: %d\n", int(clientSocket));
 
-			// ¼ÒÄÏ ¹öÆÛ Å©±â º¯°æ
+			// ì†Œì¼“ ë²„í¼ í¬ê¸° ë³€ê²½
 			SetSockOpt(clientSocket, 1048576, 1048576);
 		}
 
@@ -357,7 +357,7 @@ void MainServer::AcceptThread()
 		stCompletionKey* completionKey = new stCompletionKey();
 		completionKey->socket = clientSocket;
 
-		//completionKey->IPv4Addr = string(inet_ntoa(clientAddr.sin_addr)); // ¿ªÀ¸·Î ³×Æ®¿öÅ©¹ÙÀÌÆ®¼ø¼­·Î µÈ Á¤32ºñÆ® Á¤¼ö¸¦ ´Ù½Ã ¹®ÀÚ¿­·Î µ¹·ÁÁÖ´Â ÇÔ¼ö
+		//completionKey->IPv4Addr = string(inet_ntoa(clientAddr.sin_addr)); // ì—­ìœ¼ë¡œ ë„¤íŠ¸ì›Œí¬ë°”ì´íŠ¸ìˆœì„œë¡œ ëœ ì •32ë¹„íŠ¸ ì •ìˆ˜ë¥¼ ë‹¤ì‹œ ë¬¸ìì—´ë¡œ ëŒë ¤ì£¼ëŠ” í•¨ìˆ˜
 		char bufOfIPv4Addr[32] = { 0, };
 		inet_ntop(AF_INET, &clientAddr.sin_addr, bufOfIPv4Addr, sizeof(bufOfIPv4Addr));
 		completionKey->IPv4Addr = string(bufOfIPv4Addr);
@@ -376,7 +376,7 @@ void MainServer::AcceptThread()
 		overlappedMsg->sendBytes = 0;
 
 
-		// AcceptÇÑ Å¬¶óÀÌ¾ğÆ®ÀÇ Á¤º¸°¡ ´ã±ä completionKey¸¦ ÀúÀå
+		// Acceptí•œ í´ë¼ì´ì–¸íŠ¸ì˜ ì •ë³´ê°€ ë‹´ê¸´ completionKeyë¥¼ ì €ì¥
 		EnterCriticalSection(&csClients);
 		CONSOLE_LOG("[Info] <MainServer::AcceptThread()> Clients.size(): %d\n", (int)Clients.size());
 		Clients[clientSocket] = completionKey;
@@ -384,7 +384,7 @@ void MainServer::AcceptThread()
 		LeaveCriticalSection(&csClients);
 
 
-		// AcceptÇÑ Å¬¶óÀÌ¾ğÆ®ÀÇ recvDequeÀ» µ¿ÀûÇÒ´çÇÏ¿© ÀúÀå
+		// Acceptí•œ í´ë¼ì´ì–¸íŠ¸ì˜ recvDequeì„ ë™ì í• ë‹¹í•˜ì—¬ ì €ì¥
 		deque<char*>* recvDeque = new deque<char*>();
 		EnterCriticalSection(&csMapOfRecvDeque);
 		if (MapOfRecvDeque.find(clientSocket) == MapOfRecvDeque.end())
@@ -394,11 +394,11 @@ void MainServer::AcceptThread()
 		LeaveCriticalSection(&csMapOfRecvDeque);
 
 
-		// completionKey¸¦ ÇÒ´ç
+		// completionKeyë¥¼ í• ë‹¹
 		hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (ULONG_PTR)completionKey, 0);
 
 
-		// ÁßÃ¸ ¼ÒÄÏÀ» ÁöÁ¤ÇÏ°í ¿Ï·á½Ã ½ÇÇàµÉ ÇÔ¼ö¸¦ ³Ñ°ÜÁÜ
+		// ì¤‘ì²© ì†Œì¼“ì„ ì§€ì •í•˜ê³  ì™„ë£Œì‹œ ì‹¤í–‰ë  í•¨ìˆ˜ë¥¼ ë„˜ê²¨ì¤Œ
 		int nResult = WSARecv(
 			clientSocket,
 			&(overlappedMsg->dataBuf),
@@ -462,7 +462,7 @@ bool MainServer::CreateIOThread()
 	unsigned int threadCount = 0;
 	unsigned int threadId;
 
-	// ½Ã½ºÅÛ Á¤º¸ °¡Á®¿È
+	// ì‹œìŠ¤í…œ ì •ë³´ ê°€ì ¸ì˜´
 	SYSTEM_INFO sysInfo;
 	GetSystemInfo(&sysInfo);
 
@@ -470,24 +470,24 @@ bool MainServer::CreateIOThread()
 
 	nIOThreadCnt = sysInfo.dwNumberOfProcessors;
 
-	// thread handler ¼±¾ğ
-	// µ¿Àû ¹è¿­ ÇÒ´ç [»ó¼ö°¡ ¾Æ´Ï¾îµµ µÊ]
+	// thread handler ì„ ì–¸
+	// ë™ì  ë°°ì—´ í• ë‹¹ [ìƒìˆ˜ê°€ ì•„ë‹ˆì–´ë„ ë¨]
 	hIOThreadHandle = new HANDLE[nIOThreadCnt];
 
-	// thread »ı¼º
+	// thread ìƒì„±
 	for (DWORD i = 0; i < nIOThreadCnt; i++)
 	{
 		hIOThreadHandle[i] = (HANDLE*)_beginthreadex(NULL, 0, &CallIOThread, this, CREATE_SUSPENDED, &threadId);
 
-		// ¿¡·¯°¡ ¹ß»ıÇÏ¸é
+		// ì—ëŸ¬ê°€ ë°œìƒí•˜ë©´
 		if (hIOThreadHandle[i] == NULL || hIOThreadHandle[i] == INVALID_HANDLE_VALUE)
 		{
 			CONSOLE_LOG("[Error] <MainServer::CreateIOThread()> if (hIOThreadHandle[i] == NULL || hIOThreadHandle[i] == INVALID_HANDLE_VALUE) \n");
 
-			// »ı¼ºÇÑ ½º·¹µåµéÀ» Á¾·áÇÏ°í ÇÚµéÀ» ÃÊ±âÈ­ÇÕ´Ï´Ù.
+			// ìƒì„±í•œ ìŠ¤ë ˆë“œë“¤ì„ ì¢…ë£Œí•˜ê³  í•¸ë“¤ì„ ì´ˆê¸°í™”í•©ë‹ˆë‹¤.
 			for (unsigned int idx = 0; idx < threadCount; idx++)
 			{
-				//// CREATE_SUSPENDED·Î ½º·¹µå¸¦ »ı¼ºÇß±â ¶§¹®¿¡ TerminateThread(...)¸¦ »ç¿ëÇØµµ ±¦ÂúÀ» °Í °°½À´Ï´Ù.
+				//// CREATE_SUSPENDEDë¡œ ìŠ¤ë ˆë“œë¥¼ ìƒì„±í–ˆê¸° ë•Œë¬¸ì— TerminateThread(...)ë¥¼ ì‚¬ìš©í•´ë„ ê´œì°®ì„ ê²ƒ ê°™ìŠµë‹ˆë‹¤.
 				//TerminateThread(hIOThreadHandle[idx], 0);
 				ResumeThread(hIOThreadHandle[idx]);
 				CloseHandle(hIOThreadHandle[idx]);
@@ -504,7 +504,7 @@ bool MainServer::CreateIOThread()
 
 	CONSOLE_LOG("[Info] <MainServer::CreateIOThread()> Start Worker %d Threads\n", threadCount);
 
-	// ½º·¹µåµéÀ» Àç°³ÇÕ´Ï´Ù.
+	// ìŠ¤ë ˆë“œë“¤ì„ ì¬ê°œí•©ë‹ˆë‹¤.
 	bIOThread = true;
 	for (DWORD i = 0; i < nIOThreadCnt; i++)
 	{
@@ -517,16 +517,16 @@ bool MainServer::CreateIOThread()
 
 void MainServer::IOThread()
 {
-	// ÇÔ¼ö È£Ãâ ¼º°ø ¿©ºÎ
+	// í•¨ìˆ˜ í˜¸ì¶œ ì„±ê³µ ì—¬ë¶€
 	BOOL	bResult;
 
-	// Overlapped I/O ÀÛ¾÷¿¡¼­ Àü¼ÛµÈ µ¥ÀÌÅÍ Å©±â
+	// Overlapped I/O ì‘ì—…ì—ì„œ ì „ì†¡ëœ ë°ì´í„° í¬ê¸°
 	DWORD	numberOfBytesTransferred;
 
-	// Completion Key¸¦ ¹ŞÀ» Æ÷ÀÎÅÍ º¯¼ö
+	// Completion Keyë¥¼ ë°›ì„ í¬ì¸í„° ë³€ìˆ˜
 	stCompletionKey* completionKey = nullptr;
 
-	// I/O ÀÛ¾÷À» À§ÇØ ¿äÃ»ÇÑ Overlapped ±¸Á¶Ã¼¸¦ ¹ŞÀ» Æ÷ÀÎÅÍ	
+	// I/O ì‘ì—…ì„ ìœ„í•´ ìš”ì²­í•œ Overlapped êµ¬ì¡°ì²´ë¥¼ ë°›ì„ í¬ì¸í„°	
 	stOverlappedMsg* overlappedMsg = nullptr;
 
 	DWORD	dwFlags = 0;
@@ -537,20 +537,20 @@ void MainServer::IOThread()
 		numberOfBytesTransferred = 0;
 
 		/**
-		 * ÀÌ ÇÔ¼ö·Î ÀÎÇØ ¾²·¹µåµéÀº WaitingThread Queue ¿¡ ´ë±â»óÅÂ·Î µé¾î°¡°Ô µÊ
-		 * ¿Ï·áµÈ Overlapped I/O ÀÛ¾÷ÀÌ ¹ß»ıÇÏ¸é IOCP Queue ¿¡¼­ ¿Ï·áµÈ ÀÛ¾÷À» °¡Á®¿Í µŞÃ³¸®¸¦ ÇÔ
+		 * ì´ í•¨ìˆ˜ë¡œ ì¸í•´ ì“°ë ˆë“œë“¤ì€ WaitingThread Queue ì— ëŒ€ê¸°ìƒíƒœë¡œ ë“¤ì–´ê°€ê²Œ ë¨
+		 * ì™„ë£Œëœ Overlapped I/O ì‘ì—…ì´ ë°œìƒí•˜ë©´ IOCP Queue ì—ì„œ ì™„ë£Œëœ ì‘ì—…ì„ ê°€ì ¸ì™€ ë’·ì²˜ë¦¬ë¥¼ í•¨
 		 */
 		bResult = GetQueuedCompletionStatus(
 			hIOCP,
-			&numberOfBytesTransferred,		// ½ÇÁ¦·Î Àü¼ÛµÈ ¹ÙÀÌÆ®
+			&numberOfBytesTransferred,		// ì‹¤ì œë¡œ ì „ì†¡ëœ ë°”ì´íŠ¸
 			(PULONG_PTR)& completionKey,	// completion key
-			(LPOVERLAPPED*)& overlappedMsg,	// overlapped I/O °´Ã¼
-			INFINITE						// ´ë±âÇÒ ½Ã°£
+			(LPOVERLAPPED*)& overlappedMsg,	// overlapped I/O ê°ì²´
+			INFINITE						// ëŒ€ê¸°í•  ì‹œê°„
 		);
 
 
 		///////////////////////////////////////////
-		// PostQueuedCompletionStatus(...)·Î °­Á¦Á¾·á
+		// PostQueuedCompletionStatus(...)ë¡œ ê°•ì œì¢…ë£Œ
 		///////////////////////////////////////////
 		if (!completionKey)
 		{
@@ -567,16 +567,16 @@ void MainServer::IOThread()
 
 
 		///////////////////////////////////////////
-		// WSASend°¡ ¿Ï·áµÈ °ÍÀÌ¹Ç·Î ¹ÙÀÌÆ® È®ÀÎ
+		// WSASendê°€ ì™„ë£Œëœ ê²ƒì´ë¯€ë¡œ ë°”ì´íŠ¸ í™•ì¸
 		///////////////////////////////////////////
 		if (overlappedMsg->sendBytes > 0)
 		{
-			// »çÀÌÁî°¡ °°À¸¸é Á¦´ë·Î Àü¼ÛÀÌ ¿Ï·áµÈ °ÍÀÔ´Ï´Ù.
+			// ì‚¬ì´ì¦ˆê°€ ê°™ìœ¼ë©´ ì œëŒ€ë¡œ ì „ì†¡ì´ ì™„ë£Œëœ ê²ƒì…ë‹ˆë‹¤.
 			if (overlappedMsg->sendBytes == numberOfBytesTransferred)
 			{
 				//CONSOLE_LOG("[Info] <MainServer::IOThread()> if (overlappedMsg->sendBytes == numberOfBytesTransferred) \n");
 			}
-			// »çÀÌÁî°¡ ´Ù¸£´Ù¸é Á¦´ë·Î Àü¼ÛÀÌ µÇÁö ¾ÊÀº°ÍÀÌ¹Ç·Î ÀÏ´Ü ÄÜ¼Ö¿¡ ¾Ë¸³´Ï´Ù.
+			// ì‚¬ì´ì¦ˆê°€ ë‹¤ë¥´ë‹¤ë©´ ì œëŒ€ë¡œ ì „ì†¡ì´ ë˜ì§€ ì•Šì€ê²ƒì´ë¯€ë¡œ ì¼ë‹¨ ì½˜ì†”ì— ì•Œë¦½ë‹ˆë‹¤.
 			else
 			{
 				CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n");
@@ -586,7 +586,7 @@ void MainServer::IOThread()
 				CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n");
 			}
 
-			// ¼Û½Å¿¡ »ç¿ëÇÏ±âÀ§ÇØ µ¿ÀûÇÒ´çÇÑ overlapped °´Ã¼¸¦ ¼Ò¸ê½ÃÅµ´Ï´Ù.
+			// ì†¡ì‹ ì— ì‚¬ìš©í•˜ê¸°ìœ„í•´ ë™ì í• ë‹¹í•œ overlapped ê°ì²´ë¥¼ ì†Œë©¸ì‹œí‚µë‹ˆë‹¤.
 			delete overlappedMsg;
 			overlappedMsg = nullptr;
 			//CONSOLE_LOG("[Info] <MainServer::IOThread()> delete overlappedMsg; \n\n");
@@ -604,17 +604,17 @@ void MainServer::IOThread()
 		//CONSOLE_LOG("[Info] <MainServer::IOThread()> numberOfBytesTransferred: %d \n", (int)numberOfBytesTransferred);
 		//CONSOLE_LOG("[Info] <MainServer::IOThread()> overlappedMsg->recvBytes: %d \n", overlappedMsg->recvBytes);
 
-		// ¼ÒÄÏ È¹µæ
+		// ì†Œì¼“ íšë“
 		SOCKET socket = completionKey->socket;
 
 
 		///////////////////////////////////////////
-		// Å¬¶óÀÌ¾ğÆ®ÀÇ Á¢¼Ó ²÷±è °¨Áö
+		// í´ë¼ì´ì–¸íŠ¸ì˜ ì ‘ì† ëŠê¹€ ê°ì§€
 		///////////////////////////////////////////
-		// GetQueuedCompletionStatusÀÇ ¼ö½Å¹ÙÀÌÆ® Å©±â°¡ 0ÀÌ¸é Á¢¼ÓÀÌ ²÷±ä°ÍÀÔ´Ï´Ù.
+		// GetQueuedCompletionStatusì˜ ìˆ˜ì‹ ë°”ì´íŠ¸ í¬ê¸°ê°€ 0ì´ë©´ ì ‘ì†ì´ ëŠê¸´ê²ƒì…ë‹ˆë‹¤.
 		if (numberOfBytesTransferred == 0)
 		{
-			// ºñÁ¤»ó Á¢¼Ó ²÷±èÀº GetQueuedCompletionStatus°¡ False¸¦ ¸®ÅÏÇÕ´Ï´Ù.
+			// ë¹„ì •ìƒ ì ‘ì† ëŠê¹€ì€ GetQueuedCompletionStatusê°€ Falseë¥¼ ë¦¬í„´í•©ë‹ˆë‹¤.
 			if (!bResult)
 				CONSOLE_LOG("[Info] <MainServer::IOThread()> socket(%d) connection is abnormally disconnected. \n\n", (int)socket);
 			else
@@ -626,7 +626,7 @@ void MainServer::IOThread()
 
 
 		///////////////////////////////////////////
-		// recvDeque¿¡ ¼ö½ÅÇÑ µ¥ÀÌÅÍ¸¦ ÀûÀç
+		// recvDequeì— ìˆ˜ì‹ í•œ ë°ì´í„°ë¥¼ ì ì¬
 		///////////////////////////////////////////
 		deque<char*>* recvDeque = nullptr;
 		EnterCriticalSection(&csMapOfRecvDeque);
@@ -645,50 +645,50 @@ void MainServer::IOThread()
 		}
 		else
 		{
-			// µ¥ÀÌÅÍ°¡ MAX_BUFFER ±×´ë·Î 4096°³ ²Ë Ã¤¿ö¼­ ¿À´Â °æ¿ì°¡ ÀÖ±â ¶§¹®¿¡, ´ëºñÇÏ±â À§ÇÏ¿© +1·Î '\0' °ø°£À» ¸¸µé¾îÁİ´Ï´Ù.
+			// ë°ì´í„°ê°€ MAX_BUFFER ê·¸ëŒ€ë¡œ 4096ê°œ ê½‰ ì±„ì›Œì„œ ì˜¤ëŠ” ê²½ìš°ê°€ ìˆê¸° ë•Œë¬¸ì—, ëŒ€ë¹„í•˜ê¸° ìœ„í•˜ì—¬ +1ë¡œ '\0' ê³µê°„ì„ ë§Œë“¤ì–´ì¤ë‹ˆë‹¤.
 			char* newBuffer = new char[MAX_BUFFER + 1];
 			//ZeroMemory(newBuffer, MAX_BUFFER);
 			CopyMemory(newBuffer, overlappedMsg->dataBuf.buf, numberOfBytesTransferred);
 			newBuffer[numberOfBytesTransferred] = '\0';
-			recvDeque->push_back(newBuffer); // µÚ¿¡ ¼øÂ÷ÀûÀ¸·Î ÀûÀçÇÕ´Ï´Ù.
+			recvDeque->push_back(newBuffer); // ë’¤ì— ìˆœì°¨ì ìœ¼ë¡œ ì ì¬í•©ë‹ˆë‹¤.
 		}
 
 		/**************************************************************************/
 
 		char dataBuffer[MAX_BUFFER + 1];
-		dataBuffer[0] = '\0'; // GetDataInRecvDeque(...)¸¦ ÇØµµ µ¦ÀÌ ºñ¾îÀÖ´Â »óÅÂ¸é ¿À·ù°¡ ³¯ ¼ö ÀÖÀ¸¹Ç·Î ÃÊ±âÈ­
+		dataBuffer[0] = '\0'; // GetDataInRecvDeque(...)ë¥¼ í•´ë„ ë±ì´ ë¹„ì–´ìˆëŠ” ìƒíƒœë©´ ì˜¤ë¥˜ê°€ ë‚  ìˆ˜ ìˆìœ¼ë¯€ë¡œ ì´ˆê¸°í™”
 		dataBuffer[MAX_BUFFER] = '\0';
 
 		///////////////////////////////////////////
-		// ¼ö½ÅÇÑ µ¥ÀÌÅÍ¸¦ ÀúÀåÇÏ´Â µ¦¿¡¼­ µ¥ÀÌÅÍ¸¦ È¹µæ
+		// ìˆ˜ì‹ í•œ ë°ì´í„°ë¥¼ ì €ì¥í•˜ëŠ” ë±ì—ì„œ ë°ì´í„°ë¥¼ íšë“
 		///////////////////////////////////////////
 		GetDataInRecvDeque(recvDeque, dataBuffer);
 
 
 		/////////////////////////////////////////////
-		// 1. µ¥ÀÌÅÍ ¹öÆÛ ±æÀÌ°¡ 0ÀÌ¸é
+		// 1. ë°ì´í„° ë²„í¼ ê¸¸ì´ê°€ 0ì´ë©´
 		/////////////////////////////////////////////
 		if (strlen(dataBuffer) == 0)
 		{
 			//CONSOLE_LOG("\t if (strlen(dataBuffer) == 0) \n");
 		}
 		/////////////////////////////////////////////
-		// 2. µ¥ÀÌÅÍ ¹öÆÛ ±æÀÌ°¡ 4¹Ì¸¸ÀÌ¸é
+		// 2. ë°ì´í„° ë²„í¼ ê¸¸ì´ê°€ 4ë¯¸ë§Œì´ë©´
 		/////////////////////////////////////////////
 		else if (strlen(dataBuffer) < 4)
 		{
 			//CONSOLE_LOG("\t if (strlen(dataBuffer) < 4): %d \n", (int)strlen(dataBuffer));
 
-			// dataBufferÀÇ ³²Àº µ¥ÀÌÅÍ¸¦ newBuffer¿¡ º¹»çÇÕ´Ï´Ù.
+			// dataBufferì˜ ë‚¨ì€ ë°ì´í„°ë¥¼ newBufferì— ë³µì‚¬í•©ë‹ˆë‹¤.
 			char* newBuffer = new char[MAX_BUFFER + 1];
 			CopyMemory(newBuffer, &dataBuffer, strlen(dataBuffer));
 			newBuffer[strlen(dataBuffer)] = '\0';
 
-			// ´Ù½Ã µ¦ ¾ÕºÎºĞ¿¡ ÀûÀçÇÕ´Ï´Ù.
+			// ë‹¤ì‹œ ë± ì•ë¶€ë¶„ì— ì ì¬í•©ë‹ˆë‹¤.
 			recvDeque->push_front(newBuffer);
 		}
 		/////////////////////////////////////////////
-		// 3. µ¥ÀÌÅÍ ¹öÆÛ ±æÀÌ°¡ 4ÀÌ»ó MAX_BUFFER + 1 ¹Ì¸¸ÀÌ¸é
+		// 3. ë°ì´í„° ë²„í¼ ê¸¸ì´ê°€ 4ì´ìƒ MAX_BUFFER + 1 ë¯¸ë§Œì´ë©´
 		/////////////////////////////////////////////
 		else if (strlen(dataBuffer) < MAX_BUFFER + 1)
 		{
@@ -702,25 +702,25 @@ void MainServer::IOThread()
 				//CONSOLE_LOG("\t idxOfStartInPacket: %d \n", idxOfStartInPacket);
 				//CONSOLE_LOG("\t lenOfDataBuffer: %d \n", lenOfDataBuffer);
 
-				// ³²Àº µ¥ÀÌÅÍ ¹öÆÛ ±æÀÌ°¡ 4ÀÌÇÏ¸é ¾ÆÁ÷ ÆĞÅ¶ÀÌ ÀüºÎ ¼ö½ÅµÇÁö ¾ÊÀº°ÍÀÌ¹Ç·Î
+				// ë‚¨ì€ ë°ì´í„° ë²„í¼ ê¸¸ì´ê°€ 4ì´í•˜ë©´ ì•„ì§ íŒ¨í‚·ì´ ì „ë¶€ ìˆ˜ì‹ ë˜ì§€ ì•Šì€ê²ƒì´ë¯€ë¡œ
 				if ((lenOfDataBuffer - idxOfStartInPacket) < 4)
 				{
 					//CONSOLE_LOG("\t if (lenOfDataBuffer - idxOfStartInPacket < 4): %d \n", lenOfDataBuffer - idxOfStartInPacket);
 
-					// dataBufferÀÇ ³²Àº µ¥ÀÌÅÍ¸¦ remainingBuffer¿¡ º¹»çÇÕ´Ï´Ù.
+					// dataBufferì˜ ë‚¨ì€ ë°ì´í„°ë¥¼ remainingBufferì— ë³µì‚¬í•©ë‹ˆë‹¤.
 					char* newBuffer = new char[MAX_BUFFER + 1];
 					CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
 					newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-					// ´Ù½Ã µ¦ ¾ÕºÎºĞ¿¡ ÀûÀçÇÕ´Ï´Ù.
+					// ë‹¤ì‹œ ë± ì•ë¶€ë¶„ì— ì ì¬í•©ë‹ˆë‹¤.
 					recvDeque->push_front(newBuffer);
 
-					// ¹İº¹¹®À» Á¾·áÇÕ´Ï´Ù.
+					// ë°˜ë³µë¬¸ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.
 					break;
 				}
 
 				char sizeBuffer[5]; // [1234\0]
-				CopyMemory(sizeBuffer, &dataBuffer[idxOfStartInPacket], 4); // ¾Õ 4ÀÚ¸® µ¥ÀÌÅÍ¸¸ sizeBuffer¿¡ º¹»çÇÕ´Ï´Ù.
+				CopyMemory(sizeBuffer, &dataBuffer[idxOfStartInPacket], 4); // ì• 4ìë¦¬ ë°ì´í„°ë§Œ sizeBufferì— ë³µì‚¬í•©ë‹ˆë‹¤.
 				sizeBuffer[4] = '\0';
 
 				stringstream sizeStream;
@@ -731,24 +731,24 @@ void MainServer::IOThread()
 				//CONSOLE_LOG("\t sizeOfPacket: %d \n", sizeOfPacket);
 				//CONSOLE_LOG("\t strlen(&dataBuffer[idxOfStartInPacket]): %d \n", (int)strlen(&dataBuffer[idxOfStartInPacket]));
 
-				// ÇÊ¿äÇÑ µ¥ÀÌÅÍ »çÀÌÁî°¡ ¹öÆÛ¿¡ ³²Àº µ¥ÀÌÅÍ »çÀÌÁîº¸´Ù Å©¸é ¾ÆÁ÷ ÆĞÅ¶ÀÌ ÀüºÎ ¼ö½ÅµÇÁö ¾ÊÀº°ÍÀÌ¹Ç·Î
+				// í•„ìš”í•œ ë°ì´í„° ì‚¬ì´ì¦ˆê°€ ë²„í¼ì— ë‚¨ì€ ë°ì´í„° ì‚¬ì´ì¦ˆë³´ë‹¤ í¬ë©´ ì•„ì§ íŒ¨í‚·ì´ ì „ë¶€ ìˆ˜ì‹ ë˜ì§€ ì•Šì€ê²ƒì´ë¯€ë¡œ
 				if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket]))
 				{
 					//CONSOLE_LOG("\t if (sizeOfPacket > strlen(&dataBuffer[idxOfStartInPacket])) \n");
 
-					// dataBufferÀÇ ³²Àº µ¥ÀÌÅÍ¸¦ remainingBuffer¿¡ º¹»çÇÕ´Ï´Ù.
+					// dataBufferì˜ ë‚¨ì€ ë°ì´í„°ë¥¼ remainingBufferì— ë³µì‚¬í•©ë‹ˆë‹¤.
 					char* newBuffer = new char[MAX_BUFFER + 1];
 					CopyMemory(newBuffer, &dataBuffer[idxOfStartInPacket], strlen(&dataBuffer[idxOfStartInPacket]));
 					newBuffer[strlen(&dataBuffer[idxOfStartInPacket])] = '\0';
 
-					// ´Ù½Ã µ¦ ¾ÕºÎºĞ¿¡ ÀûÀçÇÕ´Ï´Ù.
+					// ë‹¤ì‹œ ë± ì•ë¶€ë¶„ì— ì ì¬í•©ë‹ˆë‹¤.
 					recvDeque->push_front(newBuffer);
 
-					// ¹İº¹¹®À» Á¾·áÇÕ´Ï´Ù.
+					// ë°˜ë³µë¬¸ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.
 					break;;
 				}
 
-				/// ¿À·ù È®ÀÎ
+				/// ì˜¤ë¥˜ í™•ì¸
 				if (sizeOfPacket <= 0)
 				{
 					CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n");
@@ -758,20 +758,20 @@ void MainServer::IOThread()
 					break;
 				}
 
-				// ÆĞÅ¶À» ÀÚ¸£¸é¼­ ÀÓ½Ã ¹öÆÛ¿¡ º¹»çÇÕ´Ï´Ù.
+				// íŒ¨í‚·ì„ ìë¥´ë©´ì„œ ì„ì‹œ ë²„í¼ì— ë³µì‚¬í•©ë‹ˆë‹¤.
 				char cutBuffer[MAX_BUFFER + 1];
 				CopyMemory(cutBuffer, &dataBuffer[idxOfStartInPacket], sizeOfPacket);
 				cutBuffer[sizeOfPacket] = '\0';
 
 
 				//////////////////////////////////////////////////
-				//// (ÀÓ½Ã) ÆĞÅ¶ »çÀÌÁî¿Í ½ÇÁ¦ ±æÀÌ °ËÁõ¿ë ÇÔ¼ö
+				//// (ì„ì‹œ) íŒ¨í‚· ì‚¬ì´ì¦ˆì™€ ì‹¤ì œ ê¸¸ì´ ê²€ì¦ìš© í•¨ìˆ˜
 				//////////////////////////////////////////////////
 				//VerifyPacket(cutBuffer, false);
 
 
 				///////////////////////////////////////////
-				// ÆĞÅ¶À» Ã³¸®ÇÕ´Ï´Ù.
+				// íŒ¨í‚·ì„ ì²˜ë¦¬í•©ë‹ˆë‹¤.
 				///////////////////////////////////////////
 				ProcessReceivedPacket(cutBuffer, socket);
 
@@ -779,7 +779,7 @@ void MainServer::IOThread()
 			}
 		}
 
-		// Å¬¶óÀÌ¾ğÆ® ´ë±â
+		// í´ë¼ì´ì–¸íŠ¸ ëŒ€ê¸°
 		Recv(socket, overlappedMsg);
 		continue;
 	}
@@ -792,7 +792,7 @@ void MainServer::CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg)
 
 
 	/////////////////////////////
-	// ¼ö½Å¿¡ »ç¿ëÇÏ·Á°í µ¿ÀûÇÒ´çÇÑ overlapped °´Ã¼¸¦ ¼Ò¸ê½ÃÅµ´Ï´Ù.
+	// ìˆ˜ì‹ ì— ì‚¬ìš©í•˜ë ¤ê³  ë™ì í• ë‹¹í•œ overlapped ê°ì²´ë¥¼ ì†Œë©¸ì‹œí‚µë‹ˆë‹¤.
 	/////////////////////////////
 	if (OverlappedMsg)
 	{
@@ -803,7 +803,7 @@ void MainServer::CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg)
 
 
 	/////////////////////////////
-	// ¼ÒÄÏ À¯È¿¼º °ËÁõ
+	// ì†Œì¼“ ìœ íš¨ì„± ê²€ì¦
 	/////////////////////////////
 	EnterCriticalSection(&csClients);
 	if (Clients.find(Socket) != Clients.end())
@@ -811,7 +811,7 @@ void MainServer::CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg)
 		SOCKET sk = Clients.at(Socket)->socket;
 		if (sk != NULL && sk != INVALID_SOCKET)
 		{
-			closesocket(sk); // ¼ÒÄÏ ´İ±â
+			closesocket(sk); // ì†Œì¼“ ë‹«ê¸°
 			Clients.at(Socket)->socket = NULL;
 		}
 
@@ -827,7 +827,7 @@ void MainServer::CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg)
 
 
 	///////////////////////////
-	// MapOfRecvDeque¿¡¼­ Á¦°Å
+	// MapOfRecvDequeì—ì„œ ì œê±°
 	///////////////////////////
 	EnterCriticalSection(&csMapOfRecvDeque);
 	if (MapOfRecvDeque.find(Socket) != MapOfRecvDeque.end())
@@ -869,7 +869,7 @@ void MainServer::CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg)
 
 
 	///////////////////////////
-	// ÇØ´ç Å¬¶óÀÌ¾ğÆ®ÀÇ ³×Æ®¿öÅ© Á¢¼Ó Á¾·á¸¦ ´Ù¸¥ Å¬¶óÀÌ¾ğÆ®µé¿¡°Ô ¾Ë·ÁÁİ´Ï´Ù.
+	// í•´ë‹¹ í´ë¼ì´ì–¸íŠ¸ì˜ ë„¤íŠ¸ì›Œí¬ ì ‘ì† ì¢…ë£Œë¥¼ ë‹¤ë¥¸ í´ë¼ì´ì–¸íŠ¸ë“¤ì—ê²Œ ì•Œë ¤ì¤ë‹ˆë‹¤.
 	///////////////////////////
 	//temp.str("");
 	stringstream temp;
@@ -878,16 +878,16 @@ void MainServer::CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg)
 
 
 	///////////////////////////
-	// InfoOfClients¿¡¼­ Á¦°Å
+	// InfoOfClientsì—ì„œ ì œê±°
 	///////////////////////////
 	SOCKET leaderSocket = 0;
-	/// ¾Æ·¡ÀÇ InfoOfGames¿¡¼­ Á¦°Å¿¡¼­ »ç¿ëÇÒ leaderSocketByMainServer¸¦ È¹µæÇÕ´Ï´Ù.
+	/// ì•„ë˜ì˜ InfoOfGamesì—ì„œ ì œê±°ì—ì„œ ì‚¬ìš©í•  leaderSocketByMainServerë¥¼ íšë“í•©ë‹ˆë‹¤.
 	EnterCriticalSection(&csInfoOfClients);
 	if (InfoOfClients.find(Socket) != InfoOfClients.end())
 	{
 		leaderSocket = (SOCKET)InfoOfClients.at(Socket).LeaderSocketByMainServer;
 
-		/// ³×Æ®¿öÅ© ¿¬°áÀ» Á¾·áÇÑ Å¬¶óÀÌ¾ğÆ®ÀÇ Á¤º¸¸¦ Á¦°ÅÇÕ´Ï´Ù.
+		/// ë„¤íŠ¸ì›Œí¬ ì—°ê²°ì„ ì¢…ë£Œí•œ í´ë¼ì´ì–¸íŠ¸ì˜ ì •ë³´ë¥¼ ì œê±°í•©ë‹ˆë‹¤.
 		CONSOLE_LOG("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
 		InfoOfClients.erase(Socket);
 		CONSOLE_LOG("\t InfoOfClients.size(): %d\n", (int)InfoOfClients.size());
@@ -900,10 +900,10 @@ void MainServer::CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg)
 
 
 	///////////////////////////
-	// InfoOfGames¿¡¼­ Á¦°Å
+	// InfoOfGamesì—ì„œ ì œê±°
 	///////////////////////////
 	EnterCriticalSection(&csInfoOfGames);
-	/// ³×Æ®¿öÅ© ¿¬°áÀ» Á¾·áÇÑ Å¬¶óÀÌ¾ğÆ®°¡ »ı¼ºÇÑ °ÔÀÓ¹æÀ» Á¦°ÅÇÕ´Ï´Ù.
+	/// ë„¤íŠ¸ì›Œí¬ ì—°ê²°ì„ ì¢…ë£Œí•œ í´ë¼ì´ì–¸íŠ¸ê°€ ìƒì„±í•œ ê²Œì„ë°©ì„ ì œê±°í•©ë‹ˆë‹¤.
 	if (InfoOfGames.find(Socket) != InfoOfGames.end())
 	{
 		CONSOLE_LOG("\t InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
@@ -915,7 +915,7 @@ void MainServer::CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg)
 		CONSOLE_LOG("[Error] <MainServer::CloseSocket(...)> InfoOfGames can't find Socket\n");
 	}
 
-	/// ³×Æ®¿öÅ© ¿¬°áÀ» Á¾·áÇÑ Å¬¶óÀÌ¾ğÆ®°¡ ¼Ò¼ÓµÈ °ÔÀÓ¹æÀ» Ã£¾Æ¼­ Players¿¡¼­ Á¦°ÅÇÕ´Ï´Ù.
+	/// ë„¤íŠ¸ì›Œí¬ ì—°ê²°ì„ ì¢…ë£Œí•œ í´ë¼ì´ì–¸íŠ¸ê°€ ì†Œì†ëœ ê²Œì„ë°©ì„ ì°¾ì•„ì„œ Playersì—ì„œ ì œê±°í•©ë‹ˆë‹¤.
 	if (InfoOfGames.find(leaderSocket) != InfoOfGames.end())
 		InfoOfGames.at(leaderSocket).Players.Remove((int)Socket);
 	LeaveCriticalSection(&csInfoOfGames);
@@ -930,7 +930,7 @@ void MainServer::CloseServer()
 	//tsqDiedPioneer.clear();
 
 
-	// ¼­¹ö Á¾·á
+	// ì„œë²„ ì¢…ë£Œ
 	EnterCriticalSection(&csAccept);
 	if (!bAccept)
 	{
@@ -943,7 +943,7 @@ void MainServer::CloseServer()
 	CONSOLE_LOG("[START] <MainServer::CloseServer()> \n");
 
 
-	// ¼­¹ö ¸®½¼ ¼ÒÄÏ ´İ±â
+	// ì„œë²„ ë¦¬ìŠ¨ ì†Œì¼“ ë‹«ê¸°
 	if (ListenSocket != NULL && ListenSocket != INVALID_SOCKET)
 	{
 		closesocket(ListenSocket);
@@ -953,13 +953,13 @@ void MainServer::CloseServer()
 	}
 
 	////////////////////////////////////////////////////////////////////////
-	// Accept ½º·¹µå Á¾·á È®ÀÎ
+	// Accept ìŠ¤ë ˆë“œ ì¢…ë£Œ í™•ì¸
 	////////////////////////////////////////////////////////////////////////
 	if (hAcceptThreadHandle != NULL && hAcceptThreadHandle != INVALID_HANDLE_VALUE)
 	{
 		DWORD result = WaitForSingleObject(hAcceptThreadHandle, INFINITE);
 
-		// hAcceptThreadHandleÀÌ signalÀÌ¸é
+		// hAcceptThreadHandleì´ signalì´ë©´
 		if (result == WAIT_OBJECT_0)
 		{
 			CloseHandle(hAcceptThreadHandle);
@@ -975,7 +975,7 @@ void MainServer::CloseServer()
 	}
 
 
-	// ¸ğµç Å¬¶óÀÌ¾ğÆ® ¼ÒÄÏ ´İ±â
+	// ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ ì†Œì¼“ ë‹«ê¸°
 	EnterCriticalSection(&csClients);
 	for (auto& kvp : Clients)
 	{
@@ -985,7 +985,7 @@ void MainServer::CloseServer()
 		SOCKET sk = kvp.second->socket;
 		if (sk != NULL && sk != INVALID_SOCKET)
 		{
-			closesocket(sk); // ¼ÒÄÏ ´İ±â
+			closesocket(sk); // ì†Œì¼“ ë‹«ê¸°
 			kvp.second->socket = NULL;
 		}
 	}
@@ -993,7 +993,7 @@ void MainServer::CloseServer()
 
 
 	////////////////////////////////////////////////////////////////////////
-	// ¸ğµç WSASend°¡ GetQueuedCompletionStatus¿¡ ÀÇÇØ ¿Ï·áÃ³¸® µÇ¾ú´ÂÁö È®ÀÎ
+	// ëª¨ë“  WSASendê°€ GetQueuedCompletionStatusì— ì˜í•´ ì™„ë£Œì²˜ë¦¬ ë˜ì—ˆëŠ”ì§€ í™•ì¸
 	////////////////////////////////////////////////////////////////////////
 	while (true)
 	{
@@ -1018,7 +1018,7 @@ void MainServer::CloseServer()
 
 
 	////////////////////////////////////////////////////////////////////////
-	// IO ½º·¹µåµéÀ» °­Á¦ Á¾·áÇÏµµ·Ï ÇÑ´Ù. 
+	// IO ìŠ¤ë ˆë“œë“¤ì„ ê°•ì œ ì¢…ë£Œí•˜ë„ë¡ í•œë‹¤. 
 	////////////////////////////////////////////////////////////////////////
 	for (DWORD i = 0; i < nIOThreadCnt; i++)
 	{
@@ -1028,13 +1028,13 @@ void MainServer::CloseServer()
 	}
 	if (nIOThreadCnt > 0)
 	{
-		// ¸ğµç ½º·¹µå°¡ ½ÇÇàÀ» ÁßÁöÇß´ÂÁö È®ÀÎÇÑ´Ù.
+		// ëª¨ë“  ìŠ¤ë ˆë“œê°€ ì‹¤í–‰ì„ ì¤‘ì§€í–ˆëŠ”ì§€ í™•ì¸í•œë‹¤.
 		DWORD result = WaitForMultipleObjects(nIOThreadCnt, hIOThreadHandle, true, INFINITE);
 
-		// ¸ğµç ½º·¹µå°¡ ÁßÁöµÇ¾ú´Ù¸é == ±â´Ù¸®´ø ¸ğµç EventµéÀÌ signalÀÌ µÈ °æ¿ì
+		// ëª¨ë“  ìŠ¤ë ˆë“œê°€ ì¤‘ì§€ë˜ì—ˆë‹¤ë©´ == ê¸°ë‹¤ë¦¬ë˜ ëª¨ë“  Eventë“¤ì´ signalì´ ëœ ê²½ìš°
 		if (result == WAIT_OBJECT_0)
 		{
-			for (DWORD i = 0; i < nIOThreadCnt; i++) // ½º·¹µå ÇÚµéÀ» ¸ğµÎ ´İ´Â´Ù.
+			for (DWORD i = 0; i < nIOThreadCnt; i++) // ìŠ¤ë ˆë“œ í•¸ë“¤ì„ ëª¨ë‘ ë‹«ëŠ”ë‹¤.
 			{
 				if (hIOThreadHandle[i] != INVALID_HANDLE_VALUE)
 				{
@@ -1058,7 +1058,7 @@ void MainServer::CloseServer()
 
 		CONSOLE_LOG("\t nIOThreadCnt: %d\n", (int)nIOThreadCnt);
 	}
-	// IO½º·¹µå ÇÚµé ÇÒ´çÇØÁ¦
+	// IOìŠ¤ë ˆë“œ í•¸ë“¤ í• ë‹¹í•´ì œ
 	if (hIOThreadHandle)
 	{
 		delete[] hIOThreadHandle;
@@ -1068,7 +1068,7 @@ void MainServer::CloseServer()
 	}
 
 
-	// ¸ğµç Å¬¶óÀÌ¾ğÆ®ÀÇ stCompletionKey µ¿ÀûÇÒ´ç ÇØÁ¦
+	// ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì˜ stCompletionKey ë™ì í• ë‹¹ í•´ì œ
 	EnterCriticalSection(&csClients);
 	for (auto& kvp : Clients)
 	{
@@ -1084,7 +1084,7 @@ void MainServer::CloseServer()
 	LeaveCriticalSection(&csClients);
 
 
-	// IOCP¸¦ Á¦°ÅÇÑ´Ù.  
+	// IOCPë¥¼ ì œê±°í•œë‹¤.  
 	if (hIOCP)
 	{
 		CloseHandle(hIOCP);
@@ -1094,17 +1094,17 @@ void MainServer::CloseServer()
 	}
 
 
-	// winsock ¶óÀÌºê·¯¸®¸¦ ÇØÁ¦ÇÑ´Ù.
+	// winsock ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ í•´ì œí•œë‹¤.
 	WSACleanup();
 
 
-	// µ¦¿¡ ³²¾ÆÀÖ´Â ¼ö½ÅÇÑ µ¥ÀÌÅÍ¸¦ ÀüºÎ ÇØÁ¦
+	// ë±ì— ë‚¨ì•„ìˆëŠ” ìˆ˜ì‹ í•œ ë°ì´í„°ë¥¼ ì „ë¶€ í•´ì œ
 	EnterCriticalSection(&csMapOfRecvDeque);
 	for (auto& kvp : MapOfRecvDeque)
 	{
 		if (kvp.second)
 		{
-			// µ¿ÀûÇÒ´çÇÑ char* newBuffer = new char[MAX_BUFFER + 1];¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+			// ë™ì í• ë‹¹í•œ char* newBuffer = new char[MAX_BUFFER + 1];ë¥¼ í•´ì œí•©ë‹ˆë‹¤.
 			while (kvp.second->empty() == false)
 			{
 				if (kvp.second->front())
@@ -1117,7 +1117,7 @@ void MainServer::CloseServer()
 				}
 			}
 
-			// µ¿ÀûÇÒ´çÇÑ deque<char*>* recvDeque = new deque<char*>();¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+			// ë™ì í• ë‹¹í•œ deque<char*>* recvDeque = new deque<char*>();ë¥¼ í•´ì œí•©ë‹ˆë‹¤.
 			delete kvp.second;
 			kvp.second = nullptr;
 
@@ -1130,7 +1130,7 @@ void MainServer::CloseServer()
 
 	/*********************************************************************************/
 
-	//// InfoOfEnemies_Stat ÃÊ±âÈ­
+	//// InfoOfEnemies_Stat ì´ˆê¸°í™”
 	//EnterCriticalSection(&csInfoOfEnemies_Stat);
 	//InfoOfEnemies_Stat.clear();
 	//LeaveCriticalSection(&csInfoOfEnemies_Stat);
@@ -1145,12 +1145,12 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 	// https://moguwai.tistory.com/entry/Overlapped-IO?category=363471
 	// https://a292run.tistory.com/entry/%ED%8E%8C-WSASend
 	// https://docs.microsoft.com/ko-kr/windows/win32/api/winsock2/nf-winsock2-wsasend
-	// IOCP¿¡¼± WSASend(...)ÇÒ ¶§´Â ¹öÆÛ¸¦ À¯ÁöÇØ¾ß ÇÑ´Ù.
+	// IOCPì—ì„  WSASend(...)í•  ë•ŒëŠ” ë²„í¼ë¥¼ ìœ ì§€í•´ì•¼ í•œë‹¤.
 	// https://moguwai.tistory.com/entry/Overlapped-IO
 
 
 	/////////////////////////////
-	// ¼ÒÄÏ À¯È¿¼º °ËÁõ
+	// ì†Œì¼“ ìœ íš¨ì„± ê²€ì¦
 	/////////////////////////////
 	EnterCriticalSection(&csClients);
 	if (Clients.find(Socket) == Clients.end())
@@ -1164,7 +1164,7 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 	//CONSOLE_LOG("[START] <MainServer::Send(...)>\n");
 
 
-	/***** WSARecvÀÇ &(overlappedMsg->overlapped)¿Í Áßº¹µÇ¸é ¹®Á¦°¡ ¹ß»ıÇÏ¹Ç·Î »õ·Î µ¿ÀûÇÒ´çÇÏ¿© ÁßÃ¸µÇ°Ô ÇÏ´Â ¹öÀü : Start  *****/
+	/***** WSARecvì˜ &(overlappedMsg->overlapped)ì™€ ì¤‘ë³µë˜ë©´ ë¬¸ì œê°€ ë°œìƒí•˜ë¯€ë¡œ ìƒˆë¡œ ë™ì í• ë‹¹í•˜ì—¬ ì¤‘ì²©ë˜ê²Œ í•˜ëŠ” ë²„ì „ : Start  *****/
 	stringstream finalStream;
 	if (AddSizeInStream(SendStream, finalStream) == false)
 	{
@@ -1177,7 +1177,7 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 	stOverlappedMsg* overlappedMsg = new stOverlappedMsg();
 
 	memset(&(overlappedMsg->overlapped), 0, sizeof(OVERLAPPED));
-	overlappedMsg->overlapped.hEvent = NULL; // IOCP¿¡¼­´Â overlapped.hEvent¸¦ ²À NULL·Î ÇØÁà¾ß ÇÑ´Ù°í ÇÕ´Ï´Ù.
+	overlappedMsg->overlapped.hEvent = NULL; // IOCPì—ì„œëŠ” overlapped.hEventë¥¼ ê¼­ NULLë¡œ í•´ì¤˜ì•¼ í•œë‹¤ê³  í•©ë‹ˆë‹¤.
 	CopyMemory(overlappedMsg->messageBuffer, (CHAR*)finalStream.str().c_str(), finalStream.str().length());
 	overlappedMsg->messageBuffer[finalStream.str().length()] = '\0';
 	overlappedMsg->dataBuf.len = finalStream.str().length();
@@ -1189,19 +1189,19 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 
 
 	//////////////////////////////////////////////////
-	//// (ÀÓ½Ã) ÆĞÅ¶ »çÀÌÁî¿Í ½ÇÁ¦ ±æÀÌ °ËÁõ¿ë ÇÔ¼ö
+	//// (ì„ì‹œ) íŒ¨í‚· ì‚¬ì´ì¦ˆì™€ ì‹¤ì œ ê¸¸ì´ ê²€ì¦ìš© í•¨ìˆ˜
 	//////////////////////////////////////////////////
 	//VerifyPacket(overlappedMsg->messageBuffer, true);
 
 
 	int nResult = WSASend(
-		Socket, // s: ¿¬°á ¼ÒÄÏÀ» °¡¸®Å°´Â ¼ÒÄÏ ÁöÁ¤ ¹øÈ£
-		&(overlappedMsg->dataBuf), // lpBuffers: WSABUF(:4300)±¸Á¶Ã¼ ¹è¿­ÀÇ Æ÷ÀÎÅÍ·Î °¢°¢ÀÇ WSABUF ±¸Á¶Ã¼´Â ¹öÆÛ¿Í ¹öÆÛÀÇ Å©±â¸¦ °¡¸®Å²´Ù.
-		1, // dwBufferCount: lpBuffers¿¡ ÀÖ´Â WSABUF(:4300)±¸Á¶Ã¼ÀÇ °³¼ö
-		NULL, // lpNumberOfBytesSent: ÇÔ¼öÀÇ È£Ãâ·Î Àü¼ÛµÈ µ¥ÀÌÅÍÀÇ ¹ÙÀÌÆ® Å©±â¸¦ ³Ñ°ÜÁØ´Ù. ¸¸¾à ¸Å°³ º¯¼ö lpOverlapped°¡ NULLÀÌ ¾Æ´Ï¶ó¸é, ÀÌ ¸Å°³ º¯¼öÀÇ °ªÀº NULL·Î ÇØ¾ß ÇÑ´Ù. ±×·¡¾ß (ÀáÀçÀûÀÎ)Àß¸øµÈ ¹İÈ¯À» ÇÇÇÒ ¼ö ÀÖ´Ù.
-		dwFlags,// dwFlags: WSASend ÇÔ¼ö¸¦ ¾î¶² ¹æ½ÄÀ¸·Î È£Ãâ ÇÒ°ÍÀÎÁö¸¦ ÁöÁ¤ÇÑ´Ù.
-		&(overlappedMsg->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)±¸Á¶Ã¼ÀÇ Æ÷ÀÎÅÍ´Ù. ºñ (overlapped)ÁßÃ¸ ¼ÒÄÏ¿¡¼­´Â ¹«½ÃµÈ´Ù.
-		NULL // lpCompletionRoutine: µ¥ÀÌÅÍ Àü¼ÛÀÌ ¿Ï·á µÇ¾úÀ» ¶§ È£ÃâÇÒ ¿Ï·á ·çÆ¾ (completion routine)ÀÇ Æ÷ÀÎÅÍ. ºñ ÁßÃ¸ ¼ÒÄÏ¿¡¼­´Â ¹«½Ã µÈ´Ù.
+		Socket, // s: ì—°ê²° ì†Œì¼“ì„ ê°€ë¦¬í‚¤ëŠ” ì†Œì¼“ ì§€ì • ë²ˆí˜¸
+		&(overlappedMsg->dataBuf), // lpBuffers: WSABUF(:4300)êµ¬ì¡°ì²´ ë°°ì—´ì˜ í¬ì¸í„°ë¡œ ê°ê°ì˜ WSABUF êµ¬ì¡°ì²´ëŠ” ë²„í¼ì™€ ë²„í¼ì˜ í¬ê¸°ë¥¼ ê°€ë¦¬í‚¨ë‹¤.
+		1, // dwBufferCount: lpBuffersì— ìˆëŠ” WSABUF(:4300)êµ¬ì¡°ì²´ì˜ ê°œìˆ˜
+		NULL, // lpNumberOfBytesSent: í•¨ìˆ˜ì˜ í˜¸ì¶œë¡œ ì „ì†¡ëœ ë°ì´í„°ì˜ ë°”ì´íŠ¸ í¬ê¸°ë¥¼ ë„˜ê²¨ì¤€ë‹¤. ë§Œì•½ ë§¤ê°œ ë³€ìˆ˜ lpOverlappedê°€ NULLì´ ì•„ë‹ˆë¼ë©´, ì´ ë§¤ê°œ ë³€ìˆ˜ì˜ ê°’ì€ NULLë¡œ í•´ì•¼ í•œë‹¤. ê·¸ë˜ì•¼ (ì ì¬ì ì¸)ì˜ëª»ëœ ë°˜í™˜ì„ í”¼í•  ìˆ˜ ìˆë‹¤.
+		dwFlags,// dwFlags: WSASend í•¨ìˆ˜ë¥¼ ì–´ë–¤ ë°©ì‹ìœ¼ë¡œ í˜¸ì¶œ í• ê²ƒì¸ì§€ë¥¼ ì§€ì •í•œë‹¤.
+		&(overlappedMsg->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)êµ¬ì¡°ì²´ì˜ í¬ì¸í„°ë‹¤. ë¹„ (overlapped)ì¤‘ì²© ì†Œì¼“ì—ì„œëŠ” ë¬´ì‹œëœë‹¤.
+		NULL // lpCompletionRoutine: ë°ì´í„° ì „ì†¡ì´ ì™„ë£Œ ë˜ì—ˆì„ ë•Œ í˜¸ì¶œí•  ì™„ë£Œ ë£¨í‹´ (completion routine)ì˜ í¬ì¸í„°. ë¹„ ì¤‘ì²© ì†Œì¼“ì—ì„œëŠ” ë¬´ì‹œ ëœë‹¤.
 	);
 
 	if (nResult == 0)
@@ -1218,7 +1218,7 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 		{
 			CONSOLE_LOG("[Error] <MainServer::Send(...)> Fail to WSASend(...) : %d \n", WSAGetLastError());
 
-			// ¼Û½Å¿¡ ½ÇÆĞÇÑ Å¬¶óÀÌ¾ğÆ®ÀÇ ¼ÒÄÏÀ» ´İ¾ÆÁİ´Ï´Ù.
+			// ì†¡ì‹ ì— ì‹¤íŒ¨í•œ í´ë¼ì´ì–¸íŠ¸ì˜ ì†Œì¼“ì„ ë‹«ì•„ì¤ë‹ˆë‹¤.
 			CloseSocket(Socket, overlappedMsg);
 		}
 		else
@@ -1230,7 +1230,7 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 			LeaveCriticalSection(&csCountOfSend);
 		}
 	}
-	/***** WSARecvÀÇ &(overlappedMsg->overlapped)¿Í Áßº¹µÇ¸é ¹®Á¦°¡ ¹ß»ıÇÏ¹Ç·Î »õ·Î µ¿ÀûÇÒ´çÇÏ¿© ÁßÃ¸µÇ°Ô ÇÏ´Â ¹öÀü : End  *****/
+	/***** WSARecvì˜ &(overlappedMsg->overlapped)ì™€ ì¤‘ë³µë˜ë©´ ë¬¸ì œê°€ ë°œìƒí•˜ë¯€ë¡œ ìƒˆë¡œ ë™ì í• ë‹¹í•˜ì—¬ ì¤‘ì²©ë˜ê²Œ í•˜ëŠ” ë²„ì „ : End  *****/
 
 
 	//CONSOLE_LOG("[End] <MainServer::Send(...)>\n");
@@ -1239,7 +1239,7 @@ void MainServer::Send(stringstream & SendStream, SOCKET Socket)
 void MainServer::Recv(SOCKET Socket, stOverlappedMsg * ReceivedOverlappedMsg)
 {
 	/////////////////////////////
-	// ¼ÒÄÏ À¯È¿¼º °ËÁõ
+	// ì†Œì¼“ ìœ íš¨ì„± ê²€ì¦
 	/////////////////////////////
 	EnterCriticalSection(&csClients);
 	if (Clients.find(Socket) == Clients.end())
@@ -1255,16 +1255,16 @@ void MainServer::Recv(SOCKET Socket, stOverlappedMsg * ReceivedOverlappedMsg)
 	// DWORD sendBytes;
 	DWORD dwFlags = 0;
 
-	// stSOCKETINFO µ¥ÀÌÅÍ ÃÊ±âÈ­
+	// stSOCKETINFO ë°ì´í„° ì´ˆê¸°í™”
 	ZeroMemory(&(ReceivedOverlappedMsg->overlapped), sizeof(OVERLAPPED));
-	ReceivedOverlappedMsg->overlapped.hEvent = NULL; // IOCP¿¡¼­´Â overlapped.hEvent¸¦ ²À NULL·Î ÇØÁà¾ß ÇÑ´Ù°í ÇÕ´Ï´Ù.
+	ReceivedOverlappedMsg->overlapped.hEvent = NULL; // IOCPì—ì„œëŠ” overlapped.hEventë¥¼ ê¼­ NULLë¡œ í•´ì¤˜ì•¼ í•œë‹¤ê³  í•©ë‹ˆë‹¤.
 	ZeroMemory(ReceivedOverlappedMsg->messageBuffer, MAX_BUFFER);
 	ReceivedOverlappedMsg->dataBuf.len = MAX_BUFFER;
 	ReceivedOverlappedMsg->dataBuf.buf = ReceivedOverlappedMsg->messageBuffer;
 	ReceivedOverlappedMsg->recvBytes = 0;
 	ReceivedOverlappedMsg->sendBytes = 0;
 
-	// Å¬¶óÀÌ¾ğÆ®·ÎºÎÅÍ ´Ù½Ã ÀÀ´äÀ» ¹Ş±â À§ÇØ WSARecv ¸¦ È£ÃâÇØÁÜ
+	// í´ë¼ì´ì–¸íŠ¸ë¡œë¶€í„° ë‹¤ì‹œ ì‘ë‹µì„ ë°›ê¸° ìœ„í•´ WSARecv ë¥¼ í˜¸ì¶œí•´ì¤Œ
 	int nResult = WSARecv(
 		Socket,
 		&(ReceivedOverlappedMsg->dataBuf),
@@ -1292,7 +1292,7 @@ void MainServer::Recv(SOCKET Socket, stOverlappedMsg * ReceivedOverlappedMsg)
 
 
 ///////////////////////////////////////////
-// stringstreamÀÇ ¸Ç ¾Õ¿¡ size¸¦ Ãß°¡
+// stringstreamì˜ ë§¨ ì•ì— sizeë¥¼ ì¶”ê°€
 ///////////////////////////////////////////
 bool MainServer::AddSizeInStream(stringstream & DataStream, stringstream & FinalStream)
 {
@@ -1306,23 +1306,23 @@ bool MainServer::AddSizeInStream(stringstream & DataStream, stringstream & Final
 
 	//CONSOLE_LOG("[START] <AddSizeInStream(...)> \n");
 
-	//// ex) DateStreamÀÇ Å©±â : 98
+	//// ex) DateStreamì˜ í¬ê¸° : 98
 	//CONSOLE_LOG("\t DataStream size: %d\n", (int)DataStream.str().length());
 	//CONSOLE_LOG("\t DataStream: %s\n", DataStream.str().c_str());
 
 
-	// dataStreamLengthÀÇ Å©±â : 3 [98 ]
+	// dataStreamLengthì˜ í¬ê¸° : 3 [98 ]
 	stringstream dataStreamLength;
 	dataStreamLength << DataStream.str().length() << endl;
 
-	// lengthOfFinalStreamÀÇ Å©±â : 4 [101 ]
+	// lengthOfFinalStreamì˜ í¬ê¸° : 4 [101 ]
 	stringstream lengthOfFinalStream;
 	lengthOfFinalStream << (dataStreamLength.str().length() + DataStream.str().length()) << endl;
 
-	// FinalStreamÀÇ Å©±â : 102 [101 DataStream]
+	// FinalStreamì˜ í¬ê¸° : 102 [101 DataStream]
 	int sizeOfFinalStream = (int)(lengthOfFinalStream.str().length() + DataStream.str().length());
 	FinalStream << sizeOfFinalStream << endl;
-	FinalStream << DataStream.str(); // ÀÌ¹Ì DataStream.str() ¸¶Áö¸·¿¡ endl;¸¦ »ç¿ëÇßÀ¸¹Ç·Î ¿©±â¼± ´Ù½Ã »ç¿ëÇÏÁö ¾Ê½À´Ï´Ù.
+	FinalStream << DataStream.str(); // ì´ë¯¸ DataStream.str() ë§ˆì§€ë§‰ì— endl;ë¥¼ ì‚¬ìš©í–ˆìœ¼ë¯€ë¡œ ì—¬ê¸°ì„  ë‹¤ì‹œ ì‚¬ìš©í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 
 
 	//CONSOLE_LOG("\t FinalStream size: %d\n", (int)FinalStream.str().length());
@@ -1330,8 +1330,8 @@ bool MainServer::AddSizeInStream(stringstream & DataStream, stringstream & Final
 
 
 
-	// Àü¼ÛÇÒ µ¥ÀÌÅÍ°¡ ÃÖ´ë ¹öÆÛ Å©±âº¸´Ù Å©°Å³ª °°À¸¸é Àü¼Û ºÒ°¡´ÉÀ» ¾Ë¸³´Ï´Ù.
-	// messageBuffer[MAX_BUFFER];¿¡¼­ ¸¶Áö¸·¿¡ '\0'À» ³Ö¾îÁà¾ß µÇ±â ¶§¹®¿¡ MAX_BUFFER¿Í °°À»¶§µµ ¹«½ÃÇÕ´Ï´Ù.
+	// ì „ì†¡í•  ë°ì´í„°ê°€ ìµœëŒ€ ë²„í¼ í¬ê¸°ë³´ë‹¤ í¬ê±°ë‚˜ ê°™ìœ¼ë©´ ì „ì†¡ ë¶ˆê°€ëŠ¥ì„ ì•Œë¦½ë‹ˆë‹¤.
+	// messageBuffer[MAX_BUFFER];ì—ì„œ ë§ˆì§€ë§‰ì— '\0'ì„ ë„£ì–´ì¤˜ì•¼ ë˜ê¸° ë•Œë¬¸ì— MAX_BUFFERì™€ ê°™ì„ë•Œë„ ë¬´ì‹œí•©ë‹ˆë‹¤.
 	if (FinalStream.str().length() >= MAX_BUFFER)
 	{
 
@@ -1353,7 +1353,7 @@ bool MainServer::AddSizeInStream(stringstream & DataStream, stringstream & Final
 
 
 ///////////////////////////////////////////
-// ¼ÒÄÏ ¹öÆÛ Å©±â º¯°æ
+// ì†Œì¼“ ë²„í¼ í¬ê¸° ë³€ê²½
 ///////////////////////////////////////////
 void MainServer::SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
 {
@@ -1366,9 +1366,9 @@ void MainServer::SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
 	The send buffer size defined by the SO_SNDBUF option.
 	*/
 
-	/* °ËÁõ
+	/* ê²€ì¦
 	1048576B == 1024KB
-	TCP¿¡¼± send buffer¿Í recv buffer ¸ğµÎ 1048576 * 256±îÁö °¡´É.
+	TCPì—ì„  send bufferì™€ recv buffer ëª¨ë‘ 1048576 * 256ê¹Œì§€ ê°€ëŠ¥.
 	*/
 
 
@@ -1379,7 +1379,7 @@ void MainServer::SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
 	int optval;
 	int optlen = sizeof(optval);
 
-	// ¼º°ø½Ã 0, ½ÇÆĞ½Ã -1 ¹İÈ¯
+	// ì„±ê³µì‹œ 0, ì‹¤íŒ¨ì‹œ -1 ë°˜í™˜
 	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)& optval, &optlen) == 0)
 	{
 
@@ -1428,17 +1428,17 @@ void MainServer::SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf)
 
 
 ///////////////////////////////////////////
-// ¼ö½ÅÇÑ µ¥ÀÌÅÍ¸¦ ÀúÀåÇÏ´Â µ¦¿¡¼­ µ¥ÀÌÅÍ¸¦ È¹µæ
+// ìˆ˜ì‹ í•œ ë°ì´í„°ë¥¼ ì €ì¥í•˜ëŠ” ë±ì—ì„œ ë°ì´í„°ë¥¼ íšë“
 ///////////////////////////////////////////
 void MainServer::GetDataInRecvDeque(deque<char*> * RecvDeque, char* DataBuffer)
 {
 	int idxOfStartInQueue = 0;
 	int idxOfStartInNextQueue = 0;
 
-	// µ¦ÀÌ ºô ¶§±îÁö ÁøÇà (buffer°¡ ´Ù Â÷¸é ¹İº¹¹®À» ºüÁ®³ª¿É´Ï´Ù.)
+	// ë±ì´ ë¹Œ ë•Œê¹Œì§€ ì§„í–‰ (bufferê°€ ë‹¤ ì°¨ë©´ ë°˜ë³µë¬¸ì„ ë¹ ì ¸ë‚˜ì˜µë‹ˆë‹¤.)
 	while (RecvDeque->empty() == false)
 	{
-		// dataBuffer¸¦ Ã¤¿ì·Á°í ÇÏ´Â »çÀÌÁî°¡ ÃÖ´ë·Î MAX_BUFFER¸é CopyMemory °¡´É.
+		// dataBufferë¥¼ ì±„ìš°ë ¤ê³  í•˜ëŠ” ì‚¬ì´ì¦ˆê°€ ìµœëŒ€ë¡œ MAX_BUFFERë©´ CopyMemory ê°€ëŠ¥.
 		if ((idxOfStartInQueue + strlen(RecvDeque->front())) < MAX_BUFFER + 1)
 		{
 			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque->front(), strlen(RecvDeque->front()));
@@ -1451,18 +1451,18 @@ void MainServer::GetDataInRecvDeque(deque<char*> * RecvDeque, char* DataBuffer)
 		}
 		else
 		{
-			// ¹öÆÛ¿¡ ³²Àº ÀÚ¸® ¸¸Å­ ²Ë Ã¤¿ó´Ï´Ù.
+			// ë²„í¼ì— ë‚¨ì€ ìë¦¬ ë§Œí¼ ê½‰ ì±„ì›ë‹ˆë‹¤.
 			idxOfStartInNextQueue = MAX_BUFFER - idxOfStartInQueue;
 			CopyMemory(&DataBuffer[idxOfStartInQueue], RecvDeque->front(), idxOfStartInNextQueue);
 			DataBuffer[MAX_BUFFER] = '\0';
 
-			// dateBuffer¿¡ º¹»çÇÏ°í ³²Àº µ¥ÀÌÅÍµéÀ» ÀÓ½Ã ¹öÆÛ¿¡ º¹»çÇÕ´Ï´Ù. 
+			// dateBufferì— ë³µì‚¬í•˜ê³  ë‚¨ì€ ë°ì´í„°ë“¤ì„ ì„ì‹œ ë²„í¼ì— ë³µì‚¬í•©ë‹ˆë‹¤. 
 			int lenOfRestInNextQueue = (int)strlen(&RecvDeque->front()[idxOfStartInNextQueue]);
 			char tempBuffer[MAX_BUFFER + 1];
 			CopyMemory(tempBuffer, &RecvDeque->front()[idxOfStartInNextQueue], lenOfRestInNextQueue);
 			tempBuffer[lenOfRestInNextQueue] = '\0';
 
-			// ÀÓ½Ã ¹öÆÛ¿¡ ÀÖ´Â µ¥ÀÌÅÍµéÀ» ´Ù½Ã RecvDeque->front()¿¡ º¹»çÇÕ´Ï´Ù.
+			// ì„ì‹œ ë²„í¼ì— ìˆëŠ” ë°ì´í„°ë“¤ì„ ë‹¤ì‹œ RecvDeque->front()ì— ë³µì‚¬í•©ë‹ˆë‹¤.
 			CopyMemory(RecvDeque->front(), tempBuffer, strlen(tempBuffer));
 			RecvDeque->front()[strlen(tempBuffer)] = '\0';
 
@@ -1473,7 +1473,7 @@ void MainServer::GetDataInRecvDeque(deque<char*> * RecvDeque, char* DataBuffer)
 
 
 ///////////////////////////////////////////
-// ÆĞÅ¶À» Ã³¸®ÇÕ´Ï´Ù.
+// íŒ¨í‚·ì„ ì²˜ë¦¬í•©ë‹ˆë‹¤.
 ///////////////////////////////////////////
 void MainServer::ProcessReceivedPacket(char* DataBuffer, SOCKET Socket)
 {
@@ -1488,26 +1488,26 @@ void MainServer::ProcessReceivedPacket(char* DataBuffer, SOCKET Socket)
 	stringstream recvStream;
 	recvStream << DataBuffer;
 
-	// »çÀÌÁî È®ÀÎ
+	// ì‚¬ì´ì¦ˆ í™•ì¸
 	int sizeOfRecvStream = 0;
 	recvStream >> sizeOfRecvStream;
 	//CONSOLE_LOG("\t sizeOfRecvStream: %d \n", sizeOfRecvStream);
 
-	// ÆĞÅ¶ Á¾·ù È®ÀÎ
+	// íŒ¨í‚· ì¢…ë¥˜ í™•ì¸
 	int packetType = -1;
 	recvStream >> packetType;
 	//CONSOLE_LOG("\t packetType: %d \n", packetType);
 
-	// ÆĞÅ¶ Ã³¸® ÇÔ¼ö Æ÷ÀÎÅÍÀÎ FuncProcess¿¡ ¹ÙÀÎµùÇÑ PacketType¿¡ ¸Â´Â ÇÔ¼öµéÀ» ½ÇÇàÇÕ´Ï´Ù.
+	// íŒ¨í‚· ì²˜ë¦¬ í•¨ìˆ˜ í¬ì¸í„°ì¸ FuncProcessì— ë°”ì¸ë”©í•œ PacketTypeì— ë§ëŠ” í•¨ìˆ˜ë“¤ì„ ì‹¤í–‰í•©ë‹ˆë‹¤.
 	if (fnProcess[packetType].funcProcessPacket != nullptr)
 	{
-		// WSASend(...)¿¡¼­ ¿¡·¯¹ß»ı½Ã throw("error message");
+		// WSASend(...)ì—ì„œ ì—ëŸ¬ë°œìƒì‹œ throw("error message");
 		fnProcess[packetType].funcProcessPacket(recvStream, Socket);
 	}
 	else
 	{
 
-		CONSOLE_LOG("[Error] <MainServer::ProcessReceivedPacket()> Á¤ÀÇ µÇÁö ¾ÊÀº ÆĞÅ¶ : %d \n\n", packetType);
+		CONSOLE_LOG("[Error] <MainServer::ProcessReceivedPacket()> ì •ì˜ ë˜ì§€ ì•Šì€ íŒ¨í‚· : %d \n\n", packetType);
 		CONSOLE_LOG("[Error] <MainServer::ProcessReceivedPacket()> recvBuffer: %s \n", DataBuffer);
 
 	}
@@ -1515,7 +1515,7 @@ void MainServer::ProcessReceivedPacket(char* DataBuffer, SOCKET Socket)
 
 
 ////////////////////////////////////////////////
-// ´ë¿ë·® ÆĞÅ¶ ºĞÇÒ 
+// ëŒ€ìš©ëŸ‰ íŒ¨í‚· ë¶„í•  
 ////////////////////////////////////////////////
 template<typename T>
 void MainServer::DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPacketType PacketType, T& queue)
@@ -1526,13 +1526,13 @@ void MainServer::DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPack
 		temp << queue.front() << endl;
 		size_t total = SendStream.str().length() + 2 + temp.str().length();
 
-		// size¸¦ ³ÖÀ» °ø°£±îÁö »ı°¢ÇØ¼­ ÃÖ´ë Å©±â¸¦ ¹ş¾î³ª¸é
+		// sizeë¥¼ ë„£ì„ ê³µê°„ê¹Œì§€ ìƒê°í•´ì„œ ìµœëŒ€ í¬ê¸°ë¥¼ ë²—ì–´ë‚˜ë©´
 		if (total >= MAX_BUFFER - 5)
 		{
 			//CONSOLE_LOG("[Info] <cServerSocketInGame::DivideHugePacket(...)> if (total >= MAX_BUFFER) \n");
 			//CONSOLE_LOG("[Info] <cServerSocketInGame::DivideHugePacket(...)> total: %d \n", (int)total);
 
-			// ¸ÕÀú º¸³À´Ï´Ù.
+			// ë¨¼ì € ë³´ëƒ…ë‹ˆë‹¤.
 			Send(SendStream, Socket);
 
 			SendStream.str("");
@@ -1546,7 +1546,7 @@ void MainServer::DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPack
 
 
 //////////////////////////////////////////////////
-//// (ÀÓ½Ã) ÆĞÅ¶ »çÀÌÁî¿Í ½ÇÁ¦ ±æÀÌ °ËÁõ¿ë ÇÔ¼ö
+//// (ì„ì‹œ) íŒ¨í‚· ì‚¬ì´ì¦ˆì™€ ì‹¤ì œ ê¸¸ì´ ê²€ì¦ìš© í•¨ìˆ˜
 //////////////////////////////////////////////////
 //void MainServer::VerifyPacket(char* DataBuffer, bool send)
 //{
@@ -1575,7 +1575,7 @@ void MainServer::DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPack
 //	}
 //
 //	char sizeBuffer[5]; // [1234\0]
-//	CopyMemory(sizeBuffer, buffer, 4); // ¾Õ 4ÀÚ¸® µ¥ÀÌÅÍ¸¸ sizeBuffer¿¡ º¹»çÇÕ´Ï´Ù.
+//	CopyMemory(sizeBuffer, buffer, 4); // ì• 4ìë¦¬ ë°ì´í„°ë§Œ sizeBufferì— ë³µì‚¬í•©ë‹ˆë‹¤.
 //	sizeBuffer[4] = '\0';
 //
 //	stringstream sizeStream;
@@ -1591,7 +1591,7 @@ void MainServer::DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPack
 
 
 ////////////////////////
-// ¼­¹ö ±¸µ¿ È®ÀÎ
+// ì„œë²„ êµ¬ë™ í™•ì¸
 ////////////////////////
 bool MainServer::IsServerOn()
 {
@@ -1604,7 +1604,7 @@ bool MainServer::IsServerOn()
 
 
 /////////////////////////////////////
-// ÆĞÅ¶ Ã³¸® ÇÔ¼ö
+// íŒ¨í‚· ì²˜ë¦¬ í•¨ìˆ˜
 /////////////////////////////////////
 void MainServer::Broadcast(stringstream & SendStream)
 {
@@ -1642,7 +1642,7 @@ void MainServer::Login(stringstream & RecvStream, SOCKET Socket)
 	LeaveCriticalSection(&csClients);
 
 
-	/// ¼ö½Å
+	/// ìˆ˜ì‹ 
 	cInfoOfPlayer infoOfPlayer;
 	RecvStream >> infoOfPlayer;
 
@@ -1662,7 +1662,7 @@ void MainServer::Login(stringstream & RecvStream, SOCKET Socket)
 	infoOfPlayer.PrintInfo();
 
 
-	/// ¼Û½Å
+	/// ì†¡ì‹ 
 	stringstream sendStream;
 	sendStream << EPacketType::LOGIN << endl;
 	sendStream << infoOfPlayer << endl;
@@ -1678,7 +1678,7 @@ void MainServer::CreateGame(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Recv by %d] <MainServer::CreateGame(...)>\n", (int)Socket);
 
 
-	/// ¼ö½Å
+	/// ìˆ˜ì‹ 
 	cInfoOfGame infoOfGame;
 	RecvStream >> infoOfGame;
 
@@ -1699,10 +1699,10 @@ void MainServer::FindGames(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Recv by %d] <MainServer::FindGames(...)>\n", (int)Socket);
 
 
-	/// ¼ö½Å
+	/// ìˆ˜ì‹ 
 
 
-	/// ¼Û½Å
+	/// ì†¡ì‹ 
 	EnterCriticalSection(&csInfoOfGames);
 	stringstream sendStream;
 	sendStream << EPacketType::FIND_GAMES << endl;
@@ -1725,18 +1725,18 @@ void MainServer::JoinOnlineGame(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Recv by %d] <MainServer::JoinOnlineGame(...)>\n", (int)Socket);
 
 
-	/// ¼ö½Å
+	/// ìˆ˜ì‹ 
 	cInfoOfPlayer infoOfPlayer;
 
 	RecvStream >> infoOfPlayer;
 
 	SOCKET leaderSocket = (SOCKET)infoOfPlayer.LeaderSocketByMainServer;
 
-	// Å¬¶óÀÌ¾ğÆ® Á¤º¸ Àû¿ë
+	// í´ë¼ì´ì–¸íŠ¸ ì •ë³´ ì ìš©
 	EnterCriticalSection(&csInfoOfClients);
 	if (InfoOfClients.find(Socket) == InfoOfClients.end())
 	{
-		/// ¼ö½Å - ¿¡·¯
+		/// ìˆ˜ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::JoinOnlineGame(...)> if (InfoOfClients.find(Socket) == InfoOfClients.end()) \n");
 		LeaveCriticalSection(&csInfoOfClients);
 		return;
@@ -1745,14 +1745,14 @@ void MainServer::JoinOnlineGame(stringstream & RecvStream, SOCKET Socket)
 	infoOfPlayer = InfoOfClients.at(Socket);
 	LeaveCriticalSection(&csInfoOfClients);
 
-	// °ÔÀÓ¹æ Á¤º¸ Àû¿ë
+	// ê²Œì„ë°© ì •ë³´ ì ìš©
 	EnterCriticalSection(&csInfoOfGames);
 	if (InfoOfGames.find(leaderSocket) == InfoOfGames.end())
 	{
-		/// ¼ö½Å - ¿¡·¯
+		/// ìˆ˜ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::JoinOnlineGame(...)> if (InfoOfGames.find(leaderSocket) == InfoOfGames.end()) \n");
 
-		// °ÔÀÓ¹æÀÌ Á¾·áµÇ¾ú´Ù¸é DESTROY_WAITING_GAME¸¦ Àü¼Û
+		// ê²Œì„ë°©ì´ ì¢…ë£Œë˜ì—ˆë‹¤ë©´ DESTROY_WAITING_GAMEë¥¼ ì „ì†¡
 		stringstream sendStream;
 		sendStream << EPacketType::DESTROY_WAITING_GAME << endl;
 		Send(sendStream, Socket);
@@ -1767,7 +1767,7 @@ void MainServer::JoinOnlineGame(stringstream & RecvStream, SOCKET Socket)
 	infoOfGame.PrintInfo();
 
 
-	/// ¼Û½Å to ¹æÀå
+	/// ì†¡ì‹  to ë°©ì¥
 	stringstream sendStream;
 	sendStream << EPacketType::WAITING_GAME << endl;
 	sendStream << infoOfGame << endl;
@@ -1777,7 +1777,7 @@ void MainServer::JoinOnlineGame(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Send to %d] <MainServer::JoinOnlineGame(...)>\n", (int)leaderSocket);
 
 
-	/// ¼Û½Å to ´ë±â¹æÀÇ ÇÃ·¹ÀÌ¾îµé (ÇØ´ç Å¬¶óÀÌ¾ğÆ® Æ÷ÇÔ)
+	/// ì†¡ì‹  to ëŒ€ê¸°ë°©ì˜ í”Œë ˆì´ì–´ë“¤ (í•´ë‹¹ í´ë¼ì´ì–¸íŠ¸ í¬í•¨)
 	for (const auto& kvp : infoOfGame.Players.Players)
 	{
 		Send(sendStream, (SOCKET)kvp.first);
@@ -1795,18 +1795,18 @@ void MainServer::DestroyWaitingGame(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Recv by %d] <MainServer::DestroyWaitingGame(...)>\n", (int)Socket);
 
 
-	/// ¼ö½Å by ¹æÀå
+	/// ìˆ˜ì‹  by ë°©ì¥
 	cInfoOfPlayers players;
 
 	EnterCriticalSection(&csInfoOfClients);
 	if (InfoOfClients.find(Socket) == InfoOfClients.end())
 	{
-		/// ¼Û½Å - ¿¡·¯
+		/// ì†¡ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::DestroyWaitingGame(...)> if (InfoOfClients.find(Socket) == InfoOfClients.end()) \n");
 		LeaveCriticalSection(&csInfoOfClients);
 		return;
 	}
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	InfoOfClients.at(Socket).SocketByGameServer = 0;
 	InfoOfClients.at(Socket).PortOfGameServer = 0;
 	InfoOfClients.at(Socket).PortOfGameClient = 0;
@@ -1816,12 +1816,12 @@ void MainServer::DestroyWaitingGame(stringstream & RecvStream, SOCKET Socket)
 	EnterCriticalSection(&csInfoOfGames);
 	if (InfoOfGames.find(Socket) == InfoOfGames.end())
 	{
-		/// ¼Û½Å - ¿¡·¯
+		/// ì†¡ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::DestroyWaitingGame(...)> if (InfoOfGames.find(Socket) == InfoOfGames.end()) \n");
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
-	// °ÔÀÓ¹æ ÇÃ·¹ÀÌ¾îµé ÃÊ±âÈ­
+	// ê²Œì„ë°© í”Œë ˆì´ì–´ë“¤ ì´ˆê¸°í™”
 	players = InfoOfGames.at(Socket).Players;
 	for (auto& kvp : players.Players)
 	{
@@ -1837,14 +1837,14 @@ void MainServer::DestroyWaitingGame(stringstream & RecvStream, SOCKET Socket)
 		LeaveCriticalSection(&csInfoOfClients);
 	}
 
-	// °ÔÀÓ¹æ »èÁ¦
+	// ê²Œì„ë°© ì‚­ì œ
 	CONSOLE_LOG("\t InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
 	InfoOfGames.erase(Socket);
 	CONSOLE_LOG("\t InfoOfGames.size(): %d\n", (int)InfoOfGames.size());
 	LeaveCriticalSection(&csInfoOfGames);
 
 
-	/// ¼Û½Å to ÇÃ·¹ÀÌ¾îµé(¹æÀå Á¦¿Ü)
+	/// ì†¡ì‹  to í”Œë ˆì´ì–´ë“¤(ë°©ì¥ ì œì™¸)
 	stringstream sendStream;
 	sendStream << EPacketType::DESTROY_WAITING_GAME << endl;
 
@@ -1864,17 +1864,17 @@ void MainServer::ExitWaitingGame(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Recv by %d] <MainServer::ExitWaitingGame(...)>\n", (int)Socket);
 
 
-	/// ¼ö½Å
+	/// ìˆ˜ì‹ 
 	EnterCriticalSection(&csInfoOfClients);
 	if (InfoOfClients.find(Socket) == InfoOfClients.end())
 	{
-		/// ¼ö½Å - ¿¡·¯
+		/// ìˆ˜ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::ExitWaitingGame(...)> if (InfoOfClients.find(Socket) == InfoOfClients.end()) \n");
 		LeaveCriticalSection(&csInfoOfClients);
 		return;
 	}
 	SOCKET leaderSocket = (SOCKET)InfoOfClients.at(Socket).LeaderSocketByMainServer;
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	InfoOfClients.at(Socket).SocketByGameServer = 0;
 	InfoOfClients.at(Socket).PortOfGameServer = 0;
 	InfoOfClients.at(Socket).PortOfGameClient = 0;
@@ -1885,7 +1885,7 @@ void MainServer::ExitWaitingGame(stringstream & RecvStream, SOCKET Socket)
 	EnterCriticalSection(&csInfoOfGames);
 	if (InfoOfGames.find(leaderSocket) == InfoOfGames.end())
 	{
-		/// ¼ö½Å - ¿¡·¯
+		/// ìˆ˜ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::ExitWaitingGame(...)> if (InfoOfGames.find(leaderSocket) == InfoOfGames.end()) \n");
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
@@ -1900,7 +1900,7 @@ void MainServer::ExitWaitingGame(stringstream & RecvStream, SOCKET Socket)
 	infoOfGame.PrintInfo();
 
 
-	/// ¼Û½Å to ¹æÀå
+	/// ì†¡ì‹  to ë°©ì¥
 	stringstream sendStream;
 	sendStream << EPacketType::WAITING_GAME << endl;
 	sendStream << infoOfGame << endl;
@@ -1910,7 +1910,7 @@ void MainServer::ExitWaitingGame(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Send to %d] <MainServer::ExitWaitingGame(...)>\n", (int)leaderSocket);
 
 
-	/// ¼Û½Å to ´ë±â¹æÀÇ ÇÃ·¹ÀÌ¾îµé (ÇØ´ç Å¬¶óÀÌ¾ğÆ® Æ÷ÇÔ)
+	/// ì†¡ì‹  to ëŒ€ê¸°ë°©ì˜ í”Œë ˆì´ì–´ë“¤ (í•´ë‹¹ í´ë¼ì´ì–¸íŠ¸ í¬í•¨)
 	for (const auto& kvp : infoOfGame.Players.Players)
 	{
 		Send(sendStream, (SOCKET)kvp.first);
@@ -1928,31 +1928,31 @@ void MainServer::ModifyWaitingGame(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Recv by %d] <MainServer::ModifyWaitingGame(...)>\n", (int)Socket);
 
 
-	/// ¼ö½Å
+	/// ìˆ˜ì‹ 
 	cInfoOfGame infoOfGame;
 	RecvStream >> infoOfGame;
 
 	EnterCriticalSection(&csInfoOfGames);
 	if (InfoOfGames.find(Socket) == InfoOfGames.end())
 	{
-		/// ¼ö½Å - ¿¡·¯
+		/// ìˆ˜ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::ModifyWaitingGame(...)> if (InfoOfGames.find(Socket) == InfoOfGames.end()) \n");
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
-	// °ª ´ëÀÔ
+	// ê°’ ëŒ€ì…
 	InfoOfGames.at(Socket).Title = infoOfGame.Title;
 	InfoOfGames.at(Socket).Stage = infoOfGame.Stage;
 	InfoOfGames.at(Socket).nMax = infoOfGame.nMax;
 
-	// ¼Û½ÅÀ» À§ÇØ ´Ù½Ã º¹»ç
+	// ì†¡ì‹ ì„ ìœ„í•´ ë‹¤ì‹œ ë³µì‚¬
 	infoOfGame = InfoOfGames.at(Socket);
 	LeaveCriticalSection(&csInfoOfGames);
 
 	infoOfGame.PrintInfo();
 
 
-	/// ¼Û½Å to ÇÃ·¹ÀÌ¾îµé(¹æÀå Á¦¿Ü)
+	/// ì†¡ì‹  to í”Œë ˆì´ì–´ë“¤(ë°©ì¥ ì œì™¸)
 	stringstream sendStream;
 	sendStream << EPacketType::MODIFY_WAITING_GAME << endl;
 	sendStream << infoOfGame << endl;
@@ -1975,21 +1975,21 @@ void MainServer::StartWaitingGame(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Recv by %d] <MainServer::StartWaitingGame(...)>\n", (int)Socket);
 
 
-	/// ¼ö½Å
+	/// ìˆ˜ì‹ 
 	EnterCriticalSection(&csInfoOfGames);
 	if (InfoOfGames.find(Socket) == InfoOfGames.end())
 	{
-		/// ¼ö½Å - ¿¡·¯
+		/// ìˆ˜ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::StartWaitingGame(...)> if (InfoOfGames.find(Socket) == InfoOfGames.end()) \n");
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
-	// ¼Û½ÅÀ» À§ÇØ º¹»ç
+	// ì†¡ì‹ ì„ ìœ„í•´ ë³µì‚¬
 	cInfoOfGame infoOfGame = InfoOfGames.at(Socket);
 	LeaveCriticalSection(&csInfoOfGames);
 
 
-	/// ¼Û½Å to ÇÃ·¹ÀÌ¾îµé(¹æÀå Á¦¿Ü)
+	/// ì†¡ì‹  to í”Œë ˆì´ì–´ë“¤(ë°©ì¥ ì œì™¸)
 	stringstream sendStream;
 	sendStream << EPacketType::START_WAITING_GAME << endl;
 
@@ -2013,7 +2013,7 @@ void MainServer::ActivateGameServer(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Recv by %d] <MainServer::ActivateGameServer(...)>\n", (int)Socket);
 
 
-	/// ¼ö½Å
+	/// ìˆ˜ì‹ 
 	cInfoOfPlayer infoOfPlayer;
 
 	RecvStream >> infoOfPlayer;
@@ -2021,7 +2021,7 @@ void MainServer::ActivateGameServer(stringstream & RecvStream, SOCKET Socket)
 	EnterCriticalSection(&csInfoOfClients);
 	if (InfoOfClients.find(Socket) == InfoOfClients.end())
 	{
-		/// ¼ö½Å - ¿¡·¯
+		/// ìˆ˜ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::ActivateGameServer(...)> if (InfoOfClients.find(Socket) == InfoOfClients.end()) \n");
 		LeaveCriticalSection(&csInfoOfClients);
 		return;
@@ -2032,12 +2032,12 @@ void MainServer::ActivateGameServer(stringstream & RecvStream, SOCKET Socket)
 	EnterCriticalSection(&csInfoOfGames);
 	if (InfoOfGames.find(Socket) == InfoOfGames.end())
 	{
-		/// ¼ö½Å - ¿¡·¯
+		/// ìˆ˜ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::ActivateGameServer(...)> if (InfoOfGames.find(Socket) == InfoOfGames.end()) \n");
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
-	InfoOfGames.at(Socket).State = string("Playing");
+	InfoOfGames.at(Socket).State = "ì§„í–‰ì¤‘";
 	InfoOfGames.at(Socket).Leader.PortOfGameServer = infoOfPlayer.PortOfGameServer;
 	cInfoOfGame infoOfGame = InfoOfGames.at(Socket);
 	LeaveCriticalSection(&csInfoOfGames);
@@ -2045,7 +2045,7 @@ void MainServer::ActivateGameServer(stringstream & RecvStream, SOCKET Socket)
 	infoOfPlayer.PrintInfo();
 
 
-	/// ¼Û½Å to ¹æÀå
+	/// ì†¡ì‹  to ë°©ì¥
 	stringstream sendStream;
 	sendStream << EPacketType::WAITING_GAME << endl;
 	sendStream << infoOfGame << endl;
@@ -2055,7 +2055,7 @@ void MainServer::ActivateGameServer(stringstream & RecvStream, SOCKET Socket)
 	CONSOLE_LOG("[Send to %d] <MainServer::ActivateGameServer(...)>\n", (int)Socket);
 
 
-	/// ¼Û½Å to ´ë±â¹æÀÇ ÇÃ·¹ÀÌ¾îµé (ÇØ´ç Å¬¶óÀÌ¾ğÆ® Æ÷ÇÔ)
+	/// ì†¡ì‹  to ëŒ€ê¸°ë°©ì˜ í”Œë ˆì´ì–´ë“¤ (í•´ë‹¹ í´ë¼ì´ì–¸íŠ¸ í¬í•¨)
 	for (const auto& kvp : infoOfGame.Players.Players)
 	{
 		Send(sendStream, (SOCKET)kvp.first);
@@ -2072,11 +2072,11 @@ void MainServer::RequestInfoOfGameServer(stringstream & RecvStream, SOCKET Socke
 	CONSOLE_LOG("[Recv by %d] <MainServer::RequestInfoOfGameServer(...)>\n", (int)Socket);
 
 
-	/// ¼ö½Å
+	/// ìˆ˜ì‹ 
 	EnterCriticalSection(&csInfoOfClients);
 	if (InfoOfClients.find(Socket) == InfoOfClients.end())
 	{
-		/// ¼ö½Å - ¿¡·¯
+		/// ìˆ˜ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::RequestInfoOfGameServer(...)> if (InfoOfClients.find(Socket) == InfoOfClients.end()) \n");
 		LeaveCriticalSection(&csInfoOfClients);
 		return;
@@ -2086,7 +2086,7 @@ void MainServer::RequestInfoOfGameServer(stringstream & RecvStream, SOCKET Socke
 
 	if (InfoOfClients.find(leaderSocket) == InfoOfClients.end())
 	{
-		/// ¼ö½Å - ¿¡·¯
+		/// ìˆ˜ì‹  - ì—ëŸ¬
 		CONSOLE_LOG("[Error] <MainServer::RequestInfoOfGameServer(...)> if (InfoOfClients.find(leaderSocket) == InfoOfClients.end()) \n");
 		LeaveCriticalSection(&csInfoOfClients);
 		return;
@@ -2096,7 +2096,7 @@ void MainServer::RequestInfoOfGameServer(stringstream & RecvStream, SOCKET Socke
 
 	infoOfPlayer.PrintInfo();
 
-	// ¾ÆÁ÷ °ÔÀÓ ¼­¹ö°¡ ±¸µ¿µÇÁö ¾Ê¾Ò´Ù¸é ¼Û½ÅÇÏÁö ¾Ê½À´Ï´Ù.
+	// ì•„ì§ ê²Œì„ ì„œë²„ê°€ êµ¬ë™ë˜ì§€ ì•Šì•˜ë‹¤ë©´ ì†¡ì‹ í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 	if (infoOfPlayer.PortOfGameServer <= 0)
 	{
 		CONSOLE_LOG("[Error] <MainServer::RequestInfoOfGameServer(...)> if (infoOfPlayer.PortOfGameServer <= 0) \n");
@@ -2104,7 +2104,7 @@ void MainServer::RequestInfoOfGameServer(stringstream & RecvStream, SOCKET Socke
 	}
 
 
-	/// ¼Û½Å
+	/// ì†¡ì‹ 
 	stringstream sendStream;
 	sendStream << EPacketType::REQUEST_INFO_OF_GAME_SERVER << endl;
 	sendStream << infoOfPlayer << endl;

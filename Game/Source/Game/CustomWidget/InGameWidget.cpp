@@ -1,20 +1,20 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InGameWidget.h"
 
 
-/*** Á÷Á¢ Á¤ÀÇÇÑ Çì´õ Àü¹æ ¼±¾ð : Start ***/
+/*** ì§ì ‘ ì •ì˜í•œ í—¤ë” ì „ë°© ì„ ì–¸ : Start ***/
 #include "Character/Pioneer.h"
 
 #include "Item/Weapon/Weapon.h"
-/*** Á÷Á¢ Á¤ÀÇÇÑ Çì´õ Àü¹æ ¼±¾ð : End ***/
+/*** ì§ì ‘ ì •ì˜í•œ í—¤ë” ì „ë°© ì„ ì–¸ : End ***/
 
 
 UInGameWidget::UInGameWidget()
 {
 	///////////
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	///////////	
 	LeftArrowButton = nullptr;
 	RightArrowButton = nullptr;
@@ -296,28 +296,28 @@ void UInGameWidget::SetTextOfPioneerBox(class APioneer* Pioneer)
 		return;
 	}
 
-	FString tHealth = FString::SanitizeFloat(Pioneer->HealthPoint) + " / " + FString::FromInt(Pioneer->MaxHealthPoint);
+	FString tHealth = FString::FromInt(Pioneer->HealthPoint) + " / " + FString::FromInt(Pioneer->MaxHealthPoint);
 	HealthOfPioneer->SetText(FText::FromString(tHealth));
 	
-	FString tID = "ID: " + Pioneer->NameOfID;
+	FString tID = TEXT("ID: ") + Pioneer->NameOfID;
 	IDOfPioneer->SetText(FText::FromString(tID));
 
-	FString tMoveSpeed = "MoveSpeed: " + FString::SanitizeFloat(Pioneer->MoveSpeed);
+	FString tMoveSpeed = TEXT("ì´ë™ì†ë„: ") + FString::SanitizeFloat(Pioneer->MoveSpeed);
 	MoveSpeedOfPioneer->SetText(FText::FromString(tMoveSpeed));
 
-	FString tLevel = "Level: " + FString::FromInt(Pioneer->Level);
+	FString tLevel = TEXT("ë ˆë²¨: ") + FString::FromInt(Pioneer->Level);
 	LevelOfPioneer->SetText(FText::FromString(tLevel));
 
-	FString tExp = "Exp: " + FString::SanitizeFloat(Pioneer->Exp);
+	FString tExp = TEXT("ê²½í—˜ì¹˜: ") + FString::SanitizeFloat(Pioneer->Exp);
 	ExpOfPioneer->SetText(FText::FromString(tExp));
 
-	FString tSightRange = "SightRange: " + FString::SanitizeFloat(Pioneer->SightRange);
+	FString tSightRange = TEXT("ì‹œì•¼ë²”ìœ„: ") + FString::SanitizeFloat(Pioneer->SightRange * 64.0f);
 	SightRangeOfPioneer->SetText(FText::FromString(tSightRange));
 
-	FString tDetectRange = "DetectRange: " + FString::SanitizeFloat(Pioneer->DetectRange);
+	FString tDetectRange = TEXT("íƒì§€ë²”ìœ„: ") + FString::SanitizeFloat(Pioneer->DetectRange * 64.0f);
 	DetectRangeOfPioneer->SetText(FText::FromString(tDetectRange));
 
-	FString tAttackRange = "AttackRange: " + FString::SanitizeFloat(Pioneer->AttackRange);
+	FString tAttackRange = TEXT("ê³µê²©ë²”ìœ„: ") + FString::SanitizeFloat(Pioneer->AttackRange * 64.0f);
 	AttackRangeOfPioneer->SetText(FText::FromString(tAttackRange));
 }
 
@@ -414,19 +414,19 @@ void UInGameWidget::SetTextOfWeaponBox(class AWeapon* Weapon)
 		break;
 	}
 
-	FString tLimitedLevel = "Limit Lv: " + FString::FromInt(Weapon->LimitedLevel);
+	FString tLimitedLevel = TEXT("ì œí•œ ë ˆë²¨: ") + FString::FromInt(Weapon->LimitedLevel);
 	LimitedLevelOfWeapon->SetText(FText::FromString(tLimitedLevel));
 
-	FString tAttackPower = "AttackPower: " + FString::SanitizeFloat(Weapon->AttackPower);
+	FString tAttackPower = TEXT("ê³µê²©ë ¥: ") + FString::SanitizeFloat(Weapon->AttackPower);
 	AttackPowerOfWeapon->SetText(FText::FromString(tAttackPower));
 
-	FString tAttackSpeed = "AttackSpeed: " + FString::SanitizeFloat(Weapon->AttackSpeed);
+	FString tAttackSpeed = TEXT("ê³µê²©ì†ë„: ") + FString::SanitizeFloat(Weapon->AttackSpeed);
 	AttackSpeedOfWeapon->SetText(FText::FromString(tAttackSpeed));
 
-	FString tAttackRange = "AttackRange: " + FString::SanitizeFloat(Weapon->AttackRange);
+	FString tAttackRange = TEXT("ê³µê²©ë²”ìœ„: ") + FString::SanitizeFloat(Weapon->AttackRange);
 	AttackRangeOfWeapon->SetText(FText::FromString(tAttackRange));
 
-	FString tReloadTime = "ReloadTime: " + FString::SanitizeFloat(Weapon->ReloadTime, 2);
-	ReloadTimeOfWeapon->SetText(FText::FromString(tReloadTime));
+	//FString tReloadTime = TEXT("ìž¬ìž¥ì „: ") + FString::SanitizeFloat(Weapon->ReloadTime, 2);
+	//ReloadTimeOfWeapon->SetText(FText::FromString(tReloadTime));
 
 }
