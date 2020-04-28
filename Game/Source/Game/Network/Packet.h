@@ -791,7 +791,7 @@ public:
 	cInfoOfGame() 
 	{
 		State = "대기중";
-		Title = "함께_재밌게_게임을_해보아요!";
+		Title = "같이 게임합시다~!";
 		Stage = 1;
 		nMax = 30;
 	}

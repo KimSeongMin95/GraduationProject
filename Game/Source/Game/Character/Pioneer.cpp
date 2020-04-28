@@ -149,7 +149,7 @@ void APioneer::InitHelthPointBar()
 		return;
 
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
-	//HelthPointBar->SetDrawSize(FVector2D(80, 20));
+	HelthPointBar->SetDrawSize(FVector2D(140, 30));
 }
 /*** IHealthPointBarInterface : End ***/
 

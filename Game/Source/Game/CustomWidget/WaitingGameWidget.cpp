@@ -356,7 +356,7 @@ void UWaitingGameWidget::CheckTextOfStage()
 	Stage->SetText(FText::FromString(FString::FromInt(stage)));
 }
 
-void UWaitingGameWidget::CheckTextOfMaximum()
+int UWaitingGameWidget::CheckTextOfMaximum()
 {
 	if (!Maximum)
 	{
@@ -366,7 +366,7 @@ void UWaitingGameWidget::CheckTextOfMaximum()
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::CheckTextOfMaximum(...)> if (!Maximum)"));
 #endif				
-		return;
+		return 30;
 	}
 
 	int max = 30;
@@ -380,6 +380,8 @@ void UWaitingGameWidget::CheckTextOfMaximum()
 			max = 30;
 	}
 	Maximum->SetText(FText::FromString(FString::FromInt(max)));
+
+	return max;
 }
 
 cInfoOfGame UWaitingGameWidget::GetModifiedInfo(cInfoOfGame CopiedMyInfoOfGame)

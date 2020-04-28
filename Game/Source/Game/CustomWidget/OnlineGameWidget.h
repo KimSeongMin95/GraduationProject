@@ -115,7 +115,7 @@ public:
 
 		InitEditableTextBox(State, 160.0f, ETextJustify::Type::Center);
 		InitEditableTextBox(Title, 650.0f, ETextJustify::Type::Left);
-		InitEditableTextBox(Leader, 210.0f, ETextJustify::Type::Center);
+		InitEditableTextBox(Leader, 350.0f, ETextJustify::Type::Center);
 		InitEditableTextBox(Stage, 160.0f, ETextJustify::Type::Center);
 		InitEditableTextBox(Players, 160.0f, ETextJustify::Type::Center);
 

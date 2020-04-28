@@ -82,7 +82,7 @@ public:
 
 	void CheckTextOfTitle();
 	void CheckTextOfStage();
-	void CheckTextOfMaximum();
+	int CheckTextOfMaximum();
 
 	cInfoOfGame GetModifiedInfo(cInfoOfGame CopiedMyInfoOfGame);
 	void SetModifiedInfo(cInfoOfGame& InfoOfGame);
@@ -157,7 +157,7 @@ public:
 		//Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 42));
 		//Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::ProjectDir() / TEXT("Content/Fonts/neodgm.ttf"), 36));
 		//Player->WidgetStyle.SetFont(FSlateFontInfo("neodgm", 36));
-		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/neodgm.ttf"), 36));
+		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/neodgm.ttf"), 30));
 
 		if (class UUniformGridSlot* gridSlot = Cast<class UUniformGridSlot>(Player->Slot))
 		{

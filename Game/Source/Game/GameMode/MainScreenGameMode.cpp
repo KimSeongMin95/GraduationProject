@@ -17,6 +17,8 @@
 #include "CustomWidget/OnlineGameWidget.h"
 #include "CustomWidget/WaitingGameWidget.h"
 #include "CustomWidget/CopyRightWidget.h"
+
+#include "GameMode/OnlineGameMode.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -172,6 +174,7 @@ void AMainScreenGameMode::_ActivateOnlineWidget()
 		return;
 	}
 
+	AOnlineGameMode::MaximumOfPioneers = 30;
 
 	OnlineState = EOnlineState::Online;
 
@@ -889,7 +892,7 @@ void AMainScreenGameMode::_CheckModifyWaitingGame()
 	}
 	WaitingGameWidget->CheckTextOfTitle();
 	WaitingGameWidget->CheckTextOfStage();
-	WaitingGameWidget->CheckTextOfMaximum();
+	AOnlineGameMode::MaximumOfPioneers = WaitingGameWidget->CheckTextOfMaximum();
 
 	SendModifyWaitingGame();
 }

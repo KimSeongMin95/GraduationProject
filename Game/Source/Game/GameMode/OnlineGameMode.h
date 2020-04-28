@@ -72,6 +72,9 @@ private:
 		/** 게임 패배 */
 		class UInGameDefeatWidget* InGameDefeatWidget = nullptr;
 
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** 건물 건설 UI */
+		class UBuildingToolTipWidget* BuildingToolTipWidget = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
 		class APioneerController* PioneerController = nullptr;
@@ -93,6 +96,8 @@ protected:
 
 public:
 	static const float CellSize;
+
+	static int MaximumOfPioneers;
 
 	float TickOfSpaceShip; // 임시
 
@@ -248,6 +253,14 @@ public:
 		void ActivateInGameDefeatWidget(); void _ActivateInGameDefeatWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void DeactivateInGameDefeatWidget(); void _DeactivateInGameDefeatWidget();
+
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateBuildingToolTipWidget(); void _ActivateBuildingToolTipWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateBuildingToolTipWidget(); void _DeactivateBuildingToolTipWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void SetTextOfBuildingToolTipWidget(int BuildingType); void _SetTextOfBuildingToolTipWidget(int BuildingType);
+
 
 	/////////////////////////////////////////////////
 	// 타이틀 화면으로 되돌아가기

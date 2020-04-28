@@ -13,6 +13,7 @@
 #include "CustomWidget/InGameScoreBoardWidget.h"
 #include "CustomWidget/InGameVictoryWidget.h"
 #include "CustomWidget/InGameDefeatWidget.h"
+#include "CustomWidget/BuildingToolTipWidget.h"
 
 #include "Controller/PioneerController.h"
 #include "Character/Pioneer.h"
@@ -37,6 +38,8 @@
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 const float AOnlineGameMode::CellSize = 64.0f;
+
+int AOnlineGameMode::MaximumOfPioneers = 30;
 
 /*** Basic Function : Start ***/
 AOnlineGameMode::AOnlineGameMode()
@@ -196,6 +199,10 @@ void AOnlineGameMode::BeginPlay()
 
 	InGameDefeatWidget = NewObject<UInGameDefeatWidget>(this, FName("InGameDefeatWidget"));
 	InGameDefeatWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameDefeat.InGameDefeat_C'", false);
+
+
+	BuildingToolTipWidget = NewObject<UBuildingToolTipWidget>(this, FName("BuildingToolTipWidget"));
+	BuildingToolTipWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/BuildingToolTip.BuildingToolTip_C'", false);
 
 }
 
@@ -581,7 +588,7 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 	case ESpaceShipState::Landed:
 	{
 		// Pioneer 수 제한
-		if (PioneerManager->Pioneers.Num() < 30)
+		if (PioneerManager->Pioneers.Num() <= MaximumOfPioneers)
 		{
 			SpaceShip->StartSpawning(5 + ServerSocketInGame->SizeOfObservers() * 1.00);
 		}
@@ -2314,6 +2321,54 @@ void AOnlineGameMode::_DeactivateInGameDefeatWidget()
 	InGameDefeatWidget->RemoveFromViewport();
 }
 
+void AOnlineGameMode::ActivateBuildingToolTipWidget()
+{
+	_ActivateBuildingToolTipWidget();
+}
+void AOnlineGameMode::_ActivateBuildingToolTipWidget()
+{
+	if (!BuildingToolTipWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
+#endif	
+		return;
+	}
+
+	BuildingToolTipWidget->AddToViewport();
+}
+void AOnlineGameMode::DeactivateBuildingToolTipWidget()
+{
+	_DeactivateBuildingToolTipWidget();
+}
+void AOnlineGameMode::_DeactivateBuildingToolTipWidget()
+{
+	if (!BuildingToolTipWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
+#endif	
+		return;
+	}
+
+	BuildingToolTipWidget->RemoveFromViewport();
+}
+void AOnlineGameMode::SetTextOfBuildingToolTipWidget(int BuildingType)
+{
+	_SetTextOfBuildingToolTipWidget(BuildingType);
+}
+void AOnlineGameMode::_SetTextOfBuildingToolTipWidget(int BuildingType)
+{
+	if (!BuildingToolTipWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_SetTextOfBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
+#endif	
+		return;
+	}
+
+	BuildingToolTipWidget->SetText(BuildingType);
+}
 
 /////////////////////////////////////////////////
 // 타이틀 화면으로 되돌아가기
