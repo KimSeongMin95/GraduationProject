@@ -155,7 +155,9 @@ public:
 		Player->SetIsReadOnly(true);
 
 		//Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 42));
-		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::ProjectDir() / TEXT("Content/Fonts/neodgm.ttf"), 36));
+		//Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::ProjectDir() / TEXT("Content/Fonts/neodgm.ttf"), 36));
+		//Player->WidgetStyle.SetFont(FSlateFontInfo("neodgm", 36));
+		Player->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/neodgm.ttf"), 36));
 
 		if (class UUniformGridSlot* gridSlot = Cast<class UUniformGridSlot>(Player->Slot))
 		{

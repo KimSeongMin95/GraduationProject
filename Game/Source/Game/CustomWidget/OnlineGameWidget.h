@@ -177,8 +177,10 @@ public:
 		// 폰트 파일인 .ttf는 기본적으로 Engine Content/Slate/Fonts/에 존재합니다.
 		// EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(GEngine->GetLargeFont(), 24);
 		// EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 32));
-		
-		EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::ProjectDir() / TEXT("Content/Fonts/neodgm.ttf"), 32));
+		//FontFace'/Game/Fonts/neodgm.neodgm'
+		//EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::ProjectDir() / TEXT("Content/Fonts/neodgm.ttf"), 32));
+		//EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo("neodgm", 32));
+		EditableTextBox->WidgetStyle.SetFont(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/neodgm.ttf"), 32));
 
 		FMargin padding;
 		padding.Left = 10.0f;

@@ -129,6 +129,10 @@ void APioneerController::SetupInputComponent()
 	InputComponent->BindAxis("FreeViewPoint_MoveRight", this, &APioneerController::FreeViewPoint_MoveRight);
 	// 자유시점 카메라 Q E키: 상하이동
 	InputComponent->BindAxis("FreeViewPoint_MoveUp", this, &APioneerController::FreeViewPoint_MoveUp);
+
+	// (이스터에그)Ctrl + Z키: 현재 무기의 공격속도 증가
+	InputComponent->BindAxis("EasterEgg", this, &APioneerController::EasterEgg);
+
 }
 /*** Basic Function : End ***/
 
@@ -901,6 +905,30 @@ void APioneerController::FreeViewPoint_MoveUp(float Value)
 		freeViewCamera->SetActorLocation(movedLocation);
 	}
 }
+
+
+void APioneerController::EasterEgg(float Value)
+{	
+	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	if (Value == 0.0f)
+		return;
+
+	if (!Pioneer || !GetPawn())
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::EasterEgg()> if (!Pioneer || !GetPawn())"));
+#endif
+		return;
+	}
+
+	// 죽으면 함수를 실행하지 않음.
+	if (Pioneer->bDying)
+		return;
+
+	if (Pioneer->GetCurrentWeapon())
+		Pioneer->GetCurrentWeapon()->AttackSpeed++;
+}
+
 
 
 void APioneerController::SetPioneerManager(class APioneerManager* PM)

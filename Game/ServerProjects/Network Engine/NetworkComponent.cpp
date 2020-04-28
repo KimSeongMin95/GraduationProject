@@ -9,10 +9,11 @@
 /////////////////////
 // 기본
 /////////////////////
-CNetworkComponent::CNetworkComponent(ENetworkComponentType NCT /*= NetworkComponentType::NCT_None*/)
+CNetworkComponent::CNetworkComponent(ENetworkComponentType NCT /*= NetworkComponentType::NCT_None*/, class CPacket* PacketClass /*= nullptr*/)
 {
 	this->NCT = NCT;
 
+	// 서버 or 클라이언트 설정
 	switch (NCT)
 	{
 	case ENetworkComponentType::NCT_Server:
@@ -37,10 +38,72 @@ CNetworkComponent::CNetworkComponent(ENetworkComponentType NCT /*= NetworkCompon
 		break;
 	}
 	}
+
+	// 패킷 클래스 설정
+	if (Packet)
+	{
+		this->Packet = PacketClass;
+	}
+	else
+	{
+		Packet = new CBasicPacket();
+	}
 }
 CNetworkComponent::~CNetworkComponent()
 {
 	Close();
+
+
+	if (Packet)
+	{
+		delete Packet;
+		Packet = nullptr;
+	}
+	if (Server)
+	{
+		delete Server;
+		Server = nullptr;
+	}
+	if (Client)
+	{
+		delete Client;
+		Client = nullptr;
+	}
+}
+
+
+/////////////////////
+// 패킷 인터페이스 상속
+/////////////////////
+void CNetworkComponent::RegisterTypeAndStaticFunc(string Name, void(*Function)(class CNetworkComponent*, stringstream&, SOCKET))
+{
+	if (!Packet)
+	{
+		CONSOLE_LOG("[Error] <CNetworkComponent::RegisterTypeAndStaticFunc(...)> if (!Packet) \n");
+		return;
+	}
+
+	Packet->RegisterTypeAndStaticFunc(Name, Function);
+}
+unsigned int CNetworkComponent::GetNumberOfType(string Name)
+{
+	if (!Packet)
+	{
+		CONSOLE_LOG("[Error] <CNetworkComponent::GetNumberOfType(...)> if (!Packet) \n");
+		return -1;
+	}
+
+	return Packet->GetNumberOfType(Name);
+}
+void CNetworkComponent::ProcessPacket(unsigned int Type, class CNetworkComponent* NC, stringstream& RecvStream, SOCKET Socket)
+{
+	if (!Packet)
+	{
+		CONSOLE_LOG("[Error] <CNetworkComponent::ProcessPacket(...)> if (!Packet) \n");
+		return;
+	}
+
+	Packet->ProcessPacket(Type, NC, RecvStream, Socket);
 }
 
 
@@ -65,7 +128,7 @@ bool CNetworkComponent::Initialize(const char* IPv4, USHORT Port)
 	}
 	default:
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::CloseNetwork(...)> default: \n");
+		CONSOLE_LOG("[Error] <CNetworkComponent::Initialize(...)> default: \n");
 		break;
 	}
 	}
@@ -105,7 +168,8 @@ void CNetworkComponent::Send(stringstream& SendStream, SOCKET Socket /*= 0*/)
 	{
 		if (Server)
 		{
-			Server->Send(SendStream, Socket);
+			if (Server->IsServerOn())
+				Server->Send(SendStream, Socket);
 		}
 		break;
 	}
@@ -113,7 +177,8 @@ void CNetworkComponent::Send(stringstream& SendStream, SOCKET Socket /*= 0*/)
 	{
 		if (Client)
 		{
-			Client->Send(SendStream);
+			if (Client->IsClientOn())
+				Client->Send(SendStream);
 		}
 		break;
 	}
@@ -133,7 +198,8 @@ void CNetworkComponent::SendHugeData(stringstream& SendStream, SOCKET Socket /*=
 	{
 		if (Server)
 		{
-			Server->SendHugeData(SendStream, Socket);
+			if (Server->IsServerOn())
+				Server->SendHugeData(SendStream, Socket);
 		}
 		break;
 	}
@@ -141,7 +207,8 @@ void CNetworkComponent::SendHugeData(stringstream& SendStream, SOCKET Socket /*=
 	{
 		if (Client)
 		{
-			Client->SendHugeData(SendStream);
+			if (Client->IsClientOn())
+				Client->SendHugeData(SendStream);
 		}
 		break;
 	}
@@ -187,6 +254,27 @@ bool CNetworkComponent::IsNetworkOn()
 /////////////////////
 // only 서버
 /////////////////////
+void CNetworkComponent::RegisterCBF(void (*Connect)(CCompletionKey) /*= nullptr*/, void (*Disconnect)(CCompletionKey) /*= nullptr*/)
+{
+	switch (NCT)
+	{
+	case ENetworkComponentType::NCT_Server:
+	{
+		if (Server)
+		{
+			this->Connect = (NC_CallBackFunc)Connect;
+			this->Disconnect = (NC_CallBackFunc)Disconnect;
+		}
+		break;
+	}
+	default:
+	{
+		CONSOLE_LOG("[Error] <CNetworkComponent::RegisterCBF(...)> default: \n");
+		break;
+	}
+	}
+}
+
 CCompletionKey CNetworkComponent::GetCompletionKey(SOCKET Socket)
 {
 	switch (NCT)
@@ -209,6 +297,48 @@ CCompletionKey CNetworkComponent::GetCompletionKey(SOCKET Socket)
 	return CCompletionKey();
 }
 
+void CNetworkComponent::ExecuteConnectCBF(CCompletionKey CompletionKey)
+{
+	switch (NCT)
+	{
+	case ENetworkComponentType::NCT_Server:
+	{
+		if (Server)
+		{
+			if (Connect)
+				Connect(CompletionKey);
+		}
+		break;
+	}
+	default:
+	{
+		CONSOLE_LOG("[Error] <CNetworkComponent::ExecuteConnectCBF(...)> default: \n");
+		break;
+	}
+	}
+}
+
+void CNetworkComponent::ExecuteDisconnectCBF(CCompletionKey CompletionKey)
+{
+	switch (NCT)
+	{
+	case ENetworkComponentType::NCT_Server:
+	{
+		if (Server)
+		{
+			if (Disconnect)
+				Disconnect(CompletionKey);
+		}
+		break;
+	}
+	default:
+	{
+		CONSOLE_LOG("[Error] <CNetworkComponent::ExecuteDisconnectCBF(...)> default: \n");
+		break;
+	}
+	}
+}
+
 void CNetworkComponent::Broadcast(stringstream& SendStream)
 {
 	switch (NCT)
@@ -223,7 +353,7 @@ void CNetworkComponent::Broadcast(stringstream& SendStream)
 	}
 	default:
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::IsNetworkOn()> default: \n");
+		CONSOLE_LOG("[Error] <CNetworkComponent::Broadcast(...)> default: \n");
 		break;
 	}
 	}
@@ -243,7 +373,7 @@ void CNetworkComponent::BroadcastExceptOne(stringstream& SendStream, SOCKET Exce
 	}
 	default:
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::IsNetworkOn()> default: \n");
+		CONSOLE_LOG("[Error] <CNetworkComponent::BroadcastExceptOne(...)> default: \n");
 		break;
 	}
 	}

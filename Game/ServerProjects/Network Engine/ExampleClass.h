@@ -2,17 +2,29 @@
 
 #include "Packet.h"
 
-class test
+class CExampleClass
 {
 public:
-	test();
-	~test();
+	/////////////////////
+	// ±âº»
+	/////////////////////
+	CExampleClass();
+	~CExampleClass();
 
 public:
+	////////////////////////
+	// NetworkComponent
+	////////////////////////
 	class CNetworkComponent* Server;
-	class CNetworkComponent* Client;
+	class CNetworkComponent* Clients[TEST_MAX_CLIENT];
 
 public:
+	////////////////////////
+	// NetworkComponent
+	////////////////////////
+	static void ConnectCBF(CCompletionKey CompletionKey);
+	static void DisconnectCBF(CCompletionKey CompletionKey);
+
 	static void SampleServer(CNetworkComponent* NC, stringstream& RecvStream, SOCKET Socket);
 	static void SampleClient(CNetworkComponent* NC, stringstream& RecvStream, SOCKET Socket = 0);
 	void Send();

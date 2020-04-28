@@ -9,7 +9,7 @@
 class CMyConsole
 {
 private:
-	FILE* fp_console = nullptr;
+	FILE* fp = nullptr;
 
 public:
 	void AllocConsole();

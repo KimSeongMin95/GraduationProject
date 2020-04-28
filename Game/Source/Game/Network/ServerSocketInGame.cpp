@@ -2086,7 +2086,8 @@ void cServerSocketInGame::DiedPioneer(stringstream& RecvStream, SOCKET Socket)
 
 		EnterCriticalSection(&csPossessedID);
 		int possessedID = PossessedID;
-		PossessedID = 0;
+		if (id == possessedID)
+			PossessedID = 0;
 		LeaveCriticalSection(&csPossessedID);
 
 		if (id == possessedID)

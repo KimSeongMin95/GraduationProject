@@ -127,6 +127,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void FreeViewPoint_MoveUp(float Value);
 
+	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
+		void EasterEgg(float Value);
 public:
 	void SetPioneerManager(class APioneerManager* PioneerManager);
 

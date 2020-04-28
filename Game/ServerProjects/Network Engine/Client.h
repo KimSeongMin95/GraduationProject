@@ -18,6 +18,10 @@ private:
 	CRITICAL_SECTION csAccept;	// 동기화
 	HANDLE	hMainHandle;		// 클라이언트 스레드 핸들
 
+
+	CCompletionKey Server;		// 서버 정보
+	CRITICAL_SECTION csServer;
+
 	deque<char*> RecvDeque;		// 수신한 데이터를 덱에 전부 적재
 
 
@@ -75,7 +79,7 @@ private:
 	bool AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
 
 	// (디버깅용) 패킷 사이즈와 실제 길이 검증용 함수
-	void VerifyPacket(char* DataBuffer, bool send);
+	void VerifyPacket(char* DataBuffer, bool bSend);
 
 
 public:

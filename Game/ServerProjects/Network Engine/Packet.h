@@ -29,6 +29,9 @@ using namespace std;
 // 데이터는 크기는 최대 4095여야 마지막에 '\0'가 들어가서 오류가 나지 않음
 #define	MAX_BUFFER	4096
 
+// 테스트
+#define TEST_MAX_CLIENT 1
+
 
 ////////////////////////
 // IOCP CompletionKey
@@ -44,6 +47,7 @@ public:
 public:
 	CCompletionKey();
 
+	void PrintInfo();
 };
 
 
@@ -77,44 +81,61 @@ enum ENetworkComponentType
 	NCT_Client
 };
 
-//// 패킷 처리 함수 포인터 타입 선언
+// 패킷 처리 함수 포인터 타입 선언
 typedef void* (*PacketProcessingFunc)(class CNetworkComponent*, stringstream&, SOCKET);
 
+/** 인터페이스 클래스 */
 class CPacket
 {
 public:
+	//virtual ~CPacket() = 0;
+	
+	/** 패킷타입명과 전역멤버함수를 등록합니다.
+	전역멤버함수에 사용하는 변수는 동기화를 꼭 해주어야 합니다. */
+	virtual void RegisterTypeAndStaticFunc(
+		string Name, 
+		void (*Function)(class CNetworkComponent*, stringstream&, SOCKET)
+	) = 0;
+	
+	// 패킷타입명에 해당하는 값을 가져옵니다.
+	virtual unsigned int GetNumberOfType(string Name) = 0;
+	
+	// 패킷에 해당하는 전역멤버함수를 실행합니다.
+	virtual void ProcessPacket(unsigned int Type, class CNetworkComponent* NC, stringstream& RecvStream, SOCKET Socket) = 0;
+};
+/** 기본 클래스 */
+class CBasicPacket : public CPacket
+{
+private:
 	// 패킵타입명에 대응하는 실제 Packet에 사용될 값입니다.
-	static unsigned int Number;
+	unsigned int Number;
 
 	// 패킷타입명에 대응하는 Number를 저장합니다.
-	static map<string, unsigned int> Types;
+	map<string, unsigned int> Types;
 
 	// typedef로 선언한 PacketProcessingFunc형으로 변환하여 사용해야 합니다.
-	static map<unsigned int, LPVOID> PPFsOfServer;
-	static map<unsigned int, LPVOID> PPFsOfClient;
+	map<unsigned int, LPVOID> PPFs;
 
+	// 동기화
+	CRITICAL_SECTION cs;
 
 public:
-	CPacket();
+	CBasicPacket();
+	~CBasicPacket();
 
 	/** 패킷타입명과 전역멤버함수를 등록합니다.
 	전역멤버함수에 사용하는 변수는 동기화를 꼭 해주어야 합니다. */
-	static void RegisterTypeAndStaticFunc(
-		string Name, 
-		ENetworkComponentType NCT, 
-		void(*Function)(class CNetworkComponent*, 
-		stringstream&, 
-		SOCKET)
-	);
+	virtual void RegisterTypeAndStaticFunc(
+		string Name,
+		void (*Function)(class CNetworkComponent*, stringstream&, SOCKET)
+	) override;
 
 	// 패킷타입명에 해당하는 값을 가져옵니다.
-	static unsigned int GetNumberOfType(string Name);
+	virtual unsigned int GetNumberOfType(string Name) override;
 
-	// 패킷에 해당하는 함수를 실행합니다.
-	static void ProcessPacketOfServer(unsigned int Type, class CNetworkComponent* NC, stringstream& RecvStream, SOCKET Socket);
-	static void ProcessPacketOfClient(unsigned int Type, class CNetworkComponent* NC, stringstream& RecvStream, SOCKET Socket);
+	// 패킷에 해당하는 전역멤버함수를 실행합니다.
+	virtual void ProcessPacket(unsigned int Type, class CNetworkComponent* NC, stringstream& RecvStream, SOCKET Socket) override;
 };
-
 
 
 

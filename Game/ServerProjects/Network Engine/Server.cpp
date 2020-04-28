@@ -2,6 +2,8 @@
 
 #include "Server.h"
 
+#include "NetworkComponent.h"
+
 
 ///////////////////////////////////////////
 // Call Thread Functions
@@ -295,6 +297,16 @@ void CServer::AcceptThread()
 		LeaveCriticalSection(&csMapOfRecvDeque);
 
 
+		/////////////////////////////
+		// 클라이언트의 접속시 호출할 콜백 함수를 실행합니다.
+		/////////////////////////////
+		if (NetworkComponent)
+			NetworkComponent->ExecuteConnectCBF(*completionKey);
+		else
+			CONSOLE_LOG("[Error] <CServer::AcceptThread(...)> if (!NetworkComponent) \n");
+
+		/*****************************************************************/
+
 		// completionKey를 할당
 		hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (ULONG_PTR)completionKey, 0);
 
@@ -565,8 +577,18 @@ void CServer::IOThread()
 
 void CServer::CloseSocket(SOCKET Socket, COverlappedMsg* OverlappedMsg)
 {
-	CONSOLE_LOG("[Start] <CServer::CloseSocket(...)>\n");
+	CONSOLE_LOG("[Start] <CServer::CloseSocket(...)> \n");
 
+
+	/////////////////////////////
+	// 클라이언트의 접속 종료시 호출할 콜백 함수를 실행합니다.
+	/////////////////////////////
+	if (NetworkComponent)
+		NetworkComponent->ExecuteDisconnectCBF(GetCompletionKey(Socket));
+	else
+		CONSOLE_LOG("[Error] <CServer::CloseSocket(...)> if (!NetworkComponent) \n");
+
+	/*****************************************************************/
 
 	/////////////////////////////
 	// 수신에 사용하려고 동적할당한 overlapped 객체를 소멸시킵니다.
@@ -1397,7 +1419,10 @@ void CServer::ProcessThePacket(char* DataBuffer, SOCKET Socket)
 	//CONSOLE_LOG("\t packetType: %d \n", packetType);
 
 
-	CPacket::ProcessPacketOfServer(packetType, NetworkComponent, recvStream, Socket);
+	if (NetworkComponent)
+		NetworkComponent->ProcessPacket(packetType, NetworkComponent, recvStream, Socket);
+	else
+		CONSOLE_LOG("[Error] <CServer::ProcessThePacket(...)> if (!NetworkComponent) \n");
 }
 
 bool CServer::AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
@@ -1449,7 +1474,7 @@ bool CServer::AddSizeInStream(stringstream& DataStream, stringstream& FinalStrea
 	return true;
 }
 
-void CServer::VerifyPacket(char* DataBuffer, bool send)
+void CServer::VerifyPacket(char* DataBuffer, bool bSend)
 {
 	if (!DataBuffer)
 	{
@@ -1487,7 +1512,7 @@ void CServer::VerifyPacket(char* DataBuffer, bool send)
 	if (sizeOfPacket != len)
 	{
 		CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n");
-		CONSOLE_LOG("[ERROR] <CServer::VerifyPacket(...)> type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
+		CONSOLE_LOG("[ERROR] <CServer::VerifyPacket(...)> type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n", bSend ? "Send" : "Recv", buffer, sizeOfPacket, len);
 		CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n");
 	}
 #endif

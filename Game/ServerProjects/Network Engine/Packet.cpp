@@ -13,6 +13,11 @@ CCompletionKey::CCompletionKey()
 	Port = 0;
 }
 
+void CCompletionKey::PrintInfo()
+{
+	CONSOLE_LOG("\t socket: %d, IPv4Addr: %s, Port: %d \n", socket, IPv4Addr.c_str(), Port);
+}
+
 
 ////////////////////////
 // IOCP OverlappedMsg
@@ -41,25 +46,25 @@ void COverlappedMsg::Initialize()
 
 
 ////////////////////////
-// IOCP CPacket
+// IOCP CBasicPacket
 ////////////////////////
-unsigned int CPacket::Number = 1; // 1부터 시작합니다.
-
-map<string, unsigned int> CPacket::Types;
-
-map<unsigned int, LPVOID> CPacket::PPFsOfServer;
-map<unsigned int, LPVOID> CPacket::PPFsOfClient;
-
-
-CPacket::CPacket()
+/** 기본 클래스 */
+CBasicPacket::CBasicPacket()
 {
+	Number = 1;
 
+	InitializeCriticalSection(&cs);
+}
+CBasicPacket::~CBasicPacket()
+{
+	DeleteCriticalSection(&cs);
 }
 
-void CPacket::RegisterTypeAndStaticFunc(string Name, ENetworkComponentType NCT, void(*Function)(class CNetworkComponent*, stringstream&, SOCKET))
+void CBasicPacket::RegisterTypeAndStaticFunc(string Name, void(*Function)(class CNetworkComponent*, stringstream&, SOCKET))
 {
 	unsigned int key = 0;
 
+	EnterCriticalSection(&cs);
 	// 패킷타입명이 기존에 존재하지 않으면
 	if (Types.find(Name) == Types.end())
 	{
@@ -73,58 +78,44 @@ void CPacket::RegisterTypeAndStaticFunc(string Name, ENetworkComponentType NCT, 
 		key = Types.at(Name);
 	}
 
-	switch (NCT)
-	{
-	case ENetworkComponentType::NCT_Server:
-	{
-		PPFsOfServer.emplace(key, Function);
-		break;
-	}
-	case ENetworkComponentType::NCT_Client:
-	{
-		PPFsOfClient.emplace(key, Function);
-		break;
-	}
-	default:
-	{
-		CONSOLE_LOG("[Error] <Packet::RegisterTypeAndStaticFunc(...)> default: \n");
-		break;
-	}
-	}
+	PPFs.emplace(key, Function);
+	LeaveCriticalSection(&cs);
 }
 
-unsigned int CPacket::GetNumberOfType(string Name)
+unsigned int CBasicPacket::GetNumberOfType(string Name)
 {
+	unsigned int num = 0;
+
+	EnterCriticalSection(&cs);
 	if (Types.find(Name) != Types.end())
 	{
-		return Types.at(Name);
+		num = Types.at(Name);
+
+		LeaveCriticalSection(&cs);
+		return num;
 	}
+	LeaveCriticalSection(&cs);
 
 	return -1;
 }
 
-void CPacket::ProcessPacketOfServer(unsigned int Type, class CNetworkComponent* NC, stringstream& RecvStream, SOCKET Socket)
+void CBasicPacket::ProcessPacket(unsigned int Type, class CNetworkComponent* NC, stringstream& RecvStream, SOCKET Socket)
 {
-	if (PPFsOfServer.find(Type) != PPFsOfServer.end())
+	PacketProcessingFunc func;
+
+	EnterCriticalSection(&cs);
+	if (PPFs.find(Type) != PPFs.end())
 	{
-		PacketProcessingFunc func = (PacketProcessingFunc)PPFsOfServer.at(Type);
-		func(NC, RecvStream, Socket);
+		func = (PacketProcessingFunc)PPFs.at(Type);
 	}
 	else
 	{
 		CONSOLE_LOG("[ERROR] <Packet::ProcessPacketOfServer(...)> Invalid packet type. \n");
+		LeaveCriticalSection(&cs);
+		return;
 	}
-}
+	LeaveCriticalSection(&cs);
 
-void CPacket::ProcessPacketOfClient(unsigned int Type, class CNetworkComponent* NC, stringstream& RecvStream, SOCKET Socket)
-{
-	if (PPFsOfClient.find(Type) != PPFsOfClient.end())
-	{
-		PacketProcessingFunc func = (PacketProcessingFunc)PPFsOfClient.at(Type);
-		func(NC, RecvStream, Socket);
-	}
-	else
-	{
-		CONSOLE_LOG("[ERROR] <Packet::ProcessPacketOfClient(...)> Invalid packet type. \n");
-	}
+	// 처리 실행
+	func(NC, RecvStream, Socket);
 }

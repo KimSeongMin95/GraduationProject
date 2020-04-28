@@ -9,33 +9,23 @@
 #include <tchar.h>
 
 #include "NetworkComponent.h"
-#include "test.h"
+#include "ExampleClass.h"
 
 int main()
 {
-	test t;
-
-	CPacket::RegisterTypeAndStaticFunc("Sample", ENetworkComponentType::NCT_Server, t.SampleServer);
-	CPacket::RegisterTypeAndStaticFunc("Sample", ENetworkComponentType::NCT_Client, t.SampleClient);
-	CPacket::RegisterTypeAndStaticFunc("SampleHuge", ENetworkComponentType::NCT_Server, t.SampleHugeServer);
-	CPacket::RegisterTypeAndStaticFunc("SampleHuge", ENetworkComponentType::NCT_Client, t.SampleHugeClient);
-
-	printf_s("%d \n", CPacket::GetNumberOfType("Sample"));
-	printf_s("%d \n", CPacket::GetNumberOfType("SampleHuge"));
-
-	t.Server->Initialize("127.0.0.1", 8000);
-
-
+	// 테스트
+	CExampleClass ex;
 	while (true)
 	{
-		Sleep(1000);
-		t.Client->Initialize("127.0.0.1", 8000);
+		ex.Send();
+		ex.SendHuge();
 
-		t.Send();
-		t.SendHuge();
-
-		Sleep(5000);
-		t.Client->Close();
+		Sleep(1);
+		for (int i = 0; i < TEST_MAX_CLIENT; i++)
+		{
+			ex.Clients[i]->Close();
+			ex.Clients[i]->Initialize("127.0.0.1", 8000);
+		}
 	}
 
 	return 0;

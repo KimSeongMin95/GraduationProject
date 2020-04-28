@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CClient">
+    <Position X="11.5" Y="4.25" Width="3" />
+    <AssociationLine Name="NetworkComponent" Type="CNetworkComponent" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="11.812" Y="10.228" />
+        <Point X="11.812" Y="13.312" />
+        <Point X="6.125" Y="13.312" />
+        <Point X="6.125" Y="11.367" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAQIAAAgAAgBxAAAEABIAABIAQAAKMEAQWAgQAAAAE=</HashCode>
+      <FileName>Client.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="NetworkComponent" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="CMyConsole">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAABgAAAAAAAAAAAgAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>MyConsole.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CNetworkComponent">
+    <Position X="4" Y="7.25" Width="2.25" />
+    <InheritanceLine Type="CPacket" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="1.625" Y="4.988" />
+        <Point X="1.625" Y="5.363" />
+        <Point X="3.432" Y="5.363" />
+        <Point X="3.432" Y="8.125" />
+        <Point X="4" Y="8.125" />
+      </Path>
+    </InheritanceLine>
+    <AssociationLine Name="Server" Type="CServer" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="9" />
+        <Point X="7" Y="9" />
+        <Point X="7" Y="9" />
+        <Point X="7.75" Y="9" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Connect" Type="NC_CallBackFunc" FixedToPoint="true">
+      <Path>
+        <Point X="5.5" Y="7.25" />
+        <Point X="5.5" Y="3.562" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Client" Type="CClient" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.312" Y="11.367" />
+        <Point X="4.312" Y="13.534" />
+        <Point X="12.375" Y="13.534" />
+        <Point X="12.375" Y="10.228" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Disconnect" Type="NC_CallBackFunc" FixedToPoint="true">
+      <Path>
+        <Point X="4.562" Y="7.25" />
+        <Point X="4.562" Y="3.562" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="NCT" Type="ENetworkComponentType" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.25" Y="7.25" />
+        <Point X="6.25" Y="4.456" />
+        <Point X="7" Y="4.456" />
+        <Point X="7" Y="3.739" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Packet" Type="CPacket" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.062" Y="7.25" />
+        <Point X="4.062" Y="4.895" />
+        <Point X="2.75" Y="4.895" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>gBQAAFAAAACCA4AAAEQAAIAABIAAIAIQAAAAAgCAACQ=</HashCode>
+      <FileName>NetworkComponent.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="Server" />
+      <Field Name="Connect" />
+      <Field Name="Client" />
+      <Field Name="Disconnect" />
+      <Field Name="NCT" />
+      <Field Name="Packet" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="CCompletionKey">
+    <Position X="9.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAEAAAAAACAAAAAgAAAEAAAAAAAA=</HashCode>
+      <FileName>Packet.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="COverlappedMsg">
+    <Position X="11.5" Y="1" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAQAgAAAAAAABgAAAAAAQAACAAAAAAAA=</HashCode>
+      <FileName>Packet.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CPacket">
+    <Position X="0.5" Y="3.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAQAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Packet.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CBasicPacket">
+    <Position X="0.5" Y="5.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AhAAAAAAAAAAAAAAAEQAAACQAIAAAAAAABAAAAEAAAA=</HashCode>
+      <FileName>Packet.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CServer">
+    <Position X="7.75" Y="4.25" Width="3" />
+    <AssociationLine Name="NetworkComponent" Type="CNetworkComponent" FixedFromPoint="true">
+      <Path>
+        <Point X="7.75" Y="9.75" />
+        <Point X="6.25" Y="9.75" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAgRJEIBgAGAAxEAAOADAMChKIQAgiIMACKAhAAAAAE=</HashCode>
+      <FileName>Server.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="NetworkComponent" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="CExampleClass">
+    <Position X="0.75" Y="9.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAACAAAAAAAgAEAAgAAAAAAACAAgAAQAAgAAAAQ=</HashCode>
+      <FileName>ExampleClass.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="Client" />
+      <Field Name="Server" />
+    </ShowAsAssociation>
+  </Class>
+  <Typedef Name="NC_CallBackFunc" Collapsed="true">
+    <Position X="3" Y="3" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>NetworkComponent.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PacketProcessingFunc" Collapsed="true">
+    <Position X="2.5" Y="1.5" Width="5.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Packet.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Enum Name="ENetworkComponentType">
+    <Position X="6.75" Y="2.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAKAAAAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>Packet.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="맑은 고딕" Size="9" />
+</ClassDiagram>

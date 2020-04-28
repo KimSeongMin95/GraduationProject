@@ -2,6 +2,8 @@
 
 #include "Client.h"
 
+#include "NetworkComponent.h"
+
 
 ///////////////////////////////////////////
 // Call Thread Functions
@@ -29,6 +31,8 @@ CClient::CClient()
 	InitializeCriticalSection(&csAccept);
 	hMainHandle = NULL;
 
+	InitializeCriticalSection(&csServer);
+
 	NetworkComponent = nullptr;
 }
 CClient::~CClient()
@@ -37,6 +41,8 @@ CClient::~CClient()
 
 
 	DeleteCriticalSection(&csAccept);
+
+	DeleteCriticalSection(&csServer);
 }
 
 
@@ -126,6 +132,14 @@ bool CClient::Initialize(const char* IPv4, USHORT Port)
 		return false;
 	}
 	CONSOLE_LOG("\t [Success] CreateClientThread()\n");
+
+
+	// 서버의 정보를 저장
+	EnterCriticalSection(&csServer);
+	Server.socket = ServerSocket;
+	Server.IPv4Addr = string(IPv4);
+	Server.Port = (int)Port;
+	LeaveCriticalSection(&csServer);
 
 
 	CONSOLE_LOG("[End] <CClient::Initialize()> \n");
@@ -268,6 +282,12 @@ void CClient::CloseClient()
 
 
 	CloseServerSocketAndCleanupWSA();
+
+
+	// 서버의 정보 초기화
+	EnterCriticalSection(&csServer);
+	Server = CCompletionKey();
+	LeaveCriticalSection(&csServer);
 
 
 	////////////////////
@@ -810,7 +830,10 @@ void CClient::ProcessThePacket(char* DataBuffer)
 	//CONSOLE_LOG("\t packetType: %d \n", packetType);
 
 
-	CPacket::ProcessPacketOfClient(packetType, NetworkComponent, recvStream, NULL);
+	if (NetworkComponent)
+		NetworkComponent->ProcessPacket(packetType, NetworkComponent, recvStream, NULL);
+	else
+		CONSOLE_LOG("[Error] <CClient::ProcessThePacket(...)> if (!NetworkComponent) \n");
 }
 
 bool CClient::AddSizeInStream(stringstream& DataStream, stringstream& FinalStream)
@@ -862,7 +885,7 @@ bool CClient::AddSizeInStream(stringstream& DataStream, stringstream& FinalStrea
 	return true;
 }
 
-void CClient::VerifyPacket(char* DataBuffer, bool send)
+void CClient::VerifyPacket(char* DataBuffer, bool bSend)
 {
 	if (!DataBuffer)
 	{
@@ -900,7 +923,7 @@ void CClient::VerifyPacket(char* DataBuffer, bool send)
 	if (sizeOfPacket != len)
 	{
 		CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n");
-		CONSOLE_LOG("[ERROR] <CClient::VerifyPacket(...)> type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
+		CONSOLE_LOG("[ERROR] <CClient::VerifyPacket(...)> type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n", bSend ? "Send" : "Recv", buffer, sizeOfPacket, len);
 		CONSOLE_LOG("\n\n\n\n\n\n\n\n\n\n");
 	}
 #endif
@@ -923,7 +946,13 @@ void CClient::SetNetworkComponent(class CNetworkComponent* NC)
 
 CCompletionKey CClient::GetCompletionKey()
 {
-	return CCompletionKey();
+	CCompletionKey completionKey;
+
+	EnterCriticalSection(&csServer);
+	completionKey = Server;
+	LeaveCriticalSection(&csServer);
+
+	return completionKey;
 }
 
 bool CClient::IsClientOn()

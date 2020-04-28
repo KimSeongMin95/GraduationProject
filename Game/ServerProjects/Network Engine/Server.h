@@ -103,7 +103,7 @@ private:
 	bool AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
 
 	// (디버깅용) 패킷 사이즈와 실제 길이 검증용 함수
-	void VerifyPacket(char* DataBuffer, bool send);
+	void VerifyPacket(char* DataBuffer, bool bSend);
 
 public:
 	///////////////////////////////////////////

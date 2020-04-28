@@ -1276,6 +1276,7 @@ void cClientSocket::SendActivateGameServer(int PortOfGameServer)
 	stringstream sendStream;
 	sendStream << EPacketType::ACTIVATE_GAME_SERVER << endl;
 	sendStream << infoOfLeader << endl;
+	sendStream << infoOfGame << endl;
 
 	Send(sendStream);
 	

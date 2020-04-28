@@ -2015,7 +2015,6 @@ void MainServer::ActivateGameServer(stringstream & RecvStream, SOCKET Socket)
 
 	/// 수신
 	cInfoOfPlayer infoOfPlayer;
-
 	RecvStream >> infoOfPlayer;
 
 	EnterCriticalSection(&csInfoOfClients);
@@ -2029,6 +2028,9 @@ void MainServer::ActivateGameServer(stringstream & RecvStream, SOCKET Socket)
 	InfoOfClients.at(Socket).PortOfGameServer = infoOfPlayer.PortOfGameServer;
 	LeaveCriticalSection(&csInfoOfClients);
 
+	cInfoOfGame infoOfGame;
+	RecvStream >> infoOfGame;
+
 	EnterCriticalSection(&csInfoOfGames);
 	if (InfoOfGames.find(Socket) == InfoOfGames.end())
 	{
@@ -2037,9 +2039,9 @@ void MainServer::ActivateGameServer(stringstream & RecvStream, SOCKET Socket)
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
-	InfoOfGames.at(Socket).State = "진행중";
+	InfoOfGames.at(Socket).State = infoOfGame.State;
 	InfoOfGames.at(Socket).Leader.PortOfGameServer = infoOfPlayer.PortOfGameServer;
-	cInfoOfGame infoOfGame = InfoOfGames.at(Socket);
+	infoOfGame = InfoOfGames.at(Socket);
 	LeaveCriticalSection(&csInfoOfGames);
 
 	infoOfPlayer.PrintInfo();
