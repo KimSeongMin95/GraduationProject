@@ -130,6 +130,9 @@ public:
 		/** 미내밉을 캡쳐하면서 ViewTarget의 위치를 따라갈 카메라입니다. */
 		class ASceneCapture2D* SceneCapture2D = nullptr;
 
+	UPROPERTY(EditAnywhere)
+		FVector PositionOfBase;
+
 private:
 	/** 카메라 객체 생성 */
 	void SpawnWorldViewCameraActor(class AWorldViewCameraActor** WorldViewCameraActor, FTransform Transform);

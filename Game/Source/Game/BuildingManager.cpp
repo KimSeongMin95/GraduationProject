@@ -23,6 +23,7 @@
 
 #include "Network/Packet.h"
 #include "Network/ServerSocketInGame.h"
+#include "Network/ClientSocketInGame.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -40,12 +41,15 @@ void ABuildingManager::BeginPlay()
 	Super::BeginPlay();
 	
 	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-
+	
 	// 에디터에서 월드상에 배치한 Building들을 관리하기 위해 추가합니다.
+	bool tutorial = true;
 	if (ServerSocketInGame)
 	{
 		if (ServerSocketInGame->IsServerOn())
 		{
+			tutorial = false;
+
 			UWorld* const world = GetWorld();
 			if (!world)
 			{
@@ -63,6 +67,33 @@ void ABuildingManager::BeginPlay()
 
 				ServerSocketInGame->SendInfoOfBuilding_Spawn((*ActorItr)->GetInfoOfBuilding_Spawn());
 			}
+		}
+	}
+
+	if (cClientSocketInGame::GetSingleton())
+	{
+		if (cClientSocketInGame::GetSingleton()->IsClientSocketOn())
+		{
+			tutorial = false;
+		}
+	}
+	
+	if (tutorial)
+	{
+		UWorld* const world = GetWorld();
+		if (!world)
+		{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+			UE_LOG(LogTemp, Warning, TEXT("<APioneer::BeginPlay()> if (!world)"));
+#endif
+			return;
+		}
+
+		for (TActorIterator<ABuilding> ActorItr(world); ActorItr; ++ActorItr)
+		{
+			(*ActorItr)->SetBuildingManager(this);
+
+			AddInBuildings(*ActorItr);
 		}
 	}
 }
@@ -241,16 +272,36 @@ void ABuildingManager::AddInBuildings(class ABuilding* Building)
 	}
 
 	// 서버만 Buildings에 저장합니다.
+	bool tutorial = true;
 	if (ServerSocketInGame)
 	{
 		if (ServerSocketInGame->IsServerOn())
 		{
+			tutorial = false;
+
 			Building->ID = ID;
 
 			Buildings.Add(ID, Building);
 
 			ID++;
 		}
+	}
+
+	if (cClientSocketInGame::GetSingleton())
+	{
+		if (cClientSocketInGame::GetSingleton()->IsClientSocketOn())
+		{
+			tutorial = false;
+		}
+	}
+
+	if (tutorial)
+	{
+		Building->ID = ID;
+
+		Buildings.Add(ID, Building);
+
+		ID++;
 	}
 }
 /*** ABuildingManager : End ***/

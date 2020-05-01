@@ -76,6 +76,7 @@ private:
 		/** 건물 건설 UI */
 		class UBuildingToolTipWidget* BuildingToolTipWidget = nullptr;
 
+
 	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
 		class APioneerController* PioneerController = nullptr;
 

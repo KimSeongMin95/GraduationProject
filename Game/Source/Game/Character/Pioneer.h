@@ -184,6 +184,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		float TimerOfOnConstructingMode;
 
+
+	UPROPERTY(EditAnywhere)
+		FVector PositionOfBase;
+
 private:
 	UFUNCTION(Category = Camera)
 		/** Tick()에서 호출합니다. */

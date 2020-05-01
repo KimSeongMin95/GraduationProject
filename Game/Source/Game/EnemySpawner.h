@@ -77,6 +77,12 @@ public:
 
 
 
+	UPROPERTY(EditAnywhere)
+		float MoveSpeed;
+	UPROPERTY(EditAnywhere)
+		float PercentageOfHealth;
+	UPROPERTY(EditAnywhere)
+		float PercentageOfExp;
 
 public:
 	void TickOfSpawnEnemy(float DeltaTime);

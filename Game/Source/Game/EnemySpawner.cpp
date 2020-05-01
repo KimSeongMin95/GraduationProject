@@ -43,6 +43,11 @@ AEnemySpawner::AEnemySpawner()
 	TriggerBoxForSpawn = nullptr;
 
 	EnemyManager = nullptr;
+
+
+	MoveSpeed = 0.0f;
+	PercentageOfHealth = 100.0f;
+	PercentageOfExp = 100.0f;
 }
 
 void AEnemySpawner::BeginPlay()
@@ -105,6 +110,14 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 			SpawnCount++;
 
 			SpawnTimer = 0.0f;
+
+			if (MoveSpeed > 0.0f)
+			{
+				enemy->GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed;
+			}
+
+			enemy->HealthPoint *= PercentageOfHealth / 100.0f;
+			enemy->Exp *= PercentageOfExp / 100.0f;
 		}
 	}
 	else

@@ -90,6 +90,7 @@ APioneer::APioneer()
 	TimerOfSetCursorToWorld = 0.0f;
 	TimerOfOnConstructingMode = 0.0f;
 
+	PositionOfBase = FVector::ZeroVector;
 }
 
 void APioneer::BeginPlay()
@@ -488,10 +489,11 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 	TargetActor = nullptr;
 
 	// AI는 기지를 벗어나지 못하도록 합니다.
-	if (FVector::Distance(FVector(-7859.1f, -8184.9f, 178.8f), GetActorLocation()) > (DetectRange * AOnlineGameMode::CellSize))
+	if (FVector::Distance(PositionOfBase, GetActorLocation()) > (DetectRange * AOnlineGameMode::CellSize))
 	{
 		State = EFiniteState::Idle;
-		MoveThePosition(FVector(-7859.1f, -8184.9f, 178.8f));
+		//MoveThePosition(FVector(-7859.1f, -8184.9f, 178.8f));
+		MoveThePosition(PositionOfBase);
 		return;
 	}
 
@@ -1525,6 +1527,8 @@ void APioneer::PlaceBuilding()
 	bool success = Building->Constructing();
 	if (success)
 	{
+		bool tutorial = true;
+
 		// 게임서버라면
 		if (ServerSocketInGame)
 		{
@@ -1537,6 +1541,8 @@ void APioneer::PlaceBuilding()
 
 				APioneerManager::Resources.NumOfMineral -= Building->NeedMineral;
 				APioneerManager::Resources.NumOfOrganic -= Building->NeedOrganicMatter;
+
+				tutorial = false;
 			}
 		}
 		// 게임클라이언트라면
@@ -1548,7 +1554,15 @@ void APioneer::PlaceBuilding()
 				ClientSocketInGame->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
 
 				Building->Destroy();
+
+				tutorial = false;
 			}
+		}
+
+		if (tutorial)
+		{
+			APioneerManager::Resources.NumOfMineral -= Building->NeedMineral;
+			APioneerManager::Resources.NumOfOrganic -= Building->NeedOrganicMatter;
 		}
 
 		Building = nullptr;

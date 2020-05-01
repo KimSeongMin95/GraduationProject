@@ -536,6 +536,7 @@ void ABuilding::SetHealthPoint(float Value)
 	if (!BuildingManager)
 	{
 		UE_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager)"));
+
 	}
 
 	BuildingState = EBuildingState::Destroying;

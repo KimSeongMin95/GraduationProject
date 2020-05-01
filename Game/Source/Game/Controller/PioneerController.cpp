@@ -684,7 +684,7 @@ void APioneerController::Menu()
 
 	if (tutorialGameMode)
 	{
-
+		tutorialGameMode->ToggleInGameMenuWidget();
 	}
 	else if (onlineGameMode)
 	{

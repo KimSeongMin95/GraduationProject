@@ -51,6 +51,8 @@ APioneerManager::APioneerManager()
 	SceneCapture2D = nullptr;
 
 	BuildingManager = nullptr;
+
+	PositionOfBase = FVector::ZeroVector;
 }
 
 void APioneerManager::BeginPlay()
@@ -472,6 +474,8 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	
 	pioneer->SetBuildingManager(BuildingManager);
 
+	pioneer->PositionOfBase = this->PositionOfBase;
+
 	// 이미 추가되어있지 않다면
 	if (Pioneers.Contains(KeyID) == false)
 	{
@@ -550,6 +554,7 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 	pioneer->SetInfoOfPioneer(InfoOfPioneer);
 	Pioneers.Add(InfoOfPioneer.ID, pioneer);
 	
+	pioneer->PositionOfBase = this->PositionOfBase;
 
 	if (ViewpointState == EViewpointState::SpaceShip)
 	{
