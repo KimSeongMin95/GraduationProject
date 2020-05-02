@@ -14,6 +14,7 @@
 #include "CustomWidget/InGameVictoryWidget.h"
 #include "CustomWidget/InGameDefeatWidget.h"
 #include "CustomWidget/BuildingToolTipWidget.h"
+#include "CustomWidget/DialogWidget.h"
 
 #include "Controller/PioneerController.h"
 #include "Character/Pioneer.h"
@@ -203,6 +204,9 @@ void AOnlineGameMode::BeginPlay()
 
 	BuildingToolTipWidget = NewObject<UBuildingToolTipWidget>(this, FName("BuildingToolTipWidget"));
 	BuildingToolTipWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/BuildingToolTip.BuildingToolTip_C'", false);
+
+	DialogWidget = NewObject<UDialogWidget>(this, FName("DialogWidget"));
+	DialogWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Dialog.Dialog_C'", false);
 
 }
 
@@ -2371,6 +2375,48 @@ void AOnlineGameMode::_SetTextOfBuildingToolTipWidget(int BuildingType)
 
 	BuildingToolTipWidget->SetText(BuildingType);
 }
+
+void AOnlineGameMode::ActivateDialogWidget(float TimeOfDuration)
+{
+	if (!DialogWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::ActivateDialogWidget()> if (!DialogWidget)"));
+#endif	
+		return;
+	}
+
+	DialogWidget->AddToViewport();
+
+	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfDeactivateDialogWidget))
+		GetWorldTimerManager().ClearTimer(TimerHandleOfDeactivateDialogWidget);
+	GetWorldTimerManager().SetTimer(TimerHandleOfDeactivateDialogWidget, this, &AOnlineGameMode::DeactivateDialogWidget, TimeOfDuration, false);
+}
+void AOnlineGameMode::DeactivateDialogWidget()
+{
+	if (!DialogWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::DeactivateDialogWidget()> if (!DialogWidget)"));
+#endif	
+		return;
+	}
+
+	DialogWidget->RemoveFromViewport();
+}
+void AOnlineGameMode::SetTextOfDialogWidget(FText Text)
+{
+	if (!DialogWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_SetTextOfBuildingToolTipWidget()> if (!DialogWidget)"));
+#endif	
+		return;
+	}
+
+	DialogWidget->SetText(Text);
+}
+
 
 /////////////////////////////////////////////////
 // 타이틀 화면으로 되돌아가기

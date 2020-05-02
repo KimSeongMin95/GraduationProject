@@ -9,6 +9,7 @@
 #include "CustomWidget/InGameVictoryWidget.h"
 #include "CustomWidget/InGameDefeatWidget.h"
 #include "CustomWidget/BuildingToolTipWidget.h"
+#include "CustomWidget/DialogWidget.h"
 
 #include "Controller/PioneerController.h"
 #include "Character/Pioneer.h"
@@ -86,6 +87,10 @@ void ATutorialGameMode::BeginPlay()
 
 	BuildingToolTipWidget = NewObject<UBuildingToolTipWidget>(this, FName("BuildingToolTipWidget"));
 	BuildingToolTipWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/BuildingToolTip.BuildingToolTip_C'", false);
+
+	DialogWidget = NewObject<UDialogWidget>(this, FName("DialogWidget"));
+	DialogWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Dialog.Dialog_C'", false);
+
 }
 
 void ATutorialGameMode::StartPlay()
@@ -589,6 +594,50 @@ void ATutorialGameMode::_SetTextOfBuildingToolTipWidget(int BuildingType)
 	}
 
 	BuildingToolTipWidget->SetText(BuildingType);
+}
+
+
+
+
+void ATutorialGameMode::ActivateDialogWidget(float TimeOfDuration)
+{
+	if (!DialogWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<ATutorialGameMode::ActivateDialogWidget()> if (!DialogWidget)"));
+#endif	
+		return;
+	}
+
+	DialogWidget->AddToViewport();
+
+	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfDeactivateDialogWidget))
+		GetWorldTimerManager().ClearTimer(TimerHandleOfDeactivateDialogWidget);
+	GetWorldTimerManager().SetTimer(TimerHandleOfDeactivateDialogWidget, this, &ATutorialGameMode::DeactivateDialogWidget, TimeOfDuration, false);
+}
+void ATutorialGameMode::DeactivateDialogWidget()
+{
+	if (!DialogWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<ATutorialGameMode::DeactivateDialogWidget()> if (!DialogWidget)"));
+#endif	
+		return;
+	}
+
+	DialogWidget->RemoveFromViewport();
+}
+void ATutorialGameMode::SetTextOfDialogWidget(FText Text)
+{
+	if (!DialogWidget)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<ATutorialGameMode::_SetTextOfBuildingToolTipWidget()> if (!DialogWidget)"));
+#endif	
+		return;
+	}
+
+	DialogWidget->SetText(Text);
 }
 
 

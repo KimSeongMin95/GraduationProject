@@ -100,7 +100,7 @@ void AWarrokWKurniawan::Victory()
 
 	if (tutorialGameMode)
 	{
-
+		tutorialGameMode->ActivateInGameVictoryWidget();
 	}
 	else if (onlineGameMode)
 	{

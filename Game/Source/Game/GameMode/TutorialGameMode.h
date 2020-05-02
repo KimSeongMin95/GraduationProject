@@ -53,6 +53,10 @@ private:
 		/** 건물 건설 UI */
 		class UBuildingToolTipWidget* BuildingToolTipWidget = nullptr;
 
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		/** Dialog UI */
+		class UDialogWidget* DialogWidget = nullptr;
+
 
 	UPROPERTY(VisibleAnywhere)
 		class APioneerController* PioneerController = nullptr;
@@ -130,6 +134,14 @@ public:
 		void DeactivateBuildingToolTipWidget(); void _DeactivateBuildingToolTipWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SetTextOfBuildingToolTipWidget(int BuildingType); void _SetTextOfBuildingToolTipWidget(int BuildingType);
+
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void ActivateDialogWidget(float TimeOfDuration);
+	FTimerHandle TimerHandleOfDeactivateDialogWidget;
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void DeactivateDialogWidget();
+	UFUNCTION(BlueprintCallable, Category = "Widget")
+		void SetTextOfDialogWidget(FText Text);
 
 
 	/////////////////////////////////////////////////
