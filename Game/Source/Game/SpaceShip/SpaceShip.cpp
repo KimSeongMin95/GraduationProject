@@ -103,6 +103,16 @@ ASpaceShip::ASpaceShip()
 	InitEngineParticleSystem(EngineParticleSystem2, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), false,
 		FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
+
+	EngineParticleSystem3 = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem3"));
+	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
+	EngineParticleSystem3->SetupAttachment(RootComponent);
+
+	InitEngineParticleSystem(EngineParticleSystem3, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), false,
+		FVector(2.5f, 2.5f, 2.5f), FRotator(0.0f, 180.0f, 90.0f), FVector(0.0f, -900.0f, 60.0f));
+
+
+
 	Gravity = 980.0f;
 
 	// 중력가속도가 9.8m/s^2 이므로 1초에 9.8미터가 언리얼에서는 980입니다. 
@@ -118,8 +128,14 @@ ASpaceShip::ASpaceShip()
 	ScaleOfEngineParticleSystem = 0.010f;
 	bEngine = false;
 
+	Physics = true;
 
+	AdjustmentTargetArmLength = 64.0f;
 
+	SpringArmCompRoll = 315.0f;
+	AdjustmentRoll = 2.0f;
+	SpringArmCompPitch = 60.0f;
+	AdjustmentPitch = 3.0f;
 
 	///////////
 	// 사운드
@@ -153,7 +169,7 @@ void ASpaceShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (PhysicsBox->IsSimulatingPhysics())
+	if (PhysicsBox->IsSimulatingPhysics() && Physics)
 		PhysicsBox->AddForce(Acceleration, NAME_None, true);
 }
 /*** Basic Function : End ***/
@@ -621,6 +637,67 @@ void ASpaceShip::OffEngines()
 		AudioComponent->SetBoolParameter("EngineOn", false);
 		//AudioComponent->StopDelayed(0.2f);
 	}
+}
+void ASpaceShip::OnEngine3()
+{
+	if (!EngineParticleSystem3)
+	{
+		printf_s("[ERROR] <ASpaceShip::OnEngines()> if (!EngineParticleSystem3)\n");
+		return;
+	}
+
+	EngineParticleSystem3->bAutoActivate = true;
+
+	EngineParticleSystem3->Activate(true);
+}
+void ASpaceShip::ForMainScreen()
+{
+	Physics = false;
+
+	PhysicsBox->SetSimulatePhysics(false);
+
+	SpringArmComp->TargetArmLength = 2000.0f;
+
+	SpringArmComp->SetRelativeRotation(FRotator(SpringArmCompRoll, SpringArmCompPitch, 0.0f));
+}
+void ASpaceShip::TickForMainScreen(float DeltaTime)
+{
+	if (SpringArmComp->TargetArmLength < 2000.0f)
+	{
+		AdjustmentTargetArmLength = 64.0f;
+	}
+	else if (SpringArmComp->TargetArmLength > 4000.0f)
+	{
+		AdjustmentTargetArmLength = -64.0f;
+	}
+
+	SpringArmComp->TargetArmLength += AdjustmentTargetArmLength * DeltaTime;
+
+
+	SpringArmCompRoll += AdjustmentRoll * DeltaTime;
+	if (SpringArmCompRoll > 360.0f)
+		SpringArmCompRoll -= 360.0f;
+
+	if (SpringArmCompPitch < 60.0f)
+	{
+		AdjustmentPitch = 3.0f;
+	}
+	else if (SpringArmCompPitch > 120.0f)
+	{
+		AdjustmentPitch = -3.0f;
+	}
+	SpringArmCompPitch += AdjustmentPitch * DeltaTime;
+
+	SpringArmComp->SetRelativeRotation(FRotator(SpringArmCompRoll, SpringArmCompPitch, 0.0f));
+
+	
+	FVector location = GetActorLocation();
+	location.Y += 2.0f * 4096.0f * DeltaTime;
+	if (location.Y >= 500000.0f)
+	{
+		location.Y = -500000.0f;
+	}
+	SetActorLocation(location);
 }
 
 void ASpaceShip::SetScaleOfEngineParticleSystem(float Scale /*= 0.015f*/)

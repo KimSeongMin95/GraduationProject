@@ -99,6 +99,10 @@ private:
 		class UParticleSystemComponent* EngineParticleSystem2 = nullptr;
 
 
+	UPROPERTY(EditAnywhere, Category = "ParticleSystem")
+		class UParticleSystemComponent* EngineParticleSystem3 = nullptr;
+
+
 	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
 		class APioneerManager* PioneerManager = nullptr;
 
@@ -135,6 +139,14 @@ public:
 
 	bool bPlayalbeLandingAnim; /** 착륙 애니메이션 토글 */
 	bool bOnOffEngines; /** 엔진 점화 토글 */
+
+	bool Physics;
+	float AdjustmentTargetArmLength;
+	float SpringArmCompRoll;
+	float AdjustmentRoll;
+	float SpringArmCompPitch;
+	float AdjustmentPitch;
+
 
 	///////////
 	// 네트워크
@@ -194,6 +206,10 @@ public:
 	/** 엔진 파티클을 켜고 끕니다. */
 	void OnEngines();
 	void OffEngines();
+
+	void OnEngine3();
+	void ForMainScreen();
+	void TickForMainScreen(float DeltaTime);
 
 	/** 엔진 파티클의 Scale을 조정합니다. */
 	void SetScaleOfEngineParticleSystem(float Scale = 0.015f);

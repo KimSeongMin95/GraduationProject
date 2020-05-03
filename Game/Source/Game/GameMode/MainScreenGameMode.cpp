@@ -19,20 +19,33 @@
 #include "CustomWidget/CopyRightWidget.h"
 
 #include "GameMode/OnlineGameMode.h"
+
+#include "Controller/PioneerController.h"
+
+#include "SpaceShip/SpaceShip.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
 /*** Basic Function : Start ***/
 AMainScreenGameMode::AMainScreenGameMode()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
-	//DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
+	///////////
+	// 초기화
+	///////////
+	PioneerController = nullptr;
+	SpaceShip = nullptr;
 
 	OnlineState = EOnlineState::Idle;
 
 	Count = 5;
 
+
+	PrimaryActorTick.bCanEverTick = true;
+
+
+	DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
+
+	PlayerControllerClass = APioneerController::StaticClass();
 
 	// 콘솔
 	cMyConsole* myConsole = cMyConsole::GetSingleton();
@@ -61,6 +74,9 @@ void AMainScreenGameMode::BeginPlay()
 		ClientSocketInGame->CloseSocket();
 
 
+	//////////////////////////
+	// Widget
+	//////////////////////////
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
@@ -97,20 +113,79 @@ void AMainScreenGameMode::StartPlay()
 	Super::StartPlay();
 
 
-	/*if (DefaultPawnClass)
-		DefaultPawnClass->b*/
+	FindPioneerController();
+
+	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 30000.0f)));
+	SpaceShip->SetInitLocation(FVector(0.0f, 0.0f, 30000.0f));
+	SpaceShip->OnEngine3();
+	SpaceShip->ForMainScreen();
+
+	if (PioneerController)
+	{
+		// 초기엔 우주선을 보도록 합니다.
+		PioneerController->SetViewTargetWithBlend(SpaceShip);
+	}
 }
 
 void AMainScreenGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
+	if (SpaceShip)
+		SpaceShip->TickForMainScreen(DeltaTime);
 }
 /*** Basic Function : End ***/
 
 
 /*** AMainScreenGameMode : Start ***/
+/////////////////////////////////////////////////
+// 필수
+/////////////////////////////////////////////////
+void AMainScreenGameMode::FindPioneerController()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::FindPioneerController()> if (!world)"));
+#endif				
+		return;
+	}
+
+	// UWorld에서 APioneerController를 찾습니다.
+	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Log, TEXT("<AMainScreenGameMode::FindPioneerController()> found APioneerController."));
+#endif			
+		PioneerController = *ActorItr;
+	}
+}
+
+void AMainScreenGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform)
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::SpawnSpaceShip(...)> if (!world)"));
+#endif			
+		return;
+	}
+
+	FTransform myTrans = Transform;
+
+	FActorSpawnParameters SpawnParams;
+	//SpawnParams.Name = TEXT("Name"); // Name을 설정합니다. World Outliner에 표기되는 Label과는 다릅니다.
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Instigator;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
+
+	*pSpaceShip = world->SpawnActor<ASpaceShip>(ASpaceShip::StaticClass(), myTrans, SpawnParams);
+
+}
+
+
 /////////////////////////////////////////////////
 // 튜토리얼 실행
 /////////////////////////////////////////////////

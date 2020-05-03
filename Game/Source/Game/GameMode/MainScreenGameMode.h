@@ -86,9 +86,22 @@ private:
 		class UCopyRightWidget* CopyRightWidget = nullptr;
 
 
+	UPROPERTY(VisibleAnywhere)
+		class APioneerController* PioneerController = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+		class ASpaceShip* SpaceShip = nullptr;
+
+
 	int Count;
 
 private:
+	/////////////////////////////////////////////////
+	// 필수
+	/////////////////////////////////////////////////
+	void FindPioneerController();
+	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
+
 	/////////////////////////////////////////////////
 	// 변환 함수
 	/////////////////////////////////////////////////
