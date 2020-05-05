@@ -13,27 +13,24 @@
 #include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
 /*** 언리얼엔진 헤더 선언 : End ***/
 
+#include "OnlineGameMode.h"
+
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
-#include "OnlineGameMode.generated.h"
+#include "GameMode/OnlineGameMode.h"
+#include "OnlineGameMode2.generated.h"
 
-
-UENUM()
-enum class EOnlineGameState : uint8
-{
-	Disconnected,
-	Connected
-};
-
+/**
+ * 
+ */
 UCLASS()
-class GAME_API AOnlineGameMode : public AGameModeBase
+class GAME_API AOnlineGameMode2 : public AGameModeBase
 {
 	GENERATED_BODY()
-
-/*** Basic Function : Start ***/
+	
+		/*** Basic Function : Start ***/
 public:
-	AOnlineGameMode();
+	AOnlineGameMode2();
 
 protected:
 	virtual void BeginPlay() override; /** inherited in Actor, triggered before StartPlay()*/
@@ -42,9 +39,9 @@ public:
 	virtual void StartPlay() override; /** inherited in GameModeBase, BeginPlay()이후 실행됩니다. */
 
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
+	/*** Basic Function : End ***/
 
-/*** AOnlineGameMode : Start ***/
+	/*** AOnlineGameMode : Start ***/
 protected:
 	EOnlineGameState OnlineGameState;
 
@@ -64,7 +61,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 인게임 플레이어들의 상황판 */
 		class UInGameScoreBoardWidget* InGameScoreBoardWidget = nullptr;
-	
+
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 게임 승리 */
 		class UInGameVictoryWidget* InGameVictoryWidget = nullptr;
@@ -100,10 +97,6 @@ protected:
 
 
 public:
-	static const float CellSize;
-
-	static int MaximumOfPioneers;
-
 	float TickOfSpaceShip; // 임시
 
 protected:
@@ -288,5 +281,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void TerminateGame(); void _TerminateGame();
 
-/*** AOnlineGameMode : End ***/
+	/*** AOnlineGameMode : End ***/
+
 };

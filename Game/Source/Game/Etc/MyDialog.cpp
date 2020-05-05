@@ -11,6 +11,7 @@
 
 #include "GameMode/TutorialGameMode.h"
 #include "GameMode/OnlineGameMode.h"
+#include "GameMode/OnlineGameMode2.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -80,6 +81,7 @@ void AMyDialog::ShowDialog()
 
 	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
 	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
+	AOnlineGameMode2* onlineGameMode2 = Cast<AOnlineGameMode2>(UGameplayStatics::GetGameMode(world));
 
 	if (tutorialGameMode)
 	{
@@ -91,6 +93,11 @@ void AMyDialog::ShowDialog()
 	{
 		onlineGameMode->SetTextOfDialogWidget(FText::FromString(allTexts));
 		onlineGameMode->ActivateDialogWidget(TimeOfDuration);
+	}
+	else if (onlineGameMode2)
+	{
+		onlineGameMode2->SetTextOfDialogWidget(FText::FromString(allTexts));
+		onlineGameMode2->ActivateDialogWidget(TimeOfDuration);
 	}
 
 	Destroy();

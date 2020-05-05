@@ -1,8 +1,8 @@
-Ôªø// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "OnlineGameMode.h"
+#include "OnlineGameMode2.h"
 
-/*** ÏßÅÏ†ë Ï†ïÏùòÌïú Ìó§Îçî Ï†ÑÎ∞© ÏÑ†Ïñ∏ : Start ***/
+/*** ¡˜¡¢ ¡§¿««— «Ï¥ı ¿¸πÊ º±æ : Start ***/
 #include "Network/ClientSocket.h"
 
 #include "Network/ServerSocketInGame.h"
@@ -36,17 +36,14 @@
 
 #include "Character/Enemy.h"
 #include "EnemyManager.h"
-/*** ÏßÅÏ†ë Ï†ïÏùòÌïú Ìó§Îçî Ï†ÑÎ∞© ÏÑ†Ïñ∏ : End ***/
+/*** ¡˜¡¢ ¡§¿««— «Ï¥ı ¿¸πÊ º±æ : End ***/
 
-const float AOnlineGameMode::CellSize = 64.0f;
-
-int AOnlineGameMode::MaximumOfPioneers = 30;
 
 /*** Basic Function : Start ***/
-AOnlineGameMode::AOnlineGameMode()
+AOnlineGameMode2::AOnlineGameMode2()
 {
 	///////////
-	// Ï¥àÍ∏∞Ìôî
+	// √ ±‚»≠
 	///////////
 	ClientSocket = nullptr;
 	ServerSocketInGame = nullptr;
@@ -97,56 +94,56 @@ AOnlineGameMode::AOnlineGameMode()
 	TimerOfRecvExp = 0.0f;
 
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	TimerOfCheckDefeatCondition = 0.0f;
 
-	/***** ÌïÑÏàò! Íº≠ ÏùΩÏñ¥Ï£ºÏÑ∏Ïöî. : Start *****/
+	/***** « ºˆ! ≤¿ ¿–æÓ¡÷ººø‰. : Start *****/
 	/*
-	Edit -> Project Settings -> Project -> Maps & Modes -> Default ModesÏóêÏÑú
-	DefaultGameMode: Ïã§ÌñâÌï† Í≤åÏûÑÎ™®ÎìúÎ°ú .cpp ÌååÏùºÎ°ú ÏßÄÏ†ï
-	DefaultPawnClass: APawn ÌÅ¥ÎûòÏä§Î•º ÎÑ£Ïñ¥Ï£ºÎ©¥ Îê©ÎãàÎã§.
+	Edit -> Project Settings -> Project -> Maps & Modes -> Default Modesø°º≠
+	DefaultGameMode: Ω««‡«“ ∞‘¿”∏µÂ∑Œ .cpp ∆ƒ¿œ∑Œ ¡ˆ¡§
+	DefaultPawnClass: APawn ≈¨∑°Ω∫∏¶ ≥÷æÓ¡÷∏È µÀ¥œ¥Ÿ.
 		static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDownCPP/Blueprints/TopDownCharacter"));
 		if (PlayerPawnBPClass.Class != NULL)
 		{
 			DefaultPawnClass = PlayerPawnBPClass.Class;
 		}
 	HUDClass:
-	PlayerControllerClass: PlayerController ÌÅ¥ÎûòÏä§Î•º ÎÑ£Ïñ¥Ï£ºÎ©¥ Îê©ÎãàÎã§.
+	PlayerControllerClass: PlayerController ≈¨∑°Ω∫∏¶ ≥÷æÓ¡÷∏È µÀ¥œ¥Ÿ.
 		PlayerControllerClass = APioneerController::StaticClass();
 	GameStateClass:
 	PlayerStateClass:
 	SpectatorClass:
 	*/
-	/***** ÌïÑÏàò! Íº≠ ÏùΩÏñ¥Ï£ºÏÑ∏Ïöî. : End *****/
+	/***** « ºˆ! ≤¿ ¿–æÓ¡÷ººø‰. : End *****/
 
 	//HUDClass = AMyHUD::StaticClass();
 
-	// DefaultPawnÏù¥ ÏÉùÏÑ±ÎêòÏßÄ ÏïäÍ≤å Ìï©ÎãàÎã§.
-	DefaultPawnClass = nullptr; 
+	// DefaultPawn¿Ã ª˝º∫µ«¡ˆ æ ∞‘ «’¥œ¥Ÿ.
+	DefaultPawnClass = nullptr;
 
 	// use our custom PlayerController class
 	PlayerControllerClass = APioneerController::StaticClass();
 
-	
 
-	///*** Î∏îÎ£®ÌîÑÎ¶∞Ìä∏Î•º Ïù¥Ïö©Ìïú Î∞©Î≤ï : Start ***/
+
+	///*** ∫Ì∑Á«¡∏∞∆Æ∏¶ ¿ÃøÎ«— πÊπ˝ : Start ***/
 	//// set default pawn class to our Blueprinted character
 	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDownCPP/Blueprints/TopDownCharacter"));
 	//if (PlayerPawnBPClass.Class != NULL)
 	//{
 	//	DefaultPawnClass = PlayerPawnBPClass.Class;
 	//}
-	///*** Î∏îÎ£®ÌîÑÎ¶∞Ìä∏Î•º Ïù¥Ïö©Ìïú Î∞©Î≤ï : End ***/
+	///*** ∫Ì∑Á«¡∏∞∆Æ∏¶ ¿ÃøÎ«— πÊπ˝ : End ***/
 
 
 
-	//// DefaultÎ°ú ÎπÑÌôúÏÑ±ÌôîÎêòÏñ¥ÏûàÎäî Tick()ÏùÑ ÌôúÏÑ±Ìôî Ìï©ÎãàÎã§.
+	//// Default∑Œ ∫Ò»∞º∫»≠µ«æÓ¿÷¥¬ Tick()¿ª »∞º∫»≠ «’¥œ¥Ÿ.
 	//PrimaryActorTick.SetTickFunctionEnable(true);
 	//PrimaryActorTick.bStartWithTickEnabled = true;
 
 
 
-	// ÏΩòÏÜî
+	// ƒ‹º÷
 	cMyConsole* myConsole = cMyConsole::GetSingleton();
 	if (myConsole)
 	{
@@ -155,18 +152,18 @@ AOnlineGameMode::AOnlineGameMode()
 	}
 }
 
-void AOnlineGameMode::BeginPlay()
+void AOnlineGameMode2::BeginPlay()
 {
 	Super::BeginPlay();
 
 	//////////////////////////
-	// ÎÑ§Ìä∏ÏõåÌÅ¨
+	// ≥◊∆Æøˆ≈©
 	//////////////////////////
 	ClientSocket = cClientSocket::GetSingleton();
 
 	ServerSocketInGame = cServerSocketInGame::GetSingleton();
 	ClientSocketInGame = cClientSocketInGame::GetSingleton();
-	
+
 
 	//////////////////////////
 	// Widget
@@ -175,16 +172,16 @@ void AOnlineGameMode::BeginPlay()
 	if (!world)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::BeginPlay()> if (!world)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::BeginPlay()> if (!world)"));
 #endif			
 		return;
 	}
 
 	InGameWidget = NewObject<UInGameWidget>(this, FName("InGameWidget"));
-	InGameWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGame.InGame_C'", true);
+	InGameWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/OnlineGameMode2/InGame.InGame_C'", true);
 
 	InGameMenuWidget = NewObject<UInGameMenuWidget>(this, FName("InGameMenuWidget"));
-	InGameMenuWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameMenu.InGameMenu_C'", false);
+	InGameMenuWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/OnlineGameMode2/InGameMenu.InGameMenu_C'", false);
 
 	InGameScoreBoardWidget = NewObject<UInGameScoreBoardWidget>(this, FName("InGameScoreBoardWidget"));
 	InGameScoreBoardWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameScoreBoard.InGameScoreBoard_C'", false);
@@ -196,10 +193,10 @@ void AOnlineGameMode::BeginPlay()
 	}
 
 	InGameVictoryWidget = NewObject<UInGameVictoryWidget>(this, FName("InGameVictoryWidget"));
-	InGameVictoryWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameVictory.InGameVictory_C'", false);
+	InGameVictoryWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/OnlineGameMode2/InGameVictory.InGameVictory_C'", false);
 
 	InGameDefeatWidget = NewObject<UInGameDefeatWidget>(this, FName("InGameDefeatWidget"));
-	InGameDefeatWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameDefeat.InGameDefeat_C'", false);
+	InGameDefeatWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/OnlineGameMode2/InGameDefeat.InGameDefeat_C'", false);
 
 
 	BuildingToolTipWidget = NewObject<UBuildingToolTipWidget>(this, FName("BuildingToolTipWidget"));
@@ -210,7 +207,7 @@ void AOnlineGameMode::BeginPlay()
 
 }
 
-void AOnlineGameMode::StartPlay()
+void AOnlineGameMode2::StartPlay()
 {
 	Super::StartPlay();
 
@@ -223,8 +220,8 @@ void AOnlineGameMode::StartPlay()
 
 	SpawnEnemyManager();
 
-	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(-7907.8f, -8044.8f, 20000.0f)));
-	SpaceShip->SetInitLocation(FVector(-7907.8f, -8044.8f, 20000.0f));
+	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 164.24f, 20000.0f)));
+	SpaceShip->SetInitLocation(FVector(0.0f, 164.24f, 20000.0f));
 	SpaceShip->SetPioneerManager(PioneerManager);
 
 	if (PioneerController)
@@ -237,7 +234,7 @@ void AOnlineGameMode::StartPlay()
 
 		PioneerManager->SetInGameWidget(InGameWidget);
 
-		// Ï¥àÍ∏∞Ïóî Ïö∞Ï£ºÏÑ†ÏùÑ Î≥¥ÎèÑÎ°ù Ìï©ÎãàÎã§.
+		// √ ±‚ø£ øÏ¡÷º±¿ª ∫∏µµ∑œ «’¥œ¥Ÿ.
 		PioneerController->SetViewTargetWithBlend(SpaceShip);
 
 		PioneerManager->ViewpointState = EViewpointState::SpaceShip;
@@ -246,18 +243,18 @@ void AOnlineGameMode::StartPlay()
 
 }
 
-void AOnlineGameMode::Tick(float DeltaTime)
+void AOnlineGameMode2::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	TickOfServerSocketInGame(DeltaTime);
 
 	TickOfClientSocketInGame(DeltaTime);
 
 
-	// ÏûÑÏãú
+	// ¿”Ω√
 	TickOfSpaceShip += DeltaTime;
-	if (TickOfSpaceShip >= 120.0f)
+	if (TickOfSpaceShip >= 60.0f)
 	{
 		if (SpaceShip->State == ESpaceShipState::Flying)
 		{
@@ -271,39 +268,39 @@ void AOnlineGameMode::Tick(float DeltaTime)
 /*** Basic Function : End ***/
 
 
-/*** AOnlineGameMode : Start ***/
+/*** AOnlineGameMode2 : Start ***/
 
 /////////////////////////////////////////////////
-// ÌïÑÏàò
+// « ºˆ
 /////////////////////////////////////////////////
-void AOnlineGameMode::FindPioneerController()
+void AOnlineGameMode2::FindPioneerController()
 {
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::FindPioneerController()> if (!world)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::FindPioneerController()> if (!world)"));
 #endif				
 		return;
 	}
 
-	// UWorldÏóêÏÑú APioneerControllerÎ•º Ï∞æÏäµÎãàÎã§.
+	// UWorldø°º≠ APioneerController∏¶ √£Ω¿¥œ¥Ÿ.
 	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Log, TEXT("<AOnlineGameMode::FindPioneerController()> found APioneerController."));
+		UE_LOG(LogTemp, Log, TEXT("<AOnlineGameMode2::FindPioneerController()> found APioneerController."));
 #endif			
 		PioneerController = *ActorItr;
 	}
 }
 
-void AOnlineGameMode::SpawnPioneerManager()
+void AOnlineGameMode2::SpawnPioneerManager()
 {
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnPioneerManager()> if (!world)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SpawnPioneerManager()> if (!world)"));
 #endif		
 		return;
 	}
@@ -314,20 +311,20 @@ void AOnlineGameMode::SpawnPioneerManager()
 	//SpawnParams.Name = TEXT("Name");
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ÏúÑÏπòÏóêÏÑú Ï∂©ÎèåÏù¥ Î∞úÏÉùÌñàÏùÑ Îïå Ï≤òÎ¶¨Î•º ÏÑ§Ï†ïÌï©ÎãàÎã§.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ¿ßƒ°ø°º≠ √Êµπ¿Ã πﬂª˝«ﬂ¿ª ∂ß √≥∏Æ∏¶ º≥¡§«’¥œ¥Ÿ.
 
-	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // Ïï°ÌÑ∞Î•º Í∞ùÏ≤¥Ìôî Ìï©ÎãàÎã§.
+	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // æ◊≈Õ∏¶ ∞¥√º»≠ «’¥œ¥Ÿ.
 
-	PioneerManager->PositionOfBase = FVector(-7859.1f, -8184.9f, 178.8f);
+	PioneerManager->PositionOfBase = FVector(0.0f, 0.0f, 178.8f);
 }
 
-void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform)
+void AOnlineGameMode2::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform)
 {
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnSpaceShip(...)> if (!world)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SpawnSpaceShip(...)> if (!world)"));
 #endif			
 		return;
 	}
@@ -335,22 +332,22 @@ void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform T
 	FTransform myTrans = Transform;
 
 	FActorSpawnParameters SpawnParams;
-	//SpawnParams.Name = TEXT("Name"); // NameÏùÑ ÏÑ§Ï†ïÌï©ÎãàÎã§. World OutlinerÏóê ÌëúÍ∏∞ÎêòÎäî LabelÍ≥ºÎäî Îã§Î¶ÖÎãàÎã§.
+	//SpawnParams.Name = TEXT("Name"); // Name¿ª º≥¡§«’¥œ¥Ÿ. World Outlinerø° «•±‚µ«¥¬ Label∞˙¥¬ ¥Ÿ∏®¥œ¥Ÿ.
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn ÏúÑÏπòÏóêÏÑú Ï∂©ÎèåÏù¥ Î∞úÏÉùÌñàÏùÑ Îïå Ï≤òÎ¶¨Î•º ÏÑ§Ï†ïÌï©ÎãàÎã§.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn ¿ßƒ°ø°º≠ √Êµπ¿Ã πﬂª˝«ﬂ¿ª ∂ß √≥∏Æ∏¶ º≥¡§«’¥œ¥Ÿ.
 
 	*pSpaceShip = world->SpawnActor<ASpaceShip>(ASpaceShip::StaticClass(), myTrans, SpawnParams);
 
 }
 
-void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
+void AOnlineGameMode2::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 {
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnProjectile(...)> if (!world)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SpawnProjectile(...)> if (!world)"));
 #endif			
 		return;
 	}
@@ -360,7 +357,7 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn ÏúÑÏπòÏóêÏÑú Ï∂©ÎèåÏù¥ Î∞úÏÉùÌñàÏùÑ Îïå Ï≤òÎ¶¨Î•º ÏÑ§Ï†ïÌï©ÎãàÎã§.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn ¿ßƒ°ø°º≠ √Êµπ¿Ã πﬂª˝«ﬂ¿ª ∂ß √≥∏Æ∏¶ º≥¡§«’¥œ¥Ÿ.
 
 	AProjectile* projectile = nullptr;
 
@@ -399,7 +396,7 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 
 	default:
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnProjectile(...)> switch (InfoOfProjectile.Numbering) default:"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SpawnProjectile(...)> switch (InfoOfProjectile.Numbering) default:"));
 #endif	
 		break;
 
@@ -415,13 +412,13 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 
 }
 
-void AOnlineGameMode::SpawnBuildingManager()
+void AOnlineGameMode2::SpawnBuildingManager()
 {
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnBuildingManager()> if (!world)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SpawnBuildingManager()> if (!world)"));
 #endif			
 		return;
 	}
@@ -432,18 +429,18 @@ void AOnlineGameMode::SpawnBuildingManager()
 	//SpawnParams.Name = TEXT("Name");
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ÏúÑÏπòÏóêÏÑú Ï∂©ÎèåÏù¥ Î∞úÏÉùÌñàÏùÑ Îïå Ï≤òÎ¶¨Î•º ÏÑ§Ï†ïÌï©ÎãàÎã§.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ¿ßƒ°ø°º≠ √Êµπ¿Ã πﬂª˝«ﬂ¿ª ∂ß √≥∏Æ∏¶ º≥¡§«’¥œ¥Ÿ.
 
-	BuildingManager = world->SpawnActor<ABuildingManager>(ABuildingManager::StaticClass(), myTrans, SpawnParams); // Ïï°ÌÑ∞Î•º Í∞ùÏ≤¥Ìôî Ìï©ÎãàÎã§.
+	BuildingManager = world->SpawnActor<ABuildingManager>(ABuildingManager::StaticClass(), myTrans, SpawnParams); // æ◊≈Õ∏¶ ∞¥√º»≠ «’¥œ¥Ÿ.
 }
 
-void AOnlineGameMode::SpawnEnemyManager()
+void AOnlineGameMode2::SpawnEnemyManager()
 {
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnEnemyManager()> if (!world)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SpawnEnemyManager()> if (!world)"));
 #endif			
 		return;
 	}
@@ -454,26 +451,26 @@ void AOnlineGameMode::SpawnEnemyManager()
 	//SpawnParams.Name = TEXT("Name");
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ÏúÑÏπòÏóêÏÑú Ï∂©ÎèåÏù¥ Î∞úÏÉùÌñàÏùÑ Îïå Ï≤òÎ¶¨Î•º ÏÑ§Ï†ïÌï©ÎãàÎã§.
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn ¿ßƒ°ø°º≠ √Êµπ¿Ã πﬂª˝«ﬂ¿ª ∂ß √≥∏Æ∏¶ º≥¡§«’¥œ¥Ÿ.
 
-	EnemyManager = world->SpawnActor<AEnemyManager>(AEnemyManager::StaticClass(), myTrans, SpawnParams); // Ïï°ÌÑ∞Î•º Í∞ùÏ≤¥Ìôî Ìï©ÎãàÎã§.
+	EnemyManager = world->SpawnActor<AEnemyManager>(AEnemyManager::StaticClass(), myTrans, SpawnParams); // æ◊≈Õ∏¶ ∞¥√º»≠ «’¥œ¥Ÿ.
 }
 
 
 /////////////////////////////////////////////////
 // Tick (Server)
 /////////////////////////////////////////////////
-void AOnlineGameMode::TickOfServerSocketInGame(float DeltaTime)
+void AOnlineGameMode2::TickOfServerSocketInGame(float DeltaTime)
 {
 	if (!ServerSocketInGame)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::TickOfServerSocketInGame(...)> if (!ServerSocketInGame)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::TickOfServerSocketInGame(...)> if (!ServerSocketInGame)"));
 #endif			
 		return;
 	}
 
-	// Í≤åÏûÑÏÑúÎ≤ÑÍ∞Ä ÌôúÏÑ±ÌôîÎêòÏñ¥ ÏûàÏßÄ ÏïäÏúºÎ©¥ ÎçîÏù¥ÏÉÅ Ïã§ÌñâÌïòÏßÄ ÏïäÏäµÎãàÎã§.
+	// ∞‘¿”º≠πˆ∞° »∞º∫»≠µ«æÓ ¿÷¡ˆ æ ¿∏∏È ¥ı¿ÃªÛ Ω««‡«œ¡ˆ æ Ω¿¥œ¥Ÿ.
 	if (ServerSocketInGame->IsServerOn() == false)
 	{
 		return;
@@ -496,7 +493,7 @@ void AOnlineGameMode::TickOfServerSocketInGame(float DeltaTime)
 	SetInfoOfEnemy_Stat(DeltaTime);
 }
 
-void AOnlineGameMode::GetScoreBoard(float DeltaTime)
+void AOnlineGameMode2::GetScoreBoard(float DeltaTime)
 {
 	TimerOfGetScoreBoard += DeltaTime;
 	if (TimerOfGetScoreBoard < 0.25f)
@@ -506,7 +503,7 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 	if (!InGameScoreBoardWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetScoreBoard(...)> if (!InGameScoreBoardWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::GetScoreBoard(...)> if (!InGameScoreBoardWidget)"));
 #endif			
 		return;
 	}
@@ -514,7 +511,7 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetScoreBoard(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::GetScoreBoard(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -559,7 +556,7 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 	InGameScoreBoardWidget->RevealScores(copiedQueue);
 }
 
-void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
+void AOnlineGameMode2::SendInfoOfSpaceShip(float DeltaTime)
 {
 	TimerOfSendInfoOfSpaceShip += DeltaTime;
 	if (TimerOfSendInfoOfSpaceShip < 0.5f)
@@ -569,7 +566,7 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 	if (!SpaceShip)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfSpaceShip(...)> if (!SpaceShip)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SendInfoOfSpaceShip(...)> if (!SpaceShip)"));
 #endif			
 		return;
 	}
@@ -577,7 +574,7 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfSpaceShip(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SendInfoOfSpaceShip(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -586,15 +583,15 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 
 	switch (SpaceShip->State)
 	{
-	case ESpaceShipState::Idling: // ÏÉàÎ°úÏö¥ Í≤åÏûÑÌÅ¥ÎùºÏù¥Ïñ∏Ìä∏Í∞Ä Ï†ëÏÜçÌïòÎ©¥ IdlingÏúºÎ°ú Î∞îÍøîÏÑú ÏßÑÌñâ
+	case ESpaceShipState::Idling: // ªı∑ŒøÓ ∞‘¿”≈¨∂Û¿Ãæ∆Æ∞° ¡¢º”«œ∏È Idling¿∏∑Œ πŸ≤„º≠ ¡¯«‡
 	{
 		SpaceShip->StartLanding();
 	}
 	break;
 	case ESpaceShipState::Landed:
 	{
-		// Pioneer Ïàò Ï†úÌïú
-		if (PioneerManager->Pioneers.Num() <= MaximumOfPioneers)
+		// Pioneer ºˆ ¡¶«—
+		if (PioneerManager->Pioneers.Num() <= AOnlineGameMode::MaximumOfPioneers)
 		{
 			SpaceShip->StartSpawning(5 + ServerSocketInGame->SizeOfObservers() * 1.00);
 		}
@@ -617,7 +614,7 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 	ServerSocketInGame->SendSpaceShip(infoOfSpaceShip);
 }
 
-void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
+void AOnlineGameMode2::GetDiedPioneer(float DeltaTime)
 {
 	TimerOfGetDiedPioneer += DeltaTime;
 	if (TimerOfGetDiedPioneer < 0.1f)
@@ -627,7 +624,7 @@ void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetDiedPioneer(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::GetDiedPioneer(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -644,8 +641,8 @@ void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
 		{
 			if (PioneerManager->Pioneers[copiedQueue.front()])
 			{
-				// bDyingÏùÑ Î∞îÍøîÏ£ºÎ©¥ BaseCharacterAnimInstanceÏóêÏÑú UPioneerAnimInstance::DestroyCharacter()Î•º Ìò∏Ï∂úÌïòÍ≥†
-				// Pioneer->DestroyCharacter();ÏùÑ Ìò∏Ï∂úÌïòÏó¨ ÏïåÏïÑÏÑú ÏÜåÎ©∏ÌïòÍ≤å Îê©ÎãàÎã§.
+				// bDying¿ª πŸ≤„¡÷∏È BaseCharacterAnimInstanceø°º≠ UPioneerAnimInstance::DestroyCharacter()∏¶ »£√‚«œ∞Ì
+				// Pioneer->DestroyCharacter();¿ª »£√‚«œø© æÀæ∆º≠ º“∏Í«œ∞‘ µÀ¥œ¥Ÿ.
 				PioneerManager->Pioneers[copiedQueue.front()]->bDyingFlag = true;
 				PioneerManager->Pioneers[copiedQueue.front()]->bDying = true;
 			}
@@ -657,7 +654,7 @@ void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
+void AOnlineGameMode2::GetInfoOfPioneer_Animation(float DeltaTime)
 {
 	TimerOfGetInfoOfPioneer_Animation += DeltaTime;
 	if (TimerOfGetInfoOfPioneer_Animation < 0.01f)
@@ -667,7 +664,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::GetInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -687,7 +684,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
 			{
 				pioneer->SetInfoOfPioneer_Animation(copiedQueue.front());
 
-				// AIÍ∞Ä ÏïÑÎãàÎ©¥ AI ControllerÎ•º Ìï¥Ï†úÌï©ÎãàÎã§.
+				// AI∞° æ∆¥œ∏È AI Controller∏¶ «ÿ¡¶«’¥œ¥Ÿ.
 				if (pioneer->SocketID != 0)
 				{
 					pioneer->UnPossessAIController();
@@ -698,7 +695,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
+void AOnlineGameMode2::SetInfoOfPioneer_Animation(float DeltaTime)
 {
 	TimerOfSetInfoOfPioneer_Animation += DeltaTime;
 	if (TimerOfSetInfoOfPioneer_Animation < 0.01f)
@@ -708,7 +705,7 @@ void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SetInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
 #endif				
 		return;
 	}
@@ -721,15 +718,15 @@ void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 		if (!kvp.Value)
 		{
 			forRemove.push(kvp.Key);
-			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Animation(...)> if (!kvp.Value)"));
-			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Animation(...)> if (!kvp.Value)"));
+			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode2::SetInfoOfPioneer_Animation(...)> if (!kvp.Value)"));
+			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SetInfoOfPioneer_Animation(...)> if (!kvp.Value)"));
 			continue;
 		}
 
 		EnterCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Animation);
 		if (ServerSocketInGame->InfosOfPioneer_Animation.find(kvp.Key) != ServerSocketInGame->InfosOfPioneer_Animation.end())
 		{
-			// AIÍ±∞ÎÇò Í≤åÏûÑÏÑúÎ≤ÑÍ∞Ä Ï°∞Ï¢ÖÌïòÎäî PioneerÎßå Ï†ïÎ≥¥Î•º ÏÑ§Ï†ïÌï©ÎãàÎã§.
+			// AI∞≈≥™ ∞‘¿”º≠πˆ∞° ¡∂¡æ«œ¥¬ Pioneer∏∏ ¡§∫∏∏¶ º≥¡§«’¥œ¥Ÿ.
 			if (kvp.Value->SocketID <= 1)
 				ServerSocketInGame->InfosOfPioneer_Animation.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Animation();
 		}
@@ -746,7 +743,7 @@ void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
+void AOnlineGameMode2::GetInfoOfPioneer_Socket(float DeltaTime)
 {
 	TimerOfGetInfoOfPioneer_Socket += DeltaTime;
 	if (TimerOfGetInfoOfPioneer_Socket < 0.5f)
@@ -756,7 +753,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfPioneer_Socket(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::GetInfoOfPioneer_Socket(...)> if (!PioneerManager)"));
 #endif	
 		return;
 	}
@@ -776,7 +773,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
 			{
 				pioneer->SetInfoOfPioneer_Socket(copiedQueue.front());
 
-				// AIÍ∞Ä ÏïÑÎãàÎ©¥ AI ControllerÎ•º Ìï¥Ï†úÌï©ÎãàÎã§.
+				// AI∞° æ∆¥œ∏È AI Controller∏¶ «ÿ¡¶«’¥œ¥Ÿ.
 				if (pioneer->SocketID != 0)
 				{
 					pioneer->UnPossessAIController();
@@ -788,7 +785,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::GetInfoOfPioneer_Stat(float DeltaTime)
+void AOnlineGameMode2::GetInfoOfPioneer_Stat(float DeltaTime)
 {
 	TimerOfGetInfoOfPioneer_Stat += DeltaTime;
 	if (TimerOfGetInfoOfPioneer_Stat < 0.2f)
@@ -798,7 +795,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Stat(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::GetInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -824,7 +821,7 @@ void AOnlineGameMode::GetInfoOfPioneer_Stat(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
+void AOnlineGameMode2::SetInfoOfPioneer_Stat(float DeltaTime)
 {
 	TimerOfSetInfoOfPioneer_Stat += DeltaTime;
 	if (TimerOfSetInfoOfPioneer_Stat < 0.2f)
@@ -834,7 +831,7 @@ void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SetInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -847,15 +844,15 @@ void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 		if (!kvp.Value)
 		{
 			forRemove.push(kvp.Key);
-			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Stat(...)> if (!kvp.Value)"));
-			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Stat(...)> if (!kvp.Value)"));
+			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode2::SetInfoOfPioneer_Stat(...)> if (!kvp.Value)"));
+			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SetInfoOfPioneer_Stat(...)> if (!kvp.Value)"));
 			continue;
 		}
 
 		EnterCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Stat);
 		if (ServerSocketInGame->InfosOfPioneer_Stat.find(kvp.Key) != ServerSocketInGame->InfosOfPioneer_Stat.end())
 		{
-			// AIÍ±∞ÎÇò Í≤åÏûÑÏÑúÎ≤ÑÍ∞Ä Ï°∞Ï¢ÖÌïòÎäî PioneerÎßå Ï†ïÎ≥¥Î•º ÏÑ§Ï†ïÌï©ÎãàÎã§.
+			// AI∞≈≥™ ∞‘¿”º≠πˆ∞° ¡∂¡æ«œ¥¬ Pioneer∏∏ ¡§∫∏∏¶ º≥¡§«’¥œ¥Ÿ.
 			if (kvp.Value->SocketID <= 1)
 				ServerSocketInGame->InfosOfPioneer_Stat.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Stat();
 		}
@@ -872,7 +869,7 @@ void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
+void AOnlineGameMode2::GetInfoOfProjectile(float DeltaTime)
 {
 	TimerOfGetInfoOfProjectile += DeltaTime;
 	if (TimerOfGetInfoOfProjectile < 0.01f)
@@ -882,7 +879,7 @@ void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfProjectile(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::GetInfoOfProjectile(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -901,7 +898,7 @@ void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::SendInfoOfResources(float DeltaTime)
+void AOnlineGameMode2::SendInfoOfResources(float DeltaTime)
 {
 	TimerOfSendInfoOfResources += DeltaTime;
 	if (TimerOfSendInfoOfResources < 0.2f)
@@ -911,7 +908,7 @@ void AOnlineGameMode::SendInfoOfResources(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfResources(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SendInfoOfResources(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -920,7 +917,7 @@ void AOnlineGameMode::SendInfoOfResources(float DeltaTime)
 	ServerSocketInGame->SendInfoOfResources(PioneerManager->Resources);
 }
 
-void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
+void AOnlineGameMode2::GetInfoOfBuilding_Spawn(float DeltaTime)
 {
 	TimerOfGetInfoOfBuilding_Spawn += DeltaTime;
 	if (TimerOfGetInfoOfBuilding_Spawn < 0.1f)
@@ -930,15 +927,15 @@ void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfBuilding_Spawn(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::GetInfoOfBuilding_Spawn(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
-	
+
 	if (!BuildingManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfBuilding_Spawn(...)> if (!BuildingManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::GetInfoOfBuilding_Spawn(...)> if (!BuildingManager)"));
 #endif			
 		return;
 	}
@@ -954,7 +951,7 @@ void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
 		float needMineral = copiedQueue.front().NeedMineral;
 		float needOrganicMatter = copiedQueue.front().NeedOrganicMatter;
 
-		// ÏûêÏõêÏù¥ Í±¥Î¨ºÏùÑ Í±¥ÏÑ§ÌïòÍ∏∞Ïóê Ï∂©Î∂ÑÌïòÎã§Î©¥
+		// ¿⁄ø¯¿Ã ∞«π∞¿ª ∞«º≥«œ±‚ø° √Ê∫–«œ¥Ÿ∏È
 		if (PioneerManager->Resources.NumOfMineral > needMineral &&
 			PioneerManager->Resources.NumOfOrganic > needOrganicMatter)
 		{
@@ -973,7 +970,7 @@ void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
+void AOnlineGameMode2::SetInfoOfBuilding_Stat(float DeltaTime)
 {
 	TimerOfSetInfoOfBuilding_Stat += DeltaTime;
 	if (TimerOfSetInfoOfBuilding_Stat < 0.1f)
@@ -983,7 +980,7 @@ void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 	if (!BuildingManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SetInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
 #endif			
 		return;
 	}
@@ -996,8 +993,8 @@ void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 		if (!kvp.Value)
 		{
 			forRemove.push(kvp.Key);
-			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfBuilding_Stat(...)> if (!kvp.Value)"));
-			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfBuilding_Stat(...)> if (!kvp.Value)"));
+			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode2::SetInfoOfBuilding_Stat(...)> if (!kvp.Value)"));
+			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SetInfoOfBuilding_Stat(...)> if (!kvp.Value)"));
 			continue;
 		}
 
@@ -1019,7 +1016,7 @@ void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
+void AOnlineGameMode2::SetInfoOfEnemy_Animation(float DeltaTime)
 {
 	TimerOfSetInfoOfEnemy_Animation += DeltaTime;
 	if (TimerOfSetInfoOfEnemy_Animation < 0.01f)
@@ -1029,7 +1026,7 @@ void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
 	if (!EnemyManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Animation(...)> if (!EnemyManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SetInfoOfEnemy_Animation(...)> if (!EnemyManager)"));
 #endif				
 		return;
 	}
@@ -1042,10 +1039,10 @@ void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
 		if (!kvp.Value)
 		{
 			forRemove.push(kvp.Key);
-			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Animation(...)> if (!kvp.Value)"));
-			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Animation(...)> if (!kvp.Value)"));
-			
-			
+			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode2::SetInfoOfEnemy_Animation(...)> if (!kvp.Value)"));
+			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SetInfoOfEnemy_Animation(...)> if (!kvp.Value)"));
+
+
 			continue;
 		}
 
@@ -1067,7 +1064,7 @@ void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
+void AOnlineGameMode2::SetInfoOfEnemy_Stat(float DeltaTime)
 {
 	TimerOfSetInfoOfEnemy_Stat += DeltaTime;
 	if (TimerOfSetInfoOfEnemy_Stat < 0.1f)
@@ -1077,7 +1074,7 @@ void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
 	if (!EnemyManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Stat(...)> if (!EnemyManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SetInfoOfEnemy_Stat(...)> if (!EnemyManager)"));
 #endif				
 		return;
 	}
@@ -1090,8 +1087,8 @@ void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
 		if (!kvp.Value)
 		{
 			forRemove.push(kvp.Key);
-			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Stat(...)> if (!kvp.Value)"));
-			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Stat(...)> if (!kvp.Value)"));
+			//UE_LOG(LogTemp, Fatal, TEXT("<AOnlineGameMode2::SetInfoOfEnemy_Stat(...)> if (!kvp.Value)"));
+			UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SetInfoOfEnemy_Stat(...)> if (!kvp.Value)"));
 			continue;
 		}
 
@@ -1117,17 +1114,17 @@ void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
 /////////////////////////////////////////////////
 // Tick (Client)
 /////////////////////////////////////////////////
-void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
+void AOnlineGameMode2::TickOfClientSocketInGame(float DeltaTime)
 {
 	if (!ClientSocketInGame)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::TickOfClientSocketInGame(...)> if (!ClientSocketInGame)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::TickOfClientSocketInGame(...)> if (!ClientSocketInGame)"));
 #endif				
 		return;
 	}
 
-	// Í≤åÏûÑÌÅ¥ÎùºÏù¥Ïñ∏Ìä∏Í∞Ä ÌôúÏÑ±ÌôîÎêòÏñ¥ ÏûàÏßÄ ÏïäÏúºÎ©¥ ÎçîÏù¥ÏÉÅ Ïã§ÌñâÌïòÏßÄ ÏïäÏäµÎãàÎã§.
+	// ∞‘¿”≈¨∂Û¿Ãæ∆Æ∞° »∞º∫»≠µ«æÓ ¿÷¡ˆ æ ¿∏∏È ¥ı¿ÃªÛ Ω««‡«œ¡ˆ æ Ω¿¥œ¥Ÿ.
 	if (ClientSocketInGame->IsClientSocketOn() == false)
 	{
 		return;
@@ -1161,7 +1158,7 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 	RecvExp(DeltaTime);
 }
 
-void AOnlineGameMode::SendScoreBoard(float DeltaTime)
+void AOnlineGameMode2::SendScoreBoard(float DeltaTime)
 {
 	TimerOfSendScoreBoard += DeltaTime;
 	if (TimerOfSendScoreBoard < 1.0f)
@@ -1171,7 +1168,7 @@ void AOnlineGameMode::SendScoreBoard(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendScoreBoard(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SendScoreBoard(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -1190,10 +1187,10 @@ void AOnlineGameMode::SendScoreBoard(float DeltaTime)
 			LeaveCriticalSection(&ClientSocketInGame->csMyInfoOfScoreBoard);
 		}
 	}
-	
+
 	ClientSocketInGame->SendScoreBoard();
 }
-void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
+void AOnlineGameMode2::RecvScoreBoard(float DeltaTime)
 {
 	TimerOfRecvScoreBoard += DeltaTime;
 	if (TimerOfRecvScoreBoard < 0.25f)
@@ -1203,12 +1200,12 @@ void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 	if (!InGameScoreBoardWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvScoreBoard(...)> if (!InGameScoreBoardWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvScoreBoard(...)> if (!InGameScoreBoardWidget)"));
 #endif				
 		return;
 	}
 
-	// ÏÑúÎ≤Ñ Ïó∞Í≤∞ÏÉÅÌÉú ÌôïÏù∏
+	// º≠πˆ ø¨∞·ªÛ≈¬ »Æ¿Œ
 	if (ClientSocketInGame->IsServerOn())
 		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
 	else
@@ -1225,7 +1222,7 @@ void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 	InGameScoreBoardWidget->RevealScores(copiedQueue);
 }
 
-void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfSpaceShip(float DeltaTime)
 {
 	TimerOfRecvInfoOfSpaceShip += DeltaTime;
 	if (TimerOfRecvInfoOfSpaceShip < 0.25f)
@@ -1235,14 +1232,14 @@ void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 	if (!SpaceShip)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfSpaceShip(...)> if (!SpaceShip)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfSpaceShip(...)> if (!SpaceShip)"));
 #endif			
 		return;
 	}
 	if (!PioneerController)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfSpaceShip(...)> if (!PioneerController)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfSpaceShip(...)> if (!PioneerController)"));
 #endif			
 		return;
 	}
@@ -1258,7 +1255,7 @@ void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 	SpaceShip->SetInfoOfSpaceShip(copiedQueue.back());
 }
 
-void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
+void AOnlineGameMode2::RecvSpawnPioneer(float DeltaTime)
 {
 	TimerOfRecvSpawnPioneer += DeltaTime;
 	if (TimerOfRecvSpawnPioneer < 0.02f)
@@ -1268,7 +1265,7 @@ void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvSpawnPioneer(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvSpawnPioneer(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -1288,7 +1285,7 @@ void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
+void AOnlineGameMode2::RecvDiedPioneer(float DeltaTime)
 {
 	TimerOfRecvDiedPioneer += DeltaTime;
 	if (TimerOfRecvDiedPioneer < 0.1f)
@@ -1298,7 +1295,7 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvDiedPioneer(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvDiedPioneer(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -1317,8 +1314,8 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 		{
 			if (PioneerManager->Pioneers[copiedQueue.front()])
 			{
-				// bDyingÏùÑ Î∞îÍøîÏ£ºÎ©¥ BaseCharacterAnimInstanceÏóêÏÑú UPioneerAnimInstance::DestroyCharacter()Î•º Ìò∏Ï∂úÌïòÍ≥†
-				// Pioneer->DestroyCharacter();ÏùÑ Ìò∏Ï∂úÌïòÏó¨ ÏïåÏïÑÏÑú ÏÜåÎ©∏ÌïòÍ≤å Îê©ÎãàÎã§.
+				// bDying¿ª πŸ≤„¡÷∏È BaseCharacterAnimInstanceø°º≠ UPioneerAnimInstance::DestroyCharacter()∏¶ »£√‚«œ∞Ì
+				// Pioneer->DestroyCharacter();¿ª »£√‚«œø© æÀæ∆º≠ º“∏Í«œ∞‘ µÀ¥œ¥Ÿ.
 				PioneerManager->Pioneers[copiedQueue.front()]->bDyingFlag = true;
 				PioneerManager->Pioneers[copiedQueue.front()]->bDying = true;
 			}
@@ -1330,7 +1327,7 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::SendInfoOfPioneer_Animation(float DeltaTime)
+void AOnlineGameMode2::SendInfoOfPioneer_Animation(float DeltaTime)
 {
 	TimerOfSendInfoOfPioneer_Animation += DeltaTime;
 	if (TimerOfSendInfoOfPioneer_Animation < 0.01f)
@@ -1340,7 +1337,7 @@ void AOnlineGameMode::SendInfoOfPioneer_Animation(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SendInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -1348,7 +1345,7 @@ void AOnlineGameMode::SendInfoOfPioneer_Animation(float DeltaTime)
 
 	ClientSocketInGame->SendInfoOfPioneer_Animation(PioneerManager->PioneerOfPlayer);
 }
-void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfPioneer_Animation(float DeltaTime)
 {
 	TimerOfRecvInfoOfPioneer_Animation += DeltaTime;
 	if (TimerOfRecvInfoOfPioneer_Animation < 0.01f)
@@ -1358,7 +1355,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -1379,8 +1376,8 @@ void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 			if (APioneer* pioneer = PioneerManager->Pioneers[id])
 			{
 				pioneer->SetInfoOfPioneer_Animation(copiedQueue.front());
-			
-				// AIÍ∞Ä ÏïÑÎãàÎ©¥ AI ControllerÎ•º Ìï¥Ï†úÌï©ÎãàÎã§.
+
+				// AI∞° æ∆¥œ∏È AI Controller∏¶ «ÿ¡¶«’¥œ¥Ÿ.
 				if (pioneer->SocketID != 0)
 				{
 					pioneer->UnPossessAIController();
@@ -1392,7 +1389,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
+void AOnlineGameMode2::RecvPossessPioneer(float DeltaTime)
 {
 	TimerOfRecvPossessPioneer += DeltaTime;
 	if (TimerOfRecvPossessPioneer < 0.02f)
@@ -1402,7 +1399,7 @@ void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvPossessPioneer(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvPossessPioneer(...)> if (!PioneerManager)"));
 #endif				
 		return;
 	}
@@ -1421,7 +1418,7 @@ void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
 		{
 			PioneerManager->ViewpointState = EViewpointState::Observation;
 
-			// UI ÏÑ§Ï†ï
+			// UI º≥¡§
 			if (InGameWidget)
 			{
 				InGameWidget->SetArrowButtonsVisibility(true);
@@ -1440,7 +1437,7 @@ void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfPioneer_Socket(float DeltaTime)
 {
 	TimerOfRecvInfoOfPioneer_Socket += DeltaTime;
 	if (TimerOfRecvInfoOfPioneer_Socket < 0.5f)
@@ -1450,7 +1447,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfPioneer_Socket(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfPioneer_Socket(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -1472,7 +1469,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 			{
 				pioneer->SetInfoOfPioneer_Socket(copiedQueue.front());
 
-				// AIÍ∞Ä ÏïÑÎãàÎ©¥ AI ControllerÎ•º Ìï¥Ï†úÌï©ÎãàÎã§.
+				// AI∞° æ∆¥œ∏È AI Controller∏¶ «ÿ¡¶«’¥œ¥Ÿ.
 				if (pioneer->SocketID != 0)
 				{
 					pioneer->UnPossessAIController();
@@ -1484,7 +1481,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::SendInfoOfPioneer_Stat(float DeltaTime)
+void AOnlineGameMode2::SendInfoOfPioneer_Stat(float DeltaTime)
 {
 	TimerOfSendInfoOfPioneer_Stat += DeltaTime;
 	if (TimerOfSendInfoOfPioneer_Stat < 0.25f)
@@ -1494,7 +1491,7 @@ void AOnlineGameMode::SendInfoOfPioneer_Stat(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SendInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -1502,7 +1499,7 @@ void AOnlineGameMode::SendInfoOfPioneer_Stat(float DeltaTime)
 
 	ClientSocketInGame->SendInfoOfPioneer_Stat(PioneerManager->PioneerOfPlayer);
 }
-void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfPioneer_Stat(float DeltaTime)
 {
 	TimerOfRecvInfoOfPioneer_Stat += DeltaTime;
 	if (TimerOfRecvInfoOfPioneer_Stat < 0.2f)
@@ -1512,7 +1509,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -1534,7 +1531,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 			{
 				pioneer->SetInfoOfPioneer_Stat(copiedQueue.front());
 
-				// AIÍ∞Ä ÏïÑÎãàÎ©¥ AI ControllerÎ•º Ìï¥Ï†úÌï©ÎãàÎã§.
+				// AI∞° æ∆¥œ∏È AI Controller∏¶ «ÿ¡¶«’¥œ¥Ÿ.
 				if (pioneer->SocketID != 0)
 				{
 					pioneer->UnPossessAIController();
@@ -1546,7 +1543,7 @@ void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfProjectile(float DeltaTime)
 {
 	TimerOfRecvInfoOfProjectile += DeltaTime;
 	if (TimerOfRecvInfoOfProjectile < 0.01f)
@@ -1556,7 +1553,7 @@ void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfProjectile(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfProjectile(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -1577,7 +1574,7 @@ void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfResources(float DeltaTime)
 {
 	TimerOfRecvInfoOfResources += DeltaTime;
 	if (TimerOfRecvInfoOfResources < 0.2f)
@@ -1587,7 +1584,7 @@ void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfResources(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfResources(...)> if (!PioneerManager)"));
 #endif			
 		return;
 	}
@@ -1602,14 +1599,14 @@ void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
 
 	while (copiedQueue.empty() == false)
 	{
-		// Ï†úÏùº ÎßàÏßÄÎßâÏóê Î∞õÏùÄ Í≤ÉÎßå Ï†ÅÏö©Ìï©ÎãàÎã§.
+		// ¡¶¿œ ∏∂¡ˆ∏∑ø° πﬁ¿∫ ∞Õ∏∏ ¿˚øÎ«’¥œ¥Ÿ.
 		PioneerManager->Resources = copiedQueue.back();
 
 		copiedQueue.pop();
 	}
 }
 
-void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfBuilding_Spawn(float DeltaTime)
 {
 	TimerOfRecvInfoOfBuilding_Spawn += DeltaTime;
 	if (TimerOfRecvInfoOfBuilding_Spawn < 0.1f)
@@ -1619,7 +1616,7 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
 	if (!BuildingManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfBuilding_Spawn(...)> if (!BuildingManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfBuilding_Spawn(...)> if (!BuildingManager)"));
 #endif				
 		return;
 	}
@@ -1640,7 +1637,7 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfBuilding_Spawned(float DeltaTime)
 {
 	TimerOfRecvInfoOfBuilding_Spawned += DeltaTime;
 	if (TimerOfRecvInfoOfBuilding_Spawned < 0.1f)
@@ -1650,7 +1647,7 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
 	if (!BuildingManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfBuilding_Spawned(...)> if (!BuildingManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfBuilding_Spawned(...)> if (!BuildingManager)"));
 #endif			
 		return;
 	}
@@ -1677,7 +1674,7 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::SendInfoOfBuilding_Stat(float DeltaTime)
+void AOnlineGameMode2::SendInfoOfBuilding_Stat(float DeltaTime)
 {
 	TimerOfSendInfoOfBuilding_Stat += DeltaTime;
 	if (TimerOfSendInfoOfBuilding_Stat < 0.1f)
@@ -1687,7 +1684,7 @@ void AOnlineGameMode::SendInfoOfBuilding_Stat(float DeltaTime)
 	if (!BuildingManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::SendInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
 #endif			
 		return;
 	}
@@ -1697,7 +1694,7 @@ void AOnlineGameMode::SendInfoOfBuilding_Stat(float DeltaTime)
 	ClientSocketInGame->SendInfoOfBuilding_Stat();
 }
 
-void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfBuilding_Stat(float DeltaTime)
 {
 	TimerOfRecvInfoOfBuilding_Stat += DeltaTime;
 	if (TimerOfRecvInfoOfBuilding_Stat < 0.1f)
@@ -1707,7 +1704,7 @@ void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
 	if (!BuildingManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
 #endif	
 		return;
 	}
@@ -1732,7 +1729,7 @@ void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
+void AOnlineGameMode2::RecvDestroyBuilding(float DeltaTime)
 {
 	TimerOfRecvDestroyBuilding += DeltaTime;
 	if (TimerOfRecvDestroyBuilding < 0.2f)
@@ -1742,7 +1739,7 @@ void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
 	if (!BuildingManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvDestroyBuilding(...)> if (!BuildingManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvDestroyBuilding(...)> if (!BuildingManager)"));
 #endif		
 		return;
 	}
@@ -1779,7 +1776,7 @@ void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::RecvSpawnEnemy(float DeltaTime)
+void AOnlineGameMode2::RecvSpawnEnemy(float DeltaTime)
 {
 	TimerOfRecvSpawnEnemy += DeltaTime;
 	if (TimerOfRecvSpawnEnemy < 0.02f)
@@ -1789,7 +1786,7 @@ void AOnlineGameMode::RecvSpawnEnemy(float DeltaTime)
 	if (!EnemyManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvSpawnEnemy(...)> if (!EnemyManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvSpawnEnemy(...)> if (!EnemyManager)"));
 #endif				
 		return;
 	}
@@ -1809,7 +1806,7 @@ void AOnlineGameMode::RecvSpawnEnemy(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::SendInfoOfEnemy_Animation(float DeltaTime)
+void AOnlineGameMode2::SendInfoOfEnemy_Animation(float DeltaTime)
 {
 	TimerOfSendInfoOfEnemy_Animation += DeltaTime;
 	if (TimerOfSendInfoOfEnemy_Animation < 0.01f)
@@ -1821,7 +1818,7 @@ void AOnlineGameMode::SendInfoOfEnemy_Animation(float DeltaTime)
 	ClientSocketInGame->SendInfoOfEnemy_Animation();
 
 }
-void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfEnemy_Animation(float DeltaTime)
 {
 	TimerOfRecvInfoOfEnemy_Animation += DeltaTime;
 	if (TimerOfRecvInfoOfEnemy_Animation < 0.01f)
@@ -1831,7 +1828,7 @@ void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
 	if (!EnemyManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfEnemy_Animation(...)> if (!EnemyManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfEnemy_Animation(...)> if (!EnemyManager)"));
 #endif			
 		return;
 	}
@@ -1860,7 +1857,7 @@ void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::SendInfoOfEnemy_Stat(float DeltaTime)
+void AOnlineGameMode2::SendInfoOfEnemy_Stat(float DeltaTime)
 {
 	TimerOfSendInfoOfEnemy_Stat += DeltaTime;
 	if (TimerOfSendInfoOfEnemy_Stat < 0.1f)
@@ -1871,7 +1868,7 @@ void AOnlineGameMode::SendInfoOfEnemy_Stat(float DeltaTime)
 
 	ClientSocketInGame->SendInfoOfEnemy_Stat();
 }
-void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
+void AOnlineGameMode2::RecvInfoOfEnemy_Stat(float DeltaTime)
 {
 	TimerOfRecvInfoOfEnemy_Stat += DeltaTime;
 	if (TimerOfRecvInfoOfEnemy_Stat < 0.1f)
@@ -1881,7 +1878,7 @@ void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
 	if (!EnemyManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfEnemy_Stat(...)> if (!EnemyManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvInfoOfEnemy_Stat(...)> if (!EnemyManager)"));
 #endif	
 		return;
 	}
@@ -1909,7 +1906,7 @@ void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
+void AOnlineGameMode2::RecvDestroyEnemy(float DeltaTime)
 {
 	TimerOfRecvDestroyEnemy += DeltaTime;
 	if (TimerOfRecvDestroyEnemy < 0.1f)
@@ -1919,7 +1916,7 @@ void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
 	if (!EnemyManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvDestroyEnemy(...)> if (!EnemyManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvDestroyEnemy(...)> if (!EnemyManager)"));
 #endif	
 		return;
 	}
@@ -1954,7 +1951,7 @@ void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
 	}
 }
 
-void AOnlineGameMode::RecvExp(float DeltaTime)
+void AOnlineGameMode2::RecvExp(float DeltaTime)
 {
 	TimerOfRecvExp += DeltaTime;
 	if (TimerOfRecvExp < 0.1f)
@@ -1964,7 +1961,7 @@ void AOnlineGameMode::RecvExp(float DeltaTime)
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvExp(...)> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::RecvExp(...)> if (!PioneerManager)"));
 #endif	
 		return;
 	}
@@ -1992,16 +1989,16 @@ void AOnlineGameMode::RecvExp(float DeltaTime)
 				pioneer->CalculateLevel();
 			}
 		}
-		
+
 		copiedQueue.pop();
 	}
 }
 
 
 /////////////////////////////////////////////////
-// Ìå®Î∞∞ Ï°∞Í±¥ ÌôïÏù∏
+// ∆–πË ¡∂∞« »Æ¿Œ
 /////////////////////////////////////////////////
-void AOnlineGameMode::CheckDefeatCondition(float DeltaTime)
+void AOnlineGameMode2::CheckDefeatCondition(float DeltaTime)
 {
 	TimerOfCheckDefeatCondition += DeltaTime;
 	if (TimerOfCheckDefeatCondition < 0.33f)
@@ -2011,7 +2008,7 @@ void AOnlineGameMode::CheckDefeatCondition(float DeltaTime)
 	if (!BuildingManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::CheckDefeatCondition(...)> if (!BuildingManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::CheckDefeatCondition(...)> if (!BuildingManager)"));
 #endif			
 		return;
 	}
@@ -2025,34 +2022,34 @@ void AOnlineGameMode::CheckDefeatCondition(float DeltaTime)
 
 
 /////////////////////////////////////////////////
-// ÏúÑÏ†Ø ÌôúÏÑ±Ìôî / ÎπÑÌôúÏÑ±Ìôî
+// ¿ß¡¨ »∞º∫»≠ / ∫Ò»∞º∫»≠
 /////////////////////////////////////////////////
-void AOnlineGameMode::ActivateInGameWidget()
+void AOnlineGameMode2::ActivateInGameWidget()
 {
 	_ActivateInGameWidget();
 }
-void AOnlineGameMode::_ActivateInGameWidget()
+void AOnlineGameMode2::_ActivateInGameWidget()
 {
 	if (!InGameWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateInGameWidget()> if (!InGameWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_ActivateInGameWidget()> if (!InGameWidget)"));
 #endif	
 		return;
 	}
 
 	InGameWidget->AddToViewport();
 }
-void AOnlineGameMode::DeactivateInGameWidget()
+void AOnlineGameMode2::DeactivateInGameWidget()
 {
 	_DeactivateInGameWidget();
 }
-void AOnlineGameMode::_DeactivateInGameWidget()
+void AOnlineGameMode2::_DeactivateInGameWidget()
 {
 	if (!InGameWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateInGameWidget()> if (!InGameWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_DeactivateInGameWidget()> if (!InGameWidget)"));
 #endif	
 		return;
 	}
@@ -2060,48 +2057,48 @@ void AOnlineGameMode::_DeactivateInGameWidget()
 	InGameWidget->RemoveFromViewport();
 }
 
-void AOnlineGameMode::ActivateInGameMenuWidget()
+void AOnlineGameMode2::ActivateInGameMenuWidget()
 {
 	_ActivateInGameMenuWidget();
 }
-void AOnlineGameMode::_ActivateInGameMenuWidget()
+void AOnlineGameMode2::_ActivateInGameMenuWidget()
 {
 	if (!InGameMenuWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateInGameMenuWidget()> if (!InGameMenuWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_ActivateInGameMenuWidget()> if (!InGameMenuWidget)"));
 #endif	
 		return;
 	}
 
 	InGameMenuWidget->AddToViewport();
 }
-void AOnlineGameMode::DeactivateInGameMenuWidget()
+void AOnlineGameMode2::DeactivateInGameMenuWidget()
 {
 	_DeactivateInGameMenuWidget();
 }
-void AOnlineGameMode::_DeactivateInGameMenuWidget()
+void AOnlineGameMode2::_DeactivateInGameMenuWidget()
 {
 	if (!InGameMenuWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateInGameMenuWidget()> if (!InGameMenuWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_DeactivateInGameMenuWidget()> if (!InGameMenuWidget)"));
 #endif	
 		return;
 	}
 
 	InGameMenuWidget->RemoveFromViewport();
 }
-void AOnlineGameMode::ToggleInGameMenuWidget()
+void AOnlineGameMode2::ToggleInGameMenuWidget()
 {
 	_ToggleInGameMenuWidget();
 }
-void AOnlineGameMode::_ToggleInGameMenuWidget()
+void AOnlineGameMode2::_ToggleInGameMenuWidget()
 {
 	if (!InGameMenuWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ToggleInGameMenuWidget()> if (!InGameMenuWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_ToggleInGameMenuWidget()> if (!InGameMenuWidget)"));
 #endif	
 		return;
 	}
@@ -2109,48 +2106,48 @@ void AOnlineGameMode::_ToggleInGameMenuWidget()
 	InGameMenuWidget->ToggleViewport();
 }
 
-void AOnlineGameMode::ActivateInGameScoreBoardWidget()
+void AOnlineGameMode2::ActivateInGameScoreBoardWidget()
 {
 	_ActivateInGameScoreBoardWidget();
 }
-void AOnlineGameMode::_ActivateInGameScoreBoardWidget()
+void AOnlineGameMode2::_ActivateInGameScoreBoardWidget()
 {
 	if (!InGameScoreBoardWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_ActivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
 #endif	
 		return;
 	}
 
 	InGameScoreBoardWidget->AddToViewport();
 }
-void AOnlineGameMode::DeactivateInGameScoreBoardWidget()
+void AOnlineGameMode2::DeactivateInGameScoreBoardWidget()
 {
 	_DeactivateInGameScoreBoardWidget();
 }
-void AOnlineGameMode::_DeactivateInGameScoreBoardWidget()
+void AOnlineGameMode2::_DeactivateInGameScoreBoardWidget()
 {
 	if (!InGameScoreBoardWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_DeactivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
 #endif	
 		return;
 	}
 
 	InGameScoreBoardWidget->RemoveFromViewport();
 }
-void AOnlineGameMode::ToggleInGameScoreBoardWidget()
+void AOnlineGameMode2::ToggleInGameScoreBoardWidget()
 {
 	_ToggleInGameScoreBoardWidget();
 }
-void AOnlineGameMode::_ToggleInGameScoreBoardWidget()
+void AOnlineGameMode2::_ToggleInGameScoreBoardWidget()
 {
 	if (!InGameScoreBoardWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ToggleInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_ToggleInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
 #endif	
 		return;
 	}
@@ -2158,32 +2155,32 @@ void AOnlineGameMode::_ToggleInGameScoreBoardWidget()
 	InGameScoreBoardWidget->ToggleViewport();
 }
 
-void AOnlineGameMode::LeftArrowInGameWidget()
+void AOnlineGameMode2::LeftArrowInGameWidget()
 {
 	_LeftArrowInGameWidget();
 }
-void AOnlineGameMode::_LeftArrowInGameWidget()
+void AOnlineGameMode2::_LeftArrowInGameWidget()
 {
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_LeftArrowInGameWidget()> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_LeftArrowInGameWidget()> if (!PioneerManager)"));
 #endif	
 		return;
 	}
 
 	PioneerManager->ObserveLeft();
 }
-void AOnlineGameMode::RightArrowInGameWidget()
+void AOnlineGameMode2::RightArrowInGameWidget()
 {
 	_RightArrowInGameWidget();
 }
-void AOnlineGameMode::_RightArrowInGameWidget()
+void AOnlineGameMode2::_RightArrowInGameWidget()
 {
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_RightArrowInGameWidget()> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_RightArrowInGameWidget()> if (!PioneerManager)"));
 #endif	
 		return;
 	}
@@ -2191,16 +2188,16 @@ void AOnlineGameMode::_RightArrowInGameWidget()
 	PioneerManager->ObserveRight();
 }
 
-void AOnlineGameMode::PossessInGameWidget()
+void AOnlineGameMode2::PossessInGameWidget()
 {
 	_PossessInGameWidget();
 }
-void AOnlineGameMode::_PossessInGameWidget()
+void AOnlineGameMode2::_PossessInGameWidget()
 {
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_PossessInGameWidget()> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_PossessInGameWidget()> if (!PioneerManager)"));
 #endif	
 		return;
 	}
@@ -2208,16 +2205,16 @@ void AOnlineGameMode::_PossessInGameWidget()
 	PioneerManager->PossessObservingPioneer();
 }
 
-void AOnlineGameMode::FreeViewpointInGameWidget()
+void AOnlineGameMode2::FreeViewpointInGameWidget()
 {
 	_FreeViewpointInGameWidget();
 }
-void AOnlineGameMode::_FreeViewpointInGameWidget()
+void AOnlineGameMode2::_FreeViewpointInGameWidget()
 {
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_FreeViewpointInGameWidget()> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_FreeViewpointInGameWidget()> if (!PioneerManager)"));
 #endif	
 		return;
 	}
@@ -2225,16 +2222,16 @@ void AOnlineGameMode::_FreeViewpointInGameWidget()
 	PioneerManager->SwitchToFreeViewpoint();
 }
 
-void AOnlineGameMode::ObservingInGameWidget()
+void AOnlineGameMode2::ObservingInGameWidget()
 {
 	_ObservingInGameWidget();
 }
-void AOnlineGameMode::_ObservingInGameWidget()
+void AOnlineGameMode2::_ObservingInGameWidget()
 {
 	if (!PioneerManager)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ObservingInGameWidget()> if (!PioneerManager)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_ObservingInGameWidget()> if (!PioneerManager)"));
 #endif	
 		return;
 	}
@@ -2242,16 +2239,16 @@ void AOnlineGameMode::_ObservingInGameWidget()
 	PioneerManager->Observation();
 }
 
-void AOnlineGameMode::SpawnBuildingInGameWidget(int Value)
+void AOnlineGameMode2::SpawnBuildingInGameWidget(int Value)
 {
 	_SpawnBuildingInGameWidget(Value);
 }
-void AOnlineGameMode::_SpawnBuildingInGameWidget(int Value)
+void AOnlineGameMode2::_SpawnBuildingInGameWidget(int Value)
 {
 	if (!PioneerController)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_SpawnBuildingInGameWidget(...)> if (!PioneerController)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_SpawnBuildingInGameWidget(...)> if (!PioneerController)"));
 #endif			
 		return;
 	}
@@ -2262,64 +2259,64 @@ void AOnlineGameMode::_SpawnBuildingInGameWidget(int Value)
 }
 
 
-void AOnlineGameMode::ActivateInGameVictoryWidget()
+void AOnlineGameMode2::ActivateInGameVictoryWidget()
 {
 	_ActivateInGameVictoryWidget();
 }
-void AOnlineGameMode::_ActivateInGameVictoryWidget()
+void AOnlineGameMode2::_ActivateInGameVictoryWidget()
 {
 	if (!InGameVictoryWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateInGameVictoryWidget()> if (!InGameVictoryWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_ActivateInGameVictoryWidget()> if (!InGameVictoryWidget)"));
 #endif	
 		return;
 	}
 
 	InGameVictoryWidget->AddToViewport();
 }
-void AOnlineGameMode::DeactivateInGameVictoryWidget()
+void AOnlineGameMode2::DeactivateInGameVictoryWidget()
 {
 	_DeactivateInGameVictoryWidget();
 }
-void AOnlineGameMode::_DeactivateInGameVictoryWidget()
+void AOnlineGameMode2::_DeactivateInGameVictoryWidget()
 {
 	if (!InGameVictoryWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateInGameVictoryWidget()> if (!InGameVictoryWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_DeactivateInGameVictoryWidget()> if (!InGameVictoryWidget)"));
 #endif	
 		return;
 	}
 
 	InGameVictoryWidget->RemoveFromViewport();
 }
-void AOnlineGameMode::ActivateInGameDefeatWidget()
+void AOnlineGameMode2::ActivateInGameDefeatWidget()
 {
 	_ActivateInGameDefeatWidget();
 }
-void AOnlineGameMode::_ActivateInGameDefeatWidget()
+void AOnlineGameMode2::_ActivateInGameDefeatWidget()
 {
 	if (!InGameDefeatWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateInGameDefeatWidget()> if (!InGameDefeatWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_ActivateInGameDefeatWidget()> if (!InGameDefeatWidget)"));
 #endif	
 		return;
 	}
 
 	InGameDefeatWidget->AddToViewport();
 }
-void AOnlineGameMode::DeactivateInGameDefeatWidget()
+void AOnlineGameMode2::DeactivateInGameDefeatWidget()
 {
 	_DeactivateInGameDefeatWidget();
 }
-void AOnlineGameMode::_DeactivateInGameDefeatWidget()
+void AOnlineGameMode2::_DeactivateInGameDefeatWidget()
 {
 	if (!InGameDefeatWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateInGameDefeatWidget()> if (!InGameDefeatWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_DeactivateInGameDefeatWidget()> if (!InGameDefeatWidget)"));
 #endif	
 		return;
 	}
@@ -2327,48 +2324,48 @@ void AOnlineGameMode::_DeactivateInGameDefeatWidget()
 	InGameDefeatWidget->RemoveFromViewport();
 }
 
-void AOnlineGameMode::ActivateBuildingToolTipWidget()
+void AOnlineGameMode2::ActivateBuildingToolTipWidget()
 {
 	_ActivateBuildingToolTipWidget();
 }
-void AOnlineGameMode::_ActivateBuildingToolTipWidget()
+void AOnlineGameMode2::_ActivateBuildingToolTipWidget()
 {
 	if (!BuildingToolTipWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_ActivateBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_ActivateBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
 #endif	
 		return;
 	}
 
 	BuildingToolTipWidget->AddToViewport();
 }
-void AOnlineGameMode::DeactivateBuildingToolTipWidget()
+void AOnlineGameMode2::DeactivateBuildingToolTipWidget()
 {
 	_DeactivateBuildingToolTipWidget();
 }
-void AOnlineGameMode::_DeactivateBuildingToolTipWidget()
+void AOnlineGameMode2::_DeactivateBuildingToolTipWidget()
 {
 	if (!BuildingToolTipWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_DeactivateBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_DeactivateBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
 #endif	
 		return;
 	}
 
 	BuildingToolTipWidget->RemoveFromViewport();
 }
-void AOnlineGameMode::SetTextOfBuildingToolTipWidget(int BuildingType)
+void AOnlineGameMode2::SetTextOfBuildingToolTipWidget(int BuildingType)
 {
 	_SetTextOfBuildingToolTipWidget(BuildingType);
 }
-void AOnlineGameMode::_SetTextOfBuildingToolTipWidget(int BuildingType)
+void AOnlineGameMode2::_SetTextOfBuildingToolTipWidget(int BuildingType)
 {
 	if (!BuildingToolTipWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_SetTextOfBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_SetTextOfBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
 #endif	
 		return;
 	}
@@ -2376,12 +2373,12 @@ void AOnlineGameMode::_SetTextOfBuildingToolTipWidget(int BuildingType)
 	BuildingToolTipWidget->SetText(BuildingType);
 }
 
-void AOnlineGameMode::ActivateDialogWidget(float TimeOfDuration)
+void AOnlineGameMode2::ActivateDialogWidget(float TimeOfDuration)
 {
 	if (!DialogWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::ActivateDialogWidget()> if (!DialogWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::ActivateDialogWidget()> if (!DialogWidget)"));
 #endif	
 		return;
 	}
@@ -2390,26 +2387,26 @@ void AOnlineGameMode::ActivateDialogWidget(float TimeOfDuration)
 
 	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfDeactivateDialogWidget))
 		GetWorldTimerManager().ClearTimer(TimerHandleOfDeactivateDialogWidget);
-	GetWorldTimerManager().SetTimer(TimerHandleOfDeactivateDialogWidget, this, &AOnlineGameMode::DeactivateDialogWidget, TimeOfDuration, false);
+	GetWorldTimerManager().SetTimer(TimerHandleOfDeactivateDialogWidget, this, &AOnlineGameMode2::DeactivateDialogWidget, TimeOfDuration, false);
 }
-void AOnlineGameMode::DeactivateDialogWidget()
+void AOnlineGameMode2::DeactivateDialogWidget()
 {
 	if (!DialogWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::DeactivateDialogWidget()> if (!DialogWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::DeactivateDialogWidget()> if (!DialogWidget)"));
 #endif	
 		return;
 	}
 
 	DialogWidget->RemoveFromViewport();
 }
-void AOnlineGameMode::SetTextOfDialogWidget(FText Text)
+void AOnlineGameMode2::SetTextOfDialogWidget(FText Text)
 {
 	if (!DialogWidget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::_SetTextOfBuildingToolTipWidget()> if (!DialogWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::_SetTextOfBuildingToolTipWidget()> if (!DialogWidget)"));
 #endif	
 		return;
 	}
@@ -2419,25 +2416,25 @@ void AOnlineGameMode::SetTextOfDialogWidget(FText Text)
 
 
 /////////////////////////////////////////////////
-// ÌÉÄÏù¥ÌãÄ ÌôîÎ©¥ÏúºÎ°ú ÎêòÎèåÏïÑÍ∞ÄÍ∏∞
+// ≈∏¿Ã∆≤ »≠∏È¿∏∑Œ µ«µπæ∆∞°±‚
 /////////////////////////////////////////////////
-void AOnlineGameMode::BackToTitle()
+void AOnlineGameMode2::BackToTitle()
 {
 	_BackToTitle();
 }
-void AOnlineGameMode::_BackToTitle()
+void AOnlineGameMode2::_BackToTitle()
 {
 	UGameplayStatics::OpenLevel(this, "MainScreen");
 }
 
 /////////////////////////////////////////////////
-// Í≤åÏûÑÏ¢ÖÎ£å
+// ∞‘¿”¡æ∑·
 /////////////////////////////////////////////////
-void AOnlineGameMode::TerminateGame()
+void AOnlineGameMode2::TerminateGame()
 {
 	_TerminateGame();
 }
-void AOnlineGameMode::_TerminateGame()
+void AOnlineGameMode2::_TerminateGame()
 {
 	if (ClientSocket)
 		ClientSocket->CloseSocket();
@@ -2446,4 +2443,4 @@ void AOnlineGameMode::_TerminateGame()
 	if (ClientSocketInGame)
 		ClientSocketInGame->CloseSocket();
 }
-/*** AOnlineGameMode : End ***/
+/*** AOnlineGameMode2 : End ***/

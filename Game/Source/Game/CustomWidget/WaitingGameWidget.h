@@ -82,7 +82,7 @@ public:
 
 	void CheckTextOfTitle();
 	void CheckTextOfStage();
-	int CheckTextOfMaximum();
+	int CheckTextOfMaximum(int NumOfCurrent = 1);
 
 	cInfoOfGame GetModifiedInfo(cInfoOfGame CopiedMyInfoOfGame);
 	void SetModifiedInfo(cInfoOfGame& InfoOfGame);

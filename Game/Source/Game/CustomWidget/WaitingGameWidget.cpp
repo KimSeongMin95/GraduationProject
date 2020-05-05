@@ -119,7 +119,7 @@ void UWaitingGameWidget::SetLeader(bool bLeader)
 
 void UWaitingGameWidget::SetIsReadOnly(bool bReadOnly)
 {
-	if (!Title || !Stage || !Maximum)
+	if (!Title || !Stage)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_GAME
 		printf_s("[Error] <UWaitingGameWidget::SetIsReadOnly(...)> if (!Title || !Stage || !Maximum) \n");
@@ -132,7 +132,6 @@ void UWaitingGameWidget::SetIsReadOnly(bool bReadOnly)
 
 	Title->SetIsReadOnly(bReadOnly);
 	Stage->SetIsReadOnly(bReadOnly);
-	Maximum->SetIsReadOnly(bReadOnly);
 }
 
 void UWaitingGameWidget::SetBackButtonVisibility(bool bVisible)
@@ -258,7 +257,7 @@ void UWaitingGameWidget::Clear()
 	bIsLeader = false;
 
 	State->SetText(FText::FromString(TEXT("대기중")));
-	Title->SetText(FText::FromString(TEXT("함께 재밌게 게임을 해보아요!")));
+	Title->SetText(FText::FromString(TEXT("같이 게임합시다~!")));
 	Leader->SetText(FText::FromString(TEXT("ID")));
 	Players->SetText(FText::FromString("1"));
 	Stage->SetText(FText::FromString("1"));
@@ -350,13 +349,13 @@ void UWaitingGameWidget::CheckTextOfStage()
 
 		if (stage <= 0)
 			stage = 1;
-		else if (stage > 3)
-			stage = 3;
+		else if (stage > 2)
+			stage = 2;
 	}
 	Stage->SetText(FText::FromString(FString::FromInt(stage)));
 }
 
-int UWaitingGameWidget::CheckTextOfMaximum()
+int UWaitingGameWidget::CheckTextOfMaximum(int NumOfCurrent /*= 1*/)
 {
 	if (!Maximum)
 	{
@@ -374,8 +373,8 @@ int UWaitingGameWidget::CheckTextOfMaximum()
 	{
 		max = FCString::Atoi(*Maximum->GetText().ToString());
 
-		if (max <= 0)
-			max = 1;
+		if (max < NumOfCurrent)
+			max = NumOfCurrent;
 		else if (max > 30)
 			max = 30;
 	}

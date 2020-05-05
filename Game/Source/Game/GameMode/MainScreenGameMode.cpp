@@ -967,7 +967,10 @@ void AMainScreenGameMode::_CheckModifyWaitingGame()
 	}
 	WaitingGameWidget->CheckTextOfTitle();
 	WaitingGameWidget->CheckTextOfStage();
-	AOnlineGameMode::MaximumOfPioneers = WaitingGameWidget->CheckTextOfMaximum();
+	
+	//cInfoOfGame copied = ClientSocket->CopyMyInfoOfGame();
+	
+	AOnlineGameMode::MaximumOfPioneers = WaitingGameWidget->CheckTextOfMaximum(1);
 
 	SendModifyWaitingGame();
 }
@@ -1199,7 +1202,9 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 	{
 		ClearTimerOfCountStartedGame();
 
-		StartOnlineGame();
+		cInfoOfGame copied = ClientSocket->CopyMyInfoOfGame();
+
+		StartOnlineGame(copied.Stage);
 		return;
 	}
 
@@ -1212,11 +1217,22 @@ void AMainScreenGameMode::ClearTimerOfCountStartedGame()
 }
 
 
-void AMainScreenGameMode::StartOnlineGame()
+void AMainScreenGameMode::StartOnlineGame(unsigned int Stage)
 {
 	OnlineState = EOnlineState::Playing;
 
-	UGameplayStatics::OpenLevel(this, "Online");
+	switch (Stage)
+	{
+	case 1:
+		UGameplayStatics::OpenLevel(this, "Online");
+		break;
+	case 2:
+		UGameplayStatics::OpenLevel(this, "Online2");
+		break;
+	default:
+
+		break;
+	}
 }
 
 void AMainScreenGameMode::StartGameServer()

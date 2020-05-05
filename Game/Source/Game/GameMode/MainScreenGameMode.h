@@ -223,7 +223,7 @@ public:
 	FTimerHandle thCountStartedGame;
 
 	UFUNCTION(Category = "Widget")
-		void StartOnlineGame();
+		void StartOnlineGame(unsigned int Stage);
 
 	UFUNCTION(Category = "Widget")
 		void StartGameServer();

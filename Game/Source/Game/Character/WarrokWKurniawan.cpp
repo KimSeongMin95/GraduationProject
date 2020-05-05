@@ -7,6 +7,7 @@
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "GameMode/TutorialGameMode.h"
 #include "GameMode/OnlineGameMode.h"
+#include "GameMode/OnlineGameMode2.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -97,6 +98,7 @@ void AWarrokWKurniawan::Victory()
 
 	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
 	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
+	AOnlineGameMode2* onlineGameMode2 = Cast<AOnlineGameMode2>(UGameplayStatics::GetGameMode(world));
 
 	if (tutorialGameMode)
 	{
@@ -105,6 +107,10 @@ void AWarrokWKurniawan::Victory()
 	else if (onlineGameMode)
 	{
 		onlineGameMode->ActivateInGameVictoryWidget();
+	}
+	else if (onlineGameMode2)
+	{
+		onlineGameMode2->ActivateInGameVictoryWidget();
 	}
 }
 /*** AEnemy : End ***/

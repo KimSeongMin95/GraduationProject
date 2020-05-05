@@ -1760,6 +1760,20 @@ void MainServer::JoinOnlineGame(stringstream & RecvStream, SOCKET Socket)
 		LeaveCriticalSection(&csInfoOfGames);
 		return;
 	}
+	// 최대 인원수 제한만큼 사람이 들어왔다면 더이상 들어오지 못합니다.
+	else if (InfoOfGames.at(leaderSocket).Players.Size() >= InfoOfGames.at(leaderSocket).nMax)
+	{
+		/// 수신 - 에러
+		CONSOLE_LOG("[Error] <MainServer::JoinOnlineGame(...)> if (InfoOfGames.find(leaderSocket) == InfoOfGames.end()) \n");
+
+		// 
+		stringstream sendStream;
+		sendStream << EPacketType::DESTROY_WAITING_GAME << endl;
+		Send(sendStream, Socket);
+
+		LeaveCriticalSection(&csInfoOfGames);
+		return;
+	}
 	InfoOfGames.at(leaderSocket).Players.Add((int)Socket, infoOfPlayer);
 	cInfoOfGame infoOfGame = InfoOfGames.at(leaderSocket);
 	LeaveCriticalSection(&csInfoOfGames);
