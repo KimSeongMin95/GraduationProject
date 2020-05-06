@@ -10,6 +10,10 @@
 struct stBuildingToolTip
 {
 public:
+	string Name = "NULL";
+	string HP = "NULL";
+	string Time = "NULL";
+
 	int  nNeedOfMineral = 0;
 	int  nProductionOfMineral = 0;
 	int  nConsumeOfMineral = 0;
@@ -23,8 +27,12 @@ public:
 	int  nConsumeOfEnergy = 0;
 
 public:
-	void SetValues(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8, int n9)
+	void SetValues(string name, string hp, string time, int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8, int n9)
 	{
+		Name = name;
+		HP = hp;
+		Time = time;
+
 		nNeedOfMineral = n1;
 		nProductionOfMineral = n2;
 		nConsumeOfMineral = n3;
@@ -50,6 +58,13 @@ public:
 	~UBuildingToolTipWidget();
 
 protected:
+	UPROPERTY()
+		class UEditableTextBox* Name = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* HP = nullptr;
+	UPROPERTY()
+		class UEditableTextBox* Time = nullptr;
+
 	UPROPERTY()
 		class UEditableTextBox* NeedOfMineral_Num = nullptr;
 	UPROPERTY()

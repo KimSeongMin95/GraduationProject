@@ -22,6 +22,7 @@
 #include "SpaceShip/SpaceShip.h"
 
 #include "Etc/WorldViewCameraActor.h"
+#include "Etc/OccupationPanel.h"
 
 #include "Projectile/ProjectilePistol.h"
 #include "Projectile/ProjectileAssaultRifle.h"
@@ -95,6 +96,7 @@ AOnlineGameMode2::AOnlineGameMode2()
 
 	PrimaryActorTick.bCanEverTick = true;
 
+	TimerOfCheckVictoryCondition = 0.0f;
 	TimerOfCheckDefeatCondition = 0.0f;
 
 	/***** 필수! 꼭 읽어주세요. : Start *****/
@@ -240,7 +242,7 @@ void AOnlineGameMode2::StartPlay()
 		PioneerManager->ViewpointState = EViewpointState::SpaceShip;
 	}
 
-
+	FindQcuupationPanel();
 }
 
 void AOnlineGameMode2::Tick(float DeltaTime)
@@ -263,6 +265,7 @@ void AOnlineGameMode2::Tick(float DeltaTime)
 		}
 	}
 
+	CheckVictoryCondition(DeltaTime);
 	CheckDefeatCondition(DeltaTime);
 }
 /*** Basic Function : End ***/
@@ -1998,6 +2001,48 @@ void AOnlineGameMode2::RecvExp(float DeltaTime)
 /////////////////////////////////////////////////
 // 패배 조건 확인
 /////////////////////////////////////////////////
+void AOnlineGameMode2::FindQcuupationPanel()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+		UE_LOG(LogTemp, Warning, TEXT("<AOnlineGameMode2::FindQcuupationPanel()> if (!world)"));
+#endif
+		return;
+	}
+
+	for (TActorIterator<AOccupationPanel> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		OccupationPanels.Add(*ActorItr);
+	}
+}
+void AOnlineGameMode2::CheckVictoryCondition(float DeltaTime)
+{
+	TimerOfCheckVictoryCondition += DeltaTime;
+	if (TimerOfCheckVictoryCondition < 1.0f)
+		return;
+	TimerOfCheckVictoryCondition = 0.0f;
+
+	queue<int> idx;
+	for (int i = 0; i < OccupationPanels.Num(); i++)
+	{
+		if (OccupationPanels[i]->Occupancy >= 100.0f)
+			idx.push(i);
+	}
+
+	while (idx.empty() == false)
+	{
+		OccupationPanels.RemoveAt(idx.front());
+		idx.pop();
+	}
+
+	if (OccupationPanels.Num() <= 0)
+		_ActivateInGameVictoryWidget();
+	else
+		_DeactivateInGameVictoryWidget();
+}
+
 void AOnlineGameMode2::CheckDefeatCondition(float DeltaTime)
 {
 	TimerOfCheckDefeatCondition += DeltaTime;

@@ -52,6 +52,7 @@ APioneer::APioneer()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(33.0f, 96.0f);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Overlap);
 
 	InitHelthPointBar();
 

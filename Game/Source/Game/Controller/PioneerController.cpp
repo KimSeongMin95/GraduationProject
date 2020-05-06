@@ -943,6 +943,11 @@ void APioneerController::EasterEgg(float Value)
 
 	if (Pioneer->GetCurrentWeapon())
 		Pioneer->GetCurrentWeapon()->AttackSpeed++;
+
+	Pioneer->MoveSpeed += 0.25f;
+	if (Pioneer->GetCharacterMovement())
+		Pioneer->GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * Pioneer->MoveSpeed; // 움직일 때 걷는 속도
+
 }
 
 

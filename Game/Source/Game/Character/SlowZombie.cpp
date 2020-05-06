@@ -73,8 +73,8 @@ void ASlowZombie::InitStat()
 	AttackPower = 15.0f;
 
 	AttackRange = 3.5f;
-	DetectRange = 48.0f;
-	SightRange = 48.0f;
+	DetectRange = 64.0f;
+	SightRange = 64.0f;
 
 	Exp = 11.0f;
 }

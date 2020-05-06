@@ -93,6 +93,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "EnemyManager")
 		class AEnemyManager* EnemyManager = nullptr;
 
+
+	UPROPERTY(VisibleAnywhere)
+		TArray<class AOccupationPanel*> OccupationPanels;
+
 protected:
 
 
@@ -197,8 +201,10 @@ protected:
 	void RecvExp(float DeltaTime); float TimerOfRecvExp;
 
 	/////////////////////////////////////////////////
-	// 패배 조건 확인
+	// 승리/패배 조건 확인
 	/////////////////////////////////////////////////
+	void FindQcuupationPanel();
+	void CheckVictoryCondition(float DeltaTime); float TimerOfCheckVictoryCondition;
 	void CheckDefeatCondition(float DeltaTime); float TimerOfCheckDefeatCondition;
 
 protected:

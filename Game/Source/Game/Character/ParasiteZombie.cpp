@@ -73,8 +73,8 @@ void AParasiteZombie::InitStat()
 	AttackPower = 12.0f;
 
 	AttackRange = 3.5f;
-	DetectRange = 48.0f;
-	SightRange = 48.0f;
+	DetectRange = 64.0f;
+	SightRange = 64.0f;
 
 	Exp = 9.0f;
 }

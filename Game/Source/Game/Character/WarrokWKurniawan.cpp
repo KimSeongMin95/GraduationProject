@@ -15,7 +15,7 @@
 AWarrokWKurniawan::AWarrokWKurniawan()
 {
 	// 충돌 캡슐의 크기를 설정합니다.
-	GetCapsuleComponent()->InitCapsuleSize(200.0f, 330.0f);
+	GetCapsuleComponent()->InitCapsuleSize(200.0f, 220.0f);
 
 	InitHelthPointBar();
 
@@ -76,8 +76,8 @@ void AWarrokWKurniawan::InitStat()
 	AttackPower = 100.0f;
 
 	AttackRange = 7.5f;
-	DetectRange = 48.0f;
-	SightRange = 48.0f;
+	DetectRange = 64.0f;
+	SightRange = 64.0f;
 
 	Exp = 100.0f;
 }
@@ -98,7 +98,7 @@ void AWarrokWKurniawan::Victory()
 
 	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
 	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
-	AOnlineGameMode2* onlineGameMode2 = Cast<AOnlineGameMode2>(UGameplayStatics::GetGameMode(world));
+	//AOnlineGameMode2* onlineGameMode2 = Cast<AOnlineGameMode2>(UGameplayStatics::GetGameMode(world));
 
 	if (tutorialGameMode)
 	{
@@ -108,9 +108,9 @@ void AWarrokWKurniawan::Victory()
 	{
 		onlineGameMode->ActivateInGameVictoryWidget();
 	}
-	else if (onlineGameMode2)
-	{
-		onlineGameMode2->ActivateInGameVictoryWidget();
-	}
+	//else if (onlineGameMode2)
+	//{
+	//	onlineGameMode2->ActivateInGameVictoryWidget();
+	//}
 }
 /*** AEnemy : End ***/

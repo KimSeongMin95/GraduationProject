@@ -11,6 +11,8 @@
 #include "Network/ClientSocketInGame.h"
 
 #include "Etc/MyTriggerBox.h"
+
+#include "Etc/OccupationPanel.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -48,6 +50,9 @@ AEnemySpawner::AEnemySpawner()
 	MoveSpeed = 0.0f;
 	PercentageOfHealth = 100.0f;
 	PercentageOfExp = 100.0f;
+	PercentageOfAttackPower = 100.0f;
+
+	OccupationPanel = nullptr;
 }
 
 void AEnemySpawner::BeginPlay()
@@ -76,6 +81,15 @@ void AEnemySpawner::Tick(float DeltaTime)
 /*** AEnemySpawner : Start ***/
 void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 {
+	// 소멸 트리거가 발동되면 소멸합니다.
+	if (OccupationPanel)
+	{
+		if (OccupationPanel->Occupancy >= 100.0f)
+		{
+			Destroy();
+		}
+	}
+
 	if (!TriggerBoxForSpawn)
 		return;
 
@@ -117,14 +131,13 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 			}
 
 			enemy->HealthPoint *= PercentageOfHealth / 100.0f;
+			enemy->MaxHealthPoint *= PercentageOfHealth / 100.0f;
 			enemy->Exp *= PercentageOfExp / 100.0f;
+			enemy->AttackPower *= PercentageOfAttackPower / 100.0f;
 		}
 	}
 	else
 	{
-		//EnemyManager->EnemySpawners.Remove(this);
-		//Destroy();
-
 		//////////
 		// 레벨디자인
 		//////////

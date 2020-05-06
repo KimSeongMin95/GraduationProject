@@ -83,6 +83,10 @@ public:
 		float PercentageOfHealth;
 	UPROPERTY(EditAnywhere)
 		float PercentageOfExp;
+	UPROPERTY(EditAnywhere)
+		float PercentageOfAttackPower;
+	UPROPERTY(EditAnywhere)
+		class AOccupationPanel* OccupationPanel = nullptr;
 
 public:
 	void TickOfSpawnEnemy(float DeltaTime);

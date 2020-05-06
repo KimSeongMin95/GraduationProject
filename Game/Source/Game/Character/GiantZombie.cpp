@@ -73,8 +73,8 @@ void AGiantZombie::InitStat()
 	AttackPower = 35.0f;
 
 	AttackRange = 5.75f;
-	DetectRange = 48.0f;
-	SightRange = 48.0f;
+	DetectRange = 64.0f;
+	SightRange = 64.0f;
 
 	Exp = 19.0f;
 }

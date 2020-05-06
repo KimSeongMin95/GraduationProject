@@ -31,7 +31,7 @@ AEnemyManager::AEnemyManager()
 
 	ID = 1;
 
-	LimitOfEnemySpawn = 128;
+	LimitOfEnemySpawn = 150;
 }
 
 void AEnemyManager::BeginPlay()

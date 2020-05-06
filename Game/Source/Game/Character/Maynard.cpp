@@ -73,8 +73,8 @@ void AMaynard::InitStat()
 	AttackPower = 8.0f;
 
 	AttackRange = 3.0f;
-	DetectRange = 48.0f;
-	SightRange = 48.0f;
+	DetectRange = 64.0f;
+	SightRange = 64.0f;
 
 	Exp = 7.0f;
 }

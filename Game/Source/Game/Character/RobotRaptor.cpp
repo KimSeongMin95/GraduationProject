@@ -73,8 +73,8 @@ void ARobotRaptor::InitStat()
 	AttackPower = 20.0f;
 
 	AttackRange = 4.25f;
-	DetectRange = 48.0f;
-	SightRange = 48.0f;
+	DetectRange = 64.0f;
+	SightRange = 64.0f;
 
 	Exp = 15.0f;
 }

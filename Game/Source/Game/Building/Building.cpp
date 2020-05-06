@@ -146,7 +146,7 @@ void ABuilding::BeginPlayHelthPointBar()
 	if (!world)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!world)"));
+		UE_LOG(LogTemp, Error, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!world)"));
 #endif
 		return;
 	}
@@ -172,21 +172,21 @@ void ABuilding::BeginPlayHelthPointBar()
 			if (!ProgressBar)
 			{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-				UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!ProgressBar)"));
+				UE_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!ProgressBar)"));
 #endif
 			}
 		}
 		else
 		{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-			UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!WidgetTree)"));
+			UE_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!WidgetTree)"));
 #endif
 		}
 	}
 	else
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
+		UE_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
 #endif
 	}
 

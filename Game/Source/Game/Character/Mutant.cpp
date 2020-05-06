@@ -73,8 +73,8 @@ void AMutant::InitStat()
 	AttackPower = 25.0f;
 
 	AttackRange = 4.5f;
-	DetectRange = 48.0f;
-	SightRange = 48.0f;
+	DetectRange = 64.0f;
+	SightRange = 64.0f;
 
 	Exp = 17.0f;
 }
