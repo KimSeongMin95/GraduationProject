@@ -188,6 +188,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		FVector PositionOfBase;
 
+	UPROPERTY(VisibleAnywhere)
+		FRotator Bone_Spine_01_Rotation;
+
 private:
 	UFUNCTION(Category = Camera)
 		/** Tick()에서 호출합니다. */

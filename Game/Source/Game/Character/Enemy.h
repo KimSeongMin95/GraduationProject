@@ -88,6 +88,14 @@ protected:
 		/** AttackRangeSphereComp와 Overlap된 ABaseCharacter들을 모두 저장하고 벗어나면 삭제 */
 		TArray<ABaseCharacter*> OverlappedCharacterInAttackRange;
 
+
+	UPROPERTY(EditAnywhere, Category = "DetectRange")
+		TArray<class AActor*> OverlappedTurretInDetectRange;
+
+	UPROPERTY(EditAnywhere, Category = "AttackRange")
+		TArray<class AActor*> OverlappedTurretInAttackRange;
+
+
 	UPROPERTY(EditAnywhere, Category = "DetectRange")
 		TArray<class AActor*> OverlappedBuildingInDetectRange;
 

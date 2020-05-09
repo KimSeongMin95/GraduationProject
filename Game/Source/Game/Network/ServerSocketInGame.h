@@ -101,7 +101,7 @@ public:
 
 
 	///////////////////////////////////////////
-	// Pioneer 세분화
+	// Enemy 세분화
 	///////////////////////////////////////////
 	static std::map<int, cInfoOfEnemy_Spawn> InfoOfEnemies_Spawn;
 	static CRITICAL_SECTION csInfoOfEnemies_Spawn;

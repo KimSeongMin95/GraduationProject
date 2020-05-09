@@ -18,6 +18,8 @@ UPioneerAnimInstance::UPioneerAnimInstance()
 	bHasRifleType = false;
 	bHasLauncherType = false;
 	bFired = false;
+
+	Bone_Spine_01_Rotation = FRotator::ZeroRotator;
 }
 
 void UPioneerAnimInstance::NativeInitializeAnimation()
@@ -80,6 +82,8 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 	bHasLauncherType = Pioneer->HasLauncherType();
 
 	bFired = Pioneer->bFired;
+
+	Bone_Spine_01_Rotation = Pioneer->Bone_Spine_01_Rotation;
 }
 /*** AnimInstance Basic Function : End ***/
 

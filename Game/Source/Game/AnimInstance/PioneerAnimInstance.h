@@ -57,5 +57,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		bool bFired;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+		FRotator Bone_Spine_01_Rotation;
 /*** UEnemyAnimInstance : End ***/
 };

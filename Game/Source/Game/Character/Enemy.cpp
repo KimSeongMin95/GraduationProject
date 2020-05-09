@@ -8,6 +8,7 @@
 
 #include "Character/Pioneer.h"
 #include "Building/Building.h"
+#include "Building/Turret.h"
 
 #include "Network/Packet.h"
 #include "Network/ServerSocketInGame.h"
@@ -204,6 +205,17 @@ void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedCom
 			}
 		}
 	}
+	else if (OtherActor->IsA(ATurret::StaticClass()))
+	{
+		if (ATurret* turret = dynamic_cast<ATurret*>(OtherActor))
+		{
+			if (turret->BuildingState == EBuildingState::Constructing ||
+				turret->BuildingState == EBuildingState::Constructed)
+			{
+				OverlappedTurretInDetectRange.Add(OtherActor);
+			}
+		}
+	}
 	else if (OtherActor->IsA(ABuilding::StaticClass()))
 	{
 		if (ABuilding* building = dynamic_cast<ABuilding*>(OtherActor))
@@ -215,7 +227,6 @@ void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedCom
 			}
 		}
 	}
-
 
 //#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Add(OtherActor): %s"), *OtherActor->GetName());
@@ -243,6 +254,10 @@ void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp,
 			}
 		}
 
+	}
+	else if (OtherActor->IsA(ATurret::StaticClass()))
+	{
+		OverlappedTurretInDetectRange.RemoveSingle(OtherActor);
 	}
 	else if (OtherActor->IsA(ABuilding::StaticClass()))
 	{
@@ -281,6 +296,17 @@ void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedCom
 			}
 		}
 	}
+	else if (OtherActor->IsA(ATurret::StaticClass()))
+	{
+		if (ATurret* turret = dynamic_cast<ATurret*>(OtherActor))
+		{
+			if (turret->BuildingState == EBuildingState::Constructing ||
+				turret->BuildingState == EBuildingState::Constructed)
+			{
+				OverlappedTurretInAttackRange.Add(OtherActor);
+			}
+		}
+	}
 	else if (OtherActor->IsA(ABuilding::StaticClass()))
 	{
 		if (ABuilding* building = dynamic_cast<ABuilding*>(OtherActor))
@@ -313,6 +339,10 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 			}
 		}
 
+	}
+	else if (OtherActor->IsA(ATurret::StaticClass()))
+	{
+		OverlappedTurretInAttackRange.RemoveSingle(OtherActor);
 	}
 	else if (OtherActor->IsA(ABuilding::StaticClass()))
 	{
@@ -437,14 +467,14 @@ bool AEnemy::CheckNoObstacle(AActor* Target)
 	{
 		FVector WorldOrigin = GetActorLocation(); // 시작 위치
 		//WorldOrigin.Z += 10.0f - GetCapsuleComponent()->GetScaledCapsuleRadius();
-
 		//FVector WorldDirection = Target->GetActorLocation() - WorldOrigin; // 방향 
-		FVector WorldDirection = Target->GetActorLocation(); // 방향
+
+		FVector WorldDirection = Target->GetActorLocation() + 2.0f; // 방향
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(Target))
 		{
 			if (pioneer->GetCapsuleComponent())
 			{
-				WorldDirection.Z += 0.0f - pioneer->GetCapsuleComponent()->GetScaledCapsuleRadius();
+				WorldDirection.Z -= pioneer->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 			}
 		}
 		WorldDirection -= WorldOrigin;
@@ -498,6 +528,10 @@ bool AEnemy::CheckNoObstacle(AActor* Target)
 					{
 						return true;
 					}
+				}
+				else if (ATurret* turret = dynamic_cast<ATurret*>(Target))
+				{
+					return true;
 				}
 			}
 			else if (hit.Actor->IsA(AGate::StaticClass()) && 
@@ -556,7 +590,34 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 	// Pioneer를 발견하지 못하면
 	if (!TargetActor)
 	{
+		// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
+		TSet<AActor*> tset_OverlappedTurret(OverlappedTurretInDetectRange);
 
+		for (auto& turret : tset_OverlappedTurret)
+		{
+			if (!TargetActor)
+			{
+				if (CheckNoObstacle(turret))
+				{
+					TargetActor = turret;
+				}
+
+				continue;
+			}
+
+			if (DistanceToActor(turret) < DistanceToActor(TargetActor))
+			{
+				if (CheckNoObstacle(turret))
+				{
+					TargetActor = turret;
+				}
+			}
+		}
+	}
+
+	// Turret조차 발견하지 못하면
+	if (!TargetActor)
+	{
 		// 중복된 Actor를 처리하는 오버헤드를 줄이기 위해 TSet으로 할당합니다.
 		TSet<AActor*> tset_OverlappedBuilding(OverlappedBuildingInDetectRange);
 
@@ -587,6 +648,7 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 		IdlingOfFSM(1.5f);
 	}
 	else if (OverlappedCharacterInAttackRange.Contains(TargetActor) ||
+		OverlappedTurretInAttackRange.Contains(TargetActor) ||
 		OverlappedBuildingInAttackRange.Contains(TargetActor))
 	{
 		State = EFiniteState::Attack;
@@ -633,6 +695,7 @@ void AEnemy::TracingOfFSM(float DeltaTime)
 		IdlingOfFSM(0.33f);
 	}
 	else if (OverlappedCharacterInAttackRange.Contains(TargetActor) ||
+		OverlappedTurretInAttackRange.Contains(TargetActor) ||
 		OverlappedBuildingInAttackRange.Contains(TargetActor))
 	{
 		State = EFiniteState::Attack;

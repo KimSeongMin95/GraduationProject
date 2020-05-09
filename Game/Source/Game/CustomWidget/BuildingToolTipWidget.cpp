@@ -83,7 +83,7 @@ void UBuildingToolTipWidget::SetText(int BuildingType)
 	switch (BuildingType)
 	{
 	case 1:
-		btt.SetValues("벽", "HP: 750", "건설시간: 10초", 100, 0, 0, 0, 0, 0, 0, 0, 0);
+		btt.SetValues("방호벽", "HP: 750", "건설시간: 10초", 100, 0, 0, 0, 0, 0, 0, 0, 0);
 		break;
 	case 2:
 		btt.SetValues("계단", "HP: 250", "건설시간: 10초", 30, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -101,7 +101,7 @@ void UBuildingToolTipWidget::SetText(int BuildingType)
 		btt.SetValues("핵융합 발전기", "HP: 1000", "건설시간: 20초", 600, 0, 4, 300, 0, 2, 0, 25, 0);
 		break;
 	case 7:
-		btt.SetValues("단발 포탑", "HP: 400", "건설시간: 15초", 240, 0, 0, 80, 0, 0, 0, 0, 1);
+		btt.SetValues("기본 포탑", "HP: 400", "건설시간: 15초", 240, 0, 0, 80, 0, 0, 0, 0, 1);
 		break;
 	case 8:
 		btt.SetValues("관통 포탑", "HP: 600", "건설시간: 25초", 480, 0, 0, 160, 0, 0, 0, 0, 2);

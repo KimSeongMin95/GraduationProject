@@ -92,6 +92,8 @@ APioneer::APioneer()
 	TimerOfOnConstructingMode = 0.0f;
 
 	PositionOfBase = FVector::ZeroVector;
+
+	Bone_Spine_01_Rotation = FRotator::ZeroRotator;
 }
 
 void APioneer::BeginPlay()
@@ -406,7 +408,10 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 
 	if (UWorld* world = GetWorld())
 	{
-		FVector WorldOrigin = CurrentWeapon->GetActorLocation(); // 시작 위치
+		//FVector WorldOrigin = CurrentWeapon->GetActorLocation(); // 시작 위치
+		//FVector WorldDirection = Target->GetActorLocation() - WorldOrigin; // 방향
+		//WorldDirection.Normalize();
+		FVector WorldOrigin = GetActorLocation(); // 시작 위치
 		FVector WorldDirection = Target->GetActorLocation() - WorldOrigin; // 방향
 		WorldDirection.Normalize();
 
@@ -572,6 +577,8 @@ void APioneer::IdlingOfFSM(float DeltaTime)
 	StopMovement();
 
 	MoveRandomlyPosition();
+
+	Bone_Spine_01_Rotation = FRotator::ZeroRotator;
 }
 
 void APioneer::TracingOfFSM(float DeltaTime)
@@ -600,6 +607,7 @@ void APioneer::TracingOfFSM(float DeltaTime)
 	else
 	{
 		TracingTargetActor();
+		Bone_Spine_01_Rotation = FRotator::ZeroRotator;
 	}
 }
 
@@ -627,6 +635,33 @@ void APioneer::AttackingOfFSM(float DeltaTime)
 	LookAtTheLocation(TargetActor->GetActorLocation());
 
 	FireWeapon();
+
+
+
+	// 허리 숙이기
+	if (CurrentWeapon)
+	{
+		FVector vec = TargetActor->GetActorLocation() - CurrentWeapon->GetActorLocation();
+		vec.Normalize();
+
+		Bone_Spine_01_Rotation = vec.Rotation();
+		Bone_Spine_01_Rotation.Yaw = -Bone_Spine_01_Rotation.Pitch;
+		Bone_Spine_01_Rotation.Pitch = 0.0f;
+		Bone_Spine_01_Rotation.Roll = 0.0f;
+
+		if (Bone_Spine_01_Rotation.Yaw <= -75.0f)
+			Bone_Spine_01_Rotation.Yaw = -75.0f;
+		else if (Bone_Spine_01_Rotation.Yaw >= 75.0f)
+			Bone_Spine_01_Rotation.Yaw = 75.0f;
+	}
+
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//	UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//	UE_LOG(LogTemp, Warning, TEXT("Bone_Spine_01_Rotation.Pitch: %f"), Bone_Spine_01_Rotation.Pitch);
+//	UE_LOG(LogTemp, Warning, TEXT("Bone_Spine_01_Rotation.Yaw: %f"), Bone_Spine_01_Rotation.Yaw);
+//	UE_LOG(LogTemp, Warning, TEXT("Bone_Spine_01_Rotation.Roll: %f"), Bone_Spine_01_Rotation.Roll);
+//	UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//#endif
 }
 
 void APioneer::RunFSM(float DeltaTime)
