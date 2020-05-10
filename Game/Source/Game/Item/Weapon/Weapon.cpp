@@ -136,7 +136,7 @@ void AWeapon::InitFireAnimSequence(const TCHAR* ReferencePath)
 }
 
 
-bool AWeapon::Fire(int IDOfPioneer)
+bool AWeapon::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 {
 	if (FireCoolTime < (1.0f / AttackSpeed))
 		return false;
@@ -146,6 +146,17 @@ bool AWeapon::Fire(int IDOfPioneer)
 	// Fire 애니메이션 실행
 	if (WeaponMesh)
 		WeaponMesh->PlayAnimation(FireAnimSequence, false);
+
+
+	// AI가 중복되어 발사하지 않도록
+	if (ClientSocketInGame)
+	{
+		if (ClientSocketInGame->IsClientSocketOn() && SocketIDOfPioneer == 0)
+		{
+			return false;
+		}
+	}
+	
 
 	return true;
 }

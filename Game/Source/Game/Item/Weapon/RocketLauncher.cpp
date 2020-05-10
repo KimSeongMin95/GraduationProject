@@ -81,9 +81,9 @@ void ARocketLauncher::InitWeapon()
 }
 
 
-bool ARocketLauncher::Fire(int IDOfPioneer)
+bool ARocketLauncher::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 {
-	if (Super::Fire(IDOfPioneer) == false)
+	if (Super::Fire(IDOfPioneer, SocketIDOfPioneer) == false)
 		return false;
 
 	UWorld* const world = GetWorld();

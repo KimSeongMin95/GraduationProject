@@ -83,9 +83,9 @@ void APistol::InitWeapon()
 }
 
 
-bool APistol::Fire(int IDOfPioneer)
+bool APistol::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 {
-	if (Super::Fire(IDOfPioneer) == false)
+	if (Super::Fire(IDOfPioneer, SocketIDOfPioneer) == false)
 		return false;
 
 	UWorld* const world = GetWorld();

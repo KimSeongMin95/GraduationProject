@@ -131,7 +131,7 @@ public:
 
 
 	UFUNCTION()
-		virtual bool Fire(int IDOfPioneer); /** 무기를 발사 */
+		virtual bool Fire(int IDOfPioneer, int SocketIDOfPioneer); /** 무기를 발사 */
 /*** AWeapon : End ***/
 
 };

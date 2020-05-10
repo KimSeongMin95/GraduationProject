@@ -1120,10 +1120,16 @@ public:
 
 	bool bFired;
 
+	float BoneSpineRotX;
+	float BoneSpineRotY;
+	float BoneSpineRotZ;
+
+
 	// 무기
 	int IdxOfCurrentWeapon;
 
 	bool bArmedWeapon;
+
 
 public:
 	cInfoOfPioneer_Animation()
@@ -1142,6 +1148,7 @@ public:
 		TargetRotY = 0.0f;
 		TargetRotZ = 0.0f;
 
+
 		VelocityX = 0.0f;
 		VelocityY = 0.0f;
 		VelocityZ = 0.0f;
@@ -1151,6 +1158,11 @@ public:
 		bHasLauncherType = false;
 
 		bFired = false;
+
+		BoneSpineRotX = 0.0f;
+		BoneSpineRotY = 0.0f;
+		BoneSpineRotZ = 0.0f;
+
 
 		IdxOfCurrentWeapon = 0;
 
@@ -1182,9 +1194,11 @@ public:
 		Stream << Info.bHasRifleType << ' ';
 		Stream << Info.bHasLauncherType << ' ';
 		Stream << Info.bFired << ' ';
+		Stream << Info.BoneSpineRotX << ' ';
+		Stream << Info.BoneSpineRotY << ' ';
+		Stream << Info.BoneSpineRotZ << ' ';
 
 		Stream << Info.IdxOfCurrentWeapon << ' ';
-
 		Stream << Info.bArmedWeapon << ' ';
 
 		return Stream;
@@ -1212,9 +1226,11 @@ public:
 		Stream >> Info.bHasRifleType;
 		Stream >> Info.bHasLauncherType;
 		Stream >> Info.bFired;
+		Stream >> Info.BoneSpineRotX;
+		Stream >> Info.BoneSpineRotY;
+		Stream >> Info.BoneSpineRotZ;
 
 		Stream >> Info.IdxOfCurrentWeapon;
-
 		Stream >> Info.bArmedWeapon;
 
 		return Stream;
@@ -1225,8 +1241,8 @@ public:
 	{
 		CONSOLE_LOG("%s%s<cInfoOfPioneer_Animation> ID: %d, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
-		CONSOLE_LOG("%s%s<cInfoOfPioneer_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, bHasPistolType: %s, bHasRifleType : %s, bHasLauncherType: %s, bFired: %s \n",
-			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), VelocityX, VelocityY, VelocityZ, (bHasPistolType == true) ? "true" : "false", (bHasRifleType == true) ? "true" : "false", (bHasLauncherType == true) ? "true" : "false", (bFired == true) ? "true" : "false");
+		CONSOLE_LOG("%s%s<cInfoOfPioneer_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, bHasPistolType: %s, bHasRifleType : %s, bHasLauncherType: %s, bFired: %s, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f  \n",
+			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), VelocityX, VelocityY, VelocityZ, (bHasPistolType == true) ? "true" : "false", (bHasRifleType == true) ? "true" : "false", (bHasLauncherType == true) ? "true" : "false", (bFired == true) ? "true" : "false", BoneSpineRotX, BoneSpineRotY, BoneSpineRotZ);
 		CONSOLE_LOG("%s%s<cInfoOfPioneer_Animation> IdxOfCurrentWeapon: %d, bArmedWeapon: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), IdxOfCurrentWeapon, (bArmedWeapon == true) ? "true" : "false");
 	}

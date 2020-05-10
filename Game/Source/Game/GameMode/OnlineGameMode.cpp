@@ -223,8 +223,8 @@ void AOnlineGameMode::StartPlay()
 
 	SpawnEnemyManager();
 
-	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(-7907.8f, -8044.8f, 20000.0f)));
-	SpaceShip->SetInitLocation(FVector(-7907.8f, -8044.8f, 20000.0f));
+	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(-8279.5f, -8563.8f, 20000.0f)));
+	SpaceShip->SetInitLocation(FVector(-8279.5f, -8563.8f, 20000.0f));
 	SpaceShip->SetPioneerManager(PioneerManager);
 
 	if (PioneerController)
@@ -318,7 +318,7 @@ void AOnlineGameMode::SpawnPioneerManager()
 
 	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 
-	PioneerManager->PositionOfBase = FVector(-7859.1f, -8184.9f, 178.8f);
+	PioneerManager->PositionOfBase = FVector(-8269.1f, -8742.9f, 178.8f);
 }
 
 void AOnlineGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform)

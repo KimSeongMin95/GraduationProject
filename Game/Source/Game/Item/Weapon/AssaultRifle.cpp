@@ -82,9 +82,9 @@ void AAssaultRifle::InitWeapon()
 }
 
 
-bool AAssaultRifle::Fire(int IDOfPioneer)
+bool AAssaultRifle::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 {
-	if (Super::Fire(IDOfPioneer) == false)
+	if (Super::Fire(IDOfPioneer, SocketIDOfPioneer) == false)
 		return false;
 
 	UWorld* const world = GetWorld();

@@ -82,9 +82,9 @@ void AGrenadeLauncher::InitWeapon()
 }
 
 
-bool AGrenadeLauncher::Fire(int IDOfPioneer)
+bool AGrenadeLauncher::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 {
-	if (Super::Fire(IDOfPioneer) == false)
+	if (Super::Fire(IDOfPioneer, SocketIDOfPioneer) == false)
 		return false;
 
 	UWorld* const world = GetWorld();

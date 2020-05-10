@@ -171,7 +171,7 @@ void APioneer::InitStat()
 	AttackPower = 1.0f;
 
 	AttackRange = 32.0f;
-	DetectRange = 59.25f;
+	DetectRange = 78.0f;
 	SightRange = 32.0f;
 
 	Exp = 0.0f;
@@ -763,14 +763,55 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 		FRotator CursorR = CursorFV.Rotation();
 		CursorToWorld->SetWorldLocation(TraceHitResult.Location);
 		CursorToWorld->SetWorldRotation(CursorR);
+		if (CursorToWorld->IsVisible() == false)
+			CursorToWorld->SetVisibility(true);
 
 		// 무기가 있다면 커서 위치를 바라봅니다. 없으면 바라보지 않습니다.
 		if (CurrentWeapon)
 		{
 			LookAtTheLocation(CursorToWorld->GetComponentLocation());
-		}
+		
+			// 적이라면
+			PC->GetHitResultUnderCursor(ECC_Pawn, true, TraceHitResult);
+			if (TraceHitResult.GetActor())
+			{
+				if (AEnemy* enemy = dynamic_cast<AEnemy*>(TraceHitResult.GetActor()))
+				{
+					if (TraceHitResult.GetComponent() == enemy->GetCapsuleComponent())
+					{
+						FVector vec = enemy->GetActorLocation() - CurrentWeapon->GetActorLocation();
+						vec.Normalize();
 
-		CursorToWorld->SetVisibility(true);
+						Bone_Spine_01_Rotation = vec.Rotation();
+						Bone_Spine_01_Rotation.Yaw = -Bone_Spine_01_Rotation.Pitch;
+						Bone_Spine_01_Rotation.Pitch = 0.0f;
+						Bone_Spine_01_Rotation.Roll = 0.0f;
+
+						if (Bone_Spine_01_Rotation.Yaw <= -75.0f)
+							Bone_Spine_01_Rotation.Yaw = -75.0f;
+						else if (Bone_Spine_01_Rotation.Yaw >= 75.0f)
+							Bone_Spine_01_Rotation.Yaw = 75.0f;
+					}
+				}
+				else
+				{
+					Bone_Spine_01_Rotation = FRotator::ZeroRotator;
+				}
+
+//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+//				UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//				UE_LOG(LogTemp, Warning, TEXT("GetName %s"), *TraceHitResult.GetActor()->GetName());
+//				UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *TraceHitResult.GetActor()->GetName());
+//				UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *TraceHitResult.Component->GetName());
+//				UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), TraceHitResult.Distance);
+//				UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//#endif
+			}
+		}
+		else
+		{
+			Bone_Spine_01_Rotation = FRotator::ZeroRotator;
+		}
 	}
 
 	//// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
@@ -1252,7 +1293,7 @@ void APioneer::FireWeapon()
 	if (CurrentWeapon)
 	{
 		// 쿨타임이 돌아와서 발사가 되었다면 UPioneerAnimInstance에 알려줍니다.
-		if (CurrentWeapon->Fire(ID))
+		if (CurrentWeapon->Fire(ID, SocketID))
 		{
 			// Pistol은 Fire 애니메이션이 없어서 제외합니다.
 			if (CurrentWeapon->IsA(APistol::StaticClass()) == false)
@@ -1690,6 +1731,8 @@ void APioneer::SetInfoOfPioneer_Animation(class cInfoOfPioneer_Animation& Animat
 
 	bFired = Animation.bFired;
 
+	Bone_Spine_01_Rotation = FRotator(Animation.BoneSpineRotX, Animation.BoneSpineRotY, Animation.BoneSpineRotZ);
+
 	Disarming();
 	IdxOfCurrentWeapon = Animation.IdxOfCurrentWeapon;
 	Arming();
@@ -1723,6 +1766,11 @@ class cInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
 	animation.bHasLauncherType = bHasLauncherType;
 
 	animation.bFired = bFired;
+
+	animation.BoneSpineRotX = Bone_Spine_01_Rotation.Pitch;
+	animation.BoneSpineRotY = Bone_Spine_01_Rotation.Yaw;
+	animation.BoneSpineRotZ = Bone_Spine_01_Rotation.Roll;
+
 
 	animation.IdxOfCurrentWeapon = IdxOfCurrentWeapon;
 
