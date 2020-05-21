@@ -89,7 +89,7 @@ void APioneerController::SetupInputComponent()
 	InputComponent->BindAxis("FireWeapon", this, &APioneerController::FireWeapon);
 	// Q키: 이전 무기로 변경
 	InputComponent->BindAction("ChangePreviousWeapon", IE_Pressed, this, &APioneerController::ChangePreviousWeapon);
-	// E키: 이전 무기로 변경
+	// E키: 다음 무기로 변경
 	InputComponent->BindAction("ChangeNextWeapon", IE_Pressed, this, &APioneerController::ChangeNextWeapon);
 	// 마우스 휠클릭: 무장 <--> 무장해제
 	InputComponent->BindAction("ArmOrDisArmWeapon", IE_Pressed, this, &APioneerController::ArmOrDisArmWeapon);

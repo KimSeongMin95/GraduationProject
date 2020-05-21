@@ -27,7 +27,7 @@ AWarrokWKurniawan::AWarrokWKurniawan()
 
 	InitSkeletalAnimation(TEXT("SkeletalMesh'/Game/Characters/Enemies/WarrokWKurniawan/Meshes/WarrokWKurniawan.WarrokWKurniawan'"),
 		"AnimBlueprint'/Game/Characters/Enemies/WarrokWKurniawan/Animations/WarrokWKurniawan_AnimBP.WarrokWKurniawan_AnimBP_C'",
-		FVector(3.0f, 3.0f, 3.0f), FRotator(0.0f, -90.0f, 0.0f), FVector(0.0f, 0.0f, -330.99f));
+		FVector(3.0f, 3.0f, 3.0f), FRotator(0.0f, -90.0f, 0.0f), FVector(0.0f, 0.0f, -230.99f));
 
 	EnemyType = EEnemyType::WarrokWKurniawan;
 }
@@ -57,7 +57,7 @@ void AWarrokWKurniawan::InitHelthPointBar()
 	if (!HelthPointBar)
 		return;
 
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 220.0f));
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 350.0f));
 	HelthPointBar->SetDrawSize(FVector2D(150, 35));
 }
 /*** IHealthPointBarInterface : End ***/

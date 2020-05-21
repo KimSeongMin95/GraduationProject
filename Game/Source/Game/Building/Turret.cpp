@@ -22,6 +22,8 @@
 #include "Landscape.h"
 
 #include "Building/Gate.h"
+
+#include "PioneerManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -54,6 +56,9 @@ void ATurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	if (APioneerManager::Resources.NumOfEnergy <= 0)
+		return;
 
 	if (BuildingState == EBuildingState::Constructed)
 	{
