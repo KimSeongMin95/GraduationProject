@@ -252,15 +252,6 @@ public:
 	UFUNCTION(Category = Camera)
 		void ZoomInOrZoomOut(float Value);
 
-
-	UFUNCTION(Category = "Weapon")
-		/** Weapon을 습득 */
-		void AcquireWeapon(class AWeapon* weapon);
-
-	UFUNCTION(Category = "Weapon")
-		/** CurrentWeapon을 바닥에 버림 */
-		void AbandonWeapon();
-
 	UFUNCTION(Category = "Weapon")
 		/** CurrentWeapon을 Fire */
 		void FireWeapon();

@@ -48,10 +48,6 @@ private:
 		/** APioneerManager */
 		class APioneerManager* PioneerManager = nullptr;
 
-	/** 네트워크 */
-	class cServerSocketInGame* ServerSocketInGame = nullptr;
-	class cClientSocketInGame* ClientSocketInGame = nullptr;
-
 	/** 관전상태 */
 	bool bObservation;
 
@@ -90,10 +86,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void ArmOrDisArmWeapon();
 
-	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
-		void AcquireItem();
-	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
-		void AbandonWeapon();
 
 	UFUNCTION(BlueprintCallable, Category = "PlayerActions")
 		void ConstructingMode();

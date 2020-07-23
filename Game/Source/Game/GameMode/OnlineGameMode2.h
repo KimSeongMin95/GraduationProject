@@ -13,16 +13,12 @@
 #include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
 /*** 언리얼엔진 헤더 선언 : End ***/
 
-#include "OnlineGameMode.h"
-
 
 #include "CoreMinimal.h"
 #include "GameMode/OnlineGameMode.h"
 #include "OnlineGameMode2.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class GAME_API AOnlineGameMode2 : public AGameModeBase
 {
@@ -44,10 +40,6 @@ public:
 	/*** AOnlineGameMode : Start ***/
 protected:
 	EOnlineGameState OnlineGameState;
-
-	class cClientSocket* ClientSocket = nullptr;
-	class cServerSocketInGame* ServerSocketInGame = nullptr;
-	class cClientSocketInGame* ClientSocketInGame = nullptr;
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")

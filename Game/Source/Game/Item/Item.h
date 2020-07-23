@@ -20,12 +20,6 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
-UENUM()
-enum class EItemState : uint8
-{
-	Droped = 0,  /** ¹Ù´Ú¿¡ ³õ¿©Áø »óÅÂ */
-	Acquired = 1 /** È¹µæµÈ »óÅÂ */
-};
 
 UCLASS()
 class GAME_API AItem : public AActor
@@ -46,7 +40,7 @@ public:
 
 /*** AItem : Start ***/
 public:
-	EItemState State;
+
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Item")
@@ -79,9 +73,6 @@ public:
 	FORCEINLINE class USphereComponent* GetInteractionRange() const { return InteractionRange; }
 	FORCEINLINE class UBoxComponent* GetPhysicsBox() const { return PhysicsBox; }
 	FORCEINLINE class UStaticMeshComponent* GetItemMesh() const { return ItemMesh; }
-
-	virtual void Droped();	 /** ¶¥¿¡ ¶³¾îÁø »óÅÂ */
-	virtual void Acquired(); /** È¹µæµÈ »óÅÂ */
 /*** AItem : End ***/
 
 

@@ -42,13 +42,133 @@
 #include "PostWindowsApi.h"
 #include "HideWindowsPlatformTypes.h"
 
-
 using namespace std;
 
 #define	MAX_BUFFER 4096
 
 
-/*** Console for log : Start ***/
+
+
+//#pragma once
+//
+//
+//#include <iostream>
+//
+///*** 언리얼엔진 헤더 선언 : Start ***/
+//#include "Misc/App.h"
+///*** 언리얼엔진 헤더 선언 : End ***/
+//
+//
+#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+#define MY_LOG(CategoryName, Verbosity, Format, ...) UE_LOG(CategoryName, Verbosity, Format, ##__VA_ARGS__)
+#else
+#define MY_LOG(CategoryName, Verbosity, Format, ...) 
+#endif
+//
+//class cMyLog
+//{
+//private:
+//	FILE* fp_console = nullptr;
+//
+//public:
+//	void AllocConsole()
+//	{
+//#if UE_BUILD_DEVELOPMENT && UE_GAME
+//
+//		// 이미 할당되어 있으면 콘솔을 더 할당하지 않습니다.
+//		if (fp_console)
+//			return;
+//
+//		if (::AllocConsole())
+//		{
+//			freopen_s(&fp_console, "CONOUT$", "w", stdout);
+//
+//			//CheckBuildConriguration();
+//		}
+//#endif
+//	}
+//
+//	void FreeConsole()
+//	{
+//#if UE_BUILD_DEVELOPMENT && UE_GAME
+//		// 이미 할당되어 있을 때만 소멸시킵니다.
+//		if (fp_console)
+//		{
+//			fclose(fp_console);
+//			fp_console = nullptr;
+//
+//			::FreeConsole();
+//		}
+//#endif
+//	}
+//
+//	void CheckBuildConriguration()
+//	{
+//		if (!fp_console)
+//			return;
+//
+//		printf_s("\n\n\n\n\n");
+//
+//		char config[16];
+//		switch (FApp::GetBuildConfiguration())
+//		{
+//		case 0:
+//			strcpy_s(config, "Unknown");
+//			break;
+//		case 1:
+//			strcpy_s(config, "Debug");
+//			break;
+//		case 2:
+//			strcpy_s(config, "DebugGame");
+//			break;
+//		case 3:
+//			strcpy_s(config, "Development");
+//			break;
+//		case 4:
+//			strcpy_s(config, "Shipping");
+//			break;
+//		case 5:
+//			strcpy_s(config, "Test");
+//			break;
+//		}
+//
+//		printf_s("GetBuildConfiguration: %s \n", config);
+//		printf_s("UE_BUILD_DEBUG: %d \n", UE_BUILD_DEBUG);
+//		printf_s("UE_BUILD_DEVELOPMENT: %d \n", UE_BUILD_DEVELOPMENT);
+//		printf_s("UE_BUILD_SHIPPING: %d \n", UE_BUILD_SHIPPING);
+//		printf_s("UE_GAME: %d \n", UE_GAME);
+//		printf_s("UE_EDITOR: %d \n", UE_EDITOR);
+//		printf_s("WITH_EDITOR: %d \n", WITH_EDITOR);
+//		printf_s("UE_BUILD_SHIPPING_WITH_EDITOR: %d \n", UE_BUILD_SHIPPING_WITH_EDITOR);
+//		printf_s("UE_SERVER: %d \n", UE_SERVER);
+//		printf_s("UE_BUILD_TEST: %d \n", UE_BUILD_TEST);
+//		printf_s("\n\n\n\n\n");
+//
+//	}
+//
+//	static cMyLog* GetSingleton()
+//	{
+//		static cMyLog console;
+//		return &console;
+//	}
+//
+//	static void Log(const char* format, ...)
+//	{
+//#if UE_BUILD_DEVELOPMENT && UE_GAME
+//		char buff[MAX_BUFFER];
+//
+//		va_list arglist;
+//		va_start(arglist, format);
+//		vsprintf_s(buff, format, arglist);
+//		va_end(arglist);
+//
+//		printf_s(buff);
+//#endif
+//	}
+//};
+//#define CONSOLE_LOG cMyConsole::Log
+
+
 class cMyConsole
 {
 private:
@@ -151,7 +271,7 @@ public:
 	}
 };
 #define CONSOLE_LOG cMyConsole::Log
-/*** Console for log : End ***/
+
 
 
 // IOCP CompletionKey
@@ -159,8 +279,8 @@ struct stCompletionKey
 {
 	SOCKET			socket;
 
-	string			IPv4Addr; // 메인 클라이언트의 IP 주소
-	int				Port;	  // 메인 클라이언트의 Port 주소
+	string			IPv4Addr; 
+	int				Port;	  
 };
 
 // IOCP OverlappedMsg
@@ -171,7 +291,7 @@ struct stOverlappedMsg
 
 	char			messageBuffer[MAX_BUFFER];
 	int				recvBytes;
-	int				sendBytes; // WSASend로 전송할 데이터의 바이트 크기
+	int				sendBytes;
 };
 
 

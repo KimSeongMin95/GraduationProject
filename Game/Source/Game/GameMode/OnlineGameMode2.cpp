@@ -3,10 +3,9 @@
 #include "OnlineGameMode2.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Network/ClientSocket.h"
-
-#include "Network/ServerSocketInGame.h"
-#include "Network/ClientSocketInGame.h"
+#include "Network/MainClient.h"
+#include "Network/GameServer.h"
+#include "Network/GameClient.h"
 
 #include "CustomWidget/InGameWidget.h"
 #include "CustomWidget/InGameMenuWidget.h"
@@ -22,7 +21,6 @@
 #include "SpaceShip/SpaceShip.h"
 
 #include "Etc/WorldViewCameraActor.h"
-#include "Etc/OccupationPanel.h"
 
 #include "Projectile/ProjectilePistol.h"
 #include "Projectile/ProjectileAssaultRifle.h"
@@ -39,16 +37,12 @@
 #include "EnemyManager.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
 /*** Basic Function : Start ***/
 AOnlineGameMode2::AOnlineGameMode2()
 {
 	///////////
 	// 초기화
 	///////////
-	ClientSocket = nullptr;
-	ServerSocketInGame = nullptr;
-	ClientSocketInGame = nullptr;
 	PioneerController = nullptr;
 	PioneerManager = nullptr;
 	SpaceShip = nullptr;
@@ -96,7 +90,6 @@ AOnlineGameMode2::AOnlineGameMode2()
 
 	PrimaryActorTick.bCanEverTick = true;
 
-	TimerOfCheckVictoryCondition = 0.0f;
 	TimerOfCheckDefeatCondition = 0.0f;
 
 	/***** 필수! 꼭 읽어주세요. : Start *****/
@@ -158,14 +151,6 @@ void AOnlineGameMode2::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//////////////////////////
-	// 네트워크
-	//////////////////////////
-	ClientSocket = cClientSocket::GetSingleton();
-
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-	ClientSocketInGame = cClientSocketInGame::GetSingleton();
-
 
 	//////////////////////////
 	// Widget
@@ -180,25 +165,24 @@ void AOnlineGameMode2::BeginPlay()
 	}
 
 	InGameWidget = NewObject<UInGameWidget>(this, FName("InGameWidget"));
-	InGameWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/OnlineGameMode2/InGame.InGame_C'", true);
+	InGameWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGame.InGame_C'", true);
 
 	InGameMenuWidget = NewObject<UInGameMenuWidget>(this, FName("InGameMenuWidget"));
-	InGameMenuWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/OnlineGameMode2/InGameMenu.InGameMenu_C'", false);
+	InGameMenuWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameMenu.InGameMenu_C'", false);
 
 	InGameScoreBoardWidget = NewObject<UInGameScoreBoardWidget>(this, FName("InGameScoreBoardWidget"));
 	InGameScoreBoardWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameScoreBoard.InGameScoreBoard_C'", false);
 	InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
-	if (ServerSocketInGame)
-	{
-		if (ServerSocketInGame->IsServerOn())
-			InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
-	}
+
+	if (cGameServer::GetSingleton()->IsServerOn())
+		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
+
 
 	InGameVictoryWidget = NewObject<UInGameVictoryWidget>(this, FName("InGameVictoryWidget"));
-	InGameVictoryWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/OnlineGameMode2/InGameVictory.InGameVictory_C'", false);
+	InGameVictoryWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameVictory.InGameVictory_C'", false);
 
 	InGameDefeatWidget = NewObject<UInGameDefeatWidget>(this, FName("InGameDefeatWidget"));
-	InGameDefeatWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/OnlineGameMode2/InGameDefeat.InGameDefeat_C'", false);
+	InGameDefeatWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/Online/InGameDefeat.InGameDefeat_C'", false);
 
 
 	BuildingToolTipWidget = NewObject<UBuildingToolTipWidget>(this, FName("BuildingToolTipWidget"));
@@ -222,8 +206,8 @@ void AOnlineGameMode2::StartPlay()
 
 	SpawnEnemyManager();
 
-	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 164.24f, 20000.0f)));
-	SpaceShip->SetInitLocation(FVector(0.0f, 164.24f, 20000.0f));
+	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(-8279.5f, -8563.8f, 20000.0f)));
+	SpaceShip->SetInitLocation(FVector(-8279.5f, -8563.8f, 20000.0f));
 	SpaceShip->SetPioneerManager(PioneerManager);
 
 	if (PioneerController)
@@ -242,7 +226,7 @@ void AOnlineGameMode2::StartPlay()
 		PioneerManager->ViewpointState = EViewpointState::SpaceShip;
 	}
 
-	FindQcuupationPanel();
+
 }
 
 void AOnlineGameMode2::Tick(float DeltaTime)
@@ -256,7 +240,7 @@ void AOnlineGameMode2::Tick(float DeltaTime)
 
 	// 임시
 	TickOfSpaceShip += DeltaTime;
-	if (TickOfSpaceShip >= 60.0f)
+	if (TickOfSpaceShip >= 120.0f)
 	{
 		if (SpaceShip->State == ESpaceShipState::Flying)
 		{
@@ -265,7 +249,6 @@ void AOnlineGameMode2::Tick(float DeltaTime)
 		}
 	}
 
-	CheckVictoryCondition(DeltaTime);
 	CheckDefeatCondition(DeltaTime);
 }
 /*** Basic Function : End ***/
@@ -318,7 +301,7 @@ void AOnlineGameMode2::SpawnPioneerManager()
 
 	PioneerManager = world->SpawnActor<APioneerManager>(APioneerManager::StaticClass(), myTrans, SpawnParams); // 액터를 객체화 합니다.
 
-	PioneerManager->PositionOfBase = FVector(0.0f, 0.0f, 178.8f);
+	PioneerManager->PositionOfBase = FVector(-8269.1f, -8742.9f, 178.8f);
 }
 
 void AOnlineGameMode2::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform)
@@ -465,16 +448,8 @@ void AOnlineGameMode2::SpawnEnemyManager()
 /////////////////////////////////////////////////
 void AOnlineGameMode2::TickOfServerSocketInGame(float DeltaTime)
 {
-	if (!ServerSocketInGame)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::TickOfServerSocketInGame(...)> if (!ServerSocketInGame)"));
-#endif			
-		return;
-	}
-
 	// 게임서버가 활성화되어 있지 않으면 더이상 실행하지 않습니다.
-	if (ServerSocketInGame->IsServerOn() == false)
+	if (cGameServer::GetSingleton()->IsServerOn() == false)
 	{
 		return;
 	}
@@ -520,17 +495,17 @@ void AOnlineGameMode2::GetScoreBoard(float DeltaTime)
 	}
 	/***********************************************************/
 
-	EnterCriticalSection(&ServerSocketInGame->csPossessedID);
-	int PossessedID = ServerSocketInGame->PossessedID;
-	LeaveCriticalSection(&ServerSocketInGame->csPossessedID);
+	EnterCriticalSection(&cGameServer::GetSingleton()->csPossessedID);
+	int PossessedID = cGameServer::GetSingleton()->PossessedID;
+	LeaveCriticalSection(&cGameServer::GetSingleton()->csPossessedID);
 
 	vector<cInfoOfScoreBoard> copiedVec;
 
-	EnterCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
-	for (auto& kvp : ServerSocketInGame->InfosOfScoreBoard)
+	EnterCriticalSection(&cGameServer::GetSingleton()->csInfosOfScoreBoard);
+	for (auto& kvp : cGameServer::GetSingleton()->InfosOfScoreBoard)
 	{
-		EnterCriticalSection(&ServerSocketInGame->csSocketID);
-		if (kvp.first == ServerSocketInGame->SocketID)
+		EnterCriticalSection(&cGameServer::GetSingleton()->csSocketID);
+		if (kvp.first == cGameServer::GetSingleton()->SocketID)
 		{
 			if (PioneerManager->Pioneers.Contains(PossessedID))
 			{
@@ -540,11 +515,11 @@ void AOnlineGameMode2::GetScoreBoard(float DeltaTime)
 				}
 			}
 		}
-		LeaveCriticalSection(&ServerSocketInGame->csSocketID);
+		LeaveCriticalSection(&cGameServer::GetSingleton()->csSocketID);
 
 		copiedVec.push_back(kvp.second);
 	}
-	LeaveCriticalSection(&ServerSocketInGame->csInfosOfScoreBoard);
+	LeaveCriticalSection(&cGameServer::GetSingleton()->csInfosOfScoreBoard);
 
 	std::sort(copiedVec.begin(), copiedVec.end());
 
@@ -596,7 +571,7 @@ void AOnlineGameMode2::SendInfoOfSpaceShip(float DeltaTime)
 		// Pioneer 수 제한
 		if (PioneerManager->Pioneers.Num() <= AOnlineGameMode::MaximumOfPioneers)
 		{
-			SpaceShip->StartSpawning(5 + ServerSocketInGame->SizeOfObservers() * 1.00);
+			SpaceShip->StartSpawning(5 + cGameServer::GetSingleton()->SizeOfObservers() * 1.00);
 		}
 	}
 	break;
@@ -614,7 +589,7 @@ void AOnlineGameMode2::SendInfoOfSpaceShip(float DeltaTime)
 	}
 
 	cInfoOfSpaceShip infoOfSpaceShip = SpaceShip->GetInfoOfSpaceShip();
-	ServerSocketInGame->SendSpaceShip(infoOfSpaceShip);
+	cGameServer::GetSingleton()->SendSpaceShip(infoOfSpaceShip);
 }
 
 void AOnlineGameMode2::GetDiedPioneer(float DeltaTime)
@@ -632,11 +607,11 @@ void AOnlineGameMode2::GetDiedPioneer(float DeltaTime)
 		return;
 	}
 
-	if (ServerSocketInGame->tsqDiedPioneer.empty())
+	if (cGameServer::GetSingleton()->tsqDiedPioneer.empty())
 		return;
 	/***********************************************************************/
 
-	std::queue<int> copiedQueue = ServerSocketInGame->tsqDiedPioneer.copy_clear();
+	std::queue<int> copiedQueue = cGameServer::GetSingleton()->tsqDiedPioneer.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -672,11 +647,11 @@ void AOnlineGameMode2::GetInfoOfPioneer_Animation(float DeltaTime)
 		return;
 	}
 
-	if (ServerSocketInGame->tsqInfoOfPioneer_Animation.empty())
+	if (cGameServer::GetSingleton()->tsqInfoOfPioneer_Animation.empty())
 		return;
 	/***********************************************************************/
 
-	std::queue<cInfoOfPioneer_Animation> copiedQueue = ServerSocketInGame->tsqInfoOfPioneer_Animation.copy_clear();
+	std::queue<cInfoOfPioneer_Animation> copiedQueue = cGameServer::GetSingleton()->tsqInfoOfPioneer_Animation.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -726,14 +701,14 @@ void AOnlineGameMode2::SetInfoOfPioneer_Animation(float DeltaTime)
 			continue;
 		}
 
-		EnterCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Animation);
-		if (ServerSocketInGame->InfosOfPioneer_Animation.find(kvp.Key) != ServerSocketInGame->InfosOfPioneer_Animation.end())
+		EnterCriticalSection(&cGameServer::GetSingleton()->csInfosOfPioneer_Animation);
+		if (cGameServer::GetSingleton()->InfosOfPioneer_Animation.find(kvp.Key) != cGameServer::GetSingleton()->InfosOfPioneer_Animation.end())
 		{
 			// AI거나 게임서버가 조종하는 Pioneer만 정보를 설정합니다.
 			if (kvp.Value->SocketID <= 1)
-				ServerSocketInGame->InfosOfPioneer_Animation.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Animation();
+				cGameServer::GetSingleton()->InfosOfPioneer_Animation.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Animation();
 		}
-		LeaveCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Animation);
+		LeaveCriticalSection(&cGameServer::GetSingleton()->csInfosOfPioneer_Animation);
 	}
 
 	while (!forRemove.empty())
@@ -761,11 +736,11 @@ void AOnlineGameMode2::GetInfoOfPioneer_Socket(float DeltaTime)
 		return;
 	}
 
-	if (ServerSocketInGame->tsqInfoOfPioneer_Socket.empty())
+	if (cGameServer::GetSingleton()->tsqInfoOfPioneer_Socket.empty())
 		return;
 	/***********************************************************************/
 
-	std::queue<cInfoOfPioneer_Socket> copiedQueue = ServerSocketInGame->tsqInfoOfPioneer_Socket.copy_clear();
+	std::queue<cInfoOfPioneer_Socket> copiedQueue = cGameServer::GetSingleton()->tsqInfoOfPioneer_Socket.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -803,11 +778,11 @@ void AOnlineGameMode2::GetInfoOfPioneer_Stat(float DeltaTime)
 		return;
 	}
 
-	if (ServerSocketInGame->tsqInfoOfPioneer_Stat.empty())
+	if (cGameServer::GetSingleton()->tsqInfoOfPioneer_Stat.empty())
 		return;
 	/***********************************************************************/
 
-	std::queue<cInfoOfPioneer_Stat> copiedQueue = ServerSocketInGame->tsqInfoOfPioneer_Stat.copy_clear();
+	std::queue<cInfoOfPioneer_Stat> copiedQueue = cGameServer::GetSingleton()->tsqInfoOfPioneer_Stat.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -852,14 +827,14 @@ void AOnlineGameMode2::SetInfoOfPioneer_Stat(float DeltaTime)
 			continue;
 		}
 
-		EnterCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Stat);
-		if (ServerSocketInGame->InfosOfPioneer_Stat.find(kvp.Key) != ServerSocketInGame->InfosOfPioneer_Stat.end())
+		EnterCriticalSection(&cGameServer::GetSingleton()->csInfosOfPioneer_Stat);
+		if (cGameServer::GetSingleton()->InfosOfPioneer_Stat.find(kvp.Key) != cGameServer::GetSingleton()->InfosOfPioneer_Stat.end())
 		{
 			// AI거나 게임서버가 조종하는 Pioneer만 정보를 설정합니다.
 			if (kvp.Value->SocketID <= 1)
-				ServerSocketInGame->InfosOfPioneer_Stat.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Stat();
+				cGameServer::GetSingleton()->InfosOfPioneer_Stat.at(kvp.Key) = kvp.Value->GetInfoOfPioneer_Stat();
 		}
-		LeaveCriticalSection(&ServerSocketInGame->csInfosOfPioneer_Stat);
+		LeaveCriticalSection(&cGameServer::GetSingleton()->csInfosOfPioneer_Stat);
 	}
 
 	while (!forRemove.empty())
@@ -887,11 +862,11 @@ void AOnlineGameMode2::GetInfoOfProjectile(float DeltaTime)
 		return;
 	}
 
-	if (ServerSocketInGame->tsqInfoOfProjectile.empty())
+	if (cGameServer::GetSingleton()->tsqInfoOfProjectile.empty())
 		return;
 	/***********************************************************************/
 
-	std::queue<cInfoOfProjectile> copiedQueue = ServerSocketInGame->tsqInfoOfProjectile.copy_clear();
+	std::queue<cInfoOfProjectile> copiedQueue = cGameServer::GetSingleton()->tsqInfoOfProjectile.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -917,7 +892,7 @@ void AOnlineGameMode2::SendInfoOfResources(float DeltaTime)
 	}
 	/***********************************************************/
 
-	ServerSocketInGame->SendInfoOfResources(PioneerManager->Resources);
+	cGameServer::GetSingleton()->SendInfoOfResources(PioneerManager->Resources);
 }
 
 void AOnlineGameMode2::GetInfoOfBuilding_Spawn(float DeltaTime)
@@ -943,11 +918,11 @@ void AOnlineGameMode2::GetInfoOfBuilding_Spawn(float DeltaTime)
 		return;
 	}
 
-	if (ServerSocketInGame->tsqInfoOfBuilding_Spawn.empty())
+	if (cGameServer::GetSingleton()->tsqInfoOfBuilding_Spawn.empty())
 		return;
 	/***********************************************************************/
 
-	std::queue<cInfoOfBuilding_Spawn> copiedQueue = ServerSocketInGame->tsqInfoOfBuilding_Spawn.copy_clear();
+	std::queue<cInfoOfBuilding_Spawn> copiedQueue = cGameServer::GetSingleton()->tsqInfoOfBuilding_Spawn.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -966,7 +941,7 @@ void AOnlineGameMode2::GetInfoOfBuilding_Spawn(float DeltaTime)
 
 			BuildingManager->RecvSpawnBuilding(copiedQueue.front());
 
-			ServerSocketInGame->SendInfoOfBuilding_Spawn(copiedQueue.front());
+			cGameServer::GetSingleton()->SendInfoOfBuilding_Spawn(copiedQueue.front());
 		}
 
 		copiedQueue.pop();
@@ -1001,12 +976,12 @@ void AOnlineGameMode2::SetInfoOfBuilding_Stat(float DeltaTime)
 			continue;
 		}
 
-		EnterCriticalSection(&ServerSocketInGame->csInfoOfBuilding_Stat);
-		if (ServerSocketInGame->InfoOfBuilding_Stat.find(kvp.Key) != ServerSocketInGame->InfoOfBuilding_Stat.end())
+		EnterCriticalSection(&cGameServer::GetSingleton()->csInfoOfBuilding_Stat);
+		if (cGameServer::GetSingleton()->InfoOfBuilding_Stat.find(kvp.Key) != cGameServer::GetSingleton()->InfoOfBuilding_Stat.end())
 		{
-			ServerSocketInGame->InfoOfBuilding_Stat.at(kvp.Key) = kvp.Value->GetInfoOfBuilding_Stat();
+			cGameServer::GetSingleton()->InfoOfBuilding_Stat.at(kvp.Key) = kvp.Value->GetInfoOfBuilding_Stat();
 		}
-		LeaveCriticalSection(&ServerSocketInGame->csInfoOfBuilding_Stat);
+		LeaveCriticalSection(&cGameServer::GetSingleton()->csInfoOfBuilding_Stat);
 	}
 
 	while (!forRemove.empty())
@@ -1049,12 +1024,12 @@ void AOnlineGameMode2::SetInfoOfEnemy_Animation(float DeltaTime)
 			continue;
 		}
 
-		EnterCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Animation);
-		if (ServerSocketInGame->InfoOfEnemies_Animation.find(kvp.Key) != ServerSocketInGame->InfoOfEnemies_Animation.end())
+		EnterCriticalSection(&cGameServer::GetSingleton()->csInfoOfEnemies_Animation);
+		if (cGameServer::GetSingleton()->InfoOfEnemies_Animation.find(kvp.Key) != cGameServer::GetSingleton()->InfoOfEnemies_Animation.end())
 		{
-			ServerSocketInGame->InfoOfEnemies_Animation.at(kvp.Key) = kvp.Value->GetInfoOfEnemy_Animation();
+			cGameServer::GetSingleton()->InfoOfEnemies_Animation.at(kvp.Key) = kvp.Value->GetInfoOfEnemy_Animation();
 		}
-		LeaveCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Animation);
+		LeaveCriticalSection(&cGameServer::GetSingleton()->csInfoOfEnemies_Animation);
 	}
 
 	while (!forRemove.empty())
@@ -1095,12 +1070,12 @@ void AOnlineGameMode2::SetInfoOfEnemy_Stat(float DeltaTime)
 			continue;
 		}
 
-		EnterCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Stat);
-		if (ServerSocketInGame->InfoOfEnemies_Stat.find(kvp.Key) != ServerSocketInGame->InfoOfEnemies_Stat.end())
+		EnterCriticalSection(&cGameServer::GetSingleton()->csInfoOfEnemies_Stat);
+		if (cGameServer::GetSingleton()->InfoOfEnemies_Stat.find(kvp.Key) != cGameServer::GetSingleton()->InfoOfEnemies_Stat.end())
 		{
-			ServerSocketInGame->InfoOfEnemies_Stat.at(kvp.Key) = kvp.Value->GetInfoOfEnemy_Stat();
+			cGameServer::GetSingleton()->InfoOfEnemies_Stat.at(kvp.Key) = kvp.Value->GetInfoOfEnemy_Stat();
 		}
-		LeaveCriticalSection(&ServerSocketInGame->csInfoOfEnemies_Stat);
+		LeaveCriticalSection(&cGameServer::GetSingleton()->csInfoOfEnemies_Stat);
 	}
 
 	while (!forRemove.empty())
@@ -1119,16 +1094,8 @@ void AOnlineGameMode2::SetInfoOfEnemy_Stat(float DeltaTime)
 /////////////////////////////////////////////////
 void AOnlineGameMode2::TickOfClientSocketInGame(float DeltaTime)
 {
-	if (!ClientSocketInGame)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode2::TickOfClientSocketInGame(...)> if (!ClientSocketInGame)"));
-#endif				
-		return;
-	}
-
 	// 게임클라이언트가 활성화되어 있지 않으면 더이상 실행하지 않습니다.
-	if (ClientSocketInGame->IsClientSocketOn() == false)
+	if (cGameClient::GetSingleton()->IsClientSocketOn() == false)
 	{
 		return;
 	}
@@ -1177,21 +1144,21 @@ void AOnlineGameMode2::SendScoreBoard(float DeltaTime)
 	}
 	/***********************************************************/
 
-	EnterCriticalSection(&ClientSocketInGame->csPossessedID);
-	int PossessedID = ClientSocketInGame->PossessedID;
-	LeaveCriticalSection(&ClientSocketInGame->csPossessedID);
+	EnterCriticalSection(&cGameClient::GetSingleton()->csPossessedID);
+	int PossessedID = cGameClient::GetSingleton()->PossessedID;
+	LeaveCriticalSection(&cGameClient::GetSingleton()->csPossessedID);
 
 	if (PioneerManager->Pioneers.Contains(PossessedID))
 	{
 		if (APioneer* pioneer = PioneerManager->Pioneers[PossessedID])
 		{
-			EnterCriticalSection(&ClientSocketInGame->csMyInfoOfScoreBoard);
-			ClientSocketInGame->MyInfoOfScoreBoard.Level = pioneer->Level;
-			LeaveCriticalSection(&ClientSocketInGame->csMyInfoOfScoreBoard);
+			EnterCriticalSection(&cGameClient::GetSingleton()->csMyInfoOfScoreBoard);
+			cGameClient::GetSingleton()->MyInfoOfScoreBoard.Level = pioneer->Level;
+			LeaveCriticalSection(&cGameClient::GetSingleton()->csMyInfoOfScoreBoard);
 		}
 	}
 
-	ClientSocketInGame->SendScoreBoard();
+	cGameClient::GetSingleton()->SendScoreBoard();
 }
 void AOnlineGameMode2::RecvScoreBoard(float DeltaTime)
 {
@@ -1209,18 +1176,18 @@ void AOnlineGameMode2::RecvScoreBoard(float DeltaTime)
 	}
 
 	// 서버 연결상태 확인
-	if (ClientSocketInGame->IsServerOn())
+	if (cGameClient::GetSingleton()->IsServerOn())
 		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
 	else
 		InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
 
-	if (ClientSocketInGame->tsqScoreBoard.empty())
+	if (cGameClient::GetSingleton()->tsqScoreBoard.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfScoreBoard> copiedQueue = ClientSocketInGame->tsqScoreBoard.copy_clear();
+	std::queue<cInfoOfScoreBoard> copiedQueue = cGameClient::GetSingleton()->tsqScoreBoard.copy_clear();
 
 	InGameScoreBoardWidget->RevealScores(copiedQueue);
 }
@@ -1247,13 +1214,13 @@ void AOnlineGameMode2::RecvInfoOfSpaceShip(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqSpaceShip.empty())
+	if (cGameClient::GetSingleton()->tsqSpaceShip.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfSpaceShip> copiedQueue = ClientSocketInGame->tsqSpaceShip.copy_clear();
+	std::queue<cInfoOfSpaceShip> copiedQueue = cGameClient::GetSingleton()->tsqSpaceShip.copy_clear();
 
 	SpaceShip->SetInfoOfSpaceShip(copiedQueue.back());
 }
@@ -1273,13 +1240,13 @@ void AOnlineGameMode2::RecvSpawnPioneer(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqSpawnPioneer.empty())
+	if (cGameClient::GetSingleton()->tsqSpawnPioneer.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfPioneer> copiedQueue = ClientSocketInGame->tsqSpawnPioneer.copy_clear();
+	std::queue<cInfoOfPioneer> copiedQueue = cGameClient::GetSingleton()->tsqSpawnPioneer.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1303,13 +1270,13 @@ void AOnlineGameMode2::RecvDiedPioneer(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqDiedPioneer.empty())
+	if (cGameClient::GetSingleton()->tsqDiedPioneer.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<int> copiedQueue = ClientSocketInGame->tsqDiedPioneer.copy_clear();
+	std::queue<int> copiedQueue = cGameClient::GetSingleton()->tsqDiedPioneer.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1346,7 +1313,7 @@ void AOnlineGameMode2::SendInfoOfPioneer_Animation(float DeltaTime)
 	}
 	/***********************************************************/
 
-	ClientSocketInGame->SendInfoOfPioneer_Animation(PioneerManager->PioneerOfPlayer);
+	cGameClient::GetSingleton()->SendInfoOfPioneer_Animation(PioneerManager->PioneerOfPlayer);
 }
 void AOnlineGameMode2::RecvInfoOfPioneer_Animation(float DeltaTime)
 {
@@ -1363,13 +1330,13 @@ void AOnlineGameMode2::RecvInfoOfPioneer_Animation(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfPioneer_Animation.empty())
+	if (cGameClient::GetSingleton()->tsqInfoOfPioneer_Animation.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfPioneer_Animation> copiedQueue = ClientSocketInGame->tsqInfoOfPioneer_Animation.copy_clear();
+	std::queue<cInfoOfPioneer_Animation> copiedQueue = cGameClient::GetSingleton()->tsqInfoOfPioneer_Animation.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1407,13 +1374,13 @@ void AOnlineGameMode2::RecvPossessPioneer(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqPossessPioneer.empty())
+	if (cGameClient::GetSingleton()->tsqPossessPioneer.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfPioneer_Socket> copiedQueue = ClientSocketInGame->tsqPossessPioneer.copy_clear();
+	std::queue<cInfoOfPioneer_Socket> copiedQueue = cGameClient::GetSingleton()->tsqPossessPioneer.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1455,13 +1422,13 @@ void AOnlineGameMode2::RecvInfoOfPioneer_Socket(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfPioneer_Socket.empty())
+	if (cGameClient::GetSingleton()->tsqInfoOfPioneer_Socket.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfPioneer_Socket> copiedQueue = ClientSocketInGame->tsqInfoOfPioneer_Socket.copy_clear();
+	std::queue<cInfoOfPioneer_Socket> copiedQueue = cGameClient::GetSingleton()->tsqInfoOfPioneer_Socket.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1500,7 +1467,7 @@ void AOnlineGameMode2::SendInfoOfPioneer_Stat(float DeltaTime)
 	}
 	/***********************************************************/
 
-	ClientSocketInGame->SendInfoOfPioneer_Stat(PioneerManager->PioneerOfPlayer);
+	cGameClient::GetSingleton()->SendInfoOfPioneer_Stat(PioneerManager->PioneerOfPlayer);
 }
 void AOnlineGameMode2::RecvInfoOfPioneer_Stat(float DeltaTime)
 {
@@ -1517,13 +1484,13 @@ void AOnlineGameMode2::RecvInfoOfPioneer_Stat(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfPioneer_Stat.empty())
+	if (cGameClient::GetSingleton()->tsqInfoOfPioneer_Stat.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfPioneer_Stat> copiedQueue = ClientSocketInGame->tsqInfoOfPioneer_Stat.copy_clear();
+	std::queue<cInfoOfPioneer_Stat> copiedQueue = cGameClient::GetSingleton()->tsqInfoOfPioneer_Stat.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1561,13 +1528,13 @@ void AOnlineGameMode2::RecvInfoOfProjectile(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfProjectile.empty())
+	if (cGameClient::GetSingleton()->tsqInfoOfProjectile.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfProjectile> copiedQueue = ClientSocketInGame->tsqInfoOfProjectile.copy_clear();
+	std::queue<cInfoOfProjectile> copiedQueue = cGameClient::GetSingleton()->tsqInfoOfProjectile.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1592,13 +1559,13 @@ void AOnlineGameMode2::RecvInfoOfResources(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfResources.empty())
+	if (cGameClient::GetSingleton()->tsqInfoOfResources.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfResources> copiedQueue = ClientSocketInGame->tsqInfoOfResources.copy_clear();
+	std::queue<cInfoOfResources> copiedQueue = cGameClient::GetSingleton()->tsqInfoOfResources.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1624,13 +1591,13 @@ void AOnlineGameMode2::RecvInfoOfBuilding_Spawn(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfBuilding_Spawn.empty())
+	if (cGameClient::GetSingleton()->tsqInfoOfBuilding_Spawn.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfBuilding_Spawn> copiedQueue = ClientSocketInGame->tsqInfoOfBuilding_Spawn.copy_clear();
+	std::queue<cInfoOfBuilding_Spawn> copiedQueue = cGameClient::GetSingleton()->tsqInfoOfBuilding_Spawn.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1655,13 +1622,13 @@ void AOnlineGameMode2::RecvInfoOfBuilding_Spawned(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfBuilding.empty())
+	if (cGameClient::GetSingleton()->tsqInfoOfBuilding.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfBuilding> copiedQueue = ClientSocketInGame->tsqInfoOfBuilding.copy_clear();
+	std::queue<cInfoOfBuilding> copiedQueue = cGameClient::GetSingleton()->tsqInfoOfBuilding.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1694,7 +1661,7 @@ void AOnlineGameMode2::SendInfoOfBuilding_Stat(float DeltaTime)
 
 	/***********************************************************/
 
-	ClientSocketInGame->SendInfoOfBuilding_Stat();
+	cGameClient::GetSingleton()->SendInfoOfBuilding_Stat();
 }
 
 void AOnlineGameMode2::RecvInfoOfBuilding_Stat(float DeltaTime)
@@ -1712,13 +1679,13 @@ void AOnlineGameMode2::RecvInfoOfBuilding_Stat(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfBuilding_Stat.empty())
+	if (cGameClient::GetSingleton()->tsqInfoOfBuilding_Stat.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfBuilding_Stat> copiedQueue = ClientSocketInGame->tsqInfoOfBuilding_Stat.copy_clear();
+	std::queue<cInfoOfBuilding_Stat> copiedQueue = cGameClient::GetSingleton()->tsqInfoOfBuilding_Stat.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1747,13 +1714,13 @@ void AOnlineGameMode2::RecvDestroyBuilding(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqDestroyBuilding.empty())
+	if (cGameClient::GetSingleton()->tsqDestroyBuilding.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<int> copiedQueue = ClientSocketInGame->tsqDestroyBuilding.copy_clear();
+	std::queue<int> copiedQueue = cGameClient::GetSingleton()->tsqDestroyBuilding.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1772,7 +1739,7 @@ void AOnlineGameMode2::RecvDestroyBuilding(float DeltaTime)
 		}
 		else
 		{
-			ClientSocketInGame->tsqDestroyBuilding.push(id);
+			cGameClient::GetSingleton()->tsqDestroyBuilding.push(id);
 		}
 
 		copiedQueue.pop();
@@ -1794,13 +1761,13 @@ void AOnlineGameMode2::RecvSpawnEnemy(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqSpawnEnemy.empty())
+	if (cGameClient::GetSingleton()->tsqSpawnEnemy.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfEnemy> copiedQueue = ClientSocketInGame->tsqSpawnEnemy.copy_clear();
+	std::queue<cInfoOfEnemy> copiedQueue = cGameClient::GetSingleton()->tsqSpawnEnemy.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1818,7 +1785,7 @@ void AOnlineGameMode2::SendInfoOfEnemy_Animation(float DeltaTime)
 
 	/***********************************************************/
 
-	ClientSocketInGame->SendInfoOfEnemy_Animation();
+	cGameClient::GetSingleton()->SendInfoOfEnemy_Animation();
 
 }
 void AOnlineGameMode2::RecvInfoOfEnemy_Animation(float DeltaTime)
@@ -1836,13 +1803,13 @@ void AOnlineGameMode2::RecvInfoOfEnemy_Animation(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfEnemy_Animation.empty())
+	if (cGameClient::GetSingleton()->tsqInfoOfEnemy_Animation.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfEnemy_Animation> copiedQueue = ClientSocketInGame->tsqInfoOfEnemy_Animation.copy_clear();
+	std::queue<cInfoOfEnemy_Animation> copiedQueue = cGameClient::GetSingleton()->tsqInfoOfEnemy_Animation.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1869,7 +1836,7 @@ void AOnlineGameMode2::SendInfoOfEnemy_Stat(float DeltaTime)
 
 	/***********************************************************/
 
-	ClientSocketInGame->SendInfoOfEnemy_Stat();
+	cGameClient::GetSingleton()->SendInfoOfEnemy_Stat();
 }
 void AOnlineGameMode2::RecvInfoOfEnemy_Stat(float DeltaTime)
 {
@@ -1886,13 +1853,13 @@ void AOnlineGameMode2::RecvInfoOfEnemy_Stat(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqInfoOfEnemy_Stat.empty())
+	if (cGameClient::GetSingleton()->tsqInfoOfEnemy_Stat.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<cInfoOfEnemy_Stat> copiedQueue = ClientSocketInGame->tsqInfoOfEnemy_Stat.copy_clear();
+	std::queue<cInfoOfEnemy_Stat> copiedQueue = cGameClient::GetSingleton()->tsqInfoOfEnemy_Stat.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1924,13 +1891,13 @@ void AOnlineGameMode2::RecvDestroyEnemy(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqDestroyEnemy.empty())
+	if (cGameClient::GetSingleton()->tsqDestroyEnemy.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<int> copiedQueue = ClientSocketInGame->tsqDestroyEnemy.copy_clear();
+	std::queue<int> copiedQueue = cGameClient::GetSingleton()->tsqDestroyEnemy.copy_clear();
 
 	while (copiedQueue.empty() == false)
 	{
@@ -1947,7 +1914,7 @@ void AOnlineGameMode2::RecvDestroyEnemy(float DeltaTime)
 		}
 		else
 		{
-			ClientSocketInGame->tsqDestroyEnemy.push(id);
+			cGameClient::GetSingleton()->tsqDestroyEnemy.push(id);
 		}
 
 		copiedQueue.pop();
@@ -1969,17 +1936,17 @@ void AOnlineGameMode2::RecvExp(float DeltaTime)
 		return;
 	}
 
-	if (ClientSocketInGame->tsqExp.empty())
+	if (cGameClient::GetSingleton()->tsqExp.empty())
 	{
 		return;
 	}
 	/***********************************************************/
 
-	std::queue<int> copiedQueue = ClientSocketInGame->tsqExp.copy_clear();
+	std::queue<int> copiedQueue = cGameClient::GetSingleton()->tsqExp.copy_clear();
 
-	EnterCriticalSection(&ClientSocketInGame->csPossessedID);
-	int PossessedID = ClientSocketInGame->PossessedID;
-	LeaveCriticalSection(&ClientSocketInGame->csPossessedID);
+	EnterCriticalSection(&cGameClient::GetSingleton()->csPossessedID);
+	int PossessedID = cGameClient::GetSingleton()->PossessedID;
+	LeaveCriticalSection(&cGameClient::GetSingleton()->csPossessedID);
 
 	while (copiedQueue.empty() == false)
 	{
@@ -2001,48 +1968,6 @@ void AOnlineGameMode2::RecvExp(float DeltaTime)
 /////////////////////////////////////////////////
 // 패배 조건 확인
 /////////////////////////////////////////////////
-void AOnlineGameMode2::FindQcuupationPanel()
-{
-	UWorld* const world = GetWorld();
-	if (!world)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Warning, TEXT("<AOnlineGameMode2::FindQcuupationPanel()> if (!world)"));
-#endif
-		return;
-	}
-
-	for (TActorIterator<AOccupationPanel> ActorItr(world); ActorItr; ++ActorItr)
-	{
-		OccupationPanels.Add(*ActorItr);
-	}
-}
-void AOnlineGameMode2::CheckVictoryCondition(float DeltaTime)
-{
-	TimerOfCheckVictoryCondition += DeltaTime;
-	if (TimerOfCheckVictoryCondition < 1.0f)
-		return;
-	TimerOfCheckVictoryCondition = 0.0f;
-
-	queue<int> idx;
-	for (int i = 0; i < OccupationPanels.Num(); i++)
-	{
-		if (OccupationPanels[i]->Occupancy >= 100.0f)
-			idx.push(i);
-	}
-
-	while (idx.empty() == false)
-	{
-		OccupationPanels.RemoveAt(idx.front());
-		idx.pop();
-	}
-
-	if (OccupationPanels.Num() <= 0)
-		_ActivateInGameVictoryWidget();
-	else
-		_DeactivateInGameVictoryWidget();
-}
-
 void AOnlineGameMode2::CheckDefeatCondition(float DeltaTime)
 {
 	TimerOfCheckDefeatCondition += DeltaTime;
@@ -2481,11 +2406,8 @@ void AOnlineGameMode2::TerminateGame()
 }
 void AOnlineGameMode2::_TerminateGame()
 {
-	if (ClientSocket)
-		ClientSocket->CloseSocket();
-	if (ServerSocketInGame)
-		ServerSocketInGame->CloseServer();
-	if (ClientSocketInGame)
-		ClientSocketInGame->CloseSocket();
+	cMainClient::GetSingleton()->Close();
+	cGameServer::GetSingleton()->Close();
+	cGameClient::GetSingleton()->Close();
 }
 /*** AOnlineGameMode2 : End ***/

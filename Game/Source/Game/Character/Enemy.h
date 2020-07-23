@@ -108,9 +108,6 @@ protected:
 		class AMyTriggerBox* TriggerBoxForSpawn = nullptr;
 
 public:
-	class cServerSocketInGame* ServerSocketInGame = nullptr;
-	class cClientSocketInGame* ClientSocketInGame = nullptr;
-
 	UPROPERTY(VisibleAnywhere, Category = "Enemy")
 		int ID;
 

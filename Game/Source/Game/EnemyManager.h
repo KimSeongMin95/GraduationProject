@@ -31,8 +31,6 @@ public:
 
 /*** AEnemyManager : Start ***/
 public:
-	class cServerSocketInGame* ServerSocketInGame;
-
 	UPROPERTY(VisibleAnywhere, Category = "AEnemyManager")
 		int32 ID;
 

@@ -10,8 +10,8 @@
 #include "Projectile/ProjectileSniperRifle.h"
 #include "Projectile/Splash/ProjectileRocketLauncher.h"
 
-#include "Network/ServerSocketInGame.h"
-#include "Network/ClientSocketInGame.h"
+#include "Network/GameServer.h"
+#include "Network/GameClient.h"
 
 #include "EnemyManager.h"
 
@@ -30,9 +30,6 @@
 /*** Basic Function : Start ***/
 ATurret::ATurret()
 {
-	ServerSocketInGame = nullptr;
-	ClientSocketInGame = nullptr;
-
 	TickOfFireCoolTime = 0.0f;
 
 	TickOfFindEnemyTime = 0.0f;
@@ -47,9 +44,6 @@ ATurret::ATurret()
 void ATurret::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 }
 
 void ATurret::Tick(float DeltaTime)
@@ -465,13 +459,11 @@ void ATurret::Fire()
 
 
 	// 게임클라이언트에서는 애니메이션까지만 실행하고 실제로는 발사하지 않습니다.
-	if (ClientSocketInGame)
+	if (cGameClient::GetSingleton()->IsClientSocketOn())
 	{
-		if (ClientSocketInGame->IsClientSocketOn())
-		{
-			return;
-		}
+		return;
 	}
+	
 
 	/*****************************************************************/
 
@@ -530,21 +522,18 @@ void ATurret::Fire()
 
 	projectile->SetGenerateOverlapEventsOfHitRange(true);
 
-	if (ServerSocketInGame)
+
+	if (cGameServer::GetSingleton()->IsServerOn())
 	{
-		if (ServerSocketInGame->IsServerOn())
-		{
-			cInfoOfProjectile infoOfProjectile;
-			infoOfProjectile.ID = 0;
-			infoOfProjectile.Numbering = numbering;
-			infoOfProjectile.SetActorTransform(myTrans);
+		cInfoOfProjectile infoOfProjectile;
+		infoOfProjectile.ID = 0;
+		infoOfProjectile.Numbering = numbering;
+		infoOfProjectile.SetActorTransform(myTrans);
 
-			ServerSocketInGame->SendInfoOfProjectile(infoOfProjectile);
+		cGameServer::GetSingleton()->SendInfoOfProjectile(infoOfProjectile);
 
-			return;
-		}
+		return;
 	}
-
 }
 
 void ATurret::TickOfUnderWall()
@@ -570,12 +559,9 @@ void ATurret::TickOfUnderWall()
 		}
 	}
 
-	if (ServerSocketInGame)
+	if (cGameServer::GetSingleton()->IsServerOn())
 	{
-		if (ServerSocketInGame->IsServerOn())
-		{
-			ServerSocketInGame->SendDestroyBuilding(ID);
-		}
+		cGameServer::GetSingleton()->SendDestroyBuilding(ID);
 	}
 
 	Destroy();

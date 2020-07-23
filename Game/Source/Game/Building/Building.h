@@ -135,9 +135,6 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 		float TimerOfTickOfConsumeAndProduct;
-
-	class cServerSocketInGame* ServerSocketInGame = nullptr;
-	class cClientSocketInGame* ClientSocketInGame = nullptr;
 	
 
 public:
@@ -201,13 +198,13 @@ private:
 
 
 protected:
+	void InitRootComp();
 	virtual void InitStat();
 	virtual void InitConstructBuilding();
 	virtual void InitBuilding();
 	void InitMaterial();
 
 	void AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
-	
 	void AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 	
 	/** SubStaticMeshComp엔 먼저 AddBuildingSMC(SubStaticMeshComp) 하고 가져와야 함. */
@@ -220,6 +217,7 @@ protected:
 	UFUNCTION(Category = "Building")
 		virtual void OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	void TickOfConstructable();
 	void TickOfConsumeAndProduct(float DeltaTime);
 
 public:

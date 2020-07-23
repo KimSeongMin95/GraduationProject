@@ -19,9 +19,6 @@
 
 #include "Etc/WorldViewCameraActor.h"
 
-#include "Network/ServerSocketInGame.h"
-#include "Network/ClientSocketInGame.h"
-
 #include "Building/Building.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
@@ -34,9 +31,6 @@ APioneerController::APioneerController()
 	bScoreBoard = false;
 
 	PioneerManager = nullptr;
-
-	ServerSocketInGame = nullptr;
-	ClientSocketInGame = nullptr;
 
 	bObservation = true;
 
@@ -93,11 +87,6 @@ void APioneerController::SetupInputComponent()
 	InputComponent->BindAction("ChangeNextWeapon", IE_Pressed, this, &APioneerController::ChangeNextWeapon);
 	// 마우스 휠클릭: 무장 <--> 무장해제
 	InputComponent->BindAction("ArmOrDisArmWeapon", IE_Pressed, this, &APioneerController::ArmOrDisArmWeapon);
-	// F키: 바닥에 있는 아이템 줍기
-	InputComponent->BindAction("AcquireItem", IE_Pressed, this, &APioneerController::AcquireItem);
-	// G키: 현재 무기를 바닥에 버리기
-	InputComponent->BindAction("AbandonWeapon", IE_Pressed, this, &APioneerController::AbandonWeapon);
-
 
 	// B키: 건물건설모드 진입
 	InputComponent->BindAction("ConstructingMode", IE_Pressed, this, &APioneerController::ConstructingMode);
@@ -447,114 +436,6 @@ void APioneerController::ArmOrDisArmWeapon()
 	}
 
 	Pioneer->DestroyBuilding();
-}
-
-
-
-void APioneerController::AcquireItem()
-{
-	// 네트워크 동기화의 어려움 때문에 기능을 사용하지 않습니다.
-	return;
-
-
-	if (!Pioneer || !GetPawn())
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::AcquireItem()> if (!Pioneer || !GetPawn())"));
-#endif
-		return;
-	}
-
-	if (Pioneer->OverlapedItems.Num() <= 0)
-		return;
-	
-	AItem* closestItem = nullptr;
-	float minDistance = 1000000.0f;
-	for (auto& item : Pioneer->OverlapedItems)
-	{
-		if (!item)
-			continue;
-
-		float dist = FVector::Distance(Pioneer->GetActorLocation(), item->GetActorLocation());
-		if (dist < minDistance)
-		{
-			minDistance = dist;
-			closestItem = item;
-		}
-	}
-
-	if (!closestItem)
-		return;
-	
-
-	if (AWeapon* weapon = dynamic_cast<AWeapon*>(closestItem))
-	{
-		//if (!ServerSocketInGame)
-		//	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-		//if (ServerSocketInGame->IsServerOn())
-		//{
-		//	if (ServerSocketInGame->AcquiringWeapon())
-		//	{
-
-		//		ServerSocketInGame->AcquireWeapon(weapon);
-
-		//		Pioneer->AcquireWeapon(weapon);
-		//	}
-
-		//	return;
-		//}
-
-		//if (!ClientSocketInGame)
-		//	ClientSocketInGame = cClientSocketInGame::GetSingleton();
-		//if (ClientSocketInGame->IsClientSocketOn())
-		//{
-		//	ClientSocketInGame->SendAcquireWeapon();
-
-		//	return;
-		//}
-
-		// 싱글플레이에서는 바로 획득합니다.
-		Pioneer->AcquireWeapon(weapon);
-	}
-}
-
-void APioneerController::AbandonWeapon()
-{
-	// 네트워크 동기화의 어려움 때문에 기능을 사용하지 않습니다.
-	return;
-
-	if (!Pioneer || !GetPawn())
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::AbandonWeapon()> if (!Pioneer || !GetPawn())"));
-#endif
-		return;
-	}
-
-
-	//if (!ServerSocketInGame)
-	//	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-	//if (ServerSocketInGame->IsServerOn())
-	//{
-	//	Pioneer->GetCurrentWeapon();
-
-	//	ServerSocketInGame->AbandonWeapon();
-	//	
-	//	Pioneer->AbandonWeapon();
-
-	//	return;
-	//}
-
-	//if (!ClientSocketInGame)
-	//	ClientSocketInGame = cClientSocketInGame::GetSingleton();
-	//if (ClientSocketInGame->IsClientSocketOn())
-	//{
-	//	ClientSocketInGame->SendAbandonWeapon();
-
-	//	return;
-	//}
-
-	Pioneer->AbandonWeapon();
 }
 
 void APioneerController::ConstructingMode()

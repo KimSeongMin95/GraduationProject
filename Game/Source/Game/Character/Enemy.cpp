@@ -11,8 +11,8 @@
 #include "Building/Turret.h"
 
 #include "Network/Packet.h"
-#include "Network/ServerSocketInGame.h"
-#include "Network/ClientSocketInGame.h"
+#include "Network/GameServer.h"
+#include "Network/GameClient.h"
 
 #include "EnemyManager.h"
 #include "PioneerManager.h"
@@ -30,9 +30,6 @@
 /*** Basic Function : Start ***/
 AEnemy::AEnemy()
 {
-	ServerSocketInGame = nullptr;
-	ClientSocketInGame = nullptr;
-
 	ID = 0;
 
 	EnemyManager = nullptr;
@@ -58,19 +55,13 @@ void AEnemy::BeginPlay()
 	// Init()이 끝나고 AIController에 빙의합니다.
 	PossessAIController();
 
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-	ClientSocketInGame = cClientSocketInGame::GetSingleton();
-
 	if (!GetOwner())
 	{
 		// 게임클라이언트라면 게임서버에서 SpawnEnemy으로 생성하기 때문에 소멸시킵니다.
-		if (ClientSocketInGame)
+		if (cGameClient::GetSingleton()->IsClientSocketOn())
 		{
-			if (ClientSocketInGame->IsClientSocketOn())
-			{
-				Destroy();
-				return;
-			}
+			Destroy();
+			return;
 		}
 	}
 
@@ -401,46 +392,41 @@ void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 		}
 	}
 
-	if (ServerSocketInGame)
+	if (cGameServer::GetSingleton()->IsServerOn())
 	{
-		if (ServerSocketInGame->IsServerOn())
+		cGameServer::GetSingleton()->SendDestroyEnemy(ID, IDOfPioneer, Exp);
+
+		if (PioneerManager)
 		{
-			ServerSocketInGame->SendDestroyEnemy(ID, IDOfPioneer, Exp);
-
-			if (PioneerManager)
+			if (PioneerManager->Pioneers.Contains(IDOfPioneer))
 			{
-				if (PioneerManager->Pioneers.Contains(IDOfPioneer))
+				if (APioneer* pioneer = PioneerManager->Pioneers[IDOfPioneer])
 				{
-					if (APioneer* pioneer = PioneerManager->Pioneers[IDOfPioneer])
-					{
-						pioneer->Exp += Exp;
+					pioneer->Exp += Exp;
 
-						pioneer->CalculateLevel();
-					}
+					pioneer->CalculateLevel();
 				}
 			}
 		}
 	}
+	
 
-
-	if (ClientSocketInGame && ServerSocketInGame)
+	if (!cGameServer::GetSingleton()->IsServerOn() && !cGameClient::GetSingleton()->IsClientSocketOn())
 	{
-		if (!ServerSocketInGame->IsServerOn() && !ClientSocketInGame->IsClientSocketOn())
+		if (PioneerManager)
 		{
-			if (PioneerManager)
+			if (PioneerManager->Pioneers.Contains(IDOfPioneer))
 			{
-				if (PioneerManager->Pioneers.Contains(IDOfPioneer))
+				if (APioneer* pioneer = PioneerManager->Pioneers[IDOfPioneer])
 				{
-					if (APioneer* pioneer = PioneerManager->Pioneers[IDOfPioneer])
-					{
-						pioneer->Exp += Exp;
+					pioneer->Exp += Exp;
 
-						pioneer->CalculateLevel();
-					}
+					pioneer->CalculateLevel();
 				}
 			}
 		}
 	}
+	
 
 
 

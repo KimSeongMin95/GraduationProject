@@ -15,21 +15,13 @@
 #include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
 /*** 언리얼엔진 헤더 선언 : End ***/
 
+#include "Network/Packet.h"
+
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PioneerManager.generated.h"
 
-
-//UENUM()
-//enum class ESwitchState : int8
-//{
-//	Switchable = 0,			/** 전환 가능 */
-//	Current = 1,			/** SetViewTargetWithBlend: CameraOfCurrentPioneer -> WorldViewCameraOfCurrentPioneer */
-//	FindTargetViewActor = 2,/** SetViewTargetWithBlend: WorldViewCameraOfCurrentPioneer -> WorldViewCameraOfNextPioneer */
-//	Next = 3,				/** SetViewTargetWithBlend: WorldViewCameraOfNextPioneer -> CameraOfNextPioneer */
-//	Finish = 4				/** SetViewTarget: CameraOfNextPioneer -> NextPioneer */
-//};
 
 UENUM()
 enum class EViewpointState : int8
@@ -93,17 +85,9 @@ private:
 		/**  */
 		class ABuildingManager* BuildingManager = nullptr;
 
-	//ESwitchState SwitchState;
-
 	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
 		/** 관전중인 Pioneer를 저장합니다. 상태창에 표시할 때 쓰입니다. */
 		class APioneer* ViewTarget = nullptr;
-
-
-	/** 네트워크 */
-	class cClientSocket* ClientSocket = nullptr;
-	class cServerSocketInGame* ServerSocketInGame = nullptr;
-	class cClientSocketInGame* ClientSocketInGame = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 인게임 UI */

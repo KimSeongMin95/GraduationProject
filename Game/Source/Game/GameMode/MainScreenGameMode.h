@@ -10,7 +10,6 @@
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 
-
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "MainScreenGameMode.generated.h"
@@ -51,11 +50,6 @@ public:
 /*** AMainScreenGameMode : Start ***/
 private:
 	EOnlineState OnlineState;
-
-	class cClientSocket* ClientSocket = nullptr;
-
-	class cServerSocketInGame* ServerSocketInGame = nullptr;
-	class cClientSocketInGame* ClientSocketInGame = nullptr;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** 메인화면 */

@@ -7,9 +7,6 @@
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Projectile/ProjectileAssaultRifle.h"
 
-#include "Network/ServerSocketInGame.h"
-#include "Network/ClientSocketInGame.h"
-
 #include "EnemyManager.h"
 
 #include "Character/Enemy.h"

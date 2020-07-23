@@ -3,8 +3,8 @@
 #include "Weapon.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Network/ServerSocketInGame.h"
-#include "Network/ClientSocketInGame.h"
+#include "Network/GameServer.h"
+#include "Network/GameClient.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -21,19 +21,12 @@ AWeapon::AWeapon()
 	// 발사될 Projectile의 Transform 값을 저장할 ArrowComponent 생성후 Mesh에 부착
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>("Arrow");
 	ArrowComponent->SetupAttachment(WeaponMesh);
-
-	ServerSocketInGame = nullptr;
-	ClientSocketInGame = nullptr;
 }
 
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	Droped(); // 기본적으로 Drop된 상태
 
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 }
 
 void AWeapon::Tick(float DeltaTime)
@@ -50,44 +43,13 @@ void AWeapon::InitItem()
 {
 	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
-void AWeapon::Droped()
-{
-	Super::Droped();
-
-	if (WeaponMesh)
-		WeaponMesh->SetHiddenInGame(true);
-}
-void AWeapon::Acquired()
-{
-	Super::Acquired();
-
-	if (WeaponMesh)
-		WeaponMesh->SetHiddenInGame(false);
-}
 /*** AItem : End ***/
 
 
 /*** AWeapon : Start ***/
 void AWeapon::InitStat()
 {
-	/* 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
-	WeaponType = EWeaponType::Pistol;
-	WeaponNumbering = 0;
-
-	LimitedLevel = 1;
-
-	AttackPower = 1.0f;
-	AttackSpeed = 1.0f;
-	AttackRange = 1.0f * AMyGameModeBase::CellSize;
-
-	FireCoolTime = 0.0;
-	ReloadTime = 1.0f;
-
-	CurrentNumOfBullets = 1;
-	MaximumNumOfBullets = 1;
-
-	SocketName = TEXT("PistolSocket");
-	*/
+	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
 }
 
 void AWeapon::InitWeapon()
@@ -149,15 +111,40 @@ bool AWeapon::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 
 
 	// AI가 중복되어 발사하지 않도록
-	if (ClientSocketInGame)
+	if (cGameClient::GetSingleton()->IsClientSocketOn() && SocketIDOfPioneer == 0)
 	{
-		if (ClientSocketInGame->IsClientSocketOn() && SocketIDOfPioneer == 0)
-		{
-			return false;
-		}
+		return false;
 	}
+	
 	
 
 	return true;
+}
+
+void AWeapon::FireNetwork(int IDOfPioneer, const FTransform& Transform)
+{
+	if (cGameServer::GetSingleton()->IsServerOn())
+	{
+		cInfoOfProjectile infoOfProjectile;
+		infoOfProjectile.ID = IDOfPioneer;
+		infoOfProjectile.Numbering = WeaponNumbering;
+		infoOfProjectile.SetActorTransform(Transform);
+
+		cGameServer::GetSingleton()->SendInfoOfProjectile(infoOfProjectile);
+
+		return;
+	}
+
+	if (cGameClient::GetSingleton()->IsClientSocketOn())
+	{
+		cInfoOfProjectile infoOfProjectile;
+		infoOfProjectile.ID = IDOfPioneer;
+		infoOfProjectile.Numbering = WeaponNumbering;
+		infoOfProjectile.SetActorTransform(Transform);
+
+		cGameClient::GetSingleton()->SendInfoOfProjectile(infoOfProjectile);
+
+		return;
+	}
 }
 /*** AWeapon : End ***/

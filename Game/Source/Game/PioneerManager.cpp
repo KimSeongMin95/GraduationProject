@@ -9,9 +9,9 @@
 #include "Controller/PioneerController.h"
 #include "Controller/PioneerAIController.h"
 
-#include "Network/ClientSocket.h"
-#include "Network/ServerSocketInGame.h"
-#include "Network/ClientSocketInGame.h"
+#include "Network/MainClient.h"
+#include "Network/GameServer.h"
+#include "Network/GameClient.h"
 
 #include "CustomWidget/InGameWidget.h"
 
@@ -34,10 +34,6 @@ APioneerManager::APioneerManager()
 	//SwitchState = ESwitchState::Switchable;
 
 	ViewTarget = nullptr;
-
-	ClientSocket = nullptr;
-	ServerSocketInGame = nullptr;
-	ClientSocketInGame = nullptr;
 
 	ViewpointState = EViewpointState::Idle;
 
@@ -66,14 +62,6 @@ void APioneerManager::BeginPlay()
 	SpawnWorldViewCameraActor(&WorldViewCameraOfCurrentPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 2000.0f)));
 	SpawnWorldViewCameraActor(&WorldViewCameraOfNextPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 2000.0f)));
 	SpawnWorldViewCameraActor(&CameraOfNextPioneer, FTransform(FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 2000.0f)));
-
-
-	//////////////////////////
-	// 네트워크
-	//////////////////////////
-	ClientSocket = cClientSocket::GetSingleton();
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 
 
 	FindPioneersInWorld();
@@ -147,15 +135,14 @@ void APioneerManager::FindPioneersInWorld()
 			Pioneers.Add(KeyID, *ActorItr);
 			ActorItr->ID = KeyID;
 
-			if (ServerSocketInGame)
+
+			// 이미 생성된 Pioneer를 게임서버에 알립니다.
+			if (cGameServer::GetSingleton()->IsServerOn())
 			{
-				// 이미 생성된 Pioneer를 게임서버에 알립니다.
-				if (ServerSocketInGame->IsServerOn())
-				{
-					cInfoOfPioneer infoOfPioneer = ActorItr->GetInfoOfPioneer();
-					ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
-				}
+				cInfoOfPioneer infoOfPioneer = ActorItr->GetInfoOfPioneer();
+				cGameServer::GetSingleton()->SendSpawnPioneer(infoOfPioneer);
 			}
+			
 
 			KeyID++;
 		}
@@ -483,15 +470,13 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 		Pioneers.Add(KeyID, pioneer);
 	}
 
-	if (ServerSocketInGame)
+	// Pioneer 생성을 게임클라이언트들에게 알립니다.
+	if (cGameServer::GetSingleton()->IsServerOn())
 	{
-		// Pioneer 생성을 게임클라이언트들에게 알립니다.
-		if (ServerSocketInGame->IsServerOn())
-		{
-			cInfoOfPioneer infoOfPioneer = pioneer->GetInfoOfPioneer();
-			ServerSocketInGame->SendSpawnPioneer(infoOfPioneer);
-		}
+		cInfoOfPioneer infoOfPioneer = pioneer->GetInfoOfPioneer();
+		cGameServer::GetSingleton()->SendSpawnPioneer(infoOfPioneer);
 	}
+	
 
 	KeyID++;
 
@@ -890,13 +875,6 @@ void APioneerManager::SwitchToFreeViewpoint()
 
 void APioneerManager::PossessObservingPioneer()
 {
-	if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)"));
-#endif	
-		return;
-	}
 	if (!ViewTarget)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
@@ -936,15 +914,15 @@ void APioneerManager::PossessObservingPioneer()
 
 	cInfoOfPioneer_Socket socket;
 	socket.ID = IdCurrentlyBeingObserved;
-	socket.NameOfID = ClientSocket->CopyMyInfo().ID;
+	socket.NameOfID = cMainClient::GetSingleton()->CopyMyInfo().ID;
 
 
-	if (ServerSocketInGame->IsServerOn())
+	if (cGameServer::GetSingleton()->IsServerOn())
 	{
-		socket.SocketID = ServerSocketInGame->SocketID;
+		socket.SocketID = cGameServer::GetSingleton()->SocketID;
 
 		// 빙의 할 수 있는지 확인
-		bool result = ServerSocketInGame->PossessingPioneer(socket);
+		bool result = cGameServer::GetSingleton()->PossessingPioneer(socket);
 
 		if (result)
 		{
@@ -972,9 +950,9 @@ void APioneerManager::PossessObservingPioneer()
 		return;
 	}
 
-	if (ClientSocketInGame->IsClientSocketOn())
+	if (cGameClient::GetSingleton()->IsClientSocketOn())
 	{
-		ClientSocketInGame->SendPossessPioneer(socket);
+		cGameClient::GetSingleton()->SendPossessPioneer(socket);
 
 		return;
 	}
@@ -985,13 +963,6 @@ void APioneerManager::PossessObservingPioneer()
 }
 void APioneerManager::PossessObservingPioneerByRecv(const class cInfoOfPioneer_Socket& Socket)
 {
-	if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneerByRecv(...)> if (!ClientSocket || !ServerSocketInGame || !ClientSocketInGame)"));
-#endif	
-		return;
-	}
 	if (!PioneerController)
 	{
 #if UE_BUILD_DEVELOPMENT && UE_EDITOR
@@ -1026,7 +997,7 @@ void APioneerManager::PossessObservingPioneerByRecv(const class cInfoOfPioneer_S
 	{
 		IdCurrentlyBeingObserved = 0;
 
-		if (ClientSocketInGame->IsClientSocketOn())
+		if (cGameClient::GetSingleton()->IsClientSocketOn())
 		{
 			pioneer->SetInfoOfPioneer_Socket(const_cast<cInfoOfPioneer_Socket&>(Socket));
 		}

@@ -38,8 +38,8 @@
 
 #include "Item/Item.h"
 
-#include "Network/ServerSocketInGame.h"
-#include "Network/ClientSocketInGame.h"
+#include "Network/GameServer.h"
+#include "Network/GameClient.h"
 
 #include "Etc/WorldViewCameraActor.h"
 
@@ -105,9 +105,6 @@ void APioneer::BeginPlay()
 	InitWeapon();
 
 	PossessAIController();
-
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-	ClientSocketInGame = cClientSocketInGame::GetSingleton();
 
 
 	if (EditableTextBoxForID)
@@ -226,10 +223,6 @@ void APioneer::InitCharacterMovement()
 
 void APioneer::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-//	UE_LOG(LogTemp, Log, TEXT("<APioneer::OnOverlapBegin_DetectRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
-//#endif
-
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
 
@@ -248,13 +241,6 @@ void APioneer::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedC
 			}
 		}
 	}
-
-
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Add(OtherActor): %s"), *OtherActor->GetName());
-	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Num(): %d"), OverlappedCharacterInDetectRange.Num());
-	//UE_LOG(LogTemp, Log, TEXT("_______"));
-//#endif
 }
 void APioneer::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
@@ -272,18 +258,10 @@ void APioneer::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedCom
 		{
 			if (enemy->GetCapsuleComponent() == OtherComp)
 			{
-				//OverlappedCharacterInDetectRange.Remove(OtherActor); // OtherActor 전체를 지웁니다.
-				OverlappedCharacterInDetectRange.RemoveSingle(enemy); // OtherActor 하나를 지웁니다.
+				OverlappedCharacterInDetectRange.RemoveSingle(enemy); // enemy 하나를 탐지범위에서 삭제합니다.
 			}
 		}
 	}
-
-
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-	//UE_LOG(LogTemp, Warning, TEXT("OverlappedCharacterInDetectRange.Remove(OtherActor): %s"), *OtherActor->GetName());
-	//UE_LOG(LogTemp, Warning, TEXT("OverlappedCharacterInDetectRange.Num(): %d"), OverlappedCharacterInDetectRange.Num());
-	//UE_LOG(LogTemp, Warning, TEXT("_______"));
-//#endif
 }
 
 
@@ -335,34 +313,31 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 			//////////////////////////////////////////////////////////
 			// 게임서버는와 게임클라이언트는 자신의 죽음과 관전상태를 알림
 			//////////////////////////////////////////////////////////
-			if (ServerSocketInGame && ClientSocketInGame)
+			if (cGameServer::GetSingleton()->IsServerOn())
 			{
-				if (ServerSocketInGame->IsServerOn())
+				// AI와 게임서버가 조종하는 Pioneer만 알리기 위해
+				if (SocketID <= 1)
 				{
-					// AI와 게임서버가 조종하는 Pioneer만 알리기 위해
-					if (SocketID <= 1)
-					{
-						stringstream sendStream;
-						sendStream << ID << endl;
+					stringstream sendStream;
+					sendStream << ID << endl;
 
-						ServerSocketInGame->DiedPioneer(sendStream, NULL);
+					cGameServer::GetSingleton()->DiedPioneer(sendStream, NULL);
 
-						// 조종하던 Pioneer라면
-						if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
-						{
-							ServerSocketInGame->InsertAtObersers(ServerSocketInGame->SocketID);
-						}
-					}
-				}
-				else if (ClientSocketInGame->IsClientSocketOn())
-				{
 					// 조종하던 Pioneer라면
 					if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 					{
-						ClientSocketInGame->SendDiedPioneer(ID);
-
-						ClientSocketInGame->SendObservation();
+						cGameServer::GetSingleton()->InsertAtObersers(cGameServer::GetSingleton()->SocketID);
 					}
+				}
+			}
+			else if (cGameClient::GetSingleton()->IsClientSocketOn())
+			{
+				// 조종하던 Pioneer라면
+				if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
+				{
+					cGameClient::GetSingleton()->SendDiedPioneer(ID);
+
+					cGameClient::GetSingleton()->SendObservation();
 				}
 			}
 		}
@@ -1014,7 +989,6 @@ void APioneer::InitWeapon()
 
 	// 개척자는 기본적으로 권총을 가지고 있음
 	APistol* Pistol = world->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
-	Pistol->Acquired();
 	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	//Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(Pistol) == false)
@@ -1024,35 +998,30 @@ void APioneer::InitWeapon()
 	}
 
 	AAssaultRifle* assaultRifle = world->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
-	assaultRifle->Acquired();
 	assaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	assaultRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(assaultRifle) == false)
 		Weapons.Add(assaultRifle);
 
 	AShotgun* shotgun = world->SpawnActor<AShotgun>(AShotgun::StaticClass(), myTrans, SpawnParams);
-	shotgun->Acquired();
 	shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ShotgunSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	shotgun->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(shotgun) == false)
 		Weapons.Add(shotgun);
 
 	ASniperRifle* sniperRifle = world->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), myTrans, SpawnParams);
-	sniperRifle->Acquired();
 	sniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	sniperRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(sniperRifle) == false)
 		Weapons.Add(sniperRifle);
 
 	AGrenadeLauncher* grenadeLauncher = world->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
-	grenadeLauncher->Acquired();
 	grenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	grenadeLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(grenadeLauncher) == false)
 		Weapons.Add(grenadeLauncher);
 
 	ARocketLauncher* rocketLauncher = world->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
-	rocketLauncher->Acquired();
 	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
 	rocketLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(rocketLauncher) == false)
@@ -1237,55 +1206,6 @@ void APioneer::ZoomInOrZoomOut(float Value)
 		TargetArmLength = 0.0f;
 	/*else if (TargetArmLength > 1500.0f)
 		TargetArmLength = 1500.0f;*/
-}
-
-
-void APioneer::AcquireWeapon(class AWeapon* weapon)
-{
-	if (!weapon || !GetMesh())
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::AcquireWeapon(...)> if (!weapon || !GetMesh())"));
-#endif
-		return;
-	}
-
-	// 먼저 무장해제
-	Disarming();
-
-	OverlapedItems.RemoveSingle(weapon);
-
-	weapon->Acquired();
-	weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), weapon->SocketName);
-
-	CurrentWeapon = weapon;
-	IdxOfCurrentWeapon = Weapons.Add(CurrentWeapon);
-
-	// 다시 획득한 무기로 무장
-	Arming();
-}
-
-void APioneer::AbandonWeapon()
-{
-	if (!CurrentWeapon || !GetCharacterMovement())
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::AbandonWeapon()> if (!CurrentWeapon)"));
-#endif
-		return;
-	}
-
-	CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	CurrentWeapon->Droped();
-
-	Weapons.RemoveSingle(CurrentWeapon);
-	CurrentWeapon = nullptr;
-
-	SetWeaponType();
-
-	GetCharacterMovement()->bOrientRotationToMovement = true; // 무기를 들지 않으면 이동 방향에 캐릭터 메시가 따라 회전합니다.
-
-	Arming();
 }
 
 void APioneer::FireWeapon()
@@ -1607,34 +1527,30 @@ void APioneer::PlaceBuilding()
 		bool tutorial = true;
 
 		// 게임서버라면
-		if (ServerSocketInGame)
+		if (cGameServer::GetSingleton()->IsServerOn())
 		{
-			if (ServerSocketInGame->IsServerOn())
-			{
-				if (BuildingManager)
-					BuildingManager->AddInBuildings(Building);
+			if (BuildingManager)
+				BuildingManager->AddInBuildings(Building);
 
-				ServerSocketInGame->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
+			cGameServer::GetSingleton()->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
 
-				APioneerManager::Resources.NumOfMineral -= Building->NeedMineral;
-				APioneerManager::Resources.NumOfOrganic -= Building->NeedOrganicMatter;
+			APioneerManager::Resources.NumOfMineral -= Building->NeedMineral;
+			APioneerManager::Resources.NumOfOrganic -= Building->NeedOrganicMatter;
 
-				tutorial = false;
-			}
+			tutorial = false;
 		}
+		
 		// 게임클라이언트라면
-		if (ClientSocketInGame)
+		if (cGameClient::GetSingleton()->IsClientSocketOn())
 		{
-			if (ClientSocketInGame->IsClientSocketOn())
-			{
-				// 요청을 서버에 보내고 서버에서 SpawnBuilding을 받으면 건설합니다.
-				ClientSocketInGame->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
+			// 요청을 서버에 보내고 서버에서 SpawnBuilding을 받으면 건설합니다.
+			cGameClient::GetSingleton()->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
 
-				Building->Destroy();
+			Building->Destroy();
 
-				tutorial = false;
-			}
+			tutorial = false;
 		}
+		
 
 		if (tutorial)
 		{

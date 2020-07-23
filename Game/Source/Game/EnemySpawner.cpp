@@ -8,7 +8,7 @@
 
 #include "EnemyManager.h"
 
-#include "Network/ClientSocketInGame.h"
+#include "Network/GameClient.h"
 
 #include "Etc/MyTriggerBox.h"
 
@@ -59,13 +59,10 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	cClientSocketInGame* ClientSocketInGame = cClientSocketInGame::GetSingleton();
-	if (ClientSocketInGame)
+
+	if (cGameClient::GetSingleton()->IsClientSocketOn())
 	{
-		if (ClientSocketInGame->IsClientSocketOn())
-		{
-			Destroy();
-		}
+		Destroy();
 	}
 }
 

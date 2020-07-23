@@ -48,10 +48,6 @@ public:
 protected:
 	EOnlineGameState OnlineGameState;
 
-	class cClientSocket* ClientSocket = nullptr;
-	class cServerSocketInGame* ServerSocketInGame = nullptr;
-	class cClientSocketInGame* ClientSocketInGame = nullptr;
-
 
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		/** ¿Œ∞‘¿” UI */

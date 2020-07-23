@@ -7,8 +7,9 @@
 #include "Character/BaseCharacter.h"
 
 #include "Network/Packet.h"
-#include "Network/ServerSocketInGame.h"
-#include "Network/ClientSocketInGame.h"
+#include "Network/GameServer.h"
+#include "Network/GameClient.h"
+
 
 #include "PioneerManager.h"
 
@@ -19,46 +20,26 @@
 /*** Basic Function : Start ***/
 ABuilding::ABuilding()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// 틱 함수를 활성화합니다.
 	PrimaryActorTick.bCanEverTick = true;
 
-
-	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
-	SphereComponent->SetGenerateOverlapEvents(false);
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-
-	RootComponent = SphereComponent;
-
+	InitRootComp();
 
 	InitStat();
-
-
 	InitHelthPointBar();
-
-
 	InitConstructBuilding();
-
-
 	InitBuilding();
-
-
 	InitMaterial();
-
 
 	BuildingState = EBuildingState::Constructable;
 
 	TimerOfTickOfConsumeAndProduct = 0.0f;
-
-	ServerSocketInGame = nullptr;
-	ClientSocketInGame = nullptr;
 
 	ID = 0;
 
 	BuildingManager = nullptr;
 
 	bDying = false;
-
 
 	IdxOfUnderWall = 0;
 }
@@ -67,50 +48,31 @@ void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-	ClientSocketInGame = cClientSocketInGame::GetSingleton();
-
-
-	// Pioneer가 생성한게 아니라면 건물을 바로 완성시킴
+	// Pioneer가 생성한게 아닌 것인지 확인합니다.
 	if (!GetOwner())
 	{
-		// 게임클라이언트라면 게임서버에서 SpawnBuilding으로 생성하기 때문에 소멸시킵니다.
-		if (ClientSocketInGame)
+		// 게임서버에서 SpawnBuilding으로 건물을 생성하기 때문에 플레이어가 게임클라이언트라면 건물을 소멸시킵니다.
+		if (cGameClient::GetSingleton()->IsClientSocketOn())
 		{
-			if (ClientSocketInGame->IsClientSocketOn())
-			{
-				Destroy();
-				return;
-			}
+			Destroy();
+			return;
 		}
-
+		
 		BuildingState = EBuildingState::Constructed;
+
 		CompleteConstructing();
 	}
 
 	BeginPlayHelthPointBar();
-
-	
 }
 
 void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (BuildingState == EBuildingState::Constructable)
-	{
-		if (OverlappedActors.Num() > 0)
-			SetUnConstructableMaterial();
-		else
-			SetConstructableMaterial();
-	}
-
 	TickHelthPointBar();
-
+	TickOfConstructable();
 	TickOfConsumeAndProduct(DeltaTime);
-
-	//// 임시
-	//SetHealthPoint(NULL);
 }
 /*** Basic Function : End ***/
 
@@ -155,10 +117,7 @@ void ABuilding::BeginPlayHelthPointBar()
 	FString HelthPointBarBP_Reference = "WidgetBlueprint'/Game/Characters/HelthPointBar.HelthPointBar_C'";
 	UClass* HelthPointBarBP = LoadObject<UClass>(this, *HelthPointBarBP_Reference);
 
-	// 가져온 WidgetBlueprint를 UWidgetComponent에 바로 적용하지말고 따로 UUserWidget에 저장하여 설정을 한 뒤
-	// UWidgetComponent->SetWidget(저장한 UUserWidget);으로 UWidgetComponent에 적용해야 함.
-	//HelthPointBar->SetWidgetClass(HelthPointBarBP);
-	HelthPointBarUserWidget = CreateWidget(world, HelthPointBarBP); // wolrd가 꼭 필요.
+	HelthPointBarUserWidget = CreateWidget(world, HelthPointBarBP);
 
 	if (HelthPointBarUserWidget)
 	{
@@ -202,6 +161,16 @@ void ABuilding::TickHelthPointBar()
 
 
 /*** ABuilding : Start ***/
+void ABuilding::InitRootComp()
+{
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
+	SphereComponent->SetGenerateOverlapEvents(false);
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+	RootComponent = SphereComponent;
+}
+
 void ABuilding::InitStat()
 {
 	/// Default Settings
@@ -485,6 +454,17 @@ void ABuilding::OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp,
 	}
 }
 
+void ABuilding::TickOfConstructable()
+{
+	if (BuildingState == EBuildingState::Constructable)
+	{
+		if (OverlappedActors.Num() > 0)
+			SetUnConstructableMaterial();
+		else
+			SetConstructableMaterial();
+	}
+}
+
 void ABuilding::TickOfConsumeAndProduct(float DeltaTime)
 {
 	TimerOfTickOfConsumeAndProduct += DeltaTime;
@@ -529,15 +509,13 @@ void ABuilding::SetHealthPoint(float Value)
 
 	if (bDying)
 		return;
+
 	bDying = true;
 
 	/************************************/
 
 	if (!BuildingManager)
-	{
 		UE_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager)"));
-
-	}
 
 	BuildingState = EBuildingState::Destroying;
 
@@ -558,13 +536,8 @@ void ABuilding::SetHealthPoint(float Value)
 		}
 	}
 
-	if (ServerSocketInGame)
-	{
-		if (ServerSocketInGame->IsServerOn())
-		{
-			ServerSocketInGame->SendDestroyBuilding(ID);
-		}
-	}
+	if (cGameServer::GetSingleton()->IsServerOn())
+		cGameServer::GetSingleton()->SendDestroyBuilding(ID);
 
 	Destroy();
 }

@@ -17,7 +17,7 @@
 #include "Character/AlienAnimal.h"
 
 #include "Network/Packet.h"
-#include "Network/ServerSocketInGame.h"
+#include "Network/GameServer.h"
 
 #include "EnemySpawner.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
@@ -49,27 +49,23 @@ void AEnemyManager::BeginPlay()
 	}
 
 
-	ServerSocketInGame = cServerSocketInGame::GetSingleton();
-
 	// 에디터에서 월드상에 배치한 Building들을 관리하기 위해 추가합니다.
-	if (ServerSocketInGame)
+	if (cGameServer::GetSingleton()->IsServerOn())
 	{
-		if (ServerSocketInGame->IsServerOn())
+		for (TActorIterator<AEnemy> ActorItr(world); ActorItr; ++ActorItr)
 		{
-			for (TActorIterator<AEnemy> ActorItr(world); ActorItr; ++ActorItr)
-			{
-				(*ActorItr)->ID = ID;
+			(*ActorItr)->ID = ID;
 
-				Enemies.Add(ID, *ActorItr);
+			Enemies.Add(ID, *ActorItr);
 
-				ID++;
+			ID++;
 
-				(*ActorItr)->SetEnemyManager(this);
+			(*ActorItr)->SetEnemyManager(this);
 
-				ServerSocketInGame->SendSpawnEnemy((*ActorItr)->GetInfoOfEnemy());
-			}
+			cGameServer::GetSingleton()->SendSpawnEnemy((*ActorItr)->GetInfoOfEnemy());
 		}
 	}
+	
 
 
 	for (TActorIterator<AEnemySpawner> ActorItr(world); ActorItr; ++ActorItr)
@@ -163,13 +159,12 @@ class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 
 		enemy->SetEnemyManager(this);
 
-		if (ServerSocketInGame)
+
+		if (cGameServer::GetSingleton()->IsServerOn())
 		{
-			if (ServerSocketInGame->IsServerOn())
-			{
-				ServerSocketInGame->SendSpawnEnemy(enemy->GetInfoOfEnemy());
-			}
+			cGameServer::GetSingleton()->SendSpawnEnemy(enemy->GetInfoOfEnemy());
 		}
+		
 	}
 
 	enemy->SetGenerateOverlapEventsOfCapsuleComp(true);

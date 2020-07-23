@@ -6,9 +6,7 @@
 #include "Building/Turret.h"
 #include "AssaultRifleTurret.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class GAME_API AAssaultRifleTurret : public ATurret
 {

@@ -50,10 +50,6 @@ public:
 /*** AItem : Start ***/
 protected:
 	virtual void InitItem() override; /** 아이템 초기화 */
-
-public:
-	virtual void Droped() final;   /** 땅에 떨어진 상태 */
-	virtual void Acquired() final; /** 획득된 상태 */
 /*** AItem : End ***/
 
 
@@ -76,8 +72,7 @@ private:
 		class UAnimSequence* FireAnimSequence = nullptr;
 
 protected:
-	class cServerSocketInGame* ServerSocketInGame = nullptr;
-	class cClientSocketInGame* ClientSocketInGame = nullptr;
+
 
 public:
 	EWeaponType WeaponType;
@@ -132,6 +127,9 @@ public:
 
 	UFUNCTION()
 		virtual bool Fire(int IDOfPioneer, int SocketIDOfPioneer); /** 무기를 발사 */
+	UFUNCTION()
+		void FireNetwork(int IDOfPioneer, const FTransform& Transform);
+
 /*** AWeapon : End ***/
 
 };

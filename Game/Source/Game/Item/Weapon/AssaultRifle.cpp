@@ -1,14 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "AssaultRifle.h"
-
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Projectile/ProjectileAssaultRifle.h"
-
-#include "Network/ServerSocketInGame.h"
-#include "Network/ClientSocketInGame.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
+
+#include "AssaultRifle.h"
 
 
 /*** Basic Function : Start ***/
@@ -38,8 +34,6 @@ void AAssaultRifle::Tick(float DeltaTime)
 /*** AItem : Start ***/
 void AAssaultRifle::InitItem()
 {
-	State = EItemState::Droped;
-
 	InitInteractionRange(192.0f);
 
 	InitPhysicsBox(15.0f);
@@ -114,34 +108,9 @@ bool AAssaultRifle::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 
 	projectile->SetGenerateOverlapEventsOfHitRange(true);
 
-	if (ServerSocketInGame)
-	{
-		if (ServerSocketInGame->IsServerOn())
-		{
-			cInfoOfProjectile infoOfProjectile;
-			infoOfProjectile.ID = IDOfPioneer;
-			infoOfProjectile.Numbering = WeaponNumbering;
-			infoOfProjectile.SetActorTransform(myTrans);
 
-			ServerSocketInGame->SendInfoOfProjectile(infoOfProjectile);
-
-			return true;
-		}
-	}
-	if (ClientSocketInGame)
-	{
-		if (ClientSocketInGame->IsClientSocketOn())
-		{
-			cInfoOfProjectile infoOfProjectile;
-			infoOfProjectile.ID = IDOfPioneer;
-			infoOfProjectile.Numbering = WeaponNumbering;
-			infoOfProjectile.SetActorTransform(myTrans);
-
-			ClientSocketInGame->SendInfoOfProjectile(infoOfProjectile);
-
-			return true;
-		}
-	}
+	FireNetwork(IDOfPioneer, myTrans);
+	
 
 	return true;
 }
