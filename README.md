@@ -8,12 +8,3 @@
 -- E-mail: ksm950310@naver.com<br>
 <br>
 
-<br>
-```c
-#include<stdio.h>
-int main(void)
-{
-printf("Hello Interface!\n");
-return 0;
-}
-```
