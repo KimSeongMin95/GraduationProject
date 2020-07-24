@@ -11,8 +11,10 @@ public:
 	CMyClient();
 	~CMyClient();
 
+	static CMyClient* GetSingleton();
+
 public:
-	static class CNetworkComponent* Client;
+	static unique_ptr<class CNetworkComponent> Client;
 
 	static CInfoOfClient MyInfoOfClient;
 	static CRITICAL_SECTION csMyInfoOfClient;
@@ -24,6 +26,8 @@ public:
 	static CThreadSafetyQueue<CInfoOfClient> ExitTSQ;
 
 public:
+	static bool Initialize(const char* const IPv4, const USHORT& Port);
+
 	static void SendLogin();
 	static void RecvAccept(stringstream& RecvStream, const SOCKET& Socket);
 	static void RecvReject(stringstream& RecvStream, const SOCKET& Socket);
@@ -32,7 +36,6 @@ public:
 	static void RecvMove(stringstream& RecvStream, const SOCKET& Socket);
 	static void RecvExit(stringstream& RecvStream, const SOCKET& Socket);
 
-	static CMyClient* GetSingleton();
 	void SetID(const char* c_str);
 	void SetRandomPos();
 };

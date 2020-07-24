@@ -14,7 +14,7 @@
 
 #include "NetworkInterface.h"
 
-enum ENetworkComponentType
+enum class ENetworkComponentType : uint16_t
 {
 	NCT_None,
 	NCT_Server,

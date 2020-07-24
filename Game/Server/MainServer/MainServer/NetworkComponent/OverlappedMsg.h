@@ -9,12 +9,12 @@ public:
 	COverlappedMsg();
 
 public:
-	WSAOVERLAPPED	overlapped;
-	WSABUF			dataBuf;
+	WSAOVERLAPPED	Overlapped;
+	WSABUF			DataBuf;
 
-	char			messageBuffer[MAX_BUFFER];
-	int				recvBytes;
-	int				sendBytes;
+	char			MessageBuffer[MAX_BUFFER];
+	int				RecvBytes;
+	int				SendBytes;
 
 public:
 	void Initialize();

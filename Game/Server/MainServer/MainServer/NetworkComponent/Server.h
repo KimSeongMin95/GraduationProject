@@ -10,6 +10,8 @@ public:
 	CServer();
 	virtual ~CServer();
 
+	static CServer* GetSingleton();
+
 private:
 	CProcessingFuncPtr   ProcFuncs[MAX_HEADER]; // 수신한 패킷을 처리하는 함수 포인터
 	CCallBackFuncPtr	 ConCBF;				// 클라이언트가 접속하면 실행할 콜백함수 포인터
@@ -133,9 +135,4 @@ public:
 
 	// IO 스레드를 실행합니다.
 	void RunIOThread();
-
-	////////////////////
-	// Sub Functions
-	////////////////////
-	static CServer* GetSingleton();
 };

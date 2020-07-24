@@ -3,22 +3,16 @@
 
 COverlappedMsg::COverlappedMsg()
 {
-	ZeroMemory(&overlapped, sizeof(OVERLAPPED));
-	overlapped.hEvent = NULL; // IOCP에서는 overlapped.hEvent를 꼭 NULL로 해줘야 한다고 합니다.
-	ZeroMemory(messageBuffer, MAX_BUFFER);
-	dataBuf.len = MAX_BUFFER;
-	dataBuf.buf = messageBuffer;
-	recvBytes = 0;
-	sendBytes = 0;
+	Initialize();
 }
 
 void COverlappedMsg::Initialize()
 {
-	ZeroMemory(&overlapped, sizeof(OVERLAPPED));
-	overlapped.hEvent = NULL; // IOCP에서는 overlapped.hEvent를 꼭 NULL로 해줘야 한다고 합니다.
-	ZeroMemory(messageBuffer, MAX_BUFFER);
-	dataBuf.len = MAX_BUFFER;
-	dataBuf.buf = messageBuffer;
-	recvBytes = 0;
-	sendBytes = 0;
+	ZeroMemory(&Overlapped, sizeof(OVERLAPPED));
+	Overlapped.hEvent = NULL; // IOCP에서는 overlapped.hEvent를 꼭 NULL로 해줘야 한다고 합니다.
+	ZeroMemory(MessageBuffer, MAX_BUFFER);
+	DataBuf.len = MAX_BUFFER;
+	DataBuf.buf = MessageBuffer;
+	RecvBytes = 0;
+	SendBytes = 0;
 }

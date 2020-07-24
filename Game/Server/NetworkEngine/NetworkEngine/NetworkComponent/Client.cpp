@@ -116,7 +116,7 @@ bool CClient::Initialize(const char* const IPv4, const USHORT& Port)
 
 	// 서버의 정보를 저장
 	EnterCriticalSection(&csServer);
-	Server.socket = ServerSocket;
+	Server.Socket = ServerSocket;
 	Server.IPv4Addr = string(IPv4);
 	Server.Port = (unsigned int)Port;
 	ConCBF.ExecuteFunc(Server); // 서버에 접속하면 실행할 콜백함수 실행합니다.
@@ -331,11 +331,11 @@ void CALLBACK SendCompletionRoutine(
 
 	if (COverlappedMsg* om = (COverlappedMsg*)lpOverlapped)
 	{
-		if (om->sendBytes != cbTransferred) // 사이즈가 다르다면 제대로 전송이 되지 않은것이므로 일단 콘솔에 알립니다.
+		if (om->SendBytes != cbTransferred) // 사이즈가 다르다면 제대로 전송이 되지 않은것이므로 일단 콘솔에 알립니다.
 		{
 			CONSOLE_LOG("\n\n\n\n\n");
 			CONSOLE_LOG("[Error] <CClient::SendCompletionRoutine()> if (overlappedMsg->sendBytes != cbTransferred) \n");
-			CONSOLE_LOG("[Error] <CClient::SendCompletionRoutine()> overlappedMsg->sendBytes: %d \n", om->sendBytes);
+			CONSOLE_LOG("[Error] <CClient::SendCompletionRoutine()> overlappedMsg->SendBytes: %d \n", om->SendBytes);
 			CONSOLE_LOG("[Error] <CClient::SendCompletionRoutine()> cbTransferred: %d \n", (int)cbTransferred);
 			CONSOLE_LOG("\n\n\n\n\n");
 		}
@@ -409,11 +409,11 @@ void CClient::Send(COverlappedMsg* OverlappedMsg)
 
 	int nResult = WSASend(
 		ServerSocket,				  // s: 연결 소켓을 가리키는 소켓 지정 번호입니다.
-		&(OverlappedMsg->dataBuf),	  // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킵니다.
+		&(OverlappedMsg->DataBuf),	  // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킵니다.
 		1,							  // dwBufferCount: lpBuffers에 있는 WSABUF(:4300)구조체의 개수입니다.
 		NULL,						  // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨줍니다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 (잠재적인)잘못된 반환을 피할 수 있습니다.
 		dwFlags,					  // dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정합니다.
-		&(OverlappedMsg->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터입니다. 비 (overlapped)중첩 소켓에서는 무시됩니다.
+		&(OverlappedMsg->Overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터입니다. 비 (overlapped)중첩 소켓에서는 무시됩니다.
 		SendCompletionRoutine		  // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터입니다. 비 중첩 소켓에서는 무시됩니다.
 	);
 
@@ -619,15 +619,15 @@ COverlappedMsg* CClient::GetOverlappedMsgForSend(const string& StrOfLengthAndHea
 {
 	COverlappedMsg* overlappedMsg = CExceptionHandler<COverlappedMsg>::MustDynamicAlloc();
 
-	CopyMemory(overlappedMsg->messageBuffer, StrOfLengthAndHeader.c_str(), LenOfLengthAndHeader); // 전체크기와 헤더
-	CopyMemory(&overlappedMsg->messageBuffer[LenOfLengthAndHeader], &C_StrOfData[IdxOfStart], sizeOfData); // 데이터
+	CopyMemory(overlappedMsg->MessageBuffer, StrOfLengthAndHeader.c_str(), LenOfLengthAndHeader); // 전체크기와 헤더
+	CopyMemory(&overlappedMsg->MessageBuffer[LenOfLengthAndHeader], &C_StrOfData[IdxOfStart], sizeOfData); // 데이터
 	stringstream endStream;
 	endStream << (char)3;
-	CopyMemory(&overlappedMsg->messageBuffer[LenOfLengthAndHeader + sizeOfData], endStream.str().c_str(), 1); // 끝
-	overlappedMsg->messageBuffer[LenOfLengthAndHeader + sizeOfData + 1] = '\0';
-	overlappedMsg->dataBuf.len = (ULONG)(LenOfLengthAndHeader + sizeOfData + 1);
-	overlappedMsg->dataBuf.buf = overlappedMsg->messageBuffer;
-	overlappedMsg->sendBytes = overlappedMsg->dataBuf.len;
+	CopyMemory(&overlappedMsg->MessageBuffer[LenOfLengthAndHeader + sizeOfData], endStream.str().c_str(), 1); // 끝
+	overlappedMsg->MessageBuffer[LenOfLengthAndHeader + sizeOfData + 1] = '\0';
+	overlappedMsg->DataBuf.len = (ULONG)(LenOfLengthAndHeader + sizeOfData + 1);
+	overlappedMsg->DataBuf.buf = overlappedMsg->MessageBuffer;
+	overlappedMsg->SendBytes = overlappedMsg->DataBuf.len;
 
 	return overlappedMsg;
 

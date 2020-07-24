@@ -6,7 +6,7 @@
 
 #include "MyClient.h"
 
-CNetworkComponent* CMyClient::Client;
+unique_ptr<CNetworkComponent> CMyClient::Client;
 
 CInfoOfClient CMyClient::MyInfoOfClient;
 CRITICAL_SECTION CMyClient::csMyInfoOfClient;
@@ -19,10 +19,10 @@ CThreadSafetyQueue<CInfoOfClient> CMyClient::ExitTSQ;
 
 CMyClient::CMyClient()
 {
-	InitializeCriticalSection(&csMyInfoOfClient);
+	// 크리티컬 섹션에 스핀락을 걸고 초기화에 성공할때까지 시도합니다.
+	while (InitializeCriticalSectionAndSpinCount(&csMyInfoOfClient, SPIN_COUNT) == false);
 
-	// 클라이언트 구동
-	Client = new CNetworkComponent(ENetworkComponentType::NCT_Client);
+	Client = make_unique<CNetworkComponent>(ENetworkComponentType::NCT_Client);
 	if (Client)
 	{
 		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Accept, RecvAccept);
@@ -30,19 +30,29 @@ CMyClient::CMyClient()
 		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Create, RecvCreate);
 		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Move, RecvMove);
 		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Exit, RecvExit);
-
-		while (Client->Initialize("127.0.0.1", 8000) == false);
 	}
 }
 CMyClient::~CMyClient()
 {
-	if (Client)
-	{
-		delete Client;
-		Client = nullptr;
-	}
-
 	DeleteCriticalSection(&csMyInfoOfClient);
+}
+
+CMyClient* CMyClient::GetSingleton()
+{
+	static CMyClient myClient;
+	return &myClient;
+}
+
+bool CMyClient::Initialize(const char* const IPv4, const USHORT& Port)
+{
+	if (!Client)
+	{
+		CONSOLE_LOG("[Error] <CMyClient::Initialize(...)> if (!Client) \n");
+		return false;
+	}
+	/****************************************/
+
+	return Client->Initialize(IPv4, Port);
 }
 
 void CMyClient::SendLogin()
@@ -54,8 +64,8 @@ void CMyClient::SendLogin()
 	LeaveCriticalSection(&csMyInfoOfClient);
 
 	CPacket packet((uint16_t)EMyPacketHeader::Login);
-	packet.GetData() << infoOfClient;
-	Client->Send(packet);
+	packet.GetData() << infoOfClient << endl;
+	if (Client) Client->Send(packet);
 
 	infoOfClient.PrintInfo("\t <CMyClient::SendLogin()>");
 	CONSOLE_LOG("[End] <CMyClient::SendLogin()> \n");
@@ -93,8 +103,8 @@ void CMyClient::SendMove()
 	LeaveCriticalSection(&csMyInfoOfClient);
 
 	CPacket packet((uint16_t)EMyPacketHeader::Move);
-	packet.GetData() << infoOfClient;
-	Client->Send(packet);
+	packet.GetData() << infoOfClient << endl;
+	if (Client) Client->Send(packet);
 
 	infoOfClient.PrintInfo("\t <CMyClient::SendMove()>");
 	CONSOLE_LOG("[End] <CMyClient::SendMove()> \n");
@@ -126,19 +136,12 @@ void CMyClient::RecvExit(stringstream& RecvStream, const SOCKET& Socket)
 	CONSOLE_LOG("[End] <CMyClient::RecvExit(...)> \n");
 }
 
-CMyClient* CMyClient::GetSingleton()
-{
-	static CMyClient myClient;
-	return &myClient;
-}
-
 void CMyClient::SetID(const char* c_str)
 {
 	EnterCriticalSection(&csMyInfoOfClient);
 	MyInfoOfClient.ID = c_str;
 	LeaveCriticalSection(&csMyInfoOfClient);
 }
-
 void CMyClient::SetRandomPos()
 {
 	random_device rd;

@@ -92,13 +92,19 @@ bool CServer::Initialize(const char* const IPv4, const USHORT& Port)
 	// 서버의 주소 정보를 설정합니다.
 	SOCKADDR_IN serverAddr;
 	serverAddr.sin_family = AF_INET;
-	//serverAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
-	//serverAddr.sin_addr.S_un.S_addr = inet_addr(IPv4);
-	if (inet_pton(AF_INET, IPv4, &serverAddr.sin_addr.S_un.S_addr) != 1)
+	if (IPv4 == nullptr)
 	{
-		CONSOLE_LOG("[Fail] inet_pton(...) \n");
-		CloseSocketAndWSACleanup(ListenSocket);
-		return false;
+		serverAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+	}
+	else
+	{
+		//serverAddr.sin_addr.S_un.S_addr = inet_addr(IPv4);
+		if (inet_pton(AF_INET, IPv4, &serverAddr.sin_addr.S_un.S_addr) != 1)
+		{
+			CONSOLE_LOG("[Fail] inet_pton(...) \n");
+			CloseSocketAndWSACleanup(ListenSocket);
+			return false;
+		}
 	}
 	serverAddr.sin_port = htons(Port);
 
@@ -239,7 +245,7 @@ void CServer::RunAcceptThread()
 		// 나중에 CloseSocket(...)에서 ClientsCK로부터 할당을 해제합니다. 서버를 강제종료하면 Close()에서 ClientsCK로부터 할당을 해제합니다.
 		shared_ptr<CCompletionKey> completionKey = make_shared<CCompletionKey>();
 
-		completionKey->socket = clientSocket;
+		completionKey->Socket = clientSocket;
 		char bufOfIPv4Addr[32] = { 0, };
 		inet_ntop(AF_INET, &clientAddr.sin_addr, bufOfIPv4Addr, sizeof(bufOfIPv4Addr));
 		//completionKey->IPv4Addr = string(inet_ntoa(clientAddr.sin_addr)); // 네트워크바이트 순서로 된 정32비트 정수를 다시 문자열로 돌려주는 함수입니다.
@@ -293,11 +299,11 @@ void CServer::RunAcceptThread()
 		// 클라이언트 패킷의 수신완료 통지를 기다립니다.
 		int nResult = WSARecv(
 			clientSocket,
-			&(overlappedMsg->dataBuf),
+			&(overlappedMsg->DataBuf),
 			1,
-			(LPDWORD)&overlappedMsg->recvBytes,
+			(LPDWORD)&overlappedMsg->RecvBytes,
 			&flags,
-			&(overlappedMsg->overlapped),
+			&(overlappedMsg->Overlapped),
 			NULL
 		);
 
@@ -394,7 +400,7 @@ void CServer::RunIOThread()
 		}
 
 		// 소켓을 미리 획득합니다.
-		SOCKET socket = completionKey->socket;
+		SOCKET socket = completionKey->Socket;
 
 		// GetQueuedCompletionStatus 함수에서 수신한 바이트 크기가 0이면 클라이언트가 접속을 종료한 것이므로 소켓을 닫습니다.
 		if (BytesTransferred == 0)
@@ -425,10 +431,10 @@ void CServer::RunIOThread()
 			continue;
 
 		// RecvDeque이 비어있고 수신한 데이터가 온전한 패킷이라면 RecvDeque을 거치지 않고 바로 처리하여 성능을 향상시킵니다.
-		if (RecvDeque->empty() == true && overlappedMsg->dataBuf.buf[BytesTransferred - 1] == (char)3)
+		if (RecvDeque->empty() == true && overlappedMsg->DataBuf.buf[BytesTransferred - 1] == (char)3)
 		{
 			// 수신한 패킷들을 패킷으로 분할하고 최종적으로 패킷을 처리합니다.
-			DividePacketsAndProcessThePacket(overlappedMsg->dataBuf.buf, socket);
+			DividePacketsAndProcessThePacket(overlappedMsg->DataBuf.buf, socket);
 		}
 		else // 그렇지 않다면 다음과 같은 처리를 진행합니다.
 		{
@@ -756,11 +762,11 @@ void CServer::Send(COverlappedMsg* OverlappedMsg, const SOCKET& Socket)
 
 	int nResult = WSASend(
 		Socket,						  // s: 연결 소켓을 가리키는 소켓 지정 번호입니다.
-		&(OverlappedMsg->dataBuf),	  // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킵니다.
+		&(OverlappedMsg->DataBuf),	  // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킵니다.
 		1,							  // dwBufferCount: lpBuffers에 있는 WSABUF(:4300)구조체의 개수입니다.
 		NULL,						  // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨줍니다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 (잠재적인)잘못된 반환을 피할 수 있습니다.
 		dwFlags,					  // dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정합니다.
-		&(OverlappedMsg->overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터입니다. 비 (overlapped)중첩 소켓에서는 무시됩니다.
+		&(OverlappedMsg->Overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터입니다. 비 (overlapped)중첩 소켓에서는 무시됩니다.
 		NULL						  // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터입니다. 비 중첩 소켓에서는 무시됩니다.
 	);
 
@@ -803,11 +809,11 @@ void CServer::Recv(const SOCKET& Socket, COverlappedMsg* OverlappedMsg)
 
 	int nResult = WSARecv(
 		Socket,
-		&(OverlappedMsg->dataBuf),
+		&(OverlappedMsg->DataBuf),
 		1,
-		(LPDWORD) & (OverlappedMsg->recvBytes),
+		(LPDWORD) & (OverlappedMsg->RecvBytes),
 		&dwFlags,
-		(LPWSAOVERLAPPED) & (OverlappedMsg->overlapped),
+		(LPWSAOVERLAPPED) & (OverlappedMsg->Overlapped),
 		NULL
 	);
 
@@ -827,12 +833,12 @@ void CServer::Recv(const SOCKET& Socket, COverlappedMsg* OverlappedMsg)
 
 bool CServer::ProcessingSendingInIOThread(const DWORD& BytesTransferred, COverlappedMsg* OverlappedMsg)
 {
-	if (OverlappedMsg->sendBytes <= 0)
+	if (OverlappedMsg->SendBytes <= 0)
 		return false;
 	/****************************************/
 
 	// 사이즈가 같으면 제대로 전송이 완료된 것입니다.
-	if (OverlappedMsg->sendBytes == BytesTransferred)
+	if (OverlappedMsg->SendBytes == BytesTransferred)
 	{
 		CONSOLE_LOG("[Info] <CServer::ProcessingSendingInIOThread(...)> if (overlappedMsg->sendBytes == BytesTransferred) \n");
 	}
@@ -840,7 +846,7 @@ bool CServer::ProcessingSendingInIOThread(const DWORD& BytesTransferred, COverla
 	{
 		CONSOLE_LOG("\n\n\n\n\n");
 		CONSOLE_LOG("[Error] <CServer::ProcessingSendingInIOThread(...)> if (overlappedMsg->sendBytes != BytesTransferred) \n");
-		CONSOLE_LOG("[Error] <CServer::ProcessingSendingInIOThread(...)> overlappedMsg->sendBytes: %d \n", OverlappedMsg->sendBytes);
+		CONSOLE_LOG("[Error] <CServer::ProcessingSendingInIOThread(...)> overlappedMsg->SendBytes: %d \n", OverlappedMsg->SendBytes);
 		CONSOLE_LOG("[Error] <CServer::ProcessingSendingInIOThread(...)> BytesTransferred: %d \n", (int)BytesTransferred);
 		CONSOLE_LOG("\n\n\n\n\n");
 	}
@@ -883,7 +889,7 @@ void CServer::LoadUpReceivedDataToRecvDeque(const SOCKET& Socket, COverlappedMsg
 	RecvDeque->emplace_back(make_unique<char[]>(MAX_BUFFER + 1)); // 뒷부분에 순차적으로 적재합니다.
 
 	RecvDeque->back().get()[MAX_BUFFER] = '\0';
-	CopyMemory(RecvDeque->back().get(), OverlappedMsg->dataBuf.buf, RecvLen);
+	CopyMemory(RecvDeque->back().get(), OverlappedMsg->DataBuf.buf, RecvLen);
 	RecvDeque->back().get()[RecvLen] = '\0';
 }
 
@@ -1050,15 +1056,15 @@ COverlappedMsg* CServer::GetOverlappedMsgForSend(const string& StrOfLengthAndHea
 {
 	COverlappedMsg* overlappedMsg = CExceptionHandler<COverlappedMsg>::MustDynamicAlloc();
 
-	CopyMemory(overlappedMsg->messageBuffer, StrOfLengthAndHeader.c_str(), LenOfLengthAndHeader); // 전체크기와 헤더
-	CopyMemory(&overlappedMsg->messageBuffer[LenOfLengthAndHeader], &C_StrOfData[IdxOfStart], sizeOfData); // 데이터
+	CopyMemory(overlappedMsg->MessageBuffer, StrOfLengthAndHeader.c_str(), LenOfLengthAndHeader); // 전체크기와 헤더
+	CopyMemory(&overlappedMsg->MessageBuffer[LenOfLengthAndHeader], &C_StrOfData[IdxOfStart], sizeOfData); // 데이터
 	stringstream endStream;
 	endStream << (char)3;
-	CopyMemory(&overlappedMsg->messageBuffer[LenOfLengthAndHeader + sizeOfData], endStream.str().c_str(), 1); // 끝
-	overlappedMsg->messageBuffer[LenOfLengthAndHeader + sizeOfData + 1] = '\0';
-	overlappedMsg->dataBuf.len = (ULONG)(LenOfLengthAndHeader + sizeOfData + 1);
-	overlappedMsg->dataBuf.buf = overlappedMsg->messageBuffer;
-	overlappedMsg->sendBytes = overlappedMsg->dataBuf.len;
+	CopyMemory(&overlappedMsg->MessageBuffer[LenOfLengthAndHeader + sizeOfData], endStream.str().c_str(), 1); // 끝
+	overlappedMsg->MessageBuffer[LenOfLengthAndHeader + sizeOfData + 1] = '\0';
+	overlappedMsg->DataBuf.len = (ULONG)(LenOfLengthAndHeader + sizeOfData + 1);
+	overlappedMsg->DataBuf.buf = overlappedMsg->MessageBuffer;
+	overlappedMsg->SendBytes = overlappedMsg->DataBuf.len;
 
 	return overlappedMsg;
 }

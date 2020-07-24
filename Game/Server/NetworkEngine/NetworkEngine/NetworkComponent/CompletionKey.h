@@ -8,7 +8,7 @@ public:
 	CCompletionKey();
 
 public:
-	SOCKET	socket;
+	SOCKET	Socket;
 
 	string	IPv4Addr; // 메인 클라이언트의 IP 주소
 	USHORT	Port;	  // 메인 클라이언트의 Port 주소

@@ -1,46 +1,53 @@
 
-#include "MyPacketHeader.h"
-#include "MyPacket.h"
 #include "../NetworkComponent/Console.h"
 #include "../NetworkComponent/NetworkComponent.h"
 
 #include "MyServer.h"
 
-CNetworkComponent* CMyServer::Server;
+unique_ptr<CNetworkComponent> CMyServer::Server;
 
 map<SOCKET, CInfoOfClient> CMyServer::InfoOfClients;
 CRITICAL_SECTION CMyServer::csInfoOfClients;
 
-
 CMyServer::CMyServer()
 {
-	InitializeCriticalSection(&csInfoOfClients);
+	// 크리티컬 섹션에 스핀락을 걸고 초기화에 성공할때까지 시도합니다.
+	while (InitializeCriticalSectionAndSpinCount(&csInfoOfClients, SPIN_COUNT) == false);
 
-
-	Server = new CNetworkComponent(ENetworkComponentType::NCT_Server);
+	Server = make_unique<CNetworkComponent>(ENetworkComponentType::NCT_Server);
 	if (Server)
 	{
-		Server->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Login, Login);
-		Server->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Move, Move);
-
 		Server->RegisterConCBF(ConnectCBF);
 		Server->RegisterDisconCBF(DisconnectCBF);
 
-		while (Server->Initialize("127.0.0.1", 8000) == false);
+		Server->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Login, Login);
+		Server->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Move, Move);
 	}
 }
 CMyServer::~CMyServer()
 {
-	if (Server)
-	{
-		delete Server;
-		Server = nullptr;
-	}
-
 	DeleteCriticalSection(&csInfoOfClients);
 }
 
-void CMyServer::ConnectCBF(class CCompletionKey CompletionKey)
+CMyServer* CMyServer::GetSingleton()
+{
+	static CMyServer myServer;
+	return &myServer;
+}
+
+bool CMyServer::Initialize(const char* const IPv4, const USHORT& Port)
+{
+	if (!Server)
+	{
+		CONSOLE_LOG("[Error] <CMyServer::Initialize(...)> if (!Server) \n");
+		return false;
+	}
+	/****************************************/
+
+	return Server->Initialize(IPv4, Port);
+}
+
+void CMyServer::ConnectCBF(CCompletionKey CompletionKey)
 {
 	CONSOLE_LOG("[Start] <CMyServer::ConnectCBF(...)> \n");
 
@@ -48,16 +55,16 @@ void CMyServer::ConnectCBF(class CCompletionKey CompletionKey)
 
 	CONSOLE_LOG("[End] <CMyServer::ConnectCBF(...)> \n");
 }
-void CMyServer::DisconnectCBF(class CCompletionKey CompletionKey)
+void CMyServer::DisconnectCBF(CCompletionKey CompletionKey)
 {
 	CONSOLE_LOG("[Start] <CMyServer::DisconnectCBF(...)> \n");
 
 	CInfoOfClient infoOfClient;
 	EnterCriticalSection(&csInfoOfClients);
-	if (InfoOfClients.find(CompletionKey.socket) != InfoOfClients.end())
+	if (InfoOfClients.find(CompletionKey.Socket) != InfoOfClients.end())
 	{
-		infoOfClient = InfoOfClients.at(CompletionKey.socket);
-		InfoOfClients.erase(CompletionKey.socket);
+		infoOfClient = InfoOfClients.at(CompletionKey.Socket);
+		InfoOfClients.erase(CompletionKey.Socket);
 	}
 	else
 	{
@@ -68,22 +75,23 @@ void CMyServer::DisconnectCBF(class CCompletionKey CompletionKey)
 
 
 	CPacket packet((uint16_t)EMyPacketHeader::Exit);
-	packet.GetData() << infoOfClient;
+	packet.GetData() << infoOfClient << endl;
 	infoOfClient.PrintInfo("\t <CMyServer::DisconnectCBF(...)>");
 
 	EnterCriticalSection(&csInfoOfClients);
 	for (auto kvp : InfoOfClients)
 	{
 
-		if (kvp.first == CompletionKey.socket)
+		if (kvp.first == CompletionKey.Socket)
 			continue;
 
-		Server->Send(packet, kvp.first);
+		if (Server) Server->Send(packet, kvp.first);
 	}
 	LeaveCriticalSection(&csInfoOfClients);
 
 	CONSOLE_LOG("[End] <CMyServer::DisconnectCBF(...)> \n");
 }
+
 void CMyServer::Login(stringstream& RecvStream, const SOCKET& Socket)
 {
 	CONSOLE_LOG("[Start] <CMyServer::Login(...)> \n");
@@ -102,7 +110,7 @@ void CMyServer::Login(stringstream& RecvStream, const SOCKET& Socket)
 			LeaveCriticalSection(&csInfoOfClients);
 
 			CPacket packet((uint16_t)EMyPacketHeader::Reject);
-			Server->Send(packet, Socket);
+			if (Server) Server->Send(packet, Socket);
 
 			CONSOLE_LOG("\t <CMyServer::Login(...)> Reject. \n");
 			CONSOLE_LOG("[End] <CMyServer::Login(...)> \n");
@@ -113,28 +121,28 @@ void CMyServer::Login(stringstream& RecvStream, const SOCKET& Socket)
 	LeaveCriticalSection(&csInfoOfClients);
 
 	CPacket packet((uint16_t)EMyPacketHeader::Accept);
-	Server->Send(packet, Socket);
+	if (Server) Server->Send(packet, Socket);
 
 
 	CPacket packet1((uint16_t)EMyPacketHeader::Create);
 	EnterCriticalSection(&csInfoOfClients);
 	for (auto kvp : InfoOfClients)
 	{
-		packet1.GetData() << kvp.second;
+		packet1.GetData() << kvp.second << endl;
 	}
 	LeaveCriticalSection(&csInfoOfClients);
-	Server->Send(packet1, Socket);
+	if (Server) Server->Send(packet1, Socket);
 
 
 	CPacket packet2((uint16_t)EMyPacketHeader::Create);
-	packet2.GetData() << infoOfClient;
+	packet2.GetData() << infoOfClient << endl;
 	EnterCriticalSection(&csInfoOfClients);
 	for (auto kvp : InfoOfClients)
 	{
 		if (kvp.first == Socket)
 			continue;
 
-		Server->Send(packet2, kvp.first);
+		if (Server) Server->Send(packet2, kvp.first);
 	}
 	LeaveCriticalSection(&csInfoOfClients);
 
@@ -161,7 +169,7 @@ void CMyServer::Move(stringstream& RecvStream, const SOCKET& Socket)
 
 
 	CPacket packet((uint16_t)EMyPacketHeader::Move);
-	packet.GetData() << infoOfClient;
+	packet.GetData() << infoOfClient << endl;
 
 	EnterCriticalSection(&csInfoOfClients);
 	for (auto kvp : InfoOfClients)
@@ -170,16 +178,11 @@ void CMyServer::Move(stringstream& RecvStream, const SOCKET& Socket)
 		if (kvp.first == Socket)
 			continue;
 
-		Server->Send(packet, kvp.first);
+		if (Server) Server->Send(packet, kvp.first);
 	}
 	LeaveCriticalSection(&csInfoOfClients);
 
 	CONSOLE_LOG("[End] <CMyServer::Move(...)> \n");
 }
 
-CMyServer* CMyServer::GetSingleton()
-{
-	static CMyServer myServer;
-	return &myServer;
-}
 
