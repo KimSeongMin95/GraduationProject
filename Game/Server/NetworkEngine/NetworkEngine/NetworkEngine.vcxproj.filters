@@ -80,9 +80,6 @@
     <ClInclude Include="NetworkComponent\NetworkConfig.h">
       <Filter>헤더 파일\NetworkComponent</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkComponent\NetworkHeaders.h">
-      <Filter>헤더 파일\NetworkComponent</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkComponent\NetworkInterface.h">
       <Filter>헤더 파일\NetworkComponent</Filter>
     </ClInclude>
@@ -104,11 +101,14 @@
     <ClInclude Include="SampleCode\MyPacketHeader.h">
       <Filter>헤더 파일\SampleCode</Filter>
     </ClInclude>
-    <ClInclude Include="SampleCode\MyPackets.h">
-      <Filter>헤더 파일\SampleCode</Filter>
-    </ClInclude>
     <ClInclude Include="SampleCode\MyServer.h">
       <Filter>헤더 파일\SampleCode</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleCode\MyPacket.h">
+      <Filter>헤더 파일\SampleCode</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkComponent\NetworkHeader.h">
+      <Filter>헤더 파일\NetworkComponent</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

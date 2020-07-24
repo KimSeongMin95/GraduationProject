@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NetworkHeaders.h"
+#include "NetworkHeader.h"
 #include "NetworkConfig.h"
 
 class CConsole sealed

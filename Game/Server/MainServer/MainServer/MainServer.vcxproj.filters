@@ -13,15 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="헤더 파일\NetworkComponent">
-      <UniqueIdentifier>{0ab6d80f-8ca2-4100-9243-21dcec976199}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\NetworkComponent">
-      <UniqueIdentifier>{0d225445-282a-4cb2-bf20-855d506155cb}</UniqueIdentifier>
+      <UniqueIdentifier>{f94e936d-fe3b-4839-981b-399320c75e3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\NetworkComponent">
+      <UniqueIdentifier>{e576cf48-2092-4f13-b8a3-f4bdb9eedfa2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MainServer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="NetworkComponent\Client.cpp">
@@ -50,6 +53,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MainServer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MainPacket.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MainPacketHeader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="NetworkComponent\Client.h">
       <Filter>헤더 파일\NetworkComponent</Filter>
     </ClInclude>
@@ -68,7 +80,7 @@
     <ClInclude Include="NetworkComponent\NetworkConfig.h">
       <Filter>헤더 파일\NetworkComponent</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkComponent\NetworkHeaders.h">
+    <ClInclude Include="NetworkComponent\NetworkHeader.h">
       <Filter>헤더 파일\NetworkComponent</Filter>
     </ClInclude>
     <ClInclude Include="NetworkComponent\NetworkInterface.h">

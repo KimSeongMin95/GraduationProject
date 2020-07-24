@@ -25,11 +25,11 @@ CMyClient::CMyClient()
 	Client = new CNetworkComponent(ENetworkComponentType::NCT_Client);
 	if (Client)
 	{
-		Client->RegisterHeaderAndStaticFunc((unsigned int)ETempHeader::Accept, RecvAccept);
-		Client->RegisterHeaderAndStaticFunc((unsigned int)ETempHeader::Reject, RecvReject);
-		Client->RegisterHeaderAndStaticFunc((unsigned int)ETempHeader::Create, RecvCreate);
-		Client->RegisterHeaderAndStaticFunc((unsigned int)ETempHeader::Move, RecvMove);
-		Client->RegisterHeaderAndStaticFunc((unsigned int)ETempHeader::Exit, RecvExit);
+		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Accept, RecvAccept);
+		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Reject, RecvReject);
+		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Create, RecvCreate);
+		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Move, RecvMove);
+		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Exit, RecvExit);
 
 		while (Client->Initialize("127.0.0.1", 8000) == false);
 	}
@@ -53,7 +53,7 @@ void CMyClient::SendLogin()
 	CInfoOfClient infoOfClient = MyInfoOfClient;
 	LeaveCriticalSection(&csMyInfoOfClient);
 
-	CPacket packet((unsigned int)ETempHeader::Login);
+	CPacket packet((uint16_t)EMyPacketHeader::Login);
 	packet.GetData() << infoOfClient;
 	Client->Send(packet);
 
@@ -92,7 +92,7 @@ void CMyClient::SendMove()
 	CInfoOfClient infoOfClient = MyInfoOfClient;
 	LeaveCriticalSection(&csMyInfoOfClient);
 
-	CPacket packet((unsigned int)ETempHeader::Move);
+	CPacket packet((uint16_t)EMyPacketHeader::Move);
 	packet.GetData() << infoOfClient;
 	Client->Send(packet);
 

@@ -158,7 +158,7 @@
     <ClInclude Include="NetworkComponent\ExceptionHandler.h" />
     <ClInclude Include="NetworkComponent\NetworkComponent.h" />
     <ClInclude Include="NetworkComponent\NetworkConfig.h" />
-    <ClInclude Include="NetworkComponent\NetworkHeaders.h" />
+    <ClInclude Include="NetworkComponent\NetworkHeader.h" />
     <ClInclude Include="NetworkComponent\NetworkInterface.h" />
     <ClInclude Include="NetworkComponent\OverlappedMsg.h" />
     <ClInclude Include="NetworkComponent\Packet.h" />
@@ -166,7 +166,7 @@
     <ClInclude Include="NetworkComponent\ThreadSafetyQueue.h" />
     <ClInclude Include="SampleCode\MyClient.h" />
     <ClInclude Include="SampleCode\MyPacketHeader.h" />
-    <ClInclude Include="SampleCode\MyPackets.h" />
+    <ClInclude Include="SampleCode\MyPacket.h" />
     <ClInclude Include="SampleCode\MyServer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainServer.cpp" />
     <ClCompile Include="NetworkComponent\Client.cpp" />
     <ClCompile Include="NetworkComponent\CompletionKey.cpp" />
     <ClCompile Include="NetworkComponent\Console.cpp" />
@@ -150,13 +151,16 @@
     <ClCompile Include="NetworkComponent\Server.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MainPacket.h" />
+    <ClInclude Include="MainPacketHeader.h" />
+    <ClInclude Include="MainServer.h" />
     <ClInclude Include="NetworkComponent\Client.h" />
     <ClInclude Include="NetworkComponent\CompletionKey.h" />
     <ClInclude Include="NetworkComponent\Console.h" />
     <ClInclude Include="NetworkComponent\ExceptionHandler.h" />
     <ClInclude Include="NetworkComponent\NetworkComponent.h" />
     <ClInclude Include="NetworkComponent\NetworkConfig.h" />
-    <ClInclude Include="NetworkComponent\NetworkHeaders.h" />
+    <ClInclude Include="NetworkComponent\NetworkHeader.h" />
     <ClInclude Include="NetworkComponent\NetworkInterface.h" />
     <ClInclude Include="NetworkComponent\OverlappedMsg.h" />
     <ClInclude Include="NetworkComponent\Packet.h" />

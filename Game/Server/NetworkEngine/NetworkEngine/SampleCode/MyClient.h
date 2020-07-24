@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../NetworkComponent/NetworkHeaders.h"
+#include "../NetworkComponent/NetworkHeader.h"
 #include "MyPacketHeader.h"
-#include "MyPackets.h"
+#include "MyPacket.h"
 #include "../NetworkComponent/ThreadSafetyQueue.h"
 
 class CMyClient sealed

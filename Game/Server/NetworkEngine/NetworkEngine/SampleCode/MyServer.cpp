@@ -1,6 +1,6 @@
 
 #include "MyPacketHeader.h"
-#include "MyPackets.h"
+#include "MyPacket.h"
 #include "../NetworkComponent/Console.h"
 #include "../NetworkComponent/NetworkComponent.h"
 
@@ -20,8 +20,8 @@ CMyServer::CMyServer()
 	Server = new CNetworkComponent(ENetworkComponentType::NCT_Server);
 	if (Server)
 	{
-		Server->RegisterHeaderAndStaticFunc((unsigned int)ETempHeader::Login, Login);
-		Server->RegisterHeaderAndStaticFunc((unsigned int)ETempHeader::Move, Move);
+		Server->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Login, Login);
+		Server->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Move, Move);
 
 		Server->RegisterConCBF(ConnectCBF);
 		Server->RegisterDisconCBF(DisconnectCBF);
@@ -67,7 +67,7 @@ void CMyServer::DisconnectCBF(class CCompletionKey CompletionKey)
 	LeaveCriticalSection(&csInfoOfClients);
 
 
-	CPacket packet((unsigned int)ETempHeader::Exit);
+	CPacket packet((uint16_t)EMyPacketHeader::Exit);
 	packet.GetData() << infoOfClient;
 	infoOfClient.PrintInfo("\t <CMyServer::DisconnectCBF(...)>");
 
@@ -101,7 +101,7 @@ void CMyServer::Login(stringstream& RecvStream, const SOCKET& Socket)
 		{
 			LeaveCriticalSection(&csInfoOfClients);
 
-			CPacket packet((unsigned int)ETempHeader::Reject);
+			CPacket packet((uint16_t)EMyPacketHeader::Reject);
 			Server->Send(packet, Socket);
 
 			CONSOLE_LOG("\t <CMyServer::Login(...)> Reject. \n");
@@ -112,11 +112,11 @@ void CMyServer::Login(stringstream& RecvStream, const SOCKET& Socket)
 	InfoOfClients[Socket] = infoOfClient;
 	LeaveCriticalSection(&csInfoOfClients);
 
-	CPacket packet((unsigned int)ETempHeader::Accept);
+	CPacket packet((uint16_t)EMyPacketHeader::Accept);
 	Server->Send(packet, Socket);
 
 
-	CPacket packet1((unsigned int)ETempHeader::Create);
+	CPacket packet1((uint16_t)EMyPacketHeader::Create);
 	EnterCriticalSection(&csInfoOfClients);
 	for (auto kvp : InfoOfClients)
 	{
@@ -126,7 +126,7 @@ void CMyServer::Login(stringstream& RecvStream, const SOCKET& Socket)
 	Server->Send(packet1, Socket);
 
 
-	CPacket packet2((unsigned int)ETempHeader::Create);
+	CPacket packet2((uint16_t)EMyPacketHeader::Create);
 	packet2.GetData() << infoOfClient;
 	EnterCriticalSection(&csInfoOfClients);
 	for (auto kvp : InfoOfClients)
@@ -160,7 +160,7 @@ void CMyServer::Move(stringstream& RecvStream, const SOCKET& Socket)
 	LeaveCriticalSection(&csInfoOfClients);
 
 
-	CPacket packet((unsigned int)ETempHeader::Move);
+	CPacket packet((uint16_t)EMyPacketHeader::Move);
 	packet.GetData() << infoOfClient;
 
 	EnterCriticalSection(&csInfoOfClients);
