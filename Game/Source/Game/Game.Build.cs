@@ -6,6 +6,7 @@ public class Game : ModuleRules
 {
 	public Game(ReadOnlyTargetRules Target) : base(Target)
 	{
+        // IWYU 종속성 모델 사용
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         //PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });

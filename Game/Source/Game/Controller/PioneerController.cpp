@@ -13,7 +13,6 @@
 
 #include "GameMode/TutorialGameMode.h"
 #include "GameMode/OnlineGameMode.h"
-#include "GameMode/OnlineGameMode2.h"
 
 #include "PioneerManager.h"
 
@@ -563,7 +562,6 @@ void APioneerController::Menu()
 
 	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
 	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
-	AOnlineGameMode2* onlineGameMode2 = Cast<AOnlineGameMode2>(UGameplayStatics::GetGameMode(world));
 
 	if (tutorialGameMode)
 	{
@@ -573,10 +571,7 @@ void APioneerController::Menu()
 	{
 		onlineGameMode->ToggleInGameMenuWidget();
 	}
-	else if (onlineGameMode2)
-	{
-		onlineGameMode2->ToggleInGameMenuWidget();
-	}
+
 }
 
 void APioneerController::ScoreBoard(float Value)
@@ -597,7 +592,6 @@ void APioneerController::ScoreBoard(float Value)
 
 			ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
 			AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
-			AOnlineGameMode2* onlineGameMode2 = Cast<AOnlineGameMode2>(UGameplayStatics::GetGameMode(world));
 
 			if (tutorialGameMode)
 			{
@@ -607,10 +601,7 @@ void APioneerController::ScoreBoard(float Value)
 			{
 				onlineGameMode->DeactivateInGameScoreBoardWidget();
 			}
-			else if (onlineGameMode2)
-			{
-				onlineGameMode2->DeactivateInGameScoreBoardWidget();
-			}
+
 
 			bScoreBoard = false;
 		}
@@ -631,7 +622,6 @@ void APioneerController::ScoreBoard(float Value)
 
 	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
 	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
-	AOnlineGameMode2* onlineGameMode2 = Cast<AOnlineGameMode2>(UGameplayStatics::GetGameMode(world));
 
 	if (tutorialGameMode)
 	{
@@ -640,10 +630,6 @@ void APioneerController::ScoreBoard(float Value)
 	else if (onlineGameMode)
 	{
 		onlineGameMode->ActivateInGameScoreBoardWidget();
-	}
-	else if (onlineGameMode2)
-	{
-		onlineGameMode2->ActivateInGameScoreBoardWidget();
 	}
 
 	bScoreBoard = true;

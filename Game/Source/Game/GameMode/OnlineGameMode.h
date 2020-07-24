@@ -15,7 +15,7 @@
 
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameMode/InGameMode.h"
 #include "OnlineGameMode.generated.h"
 
 
@@ -27,7 +27,7 @@ enum class EOnlineGameState : uint8
 };
 
 UCLASS()
-class GAME_API AOnlineGameMode : public AGameModeBase
+class GAME_API AOnlineGameMode : public AInGameMode
 {
 	GENERATED_BODY()
 

@@ -9,12 +9,12 @@
 /*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameMode/InGameMode.h"
 #include "TutorialGameMode.generated.h"
 
 
 UCLASS()
-class GAME_API ATutorialGameMode : public AGameModeBase
+class GAME_API ATutorialGameMode : public AInGameMode
 {
 	GENERATED_BODY()
 
