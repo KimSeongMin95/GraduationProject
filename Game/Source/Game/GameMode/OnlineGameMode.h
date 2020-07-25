@@ -34,6 +34,7 @@ class GAME_API AOnlineGameMode : public AInGameMode
 /*** Basic Function : Start ***/
 public:
 	AOnlineGameMode();
+	virtual ~AOnlineGameMode();
 
 protected:
 	virtual void BeginPlay() override; /** inherited in Actor, triggered before StartPlay()*/
@@ -48,73 +49,19 @@ public:
 protected:
 	EOnlineGameState OnlineGameState;
 
-
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 인게임 UI */
-		class UInGameWidget* InGameWidget = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 인게임 메뉴바 */
-		class UInGameMenuWidget* InGameMenuWidget = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 인게임 플레이어들의 상황판 */
-		class UInGameScoreBoardWidget* InGameScoreBoardWidget = nullptr;
-	
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 게임 승리 */
-		class UInGameVictoryWidget* InGameVictoryWidget = nullptr;
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 게임 패배 */
-		class UInGameDefeatWidget* InGameDefeatWidget = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 건물 건설 UI */
-		class UBuildingToolTipWidget* BuildingToolTipWidget = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** Dialog UI */
-		class UDialogWidget* DialogWidget = nullptr;
-
-
-	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
-		class APioneerController* PioneerController = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
-		class APioneerManager* PioneerManager = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "AOnlineGameMode")
-		class ASpaceShip* SpaceShip = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "BuildingManager")
-		class ABuildingManager* BuildingManager = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "EnemyManager")
-		class AEnemyManager* EnemyManager = nullptr;
-
-protected:
-
-
 public:
 	static const float CellSize;
 
 	static int MaximumOfPioneers;
 
-	float TickOfSpaceShip; // 임시
+	float TimerOfSpaceShip;
 
 protected:
-	/////////////////////////////////////////////////
-	// 필수
-	/////////////////////////////////////////////////
-	void FindPioneerController();
-	void SpawnPioneerManager();
-	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
+	virtual void TickOfSpaceShip(float DeltaTime) override;
 
 	void SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile);
 
-	void SpawnBuildingManager();
-
-	void SpawnEnemyManager();
+	
 
 	/////////////////////////////////////////////////
 	// Tick (Server)
@@ -208,81 +155,7 @@ protected:
 
 
 public:
-	/////////////////////////////////////////////////
-	// 위젯 활성화 / 비활성화
-	/////////////////////////////////////////////////
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateInGameWidget(); void _ActivateInGameWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateInGameWidget(); void _DeactivateInGameWidget();
 
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateInGameMenuWidget(); void _ActivateInGameMenuWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateInGameMenuWidget(); void _DeactivateInGameMenuWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ToggleInGameMenuWidget(); void _ToggleInGameMenuWidget();
-
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateInGameScoreBoardWidget(); void _ActivateInGameScoreBoardWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateInGameScoreBoardWidget(); void _DeactivateInGameScoreBoardWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ToggleInGameScoreBoardWidget(); void _ToggleInGameScoreBoardWidget();
-
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void LeftArrowInGameWidget(); void _LeftArrowInGameWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void RightArrowInGameWidget(); void _RightArrowInGameWidget();
-
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void PossessInGameWidget(); void _PossessInGameWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void FreeViewpointInGameWidget(); void _FreeViewpointInGameWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ObservingInGameWidget(); void _ObservingInGameWidget();
-
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void SpawnBuildingInGameWidget(int Value); void _SpawnBuildingInGameWidget(int Value);
-
-
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateInGameVictoryWidget(); void _ActivateInGameVictoryWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateInGameVictoryWidget(); void _DeactivateInGameVictoryWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateInGameDefeatWidget(); void _ActivateInGameDefeatWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateInGameDefeatWidget(); void _DeactivateInGameDefeatWidget();
-
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateBuildingToolTipWidget(); void _ActivateBuildingToolTipWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateBuildingToolTipWidget(); void _DeactivateBuildingToolTipWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void SetTextOfBuildingToolTipWidget(int BuildingType); void _SetTextOfBuildingToolTipWidget(int BuildingType);
-
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateDialogWidget(float TimeOfDuration);
-	FTimerHandle TimerHandleOfDeactivateDialogWidget;
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateDialogWidget();
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void SetTextOfDialogWidget(FText Text);
-
-
-	/////////////////////////////////////////////////
-	// 타이틀 화면으로 되돌아가기
-	/////////////////////////////////////////////////
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void BackToTitle(); void _BackToTitle();
-
-
-	/////////////////////////////////////////////////
-	// 게임종료
-	/////////////////////////////////////////////////
-	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void TerminateGame(); void _TerminateGame();
 
 /*** AOnlineGameMode : End ***/
 };

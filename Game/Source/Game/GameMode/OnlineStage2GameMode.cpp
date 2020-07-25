@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "OnlineStage1GameMode.h"
+
+#include "OnlineStage2GameMode.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "CustomWidget/InGameWidget.h"
@@ -26,21 +27,21 @@
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 /*** Basic Function : Start ***/
-AOnlineStage1GameMode::AOnlineStage1GameMode()
+AOnlineStage2GameMode::AOnlineStage2GameMode()
 {
 
 }
-AOnlineStage1GameMode::~AOnlineStage1GameMode()
+AOnlineStage2GameMode::~AOnlineStage2GameMode()
 {
 
 }
 
-void AOnlineStage1GameMode::BeginPlay()
+void AOnlineStage2GameMode::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void AOnlineStage1GameMode::StartPlay()
+void AOnlineStage2GameMode::StartPlay()
 {
 	Super::StartPlay();
 
@@ -49,23 +50,21 @@ void AOnlineStage1GameMode::StartPlay()
 
 	if (PioneerManager)
 		PioneerManager->PositionOfBase = FVector(-8269.1f, -8742.9f, 178.8f);
-
 }
 
-void AOnlineStage1GameMode::Tick(float DeltaTime)
+void AOnlineStage2GameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	SpaceShip->SetInitLocation(FVector(-8279.5f, -8563.8f, 2000.0f));
+
 }
 /*** Basic Function : End ***/
 
 
-
-void AOnlineStage1GameMode::TickOfSpaceShip(float DeltaTime)
+void AOnlineStage2GameMode::TickOfSpaceShip(float DeltaTime)
 {
 	if (!SpaceShip)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineStage1GameMode::TickOfSpaceShip()> if (!SpaceShip)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineStage2GameMode::TickOfSpaceShip()> if (!SpaceShip)"));
 		return;
 	}
 	/***********************************************************/
@@ -74,7 +73,7 @@ void AOnlineStage1GameMode::TickOfSpaceShip(float DeltaTime)
 
 	// OnlineStage에서 조절
 	TimerOfSpaceShip += DeltaTime;
-	if (TimerOfSpaceShip >= 120.0f)
+	if (TimerOfSpaceShip >= 60.0f)
 	{
 		if (SpaceShip->State == ESpaceShipState::Flying)
 		{

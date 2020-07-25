@@ -27,4 +27,9 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 /*** Basic Function : End ***/
+
+protected:
+	virtual void TickOfSpaceShip(float DeltaTime) override;
+
+
 };

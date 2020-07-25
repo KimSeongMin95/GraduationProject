@@ -34,8 +34,8 @@ ASpaceShip::ASpaceShip()
 	PhysicsBox->BodyInstance.bLockXRotation = true;
 	PhysicsBox->BodyInstance.bLockYRotation = true;
 	PhysicsBox->BodyInstance.bLockZRotation = true;
-	PhysicsBox->BodyInstance.bLockXTranslation = true;
-	PhysicsBox->BodyInstance.bLockYTranslation = true;
+	//PhysicsBox->BodyInstance.bLockXTranslation = true; // 고정해놓으면 SetActorLocation도 작동이 안됩니다.
+	//PhysicsBox->BodyInstance.bLockYTranslation = true;
 	
 	InitPhysicsBox(FVector(256.0f, 256.0f, 256.0f), FVector(0.0f, 0.0f, 256.0f));
 
@@ -327,6 +327,8 @@ void ASpaceShip::Flying()
 
 void ASpaceShip::StartLanding()
 {
+	SetActorLocation(InitLocation);
+
 	State = ESpaceShipState::Landing;
 
 	// 게임에서 보이게 합니다.
@@ -335,6 +337,8 @@ void ASpaceShip::StartLanding()
 	EngineParticleSystem2->SetHiddenInGame(false);
 	bHiddenInGame = false;
 
+	PhysicsBox->BodyInstance.bLockXTranslation = true; // 고정해놓으면 SetActorLocation도 작동이 안됩니다.
+	PhysicsBox->BodyInstance.bLockYTranslation = true;
 	PhysicsBox->SetSimulatePhysics(true);
 	bSimulatePhysics = true;
 
@@ -506,8 +510,6 @@ void ASpaceShip::TakingOff()
 		if (AudioComponent)
 			AudioComponent->SetBoolParameter("TakingOff", false);
 
-		SetActorLocation(InitLocation);
-
 		// 게임에서 보이지 않게 합니다.
 		SkeletalMesh->SetHiddenInGame(true); 
 		EngineParticleSystem->SetHiddenInGame(true);
@@ -517,6 +519,8 @@ void ASpaceShip::TakingOff()
 		// Physics를 끕니다.
 		PhysicsBox->SetSimulatePhysics(false);
 		bSimulatePhysics = false;
+
+		SetActorLocation(InitLocation);
 
 		// 엔진을 끕니다.
 		OffEngines();

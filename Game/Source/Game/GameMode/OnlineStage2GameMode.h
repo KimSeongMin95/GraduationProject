@@ -2,26 +2,22 @@
 
 #pragma once
 
-/*** 언리얼엔진 헤더 선언 : Start ***/
-#include "UObject/ConstructorHelpers.h"
-
-#include "Engine.h"
-/*** 언리얼엔진 헤더 선언 : End ***/
-
 #include "CoreMinimal.h"
-#include "GameMode/InGameMode.h"
-#include "TutorialGameMode.generated.h"
+#include "GameMode/OnlineGameMode.h"
+#include "OnlineStage2GameMode.generated.h"
 
-
+/**
+ * 
+ */
 UCLASS()
-class GAME_API ATutorialGameMode : public AInGameMode
+class GAME_API AOnlineStage2GameMode : public AOnlineGameMode
 {
 	GENERATED_BODY()
 
 /*** Basic Function : Start ***/
 public:
-	ATutorialGameMode();
-	virtual ~ATutorialGameMode();
+	AOnlineStage2GameMode();
+	virtual ~AOnlineStage2GameMode();
 
 protected:
 	virtual void BeginPlay() override; /** inherited in Actor, triggered before StartPlay()*/
