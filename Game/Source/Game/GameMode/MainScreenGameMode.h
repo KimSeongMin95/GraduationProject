@@ -2,18 +2,12 @@
 
 #pragma once
 
-
-/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Kismet/GameplayStatics.h" // For UGameplayStatics::OpenLevel(this, TransferLevelName);
-
-#include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
-/*** 언리얼엔진 헤더 선언 : End ***/
-
+#include "Engine/Public/TimerManager.h" // For GetWorldTimerManager()
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "MainScreenGameMode.generated.h"
-
 
 UENUM()
 enum class EOnlineState : uint8
@@ -33,72 +27,46 @@ class GAME_API AMainScreenGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-/*** Basic Function : Start ***/
 public:
 	AMainScreenGameMode();
+	virtual ~AMainScreenGameMode();
 
 protected:
 	virtual void BeginPlay() override; /** inherited in Actor, triggered before StartPlay()*/
-
-public:
 	virtual void StartPlay() override; /** inherited in GameModeBase, BeginPlay()이후 실행됩니다. */
-
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
 
-
-/*** AMainScreenGameMode : Start ***/
 private:
 	EOnlineState OnlineState;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 메인화면 */
-		class UMainScreenWidget* MainScreenWidget = nullptr;
-
+		class UMainScreenWidget* MainScreenWidget = nullptr; /** 메인화면 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/**  */
-		class UOnlineWidget* OnlineWidget = nullptr;
-
+		class UOnlineWidget* OnlineWidget = nullptr; /** 온라인 UI*/
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 설정 */
-		class USettingsWidget* SettingsWidget = nullptr;
-
+		class USettingsWidget* SettingsWidget = nullptr; /** 설정 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 개발자 정보 */
-		class UDeveloperWidget* DeveloperWidget = nullptr;
-
+		class UDeveloperWidget* DeveloperWidget = nullptr; /** 개발자 정보 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/**  */
-		class UOnlineGameWidget* OnlineGameWidget = nullptr;
-
+		class UOnlineGameWidget* OnlineGameWidget = nullptr; /** 게임방 리스트 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/**  */
-		class UWaitingGameWidget* WaitingGameWidget = nullptr;
-
+		class UWaitingGameWidget* WaitingGameWidget = nullptr; /** 게임방 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 저작권 정보 */
-		class UCopyRightWidget* CopyRightWidget = nullptr;
-
+		class UCopyRightWidget* CopyRightWidget = nullptr; /** 저작권 UI */
 
 	UPROPERTY(VisibleAnywhere)
 		class APioneerController* PioneerController = nullptr;
-
 	UPROPERTY(VisibleAnywhere)
 		class ASpaceShip* SpaceShip = nullptr;
-
 
 	int Count;
 
 private:
-	/////////////////////////////////////////////////
-	// 필수
-	/////////////////////////////////////////////////
 	void FindPioneerController();
-	void SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform);
 
-	/////////////////////////////////////////////////
+	void SpawnSpaceShip();
+
 	// 변환 함수
-	/////////////////////////////////////////////////
 	int FTextToInt(class UEditableTextBox* EditableTextBox);
 
 public:
@@ -112,62 +80,59 @@ public:
 	// 위젯 활성화 / 비활성화
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateMainScreenWidget(); void _ActivateMainScreenWidget();
+		void ActivateMainScreenWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateMainScreenWidget(); void _DeactivateMainScreenWidget();
+		void DeactivateMainScreenWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateOnlineWidget(); void _ActivateOnlineWidget();
+		void ActivateOnlineWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateOnlineWidget(); void _DeactivateOnlineWidget();
+		void DeactivateOnlineWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateSettingsWidget(); void _ActivateSettingsWidget();
+		void ActivateSettingsWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateSettingsWidget(); void _DeactivateSettingsWidget();
+		void DeactivateSettingsWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateDeveloperWidget(); void _ActivateDeveloperWidget();
+		void ActivateDeveloperWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateDeveloperWidget(); void _DeactivateDeveloperWidget();
+		void DeactivateDeveloperWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateOnlineGameWidget(); void _ActivateOnlineGameWidget();
+		void ActivateOnlineGameWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateOnlineGameWidget(); void _DeactivateOnlineGameWidget();
+		void DeactivateOnlineGameWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateWaitingGameWidget(); void _ActivateWaitingGameWidget();
+		void ActivateWaitingGameWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateWaitingGameWidget(); void _DeactivateWaitingGameWidget();
+		void DeactivateWaitingGameWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void ActivateCopyRightWidget(); void _ActivateCopyRightWidget();
+		void ActivateCopyRightWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void DeactivateCopyRightWidget(); void _DeactivateCopyRightWidget();
+		void DeactivateCopyRightWidget();
 
 	/////////////////////////////////////////////////
 	// 게임종료
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void TerminateGame(); void _TerminateGame();
+		void TerminateGame();
 
 	/////////////////////////////////////////////////
-	// 
+	// 네트워크 통신
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void CheckTextOfID(); void _CheckTextOfID();
+		void CheckTextOfID();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void CheckTextOfPort(); void _CheckTextOfPort();
+		void CheckTextOfPort();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void SendLogin(); void _SendLogin();
-
-	UFUNCTION(Category = "Widget")
-		void CloseClientSocket();
+		void SendLogin();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void SendCreateGame(); void _SendCreateGame();
+		void SendCreateGame();
 
 	UFUNCTION(Category = "Widget")
 		void SendFindGames();
@@ -176,7 +141,7 @@ public:
 	UFUNCTION(Category = "Widget")
 		void ClearFindGames();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void RefreshFindGames(); void _RefreshFindGames();
+		void RefreshFindGames();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SendJoinWaitingGame(int SocketIDOfLeader);
@@ -195,7 +160,7 @@ public:
 		void RecvDestroyWaitingGame();
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
-		void CheckModifyWaitingGame(); void _CheckModifyWaitingGame();
+		void CheckModifyWaitingGame();
 	UFUNCTION(Category = "Widget")
 		void SendModifyWaitingGame();
 	UFUNCTION(Category = "Widget")
@@ -234,8 +199,5 @@ public:
 	UFUNCTION(Category = "Timer")
 		void ClearTimerOfRecvAndApply();
 	FTimerHandle thRecvAndApply;
-
-
-/*** AMainScreenGameMode : End ***/
 };
 

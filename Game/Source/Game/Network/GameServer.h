@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-
 #include "Packet.h"
 
+#include "CoreMinimal.h"
 
 // 패킷 처리 함수 포인터
 struct FuncProcess
@@ -52,11 +51,11 @@ public:
 
 
 	// WSAAccept(...)한 모든 클라이언트의 new stCompletionKey()를 저장
-	static std::map<SOCKET, stCompletionKey*> GameClients;
+	static unordered_map<SOCKET, stCompletionKey*> GameClients;
 	static CRITICAL_SECTION csGameClients;
 
 	// 수신한 데이터를 덱에 전부 적재
-	static map<SOCKET, deque<char*>*> MapOfRecvDeque;
+	static unordered_map<SOCKET, deque<char*>*> MapOfRecvDeque;
 	static CRITICAL_SECTION csMapOfRecvDeque;
 
 	// WSASend(...)를 실행하면 ++, 실행이 완료되거나 실패하면 --
@@ -66,49 +65,49 @@ public:
 	/**************************************************/
 
 	// Connected 클라이언트의 InfoOfPlayer 저장
-	static std::map<SOCKET, cInfoOfPlayer> InfoOfClients;
+	static unordered_map<SOCKET, cInfoOfPlayer> InfoOfClients;
 	static CRITICAL_SECTION csInfoOfClients;
 
-	static std::map<SOCKET, cInfoOfScoreBoard> InfosOfScoreBoard;
+	static unordered_map<SOCKET, cInfoOfScoreBoard> InfosOfScoreBoard;
 	static CRITICAL_SECTION csInfosOfScoreBoard;
 
-	static std::map<SOCKET, SOCKET> Observers;
+	static unordered_map<SOCKET, SOCKET> Observers;
 	static CRITICAL_SECTION csObservers;
 
 
 	///////////////////////////////////////////
 	// Pioneer 세분화
 	///////////////////////////////////////////
-	static std::map<int, cInfoOfPioneer_Socket> InfosOfPioneer_Socket;
+	static unordered_map<int, cInfoOfPioneer_Socket> InfosOfPioneer_Socket;
 	static CRITICAL_SECTION csInfosOfPioneer_Socket;
 
-	static std::map<int, cInfoOfPioneer_Animation> InfosOfPioneer_Animation;
+	static unordered_map<int, cInfoOfPioneer_Animation> InfosOfPioneer_Animation;
 	static CRITICAL_SECTION csInfosOfPioneer_Animation;
 
-	static std::map<int, cInfoOfPioneer_Stat> InfosOfPioneer_Stat;
+	static unordered_map<int, cInfoOfPioneer_Stat> InfosOfPioneer_Stat;
 	static CRITICAL_SECTION csInfosOfPioneer_Stat;
 
 
 	///////////////////////////////////////////
 	// Building 세분화
 	///////////////////////////////////////////
-	static std::map<int, cInfoOfBuilding_Spawn> InfoOfBuilding_Spawn;
+	static unordered_map<int, cInfoOfBuilding_Spawn> InfoOfBuilding_Spawn;
 	static CRITICAL_SECTION csInfoOfBuilding_Spawn;
 
-	static std::map<int, cInfoOfBuilding_Stat> InfoOfBuilding_Stat;
+	static unordered_map<int, cInfoOfBuilding_Stat> InfoOfBuilding_Stat;
 	static CRITICAL_SECTION csInfoOfBuilding_Stat;
 
 
 	///////////////////////////////////////////
 	// Enemy 세분화
 	///////////////////////////////////////////
-	static std::map<int, cInfoOfEnemy_Spawn> InfoOfEnemies_Spawn;
+	static unordered_map<int, cInfoOfEnemy_Spawn> InfoOfEnemies_Spawn;
 	static CRITICAL_SECTION csInfoOfEnemies_Spawn;
 
-	static std::map<int, cInfoOfEnemy_Animation> InfoOfEnemies_Animation;
+	static unordered_map<int, cInfoOfEnemy_Animation> InfoOfEnemies_Animation;
 	static CRITICAL_SECTION csInfoOfEnemies_Animation;
 
-	static std::map<int, cInfoOfEnemy_Stat> InfoOfEnemies_Stat;
+	static unordered_map<int, cInfoOfEnemy_Stat> InfoOfEnemies_Stat;
 	static CRITICAL_SECTION csInfoOfEnemies_Stat;
 
 

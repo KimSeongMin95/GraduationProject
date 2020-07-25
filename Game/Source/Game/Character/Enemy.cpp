@@ -4,6 +4,8 @@
 #include "Enemy.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "GameMode/InGameMode.h"
+
 #include "Controller/EnemyAIController.h"
 
 #include "Character/Pioneer.h"
@@ -117,7 +119,7 @@ void AEnemy::InitRanges()
 	DetectRangeSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
 	DetectRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
 	DetectRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
-	DetectRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * DetectRange, true);
+	DetectRangeSphereComp->SetSphereRadius(AInGameMode::CellSize * DetectRange, true);
 
 
 	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
@@ -131,7 +133,7 @@ void AEnemy::InitRanges()
 	AttackRangeSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
 	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
 	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
-	AttackRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * AttackRange, true);
+	AttackRangeSphereComp->SetSphereRadius(AInGameMode::CellSize * AttackRange, true);
 	AttackRangeSphereComp->SetCanEverAffectNavigation(false);
 
 }
@@ -166,7 +168,7 @@ void AEnemy::InitAIController()
 
 void AEnemy::InitCharacterMovement()
 {
-	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
+	GetCharacterMovement()->MaxWalkSpeed = AInGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
 	
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 }
@@ -473,7 +475,7 @@ bool AEnemy::CheckNoObstacle(AActor* Target)
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel4); // Building
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic); // 
 		//FCollisionQueryParams collisionQueryParams;
-		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, collisionObjectQueryParams);
+		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AInGameMode::CellSize, collisionObjectQueryParams);
 
 		if (hitResults.Num() == 0)
 			return false;
@@ -624,7 +626,7 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 	{
 		float dist = FVector::Distance(TriggerBoxForSpawn->GetActorLocation(), GetActorLocation());
 
-		if (dist >= (0.75f * DetectRange * AOnlineGameMode::CellSize))
+		if (dist >= (0.75f * DetectRange * AInGameMode::CellSize))
 			TargetActor = TriggerBoxForSpawn;
 	}
 

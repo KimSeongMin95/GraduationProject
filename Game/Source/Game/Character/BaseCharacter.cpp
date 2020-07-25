@@ -3,9 +3,8 @@
 
 #include "BaseCharacter.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "GameMode/InGameMode.h"
 #include "Controller/BaseAIController.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
 /*** Basic Function : Start ***/
@@ -227,7 +226,7 @@ void ABaseCharacter::InitCharacterMovement()
 	//GetCharacterMovement()->JumpZVelocity = 600.0f;
 	//GetCharacterMovement()->AirControl = 0.2f;
 	//GetCharacterMovement()->MaxWalkSpeed = 600.0f; // 움직일 때 걷는 속도
-	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = AInGameMode::CellSize * MoveSpeed;
 	GetCharacterMovement()->MaxStepHeight = 45.0f; // 움직일 때 45.0f 높이는 올라갈 수 있도록 합니다. ex) 계단
 
 	//GetWorld()->ComponentOverlapMulti();

@@ -9,8 +9,7 @@
 
 #include "CustomWidget/DialogWidget.h"
 
-#include "GameMode/TutorialGameMode.h"
-#include "GameMode/OnlineGameMode.h"
+#include "GameMode/InGameMode.h"
 /*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
@@ -78,19 +77,10 @@ void AMyDialog::ShowDialog()
 		allTexts.Append(LINE_TERMINATOR);
 	}
 
-	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
-	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
-
-	if (tutorialGameMode)
+	if (AInGameMode* inGameMode = Cast<AInGameMode>(UGameplayStatics::GetGameMode(world)))
 	{
-		tutorialGameMode->SetTextOfDialogWidget(FText::FromString(allTexts));
-		tutorialGameMode->ActivateDialogWidget(TimeOfDuration);
-
-	}
-	else if (onlineGameMode)
-	{
-		onlineGameMode->SetTextOfDialogWidget(FText::FromString(allTexts));
-		onlineGameMode->ActivateDialogWidget(TimeOfDuration);
+		inGameMode->SetTextOfDialogWidget(FText::FromString(allTexts));
+		inGameMode->ActivateDialogWidget(TimeOfDuration);
 	}
 
 	Destroy();

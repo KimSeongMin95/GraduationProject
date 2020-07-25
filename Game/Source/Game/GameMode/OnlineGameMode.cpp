@@ -2,96 +2,28 @@
 
 #include "OnlineGameMode.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Network/MainClient.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
-
 #include "CustomWidget/InGameWidget.h"
-#include "CustomWidget/InGameMenuWidget.h"
 #include "CustomWidget/InGameScoreBoardWidget.h"
-#include "CustomWidget/InGameVictoryWidget.h"
-#include "CustomWidget/InGameDefeatWidget.h"
-#include "CustomWidget/BuildingToolTipWidget.h"
-#include "CustomWidget/DialogWidget.h"
-
-#include "Controller/PioneerController.h"
-#include "Character/Pioneer.h"
 #include "PioneerManager.h"
 #include "SpaceShip/SpaceShip.h"
-
-#include "Etc/WorldViewCameraActor.h"
-
+#include "BuildingManager.h"
+#include "EnemyManager.h"
 #include "Projectile/ProjectilePistol.h"
 #include "Projectile/ProjectileAssaultRifle.h"
 #include "Projectile/ProjectileShotgun.h"
 #include "Projectile/ProjectileSniperRifle.h"
 #include "Projectile/Splash/ProjectileGrenadeLauncher.h"
 #include "Projectile/Splash/ProjectileRocketLauncher.h"
-
-#include "BuildingManager.h"
-
+#include "Character/Pioneer.h"
 #include "Building/Building.h"
-
 #include "Character/Enemy.h"
-#include "EnemyManager.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-const float AOnlineGameMode::CellSize = 64.0f;
-
-int AOnlineGameMode::MaximumOfPioneers = 30;
-
-/*** Basic Function : Start ***/
 AOnlineGameMode::AOnlineGameMode()
 {
-	TimerOfGetScoreBoard = 0.0f;
-	TimerOfSendInfoOfSpaceShip = 0.0f;
-	TimerOfGetDiedPioneer = 0.0f;
-	TimerOfGetInfoOfPioneer_Animation = 0.0f;
-	TimerOfSetInfoOfPioneer_Animation = 0.0f;
-	TimerOfGetInfoOfPioneer_Socket = 0.0f;
-	TimerOfGetInfoOfPioneer_Stat = 0.0f;
-	TimerOfSetInfoOfPioneer_Stat = 0.0f;
-	TimerOfGetInfoOfProjectile = 0.0f;
-	TimerOfSendInfoOfResources = 0.0f;
-	TimerOfGetInfoOfBuilding_Spawn = 0.0f;
-	TimerOfSetInfoOfBuilding_Stat = 0.0f;
-	TimerOfSetInfoOfEnemy_Animation = 0.0f;
-	TimerOfSetInfoOfEnemy_Stat = 0.0f;
-
-	TimerOfSendScoreBoard = 0.0f;
-	TimerOfRecvScoreBoard = 0.0f;
-	TimerOfRecvInfoOfSpaceShip = 0.0f;
-	TimerOfRecvSpawnPioneer = 0.0f;
-	TimerOfRecvDiedPioneer = 0.0f;
-	TimerOfSendInfoOfPioneer_Animation = 0.0f;
-	TimerOfRecvInfoOfPioneer_Animation = 0.0f;
-	TimerOfRecvPossessPioneer = 0.0f;
-	TimerOfRecvInfoOfPioneer_Socket = 0.0f;
-	TimerOfSendInfoOfPioneer_Stat = 0.0f;
-	TimerOfRecvInfoOfPioneer_Stat = 0.0f;
-	TimerOfRecvInfoOfProjectile = 0.0f;
-	TimerOfRecvInfoOfResources = 0.0f;
-	TimerOfRecvInfoOfBuilding_Spawn = 0.0f;
-	TimerOfRecvInfoOfBuilding_Spawned = 0.0f;
-	TimerOfSendInfoOfBuilding_Stat = 0.0f;
-	TimerOfRecvInfoOfBuilding_Stat = 0.0f;
-	TimerOfRecvDestroyBuilding = 0.0f;
-	TimerOfRecvSpawnEnemy = 0.0f;
-	TimerOfSendInfoOfEnemy_Animation = 0.0f;
-	TimerOfRecvInfoOfEnemy_Animation = 0.0f;
-	TimerOfSendInfoOfEnemy_Stat = 0.0f;
-	TimerOfRecvInfoOfEnemy_Stat = 0.0f;
-	TimerOfRecvDestroyEnemy = 0.0f;
-	TimerOfRecvExp = 0.0f;
-
 	PrimaryActorTick.bCanEverTick = true;
-	
-	TimerOfCheckDefeatCondition = 0.0f;
-
-
-
-	TimerOfSpaceShip = 0.0f;
 }
 AOnlineGameMode::~AOnlineGameMode()
 {
@@ -105,12 +37,10 @@ void AOnlineGameMode::BeginPlay()
 	if (cGameServer::GetSingleton()->IsServerOn() && InGameScoreBoardWidget)
 		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
 }
-
 void AOnlineGameMode::StartPlay()
 {
 	Super::StartPlay();
 }
-
 void AOnlineGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -120,12 +50,6 @@ void AOnlineGameMode::Tick(float DeltaTime)
 
 	CheckDefeatCondition(DeltaTime);
 }
-/*** Basic Function : End ***/
-
-
-
-
-/*** AOnlineGameMode : Start ***/
 
 void AOnlineGameMode::TickOfSpaceShip(float DeltaTime)
 {
@@ -141,8 +65,8 @@ void AOnlineGameMode::TickOfSpaceShip(float DeltaTime)
 	case ESpaceShipState::Idling:
 	{
 		SpaceShip->StartLanding();
+		break;
 	}
-	break;
 	case ESpaceShipState::Landed:
 	{
 		// Pioneer 최대수를 제한합니다.
@@ -150,32 +74,23 @@ void AOnlineGameMode::TickOfSpaceShip(float DeltaTime)
 		{
 			SpaceShip->StartSpawning(5 + cGameServer::GetSingleton()->SizeOfObservers() * 1.00);
 		}
+		break;
 	}
-	break;
 	case ESpaceShipState::Spawned:
 	{
 		SpaceShip->StartTakingOff();
+		break;
 	}
-	break;
-	default:
-	{
-
-
-	}
-	break;
+	default: { break; }
 	}
 }
-
-
 
 void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 {
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnProjectile(...)> if (!world)"));
-
 		return;
 	}
 
@@ -193,55 +108,49 @@ void AOnlineGameMode::SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile)
 	case 1:
 	{
 		projectile = world->SpawnActor<AProjectilePistol>(AProjectilePistol::StaticClass(), myTrans, SpawnParams);
+		break;
 	}
-	break;
 	case 2:
 	{
 		projectile = world->SpawnActor<AProjectileAssaultRifle>(AProjectileAssaultRifle::StaticClass(), myTrans, SpawnParams);
+		break;
 	}
-	break;
 	case 3:
 	{
 		projectile = world->SpawnActor<AProjectileShotgun>(AProjectileShotgun::StaticClass(), myTrans, SpawnParams);
+		break;
 	}
-	break;
 	case 4:
 	{
 		projectile = world->SpawnActor<AProjectileSniperRifle>(AProjectileSniperRifle::StaticClass(), myTrans, SpawnParams);
+		break;
 	}
-	break;
 	case 5:
 	{
 		projectile = world->SpawnActor<AProjectileGrenadeLauncher>(AProjectileGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
+		break;
 	}
-	break;
 	case 6:
 	{
 		projectile = world->SpawnActor<AProjectileRocketLauncher>(AProjectileRocketLauncher::StaticClass(), myTrans, SpawnParams);
-	}
-	break;
-
-	default:
-
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnProjectile(...)> switch (InfoOfProjectile.Numbering) default:"));
-	
 		break;
-
+	}
+	default:
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SpawnProjectile(...)> switch (InfoOfProjectile.Numbering) default:"));
+		break;
+	}
 	}
 
 	if (projectile)
 	{
 		projectile->IDOfPioneer = InfoOfProjectile.ID;
-
 		projectile->SetGenerateOverlapEventsOfHitRange(true);
 	}
-
-
 }
 
-
 /////////////////////////////////////////////////
-// Tick (Server)
+// 네트워크 통신 (Server)
 /////////////////////////////////////////////////
 void AOnlineGameMode::TickOfServerSocketInGame(float DeltaTime)
 {
@@ -270,24 +179,20 @@ void AOnlineGameMode::TickOfServerSocketInGame(float DeltaTime)
 
 void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 {
-	TimerOfGetScoreBoard += DeltaTime;
-	if (TimerOfGetScoreBoard < 0.25f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.25f) 
 		return;
-	TimerOfGetScoreBoard = 0.0f;
+	timer = 0.0f;
 
 	if (!InGameScoreBoardWidget)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetScoreBoard(...)> if (!InGameScoreBoardWidget)"));
-
 		return;
 	}
-
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetScoreBoard(...)> if (!PioneerManager)"));
-
 		return;
 	}
 	/***********************************************************/
@@ -320,7 +225,6 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 
 	std::sort(copiedVec.begin(), copiedVec.end());
 
-
 	queue<cInfoOfScoreBoard> copiedQueue;
 
 	for (auto& vec : copiedVec)
@@ -330,13 +234,13 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 
 	InGameScoreBoardWidget->RevealScores(copiedQueue);
 }
-
 void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 {
-	TimerOfSendInfoOfSpaceShip += DeltaTime;
-	if (TimerOfSendInfoOfSpaceShip < 0.5f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.5f)
 		return;
-	TimerOfSendInfoOfSpaceShip = 0.0f;
+	timer = 0.0f;
 
 	if (!SpaceShip)
 	{
@@ -348,19 +252,17 @@ void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 	cInfoOfSpaceShip infoOfSpaceShip = SpaceShip->GetInfoOfSpaceShip();
 	cGameServer::GetSingleton()->SendSpaceShip(infoOfSpaceShip);
 }
-
 void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
 {
-	TimerOfGetDiedPioneer += DeltaTime;
-	if (TimerOfGetDiedPioneer < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfGetDiedPioneer = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetDiedPioneer(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -388,19 +290,17 @@ void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
 {
-	TimerOfGetInfoOfPioneer_Animation += DeltaTime;
-	if (TimerOfGetInfoOfPioneer_Animation < 0.01f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.01f)
 		return;
-	TimerOfGetInfoOfPioneer_Animation = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -432,16 +332,15 @@ void AOnlineGameMode::GetInfoOfPioneer_Animation(float DeltaTime)
 }
 void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 {
-	TimerOfSetInfoOfPioneer_Animation += DeltaTime;
-	if (TimerOfSetInfoOfPioneer_Animation < 0.01f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.01f)
 		return;
-	TimerOfSetInfoOfPioneer_Animation = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
-	
 		return;
 	}
 	/***********************************************************/
@@ -477,19 +376,17 @@ void AOnlineGameMode::SetInfoOfPioneer_Animation(float DeltaTime)
 		forRemove.pop();
 	}
 }
-
 void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
 {
-	TimerOfGetInfoOfPioneer_Socket += DeltaTime;
-	if (TimerOfGetInfoOfPioneer_Socket < 0.5f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.5f)
 		return;
-	TimerOfGetInfoOfPioneer_Socket = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfPioneer_Socket(...)> if (!PioneerManager)"));
-	
 		return;
 	}
 
@@ -519,19 +416,17 @@ void AOnlineGameMode::GetInfoOfPioneer_Socket(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::GetInfoOfPioneer_Stat(float DeltaTime)
 {
-	TimerOfGetInfoOfPioneer_Stat += DeltaTime;
-	if (TimerOfGetInfoOfPioneer_Stat < 0.2f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.2f)
 		return;
-	TimerOfGetInfoOfPioneer_Stat = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -558,16 +453,15 @@ void AOnlineGameMode::GetInfoOfPioneer_Stat(float DeltaTime)
 }
 void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 {
-	TimerOfSetInfoOfPioneer_Stat += DeltaTime;
-	if (TimerOfSetInfoOfPioneer_Stat < 0.2f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.2f)
 		return;
-	TimerOfSetInfoOfPioneer_Stat = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
-
 		return;
 	}
 	/***********************************************************/
@@ -603,19 +497,17 @@ void AOnlineGameMode::SetInfoOfPioneer_Stat(float DeltaTime)
 		forRemove.pop();
 	}
 }
-
 void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
 {
-	TimerOfGetInfoOfProjectile += DeltaTime;
-	if (TimerOfGetInfoOfProjectile < 0.01f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.01f)
 		return;
-	TimerOfGetInfoOfProjectile = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfProjectile(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -632,19 +524,17 @@ void AOnlineGameMode::GetInfoOfProjectile(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::SendInfoOfResources(float DeltaTime)
 {
-	TimerOfSendInfoOfResources += DeltaTime;
-	if (TimerOfSendInfoOfResources < 0.2f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.2f)
 		return;
-	TimerOfSendInfoOfResources = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfResources(...)> if (!PioneerManager)"));
-
 		return;
 	}
 	/***********************************************************/
@@ -654,24 +544,20 @@ void AOnlineGameMode::SendInfoOfResources(float DeltaTime)
 
 void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
 {
-	TimerOfGetInfoOfBuilding_Spawn += DeltaTime;
-	if (TimerOfGetInfoOfBuilding_Spawn < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfGetInfoOfBuilding_Spawn = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfBuilding_Spawn(...)> if (!PioneerManager)"));
-
 		return;
 	}
-	
 	if (!BuildingManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetInfoOfBuilding_Spawn(...)> if (!BuildingManager)"));
-
 		return;
 	}
 
@@ -704,19 +590,17 @@ void AOnlineGameMode::GetInfoOfBuilding_Spawn(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 {
-	TimerOfSetInfoOfBuilding_Stat += DeltaTime;
-	if (TimerOfSetInfoOfBuilding_Stat < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfSetInfoOfBuilding_Stat = 0.0f;
+	timer = 0.0f;
 
 	if (!BuildingManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
-
 		return;
 	}
 	/***********************************************************/
@@ -753,16 +637,15 @@ void AOnlineGameMode::SetInfoOfBuilding_Stat(float DeltaTime)
 
 void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
 {
-	TimerOfSetInfoOfEnemy_Animation += DeltaTime;
-	if (TimerOfSetInfoOfEnemy_Animation < 0.01f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.01f)
 		return;
-	TimerOfSetInfoOfEnemy_Animation = 0.0f;
+	timer = 0.0f;
 
 	if (!EnemyManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Animation(...)> if (!EnemyManager)"));
-	
 		return;
 	}
 	/***********************************************************/
@@ -801,16 +684,15 @@ void AOnlineGameMode::SetInfoOfEnemy_Animation(float DeltaTime)
 
 void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
 {
-	TimerOfSetInfoOfEnemy_Stat += DeltaTime;
-	if (TimerOfSetInfoOfEnemy_Stat < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfSetInfoOfEnemy_Stat = 0.0f;
+	timer = 0.0f;
 
 	if (!EnemyManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SetInfoOfEnemy_Stat(...)> if (!EnemyManager)"));
-	
 		return;
 	}
 	/***********************************************************/
@@ -845,9 +727,8 @@ void AOnlineGameMode::SetInfoOfEnemy_Stat(float DeltaTime)
 	}
 }
 
-
 /////////////////////////////////////////////////
-// Tick (Client)
+// 네트워크 통신 (Client)
 /////////////////////////////////////////////////
 void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 {
@@ -887,16 +768,15 @@ void AOnlineGameMode::TickOfClientSocketInGame(float DeltaTime)
 
 void AOnlineGameMode::SendScoreBoard(float DeltaTime)
 {
-	TimerOfSendScoreBoard += DeltaTime;
-	if (TimerOfSendScoreBoard < 1.0f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.5f)
 		return;
-	TimerOfSendScoreBoard = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendScoreBoard(...)> if (!PioneerManager)"));
-
 		return;
 	}
 	/***********************************************************/
@@ -919,16 +799,15 @@ void AOnlineGameMode::SendScoreBoard(float DeltaTime)
 }
 void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 {
-	TimerOfRecvScoreBoard += DeltaTime;
-	if (TimerOfRecvScoreBoard < 0.25f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.25f)
 		return;
-	TimerOfRecvScoreBoard = 0.0f;
+	timer = 0.0f;
 
 	if (!InGameScoreBoardWidget)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvScoreBoard(...)> if (!InGameScoreBoardWidget)"));
-	
 		return;
 	}
 
@@ -948,26 +827,22 @@ void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 
 	InGameScoreBoardWidget->RevealScores(copiedQueue);
 }
-
 void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 {
-	TimerOfRecvInfoOfSpaceShip += DeltaTime;
-	if (TimerOfRecvInfoOfSpaceShip < 0.25f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.25f)
 		return;
-	TimerOfRecvInfoOfSpaceShip = 0.0f;
+	timer = 0.0f;
 
 	if (!SpaceShip)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfSpaceShip(...)> if (!SpaceShip)"));
-
 		return;
 	}
 	if (!PioneerController)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfSpaceShip(...)> if (!PioneerController)"));
-
 		return;
 	}
 
@@ -981,19 +856,17 @@ void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 
 	SpaceShip->SetInfoOfSpaceShip(copiedQueue.back());
 }
-
 void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
 {
-	TimerOfRecvSpawnPioneer += DeltaTime;
-	if (TimerOfRecvSpawnPioneer < 0.02f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.02f)
 		return;
-	TimerOfRecvSpawnPioneer = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvSpawnPioneer(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -1011,19 +884,17 @@ void AOnlineGameMode::RecvSpawnPioneer(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 {
-	TimerOfRecvDiedPioneer += DeltaTime;
-	if (TimerOfRecvDiedPioneer < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfRecvDiedPioneer = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvDiedPioneer(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -1053,19 +924,17 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::SendInfoOfPioneer_Animation(float DeltaTime)
 {
-	TimerOfSendInfoOfPioneer_Animation += DeltaTime;
-	if (TimerOfSendInfoOfPioneer_Animation < 0.01f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.01f)
 		return;
-	TimerOfSendInfoOfPioneer_Animation = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
-
 		return;
 	}
 	/***********************************************************/
@@ -1074,16 +943,15 @@ void AOnlineGameMode::SendInfoOfPioneer_Animation(float DeltaTime)
 }
 void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 {
-	TimerOfRecvInfoOfPioneer_Animation += DeltaTime;
-	if (TimerOfRecvInfoOfPioneer_Animation < 0.01f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.01f)
 		return;
-	TimerOfRecvInfoOfPioneer_Animation = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfPioneer_Animation(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -1118,16 +986,15 @@ void AOnlineGameMode::RecvInfoOfPioneer_Animation(float DeltaTime)
 
 void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
 {
-	TimerOfRecvPossessPioneer += DeltaTime;
-	if (TimerOfRecvPossessPioneer < 0.02f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.02f)
 		return;
-	TimerOfRecvPossessPioneer = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvPossessPioneer(...)> if (!PioneerManager)"));
-	
 		return;
 	}
 
@@ -1166,16 +1033,15 @@ void AOnlineGameMode::RecvPossessPioneer(float DeltaTime)
 
 void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 {
-	TimerOfRecvInfoOfPioneer_Socket += DeltaTime;
-	if (TimerOfRecvInfoOfPioneer_Socket < 0.5f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.5f)
 		return;
-	TimerOfRecvInfoOfPioneer_Socket = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfPioneer_Socket(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -1210,16 +1076,15 @@ void AOnlineGameMode::RecvInfoOfPioneer_Socket(float DeltaTime)
 
 void AOnlineGameMode::SendInfoOfPioneer_Stat(float DeltaTime)
 {
-	TimerOfSendInfoOfPioneer_Stat += DeltaTime;
-	if (TimerOfSendInfoOfPioneer_Stat < 0.25f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.25f)
 		return;
-	TimerOfSendInfoOfPioneer_Stat = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
-
 		return;
 	}
 	/***********************************************************/
@@ -1228,16 +1093,15 @@ void AOnlineGameMode::SendInfoOfPioneer_Stat(float DeltaTime)
 }
 void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 {
-	TimerOfRecvInfoOfPioneer_Stat += DeltaTime;
-	if (TimerOfRecvInfoOfPioneer_Stat < 0.2f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.2f)
 		return;
-	TimerOfRecvInfoOfPioneer_Stat = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfPioneer_Stat(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -1269,19 +1133,17 @@ void AOnlineGameMode::RecvInfoOfPioneer_Stat(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
 {
-	TimerOfRecvInfoOfProjectile += DeltaTime;
-	if (TimerOfRecvInfoOfProjectile < 0.01f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.01f)
 		return;
-	TimerOfRecvInfoOfProjectile = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfProjectile(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -1300,19 +1162,17 @@ void AOnlineGameMode::RecvInfoOfProjectile(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
 {
-	TimerOfRecvInfoOfResources += DeltaTime;
-	if (TimerOfRecvInfoOfResources < 0.2f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.2f)
 		return;
-	TimerOfRecvInfoOfResources = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfResources(...)> if (!PioneerManager)"));
-
 		return;
 	}
 
@@ -1332,19 +1192,17 @@ void AOnlineGameMode::RecvInfoOfResources(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
 {
-	TimerOfRecvInfoOfBuilding_Spawn += DeltaTime;
-	if (TimerOfRecvInfoOfBuilding_Spawn < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfRecvInfoOfBuilding_Spawn = 0.0f;
+	timer = 0.0f;
 
 	if (!BuildingManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfBuilding_Spawn(...)> if (!BuildingManager)"));
-	
 		return;
 	}
 
@@ -1363,19 +1221,17 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawn(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
 {
-	TimerOfRecvInfoOfBuilding_Spawned += DeltaTime;
-	if (TimerOfRecvInfoOfBuilding_Spawned < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfRecvInfoOfBuilding_Spawned = 0.0f;
+	timer = 0.0f;
 
 	if (!BuildingManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfBuilding_Spawned(...)> if (!BuildingManager)"));
-
 		return;
 	}
 
@@ -1400,19 +1256,17 @@ void AOnlineGameMode::RecvInfoOfBuilding_Spawned(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::SendInfoOfBuilding_Stat(float DeltaTime)
 {
-	TimerOfSendInfoOfBuilding_Stat += DeltaTime;
-	if (TimerOfSendInfoOfBuilding_Stat < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfSendInfoOfBuilding_Stat = 0.0f;
+	timer = 0.0f;
 
 	if (!BuildingManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::SendInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
-
 		return;
 	}
 
@@ -1420,19 +1274,17 @@ void AOnlineGameMode::SendInfoOfBuilding_Stat(float DeltaTime)
 
 	cGameClient::GetSingleton()->SendInfoOfBuilding_Stat();
 }
-
 void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
 {
-	TimerOfRecvInfoOfBuilding_Stat += DeltaTime;
-	if (TimerOfRecvInfoOfBuilding_Stat < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfRecvInfoOfBuilding_Stat = 0.0f;
+	timer = 0.0f;
 
 	if (!BuildingManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfBuilding_Stat(...)> if (!BuildingManager)"));
-	
 		return;
 	}
 
@@ -1455,19 +1307,17 @@ void AOnlineGameMode::RecvInfoOfBuilding_Stat(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
 {
-	TimerOfRecvDestroyBuilding += DeltaTime;
-	if (TimerOfRecvDestroyBuilding < 0.2f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.2f)
 		return;
-	TimerOfRecvDestroyBuilding = 0.0f;
+	timer = 0.0f;
 
 	if (!BuildingManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvDestroyBuilding(...)> if (!BuildingManager)"));
-		
 		return;
 	}
 
@@ -1502,19 +1352,17 @@ void AOnlineGameMode::RecvDestroyBuilding(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::RecvSpawnEnemy(float DeltaTime)
 {
-	TimerOfRecvSpawnEnemy += DeltaTime;
-	if (TimerOfRecvSpawnEnemy < 0.02f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.02f)
 		return;
-	TimerOfRecvSpawnEnemy = 0.0f;
+	timer = 0.0f;
 
 	if (!EnemyManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvSpawnEnemy(...)> if (!EnemyManager)"));
-	
 		return;
 	}
 
@@ -1532,13 +1380,13 @@ void AOnlineGameMode::RecvSpawnEnemy(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::SendInfoOfEnemy_Animation(float DeltaTime)
 {
-	TimerOfSendInfoOfEnemy_Animation += DeltaTime;
-	if (TimerOfSendInfoOfEnemy_Animation < 0.01f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.01f)
 		return;
-	TimerOfSendInfoOfEnemy_Animation = 0.0f;
+	timer = 0.0f;
 
 	/***********************************************************/
 
@@ -1547,16 +1395,15 @@ void AOnlineGameMode::SendInfoOfEnemy_Animation(float DeltaTime)
 }
 void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
 {
-	TimerOfRecvInfoOfEnemy_Animation += DeltaTime;
-	if (TimerOfRecvInfoOfEnemy_Animation < 0.01f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.01f)
 		return;
-	TimerOfRecvInfoOfEnemy_Animation = 0.0f;
+	timer = 0.0f;
 
 	if (!EnemyManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfEnemy_Animation(...)> if (!EnemyManager)"));
-
 		return;
 	}
 
@@ -1583,13 +1430,13 @@ void AOnlineGameMode::RecvInfoOfEnemy_Animation(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::SendInfoOfEnemy_Stat(float DeltaTime)
 {
-	TimerOfSendInfoOfEnemy_Stat += DeltaTime;
-	if (TimerOfSendInfoOfEnemy_Stat < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfSendInfoOfEnemy_Stat = 0.0f;
+	timer = 0.0f;
 
 	/***********************************************************/
 
@@ -1597,16 +1444,15 @@ void AOnlineGameMode::SendInfoOfEnemy_Stat(float DeltaTime)
 }
 void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
 {
-	TimerOfRecvInfoOfEnemy_Stat += DeltaTime;
-	if (TimerOfRecvInfoOfEnemy_Stat < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfRecvInfoOfEnemy_Stat = 0.0f;
+	timer = 0.0f;
 
 	if (!EnemyManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvInfoOfEnemy_Stat(...)> if (!EnemyManager)"));
-	
 		return;
 	}
 
@@ -1632,19 +1478,17 @@ void AOnlineGameMode::RecvInfoOfEnemy_Stat(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
 {
-	TimerOfRecvDestroyEnemy += DeltaTime;
-	if (TimerOfRecvDestroyEnemy < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfRecvDestroyEnemy = 0.0f;
+	timer = 0.0f;
 
 	if (!EnemyManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvDestroyEnemy(...)> if (!EnemyManager)"));
-	
 		return;
 	}
 
@@ -1677,19 +1521,17 @@ void AOnlineGameMode::RecvDestroyEnemy(float DeltaTime)
 		copiedQueue.pop();
 	}
 }
-
 void AOnlineGameMode::RecvExp(float DeltaTime)
 {
-	TimerOfRecvExp += DeltaTime;
-	if (TimerOfRecvExp < 0.1f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.1f)
 		return;
-	TimerOfRecvExp = 0.0f;
+	timer = 0.0f;
 
 	if (!PioneerManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvExp(...)> if (!PioneerManager)"));
-	
 		return;
 	}
 
@@ -1721,22 +1563,24 @@ void AOnlineGameMode::RecvExp(float DeltaTime)
 	}
 }
 
-
 /////////////////////////////////////////////////
-// 패배 조건 확인
+// 승리/패배 조건 확인
 /////////////////////////////////////////////////
+void AOnlineGameMode::CheckVictoryCondition(float DeltaTime)
+{
+	// virtual
+}
 void AOnlineGameMode::CheckDefeatCondition(float DeltaTime)
 {
-	TimerOfCheckDefeatCondition += DeltaTime;
-	if (TimerOfCheckDefeatCondition < 0.33f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.33f)
 		return;
-	TimerOfCheckDefeatCondition = 0.0f;
+	timer = 0.0f;
 
 	if (!BuildingManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::CheckDefeatCondition(...)> if (!BuildingManager)"));
-
 		return;
 	}
 	/***********************************************************/
@@ -1746,7 +1590,3 @@ void AOnlineGameMode::CheckDefeatCondition(float DeltaTime)
 	else
 		DeactivateInGameDefeatWidget();
 }
-
-
-
-/*** AOnlineGameMode : End ***/

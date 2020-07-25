@@ -4,9 +4,8 @@
 
 #include "AssaultRifle.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "GameMode/InGameMode.h"
 #include "Projectile/ProjectileAssaultRifle.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
 /*** Basic Function : Start ***/
 AAssaultRifle::AAssaultRifle()
@@ -54,7 +53,7 @@ void AAssaultRifle::InitStat()
 
 	AttackPower = 18.0f;
 	AttackSpeed = 5.0f;
-	AttackRange = 12.0f * AOnlineGameMode::CellSize;
+	AttackRange = 12.0f * AInGameMode::CellSize;
 
 	FireCoolTime = 0.0;
 	ReloadTime = 2.0f;

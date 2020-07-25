@@ -298,7 +298,7 @@ void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* Partic
 
 
 //////////////////////////
-// OnlineGameMode에서 호출
+// AInGameMode에서 호출
 //////////////////////////
 void ASpaceShip::SetPioneerManager(class APioneerManager* pPioneerManager)
 {
@@ -403,6 +403,9 @@ void ASpaceShip::Landing()
 
 		// Physics를 끕니다.
 		PhysicsBox->SetSimulatePhysics(false);
+		PhysicsBox->BodyInstance.bLockXTranslation = false;
+		PhysicsBox->BodyInstance.bLockYTranslation = false;
+
 		bSimulatePhysics = false;
 
 		// 엔진을 끕니다.
@@ -413,7 +416,7 @@ void ASpaceShip::Landing()
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
 
-		//// OnlineGameMode에서 실행
+		//// AInGameMode에서 실행
 		//StartSpawning();
 	}
 }
@@ -460,7 +463,7 @@ void ASpaceShip::Spawning()
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
 
-		//// OnlineGameMode에서 실행
+		//// AInGameMode에서 실행
 		//StartTakingOff();
 	}
 }

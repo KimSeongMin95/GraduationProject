@@ -11,8 +11,7 @@
 #include "Item/Item.h"
 #include "Item/Weapon/Weapon.h"
 
-#include "GameMode/TutorialGameMode.h"
-#include "GameMode/OnlineGameMode.h"
+#include "GameMode/InGameMode.h"
 
 #include "PioneerManager.h"
 
@@ -560,18 +559,10 @@ void APioneerController::Menu()
 		return;
 	}
 
-	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
-	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
-
-	if (tutorialGameMode)
+	if (AInGameMode* inGameMode = Cast<AInGameMode>(UGameplayStatics::GetGameMode(world)))
 	{
-		tutorialGameMode->ToggleInGameMenuWidget();
+		inGameMode->ToggleInGameMenuWidget();
 	}
-	else if (onlineGameMode)
-	{
-		onlineGameMode->ToggleInGameMenuWidget();
-	}
-
 }
 
 void APioneerController::ScoreBoard(float Value)
@@ -590,18 +581,10 @@ void APioneerController::ScoreBoard(float Value)
 				return;
 			}
 
-			ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
-			AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
-
-			if (tutorialGameMode)
+			if (AInGameMode* inGameMode = Cast<AInGameMode>(UGameplayStatics::GetGameMode(world)))
 			{
-
+				inGameMode->DeactivateInGameScoreBoardWidget();
 			}
-			else if (onlineGameMode)
-			{
-				onlineGameMode->DeactivateInGameScoreBoardWidget();
-			}
-
 
 			bScoreBoard = false;
 		}
@@ -620,16 +603,9 @@ void APioneerController::ScoreBoard(float Value)
 		return;
 	}
 
-	ATutorialGameMode* tutorialGameMode = Cast<ATutorialGameMode>(UGameplayStatics::GetGameMode(world));
-	AOnlineGameMode* onlineGameMode = Cast<AOnlineGameMode>(UGameplayStatics::GetGameMode(world));
-
-	if (tutorialGameMode)
+	if (AInGameMode* inGameMode = Cast<AInGameMode>(UGameplayStatics::GetGameMode(world)))
 	{
-
-	}
-	else if (onlineGameMode)
-	{
-		onlineGameMode->ActivateInGameScoreBoardWidget();
+		inGameMode->ActivateInGameScoreBoardWidget();
 	}
 
 	bScoreBoard = true;
@@ -813,7 +789,7 @@ void APioneerController::EasterEgg(float Value)
 
 	Pioneer->MoveSpeed += 0.25f;
 	if (Pioneer->GetCharacterMovement())
-		Pioneer->GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * Pioneer->MoveSpeed; // 움직일 때 걷는 속도
+		Pioneer->GetCharacterMovement()->MaxWalkSpeed = AInGameMode::CellSize * Pioneer->MoveSpeed; // 움직일 때 걷는 속도
 
 }
 

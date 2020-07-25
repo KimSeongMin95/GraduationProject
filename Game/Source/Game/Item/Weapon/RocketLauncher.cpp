@@ -3,9 +3,8 @@
 
 #include "RocketLauncher.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "GameMode/InGameMode.h"
 #include "Projectile/Splash/ProjectileRocketLauncher.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
 
 /*** Basic Function : Start ***/
@@ -53,7 +52,7 @@ void ARocketLauncher::InitStat()
 
 	AttackPower = 100.0f;
 	AttackSpeed = 0.5f;
-	AttackRange = 10.0f * AOnlineGameMode::CellSize;
+	AttackRange = 10.0f * AInGameMode::CellSize;
 
 	FireCoolTime = 0.0f;
 	ReloadTime = 5.0f;

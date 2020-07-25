@@ -2,22 +2,13 @@
 
 #pragma once
 
-
-/*** 언리얼엔진 헤더 선언 : Start ***/
-#include "UObject/ConstructorHelpers.h"
-
-#include "Engine.h"
-
+#include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FClassFinder<T>
 #include "Kismet/GameplayStatics.h" // For UGameplayStatics::OpenLevel(this, TransferLevelName);
-
-#include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
-/*** 언리얼엔진 헤더 선언 : End ***/
-
+#include "Engine/Public/TimerManager.h" // For GetWorldTimerManager()
 
 #include "CoreMinimal.h"
 #include "GameMode/InGameMode.h"
 #include "OnlineGameMode.generated.h"
-
 
 UENUM()
 enum class EOnlineGameState : uint8
@@ -31,131 +22,79 @@ class GAME_API AOnlineGameMode : public AInGameMode
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	AOnlineGameMode();
 	virtual ~AOnlineGameMode();
 
 protected:
 	virtual void BeginPlay() override; /** inherited in Actor, triggered before StartPlay()*/
-
-public:
 	virtual void StartPlay() override; /** inherited in GameModeBase, BeginPlay()이후 실행됩니다. */
-
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
 
-/*** AOnlineGameMode : Start ***/
 protected:
 	EOnlineGameState OnlineGameState;
-
-public:
-	static const float CellSize;
-
-	static int MaximumOfPioneers;
-
-	float TimerOfSpaceShip;
 
 protected:
 	virtual void TickOfSpaceShip(float DeltaTime) override;
 
 	void SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile);
 
-	
-
 	/////////////////////////////////////////////////
-	// Tick (Server)
+	// 네트워크 통신 (Server)
 	/////////////////////////////////////////////////
 	UFUNCTION(Category = "AOnlineGameMode")
 		void TickOfServerSocketInGame(float DeltaTime);
 
-	void GetScoreBoard(float DeltaTime); float TimerOfGetScoreBoard;
-
-	void SendInfoOfSpaceShip(float DeltaTime); float TimerOfSendInfoOfSpaceShip;
-
-	void GetDiedPioneer(float DeltaTime); float TimerOfGetDiedPioneer;
-
-	void GetInfoOfPioneer_Animation(float DeltaTime); float TimerOfGetInfoOfPioneer_Animation;
-	void SetInfoOfPioneer_Animation(float DeltaTime); float TimerOfSetInfoOfPioneer_Animation;
-
-	void GetInfoOfPioneer_Socket(float DeltaTime); float TimerOfGetInfoOfPioneer_Socket;
-
-	void GetInfoOfPioneer_Stat(float DeltaTime); float TimerOfGetInfoOfPioneer_Stat;
-	void SetInfoOfPioneer_Stat(float DeltaTime); float TimerOfSetInfoOfPioneer_Stat;
-
-	void GetInfoOfProjectile(float DeltaTime); float TimerOfGetInfoOfProjectile;
-
-	void SendInfoOfResources(float DeltaTime); float TimerOfSendInfoOfResources;
-
-	void GetInfoOfBuilding_Spawn(float DeltaTime); float TimerOfGetInfoOfBuilding_Spawn;
-
-	void SetInfoOfBuilding_Stat(float DeltaTime); float TimerOfSetInfoOfBuilding_Stat;
-
-	void SetInfoOfEnemy_Animation(float DeltaTime); float TimerOfSetInfoOfEnemy_Animation;
-
-	void SetInfoOfEnemy_Stat(float DeltaTime); float TimerOfSetInfoOfEnemy_Stat;
-
+	void GetScoreBoard(float DeltaTime); 
+	void SendInfoOfSpaceShip(float DeltaTime); 
+	void GetDiedPioneer(float DeltaTime); 
+	void GetInfoOfPioneer_Animation(float DeltaTime); 
+	void SetInfoOfPioneer_Animation(float DeltaTime);
+	void GetInfoOfPioneer_Socket(float DeltaTime);
+	void GetInfoOfPioneer_Stat(float DeltaTime);
+	void SetInfoOfPioneer_Stat(float DeltaTime);
+	void GetInfoOfProjectile(float DeltaTime);
+	void SendInfoOfResources(float DeltaTime);
+	void GetInfoOfBuilding_Spawn(float DeltaTime);
+	void SetInfoOfBuilding_Stat(float DeltaTime);
+	void SetInfoOfEnemy_Animation(float DeltaTime);
+	void SetInfoOfEnemy_Stat(float DeltaTime);
 
 	/////////////////////////////////////////////////
-	// Tick (Client)
+	// 네트워크 통신 (Client)
 	/////////////////////////////////////////////////
 	UFUNCTION(Category = "AOnlineGameMode")
 		void TickOfClientSocketInGame(float DeltaTime);
 
-	void SendScoreBoard(float DeltaTime); float TimerOfSendScoreBoard;
-	void RecvScoreBoard(float DeltaTime); float TimerOfRecvScoreBoard;
-
-	void RecvInfoOfSpaceShip(float DeltaTime); float TimerOfRecvInfoOfSpaceShip;
-
-	void RecvSpawnPioneer(float DeltaTime); float TimerOfRecvSpawnPioneer;
-	void RecvDiedPioneer(float DeltaTime); float TimerOfRecvDiedPioneer;
-
-	void SendInfoOfPioneer_Animation(float DeltaTime); float TimerOfSendInfoOfPioneer_Animation;
-	void RecvInfoOfPioneer_Animation(float DeltaTime); float TimerOfRecvInfoOfPioneer_Animation;
-
-	void RecvPossessPioneer(float DeltaTime); float TimerOfRecvPossessPioneer;
-
-	void RecvInfoOfPioneer_Socket(float DeltaTime); float TimerOfRecvInfoOfPioneer_Socket;
-
-	void SendInfoOfPioneer_Stat(float DeltaTime); float TimerOfSendInfoOfPioneer_Stat;
-	void RecvInfoOfPioneer_Stat(float DeltaTime); float TimerOfRecvInfoOfPioneer_Stat;
-
-	void RecvInfoOfProjectile(float DeltaTime); float TimerOfRecvInfoOfProjectile;
-
-	void RecvInfoOfResources(float DeltaTime); float TimerOfRecvInfoOfResources;
-
-	void RecvInfoOfBuilding_Spawn(float DeltaTime); float TimerOfRecvInfoOfBuilding_Spawn;
-
-	void RecvInfoOfBuilding_Spawned(float DeltaTime); float TimerOfRecvInfoOfBuilding_Spawned;
-
-	void SendInfoOfBuilding_Stat(float DeltaTime); float TimerOfSendInfoOfBuilding_Stat;
-	void RecvInfoOfBuilding_Stat(float DeltaTime); float TimerOfRecvInfoOfBuilding_Stat;
-
-	void RecvDestroyBuilding(float DeltaTime); float TimerOfRecvDestroyBuilding;
-
-
-	void RecvSpawnEnemy(float DeltaTime); float TimerOfRecvSpawnEnemy;
-
-	void SendInfoOfEnemy_Animation(float DeltaTime); float TimerOfSendInfoOfEnemy_Animation;
-	void RecvInfoOfEnemy_Animation(float DeltaTime); float TimerOfRecvInfoOfEnemy_Animation;
-
-	void SendInfoOfEnemy_Stat(float DeltaTime); float TimerOfSendInfoOfEnemy_Stat;
-	void RecvInfoOfEnemy_Stat(float DeltaTime); float TimerOfRecvInfoOfEnemy_Stat;
-
-
-	void RecvDestroyEnemy(float DeltaTime); float TimerOfRecvDestroyEnemy;
-	void RecvExp(float DeltaTime); float TimerOfRecvExp;
+	void SendScoreBoard(float DeltaTime);
+	void RecvScoreBoard(float DeltaTime);
+	void RecvInfoOfSpaceShip(float DeltaTime);
+	void RecvSpawnPioneer(float DeltaTime);
+	void RecvDiedPioneer(float DeltaTime);
+	void SendInfoOfPioneer_Animation(float DeltaTime);
+	void RecvInfoOfPioneer_Animation(float DeltaTime);
+	void RecvPossessPioneer(float DeltaTime);
+	void RecvInfoOfPioneer_Socket(float DeltaTime);
+	void SendInfoOfPioneer_Stat(float DeltaTime);
+	void RecvInfoOfPioneer_Stat(float DeltaTime);
+	void RecvInfoOfProjectile(float DeltaTime);
+	void RecvInfoOfResources(float DeltaTime);
+	void RecvInfoOfBuilding_Spawn(float DeltaTime);
+	void RecvInfoOfBuilding_Spawned(float DeltaTime);
+	void SendInfoOfBuilding_Stat(float DeltaTime);
+	void RecvInfoOfBuilding_Stat(float DeltaTime);
+	void RecvDestroyBuilding(float DeltaTime);
+	void RecvSpawnEnemy(float DeltaTime);
+	void SendInfoOfEnemy_Animation(float DeltaTime);
+	void RecvInfoOfEnemy_Animation(float DeltaTime);
+	void SendInfoOfEnemy_Stat(float DeltaTime);
+	void RecvInfoOfEnemy_Stat(float DeltaTime);
+	void RecvDestroyEnemy(float DeltaTime);
+	void RecvExp(float DeltaTime);
 
 	/////////////////////////////////////////////////
-	// 패배 조건 확인
+	// 승리/패배 조건 확인
 	/////////////////////////////////////////////////
-	void CheckDefeatCondition(float DeltaTime); float TimerOfCheckDefeatCondition;
-
-protected:
-
-
-public:
-
-
-/*** AOnlineGameMode : End ***/
+	virtual void CheckVictoryCondition(float DeltaTime);
+	void CheckDefeatCondition(float DeltaTime);
 };

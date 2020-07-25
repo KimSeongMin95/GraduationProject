@@ -3,30 +3,10 @@
 
 #include "OnlineStage2GameMode.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "CustomWidget/InGameWidget.h"
-#include "CustomWidget/InGameMenuWidget.h"
-#include "CustomWidget/InGameVictoryWidget.h"
-#include "CustomWidget/InGameDefeatWidget.h"
-#include "CustomWidget/BuildingToolTipWidget.h"
-#include "CustomWidget/DialogWidget.h"
-
-#include "Controller/PioneerController.h"
-#include "Character/Pioneer.h"
 #include "PioneerManager.h"
 #include "SpaceShip/SpaceShip.h"
+#include "Etc/OccupationPanel.h"
 
-#include "Etc/WorldViewCameraActor.h"
-
-#include "BuildingManager.h"
-
-#include "Building/Building.h"
-
-#include "Character/Enemy.h"
-#include "EnemyManager.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
-/*** Basic Function : Start ***/
 AOnlineStage2GameMode::AOnlineStage2GameMode()
 {
 
@@ -40,25 +20,25 @@ void AOnlineStage2GameMode::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
 void AOnlineStage2GameMode::StartPlay()
 {
 	Super::StartPlay();
 
 	if (SpaceShip)
-		SpaceShip->SetInitLocation(FVector(-8279.5f, -8563.8f, 20000.0f));
+		SpaceShip->SetInitLocation(FVector(0.0f, 164.24f, 20000.0f));
 
 	if (PioneerManager)
-		PioneerManager->PositionOfBase = FVector(-8269.1f, -8742.9f, 178.8f);
-}
+		PioneerManager->PositionOfBase = FVector(0.0f, 0.0f, 178.8f);
 
+	FindQcuupationPanel();
+}
 void AOnlineStage2GameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	CheckVictoryCondition(DeltaTime);
+	CheckDefeatCondition(DeltaTime);
 }
-/*** Basic Function : End ***/
-
 
 void AOnlineStage2GameMode::TickOfSpaceShip(float DeltaTime)
 {
@@ -71,14 +51,56 @@ void AOnlineStage2GameMode::TickOfSpaceShip(float DeltaTime)
 
 	Super::TickOfSpaceShip(DeltaTime);
 
-	// OnlineStage에서 조절
-	TimerOfSpaceShip += DeltaTime;
-	if (TimerOfSpaceShip >= 60.0f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer >= 60.0f)
 	{
 		if (SpaceShip->State == ESpaceShipState::Flying)
 		{
-			TimerOfSpaceShip = 0.0f;
+			timer = 0.0f;
 			SpaceShip->State = ESpaceShipState::Idling;
 		}
+	}
+}
+
+void AOnlineStage2GameMode::CheckVictoryCondition(float DeltaTime)
+{
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 1.0f)
+		return;
+	timer = 0.0f;
+
+	queue<int> idx;
+	for (int i = 0; i < OccupationPanels.Num(); i++)
+	{
+		if (OccupationPanels[i]->Occupancy >= 100.0f)
+			idx.push(i);
+	}
+
+	while (idx.empty() == false)
+	{
+		OccupationPanels.RemoveAt(idx.front());
+		idx.pop();
+	}
+
+	if (OccupationPanels.Num() <= 0)
+		ActivateInGameVictoryWidget();
+	else
+		DeactivateInGameVictoryWidget();
+}
+
+void AOnlineStage2GameMode::FindQcuupationPanel()
+{
+	UWorld* const world = GetWorld();
+	if (!world)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("<AOnlineGameMode2::FindQcuupationPanel()> if (!world)"));
+		return;
+	}
+
+	for (TActorIterator<AOccupationPanel> ActorItr(world); ActorItr; ++ActorItr)
+	{
+		OccupationPanels.Add(*ActorItr);
 	}
 }

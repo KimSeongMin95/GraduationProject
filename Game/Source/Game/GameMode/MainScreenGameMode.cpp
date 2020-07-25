@@ -3,12 +3,10 @@
 
 #include "MainScreenGameMode.h"
 
-
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Network/MainClient.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
-
+#include "GameMode/OnlineGameMode.h"
 #include "CustomWidget/MainScreenWidget.h"
 #include "CustomWidget/OnlineWidget.h"
 #include "CustomWidget/SettingsWidget.h"
@@ -16,21 +14,11 @@
 #include "CustomWidget/OnlineGameWidget.h"
 #include "CustomWidget/WaitingGameWidget.h"
 #include "CustomWidget/CopyRightWidget.h"
-
-#include "GameMode/OnlineGameMode.h"
-
 #include "Controller/PioneerController.h"
-
 #include "SpaceShip/SpaceShip.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** Basic Function : Start ***/
 AMainScreenGameMode::AMainScreenGameMode()
 {
-	///////////
-	// 초기화
-	///////////
 	PioneerController = nullptr;
 	SpaceShip = nullptr;
 
@@ -38,21 +26,15 @@ AMainScreenGameMode::AMainScreenGameMode()
 
 	Count = 5;
 
-
 	PrimaryActorTick.bCanEverTick = true;
-
 
 	DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
 
 	PlayerControllerClass = APioneerController::StaticClass();
+}
+AMainScreenGameMode::~AMainScreenGameMode()
+{
 
-	// 콘솔
-	cMyConsole* myConsole = cMyConsole::GetSingleton();
-	if (myConsole)
-	{
-		//myConsole->FreeConsole();
-		myConsole->AllocConsole();
-	}
 }
 
 void AMainScreenGameMode::BeginPlay()
@@ -70,9 +52,9 @@ void AMainScreenGameMode::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::BeginPlay()> if (!world)"));
-#endif		
+		
 		return;
 	}
 
@@ -102,18 +84,20 @@ void AMainScreenGameMode::StartPlay()
 {
 	Super::StartPlay();
 
-
 	FindPioneerController();
 
-	SpawnSpaceShip(&SpaceShip, FTransform(FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 30000.0f)));
-	SpaceShip->SetInitLocation(FVector(0.0f, 0.0f, 30000.0f));
-	SpaceShip->OnEngine3();
-	SpaceShip->ForMainScreen();
+	SpawnSpaceShip();
+
+	if (SpaceShip)
+	{
+		SpaceShip->SetInitLocation(FVector(0.0f, 0.0f, 30000.0f));
+		SpaceShip->OnEngine3();
+		SpaceShip->ForMainScreen();
+	}
 
 	if (PioneerController)
 	{
-		// 초기엔 우주선을 보도록 합니다.
-		PioneerController->SetViewTargetWithBlend(SpaceShip);
+		PioneerController->SetViewTargetWithBlend(SpaceShip); // 초기엔 우주선을 보도록 합니다.
 	}
 }
 
@@ -136,34 +120,26 @@ void AMainScreenGameMode::FindPioneerController()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::FindPioneerController()> if (!world)"));
-#endif				
 		return;
 	}
 
 	// UWorld에서 APioneerController를 찾습니다.
 	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Log, TEXT("<AMainScreenGameMode::FindPioneerController()> found APioneerController."));
-#endif			
 		PioneerController = *ActorItr;
 	}
 }
 
-void AMainScreenGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransform Transform)
+void AMainScreenGameMode::SpawnSpaceShip()
 {
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::SpawnSpaceShip(...)> if (!world)"));
-#endif			
 		return;
 	}
-
-	FTransform myTrans = Transform;
 
 	FActorSpawnParameters SpawnParams;
 	//SpawnParams.Name = TEXT("Name"); // Name을 설정합니다. World Outliner에 표기되는 Label과는 다릅니다.
@@ -171,292 +147,9 @@ void AMainScreenGameMode::SpawnSpaceShip(class ASpaceShip** pSpaceShip, FTransfo
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	*pSpaceShip = world->SpawnActor<ASpaceShip>(ASpaceShip::StaticClass(), myTrans, SpawnParams);
-
+	SpaceShip = world->SpawnActor<ASpaceShip>(ASpaceShip::StaticClass(), FTransform::Identity, SpawnParams);
 }
 
-
-/////////////////////////////////////////////////
-// 튜토리얼 실행
-/////////////////////////////////////////////////
-void AMainScreenGameMode::PlayTutorial()
-{
-	UGameplayStatics::OpenLevel(this, "Tutorial");
-}
-
-
-/////////////////////////////////////////////////
-// 위젯 활성화 / 비활성화
-/////////////////////////////////////////////////
-void AMainScreenGameMode::ActivateMainScreenWidget()
-{
-	_ActivateMainScreenWidget();
-}
-void AMainScreenGameMode::_ActivateMainScreenWidget()
-{
-	if (!MainScreenWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateMainScreenWidget()> if (!MainScreenWidget)"));
-#endif		
-		return;
-	}
-
-
-	OnlineState = EOnlineState::Idle;
-
-
-	MainScreenWidget->AddToViewport();
-}
-void AMainScreenGameMode::DeactivateMainScreenWidget()
-{
-	_DeactivateMainScreenWidget();
-}
-void AMainScreenGameMode::_DeactivateMainScreenWidget()
-{
-	if (!MainScreenWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateMainScreenWidget()> if (!MainScreenWidget)"));
-#endif			
-		return;
-	}
-
-	MainScreenWidget->RemoveFromViewport();
-}
-
-void AMainScreenGameMode::ActivateOnlineWidget()
-{
-	_ActivateOnlineWidget();
-}
-void AMainScreenGameMode::_ActivateOnlineWidget()
-{
-	if (!OnlineWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateOnlineWidget()> if (!OnlineWidget)"));
-#endif			
-		return;
-	}
-
-	AOnlineGameMode::MaximumOfPioneers = 30;
-
-	OnlineState = EOnlineState::Online;
-
-	AMainScreenGameMode::CloseClientSocket();
-
-	ClearAllRecvedQueue();
-
-	ClearTimerOfRecvAndApply();
-
-
-	OnlineWidget->AddToViewport();
-}
-void AMainScreenGameMode::DeactivateOnlineWidget()
-{
-	_DeactivateOnlineWidget();
-}
-void AMainScreenGameMode::_DeactivateOnlineWidget()
-{
-	if (!OnlineWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateOnlineWidget()> if (!OnlineWidget)"));
-#endif			
-		return;
-	}
-
-	OnlineWidget->RemoveFromViewport();
-}
-
-void AMainScreenGameMode::ActivateSettingsWidget()
-{
-	_ActivateSettingsWidget();
-}
-void AMainScreenGameMode::_ActivateSettingsWidget()
-{
-	if (!SettingsWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateSettingsWidget()> if (!SettingsWidget)"));
-#endif			
-		return;
-	}
-
-	SettingsWidget->AddToViewport();
-}
-void AMainScreenGameMode::DeactivateSettingsWidget()
-{
-	_DeactivateSettingsWidget();
-}
-void AMainScreenGameMode::_DeactivateSettingsWidget()
-{
-	if (!SettingsWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateSettingsWidget()> if (!SettingsWidget)"));
-#endif		
-		return;
-	}
-
-	SettingsWidget->RemoveFromViewport();
-}
-
-void AMainScreenGameMode::ActivateDeveloperWidget()
-{
-	_ActivateDeveloperWidget();
-}
-void AMainScreenGameMode::_ActivateDeveloperWidget()
-{
-	if (!DeveloperWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateDeveloperWidget()> if (!DeveloperWidget)"));
-#endif			
-		return;
-	}
-
-	DeveloperWidget->AddToViewport();
-}
-void AMainScreenGameMode::DeactivateDeveloperWidget()
-{
-	_DeactivateDeveloperWidget();
-}
-void AMainScreenGameMode::_DeactivateDeveloperWidget()
-{
-	if (!DeveloperWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateDeveloperWidget()> if (!DeveloperWidget)"));
-#endif			
-		return;
-	}
-
-	DeveloperWidget->RemoveFromViewport();
-}
-
-void AMainScreenGameMode::ActivateOnlineGameWidget()
-{
-	_ActivateOnlineGameWidget();
-}
-void AMainScreenGameMode::_ActivateOnlineGameWidget()
-{
-	if (!OnlineGameWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateOnlineGameWidget()> if (!OnlineGameWidget)"));
-#endif			
-		return;
-	}
-
-
-	OnlineState = EOnlineState::OnlineGame;
-
-	SendFindGames();
-
-	RecvAndApply();
-
-
-	OnlineGameWidget->AddToViewport();
-}
-void AMainScreenGameMode::DeactivateOnlineGameWidget()
-{
-	_DeactivateOnlineGameWidget();
-}
-void AMainScreenGameMode::_DeactivateOnlineGameWidget()
-{
-	if (!OnlineGameWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateOnlineGameWidget()> if (!OnlineGameWidget)"));
-#endif		
-		return;
-	}
-
-
-	ClearFindGames();
-
-
-	OnlineGameWidget->RemoveFromViewport();
-}
-
-void AMainScreenGameMode::ActivateWaitingGameWidget()
-{
-	_ActivateWaitingGameWidget();
-}
-void AMainScreenGameMode::_ActivateWaitingGameWidget()
-{
-	if (!WaitingGameWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateWaitingGameWidget()> if (!WaitingGameWidget)"));
-#endif			
-		return;
-	}
-
-	WaitingGameWidget->AddToViewport();
-}
-void AMainScreenGameMode::DeactivateWaitingGameWidget()
-{
-	_DeactivateWaitingGameWidget();
-}
-void AMainScreenGameMode::_DeactivateWaitingGameWidget()
-{
-	if (!WaitingGameWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateWaitingGameWidget()> if (!WaitingGameWidget)"));
-#endif				
-		return;
-	}
-
-
-	// ClearWaitingGame보다 먼저 실행해야 합니다.
-	SendDestroyOrExitWaitingGame();
-
-	ClearWaitingGame();
-
-
-	WaitingGameWidget->RemoveFromViewport();
-}
-
-void AMainScreenGameMode::ActivateCopyRightWidget()
-{
-	_ActivateCopyRightWidget();
-}
-void AMainScreenGameMode::_ActivateCopyRightWidget()
-{
-	if (!CopyRightWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateCopyRightWidget()> if (!CopyRightWidget)"));
-#endif			
-		return;
-	}
-
-	CopyRightWidget->AddToViewport();
-}
-void AMainScreenGameMode::DeactivateCopyRightWidget()
-{
-	_DeactivateCopyRightWidget();
-}
-void AMainScreenGameMode::_DeactivateCopyRightWidget()
-{
-	if (!CopyRightWidget)
-	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateCopyRightWidget()> if (!CopyRightWidget)"));
-#endif			
-		return;
-	}
-
-	CopyRightWidget->RemoveFromViewport();
-}
-
-
-/////////////////////////////////////////////////
-// 변환 함수
-/////////////////////////////////////////////////
 int AMainScreenGameMode::FTextToInt(class UEditableTextBox* EditableTextBox)
 {
 	if (EditableTextBox == nullptr)
@@ -469,66 +162,229 @@ int AMainScreenGameMode::FTextToInt(class UEditableTextBox* EditableTextBox)
 	return (int)FCString::Atoi(*EditableTextBox->GetText().ToString());
 }
 
+/////////////////////////////////////////////////
+// 튜토리얼 실행
+/////////////////////////////////////////////////
+void AMainScreenGameMode::PlayTutorial()
+{
+	UGameplayStatics::OpenLevel(this, "Tutorial");
+}
+
+/////////////////////////////////////////////////
+// 위젯 활성화 / 비활성화
+/////////////////////////////////////////////////
+void AMainScreenGameMode::ActivateMainScreenWidget()
+{
+	if (!MainScreenWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateMainScreenWidget()> if (!MainScreenWidget)"));
+		return;
+	}
+
+	OnlineState = EOnlineState::Idle;
+
+	MainScreenWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateMainScreenWidget()
+{
+	if (!MainScreenWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateMainScreenWidget()> if (!MainScreenWidget)"));
+		return;
+	}
+
+	MainScreenWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateOnlineWidget()
+{
+	if (!OnlineWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateOnlineWidget()> if (!OnlineWidget)"));
+		return;
+	}
+
+	AOnlineGameMode::MaximumOfPioneers = 30;
+
+	OnlineState = EOnlineState::Online;
+
+	cMainClient::GetSingleton()->Close();
+
+	ClearAllRecvedQueue();
+
+	ClearTimerOfRecvAndApply();
+
+	OnlineWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateOnlineWidget()
+{
+	if (!OnlineWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateOnlineWidget()> if (!OnlineWidget)"));
+		return;
+	}
+
+	OnlineWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateSettingsWidget()
+{
+	if (!SettingsWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateSettingsWidget()> if (!SettingsWidget)"));
+		return;
+	}
+
+	SettingsWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateSettingsWidget()
+{
+	if (!SettingsWidget)
+	{
+
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateSettingsWidget()> if (!SettingsWidget)"));
+		
+		return;
+	}
+
+	SettingsWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateDeveloperWidget()
+{
+	if (!DeveloperWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateDeveloperWidget()> if (!DeveloperWidget)"));
+		return;
+	}
+
+	DeveloperWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateDeveloperWidget()
+{
+	if (!DeveloperWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateDeveloperWidget()> if (!DeveloperWidget)"));
+		return;
+	}
+
+	DeveloperWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateOnlineGameWidget()
+{
+	if (!OnlineGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateOnlineGameWidget()> if (!OnlineGameWidget)"));
+		return;
+	}
+
+	OnlineState = EOnlineState::OnlineGame;
+
+	SendFindGames();
+
+	RecvAndApply();
+
+	OnlineGameWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateOnlineGameWidget()
+{
+	if (!OnlineGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateOnlineGameWidget()> if (!OnlineGameWidget)"));
+		return;
+	}
+
+	ClearFindGames();
+
+	OnlineGameWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateWaitingGameWidget()
+{
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateWaitingGameWidget()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	WaitingGameWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateWaitingGameWidget()
+{
+	if (!WaitingGameWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateWaitingGameWidget()> if (!WaitingGameWidget)"));
+		return;
+	}
+
+	// ClearWaitingGame보다 먼저 실행해야 합니다.
+	SendDestroyOrExitWaitingGame();
+
+	ClearWaitingGame();
+
+	WaitingGameWidget->RemoveFromViewport();
+}
+
+void AMainScreenGameMode::ActivateCopyRightWidget()
+{
+	if (!CopyRightWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_ActivateCopyRightWidget()> if (!CopyRightWidget)"));
+		return;
+	}
+
+	CopyRightWidget->AddToViewport();
+}
+void AMainScreenGameMode::DeactivateCopyRightWidget()
+{
+	if (!CopyRightWidget)
+	{
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_DeactivateCopyRightWidget()> if (!CopyRightWidget)"));
+		return;
+	}
+
+	CopyRightWidget->RemoveFromViewport();
+}
 
 /////////////////////////////////////////////////
 // 게임종료
 /////////////////////////////////////////////////
 void AMainScreenGameMode::TerminateGame()
 {
-	_TerminateGame();
-}
-void AMainScreenGameMode::_TerminateGame()
-{
 	//// 주의: Selected Viewport일 때도 종료되는 함수
 	//FGenericPlatformMisc::RequestExit(false);
 }
 
-
 /////////////////////////////////////////////////
-// 
+// 네트워크 통신
 /////////////////////////////////////////////////
 void AMainScreenGameMode::CheckTextOfID()
 {
-	_CheckTextOfID();
-}
-void AMainScreenGameMode::_CheckTextOfID()
-{
 	if (!OnlineWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_CheckTextOfID()> if (!OnlineWidget)"));
-#endif			
 		return;
 	}
+
 	OnlineWidget->CheckTextOfID();
 }
 void AMainScreenGameMode::CheckTextOfPort()
 {
-	_CheckTextOfPort();
-}
-void AMainScreenGameMode::_CheckTextOfPort()
-{
 	if (!OnlineWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_CheckTextOfPort()> if (!OnlineWidget)"));
-#endif			
 		return;
 	}
+
 	OnlineWidget->CheckTextOfPort();
 }
 
 void AMainScreenGameMode::SendLogin()
 {
-	_SendLogin();
-}
-void AMainScreenGameMode::_SendLogin()
-{
 	if (!OnlineWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_SendLogin()> if (!OnlineWidget)"));
-#endif				
 		return;
 	}
 
@@ -537,9 +393,7 @@ void AMainScreenGameMode::_SendLogin()
 	{
 		if (cMainClient::GetSingleton()->Initialize() == false)
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_SendLogin()> if (cMainClient::GetSingleton()->Init() == false)"));
-#endif			
 			return;
 		}
 	}
@@ -547,26 +401,19 @@ void AMainScreenGameMode::_SendLogin()
 	// 아직 메인서버에 연결되지 않았다면
 	if (cMainClient::GetSingleton()->IsConnected() == false)
 	{
-		//cMainClient::GetSingleton()->Connect("127.0.0.1", 8000);
 		if (cMainClient::GetSingleton()->Connect(TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort())) == false)
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_SendLogin()> if (!bIsConnected)"));
 			UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port: %s"), *OnlineWidget->GetIPv4()->GetText().ToString(), *OnlineWidget->GetPort()->GetText().ToString());
-#endif		
 			return;
 		}
 	}
 
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	UE_LOG(LogTemp, Log, TEXT("[INFO] <AMainScreenGameMode::SendLogin()> IOCP Main Server connect success!"));
-#endif	
 
 	if (cMainClient::GetSingleton()->StartListen() == false)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_SendLogin()> if (cMainClient::GetSingleton()->StartListen() == false)"));
-#endif			
 		return;
 	}
 
@@ -576,22 +423,11 @@ void AMainScreenGameMode::_SendLogin()
 	ActivateOnlineGameWidget();
 }
 
-void AMainScreenGameMode::CloseClientSocket()
-{
-	cMainClient::GetSingleton()->Close();
-}
-
 void AMainScreenGameMode::SendCreateGame()
-{
-	_SendCreateGame();
-}
-void AMainScreenGameMode::_SendCreateGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_SendCreateGame()> if (!WaitingGameWidget)"));
-#endif				
 		return;
 	}
 
@@ -622,9 +458,7 @@ void AMainScreenGameMode::RecvFindGames()
 {
 	if (!OnlineGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::RecvFindGames()> if (!OnlineGameWidget)"));
-#endif			
 		return;
 	}
 
@@ -658,9 +492,7 @@ void AMainScreenGameMode::RecvFindGames()
 			button->CustomOnClicked.AddDynamic(this, &AMainScreenGameMode::SendJoinPlayingGame);
 		else
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::RecvFindGames()> else"));
-#endif
 		}
 
 		copiedQueue.pop();
@@ -670,9 +502,7 @@ void AMainScreenGameMode::ClearFindGames()
 {
 	if (!OnlineGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::ClearFindGames()> if (!OnlineGameWidget)"));
-#endif		
 		return;
 	}
 
@@ -681,25 +511,17 @@ void AMainScreenGameMode::ClearFindGames()
 }
 void AMainScreenGameMode::RefreshFindGames()
 {
-	_RefreshFindGames();
-}
-void AMainScreenGameMode::_RefreshFindGames()
-{
 	ClearFindGames();
 	SendFindGames();
 }
 
 void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 {
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	UE_LOG(LogTemp, Log, TEXT("[INFO] <AMainScreenGameMode::SendJoinWaitingGame(...)> SocketID: %d"), SocketIDOfLeader);
-#endif	
 
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::SendJoinWaitingGame(...)> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
 
@@ -723,9 +545,7 @@ void AMainScreenGameMode::RecvWaitingGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::RecvWaitingGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
 
@@ -760,9 +580,7 @@ void AMainScreenGameMode::ClearWaitingGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::ClearWaitingGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
 
@@ -779,18 +597,13 @@ void AMainScreenGameMode::ClearWaitingGame()
 
 void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 {
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	UE_LOG(LogTemp, Log, TEXT("[INFO] <AMainScreenGameMode::SendJoinPlayingGame(...)> SocketID: %d"), SocketIDOfLeader);
-#endif	
 
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::SendJoinPlayingGame(...)> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
-
 
 	OnlineState = EOnlineState::PlayerOfPlayingGame;
 
@@ -813,12 +626,9 @@ void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::SendDestroyOrExitWaitingGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
-
 
 	// 게임 시작 카운트 다운을 세는 타이머를 종료합니다.
 	ClearTimerOfCountStartedGame();
@@ -842,9 +652,7 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::RecvDestroyWaitingGame()> if (!cMainClient::GetSingleton())"));
-#endif			
 		return;
 	}
 
@@ -872,21 +680,13 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 
 void AMainScreenGameMode::CheckModifyWaitingGame()
 {
-	_CheckModifyWaitingGame();
-}
-void AMainScreenGameMode::_CheckModifyWaitingGame()
-{
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_CheckModifyWaitingGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
 	WaitingGameWidget->CheckTextOfTitle();
 	WaitingGameWidget->CheckTextOfStage();
-	
-	//cInfoOfGame copied = cMainClient::GetSingleton()->CopyMyInfoOfGame();
 	
 	AOnlineGameMode::MaximumOfPioneers = WaitingGameWidget->CheckTextOfMaximum(1);
 
@@ -897,9 +697,7 @@ void AMainScreenGameMode::SendModifyWaitingGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::SendModifyWaitingGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
 
@@ -918,9 +716,7 @@ void AMainScreenGameMode::RecvModifyWaitingGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::RecvModifyWaitingGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
 
@@ -943,9 +739,7 @@ void AMainScreenGameMode::_SendStartWaitingGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_SendStartWaitingGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
 
@@ -963,9 +757,7 @@ void AMainScreenGameMode::RecvStartWaitingGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::RecvStartWaitingGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
 
@@ -993,9 +785,7 @@ void AMainScreenGameMode::_JoinStartedGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_JoinStartedGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
 
@@ -1011,12 +801,9 @@ void AMainScreenGameMode::CountStartedGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::CountStartedGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
-
 
 	// 방장이면
 	if (WaitingGameWidget->IsLeader())
@@ -1027,7 +814,6 @@ void AMainScreenGameMode::CountStartedGame()
 	{
 		cMainClient::GetSingleton()->SendRequestInfoOfGameServer();
 	}
-
 
 	// 카운드 다운 시작
 	Count = 5;
@@ -1040,9 +826,7 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 {
 	if (!WaitingGameWidget)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::TimerOfCountStartedGame()> if (!WaitingGameWidget)"));
-#endif			
 		return;
 	}
 
@@ -1056,7 +840,6 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 		// 게임 클라이언트가 게임 서버 정보를 메인 서버로부터 요청하고 얻으면 접속 시도
 		GameClientConnectGameServer();
 	}
-
 
 	Count--;
 
@@ -1109,12 +892,9 @@ void AMainScreenGameMode::StartGameServer()
 {
 	if (cGameServer::GetSingleton()->IsServerOn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<AMainScreenGameMode::StartGameServer()> Already server is on."));
-#endif			
 		return;
 	}
-
 	
 	cGameServer::GetSingleton()->Init();
 
@@ -1125,9 +905,7 @@ void AMainScreenGameMode::StartGameServer()
 		int GameServerPort = cGameServer::GetSingleton()->GetServerPort();
 		cMainClient::GetSingleton()->SendActivateGameServer(GameServerPort);
 
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<AMainScreenGameMode::StartGameServer()> Server is on."));
-#endif	
 	}
 }
 void AMainScreenGameMode::GameClientConnectGameServer()
@@ -1151,9 +929,7 @@ void AMainScreenGameMode::GameClientConnectGameServer()
 	{
 		if (cGameClient::GetSingleton()->Initialize() == false)
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::GameClientConnectGameServer()> if (cGameClient::GetSingleton()->Init() == false)"));
-#endif				
 			return;
 		}
 	}
@@ -1163,33 +939,27 @@ void AMainScreenGameMode::GameClientConnectGameServer()
 	{
 		if (cGameClient::GetSingleton()->Connect(infoOfPlayer.IPv4Addr.c_str(), infoOfPlayer.PortOfGameServer) == false)
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+
 			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::GameClientConnectGameServer()> Fail to connect(...)"));
 			UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port : %d"), *FString(infoOfPlayer.IPv4Addr.c_str()), infoOfPlayer.PortOfGameServer);
-#endif				
+				
 			return;
 		}
 	}
 
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	UE_LOG(LogTemp, Warning, TEXT("<AMainScreenGameMode::GameClientConnectGameServer()> IOCP Game Server connect success!"));
-#endif	
-
+	
 	// 아직 Recv 스레드가 구동되지 않았다면
 	if (cGameClient::GetSingleton()->IsClientSocketOn() == false)
 	{
 		if (cGameClient::GetSingleton()->BeginMainThread() == false)
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::GameClientConnectGameServer()> if (cGameClient::GetSingleton()->BeginMainThread() == false)"));
-#endif	
 			return;
 		}
 	}
 
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	UE_LOG(LogTemp, Warning, TEXT("<AMainScreenGameMode::GameClientConnectGameServer()> cMainClient::GetSingleton() is on."));
-#endif	
 }
 
 void AMainScreenGameMode::ClearAllRecvedQueue()
@@ -1259,9 +1029,7 @@ void AMainScreenGameMode::TimerOfRecvAndApply()
 	break;
 	default:
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::TimerOfRecvAndApply()> switch (OnlineState) default:"));
-#endif	
 	}
 	break;
 	}

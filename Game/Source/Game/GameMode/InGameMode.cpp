@@ -2,7 +2,6 @@
 
 #include "InGameMode.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "CustomWidget/InGameWidget.h"
 #include "CustomWidget/InGameMenuWidget.h"
 #include "CustomWidget/InGameVictoryWidget.h"
@@ -10,23 +9,16 @@
 #include "CustomWidget/BuildingToolTipWidget.h"
 #include "CustomWidget/DialogWidget.h"
 #include "CustomWidget/InGameScoreBoardWidget.h"
-
 #include "Controller/PioneerController.h"
-#include "Character/Pioneer.h"
 #include "PioneerManager.h"
 #include "SpaceShip/SpaceShip.h"
-
-#include "Etc/WorldViewCameraActor.h"
-
 #include "BuildingManager.h"
-
-#include "Building/Building.h"
-
-#include "Character/Enemy.h"
 #include "EnemyManager.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-/*** Basic Function : Start ***/
+const float AInGameMode::CellSize = 64.0f;
+
+int AInGameMode::MaximumOfPioneers = 30;
+
 AInGameMode::AInGameMode()
 {
 	/* GameMode 설정
@@ -67,9 +59,6 @@ void AInGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//////////////////////////
-	// Widget
-	//////////////////////////
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
@@ -123,23 +112,16 @@ void AInGameMode::BeginPlay()
 		PioneerManager->ViewpointState = EViewpointState::SpaceShip;
 	}
 }
-
 void AInGameMode::StartPlay()
 {
 	Super::StartPlay();
-
-
 }
-
 void AInGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	TickOfSpaceShip(DeltaTime);
 }
-/*** Basic Function : End ***/
-
-
 
 void AInGameMode::FindPioneerController()
 {
@@ -185,7 +167,6 @@ void AInGameMode::SpawnSpaceShip()
 	}
 
 	FActorSpawnParameters SpawnParams;
-	//SpawnParams.Name = TEXT("Name"); // Name을 설정합니다. World Outliner에 표기되는 Label과는 다릅니다.
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
@@ -202,7 +183,6 @@ void AInGameMode::SpawnBuildingManager()
 	}
 
 	FActorSpawnParameters SpawnParams;
-	//SpawnParams.Name = TEXT("Name");
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
@@ -219,7 +199,6 @@ void AInGameMode::SpawnEnemyManager()
 	}
 
 	FActorSpawnParameters SpawnParams;
-	//SpawnParams.Name = TEXT("Name");
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
@@ -231,7 +210,6 @@ void AInGameMode::TickOfSpaceShip(float DeltaTime)
 {
 	// virtual
 }
-
 
 /////////////////////////////////////////////////
 // 위젯 활성화 / 비활성화
@@ -382,7 +360,6 @@ void AInGameMode::SpawnBuildingInGameWidget(int Value)
 	}
 
 	PioneerController->ConstructingMode();
-
 	PioneerController->SpawnBuilding(Value);
 }
 
@@ -494,7 +471,6 @@ void AInGameMode::SetTextOfDialogWidget(FText Text)
 
 	DialogWidget->SetText(Text);
 }
-
 
 /////////////////////////////////////////////////
 // 타이틀 화면으로 되돌아가기

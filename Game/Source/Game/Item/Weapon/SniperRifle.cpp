@@ -3,10 +3,8 @@
 
 #include "SniperRifle.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "GameMode/InGameMode.h"
 #include "Projectile/ProjectileSniperRifle.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
 
 /*** Basic Function : Start ***/
 ASniperRifle::ASniperRifle()
@@ -54,7 +52,7 @@ void ASniperRifle::InitStat()
 
 	AttackPower = 40.0f;
 	AttackSpeed = 1.0f;
-	AttackRange = 10.0f * AOnlineGameMode::CellSize;
+	AttackRange = 10.0f * AInGameMode::CellSize;
 
 	FireCoolTime = 0.0f;
 	ReloadTime = 4.0f;

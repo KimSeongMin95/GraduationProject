@@ -3,10 +3,8 @@
 
 #include "Pistol.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "GameMode/InGameMode.h"
 #include "Projectile/ProjectilePistol.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
 
 /*** Basic Function : Start ***/
 APistol::APistol()
@@ -55,7 +53,7 @@ void APistol::InitStat()
 
 	AttackPower = 10.0f;
 	AttackSpeed = 3.0f;
-	AttackRange = 8.0f * AOnlineGameMode::CellSize;
+	AttackRange = 8.0f * AInGameMode::CellSize;
 
 	FireCoolTime = 0.0;
 	ReloadTime = 3.0f;

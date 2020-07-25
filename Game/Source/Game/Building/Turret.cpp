@@ -140,17 +140,17 @@ bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 {
 	if (!Enemy)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+
 		UE_LOG(LogTemp, Warning, TEXT("<ATurret::CheckEnemyInAttackRange(...)> if (!Enemy)"));
-#endif
+
 		return false;
 	}
 
 	if (!ParentOfHead)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::CheckEnemyInAttackRange(...)> if (!ParentOfHead)"));
-#endif
+
 		return false;
 	}
 
@@ -169,23 +169,20 @@ bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic); // 
 		//FCollisionQueryParams collisionQueryParams;
 		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * AttackRange, collisionObjectQueryParams);
-
 		//FCollisionResponseParams collisionResponseParams(ECollisionResponse::ECR_Overlap);
-		//world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, ECollisionChannel::ECC_WorldStatic);
+		//world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * AttackRange, ECollisionChannel::ECC_WorldStatic);
 
 		if (hitResults.Num() == 0)
 			return false;
 
 		for (auto& hit : hitResults)
 		{
-			//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-			//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-			//			UE_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
-			//			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
-			//			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
-			//			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
-			//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-			//#endif
+			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//UE_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
 
 			if (hit.Actor == this)
 				continue;
@@ -239,9 +236,9 @@ void ATurret::TickOfFindEnemy(float DeltaTime)
 		UWorld* const world = GetWorld();
 		if (!world)
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+
 			UE_LOG(LogTemp, Error, TEXT("<ATurret::TickOfFindEnemy()> if (!world)"));
-#endif
+
 			return;
 		}
 
@@ -304,9 +301,9 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 
 	if (!ParentOfHead)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::RotateTargetRotation(...)> if (!ParentOfHead)"));
-#endif
+
 		return;
 	}
 
@@ -405,9 +402,9 @@ void ATurret::LookAtTheLocation()
 {
 	if (!ParentOfHead)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::RotateTargetRotation(...)> if (!ParentOfHead)"));
-#endif
+
 		return;
 	}
 
@@ -444,9 +441,9 @@ void ATurret::Fire()
 
 	if (!EnemyManager)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::Fire()> if (!EnemyManager)"));
-#endif
+
 		return;
 	}
 
@@ -470,9 +467,9 @@ void ATurret::Fire()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
+
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::Fire()> if (!world)"));
-#endif
+
 		return;
 	}
 

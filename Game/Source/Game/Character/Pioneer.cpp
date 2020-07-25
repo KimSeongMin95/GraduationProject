@@ -3,6 +3,8 @@
 #include "Pioneer.h"
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "GameMode/InGameMode.h"
+
 #include "AnimInstance/PioneerAnimInstance.h"
 
 #include "Controller/PioneerController.h"
@@ -181,7 +183,7 @@ void APioneer::InitRanges()
 
 	DetectRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &APioneer::OnOverlapBegin_DetectRange);
 	DetectRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &APioneer::OnOverlapEnd_DetectRange);
-	DetectRangeSphereComp->SetSphereRadius(AOnlineGameMode::CellSize * DetectRange, true);
+	DetectRangeSphereComp->SetSphereRadius(AInGameMode::CellSize * DetectRange, true);
 }
 
 void APioneer::InitAIController()
@@ -217,7 +219,7 @@ void APioneer::InitCharacterMovement()
 	if (!GetCharacterMovement())
 		return;
 
-	GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
+	GetCharacterMovement()->MaxWalkSpeed = AInGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
 }
 
 
@@ -397,10 +399,10 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel4); // Building
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic); // 
 		//FCollisionQueryParams collisionQueryParams;
-		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, collisionObjectQueryParams);
+		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AInGameMode::CellSize, collisionObjectQueryParams);
 
 		//FCollisionResponseParams collisionResponseParams(ECollisionResponse::ECR_Overlap);
-		//world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AOnlineGameMode::CellSize, ECollisionChannel::ECC_WorldStatic);
+		//world->LineTraceMultiByChannel(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AInGameMode::CellSize, ECollisionChannel::ECC_WorldStatic);
 
 		if (hitResults.Num() == 0)
 			return false;
@@ -470,7 +472,7 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 	TargetActor = nullptr;
 
 	// AI는 기지를 벗어나지 못하도록 합니다.
-	if (FVector::Distance(PositionOfBase, GetActorLocation()) > (DetectRange * AOnlineGameMode::CellSize))
+	if (FVector::Distance(PositionOfBase, GetActorLocation()) > (DetectRange * AInGameMode::CellSize))
 	{
 		State = EFiniteState::Idle;
 		//MoveThePosition(FVector(-7859.1f, -8184.9f, 178.8f));
@@ -527,7 +529,7 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 		State = EFiniteState::Idle;
 		IdlingOfFSM(1.5f);
 	}
-	else if (DistanceToActor(TargetActor) < (AttackRange * AOnlineGameMode::CellSize)
+	else if (DistanceToActor(TargetActor) < (AttackRange * AInGameMode::CellSize)
 		&& CheckNoObstacle(TargetActor))
 	{
 		State = EFiniteState::Attack;
@@ -573,7 +575,7 @@ void APioneer::TracingOfFSM(float DeltaTime)
 		State = EFiniteState::Idle;
 		IdlingOfFSM(3.0f);
 	}
-	else if (DistanceToActor(TargetActor) < (AttackRange * AOnlineGameMode::CellSize)
+	else if (DistanceToActor(TargetActor) < (AttackRange * AInGameMode::CellSize)
 		&& CheckNoObstacle(TargetActor))
 	{
 		State = EFiniteState::Attack;
@@ -1590,7 +1592,7 @@ void APioneer::CalculateLevel()
 
 		MoveSpeed += 0.25f;
 		if (GetCharacterMovement())
-			GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
+			GetCharacterMovement()->MaxWalkSpeed = AInGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
 	}
 }
 

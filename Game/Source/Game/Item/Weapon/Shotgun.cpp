@@ -3,10 +3,8 @@
 
 #include "Shotgun.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
+#include "GameMode/InGameMode.h"
 #include "Projectile/ProjectileShotgun.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
 
 /*** Basic Function : Start ***/
 AShotgun::AShotgun()
@@ -54,7 +52,7 @@ void AShotgun::InitStat()
 
 	AttackPower = 12.0f;
 	AttackSpeed = 0.8f;
-	AttackRange = 10.0f * AOnlineGameMode::CellSize;
+	AttackRange = 10.0f * AInGameMode::CellSize;
 
 	FireCoolTime = 0.0f;
 	ReloadTime = 4.0f;

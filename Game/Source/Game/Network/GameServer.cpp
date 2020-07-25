@@ -20,59 +20,59 @@ int cGameServer::PossessedID;
 CRITICAL_SECTION cGameServer::csPossessedID;
 
 
-std::map<SOCKET, stCompletionKey*> cGameServer::GameClients;
+unordered_map<SOCKET, stCompletionKey*> cGameServer::GameClients;
 CRITICAL_SECTION cGameServer::csGameClients;
 
-map<SOCKET, deque<char*>*> cGameServer::MapOfRecvDeque;
+unordered_map<SOCKET, deque<char*>*> cGameServer::MapOfRecvDeque;
 CRITICAL_SECTION cGameServer::csMapOfRecvDeque;
 
 unsigned int cGameServer::CountOfSend;
 CRITICAL_SECTION cGameServer::csCountOfSend;
 
 
-std::map<SOCKET, cInfoOfPlayer> cGameServer::InfoOfClients;
+unordered_map<SOCKET, cInfoOfPlayer> cGameServer::InfoOfClients;
 CRITICAL_SECTION cGameServer::csInfoOfClients;
 
-std::map<SOCKET, cInfoOfScoreBoard> cGameServer::InfosOfScoreBoard;
+unordered_map<SOCKET, cInfoOfScoreBoard> cGameServer::InfosOfScoreBoard;
 CRITICAL_SECTION cGameServer::csInfosOfScoreBoard;
 
-std::map<SOCKET, SOCKET> cGameServer::Observers;
+unordered_map<SOCKET, SOCKET> cGameServer::Observers;
 CRITICAL_SECTION cGameServer::csObservers;
 
 
 ///////////////////////////////////////////
 // Pioneer 세분화
 ///////////////////////////////////////////
-std::map<int, cInfoOfPioneer_Socket> cGameServer::InfosOfPioneer_Socket;
+unordered_map<int, cInfoOfPioneer_Socket> cGameServer::InfosOfPioneer_Socket;
 CRITICAL_SECTION cGameServer::csInfosOfPioneer_Socket;
 
-std::map<int, cInfoOfPioneer_Animation> cGameServer::InfosOfPioneer_Animation;
+unordered_map<int, cInfoOfPioneer_Animation> cGameServer::InfosOfPioneer_Animation;
 CRITICAL_SECTION cGameServer::csInfosOfPioneer_Animation;
 
-std::map<int, cInfoOfPioneer_Stat> cGameServer::InfosOfPioneer_Stat;
+unordered_map<int, cInfoOfPioneer_Stat> cGameServer::InfosOfPioneer_Stat;
 CRITICAL_SECTION cGameServer::csInfosOfPioneer_Stat;
 
 
 ///////////////////////////////////////////
 // Building 세분화
 ///////////////////////////////////////////
-std::map<int, cInfoOfBuilding_Spawn> cGameServer::InfoOfBuilding_Spawn;
+unordered_map<int, cInfoOfBuilding_Spawn> cGameServer::InfoOfBuilding_Spawn;
 CRITICAL_SECTION cGameServer::csInfoOfBuilding_Spawn;
 
-std::map<int, cInfoOfBuilding_Stat> cGameServer::InfoOfBuilding_Stat;
+unordered_map<int, cInfoOfBuilding_Stat> cGameServer::InfoOfBuilding_Stat;
 CRITICAL_SECTION cGameServer::csInfoOfBuilding_Stat;
 
 
 ///////////////////////////////////////////
 // Pioneer 세분화
 ///////////////////////////////////////////
-std::map<int, cInfoOfEnemy_Spawn> cGameServer::InfoOfEnemies_Spawn;
+unordered_map<int, cInfoOfEnemy_Spawn> cGameServer::InfoOfEnemies_Spawn;
 CRITICAL_SECTION cGameServer::csInfoOfEnemies_Spawn;
 
-std::map<int, cInfoOfEnemy_Animation> cGameServer::InfoOfEnemies_Animation;
+unordered_map<int, cInfoOfEnemy_Animation> cGameServer::InfoOfEnemies_Animation;
 CRITICAL_SECTION cGameServer::csInfoOfEnemies_Animation;
 
-std::map<int, cInfoOfEnemy_Stat> cGameServer::InfoOfEnemies_Stat;
+unordered_map<int, cInfoOfEnemy_Stat> cGameServer::InfoOfEnemies_Stat;
 CRITICAL_SECTION cGameServer::csInfoOfEnemies_Stat;
 
 

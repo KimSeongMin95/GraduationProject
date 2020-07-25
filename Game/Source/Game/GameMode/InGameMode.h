@@ -2,94 +2,66 @@
 
 #pragma once
 
-/*** 언리얼엔진 헤더 선언 : Start ***/
-#include "UObject/ConstructorHelpers.h"
-
-#include "Engine.h"
-
+#include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FClassFinder<T>
 #include "Kismet/GameplayStatics.h" // For UGameplayStatics::OpenLevel(this, TransferLevelName);
-
-#include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
-/*** 언리얼엔진 헤더 선언 : End ***/
+#include "Engine/Public/TimerManager.h" // For GetWorldTimerManager()
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "InGameMode.generated.h"
 
 /**
- * 
+ * 튜토리얼과 온라인 스테이지의 부모가 되는 클래스입니다.
  */
 UCLASS()
 class GAME_API AInGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	AInGameMode();
 	virtual ~AInGameMode();
 
 protected:
 	virtual void BeginPlay() override; /** inherited in Actor, triggered before StartPlay()*/
-
-public:
 	virtual void StartPlay() override; /** inherited in GameModeBase, BeginPlay()이후 실행됩니다. */
-
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
 
-	/*** ATutorialGameMode : Start ***/
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 인게임 UI */
-		class UInGameWidget* InGameWidget = nullptr;
-
+		class UInGameWidget* InGameWidget = nullptr; /** 인게임 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 인게임 메뉴바 */
-		class UInGameMenuWidget* InGameMenuWidget = nullptr;
-
+		class UInGameMenuWidget* InGameMenuWidget = nullptr; /** 메뉴 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 게임 승리 */
-		class UInGameVictoryWidget* InGameVictoryWidget = nullptr;
+		class UInGameVictoryWidget* InGameVictoryWidget = nullptr; /** 게임 승리 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 게임 패배 */
-		class UInGameDefeatWidget* InGameDefeatWidget = nullptr;
-
+		class UInGameDefeatWidget* InGameDefeatWidget = nullptr; /** 게임 패배 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 건물 건설 UI */
-		class UBuildingToolTipWidget* BuildingToolTipWidget = nullptr;
-
+		class UBuildingToolTipWidget* BuildingToolTipWidget = nullptr; /** 건물 툴팁 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** Dialog UI */
-		class UDialogWidget* DialogWidget = nullptr;
-
+		class UDialogWidget* DialogWidget = nullptr; /** 설명 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		/** 인게임 플레이어들의 상황판 */
-		class UInGameScoreBoardWidget* InGameScoreBoardWidget = nullptr;
-
+		class UInGameScoreBoardWidget* InGameScoreBoardWidget = nullptr; /** 플레이어 점수판 UI */
 
 	UPROPERTY(VisibleAnywhere)
 		class APioneerController* PioneerController = nullptr;
-
 	UPROPERTY(VisibleAnywhere)
 		class APioneerManager* PioneerManager = nullptr;
-
 	UPROPERTY(VisibleAnywhere)
 		class ASpaceShip* SpaceShip = nullptr;
-
 	UPROPERTY(VisibleAnywhere)
 		class ABuildingManager* BuildingManager = nullptr;
-
 	UPROPERTY(VisibleAnywhere)
 		class AEnemyManager* EnemyManager = nullptr;
 
+	FTimerHandle TimerHandleOfDeactivateDialogWidget;
+
 public:
-	
+	static const float CellSize;
+
+	static int MaximumOfPioneers;
 
 protected:
-	/////////////////////////////////////////////////
-	// 필수
-	/////////////////////////////////////////////////
 	void FindPioneerController();
 
 	void SpawnPioneerManager();
@@ -130,7 +102,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void SpawnBuildingInGameWidget(int Value);
 
-
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void ActivateInGameVictoryWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
@@ -149,7 +120,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void ActivateDialogWidget(float TimeOfDuration);
-	FTimerHandle TimerHandleOfDeactivateDialogWidget;
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void DeactivateDialogWidget();
 	UFUNCTION(BlueprintCallable, Category = "Widget")
@@ -162,21 +132,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void ToggleInGameScoreBoardWidget();
 
-
 	/////////////////////////////////////////////////
 	// 타이틀 화면으로 되돌아가기
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void BackToTitle();
 
-
 	/////////////////////////////////////////////////
 	// 게임종료
 	/////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "Widget")
 		void TerminateGame();
-
-
-	/*** ATutorialGameMode : End ***/
-
 };

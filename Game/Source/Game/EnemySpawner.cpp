@@ -5,7 +5,7 @@
 
 /*** 직접 정의한 헤더 전방 선언 : Start ***/
 //#include "Character/Enemy.h"
-
+#include "GameMode/InGameMode.h"
 #include "EnemyManager.h"
 
 #include "Network/GameClient.h"
@@ -124,7 +124,7 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 
 			if (MoveSpeed > 0.0f)
 			{
-				enemy->GetCharacterMovement()->MaxWalkSpeed = AOnlineGameMode::CellSize * MoveSpeed;
+				enemy->GetCharacterMovement()->MaxWalkSpeed = AInGameMode::CellSize * MoveSpeed;
 			}
 
 			enemy->HealthPoint *= PercentageOfHealth / 100.0f;
