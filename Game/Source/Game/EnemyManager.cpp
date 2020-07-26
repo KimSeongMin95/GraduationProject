@@ -3,8 +3,6 @@
 
 #include "EnemyManager.h"
 
-
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Enemy.h"
 #include "Character/SlowZombie.h"
 #include "Character/ParasiteZombie.h"
@@ -15,15 +13,9 @@
 #include "Character/Mutant.h"
 #include "Character/Maynard.h"
 #include "Character/AlienAnimal.h"
-
-#include "Network/Packet.h"
+#include "EnemySpawner.h"
 #include "Network/GameServer.h"
 
-#include "EnemySpawner.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
-
-/*** Basic Function : Start ***/
 AEnemyManager::AEnemyManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -33,21 +25,21 @@ AEnemyManager::AEnemyManager()
 
 	LimitOfEnemySpawn = 150;
 }
+AEnemyManager::~AEnemyManager()
+{
+
+}
 
 void AEnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
-
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::BeginPlay()> if (!world)"));
-#endif
 		return;
 	}
-
 
 	// 에디터에서 월드상에 배치한 Building들을 관리하기 위해 추가합니다.
 	if (cGameServer::GetSingleton()->IsServerOn())
@@ -66,8 +58,6 @@ void AEnemyManager::BeginPlay()
 		}
 	}
 	
-
-
 	for (TActorIterator<AEnemySpawner> ActorItr(world); ActorItr; ++ActorItr)
 	{
 		(*ActorItr)->SetEnemyManager(this);
@@ -75,34 +65,24 @@ void AEnemyManager::BeginPlay()
 		EnemySpawners.Add(*ActorItr);
 	}
 }
-
 void AEnemyManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-/*** Basic Function : End ***/
 
-
-/*** AEnemyManager : Start ***/
 class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 {
 	// 적을 생성할 수 있는 최대 개수를 제한합니다.
 	if (Enemies.Num() >= LimitOfEnemySpawn)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::SpawnEnemy(...)> if (Enemies.Num() >= LimitOfEnemySpawn)"));
-#endif
 		return nullptr;
 	}
-
 
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::SpawnEnemy(...)> if (!world)"));
-#endif
 		return nullptr;
 	}
 
@@ -177,9 +157,7 @@ void AEnemyManager::RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::RecvSpawnEnemy(...)> if (!world)"));
-#endif
 		return;
 	}
 
@@ -188,7 +166,6 @@ void AEnemyManager::RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy)
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
-
 
 	AEnemy* enemy = nullptr;
 
@@ -221,8 +198,6 @@ void AEnemyManager::RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy)
 	case EEnemyType::AlienAnimal:
 		enemy = world->SpawnActor<AAlienAnimal>(AAlienAnimal::StaticClass(), myTrans, SpawnParams);
 		break;
-
-
 	default:
 
 		break;
@@ -235,10 +210,8 @@ void AEnemyManager::RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy)
 		if (Enemies.Contains(InfoOfEnemy.ID) == false)
 			Enemies.Add(InfoOfEnemy.ID, enemy);
 
-
 		enemy->SetEnemyManager(this);
 	}
 
 	enemy->SetGenerateOverlapEventsOfCapsuleComp(true);
 }
-/*** AEnemyManager : End ***/

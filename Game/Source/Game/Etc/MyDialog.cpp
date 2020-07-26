@@ -1,22 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "MyDialog.h"
 
-
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Etc/MyTriggerBox.h"
-
-#include "CustomWidget/DialogWidget.h"
-
+#include "Widget/DialogWidget.h"
 #include "GameMode/InGameMode.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-// Sets default values
 AMyDialog::AMyDialog()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this actor to call Tick() every frame. You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	TriggerBox = nullptr;
@@ -25,15 +17,15 @@ AMyDialog::AMyDialog()
 	TimeOfDelay = 0.0f;
 	TimeOfDuration = 1.0f;
 }
+AMyDialog::~AMyDialog()
+{
 
-// Called when the game starts or when spawned
+}
+
 void AMyDialog::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
-
-// Called every frame
 void AMyDialog::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -62,12 +54,9 @@ void AMyDialog::ShowDialog()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AMyDialog::ShowDialog()> if (!world)"));
-#endif		
 		return;
 	}
-
 
 	FString allTexts;
 

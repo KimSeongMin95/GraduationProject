@@ -11,20 +11,14 @@ class GAME_API AProjectilePistol : public AProjectile
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	AProjectilePistol();
+	virtual ~AProjectilePistol();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() final;
+	virtual void Tick(float DeltaTime) final;
 
-public:
-	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
-
-
-/*** AProjectile : Start ***/
 protected:
-	virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
-/*** AProjectile : End ***/
+	virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
 };

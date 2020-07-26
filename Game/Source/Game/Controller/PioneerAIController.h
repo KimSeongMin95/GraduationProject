@@ -11,12 +11,11 @@ class GAME_API APioneerAIController : public ABaseAIController
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	APioneerAIController();
+	virtual ~APioneerAIController();
 
-	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
+protected:
+	virtual void BeginPlay() final;
+	virtual void Tick(float DeltaTime) final;
 };

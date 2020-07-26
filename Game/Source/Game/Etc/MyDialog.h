@@ -7,24 +7,18 @@
 #include "GameFramework/Actor.h"
 #include "MyDialog.generated.h"
 
-
 UCLASS()
 class GAME_API AMyDialog : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AMyDialog();
+	virtual ~AMyDialog();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	virtual void BeginPlay() final;
+	virtual void Tick(float DeltaTime) final;
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -39,10 +33,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		float TimeOfDuration;
 
-
 public:
 	void TickOfDialog(float DeltaTime);
 	void ShowDialog();
-
-
 };

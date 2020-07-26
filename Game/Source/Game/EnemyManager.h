@@ -2,11 +2,7 @@
 
 #pragma once
 
-
-/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "EngineUtils.h" // TActorIterator<>
-/*** 언리얼엔진 헤더 선언 : End ***/
-
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -17,19 +13,14 @@ class GAME_API AEnemyManager : public AActor
 {
 	GENERATED_BODY()
 	
-/*** Basic Function : Start ***/
 public:	
 	AEnemyManager();
+	virtual ~AEnemyManager();
 
 protected:
 	virtual void BeginPlay() override;
-
-public:	
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
 
-
-/*** AEnemyManager : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere, Category = "AEnemyManager")
 		int32 ID;
@@ -41,13 +32,10 @@ public:
 		TArray<class AEnemySpawner*> EnemySpawners;
 
 	UPROPERTY(EditAnywhere)
-		/** 적을 생성할 수 있는 최대 개수를 제한합니다. */
-		int LimitOfEnemySpawn;
+		int LimitOfEnemySpawn; /** 적을 생성할 수 있는 최대 개수를 제한합니다. */
 
 public:
 	class AEnemy* SpawnEnemy(int EnemyType, FTransform Transform);
 
 	void RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy);
-
-/*** AEnemyManager : End ***/
 };

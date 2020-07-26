@@ -1,49 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BaseCharacter.h"
 
-#include "GameMode/InGameMode.h"
 #include "Controller/BaseAIController.h"
 
-
-/*** Basic Function : Start ***/
 ABaseCharacter::ABaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	if (GetCapsuleComponent())
-	{
-		GetCapsuleComponent()->SetGenerateOverlapEvents(false);
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
-		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap); // RangeSphere
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block); // Building
-	}
-
-
+	
 	InitHelthPointBar();
 
+	InitCapsuleComponent();
 	InitStat();
-
 	InitRanges();
-
 	InitCharacterMovement();
-
-	CharacterAI = ECharacterAI::FSM;
-
-	State = EFiniteState::Idle;
-
 	InitFSM();
 
-	bDyingFlag = false;
-
-	TimerOfRotateTargetRotation = 0.0f;
 	bRotateTargetRotation = false;
 	TargetRotation = FRotator::ZeroRotator;
 
@@ -54,6 +27,10 @@ ABaseCharacter::ABaseCharacter()
 	TimerOfTracingOfFSM = 0.0f;
 	TimerOfAttackingOfFSM = 0.0f;
 }
+ABaseCharacter::~ABaseCharacter()
+{
+
+}
 
 void ABaseCharacter::BeginPlay()
 {
@@ -61,11 +38,9 @@ void ABaseCharacter::BeginPlay()
 	
 	BeginPlayHelthPointBar();
 }
-
 void ABaseCharacter::Tick(float DeltaTime)
 {
-	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있음.
-	// 따라서, Tick 가장 앞에서 죽었는지 여부를 체크해야 함.
+	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있으므로 체크해야 합니다.
 	if (bDying)
 		return;
 
@@ -73,16 +48,11 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 	TickHelthPointBar();
 }
-
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
 void ABaseCharacter::InitHelthPointBar()
 {
 	HelthPointBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelthPointBar"));
@@ -100,11 +70,11 @@ void ABaseCharacter::InitHelthPointBar()
 
 	HelthPointBar->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 	//HelthPointBar->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-	HelthPointBar->SetRelativeRotation(FRotator(45.0f, 180.0f, 0.0f)); // 항상 플레이어에게 보이도록 회전 값을 World로 해야 함.
+	HelthPointBar->SetRelativeRotation(FRotator(45.0f, 180.0f, 0.0f)); // 항상 플레이어에게 보이도록 회전 값을 World로 해야 합니다.
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	HelthPointBar->SetDrawSize(FVector2D(100, 30));
 
-	// Screen은 뷰포트에서 UI처럼 띄워주는 것이고 World는 게임 내에서 UI처럼 띄워주는 것
+	// Screen은 뷰포트에서 UI처럼 띄워주는 것이고 World는 게임 내에서 UI처럼 띄워주는 것입니다.
 	HelthPointBar->SetWidgetSpace(EWidgetSpace::World);
 }
 void ABaseCharacter::BeginPlayHelthPointBar()
@@ -112,51 +82,37 @@ void ABaseCharacter::BeginPlayHelthPointBar()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!world)"));
-#endif
 		return;
 	}
 
-	/*** 주의: Blueprint 애셋은 뒤에 _C를 붙여줘서 클래스를 가져와줘야 함. ***/
+	/*** 주의: Blueprint 애셋은 뒤에 _C를 붙여줘서 클래스를 가져와야 합니다. ***/
 	FString HelthPointBarBP_Reference = "WidgetBlueprint'/Game/Characters/HelthPointBar.HelthPointBar_C'";
 	UClass* HelthPointBarBP = LoadObject<UClass>(this, *HelthPointBarBP_Reference);
 
-	// 가져온 WidgetBlueprint를 UWidgetComponent에 바로 적용하지말고 따로 UUserWidget에 저장하여 설정을 한 뒤
-	// UWidgetComponent->SetWidget(저장한 UUserWidget);으로 UWidgetComponent에 적용해야 함.
-	//HelthPointBar->SetWidgetClass(HelthPointBarBP);
-	HelthPointBarUserWidget = CreateWidget(world, HelthPointBarBP); // wolrd가 꼭 필요.
+	HelthPointBarUserWidget = CreateWidget(world, HelthPointBarBP);
 
 	if (HelthPointBarUserWidget)
 	{
 		UWidgetTree* WidgetTree = HelthPointBarUserWidget->WidgetTree;
 		if (WidgetTree)
 		{
-			//// 이 방법은 안됨.
+			//// 이 방법은 사용할 수 없습니다.
 			// ProgreeBar = Cast<UProgressBar>(HelthPointBarUserWidget->GetWidgetFromName(FName(TEXT("ProgressBar_153"))));
-
 			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
 			if (!ProgressBar)
 			{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 				UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!ProgressBar)"));
-#endif
 			}
-
-			EditableTextBoxForID = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_147")));
 		}
 		else
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 			UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!WidgetTree)"));
-#endif
 		}
 	}
 	else
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
-#endif
 	}
 
 	HelthPointBar->SetWidget(HelthPointBarUserWidget);
@@ -166,10 +122,22 @@ void ABaseCharacter::TickHelthPointBar()
 	if (ProgressBar)
 		ProgressBar->SetPercent(HealthPoint / MaxHealthPoint);
 }
-/*** IHealthPointBarInterface : End ***/
 
+void ABaseCharacter::InitCapsuleComponent()
+{
+	if (!GetCapsuleComponent())
+		return;
 
-/*** ABaseCharacter : Start ***/
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap); // RangeSphere
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block); // Building
+}
 void ABaseCharacter::InitStat()
 {
 	HealthPoint = 100.0f;
@@ -187,7 +155,6 @@ void ABaseCharacter::InitStat()
 
 	Exp = 0.0f;
 }
-
 void ABaseCharacter::InitRanges()
 {
 	DetectRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("DetectRangeSphereComp"));
@@ -200,22 +167,18 @@ void ABaseCharacter::InitRanges()
 	DetectRangeSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	DetectRangeSphereComp->SetCanEverAffectNavigation(false);
 }
-
 void ABaseCharacter::InitAIController()
 {
-	// Pawn을 상속받는 클래스를 Editor에서 끌어다 객체화 할 때, 자동으로 생성되는 상위 클래스인 AIController를 삭제
+	// Pawn을 상속받는 클래스를 Editor에서 끌어다 객체화 할 때, 자동으로 생성되는 상위 클래스인 AIController를 삭제합니다.
 	if (GetController())
 		GetController()->Destroy();
 }
-
 void ABaseCharacter::InitCharacterMovement()
 {
-	// Don't rotate character to camera direction
 	// 컨트롤러가 회전할 떄 각 축을 회전시키지 않습니다. 카메라에만 영향을 줍니다.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-
 
 	// 캐릭터 이동&회전 관련 설정을 합니다.
 	GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향에 캐릭터 메시가 따라 회전합니다.
@@ -226,7 +189,7 @@ void ABaseCharacter::InitCharacterMovement()
 	//GetCharacterMovement()->JumpZVelocity = 600.0f;
 	//GetCharacterMovement()->AirControl = 0.2f;
 	//GetCharacterMovement()->MaxWalkSpeed = 600.0f; // 움직일 때 걷는 속도
-	GetCharacterMovement()->MaxWalkSpeed = AInGameMode::CellSize * MoveSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = 64.0f * MoveSpeed;
 	GetCharacterMovement()->MaxStepHeight = 45.0f; // 움직일 때 45.0f 높이는 올라갈 수 있도록 합니다. ex) 계단
 
 	//GetWorld()->ComponentOverlapMulti();
@@ -235,32 +198,30 @@ void ABaseCharacter::InitCharacterMovement()
 	GetCharacterMovement()->bSweepWhileNavWalking = false;
 	GetCharacterMovement()->bEnablePhysicsInteraction = false;
 }
-
 void ABaseCharacter::InitFSM()
 {
 	State = EFiniteState::Idle;
 }
 
-
 void ABaseCharacter::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
 void ABaseCharacter::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
-
 
 void ABaseCharacter::RotateTargetRotation(float DeltaTime)
 {
 	if (!bRotateTargetRotation)
 		return;
 
-	TimerOfRotateTargetRotation += DeltaTime;
-	if (TimerOfRotateTargetRotation < 0.033f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.01f)
 		return;
-	TimerOfRotateTargetRotation = 0.0f;
+	timer = 0.0f;
 
 	/*******************************************/
 
@@ -365,14 +326,11 @@ void ABaseCharacter::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 	}
 }
 
-
 void ABaseCharacter::PossessAIController()
 {
 	if (!AIController)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::PossessAIController()> if (!AIController)"));
-#endif		
+		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::PossessAIController()> if (!AIController)"));		
 		return;
 	}
 
@@ -387,9 +345,7 @@ void ABaseCharacter::UnPossessAIController()
 {
 	if (!AIController)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::UnPossessAIController()> if (!AIController)"));
-#endif		
+		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::UnPossessAIController()> if (!AIController)"));	
 		return;
 	}
 
@@ -439,15 +395,14 @@ void ABaseCharacter::LookAtTheLocation(FVector Location)
 
 bool ABaseCharacter::CheckNoObstacle(AActor* Target)
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 	return false;
 }
 
 void ABaseCharacter::FindTheTargetActor(float DeltaTime)
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
-
 void ABaseCharacter::TracingTargetActor()
 {
 	if (!TargetActor || !GetController())
@@ -481,7 +436,6 @@ void ABaseCharacter::TracingTargetActor()
 		LookAtTheLocation(DestLocation);
 	}
 }
-
 void ABaseCharacter::MoveRandomlyPosition()
 {
 	if (!GetController())
@@ -493,7 +447,6 @@ void ABaseCharacter::MoveRandomlyPosition()
 
 	LookAtTheLocation(newPosition);
 }
-
 void ABaseCharacter::MoveThePosition(FVector newPosition)
 {
 	if (!GetController())
@@ -506,26 +459,17 @@ void ABaseCharacter::MoveThePosition(FVector newPosition)
 
 void ABaseCharacter::IdlingOfFSM(float DeltaTime)
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
-
 void ABaseCharacter::TracingOfFSM(float DeltaTime)
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
-
 void ABaseCharacter::AttackingOfFSM(float DeltaTime)
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
-
 void ABaseCharacter::RunFSM(float DeltaTime)
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
-
-void ABaseCharacter::RunBehaviorTree(float DeltaTime)
-{
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
-}
-/*** ABaseCharacter : End ***/

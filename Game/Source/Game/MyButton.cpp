@@ -1,14 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "MyButton.h"
 
-/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Widgets/SNullWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/Input/SButton.h"
 #include "Components/ButtonSlot.h"
-/*** 언리얼엔진 헤더 선언 : End ***/
 
 TSharedRef<SWidget> UMyButton::RebuildWidget()
 {

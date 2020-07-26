@@ -1,43 +1,33 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Stairs.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
-
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
-
-/*** Basic Function : Start ***/
 AStairs::AStairs()
 {
-	InitStat();
+	BuildingType = EBuildingType::Stairs;
 
 	InitHelthPointBar();
 
+	InitStat();
 	InitConstructBuilding();
-
 	InitBuilding();
+}
+AStairs::~AStairs()
+{
 
-	BuildingType = EBuildingType::Stairs;
 }
 
 void AStairs::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
-
 void AStairs::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 
 }
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
 void AStairs::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -46,10 +36,7 @@ void AStairs::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 200.0f));
 	HelthPointBar->SetDrawSize(FVector2D(100, 20));
 }
-/*** IHealthPointBarInterface : End ***/
 
-
-/*** ABuilding : Start ***/
 void AStairs::InitStat()
 {
 	ConstructionTime = 10.0f;
@@ -71,7 +58,6 @@ void AStairs::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-
 void AStairs::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
@@ -89,4 +75,3 @@ void AStairs::InitBuilding()
 		TEXT("StaticMesh'/Game/Buildings/Stairs/SM_Stairs_A.SM_Stairs_A'"),
 		FVector(2.2f, 0.9198f, 2.2f), FRotator(0.0f, 0.0f, 0.0f), FVector(155.00f, 0.0f, 166.4f));
 }
-/*** ABuilding : End ***/

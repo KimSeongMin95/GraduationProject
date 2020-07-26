@@ -2,13 +2,12 @@
 
 #pragma once
 
+#include <queue>
+
 #include "CoreMinimal.h"
 #include "GameMode/OnlineGameMode.h"
 #include "OnlineStage2GameMode.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class GAME_API AOnlineStage2GameMode : public AOnlineGameMode
 {

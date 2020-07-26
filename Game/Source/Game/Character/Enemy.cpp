@@ -1,51 +1,39 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Enemy.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "GameMode/InGameMode.h"
-
 #include "Controller/EnemyAIController.h"
-
 #include "Character/Pioneer.h"
 #include "Building/Building.h"
 #include "Building/Turret.h"
-
-#include "Network/Packet.h"
+#include "Building/Gate.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
-
 #include "EnemyManager.h"
 #include "PioneerManager.h"
-
-#include "Projectile/Projectile.h"
-
-#include "Building/Gate.h"
-
 #include "Landscape.h"
-
 #include "Etc/MyTriggerBox.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** Basic Function : Start ***/
 AEnemy::AEnemy()
 {
+	TriggerBoxForSpawn = nullptr;
+
 	ID = 0;
+
+	EnemyType = EEnemyType::None;
 
 	EnemyManager = nullptr;
 
 	PioneerManager = nullptr;
 
-	EnemyType = EEnemyType::None;
-
 	if (GetCapsuleComponent())
 	{
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Overlap); // Projectile
 	}
+}
+AEnemy::~AEnemy()
+{
 
-	TriggerBoxForSpawn = nullptr;
 }
 
 void AEnemy::BeginPlay()
@@ -70,9 +58,7 @@ void AEnemy::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AEnemy::BeginPlay()> if (!world)"));
-#endif				
 		return;
 	}
 
@@ -82,11 +68,8 @@ void AEnemy::BeginPlay()
 		PioneerManager = *ActorItr;
 	}
 }
-
 void AEnemy::Tick(float DeltaTime)
 {
-	// 죽어서 Destroy한 Component들 때문에 Tick에서 에러가 발생할 수 있음.
-	// 따라서, Tick 가장 앞에서 죽었는지 여부를 체크해야 함.
 	if (bDying)
 		return;
 
@@ -94,37 +77,19 @@ void AEnemy::Tick(float DeltaTime)
 
 	RotateTargetRotation(DeltaTime);
 }
-/*** Basic Function : End ***/
-
-
-/*** IHealthPointBarInterface : Start ***/
-void AEnemy::InitHelthPointBar()
-{
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
-}
-/*** IHealthPointBarInterface : End ***/
-
-
-/*** ABaseCharacter : Start ***/
-void AEnemy::InitStat()
-{
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
-}
 
 void AEnemy::InitRanges()
 {
-	if (!DetectRangeSphereComp)
+	if (!DetectRangeSphereComp || AttackRangeSphereComp)
 		return;
 
 	DetectRangeSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
 	DetectRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_DetectRange);
 	DetectRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_DetectRange);
-	DetectRangeSphereComp->SetSphereRadius(AInGameMode::CellSize * DetectRange, true);
-
+	DetectRangeSphereComp->SetSphereRadius(64.0f * DetectRange, true);
 
 	AttackRangeSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphereComp"));
 	AttackRangeSphereComp->SetupAttachment(RootComponent);
-
 	AttackRangeSphereComp->SetGenerateOverlapEvents(true);
 	AttackRangeSphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	AttackRangeSphereComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
@@ -133,25 +98,21 @@ void AEnemy::InitRanges()
 	AttackRangeSphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
 	AttackRangeSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnOverlapBegin_AttackRange);
 	AttackRangeSphereComp->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnOverlapEnd_AttackRange);
-	AttackRangeSphereComp->SetSphereRadius(AInGameMode::CellSize * AttackRange, true);
+	AttackRangeSphereComp->SetSphereRadius(64.0f * AttackRange, true);
 	AttackRangeSphereComp->SetCanEverAffectNavigation(false);
-
 }
-
 void AEnemy::InitAIController()
 {
 	Super::InitAIController();
 
-	// 이미 AIController를 가지고 있으면 생성하지 않음.
+	// 이미 AIController를 가지고 있으면 생성하지 않습니다.
 	if (AIController)
 		return;
 
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AEnemy::InitAIController()> if (!world)"));
-#endif
 		return;
 	}
 
@@ -165,27 +126,20 @@ void AEnemy::InitAIController()
 
 	AIController->SetBaseCharacter(this);
 }
-
 void AEnemy::InitCharacterMovement()
 {
-	GetCharacterMovement()->MaxWalkSpeed = AInGameMode::CellSize * MoveSpeed; // 움직일 때 걷는 속도
-	
+	GetCharacterMovement()->MaxWalkSpeed = 64.0f * MoveSpeed; // 움직일 때 걷는 속도
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 
-
 void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 //	UE_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_DetectRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
-//#endif
 
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
-
 	if (OtherActor == this)
 		return;
-
 	/**************************************************/
 
 	if (OtherActor->IsA(APioneer::StaticClass()))
@@ -221,20 +175,16 @@ void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedCom
 		}
 	}
 
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Add(OtherActor): %s"), *OtherActor->GetName());
 	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Num(): %d"), OverlappedCharacterInDetectRange.Num());
 	//UE_LOG(LogTemp, Log, TEXT("_______"));
-//#endif
 }
 void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
-
 	if (OtherActor == this)
 		return;
-
 	/**************************************************/
 
 	if (OtherActor->IsA(APioneer::StaticClass()))
@@ -257,26 +207,19 @@ void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp,
 		OverlappedBuildingInDetectRange.RemoveSingle(OtherActor);
 	}
 
-
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.RemoveSingle(OtherActor): %s"), *OtherActor->GetName());
 	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Num(): %d"), OverlappedCharacterInDetectRange.Num());
 	//UE_LOG(LogTemp, Log, TEXT("_______"));
-//#endif
 }
 
 void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 //	UE_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_AttackRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
-//#endif
 
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
-
 	if (OtherActor == this)
 		return;
-
 	/**************************************************/
 
 	if (OtherActor->IsA(APioneer::StaticClass()))
@@ -316,10 +259,8 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 {
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
-
 	if (OtherActor == this)
 		return;
-
 	/**************************************************/
 
 	if (OtherActor->IsA(APioneer::StaticClass()))
@@ -343,8 +284,6 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 	}
 }
 
-
-
 void AEnemy::RotateTargetRotation(float DeltaTime)
 {
 	// 회전을 할 필요가 없으면 실행하지 않습니다.
@@ -354,22 +293,49 @@ void AEnemy::RotateTargetRotation(float DeltaTime)
 	Super::RotateTargetRotation(DeltaTime);
 }
 
+void AEnemy::InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FString ReferencePathOfBP_AnimInstance,
+	FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
+{
+	// USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(ReferencePathOfMesh);
+	if (skeletalMeshAsset.Succeeded())
+	{
+		// 각 Enemy의 BP_Animation을 가져옵니다. (주의: .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용해야 합니다.)
+		FString referencePathOfBP_AnimInstance = ReferencePathOfBP_AnimInstance;
+		UClass* animBP = LoadObject<UClass>(NULL, *referencePathOfBP_AnimInstance);
+		if (!animBP)
+		{
+			UE_LOG(LogTemp, Error, TEXT("<AEnemy::InitSkeletalAnimation(...)> if (!animBP)"));
+		}
+		else
+			GetMesh()->SetAnimInstanceClass(animBP);
+
+		// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
+		GetMesh()->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
+		GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
+		GetMesh()->bCastDynamicShadow = true;
+		GetMesh()->CastShadow = true;
+
+		GetMesh()->SetRelativeScale3D(Scale);
+		GetMesh()->SetRelativeRotation(Rotation);
+		GetMesh()->SetRelativeLocation(Location);
+
+		GetMesh()->SetGenerateOverlapEvents(false);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+		GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		GetMesh()->SetCanEverAffectNavigation(false);
+	}
+}
 
 void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 {
-	if (bDying)
-		return;
-
 	HealthPoint += Value;
-
 	if (HealthPoint > 0.0f)
 		return;
-
-	if (bDyingFlag)
+	if (bDying)
 		return;
-	else
-		bDyingFlag = true;
-
+	bDying = true;
 	/************************************/
 
 	if (!EnemyManager)
@@ -412,7 +378,6 @@ void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 		}
 	}
 	
-
 	if (!cGameServer::GetSingleton()->IsServerOn() && !cGameClient::GetSingleton()->IsClientSocketOn())
 	{
 		if (PioneerManager)
@@ -429,9 +394,6 @@ void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 		}
 	}
 	
-
-
-
 	Super::SetHealthPoint(Value);
 
 	if (AttackRangeSphereComp)
@@ -447,15 +409,12 @@ bool AEnemy::CheckNoObstacle(AActor* Target)
 {
 	if (!Target || !GetCapsuleComponent())
 	{
-		//
 		return false;
 	}
 
 	if (UWorld* world = GetWorld())
 	{
 		FVector WorldOrigin = GetActorLocation(); // 시작 위치
-		//WorldOrigin.Z += 10.0f - GetCapsuleComponent()->GetScaledCapsuleRadius();
-		//FVector WorldDirection = Target->GetActorLocation() - WorldOrigin; // 방향 
 
 		FVector WorldDirection = Target->GetActorLocation() + 2.0f; // 방향
 		if (APioneer* pioneer = dynamic_cast<APioneer*>(Target))
@@ -468,44 +427,35 @@ bool AEnemy::CheckNoObstacle(AActor* Target)
 		WorldDirection -= WorldOrigin;
 		WorldDirection.Normalize();
 
-		TArray<FHitResult> hitResults; // 결과를 저장
+		TArray<FHitResult> hitResults; // 결과를 저장합니다.
 
 		FCollisionObjectQueryParams collisionObjectQueryParams;
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn); // Pioneer
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel4); // Building
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic); // 
 		//FCollisionQueryParams collisionQueryParams;
-		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * AInGameMode::CellSize, collisionObjectQueryParams);
+		world->LineTraceMultiByObjectType(hitResults, WorldOrigin, WorldOrigin + WorldDirection * DetectRange * 64.0f, collisionObjectQueryParams);
 
 		if (hitResults.Num() == 0)
 			return false;
 
 		for (auto& hit : hitResults)
 		{
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 //			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
 //			UE_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
 //			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
 //			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
 //			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
 //			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-//#endif
 
 			if (hit.Actor == this)
 				continue;
-
 			if (hit.Actor->IsA(ATriggerVolume::StaticClass()))
 				continue;
-
-			//if (hit.Actor->IsA(AProjectile::StaticClass()))
-			//	continue;
-
 			if (hit.Actor->IsA(AEnemy::StaticClass()))
 				continue;
-
 			if (hit.Actor->IsA(ALandscape::StaticClass()))
 				continue;
-
 
 			// 충돌하는 것이 해당 Enemy면
 			if (hit.Actor == Target)
@@ -543,7 +493,6 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 	if (TimerOfFindTheTargetActor < 1.5f)
 		return;
 	TimerOfFindTheTargetActor = 0.0f;
-
 	/*******************************************/
 
 	TargetActor = nullptr;
@@ -626,7 +575,7 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 	{
 		float dist = FVector::Distance(TriggerBoxForSpawn->GetActorLocation(), GetActorLocation());
 
-		if (dist >= (0.75f * DetectRange * AInGameMode::CellSize))
+		if (dist >= (0.75f * DetectRange * 64.0f))
 			TargetActor = TriggerBoxForSpawn;
 	}
 
@@ -655,14 +604,11 @@ void AEnemy::IdlingOfFSM(float DeltaTime)
 	if (TimerOfIdlingOfFSM < 10.0f)
 		return;
 	TimerOfIdlingOfFSM = 0.0f;
-
 	/*******************************************/
 
 	StopMovement();
-
 	MoveRandomlyPosition();
 }
-
 void AEnemy::TracingOfFSM(float DeltaTime)
 {
 	TimerOfTracingOfFSM += DeltaTime;
@@ -672,7 +618,6 @@ void AEnemy::TracingOfFSM(float DeltaTime)
 
 	if (!GetController())
 		return;
-
 	/*******************************************/
 
 	if (!TargetActor)
@@ -694,7 +639,6 @@ void AEnemy::TracingOfFSM(float DeltaTime)
 		TracingTargetActor();
 	}
 }
-
 void AEnemy::AttackingOfFSM(float DeltaTime)
 {
 	TimerOfAttackingOfFSM += DeltaTime;
@@ -704,7 +648,6 @@ void AEnemy::AttackingOfFSM(float DeltaTime)
 
 	if (!GetController())
 		return;
-
 	/*******************************************/
 
 	if (!TargetActor)
@@ -715,10 +658,8 @@ void AEnemy::AttackingOfFSM(float DeltaTime)
 	}
 
 	StopMovement();
-
 	LookAtTheLocation(TargetActor->GetActorLocation());
 }
-
 void AEnemy::RunFSM(float DeltaTime)
 {
 	FindTheTargetActor(DeltaTime);
@@ -745,53 +686,6 @@ void AEnemy::RunFSM(float DeltaTime)
 		break;
 	}
 }
-
-void AEnemy::RunBehaviorTree(float DeltaTime)
-{
-
-}
-
-/*** ABaseCharacter : End ***/
-
-
-/*** AEnemy : Start ***/
-void AEnemy::InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FString ReferencePathOfBP_AnimInstance,
-	FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
-{
-	// USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(ReferencePathOfMesh);
-	if (skeletalMeshAsset.Succeeded())
-	{
-		// 각 Enemy의 BP_Animation을 가져오기. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용하는 것입니다.)
-		FString referencePathOfBP_AnimInstance = ReferencePathOfBP_AnimInstance;
-		UClass* animBP = LoadObject<UClass>(NULL, *referencePathOfBP_AnimInstance);
-		if (!animBP)
-		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-			UE_LOG(LogTemp, Error, TEXT("<AEnemy::InitSkeletalAnimation(...)> if (!animBP)"));
-#endif
-		}
-		else
-			GetMesh()->SetAnimInstanceClass(animBP);
-
-		// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
-		GetMesh()->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
-		GetMesh()->SetSkeletalMesh(skeletalMeshAsset.Object);
-		GetMesh()->bCastDynamicShadow = true; // ???
-		GetMesh()->CastShadow = true; // ???
-
-		GetMesh()->SetRelativeScale3D(Scale);
-		GetMesh()->SetRelativeRotation(Rotation);
-		GetMesh()->SetRelativeLocation(Location);
-
-		GetMesh()->SetGenerateOverlapEvents(false);
-		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
-		GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		GetMesh()->SetCanEverAffectNavigation(false);
-	}
-}
-
 
 void AEnemy::DamageToTargetActor()
 {
@@ -826,6 +720,10 @@ void AEnemy::DamageToTargetActor()
 	}
 }
 
+void AEnemy::Victory()
+{
+	// virtual
+}
 
 
 ///////////
@@ -842,12 +740,10 @@ class cInfoOfEnemy_Spawn AEnemy::GetInfoOfEnemy_Spawn()
 	cInfoOfEnemy_Spawn spawn;
 
 	spawn.ID = ID;
-
 	spawn.EnemyType = (int)EnemyType;
 
 	return spawn;
 }
-
 void AEnemy::SetInfoOfEnemy_Animation(class cInfoOfEnemy_Animation& Animation)
 {
 	SetActorTransform(Animation.GetActorTransform());
@@ -865,35 +761,26 @@ class cInfoOfEnemy_Animation AEnemy::GetInfoOfEnemy_Animation()
 	cInfoOfEnemy_Animation animation;
 
 	animation.ID = ID;
-
 	animation.SetActorTransform(GetActorTransform());
-
 	animation.TargetRotX = TargetRotation.Pitch;
 	animation.TargetRotY = TargetRotation.Yaw;
 	animation.TargetRotZ = TargetRotation.Roll;
-
 	FVector velocity = GetVelocity();
 	animation.VelocityX = velocity.X;
 	animation.VelocityY = velocity.Y;
 	animation.VelocityZ = velocity.Z;
-
 	animation.State = (int)State;
 
 	return animation;
 }
-
 void AEnemy::SetInfoOfEnemy_Stat(class cInfoOfEnemy_Stat& Stat)
 {
 	HealthPoint = Stat.HealthPoint;
 	SetHealthPoint(NULL);
-
 	MaxHealthPoint = Stat.MaxHealthPoint;
-
 	MoveSpeed = Stat.MoveSpeed;
 	AttackSpeed = Stat.AttackSpeed;
-
 	AttackPower = Stat.AttackPower;
-
 	SightRange = Stat.SightRange;
 	DetectRange = Stat.DetectRange;
 	AttackRange = Stat.AttackRange;
@@ -903,15 +790,11 @@ class cInfoOfEnemy_Stat AEnemy::GetInfoOfEnemy_Stat()
 	cInfoOfEnemy_Stat stat;
 
 	stat.ID = ID;
-
 	stat.HealthPoint = HealthPoint;
 	stat.MaxHealthPoint = MaxHealthPoint;
-
 	stat.MoveSpeed = MoveSpeed;
 	stat.AttackSpeed = AttackSpeed;
-
 	stat.AttackPower = AttackPower;
-
 	stat.SightRange = SightRange;
 	stat.DetectRange = DetectRange;
 	stat.AttackRange = AttackRange;
@@ -931,4 +814,3 @@ class cInfoOfEnemy AEnemy::GetInfoOfEnemy()
 
 	return infoOfEnemy;
 }
-/*** AEnemy : End ***/

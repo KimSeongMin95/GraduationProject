@@ -1,23 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Projectile.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Item/Weapon/Weapon.h"
-#include "Character/Enemy.h"
-#include "Character/Pioneer.h"
-#include "Building/Building.h"
-#include "Building/Turret.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
-
-/*** Basic Function : Start ***/
 AProjectile::AProjectile()
 {
+	TotalDamage = 0.0f;
+
+	IDOfPioneer = 0;
+
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 
 	HitRange = CreateDefaultSubobject<USphereComponent>(TEXT("HitRange"));
 	RootComponent = HitRange;
@@ -44,61 +36,39 @@ AProjectile::AProjectile()
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
 	
-	
 	TrailParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("TrailParticleSystem"));
 	TrailParticleSystem->SetupAttachment(RootComponent);
 	TrailParticleSystem->bAutoActivate = true; // 바로 실행되며 탄환을 따라다닙니다.
-	
 
 	ImpactParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ImpactParticleSystem"));
 	ImpactParticleSystem->SetupAttachment(RootComponent);
 	ImpactParticleSystem->bAutoActivate = false; // 충돌시 실행되며 그 자리에서 나타납니다. 
+}
+AProjectile::~AProjectile()
+{
 
-	
-	TotalDamage = 0.0f;
-
-	IDOfPioneer = 0;
 }
 
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
-	///* 함수 실행순서
-	//Owner가 Spawn()
-	//	AProjectile::AProjectile()
-	//	AProjectile::BeginPlay()
-	//	AProjectile::OnOverlapBegin()
-	//	AProjectile::OnOverlapBegin()
-	//다시 Owner 코드로 되돌아감
-	//	AProjectile::Tick
-	//*/
-	//// 위의 실행순서에 의해 SetDamage()가 나중에 실행되므로 미리 값을 가져와서 적용.
-	//if (GetOwner())
-	//	TotalDamage = static_cast<AWeapon*>(GetOwner())->AttackPower;
 }
-
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
-/*** Basic Function : End ***/
 
-
-/*** AProjectile : Start ***/
 void AProjectile::InitProjectile()
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
 
 void AProjectile::InitHitRange(float Radius)
 {
 	if (!HitRange)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AProjectile::InitHitRange(...)> if (!HitRange)"));
-#endif
 		return;
 	}
 
@@ -130,9 +100,7 @@ void AProjectile::InitProjectileMovement(float InitialSpeed, float MaxSpeed, flo
 {
 	if (!ProjectileMovement)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AProjectile::InitProjectileMovement(...)> if (!ProjectileMovement)"));
-#endif
 		return;
 	}
 
@@ -148,9 +116,7 @@ void AProjectile::InitParticleSystem(class UParticleSystemComponent* ParticleSys
 {
 	if (!ParticleSystem)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AProjectile::InitParticleSystem(...)> if (!ParticleSystem)"));
-#endif
 		return;
 	}
 
@@ -167,7 +133,7 @@ void AProjectile::InitParticleSystem(class UParticleSystemComponent* ParticleSys
 
 void AProjectile::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
 
 void AProjectile::SetTimerForDestroy(float Time)
@@ -215,7 +181,5 @@ void AProjectile::ActiveToggleOfImpactParticleSystem(bool bDefaultRotation)
 }
 void AProjectile::SetLifespan(float Time)
 {
-	// 생성자에서 SetTimer를 실행하면 안됨. 무조건 BeginPlay()에 두어야 함.
 	GetWorldTimerManager().SetTimer(TimerHandleOfDestroy, this, &AProjectile::DestroyByTimer, Time, false); // time초 뒤 투사체를 소멸합니다.
 }
-/*** AProjectile : End ***/

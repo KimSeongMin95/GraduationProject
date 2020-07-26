@@ -11,12 +11,11 @@ class GAME_API AEnemyAIController : public ABaseAIController
 {
 	GENERATED_BODY()
 	
-/*** Basic Function : Start ***/
 public:
 	AEnemyAIController();
+	virtual ~AEnemyAIController();
 
-	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
+protected:
+	virtual void BeginPlay() final;
+	virtual void Tick(float DeltaTime) final;
 };

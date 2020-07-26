@@ -1,30 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "SniperRifleTurret.h"
 
-
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
-#include "Projectile/ProjectileAssaultRifle.h"
-
-#include "EnemyManager.h"
-
-#include "Character/Enemy.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
-
-/*** Basic Function : Start ***/
 ASniperRifleTurret::ASniperRifleTurret()
 {
-	InitStat();
-
 	InitHelthPointBar();
 
+	InitStat();
 	InitConstructBuilding();
-
 	InitBuilding();
 
 	InitArrowComponent(FRotator::ZeroRotator, FVector(222.805f, -1.117f, 81.666f));
+}
+ASniperRifleTurret::~ASniperRifleTurret()
+{
+
 }
 
 void ASniperRifleTurret::BeginPlay()
@@ -32,16 +22,12 @@ void ASniperRifleTurret::BeginPlay()
 	Super::BeginPlay();
 
 }
-
 void ASniperRifleTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
 void ASniperRifleTurret::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -50,10 +36,7 @@ void ASniperRifleTurret::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 350.0f));
 	HelthPointBar->SetDrawSize(FVector2D(100, 20));
 }
-/*** IHealthPointBarInterface : End ***/
 
-
-/*** ABuilding : Start ***/
 void ASniperRifleTurret::InitStat()
 {
 	BuildingType = EBuildingType::SniperRifleTurret;
@@ -80,14 +63,12 @@ void ASniperRifleTurret::InitStat()
 	FireCoolTime = 2.0f;
 	AttackRange = 4096.0f;
 }
-
 void ASniperRifleTurret::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
 		FVector(2.957f, 2.167f, 3.47f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
-
 void ASniperRifleTurret::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_Tower, TEXT("BuildingSMC_Tower"),
@@ -97,7 +78,6 @@ void ASniperRifleTurret::InitBuilding()
 	ParentOfHead = CreateDefaultSubobject<USceneComponent>(TEXT("ParentOfHead"));
 	ParentOfHead->SetupAttachment(RootComponent);
 	ParentOfHead->SetRelativeLocation(FVector(0.0f, 0.0f, 202.0f));
-
 
 	AddBuildingSkMC(&BuildingSkMC_Head, TEXT("BuildingSkMC_Head"),
 		TEXT("SkeletalMesh'/Game/CSC/Meshes/SK_CSC_Gun4.SK_CSC_Gun4'"),
@@ -112,4 +92,3 @@ void ASniperRifleTurret::InitBuilding()
 		TEXT("AnimSequence'/Game/CSC/Animations/Anim_CSC_Gun4.Anim_CSC_Gun4'"),
 		2.0f);
 }
-/*** ABuilding : End ***/

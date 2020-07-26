@@ -1,15 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "OccupationPanel.h"
 
-
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Pioneer.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** Basic Function : Start ***/
 AOccupationPanel::AOccupationPanel()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -29,7 +23,6 @@ AOccupationPanel::AOccupationPanel()
 	SphereComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	SphereComponent->SetSphereRadius(650.0f, true);
 
-
 	PanelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PanelMesh"));
 	PanelMesh->SetupAttachment(RootComponent);
 	PanelMesh->SetGenerateOverlapEvents(false);
@@ -48,7 +41,6 @@ AOccupationPanel::AOccupationPanel()
 		OccupancyMaterialInstanceConstant = occupancyMaterialInstanceConstant.Object;
 	}
 
-
 	DownBorderMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DownBorderMesh"));
 	DownBorderMesh->SetupAttachment(RootComponent);
 	DownBorderMesh->SetGenerateOverlapEvents(false);
@@ -62,7 +54,6 @@ AOccupationPanel::AOccupationPanel()
 	}
 	DownBorderMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-
 	InitHelthPointBar();
 
 	Height = 512.0f;
@@ -73,6 +64,10 @@ AOccupationPanel::AOccupationPanel()
 
 	TickFlag = false;
 }
+AOccupationPanel::~AOccupationPanel()
+{
+
+}
 
 void AOccupationPanel::BeginPlay()
 {
@@ -80,7 +75,6 @@ void AOccupationPanel::BeginPlay()
 	
 	BeginPlayHelthPointBar();
 }
-
 void AOccupationPanel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -91,15 +85,12 @@ void AOccupationPanel::Tick(float DeltaTime)
 
 	TickOfDownBorderMesh(DeltaTime);
 }
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
 void AOccupationPanel::InitHelthPointBar()
 {
 	HelthPointBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelthPointBar"));
 	//HelthPointBar = NewObject<UWidgetComponent>(this, UWidgetComponent::StaticClass());
-	HelthPointBar->SetupAttachment(DownBorderMesh);
+	HelthPointBar->SetupAttachment(RootComponent);
 	HelthPointBar->bAbsoluteRotation = true; // 절대적인 회전값을 적용합니다.
 
 	HelthPointBar->SetGenerateOverlapEvents(false);
@@ -112,11 +103,11 @@ void AOccupationPanel::InitHelthPointBar()
 
 	HelthPointBar->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 	//HelthPointBar->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-	HelthPointBar->SetRelativeRotation(FRotator(45.0f, 180.0f, 0.0f)); // 항상 플레이어에게 보이도록 회전 값을 World로 해야 함.
-	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 30.0f));
+	HelthPointBar->SetRelativeRotation(FRotator(45.0f, 180.0f, 0.0f)); // 항상 플레이어에게 보이도록 회전 값을 World로 해야 합니다.
+	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	HelthPointBar->SetDrawSize(FVector2D(256, 64));
 
-	// Screen은 뷰포트에서 UI처럼 띄워주는 것이고 World는 게임 내에서 UI처럼 띄워주는 것
+	// Screen은 뷰포트에서 UI처럼 띄워주는 것이고 World는 게임 내에서 UI처럼 띄워주는 것입니다.
 	HelthPointBar->SetWidgetSpace(EWidgetSpace::World);
 }
 void AOccupationPanel::BeginPlayHelthPointBar()
@@ -124,54 +115,41 @@ void AOccupationPanel::BeginPlayHelthPointBar()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<AOccupationPanel::BeginPlayHelthPointBar()> if (!world)"));
-#endif
+		UE_LOG(LogTemp, Error, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!world)"));
 		return;
 	}
 
-	/*** 주의: Blueprint 애셋은 뒤에 _C를 붙여줘서 클래스를 가져와줘야 함. ***/
+	/*** 주의: Blueprint 애셋은 뒤에 _C를 붙여줘서 클래스를 가져와야 합니다. ***/
 	FString HelthPointBarBP_Reference = "WidgetBlueprint'/Game/Characters/HelthPointBar.HelthPointBar_C'";
 	UClass* HelthPointBarBP = LoadObject<UClass>(this, *HelthPointBarBP_Reference);
 
-	// 가져온 WidgetBlueprint를 UWidgetComponent에 바로 적용하지말고 따로 UUserWidget에 저장하여 설정을 한 뒤
-	// UWidgetComponent->SetWidget(저장한 UUserWidget);으로 UWidgetComponent에 적용해야 함.
-	//HelthPointBar->SetWidgetClass(HelthPointBarBP);
-	HelthPointBarUserWidget = CreateWidget(world, HelthPointBarBP); // wolrd가 꼭 필요.
+	HelthPointBarUserWidget = CreateWidget(world, HelthPointBarBP);
 
 	if (HelthPointBarUserWidget)
 	{
 		UWidgetTree* WidgetTree = HelthPointBarUserWidget->WidgetTree;
 		if (WidgetTree)
 		{
-			//// 이 방법은 안됨.
+			//// 이 방법은 사용할 수 없습니다.
 			// ProgreeBar = Cast<UProgressBar>(HelthPointBarUserWidget->GetWidgetFromName(FName(TEXT("ProgressBar_153"))));
-
 			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
 			if (!ProgressBar)
 			{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-				UE_LOG(LogTemp, Warning, TEXT("<AOccupationPanel::BeginPlayHelthPointBar()> if (!ProgressBar)"));
-#endif
+				UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!ProgressBar)"));
 			}
 		}
 		else
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-			UE_LOG(LogTemp, Warning, TEXT("<AOccupationPanel::BeginPlayHelthPointBar()> if (!WidgetTree)"));
-#endif
+			UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!WidgetTree)"));
 		}
 	}
 	else
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Warning, TEXT("<AOccupationPanel::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
-#endif
+		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
 	}
 
 	HelthPointBar->SetWidget(HelthPointBarUserWidget);
 }
-
 void AOccupationPanel::TickHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -180,18 +158,13 @@ void AOccupationPanel::TickHelthPointBar()
 	if (ProgressBar)
 		ProgressBar->SetPercent(Occupancy / 100.0f);
 }
-/*** IHealthPointBarInterface : End ***/
 
-
-/*** AOccupationPanel : Start ***/
 void AOccupationPanel::OnOverlapBegin_Pioneer(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
-
 	if (OtherActor == this)
 		return;
-
 	/**************************************************/
 
 	if (OtherActor->IsA(APioneer::StaticClass()))
@@ -210,10 +183,8 @@ void AOccupationPanel::OnOverlapEnd_Pioneer(class UPrimitiveComponent* Overlappe
 {
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
-
 	if (OtherActor == this)
 		return;
-
 	/**************************************************/
 
 	if (OtherActor->IsA(APioneer::StaticClass()))
@@ -297,10 +268,8 @@ void AOccupationPanel::TickOfDownBorderMesh(float DeltaTime)
 {
 	if (!DownBorderMesh)
 	{
-		//
 		return;
 	}
-
 	/***********************************************/
 
 	// 상태 변경
@@ -318,18 +287,14 @@ void AOccupationPanel::TickOfDownBorderMesh(float DeltaTime)
 			DownBorderState = EDownBorderState::Floating;
 			TimerOfFloating = 1.5f;
 		}
-
 		break;
 	case EDownBorderState::Floating:
 		TimerOfFloating += 0.5f * DeltaTime;
 		DownBorderMesh->SetRelativeLocation(FVector(0.0f, 0.0f, Height + 64.0f * FMath::Cos(TimerOfFloating * PI)));
-
 		break;
 	case EDownBorderState::Down:
 		DownBorderMesh->SetRelativeLocation(FVector(0.0f, 0.0f, Height * TimerOfDown));
 		TimerOfDown -= 0.5f * DeltaTime;
-		
-
 		if (TimerOfDown <= 0.0f)
 		{
 			if (Occupancy < 100.0f)
@@ -342,14 +307,10 @@ void AOccupationPanel::TickOfDownBorderMesh(float DeltaTime)
 
 			DownBorderMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		}
-
 		break;
 	case EDownBorderState::End:
-
 		break;
 	default:
-
 		break;
 	}
 }
-/*** AOccupationPanel : End ***/

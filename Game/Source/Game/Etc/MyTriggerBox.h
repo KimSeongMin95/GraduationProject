@@ -2,27 +2,25 @@
 
 #pragma once
 
+#include "Components/BillboardComponent.h"
+#include "Components/BoxComponent.h"
+
 #include "CoreMinimal.h"
 #include "Engine/TriggerBox.h"
 #include "MyTriggerBox.generated.h"
-
 
 UCLASS()
 class GAME_API AMyTriggerBox : public ATriggerBox
 {
 	GENERATED_BODY()
 
-
-/*** Basic Function : Start ***/
 public:
 	AMyTriggerBox();
+	virtual ~AMyTriggerBox();
 
 protected:
-	virtual void BeginPlay() override;
-/*** Basic Function : End ***/
+	virtual void BeginPlay() final;
 
-
-/*** AMyTriggerBox : Start ***/
 public:
 	UPROPERTY(EditAnywhere, Category = "AMyTriggerBox")
 		bool bIsTriggered;
@@ -34,6 +32,4 @@ protected:
 public:
 	UFUNCTION(Category = "AMyTriggerBox")
 		bool IsTriggered();
-	
-/*** AMyTriggerBox : End ***/
 };

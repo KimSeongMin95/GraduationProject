@@ -2,22 +2,15 @@
 
 #include "SpaceShip.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "PioneerManager.h"
 #include "Character/Pioneer.h"
-
 #include "Landscape.h"
-
 #include "Network/Packet.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** Basic Function : Start ***/
 ASpaceShip::ASpaceShip()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 
 	PhysicsBox = CreateDefaultSubobject<UBoxComponent>(TEXT("PhysicsBox"));
 	RootComponent = PhysicsBox;
@@ -39,19 +32,10 @@ ASpaceShip::ASpaceShip()
 	
 	InitPhysicsBox(FVector(256.0f, 256.0f, 256.0f), FVector(0.0f, 0.0f, 256.0f));
 
-
 	PioneerSpawnPoint = CreateDefaultSubobject<UArrowComponent>("PioneerSpawnPoint");
 	PioneerSpawnPoint->SetupAttachment(RootComponent);
 	PioneerSpawnPoint->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
 	PioneerSpawnPoint->SetRelativeLocation(FVector(-777.02f, 329.26f, -150.0f));
-
-
-	//StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	//StaticMesh->SetupAttachment(RootComponent);
-
-	//InitStaticMesh(TEXT("StaticMesh'/Game/SpaceShip/SpaceShip_ForCollision.SpaceShip_ForCollision'"),
-	//	FVector(80.0f, 80.0f, 80.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(-3.0f, -214.0f, -260.0f));
-
 
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	SkeletalMesh->SetupAttachment(RootComponent);
@@ -61,15 +45,10 @@ ASpaceShip::ASpaceShip()
 	SkeletalMesh->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
 	SkeletalMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
-
 	InitSkeletalMesh(TEXT("SkeletalMesh'/Game/SpaceShip/SpaceShip.SpaceShip'"),
 		FVector(80.0f, 80.0f, 80.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(50.0f, 650.43f, -99.0f));
-
-
 	InitSkeleton(TEXT("Skeleton'/Game/SpaceShip/SpaceShip_Skeleton.SpaceShip_Skeleton'"));
-
 	InitPhysicsAsset(TEXT("PhysicsAsset'/Game/SpaceShip/SpaceShip_PhysicsAsset.SpaceShip_PhysicsAsset'"));
-
 	InitAnimSequence(TEXT("AnimSequence'/Game/SpaceShip/SpaceShip_Anim.SpaceShip_Anim'"), false, false, 130.0f, -3.0f);
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
@@ -82,36 +61,31 @@ ASpaceShip::ASpaceShip()
 
 	InitSpringArmComp(2500.0f, FRotator(-30.0f, 45.0f, 0.0f), FVector(-20.0f, -870.0f, 190.0f));
 
-
 	// 따라다니는 카메라를 생성합니다.
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(SpringArmComp, USpringArmComponent::SocketName); // boom의 맨 뒤쪽에 해당 카메라를 붙이고, 컨트롤러의 방향에 맞게 boom을 적용합니다.
 	CameraComp->bUsePawnControlRotation = false; // 카메라는 Arm에 상대적으로 회전하지 않습니다.
 
-
 	EngineParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem"));
-	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
+	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 합니다.)
 	EngineParticleSystem->SetupAttachment(SkeletalMesh, TEXT("Engine_L")); // "Engine_L" 소켓에 붙입니다.
 
 	InitEngineParticleSystem(EngineParticleSystem, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), false,
 		FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
 	EngineParticleSystem2 = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem2"));
-	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
+	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 합니다.)
 	EngineParticleSystem2->SetupAttachment(SkeletalMesh, TEXT("Engine_R")); // "Engine_R" 소켓에 붙입니다.
 
 	InitEngineParticleSystem(EngineParticleSystem2, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), false,
 		FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
-
 	EngineParticleSystem3 = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EngineParticleSystem3"));
-	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 한다.)
+	// (패키징 오류 주의: 다른 액터를 붙일 땐 AttachToComponent를 사용하지만 컴퍼넌트를 붙일 땐 SetupAttachment를 사용해야 합니다.)
 	EngineParticleSystem3->SetupAttachment(RootComponent);
 
 	InitEngineParticleSystem(EngineParticleSystem3, TEXT("ParticleSystem'/Game/SpaceShip/Effects/FX/P_RocketTrail_02.P_RocketTrail_02'"), false,
 		FVector(2.5f, 2.5f, 2.5f), FRotator(0.0f, 180.0f, 90.0f), FVector(0.0f, -900.0f, 60.0f));
-
-
 
 	Gravity = 980.0f;
 
@@ -158,13 +132,15 @@ ASpaceShip::ASpaceShip()
 		}
 	}
 }
+ASpaceShip::~ASpaceShip()
+{
+
+}
 
 void ASpaceShip::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
-
 void ASpaceShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -172,22 +148,16 @@ void ASpaceShip::Tick(float DeltaTime)
 	if (PhysicsBox->IsSimulatingPhysics() && Physics)
 		PhysicsBox->AddForce(Acceleration, NAME_None, true);
 }
-/*** Basic Function : End ***/
 
-
-/*** ASpaceShip : Start ***/
 void ASpaceShip::InitPhysicsBox(FVector BoxExtent /*= FVector::ZeroVector*/, FVector Location /*= FVector::ZeroVector*/)
 {
 	if (!PhysicsBox)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitPhysicsBox(...)> if (!PhysicsBox)"));
-#endif
 		return;
 	}
 
 	PhysicsBox->SetBoxExtent(BoxExtent);
-
 	PhysicsBox->SetRelativeLocation(Location);
 }
 
@@ -195,9 +165,7 @@ void ASpaceShip::InitSkeletalMesh(const TCHAR* ReferencePath, FVector Scale /*= 
 {
 	if (!SkeletalMesh)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitSkeletalMesh(...)> if (!SkeletalMesh)"));
-#endif
 		return;
 	}
 
@@ -240,9 +208,7 @@ void ASpaceShip::InitAnimSequence(const TCHAR* ReferencePath, bool bIsLooping /*
 {
 	if (!SkeletalMesh || !Skeleton)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitAnimSequence(...)> if (!SkeletalMesh || !Skeleton)"));
-#endif
 		return;
 	}
 
@@ -261,14 +227,11 @@ void ASpaceShip::InitSpringArmComp(float TargetArmLength /*= 2500.0f*/, FRotator
 {
 	if (!SpringArmComp)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitSpringArmComp(...)> if (!SpringArmComp)"));
-#endif
 		return;
 	}
 
 	SpringArmComp->TargetArmLength = TargetArmLength; // 해당 간격으로 카메라가 Arm을 따라다닙니다.
-
 	SpringArmComp->SetRelativeRotation(Rotation);
 	SpringArmComp->SetRelativeLocation(Location);
 }
@@ -278,9 +241,7 @@ void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* Partic
 {
 	if (!ParticleSystemComponent)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitEngineParticleSystem(...)> if (!ParticleSystemComponent)"));
-#endif
 		return;
 	}
 
@@ -296,7 +257,6 @@ void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* Partic
 	}
 }
 
-
 //////////////////////////
 // AInGameMode에서 호출
 //////////////////////////
@@ -304,27 +264,22 @@ void ASpaceShip::SetPioneerManager(class APioneerManager* pPioneerManager)
 {
 	this->PioneerManager = pPioneerManager;
 }
-
 void ASpaceShip::Flying()
 {
 	State = ESpaceShipState::Flying;
 
 	if (!PhysicsBox || !PioneerSpawnPoint || !SkeletalMesh || !Skeleton || !AnimSequence || !SpringArmComp || !CameraComp || !EngineParticleSystem || !EngineParticleSystem2)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::Flying(...)> if (!PhysicsBox || !PioneerSpawnPoint || !SkeletalMesh || !Skeleton || !AnimSequence || !SpringArmComp || !CameraComp || !EngineParticleSystem || !EngineParticleSystem2)"));
-#endif
 		return;
 	}
 
 	if (true)
 	{
 		State = ESpaceShipState::Flied;
-
 		StartLanding();
 	}
 }
-
 void ASpaceShip::StartLanding()
 {
 	SetActorLocation(InitLocation);
@@ -355,10 +310,6 @@ void ASpaceShip::Landing()
 {
 	float dist = CalculateDistanceToLand();
 	dist -= LandingHeight;
-
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-	//UE_LOG(LogTemp, Warning, TEXT("dist: %f"), dist);
-//#endif
 
 	// F(힘) = m(질량)a(가속도)
 	// F(힘): AddForce of AddImpulse //
@@ -415,9 +366,6 @@ void ASpaceShip::Landing()
 
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
-
-		//// AInGameMode에서 실행
-		//StartSpawning();
 	}
 }
 
@@ -446,9 +394,7 @@ void ASpaceShip::Spawning()
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
 
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::Spawning()> if (!PioneerManager)"));
-#endif
 		return;
 	}
 
@@ -462,9 +408,6 @@ void ASpaceShip::Spawning()
 
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
-
-		//// AInGameMode에서 실행
-		//StartTakingOff();
 	}
 }
 
@@ -537,7 +480,6 @@ void ASpaceShip::TakingOff()
 //////////////////////////
 float ASpaceShip::CalculateDistanceToLand()
 {
-	// 이 코드는 LineTrace할 때 모든 액터를 hit하고 그 중 LandScape만 가져와서 마우스 커서 Transform 정보를 얻음.
 	if (UWorld* world = GetWorld())
 	{
 		FVector WorldOrigin = GetActorLocation(); // 시작 위치
@@ -553,13 +495,11 @@ float ASpaceShip::CalculateDistanceToLand()
 		
 		for (auto& hit : hitResults)
 		{
-//#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-//			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
-//			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
-//			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
-//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-//#endif
+			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
 
 			// 지면과 충돌하는 것만 구합니다.
 			if (hit.Actor->IsA(ALandscape::StaticClass()))
@@ -611,8 +551,6 @@ void ASpaceShip::OnEngines()
 
 	EngineParticleSystem->Activate(true);
 	EngineParticleSystem2->Activate(true);
-	//EngineParticleSystem->ToggleActive();
-	//EngineParticleSystem2->ToggleActive();
 
 	bEngine = true;
 
@@ -642,7 +580,6 @@ void ASpaceShip::OffEngines()
 	if (AudioComponent)
 	{
 		AudioComponent->SetBoolParameter("EngineOn", false);
-		//AudioComponent->StopDelayed(0.2f);
 	}
 }
 void ASpaceShip::OnEngine3()
@@ -664,7 +601,6 @@ void ASpaceShip::ForMainScreen()
 	PhysicsBox->SetSimulatePhysics(false);
 
 	SpringArmComp->TargetArmLength = 2000.0f;
-
 	SpringArmComp->SetRelativeRotation(FRotator(SpringArmCompRoll, SpringArmCompPitch, 0.0f));
 }
 void ASpaceShip::TickForMainScreen(float DeltaTime)
@@ -680,7 +616,6 @@ void ASpaceShip::TickForMainScreen(float DeltaTime)
 
 	SpringArmComp->TargetArmLength += AdjustmentTargetArmLength * DeltaTime;
 
-
 	SpringArmCompRoll += AdjustmentRoll * DeltaTime;
 	if (SpringArmCompRoll > 360.0f)
 		SpringArmCompRoll -= 360.0f;
@@ -694,10 +629,8 @@ void ASpaceShip::TickForMainScreen(float DeltaTime)
 		AdjustmentPitch = -3.0f;
 	}
 	SpringArmCompPitch += AdjustmentPitch * DeltaTime;
-
 	SpringArmComp->SetRelativeRotation(FRotator(SpringArmCompRoll, SpringArmCompPitch, 0.0f));
 
-	
 	FVector location = GetActorLocation();
 	location.Y += 2.0f * 4096.0f * DeltaTime;
 	if (location.Y >= 500000.0f)
@@ -711,9 +644,7 @@ void ASpaceShip::SetScaleOfEngineParticleSystem(float Scale /*= 0.015f*/)
 {
 	if (!EngineParticleSystem || !EngineParticleSystem2)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::SetScaleOfEngineParticleSystem(...)> if (!EngineParticleSystem || !EngineParticleSystem2)"));
-#endif
 		return;
 	}
 
@@ -733,9 +664,7 @@ void ASpaceShip::PlayLandingAnimation()
 
 	if (!SkeletalMesh)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::PlayLandingAnimation(...)> if (!SkeletalMesh)"));
-#endif
 		return;
 	}
 
@@ -747,18 +676,14 @@ void ASpaceShip::PlayLandingAnimation()
 	if (AudioComponent)
 	{
 		AudioComponent->SetBoolParameter("Landing", true);
-		//AudioComponent->FadeIn(0.5f, 1.0f, 0.0f);
 		AudioComponent->Play(0.0f);
 	}
 }
-
 void ASpaceShip::PlayTakingOffAnimation()
 {
 	if (!SkeletalMesh)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::PlayTakingOffAnimation(...)> if (!SkeletalMesh)"));
-#endif
 		return;
 	}
 
@@ -855,5 +780,4 @@ class cInfoOfSpaceShip ASpaceShip::GetInfoOfSpaceShip()
 
 	return infoOfSpaceShip;
 }
-/*** ASpaceShip : End ***/
 

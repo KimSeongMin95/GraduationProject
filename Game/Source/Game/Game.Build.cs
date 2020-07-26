@@ -20,13 +20,10 @@ public class Game : ModuleRules
             "Core", "CoreUObject", "Engine", "InputCore",
             "HeadMountedDisplay", "NavigationSystem", "AIModule", "UMG" });
 
-        /* ALandscape::GetPrivateStaticClass() 오류가 발생하여 PrivateDependencyModuleNames에 "Landscape"를 추가.
+        /* ALandscape::GetPrivateStaticClass() 오류가 발생하여 PrivateDependencyModuleNames에 "Landscape"를 추가합니다.
          * 
          */
         PrivateDependencyModuleNames.AddRange(new string[] { "Landscape", "Slate", "SlateCore" });
-
-
-
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

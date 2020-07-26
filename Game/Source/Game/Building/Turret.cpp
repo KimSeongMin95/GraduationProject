@@ -1,55 +1,41 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Turret.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "BuildingManager.h"
-
 #include "Projectile/ProjectileAssaultRifle.h"
 #include "Projectile/ProjectileSniperRifle.h"
 #include "Projectile/Splash/ProjectileRocketLauncher.h"
-
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
-
 #include "EnemyManager.h"
-
 #include "Character/Enemy.h"
-
 #include "Character/Pioneer.h"
-
 #include "Landscape.h"
-
 #include "Building/Gate.h"
-
 #include "PioneerManager.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** Basic Function : Start ***/
 ATurret::ATurret()
 {
 	TickOfFireCoolTime = 0.0f;
 
-	TickOfFindEnemyTime = 0.0f;
-
-	TimerOfRotateTargetRotation = 0.0f;
 	bRotateTargetRotation = false;
 	TargetRotation = FRotator::ZeroRotator;
 
 	IdxOfTarget = 0;
+}
+ATurret::~ATurret()
+{
+
 }
 
 void ATurret::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
 void ATurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 
 	if (APioneerManager::Resources.NumOfEnergy <= 0)
 		return;
@@ -67,41 +53,31 @@ void ATurret::Tick(float DeltaTime)
 
 	TickOfUnderWall();
 }
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
 void ATurret::InitHelthPointBar()
 {
-	
+	// virtual
 }
-/*** IHealthPointBarInterface : End ***/
 
-
-/*** ABuilding : Start ***/
 void ATurret::InitStat()
 {
-	
+	// virtual
 }
-
 void ATurret::InitConstructBuilding()
 {
-
+	// virtual
 }
-
 void ATurret::InitBuilding()
 {
-	
+	// virtual
 }
-/*** ABuilding : End ***/
 
-/*** ATurret : Start ***/
 void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent, const TCHAR* SkeletonToFind, const TCHAR* AnimSequenceToFind, float PlayRate)
 {
 	// Character로 부터 상속 받은 USkeletalMeshComponent* Mesh를 사용합니다.
 	SkeletalMeshComponent->SetOnlyOwnerSee(false); // 소유자만 볼 수 있게 하지 않습니다.
-	SkeletalMeshComponent->bCastDynamicShadow = true; // ???
-	SkeletalMeshComponent->CastShadow = true; // ???
+	SkeletalMeshComponent->bCastDynamicShadow = true; 
+	SkeletalMeshComponent->CastShadow = true;
 
 	// Skeleton을 가져옵니다.
 	ConstructorHelpers::FObjectFinder<USkeleton> skeleton(SkeletonToFind);
@@ -109,12 +85,6 @@ void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent, const
 	{
 		Skeleton = skeleton.Object;
 	}
-	//// PhysicsAsset을 가져옵니다.
-	//ConstructorHelpers::FObjectFinder<UPhysicsAsset> physicsAsset(TEXT("PhysicsAsset'/Game/CSC/Meshes/CSC_Gun6_PhysicsAsset.CSC_Gun6_PhysicsAsset'"));
-	//if (physicsAsset.Succeeded())
-	//{
-	//	SkeletalMeshComponent->SetPhysicsAsset(physicsAsset.Object);
-	//}
 	// AnimInstance를 사용하지 않고 간단하게 애니메이션을 재생하려면 AnimSequence를 가져와서 Skeleton에 적용합니다.
 	ConstructorHelpers::FObjectFinder<UAnimSequence> animSequence(AnimSequenceToFind);
 	if (animSequence.Succeeded())
@@ -127,10 +97,9 @@ void ATurret::InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent, const
 
 void ATurret::InitArrowComponent(FRotator Rotatation, FVector Location)
 {
-	// 발사될 Projectile의 Transform 값을 저장할 ArrowComponent 생성후 Mesh에 부착
+	// 발사될 Projectile의 Transform 값을 저장할 ArrowComponent 생성후 Mesh에 부착합니다.
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>("Arrow");
 	ArrowComponent->SetupAttachment(BuildingSkMC_Head);
-
 	ArrowComponent->SetRelativeRotation(Rotatation);
 	ArrowComponent->SetRelativeLocation(Location);
 }
@@ -140,20 +109,14 @@ bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 {
 	if (!Enemy)
 	{
-
 		UE_LOG(LogTemp, Warning, TEXT("<ATurret::CheckEnemyInAttackRange(...)> if (!Enemy)"));
-
 		return false;
 	}
-
 	if (!ParentOfHead)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::CheckEnemyInAttackRange(...)> if (!ParentOfHead)"));
-
 		return false;
 	}
-
 
 	if (UWorld* world = GetWorld())
 	{
@@ -161,7 +124,7 @@ bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 		FVector WorldDirection = Enemy->GetActorLocation() - WorldOrigin; // 방향
 		WorldDirection.Normalize();
 
-		TArray<FHitResult> hitResults; // 결과를 저장
+		TArray<FHitResult> hitResults; // LineTrace의 결과를 저장합니다.
 
 		FCollisionObjectQueryParams collisionObjectQueryParams;
 		collisionObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn); // Pioneer
@@ -186,19 +149,12 @@ bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 
 			if (hit.Actor == this)
 				continue;
-
 			if (hit.Actor->IsA(ATriggerVolume::StaticClass()))
 				continue;
-
-			//if (hit.Actor->IsA(AProjectile::StaticClass()))
-			//	continue;
-
 			if (hit.Actor->IsA(APioneer::StaticClass()))
 				continue;
-
 			if (hit.Actor->IsA(ALandscape::StaticClass()))
 				continue;
-
 
 			// 충돌하는 것이 해당 Enemy면
 			if (hit.Actor == Enemy)
@@ -208,8 +164,7 @@ bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 					return true;
 				}
 			}
-			else if (hit.Actor->IsA(AGate::StaticClass()) &&
-				hit.Component->IsA(USphereComponent::StaticClass()))
+			else if (hit.Actor->IsA(AGate::StaticClass()) && hit.Component->IsA(USphereComponent::StaticClass()))
 			{
 				continue;
 			}
@@ -220,25 +175,23 @@ bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 		}
 	}
 
-
 	return false;
 }
 
 void ATurret::TickOfFindEnemy(float DeltaTime)
 {
-	TickOfFindEnemyTime += DeltaTime;
-	if (TickOfFindEnemyTime < 1.0f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 1.0f)
 		return;
-	TickOfFindEnemyTime = 0.0f;
+	timer = 0.0f;
 
 	if (!EnemyManager)
 	{
 		UWorld* const world = GetWorld();
 		if (!world)
 		{
-
 			UE_LOG(LogTemp, Error, TEXT("<ATurret::TickOfFindEnemy()> if (!world)"));
-
 			return;
 		}
 
@@ -256,7 +209,6 @@ void ATurret::TickOfFindEnemy(float DeltaTime)
 		if (!kvp.Value)
 			continue;
 
-	
 		distance = FVector::Distance(ParentOfHead->GetComponentLocation(), kvp.Value->GetActorLocation());
 
 		if (distance <= AttackRange)
@@ -294,19 +246,17 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 	if (!bRotateTargetRotation)
 		return;
 
-	TimerOfRotateTargetRotation += DeltaTime;
-	if (TimerOfRotateTargetRotation < 0.033f)
+	static float timer = 0.0f;
+	timer += DeltaTime;
+	if (timer < 0.033f)
 		return;
-	TimerOfRotateTargetRotation = 0.0f;
+	timer = 0.0f;
 
 	if (!ParentOfHead)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::RotateTargetRotation(...)> if (!ParentOfHead)"));
-
 		return;
 	}
-
 	/*******************************************/
 
 	FRotator CurrentRotation = ParentOfHead->GetComponentRotation(); // Normalized
@@ -350,8 +300,6 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 		CurrentRotation.Yaw = TargetRotation.Yaw;
 		OverYaw = true;
 	}
-
-
 
 	sign = 1.0f;
 	float DifferencePitch = FMath::Abs(CurrentRotation.Pitch - TargetRotation.Pitch);
@@ -402,15 +350,11 @@ void ATurret::LookAtTheLocation()
 {
 	if (!ParentOfHead)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::RotateTargetRotation(...)> if (!ParentOfHead)"));
-
 		return;
 	}
-
 	if (!EnemyManager)
 		return;
-
 	/*******************************************/
 
 	if (EnemyManager->Enemies.Contains(IdxOfTarget))
@@ -441,9 +385,7 @@ void ATurret::Fire()
 
 	if (!EnemyManager)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::Fire()> if (!EnemyManager)"));
-
 		return;
 	}
 
@@ -454,22 +396,17 @@ void ATurret::Fire()
 	if (BuildingSkMC_Head && AnimSequence)
 		BuildingSkMC_Head->PlayAnimation(AnimSequence, false);
 
-
 	// 게임클라이언트에서는 애니메이션까지만 실행하고 실제로는 발사하지 않습니다.
 	if (cGameClient::GetSingleton()->IsClientSocketOn())
 	{
 		return;
 	}
-	
-
 	/*****************************************************************/
 
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-
 		UE_LOG(LogTemp, Error, TEXT("<ATurret::Fire()> if (!world)"));
-
 		return;
 	}
 
@@ -485,7 +422,6 @@ void ATurret::Fire()
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 	
-
 	AProjectile* projectile = nullptr;
 	int numbering = 0;
 
@@ -519,7 +455,6 @@ void ATurret::Fire()
 
 	projectile->SetGenerateOverlapEventsOfHitRange(true);
 
-
 	if (cGameServer::GetSingleton()->IsServerOn())
 	{
 		cInfoOfProjectile infoOfProjectile;
@@ -544,7 +479,6 @@ void ATurret::TickOfUnderWall()
 	if (BuildingManager->Buildings.Contains(IdxOfUnderWall))
 		return;
 
-
 	// 하단의 Wall이 소멸되면 상단의 Turret도 소멸되도록 합니다.
 	BuildingState = EBuildingState::Destroying;
 
@@ -563,4 +497,3 @@ void ATurret::TickOfUnderWall()
 
 	Destroy();
 }
-/*** ATurret : End ***/

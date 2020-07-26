@@ -1,17 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ProjectileShotgun.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Enemy.h"
 #include "Building/Building.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** Basic Function : Start ***/
 AProjectileShotgun::AProjectileShotgun()
 {
+	TotalDamage = 12.0f;
+
 	InitHitRange(8.0f);
 
 	InitProjectileMesh(TEXT("StaticMesh'/Game/Items/Weapons/Meshes/White_Shotgun_Ammo.White_Shotgun_Ammo'"),
@@ -19,12 +16,12 @@ AProjectileShotgun::AProjectileShotgun()
 		FVector(2.5f, 2.5f, 2.5f), FRotator(-90.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 
 	InitProjectileMovement(1600.0f, 1600.0f, 0.0f, false, 0.0f);
-
 	InitParticleSystem(GetTrailParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Shotgun_Tracer_Light.P_Shotgun_Tracer_Light'"));
-
 	InitParticleSystem(GetImpactParticleSystem(), TEXT("ParticleSystem'/Game/Items/Weapons/FX/Particles/P_Impact_Wood_Medium_Light.P_Impact_Wood_Medium_Light'"));
+}
+AProjectileShotgun::~AProjectileShotgun()
+{
 
-	TotalDamage = 12.0f;
 }
 
 void AProjectileShotgun::BeginPlay()
@@ -33,24 +30,17 @@ void AProjectileShotgun::BeginPlay()
 
 	SetLifespan(8.0f);
 }
-
 void AProjectileShotgun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-/*** Basic Function : End ***/
 
-
-/*** AProjectile : Start ***/
 void AProjectileShotgun::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
-
 	if (OtherActor == this)
 		return;
-
 	/**************************************************/
 
 	if (OtherActor->IsA(AEnemy::StaticClass()))
@@ -84,4 +74,3 @@ void AProjectileShotgun::OnOverlapBegin_HitRange(class UPrimitiveComponent* Over
 		SetTimerForDestroy(1.0f);
 	}
 }
-/*** AProjectile : End ***/

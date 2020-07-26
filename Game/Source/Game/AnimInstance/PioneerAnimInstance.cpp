@@ -2,14 +2,8 @@
 
 #include "PioneerAnimInstance.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Pioneer.h"
-#include "Controller/PioneerController.h"
-#include "Controller/PioneerAIController.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** AnimInstance Basic Function : Start ***/
 UPioneerAnimInstance::UPioneerAnimInstance()
 {
 	Pioneer = nullptr;
@@ -20,6 +14,10 @@ UPioneerAnimInstance::UPioneerAnimInstance()
 	bFired = false;
 
 	Bone_Spine_01_Rotation = FRotator::ZeroRotator;
+}
+UPioneerAnimInstance::~UPioneerAnimInstance()
+{
+
 }
 
 void UPioneerAnimInstance::NativeInitializeAnimation()
@@ -32,19 +30,15 @@ void UPioneerAnimInstance::NativeInitializeAnimation()
 			Pioneer = Cast<APioneer>(BaseCharacter);
 	}
 }
-
 void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 {
 	Super::NativeUpdateAnimation(DeltaTimeX);
 
 	if (!TryGetPawnOwner())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> if (!TryGetPawnOwner())"));
-#endif
 		return;
 	}
-
 	if (!Pioneer)
 	{
 		if (APawn* Owner = TryGetPawnOwner())
@@ -54,27 +48,8 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 				Pioneer = Cast<APioneer>(Owner);
 		}
 
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> if (!Pioneer)"));
-#endif
 		return;
-	}
-
-
-	/// CharacterAI
-	switch (CharacterAI)
-	{
-	case 0:
-		SetFSM();
-		break;
-	case 1:
-		SetBehaviorTree();
-		break;
-	default:
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> switch (CharacterAI): default"));
-#endif
-		break;
 	}
 
 	bHasPistolType = Pioneer->HasPistolType();
@@ -85,35 +60,17 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 
 	Bone_Spine_01_Rotation = Pioneer->Bone_Spine_01_Rotation;
 }
-/*** AnimInstance Basic Function : End ***/
-
-
-/*** UBaseCharacterAnimInstance : Start ***/
-void UPioneerAnimInstance::SetFSM()
-{
-
-}
-
-void UPioneerAnimInstance::SetBehaviorTree()
-{
-
-}
 
 void UPioneerAnimInstance::FireEnd()
 {
 	if (!TryGetPawnOwner())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::FireEnd()> if (!TryGetPawnOwner())"));
-#endif
 		return;
 	}
-
 	if (!Pioneer)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::FireEnd()> if (!Pioneer)"));
-#endif 
 		return;
 	}
 
@@ -124,20 +81,14 @@ void UPioneerAnimInstance::DestroyCharacter()
 {
 	if (!TryGetPawnOwner())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::DestroyCharacter()> if (!TryGetPawnOwner())"));
-#endif
 		return;
 	}
-
 	if (!Pioneer)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::DestroyCharacter()> if (!Pioneer)"));
-#endif 
 		return;
 	}
 
 	Pioneer->DestroyCharacter();
 }
-/*** UBaseCharacterAnimInstance : End ***/

@@ -1,25 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Wall.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
-
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
-
-/*** Basic Function : Start ***/
 AWall::AWall()
 {
-	InitStat();
+	BuildingType = EBuildingType::Wall;
 
 	InitHelthPointBar();
 
+	InitStat();
 	InitConstructBuilding();
-
 	InitBuilding();
+}
+AWall::~AWall()
+{
 
-	BuildingType = EBuildingType::Wall;
 }
 
 void AWall::BeginPlay()
@@ -27,17 +22,13 @@ void AWall::BeginPlay()
 	Super::BeginPlay();
 
 }
-
 void AWall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 
 }
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
 void AWall::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -46,10 +37,7 @@ void AWall::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 400.0f));
 	HelthPointBar->SetDrawSize(FVector2D(100, 20));
 }
-/*** IHealthPointBarInterface : End ***/
 
-
-/*** ABuilding : Start ***/
 void AWall::InitStat()
 {
 	ConstructionTime = 10.0f;
@@ -71,14 +59,12 @@ void AWall::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-
 void AWall::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
 		FVector(3.295f, 2.41f, 4.86f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
-
 void AWall::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
@@ -89,4 +75,3 @@ void AWall::InitBuilding()
 		TEXT("StaticMesh'/Game/Buildings/Floors/SM_Floor_Below.SM_Floor_Below'"),
 		FVector(0.39500f, 0.264f, 1.0f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.3249f, -0.3365f, 376.0f));
 }
-/*** ABuilding : End ***/

@@ -11,27 +11,18 @@ class GAME_API AProjectileSniperRifle : public AProjectile
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	AProjectileSniperRifle();
+	virtual ~AProjectileSniperRifle();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() final;
+	virtual void Tick(float DeltaTime) final;
 
-public:
-	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
-
-
-/*** AProjectile : Start ***/
 protected:
-	virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
-/*** AProjectile : End ***/
-
-
-/*** AProjectileSniperRifle : Start ***/
 	UPROPERTY(EditAnywhere, Category = "AProjectileSniperRifle")
-		/** 관통하는 적들의 수를 셉니다. */
-		int hitCount; 
-/*** AProjectileSniperRifle : End ***/
+		int hitCount; /** 관통하는 적들의 수를 셉니다. */
+
+protected:
+	virtual void OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) final;
 };

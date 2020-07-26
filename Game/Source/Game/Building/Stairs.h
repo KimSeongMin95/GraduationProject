@@ -11,40 +11,27 @@ class GAME_API AStairs : public ABuilding
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	AStairs();
+	virtual ~AStairs();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() final;
+	virtual void Tick(float DeltaTime) final;
 
-public:
-	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
-
-
-/*** IHealthPointBarInterface : Start ***/
-public:
-	virtual void InitHelthPointBar() override;
-/*** IHealthPointBarInterface : End ***/
-
-
-/*** ABuilding : Start ***/
-protected:
-	virtual void InitStat() override;
-	virtual void InitConstructBuilding() override;
-	virtual void InitBuilding() override;
-/*** ABuilding : End ***/
-
-
-/*** AStairs : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere, Category = "AStairs")
 		class UStaticMeshComponent* ConstructBuildingSMC = nullptr;
-
 	UPROPERTY(VisibleAnywhere, Category = "AStairs")
 		class UStaticMeshComponent* BuildingSMC_1 = nullptr;
 	UPROPERTY(VisibleAnywhere, Category = "AStairs")
 		class UStaticMeshComponent* BuildingSMC_2 = nullptr;
-/*** AStairs : End ***/
+
+protected:
+	virtual void InitHelthPointBar() final;
+
+	virtual void InitStat() final;
+	virtual void InitConstructBuilding() final;
+	virtual void InitBuilding() final;
+
 };

@@ -12,32 +12,19 @@ class GAME_API AWarrokWKurniawan : public AEnemy
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	AWarrokWKurniawan();
+	virtual ~AWarrokWKurniawan();
 
 protected:
 	virtual void BeginPlay() final;
-
-public:
 	virtual void Tick(float DeltaTime) final;
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
-public:
-	virtual void InitHelthPointBar() final;
-/*** IHealthPointBarInterface : End ***/
-
-
-/*** ABaseCharacter : Start ***/
 protected:
+	virtual void InitHelthPointBar() final;
+
 	virtual void InitStat() final;
-/*** ABaseCharacter : End ***/
 
-
-/*** AEnemy : Start ***/
 public:
 	virtual void Victory() final;
-/*** AEnemy : End ***/
 };

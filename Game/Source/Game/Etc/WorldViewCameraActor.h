@@ -10,5 +10,4 @@ UCLASS()
 class GAME_API AWorldViewCameraActor : public ACameraActor
 {
 	GENERATED_BODY()
-	
 };

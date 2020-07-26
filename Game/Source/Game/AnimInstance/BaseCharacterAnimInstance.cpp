@@ -3,14 +3,10 @@
 
 #include "BaseCharacterAnimInstance.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/BaseCharacter.h"
 #include "Character/Pioneer.h"
 #include "Character/Enemy.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** AnimInstance Basic Function : Start ***/
 UBaseCharacterAnimInstance::UBaseCharacterAnimInstance()
 {
 	BaseCharacter = nullptr;
@@ -19,6 +15,10 @@ UBaseCharacterAnimInstance::UBaseCharacterAnimInstance()
 	bIsMoving = false;
 	Direction = 0.0f;
 	bDying = false;
+}
+UBaseCharacterAnimInstance::~UBaseCharacterAnimInstance()
+{
+
 }
 
 void UBaseCharacterAnimInstance::NativeInitializeAnimation()
@@ -33,24 +33,18 @@ void UBaseCharacterAnimInstance::NativeInitializeAnimation()
 			BaseCharacter = Cast<ABaseCharacter>(Owner);
 	}
 }
-
 void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 {
 	Super::NativeUpdateAnimation(DeltaTimeX);
 
 	if (!TryGetPawnOwner())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!TryGetPawnOwner())"));
-#endif
 		return;
 	}
-
 	if (!BaseCharacter)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!BaseCharacter)"));
-#endif
 
 		if (APawn* Owner = TryGetPawnOwner())
 		{
@@ -58,10 +52,8 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 			if (Owner->IsA(ABaseCharacter::StaticClass()))
 				BaseCharacter = Cast<ABaseCharacter>(Owner);
 		}
-
 		return;
 	}
-
 
 	bDying = BaseCharacter->bDying;
 
@@ -74,28 +66,17 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 		}
 	}
 
-	CharacterAI = (int)BaseCharacter->GetCharacterAI();
-
 	Speed = BaseCharacter->GetVelocity().Size();
 	bIsMoving = Speed > 0 ? true : false;
 	Direction = CalculateDirection(BaseCharacter->GetVelocity(), BaseCharacter->GetActorRotation());
 }
-/*** AnimInstance Basic Function : End ***/
-
-
-/*** UBaseCharacterAnimInstance : Start ***/
-void UBaseCharacterAnimInstance::DestroyCharacter()
-{
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
-}
 
 void UBaseCharacterAnimInstance::SetFSM()
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
 
-void UBaseCharacterAnimInstance::SetBehaviorTree()
+void UBaseCharacterAnimInstance::DestroyCharacter()
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
-/*** UBaseCharacterAnimInstance : End ***/

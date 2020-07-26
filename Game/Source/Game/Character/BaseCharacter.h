@@ -2,38 +2,21 @@
 
 #pragma once
 
-/*** 언리얼엔진 헤더 선언 : Start ***/
-#include "Components/CapsuleComponent.h"
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
-
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Engine.h"
-#include "Engine/World.h"
-#include "Engine/SkeletalMesh.h"
+#include "Components/SkeletalMeshComponent.h"
+//#include "Engine/World.h"
+//#include "Engine/SkeletalMesh.h"
 #include "Animation/AnimBlueprint.h"
 
-//#include "Editor/EditorEngine.h" // 어따 쓰지...
-/*** 언리얼엔진 헤더 선언 : End ***/
-
-/*** Interface 헤더 선언 : Start ***/
 #include "Interface/HealthPointBarInterface.h"
-/*** Interface 헤더 선언 : Start ***/
-
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
-
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
-
-
-UENUM(BlueprintType)
-enum class ECharacterAI : uint8
-{
-	FSM = 0,
-	BehaviorTree = 1
-};
 
 UENUM(BlueprintType)
 enum class EFiniteState : uint8
@@ -44,7 +27,6 @@ enum class EFiniteState : uint8
 	Attack,
 };
 
-
 /**
 * ABaseCharacter는 언리얼의 클래스인 ACharacter를 상속받고 APioneer와 AEnemy의 상위 클래스입니다.
 * 캐릭터의 상단에 체력바를 띄우기 위해 인터페이스 클래스인 IHealthPointBarInterface를 상속받고 기능들을 구현합니다.
@@ -54,49 +36,24 @@ class GAME_API ABaseCharacter : public ACharacter, public IHealthPointBarInterfa
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	ABaseCharacter();
+	virtual ~ABaseCharacter();
 
 protected:
 	virtual void BeginPlay() override;
-
-public:	
 	virtual void Tick(float DeltaTime) override;
-
-	/** Called to bind functionality to input */
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-/*** Basic Function : End ***/
-
-
-/*** IHealthPointBarInterface : Start ***/
-public:
-	virtual void InitHelthPointBar() override;
-	virtual void BeginPlayHelthPointBar() final;
-	virtual void TickHelthPointBar() final;
-/*** IHealthPointBarInterface : End ***/
-
-
-/*** ABaseCharacter : Start ***/
-private:
-	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
-		ECharacterAI CharacterAI;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; /** Called to bind functionality to input */
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "DetectRange")
 		class USphereComponent* DetectRangeSphereComp = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "DetectRange")
-		/** DetactRangeSphereComp와 Overlap된 ABaseCharacter들을 모두 저장하고 벗어나면 삭제 */
-		TArray<ABaseCharacter*> OverlappedCharacterInDetectRange;
-
+		TArray<ABaseCharacter*> OverlappedCharacterInDetectRange; /** DetactRangeSphereComp와 Overlap된 ABaseCharacter들을 모두 저장하고 벗어나면 제거합니다. */
 
 	UPROPERTY(VisibleAnywhere, Category = "AIController")
 		class ABaseAIController* AIController = nullptr;
-
-
-	UPROPERTY(VisibleAnywhere, Category = "Rotation")
-		float TimerOfRotateTargetRotation;
 
 	UPROPERTY(EditAnywhere, Category = "Rotation")
 		bool bRotateTargetRotation;
@@ -104,26 +61,21 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Rotation")
 		FRotator TargetRotation;
 
-
-	UPROPERTY(EditAnywhere, Category = "CharacterAI")
+	UPROPERTY(EditAnywhere)
 		class AActor* TargetActor = nullptr;
 
-	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
+	UPROPERTY(VisibleAnywhere)
 		float TimerOfFindTheTargetActor;
 
-	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
+	UPROPERTY(VisibleAnywhere)
 		float TimerOfIdlingOfFSM;
-	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
+	UPROPERTY(VisibleAnywhere)
 		float TimerOfTracingOfFSM;
-	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
+	UPROPERTY(VisibleAnywhere)
 		float TimerOfAttackingOfFSM;
 
-
 public:
-	UPROPERTY(EditAnywhere, Category = "Stat")
-		bool bDyingFlag;
-
-	UPROPERTY(VisibleAnywhere, Category = "CharacterAI")
+	UPROPERTY(VisibleAnywhere)
 		EFiniteState State;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
@@ -132,29 +84,27 @@ public:
 		float MaxHealthPoint; /** 최대 생명력 */
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		bool bDying;
-
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float MoveSpeed;
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackSpeed;
-
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackPower;
-
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float SightRange;
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float DetectRange;
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float AttackRange;
-
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float Exp;
 
-private:
-
-
 protected:
+	virtual void InitHelthPointBar() override;
+	virtual void BeginPlayHelthPointBar() final;
+	virtual void TickHelthPointBar() final;
+
+	void InitCapsuleComponent();
 	virtual void InitStat();
 	virtual void InitRanges();
 	virtual void InitAIController();
@@ -169,7 +119,6 @@ protected:
 	UFUNCTION(Category = "Rotation")
 		virtual void RotateTargetRotation(float DeltaTime);
 
-
 	UFUNCTION(Category = "CharacterMovement")
 		float DistanceToActor(AActor* Actor);
 
@@ -177,67 +126,40 @@ public:
 	void SetGenerateOverlapEventsOfCapsuleComp(bool bGenerate);
 
 	FORCEINLINE AActor* GetTargetActor() const { return TargetActor; }
-
-	FORCEINLINE ECharacterAI GetCharacterAI() const { return CharacterAI; }
-	
 	FORCEINLINE USphereComponent* GetDetectRangeSphereComp() const { return DetectRangeSphereComp; }
 
 	UFUNCTION(Category = "Stat")
 		virtual void SetHealthPoint(float Value, int IDOfPioneer = 0);
 
-
 	UFUNCTION(Category = "AIController")
-		/** AIController에 Possess 합니다. */
-		void PossessAIController();
-
+		void PossessAIController(); /** AIController에 Possess 합니다. */
 	UFUNCTION(Category = "AIController")
-		/** AIController에 Possess 합니다. */
-		void UnPossessAIController();
+		void UnPossessAIController(); /** AIController에 Possess 합니다. */
 
 	UFUNCTION(Category = "CharacterMovement")
 		void StopMovement();
 
-
 	UFUNCTION(Category = "Rotation")
-		/** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
-		void LookAtTheLocation(FVector Location);
+		void LookAtTheLocation(FVector Location); /** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
 
-	UFUNCTION(Category = "CharacterAI")
+	UFUNCTION()
 		virtual bool CheckNoObstacle(AActor* Target);
 
-	UFUNCTION(Category = "CharacterAI")
-		/** TargetActor를 찾기 */
-		virtual void FindTheTargetActor(float DeltaTime);
+	UFUNCTION()
+		virtual void FindTheTargetActor(float DeltaTime); /** TargetActor를 찾습니다. */
+	UFUNCTION()
+		void TracingTargetActor(); /** TargetActor 위치로 이동합니다. */
+	UFUNCTION()
+		void MoveRandomlyPosition(); /** 랜덤한 위치로 이동합니다 */
+	UFUNCTION()
+		void MoveThePosition(FVector newPosition); /** 지정한 위치로 이동합니다 */
 
-	UFUNCTION(Category = "CharacterAI")
-		/** TargetActor 위치로 이동 */
-		void TracingTargetActor();
-
-	UFUNCTION(Category = "CharacterAI")
-		/** 랜덤한 위치로 이동 */
-		void MoveRandomlyPosition();
-
-	UFUNCTION(Category = "CharacterAI")
-		/** 지정한 위치로 이동 */
-		void MoveThePosition(FVector newPosition);
-
-
-
-
-	UFUNCTION(Category = "CharacterAI")
+	UFUNCTION()
 		virtual void IdlingOfFSM(float DeltaTime);
-
-	UFUNCTION(Category = "CharacterAI")
+	UFUNCTION()
 		virtual void TracingOfFSM(float DeltaTime);
-
-	UFUNCTION(Category = "CharacterAI")
+	UFUNCTION()
 		virtual void AttackingOfFSM(float DeltaTime);
-
-	UFUNCTION(Category = "CharacterAI")
+	UFUNCTION()
 		virtual void RunFSM(float DeltaTime);
-
-
-	UFUNCTION(Category = "CharacterAI")
-		virtual void RunBehaviorTree(float DeltaTime);
-/*** ABaseCharacter : End ***/
 };

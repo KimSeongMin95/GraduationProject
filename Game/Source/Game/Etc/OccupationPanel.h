@@ -2,19 +2,14 @@
 
 #pragma once
 
-
-/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Materials/MaterialInstanceConstant.h"
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
 #include "Materials/Material.h"
 #include "Materials/MaterialInterface.h"
-/*** 언리얼엔진 헤더 선언 : End ***/
 
-/*** Interface 헤더 선언 : Start ***/
 #include "Interface/HealthPointBarInterface.h"
-/*** Interface 헤더 선언 : Start ***/
-
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -30,33 +25,19 @@ enum class EDownBorderState : uint8
 	End
 };
 
-
 UCLASS()
 class GAME_API AOccupationPanel : public AActor, public IHealthPointBarInterface
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:	
 	AOccupationPanel();
+	virtual ~AOccupationPanel();
 
 protected:
 	virtual void BeginPlay() final;
-
-public:	
 	virtual void Tick(float DeltaTime) final;
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
-public:
-	virtual void InitHelthPointBar() final;
-	virtual void BeginPlayHelthPointBar() final;
-	virtual void TickHelthPointBar() final;
-/*** IHealthPointBarInterface : End ***/
-
-
-/*** AOccupationPanel : Start ***/
 public:
 
 	UPROPERTY(EditAnywhere)
@@ -104,14 +85,17 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		bool TickFlag;
 
+protected:
+	virtual void InitHelthPointBar() final;
+	virtual void BeginPlayHelthPointBar() final;
+	virtual void TickHelthPointBar() final;
+
 public:
 	UFUNCTION()
 		virtual void OnOverlapBegin_Pioneer(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 	UFUNCTION()
 		virtual void OnOverlapEnd_Pioneer(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	void TickOfOccupation(float DeltaTime);
 	void TickOfDownBorderMesh(float DeltaTime);
-/*** AOccupationPanel : End ***/
 };

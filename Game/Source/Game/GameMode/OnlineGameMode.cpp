@@ -5,8 +5,8 @@
 #include "Network/MainClient.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
-#include "CustomWidget/InGameWidget.h"
-#include "CustomWidget/InGameScoreBoardWidget.h"
+#include "Widget/InGameWidget.h"
+#include "Widget/ScoreBoardWidget.h"
 #include "PioneerManager.h"
 #include "SpaceShip/SpaceShip.h"
 #include "BuildingManager.h"
@@ -34,8 +34,8 @@ void AOnlineGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (cGameServer::GetSingleton()->IsServerOn() && InGameScoreBoardWidget)
-		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
+	if (cGameServer::GetSingleton()->IsServerOn() && ScoreBoardWidget)
+		ScoreBoardWidget->SetServerDestroyedVisibility(false);
 }
 void AOnlineGameMode::StartPlay()
 {
@@ -185,9 +185,9 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 		return;
 	timer = 0.0f;
 
-	if (!InGameScoreBoardWidget)
+	if (!ScoreBoardWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetScoreBoard(...)> if (!InGameScoreBoardWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::GetScoreBoard(...)> if (!ScoreBoardWidget)"));
 		return;
 	}
 	if (!PioneerManager)
@@ -232,7 +232,7 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 		copiedQueue.push(vec);
 	}
 
-	InGameScoreBoardWidget->RevealScores(copiedQueue);
+	ScoreBoardWidget->RevealScores(copiedQueue);
 }
 void AOnlineGameMode::SendInfoOfSpaceShip(float DeltaTime)
 {
@@ -280,7 +280,6 @@ void AOnlineGameMode::GetDiedPioneer(float DeltaTime)
 			{
 				// bDying을 바꿔주면 BaseCharacterAnimInstance에서 UPioneerAnimInstance::DestroyCharacter()를 호출하고
 				// Pioneer->DestroyCharacter();을 호출하여 알아서 소멸하게 됩니다.
-				PioneerManager->Pioneers[copiedQueue.front()]->bDyingFlag = true;
 				PioneerManager->Pioneers[copiedQueue.front()]->bDying = true;
 			}
 
@@ -805,17 +804,17 @@ void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 		return;
 	timer = 0.0f;
 
-	if (!InGameScoreBoardWidget)
+	if (!ScoreBoardWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvScoreBoard(...)> if (!InGameScoreBoardWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AOnlineGameMode::RecvScoreBoard(...)> if (!ScoreBoardWidget)"));
 		return;
 	}
 
 	// 서버 연결상태 확인
 	if (cGameClient::GetSingleton()->IsServerOn())
-		InGameScoreBoardWidget->SetServerDestroyedVisibility(false);
+		ScoreBoardWidget->SetServerDestroyedVisibility(false);
 	else
-		InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
+		ScoreBoardWidget->SetServerDestroyedVisibility(true);
 
 	if (cGameClient::GetSingleton()->tsqScoreBoard.empty())
 	{
@@ -825,7 +824,7 @@ void AOnlineGameMode::RecvScoreBoard(float DeltaTime)
 
 	std::queue<cInfoOfScoreBoard> copiedQueue = cGameClient::GetSingleton()->tsqScoreBoard.copy_clear();
 
-	InGameScoreBoardWidget->RevealScores(copiedQueue);
+	ScoreBoardWidget->RevealScores(copiedQueue);
 }
 void AOnlineGameMode::RecvInfoOfSpaceShip(float DeltaTime)
 {
@@ -914,7 +913,6 @@ void AOnlineGameMode::RecvDiedPioneer(float DeltaTime)
 			{
 				// bDying을 바꿔주면 BaseCharacterAnimInstance에서 UPioneerAnimInstance::DestroyCharacter()를 호출하고
 				// Pioneer->DestroyCharacter();을 호출하여 알아서 소멸하게 됩니다.
-				PioneerManager->Pioneers[copiedQueue.front()]->bDyingFlag = true;
 				PioneerManager->Pioneers[copiedQueue.front()]->bDying = true;
 			}
 

@@ -2,10 +2,6 @@
 
 #pragma once
 
-/*** 언리얼엔진 헤더 선언 : Start ***/
-
-/*** 언리얼엔진 헤더 선언 : End ***/
-
 #include "CoreMinimal.h"
 #include "Projectile/Projectile.h"
 #include "ProjectileSplash.generated.h"
@@ -15,19 +11,18 @@ class GAME_API AProjectileSplash : public AProjectile
 {
 	GENERATED_BODY()
 	
-/*** Basic Function : Start ***/
 public:
 	AProjectileSplash();
+	virtual ~AProjectileSplash();
 
 protected:
 	virtual void BeginPlay() override;
-
-public:
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
 
+private:
+	UPROPERTY(VisibleAnywhere, Category = "AProjectileSplash")
+		class USphereComponent* SplashRange = nullptr;
 
-/*** AProjectile : Start ***/
 protected:
 	virtual void InitProjectile();
 
@@ -35,17 +30,6 @@ protected:
 
 	virtual void SetTimerForDestroy(float Time) override;
 
-public:
-	virtual void SetLifespan(float Time) override;
-/*** AProjectile : End ***/
-
-
-/*** AProjectileSplash : Start ***/
-private:
-	UPROPERTY(VisibleAnywhere, Category = "AProjectileSplash")
-		class USphereComponent* SplashRange = nullptr;
-
-protected:
 	void SetSplashRange(float Radius);
 
 	UFUNCTION(Category = "Splash")
@@ -58,7 +42,7 @@ protected:
 		void DestroySplashByTimer();
 
 public:
-	FORCEINLINE class USphereComponent* GetSplashRange() const { return SplashRange; }
+	virtual void SetLifespan(float Time) override;
 
-/*** AProjectileSplash : End ***/
+	FORCEINLINE class USphereComponent* GetSplashRange() const { return SplashRange; }
 };

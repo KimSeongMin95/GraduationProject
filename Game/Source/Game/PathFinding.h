@@ -2,12 +2,10 @@
 
 #pragma once
 
-/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "GameFramework/Controller.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h" // Navigation
 #include "Math/Vector.h"
 #include "Navigation/PathFollowingComponent.h"
-/*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
 
@@ -26,12 +24,8 @@ enum PathFindAlgorithm
 static class GAME_API PathFinding
 {
 public:
-	/** Navigation중 WASD키로 움직이면 가던 길을 멈춥니다. */
-	static bool bMoveInterrupt;
+	static bool bMoveInterrupt; /** Navigation중 WASD키로 움직이면 가던 길을 멈춥니다. */
 
-	/** PioneerController에서 길찾기 알고리즘을 선택해서 실행합니다. */
 	static void SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Controller, const FVector DestLocation);
 	static void SetNewMoveDestination(PathFindAlgorithm PFA_, AController* Controller, const AActor* DestActor);
-
-
 };

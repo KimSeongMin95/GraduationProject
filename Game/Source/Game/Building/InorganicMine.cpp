@@ -1,25 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "InorganicMine.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
-
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
-
-/*** Basic Function : Start ***/
 AInorganicMine::AInorganicMine()
 {
-	InitStat();
+	BuildingType = EBuildingType::InorganicMine;
 
 	InitHelthPointBar();
 
+	InitStat();
 	InitConstructBuilding();
-
 	InitBuilding();
+}
+AInorganicMine::~AInorganicMine()
+{
 
-	BuildingType = EBuildingType::InorganicMine;
 }
 
 void AInorganicMine::BeginPlay()
@@ -27,17 +22,13 @@ void AInorganicMine::BeginPlay()
 	Super::BeginPlay();
 
 }
-
 void AInorganicMine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 
 }
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
 void AInorganicMine::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -46,10 +37,7 @@ void AInorganicMine::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 400.0f));
 	HelthPointBar->SetDrawSize(FVector2D(120, 25));
 }
-/*** IHealthPointBarInterface : End ***/
 
-
-/*** ABuilding : Start ***/
 void AInorganicMine::InitStat()
 {
 	ConstructionTime = 20.0f;
@@ -71,18 +59,15 @@ void AInorganicMine::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-
 void AInorganicMine::InitConstructBuilding()
 {
-	AddConstructBuildingSMC(&ConstructBuildingSMC_1, TEXT("ConstructBuildingSMC_1"),
+	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
 		FVector(6.042f, 4.417f, 3.727f), FRotator(0.0f, 0.0f, 0.0f));
 }
-
 void AInorganicMine::InitBuilding()
 {
-	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
+	AddBuildingSMC(&BuildingSMC, TEXT("BuildingSMC"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason2/ModSciInteriors/Meshes/SM_EnergyNode_A.SM_EnergyNode_A'"),
 		FVector(10.0f, 10.0f, 10.0f), FRotator(0.0f, 0.0f, 0.0f));
 }
-/*** ABuilding : End ***/

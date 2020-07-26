@@ -2,16 +2,12 @@
 
 #pragma once
 
-/*** 언리얼엔진 헤더 선언 : Start ***/
+#include "Components/SceneComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Animation/Skeleton.h"
 #include "Animation/AnimSequence.h"
-#include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
-
-#include "Components/ArrowComponent.h"
-
+#include "Engine/Public/TimerManager.h" // For GetWorldTimerManager()
 #include "EngineUtils.h" // TActorIterator<>
-#include "Components/SceneComponent.h"
-/*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
 #include "Building/Building.h"
@@ -22,33 +18,14 @@ class GAME_API ATurret : public ABuilding
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	ATurret();
+	virtual ~ATurret();
 
 protected:
 	virtual void BeginPlay() override;
-
-public:
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
-public:
-	virtual void InitHelthPointBar();
-/*** IHealthPointBarInterface : End ***/
-
-
-/*** ABuilding : Start ***/
-protected:
-	virtual void InitStat() override;
-	virtual void InitConstructBuilding() override;
-	virtual void InitBuilding() override;
-/*** ABuilding : End ***/
-
-
-/*** ATurret : Start ***/
 protected:
 	class cServerSocketInGame* ServerSocketInGame = nullptr;
 	class cClientSocketInGame* ClientSocketInGame = nullptr;
@@ -62,25 +39,19 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
 		class UStaticMeshComponent* BuildingSMC_Tower = nullptr;
-
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
 		class USkeletalMeshComponent* BuildingSkMC_Head = nullptr;
 
-
 	UPROPERTY(VisibleAnywhere, Category = "Animation")
 		class USkeleton* Skeleton = nullptr;
-
 	UPROPERTY(VisibleAnywhere, Category = "Animation")
 		class UAnimSequence* AnimSequence = nullptr;
 
-
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
-		/** Projectile이 Spawn되는 방향을 표시 */
-		class UArrowComponent* ArrowComponent = nullptr;
+		class UArrowComponent* ArrowComponent = nullptr; /** Projectile이 Spawn되는 방향을 표시합니다. */
 
 	UPROPERTY(EditAnywhere, Category = "ATurret")
 		float TickOfFireCoolTime;
-
 	UPROPERTY(EditAnywhere, Category = "ATurret")
 		float FireCoolTime;
 
@@ -90,16 +61,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "ATurret")
 		float AttackRange;
 
-	UPROPERTY(EditAnywhere, Category = "ATurret")
-		float TickOfFindEnemyTime;
-
 	UPROPERTY(VisibleAnywhere, Category = "ATurret")
 		TMap<int32, class AEnemy*> Targets;
-
-
-
-	UPROPERTY(VisibleAnywhere, Category = "Rotation")
-		float TimerOfRotateTargetRotation;
 
 	UPROPERTY(EditAnywhere, Category = "Rotation")
 		bool bRotateTargetRotation;
@@ -107,13 +70,16 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Rotation")
 		FRotator TargetRotation;
 
-
 	UPROPERTY(EditAnywhere, Category = "ATurret")
 		int IdxOfTarget;
 
-
-
 protected:
+	virtual void InitHelthPointBar();
+
+	virtual void InitStat() override;
+	virtual void InitConstructBuilding() override;
+	virtual void InitBuilding() override;
+
 	void InitAnimation(USkeletalMeshComponent* SkeletalMeshComponent, const TCHAR* SkeletonToFind, const TCHAR* AnimSequenceToFind, float PlayRate = 1.0f);
 	void InitArrowComponent(FRotator Rotatation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
@@ -124,12 +90,9 @@ protected:
 	void RotateTargetRotation(float DeltaTime);
 
 	UFUNCTION(Category = "Rotation")
-		/** 포탑 방향을 Location을 바라보도록 회전합니다. */
-		void LookAtTheLocation();
+		void LookAtTheLocation(); /** 포탑 방향을 Location을 바라보도록 회전합니다. */
 
 	void Fire();
 
 	void TickOfUnderWall();
-	
-/*** ATurret : End ***/
 };

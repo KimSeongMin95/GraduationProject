@@ -31,17 +31,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		class UInGameWidget* InGameWidget = nullptr; /** 인게임 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		class UInGameMenuWidget* InGameMenuWidget = nullptr; /** 메뉴 UI */
+		class UMenuWidget* MenuWidget = nullptr; /** 메뉴 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		class UInGameVictoryWidget* InGameVictoryWidget = nullptr; /** 게임 승리 UI */
+		class UVictoryWidget* VictoryWidget = nullptr; /** 게임 승리 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		class UInGameDefeatWidget* InGameDefeatWidget = nullptr; /** 게임 패배 UI */
+		class UDefeatWidget* DefeatWidget = nullptr; /** 게임 패배 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		class UBuildingToolTipWidget* BuildingToolTipWidget = nullptr; /** 건물 툴팁 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		class UDialogWidget* DialogWidget = nullptr; /** 설명 UI */
 	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		class UInGameScoreBoardWidget* InGameScoreBoardWidget = nullptr; /** 플레이어 점수판 UI */
+		class UScoreBoardWidget* ScoreBoardWidget = nullptr; /** 플레이어 점수판 UI */
 
 	UPROPERTY(VisibleAnywhere)
 		class APioneerController* PioneerController = nullptr;

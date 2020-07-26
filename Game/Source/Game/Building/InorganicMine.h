@@ -11,38 +11,24 @@ class GAME_API AInorganicMine : public ABuilding
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	AInorganicMine();
+	virtual ~AInorganicMine();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() final;
+	virtual void Tick(float DeltaTime) final;
 
 public:
-	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
+	UPROPERTY(VisibleAnywhere, Category = "AInorganicMine")
+		class UStaticMeshComponent* ConstructBuildingSMC = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "AInorganicMine")
+		class UStaticMeshComponent* BuildingSMC = nullptr;
 
-
-/*** IHealthPointBarInterface : Start ***/
-public:
-	virtual void InitHelthPointBar() override;
-/*** IHealthPointBarInterface : End ***/
-
-
-/*** ABuilding : Start ***/
 protected:
-	virtual void InitStat() override;
-	virtual void InitConstructBuilding() override;
-	virtual void InitBuilding() override;
-/*** ABuilding : End ***/
+	virtual void InitHelthPointBar() final;
 
-
-/*** AInorganicMine : Start ***/
-public:
-	UPROPERTY(VisibleAnywhere, Category = "AInorganicMine")
-		class UStaticMeshComponent* ConstructBuildingSMC_1 = nullptr;
-
-	UPROPERTY(VisibleAnywhere, Category = "AInorganicMine")
-		class UStaticMeshComponent* BuildingSMC_1 = nullptr;
-/*** AInorganicMine : End ***/
+	virtual void InitStat() final;
+	virtual void InitConstructBuilding() final;
+	virtual void InitBuilding() final;
 };

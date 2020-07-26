@@ -2,21 +2,12 @@
 
 #include "EnemySpawner.h"
 
-
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
-//#include "Character/Enemy.h"
-#include "GameMode/InGameMode.h"
+#include "Character/Enemy.h"
 #include "EnemyManager.h"
-
 #include "Network/GameClient.h"
-
+#include "Etc/OccupationPanel.h"
 #include "Etc/MyTriggerBox.h"
 
-#include "Etc/OccupationPanel.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
-
-
-/*** Basic Function : Start ***/
 AEnemySpawner::AEnemySpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -25,7 +16,7 @@ AEnemySpawner::AEnemySpawner()
 	SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	RootComponent = SceneComp;
 
-	EnemyType = EEnemyType::None;
+	EnemyType = 0;
 
 	SpawnCount = 0;
 	SpawnLimit = 5;
@@ -54,28 +45,27 @@ AEnemySpawner::AEnemySpawner()
 
 	OccupationPanel = nullptr;
 }
+AEnemySpawner::~AEnemySpawner()
+{
+
+}
 
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
-
 
 	if (cGameClient::GetSingleton()->IsClientSocketOn())
 	{
 		Destroy();
 	}
 }
-
 void AEnemySpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	TickOfSpawnEnemy(DeltaTime);
 }
-/*** Basic Function : End ***/
 
-
-/*** AEnemySpawner : Start ***/
 void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 {
 	// 소멸 트리거가 발동되면 소멸합니다.
@@ -96,9 +86,7 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 	
 	if (!EnemyManager)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AEnemySpawner::TickOfSpawnEnemy(...)> if (!EnemyManager)"));
-#endif
 		return;
 	}
 
@@ -114,7 +102,7 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 	if (SpawnCount < SpawnLimit)
 	{
 		// 생성되면
-		if (AEnemy* enemy = EnemyManager->SpawnEnemy((int)EnemyType, GetActorTransform()))
+		if (AEnemy* enemy = EnemyManager->SpawnEnemy(EnemyType, GetActorTransform()))
 		{
 			enemy->SetTriggerBoxForSpawn(TriggerBoxForSpawn);
 
@@ -124,7 +112,7 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 
 			if (MoveSpeed > 0.0f)
 			{
-				enemy->GetCharacterMovement()->MaxWalkSpeed = AInGameMode::CellSize * MoveSpeed;
+				enemy->GetCharacterMovement()->MaxWalkSpeed = 64.0f * MoveSpeed;
 			}
 
 			enemy->HealthPoint *= PercentageOfHealth / 100.0f;

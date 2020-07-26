@@ -11,38 +11,25 @@ class GAME_API ANuclearFusionPowerPlant : public ABuilding
 {
 	GENERATED_BODY()
 
-/*** Basic Function : Start ***/
 public:
 	ANuclearFusionPowerPlant();
+	virtual ~ANuclearFusionPowerPlant();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() final;
+	virtual void Tick(float DeltaTime) final;
 
-public:
-	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
-
-
-/*** IHealthPointBarInterface : Start ***/
-public:
-	virtual void InitHelthPointBar() override;
-/*** IHealthPointBarInterface : End ***/
-
-
-/*** ABuilding : Start ***/
-protected:
-	virtual void InitStat() override;
-	virtual void InitConstructBuilding() override;
-	virtual void InitBuilding() override;
-/*** ABuilding : End ***/
-
-
-/*** ANuclearFusionPowerPlant : Start ***/
 public:
 	UPROPERTY(VisibleAnywhere, Category = "ANuclearFusionPowerPlant")
 		class UStaticMeshComponent* ConstructBuildingSMC = nullptr;
-
 	UPROPERTY(VisibleAnywhere, Category = "ANuclearFusionPowerPlant")
-		class UStaticMeshComponent* BuildingSMC_1 = nullptr;
-/*** ANuclearFusionPowerPlant : End ***/
+		class UStaticMeshComponent* BuildingSMC = nullptr;
+
+protected:
+	virtual void InitHelthPointBar() final;
+
+	virtual void InitStat() final;
+	virtual void InitConstructBuilding() final;
+	virtual void InitBuilding() final;
+
 };

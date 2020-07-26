@@ -2,26 +2,14 @@
 
 #include "PioneerController.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "PathFinding.h"
-
 #include "Character/Pioneer.h"
-#include "Controller/PioneerAIController.h"
-
-#include "Item/Item.h"
-#include "Item/Weapon/Weapon.h"
-
+#include "Weapon/Weapon.h"
 #include "GameMode/InGameMode.h"
-
 #include "PioneerManager.h"
-
 #include "Etc/WorldViewCameraActor.h"
-
 #include "Building/Building.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** Basic Function : Start ***/
 APioneerController::APioneerController()
 {
 	Pioneer = nullptr;
@@ -32,12 +20,15 @@ APioneerController::APioneerController()
 
 	bObservation = true;
 
-	// setting mouse
 	bShowMouseCursor = true; // 마우스를 보이게 합니다.
 	//DefaultMouseCursor = EMouseCursor::Default; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
 	DefaultMouseCursor = EMouseCursor::Crosshairs; // EMouseCursor::에 따라 마우스 커서 모양을 변경할 수 있습니다.
 
 	PlayTickDeltaTime = 0.0f;
+}
+APioneerController::~APioneerController()
+{
+
 }
 
 void APioneerController::PlayerTick(float DeltaTime)
@@ -52,7 +43,6 @@ void APioneerController::PlayerTick(float DeltaTime)
 		MoveToMouseCursor();
 	}
 }
-
 void APioneerController::SetupInputComponent()
 {
 	// set up gameplay key bindings
@@ -61,13 +51,6 @@ void APioneerController::SetupInputComponent()
 	// support keyboard
 	InputComponent->BindAction("SetDestination", IE_Pressed, this, &APioneerController::OnSetDestinationPressed);
 	InputComponent->BindAction("SetDestination", IE_Released, this, &APioneerController::OnSetDestinationReleased);
-
-	//// support touch devices 
-	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &APioneerController::MoveToTouchLocation);
-	//InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &APioneerController::MoveToTouchLocation);
-
-	//// support VR
-	//InputComponent->BindAction("ResetVR", IE_Pressed, this, &APioneerController::OnResetVR);
 	
 	// W S키: 전후진이동
 	InputComponent->BindAxis("MoveForward", this, &APioneerController::MoveForward);
@@ -122,17 +105,17 @@ void APioneerController::SetupInputComponent()
 	InputComponent->BindAxis("EasterEgg", this, &APioneerController::EasterEgg);
 
 }
-/*** Basic Function : End ***/
 
+void APioneerController::SetViewTargetWithBlend(class AActor* NewViewTarget, float BlendTime, enum EViewTargetBlendFunction BlendFunc, float BlendExp, bool bLockOutgoing)
+{
+	APlayerController::SetViewTargetWithBlend(NewViewTarget, BlendTime, BlendFunc, BlendExp, bLockOutgoing);
+}
 
-/*** APlayerController : Start ***/
 void APioneerController::OnPossess(APawn* InPawn)
 {
 	if (!InPawn)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::OnPossess(...)> if (!InPawn)"));
-#endif		
 		return;
 	}
 
@@ -150,9 +133,7 @@ void APioneerController::OnUnPossess()
 
 	if (!GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::OnUnPossess(...)> if (!GetPawn())"));
-#endif		
 		return;
 	}
 
@@ -162,110 +143,49 @@ void APioneerController::OnUnPossess()
 
 	bObservation = true;
 }
-/*** APlayerController : End ***/
 
-
-/*** APioneerController : Start ***/
 void APioneerController::MoveToMouseCursor()
 {
 	if (!Pioneer)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveToMouseCursor()> if (!Pioneer)"));
-#endif		return;
+		return;
 	}
 
-	// VR 사용시
-	/*if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
+	if (APioneer* pioneer = Cast<APioneer>(GetPawn()))
 	{
-		if (APioneer* MyPawn = Cast<APioneer>(GetPawn()))
-		{
-			if (MyPawn->GetCursorToWorld())
-			{
-				UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, MyPawn->GetCursorToWorld()->GetComponentLocation());
-			}
-		}
-	}
-	else*/
-	// 마우스 커서 사용시
-	{
-		if (APioneer* pioneer = Cast<APioneer>(GetPawn()))
-		{
-			if (pioneer->GetCursorToWorld() == nullptr)
-				return;
+		if (pioneer->GetCursorToWorld() == nullptr)
+			return;
+		if (pioneer->bDying == true)
+			return;
 
-			// 죽으면 함수를 실행하지 않음.
-			if (pioneer->bDying == true)
-				return;
-
-			//// Trace to see what is under the mouse cursor
-			//// 마우스 커서 아래에 무엇이 존재하는지 추적합니다.
-			//FHitResult HitResult;
-			//GetHitResultUnderCursor(ECC_Visibility, false, HitResult); // 내부에서 APlayerController::GetHitResultAtScreenPosition(...)을 사용합니다.
-			//// ECollisionChannel:: indicating different type of objects for rigid-body collision purposes.
-
-			//// Indicates if this hit was a result of blocking collision
-			//if (HitResult.bBlockingHit)
-			//{
-			//	// We hit something, move there
-			//	// Hit.ImpactPoint는 Ray와 충돌한 물체의 표면 지점을 반환합니다.
-			//	PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, HitResult.ImpactPoint);
-			//}
-			PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, pioneer->GetCursorToWorld()->GetComponentLocation());
-		}
+		PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, pioneer->GetCursorToWorld()->GetComponentLocation());
 	}
 }
-
-//void APioneerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location)
-//{
-//	// 받아온 터치한 위치를 ScreenSpaceLocation에 저장합니다.
-//	FVector2D ScreenSpaceLocation(Location);
-//
-//	// Trace to see what is under the touch location
-//	// 터치한 위치 아래에 무엇이 존재하는지 추적합니다.
-//	FHitResult HitResult;
-//	GetHitResultAtScreenPosition(ScreenSpaceLocation, CurrentClickTraceChannel, true, HitResult);
-//
-//	// Indicates if this hit was a result of blocking collision
-//	if (HitResult.bBlockingHit)
-//	{
-//		// We hit something, move there
-//		// Hit.ImpactPoint는 Ray와 충돌한 물체의 표면 지점을 반환합니다.
-//		PathFinding::SetNewMoveDestination(PFA_NaveMesh, this, HitResult.ImpactPoint);
-//	}
-//}
 
 void APioneerController::OnSetDestinationPressed()
 {
 	// set flag to keep updating destination until released
 	bMoveToMouseCursor = true;
 }
-
 void APioneerController::OnSetDestinationReleased()
 {
 	// clear flag to indicate we should stop updating the destination
 	bMoveToMouseCursor = false;
 }
 
-
 void APioneerController::MoveForward(float Value)
 {
-	//// 현재 컨트롤러가 사용하고 있는 Pawn 객체를 (APioneer*)로 변환하여 가져옵니다.
-	//APioneer* MyPawn = dynamic_cast<APioneer*>(GetPawn());
-
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	// Value에 값이 없으면 실행할 필요가 없으니 종료합니다.합니다.
 	if (Value == 0.0f)
 		return;
 
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveForward(...)> if (!Pioneer || !GetPawn())"));
-#endif		
 		return;
 	}
 	
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
@@ -277,27 +197,19 @@ void APioneerController::MoveForward(float Value)
 	const FRotator YawRotation(0, Rotation.Yaw, 0); // 오른쪽 방향을 찾습니다.
 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	Pioneer->AddMovementInput(Direction, Value); // 해당 방향으로 이동 값을 추가합니다.
-
-	//// 방향을 고정합니다.
-	//MyPawn->AddMovementInput(FVector().ForwardVector, value);
 }
-
 void APioneerController::MoveRight(float Value)
 {
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	// Value에 값이 없으면 실행할 필요가 없으니 종료합니다.
 	if (Value == 0.0f)
 		return;
 
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveRight(...)> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
-
-
-	// 죽으면 함수를 실행하지 않음.
+	
 	if (Pioneer->bDying)
 		return;
 
@@ -309,14 +221,11 @@ void APioneerController::MoveRight(float Value)
 	const FRotator YawRotation(0, Rotation.Yaw, 0); // 오른쪽 방향을 찾습니다.
 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	Pioneer->AddMovementInput(Direction, Value); // 해당 방향으로 이동 값을 추가합니다.
-
-	//// 방향을 고정합니다.
-	//MyPawn->AddMovementInput(FVector().RightVector, value);
 }
 
 void APioneerController::ZoomInOrZoomOut(float Value)
 {
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	// Value에 값이 없으면 실행할 필요가 없으니 종료합니다.
 	if (Value == 0.0f)
 		return;
 
@@ -326,57 +235,45 @@ void APioneerController::ZoomInOrZoomOut(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ZoomInOrZoomOut(...)> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
 
-
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
 	Pioneer->ZoomInOrZoomOut(Value);
 }
+
 void APioneerController::FireWeapon(float Value)
 {
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	// Value에 값이 없으면 실행할 필요가 없으니 종료합니다.
 	if (Value == 0.0f)
 		return;
 
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::FireWeapon(...)> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
 
-
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
 	Pioneer->FireWeapon();
 }
-
 void APioneerController::ChangePreviousWeapon()
 {
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ChangePreviousWeapon()> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
 
-
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
-	// 건설모드면 실행하지 않음.
+	// 건설모드면 실행하지 않습니다.
 	if (Pioneer->bConstructingMode)
 		return;
 		
@@ -386,18 +283,14 @@ void APioneerController::ChangeNextWeapon()
 {
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ChangeNextWeapon()> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
-
-
-	// 죽으면 함수를 실행하지 않음.
+	
 	if (Pioneer->bDying)
 		return;
 
-	// 건설모드면 실행하지 않음.
+	// 건설모드면 실행하지 않습니다.
 	if (Pioneer->bConstructingMode)
 		return;
 
@@ -407,14 +300,10 @@ void APioneerController::ArmOrDisArmWeapon()
 {
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ArmOrDisArmWeapon()> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
 
-
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
@@ -440,13 +329,10 @@ void APioneerController::ConstructingMode()
 {
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ConstructingMode()> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
 
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
@@ -459,13 +345,10 @@ void APioneerController::ESC_ConstructingMode()
 {
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ESC_ConstructingMode()> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
 
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
@@ -478,19 +361,16 @@ void APioneerController::ESC_ConstructingMode()
 }
 void APioneerController::SpawnBuilding(float Value)
 {
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	// Value에 값이 없으면 실행할 필요가 없으니 종료합니다.
 	if (Value == 0.0f)
 		return;
 
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::SpawnBuilding(...)> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
 
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
@@ -499,20 +379,16 @@ void APioneerController::SpawnBuilding(float Value)
 }
 void APioneerController::RotatingBuilding(float Value)
 {
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	// Value에 값이 없으면 실행할 필요가 없으니 종료합니다.
 	if (Value == 0.0f)
 		return;
 
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::RotatingBuilding(...)> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
 
-
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
@@ -522,21 +398,16 @@ void APioneerController::PlaceBuilding()
 {
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::PlaceBuilding()> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
 
-
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
 	// nullptr 체크
 	if (!Pioneer->GetBuilding())
 		return;
-
 
 	// 기본적으로 자원이 부족하면 건설하지 않습니다.
 	if (APioneerManager::Resources.NumOfMineral < Pioneer->GetBuilding()->NeedMineral
@@ -553,9 +424,7 @@ void APioneerController::Menu()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<APioneerController::Menu()> if (!world)"));
-#endif		
 		return;
 	}
 
@@ -564,7 +433,6 @@ void APioneerController::Menu()
 		inGameMode->ToggleInGameMenuWidget();
 	}
 }
-
 void APioneerController::ScoreBoard(float Value)
 {
 	// Value에 값이 없으면 키가 눌려있지 않은것입니다.
@@ -575,9 +443,7 @@ void APioneerController::ScoreBoard(float Value)
 			UWorld* const world = GetWorld();
 			if (!world)
 			{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-				UE_LOG(LogTemp, Error, TEXT("<APioneerController::ScoreBoard(...)> if (!world)"));
-#endif				
+				UE_LOG(LogTemp, Error, TEXT("<APioneerController::ScoreBoard(...)> if (!world)"));	
 				return;
 			}
 
@@ -591,15 +457,12 @@ void APioneerController::ScoreBoard(float Value)
 
 		return;
 	}
-
 	/************************************************************/
 
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ScoreBoard(...)> if (!world)"));
-#endif		
+		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ScoreBoard(...)> if (!world)"));	
 		return;
 	}
 
@@ -615,9 +478,7 @@ void APioneerController::ObservingLeft()
 {
 	if (!PioneerManager)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingLeft()> if (!PioneerManager)"));
-#endif		
 		return;
 	}
 
@@ -631,9 +492,7 @@ void APioneerController::ObservingRight()
 {
 	if (!PioneerManager)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingRight()> if (!PioneerManager)"));
-#endif		
 		return;
 	}
 
@@ -647,9 +506,7 @@ void APioneerController::ObservingFree()
 {
 	if (!PioneerManager)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingFree()> if (!PioneerManager)"));
-#endif		
 		return;
 	}
 
@@ -668,9 +525,7 @@ void APioneerController::ObservingPossess()
 {
 	if (!PioneerManager)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingPossess()> if (!PioneerManager)"));
-#endif		
 		return;
 	}
 
@@ -683,15 +538,13 @@ void APioneerController::ObservingPossess()
 
 void APioneerController::FreeViewPoint_MoveForward(float Value)
 {
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	// Value에 값이 없으면 실행할 필요가 없으니 종료합니다.
 	if (Value == 0.0f)
 		return;
 
 	if (!PioneerManager)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveForward(...)> if (!PioneerManager)"));
-#endif		
 		return;
 	}
 
@@ -708,18 +561,15 @@ void APioneerController::FreeViewPoint_MoveForward(float Value)
 		freeViewCamera->SetActorTransform(transform);
 	}
 }
-
 void APioneerController::FreeViewPoint_MoveRight(float Value)
 {
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	// Value에 값이 없으면 실행할 필요가 없으니 종료합니다.
 	if (Value == 0.0f)
 		return;
 
 	if (!PioneerManager)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveRight(...)> if (!PioneerManager)"));
-#endif		
 		return;
 	}
 
@@ -736,18 +586,15 @@ void APioneerController::FreeViewPoint_MoveRight(float Value)
 		freeViewCamera->SetActorTransform(transform);
 	}
 }
-
 void APioneerController::FreeViewPoint_MoveUp(float Value)
 {
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	// Value에 값이 없으면 실행할 필요가 없으니 종료합니다.
 	if (Value == 0.0f)
 		return;
 
 	if (!PioneerManager)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveUp(...)> if (!PioneerManager)"));
-#endif		
 		return;
 	}
 
@@ -765,22 +612,18 @@ void APioneerController::FreeViewPoint_MoveUp(float Value)
 	}
 }
 
-
 void APioneerController::EasterEgg(float Value)
 {	
-	// Value에 값이 없으면 실행할 필요가 없으니 종료
+	// Value에 값이 없으면 실행할 필요가 없으니 종료합니다.
 	if (Value == 0.0f)
 		return;
 
 	if (!Pioneer || !GetPawn())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::EasterEgg()> if (!Pioneer || !GetPawn())"));
-#endif
 		return;
 	}
 
-	// 죽으면 함수를 실행하지 않음.
 	if (Pioneer->bDying)
 		return;
 
@@ -790,26 +633,10 @@ void APioneerController::EasterEgg(float Value)
 	Pioneer->MoveSpeed += 0.25f;
 	if (Pioneer->GetCharacterMovement())
 		Pioneer->GetCharacterMovement()->MaxWalkSpeed = AInGameMode::CellSize * Pioneer->MoveSpeed; // 움직일 때 걷는 속도
-
 }
-
-
 
 void APioneerController::SetPioneerManager(class APioneerManager* PM)
 {
 	this->PioneerManager = PM;
 }
 
-void APioneerController::SetViewTargetWithBlend(class AActor* NewViewTarget, float BlendTime, enum EViewTargetBlendFunction BlendFunc, float BlendExp, bool bLockOutgoing)
-{
-	APlayerController::SetViewTargetWithBlend(NewViewTarget, BlendTime, BlendFunc, BlendExp, bLockOutgoing);
-}
-
-/*** APioneerController : End ***/
-
-
-
-//void APioneerController::OnResetVR()
-//{
-//	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-//}

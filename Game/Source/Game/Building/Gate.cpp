@@ -3,35 +3,30 @@
 
 #include "Gate.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Pioneer.h"
 #include "Character/Enemy.h"
-
-#include "Network/Packet.h"
 #include "PioneerManager.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** Basic Function : Start ***/
 AGate::AGate()
 {
-	InitStat();
+	BuildingType = EBuildingType::Gate;
 
 	InitHelthPointBar();
 
+	InitStat();
 	InitConstructBuilding();
-
 	InitBuilding();
 
-	BuildingType = EBuildingType::Gate;
-
 	InitTriggerOfGate();
+}
+AGate::~AGate()
+{
+
 }
 
 void AGate::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void AGate::Tick(float DeltaTime)
@@ -41,10 +36,7 @@ void AGate::Tick(float DeltaTime)
 	if (BuildingState == EBuildingState::Constructed)
 		TickOfOpenAndCloseTheGate(DeltaTime);
 }
-/*** Basic Function : End ***/
 
-
-/*** IHealthPointBarInterface : Start ***/
 void AGate::InitHelthPointBar()
 {
 	if (!HelthPointBar)
@@ -53,10 +45,7 @@ void AGate::InitHelthPointBar()
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 900.0f));
 	HelthPointBar->SetDrawSize(FVector2D(180, 40));
 }
-/*** IHealthPointBarInterface : End ***/
 
-
-/*** ABuilding : Start ***/
 void AGate::InitStat()
 {
 	ConstructionTime = 20.0f;
@@ -78,14 +67,12 @@ void AGate::InitStat()
 	ProductionOrganicMatter = 0.0f;
 	ProductionElectricPower = 0.0f;
 }
-
 void AGate::InitConstructBuilding()
 {
 	AddConstructBuildingSMC(&ConstructBuildingSMC, TEXT("ConstructBuildingSMC"),
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularScifiHallways/Meshes/SM_Crate_A.SM_Crate_A'"),
 		FVector(21.979f, 1.3f, 10.79f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 }
-
 void AGate::InitBuilding()
 {
 	AddBuildingSMC(&BuildingSMC_1, TEXT("BuildingSMC_1"),
@@ -108,7 +95,6 @@ void AGate::InitBuilding()
 		TEXT("StaticMesh'/Game/ModularSciFiSeason1/ModularSci_Int/Meshes/SM_Ceiling_B_2.SM_Ceiling_B_2'"),
 		FVector(5.310f, 0.353f, 1.3f), FRotator(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 794.635f));
 }
-
 void AGate::InitTriggerOfGate()
 {
 	TriggerOfGate = CreateDefaultSubobject<USphereComponent>(TEXT("TriggerOfGate"));
@@ -127,7 +113,6 @@ void AGate::InitTriggerOfGate()
 	TriggerOfGate->OnComponentBeginOverlap.AddDynamic(this, &AGate::OnOverlapBegin);
 	TriggerOfGate->OnComponentEndOverlap.AddDynamic(this, &AGate::OnOverlapEnd);
 }
-
 void AGate::OpenTheGate(float DeltaTime)
 {
 	FTransform transform = BuildingSMC_2->GetRelativeTransform();
@@ -143,7 +128,6 @@ void AGate::OpenTheGate(float DeltaTime)
 
 	BuildingSMC_2->SetRelativeTransform(transform);
 }
-
 void AGate::CloseTheGate(float DeltaTime)
 {
 	FTransform transform = BuildingSMC_2->GetRelativeTransform();
@@ -159,14 +143,11 @@ void AGate::CloseTheGate(float DeltaTime)
 
 	BuildingSMC_2->SetRelativeTransform(transform);
 }
-
 void AGate::TickOfOpenAndCloseTheGate(float DeltaTime)
 {
 	if (!BuildingSMC_2)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<AGate::TickOfOpenAndCloseTheGate(...)> if (!BuildingSMC_2)"));
-#endif
 		return;
 	}
 
@@ -196,10 +177,8 @@ void AGate::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AAct
 {
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
-
 	if (OtherActor == this)
 		return;
-
 	/**************************************************/
 
 	if (OtherActor->IsA(APioneer::StaticClass()))
@@ -225,7 +204,6 @@ void AGate::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AAct
 		}
 	}
 }
-
 void AGate::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
@@ -257,4 +235,3 @@ void AGate::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor
 		}
 	}
 }
-/*** ABuilding : End ***/

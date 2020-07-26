@@ -1,14 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ProjectileSplash.h"
 
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Character/Enemy.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** Basic Function : Start ***/
 AProjectileSplash::AProjectileSplash()
 {
 	SplashRange = CreateDefaultSubobject<USphereComponent>(TEXT("SplashRange"));
@@ -27,47 +22,42 @@ AProjectileSplash::AProjectileSplash()
 
 	SplashRange->SetSphereRadius(0.001f); // 충돌을 발생시키지 않게 처음엔 아주 작게 만듦.
 }
+AProjectileSplash::~AProjectileSplash()
+{
+
+}
 
 void AProjectileSplash::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
-
 void AProjectileSplash::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
-/*** Basic Function : End ***/
 
-
-/*** AProjectile : Start ***/
 void AProjectileSplash::InitProjectile()
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
 
 void AProjectileSplash::OnOverlapBegin_HitRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// 객체화하는 자식클래스에서 오버라이딩하여 사용해야 합니다.
+	// virtual
 }
 
 void AProjectileSplash::SetTimerForDestroy(float Time)
 {
 	Super::SetTimerForDestroy(Time);
-
-
 }
 
 void AProjectileSplash::SetLifespan(float Time)
 {
 	Super::SetLifespan(Time);
 }
-/*** AProjectile : End ***/
 
-
-/*** AProjectileSplash : Start ***/
 void AProjectileSplash::SetSplashRange(float Radius)
 {
 	if (!SplashRange)
@@ -83,10 +73,8 @@ void AProjectileSplash::OnOverlapBegin_Splash(class UPrimitiveComponent* Overlap
 {
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
-
 	if (OtherActor == this)
 		return;
-
 	/**************************************************/
 
 	if (OtherActor->IsA(AEnemy::StaticClass()))
@@ -109,4 +97,3 @@ void AProjectileSplash::DestroySplashByTimer()
 	if (SplashRange)
 		SplashRange->DestroyComponent();
 }
-/*** AProjectileSplash : End ***/

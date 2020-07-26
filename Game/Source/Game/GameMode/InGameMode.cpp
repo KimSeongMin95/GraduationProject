@@ -2,13 +2,13 @@
 
 #include "InGameMode.h"
 
-#include "CustomWidget/InGameWidget.h"
-#include "CustomWidget/InGameMenuWidget.h"
-#include "CustomWidget/InGameVictoryWidget.h"
-#include "CustomWidget/InGameDefeatWidget.h"
-#include "CustomWidget/BuildingToolTipWidget.h"
-#include "CustomWidget/DialogWidget.h"
-#include "CustomWidget/InGameScoreBoardWidget.h"
+#include "Widget/InGameWidget.h"
+#include "Widget/MenuWidget.h"
+#include "Widget/VictoryWidget.h"
+#include "Widget/DefeatWidget.h"
+#include "Widget/BuildingToolTipWidget.h"
+#include "Widget/DialogWidget.h"
+#include "Widget/ScoreBoardWidget.h"
 #include "Controller/PioneerController.h"
 #include "PioneerManager.h"
 #include "SpaceShip/SpaceShip.h"
@@ -69,14 +69,14 @@ void AInGameMode::BeginPlay()
 	InGameWidget = NewObject<UInGameWidget>(this, FName("InGameWidget"));
 	InGameWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/InGame.InGame_C'", true);
 
-	InGameMenuWidget = NewObject<UInGameMenuWidget>(this, FName("MenuWidget"));
-	InGameMenuWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/Menu.Menu_C'", false);
+	MenuWidget = NewObject<UMenuWidget>(this, FName("MenuWidget"));
+	MenuWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/Menu.Menu_C'", false);
 
-	InGameVictoryWidget = NewObject<UInGameVictoryWidget>(this, FName("VictoryWidget"));
-	InGameVictoryWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/Victory.Victory_C'", false);
+	VictoryWidget = NewObject<UVictoryWidget>(this, FName("VictoryWidget"));
+	VictoryWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/Victory.Victory_C'", false);
 
-	InGameDefeatWidget = NewObject<UInGameDefeatWidget>(this, FName("DefeatWidget"));
-	InGameDefeatWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/Defeat.Defeat_C'", false);
+	DefeatWidget = NewObject<UDefeatWidget>(this, FName("DefeatWidget"));
+	DefeatWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/Defeat.Defeat_C'", false);
 
 	BuildingToolTipWidget = NewObject<UBuildingToolTipWidget>(this, FName("BuildingToolTipWidget"));
 	BuildingToolTipWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/BuildingToolTip.BuildingToolTip_C'", false);
@@ -84,9 +84,9 @@ void AInGameMode::BeginPlay()
 	DialogWidget = NewObject<UDialogWidget>(this, FName("DialogWidget"));
 	DialogWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/Dialog.Dialog_C'", false);
 
-	InGameScoreBoardWidget = NewObject<UInGameScoreBoardWidget>(this, FName("ScoreBoardWidget"));
-	InGameScoreBoardWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/ScoreBoard.ScoreBoard_C'", false);
-	InGameScoreBoardWidget->SetServerDestroyedVisibility(true);
+	ScoreBoardWidget = NewObject<UScoreBoardWidget>(this, FName("ScoreBoardWidget"));
+	ScoreBoardWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/InGame/ScoreBoard.ScoreBoard_C'", false);
+	ScoreBoardWidget->SetServerDestroyedVisibility(true);
 
 	SpawnPioneerManager();
 	SpawnSpaceShip();
@@ -237,64 +237,64 @@ void AInGameMode::DeactivateInGameWidget()
 
 void AInGameMode::ActivateInGameMenuWidget()
 {
-	if (!InGameMenuWidget)
+	if (!MenuWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameMenuWidget()> if (!InGameMenuWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameMenuWidget()> if (!MenuWidget)"));
 		return;
 	}
 
-	InGameMenuWidget->AddToViewport();
+	MenuWidget->AddToViewport();
 }
 void AInGameMode::DeactivateInGameMenuWidget()
 {
-	if (!InGameMenuWidget)
+	if (!MenuWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameMenuWidget()> if (!InGameMenuWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameMenuWidget()> if (!MenuWidget)"));
 		return;
 	}
 
-	InGameMenuWidget->RemoveFromViewport();
+	MenuWidget->RemoveFromViewport();
 }
 void AInGameMode::ToggleInGameMenuWidget()
 {
-	if (!InGameMenuWidget)
+	if (!MenuWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_ToggleInGameMenuWidget()> if (!InGameMenuWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_ToggleInGameMenuWidget()> if (!MenuWidget)"));
 		return;
 	}
 
-	InGameMenuWidget->ToggleViewport();
+	MenuWidget->ToggleViewport();
 }
 
 void AInGameMode::ActivateInGameScoreBoardWidget()
 {
-	if (!InGameScoreBoardWidget)
+	if (!ScoreBoardWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameScoreBoardWidget()> if (!ScoreBoardWidget)"));
 		return;
 	}
 
-	InGameScoreBoardWidget->AddToViewport();
+	ScoreBoardWidget->AddToViewport();
 }
 void AInGameMode::DeactivateInGameScoreBoardWidget()
 {
-	if (!InGameScoreBoardWidget)
+	if (!ScoreBoardWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameScoreBoardWidget()> if (!ScoreBoardWidget)"));
 		return;
 	}
 
-	InGameScoreBoardWidget->RemoveFromViewport();
+	ScoreBoardWidget->RemoveFromViewport();
 }
 void AInGameMode::ToggleInGameScoreBoardWidget()
 {
-	if (!InGameScoreBoardWidget)
+	if (!ScoreBoardWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_ToggleInGameScoreBoardWidget()> if (!InGameScoreBoardWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_ToggleInGameScoreBoardWidget()> if (!ScoreBoardWidget)"));
 		return;
 	}
 
-	InGameScoreBoardWidget->ToggleViewport();
+	ScoreBoardWidget->ToggleViewport();
 }
 
 void AInGameMode::LeftArrowInGameWidget()
@@ -366,43 +366,43 @@ void AInGameMode::SpawnBuildingInGameWidget(int Value)
 
 void AInGameMode::ActivateInGameVictoryWidget()
 {
-	if (!InGameVictoryWidget)
+	if (!VictoryWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameVictoryWidget()> if (!InGameVictoryWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameVictoryWidget()> if (!VictoryWidget)"));
 		return;
 	}
 
-	InGameVictoryWidget->AddToViewport();
+	VictoryWidget->AddToViewport();
 }
 void AInGameMode::DeactivateInGameVictoryWidget()
 {
-	if (!InGameVictoryWidget)
+	if (!VictoryWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameVictoryWidget()> if (!InGameVictoryWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameVictoryWidget()> if (!VictoryWidget)"));
 		return;
 	}
 
-	InGameVictoryWidget->RemoveFromViewport();
+	VictoryWidget->RemoveFromViewport();
 }
 void AInGameMode::ActivateInGameDefeatWidget()
 {
-	if (!InGameDefeatWidget)
+	if (!DefeatWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameDefeatWidget()> if (!InGameDefeatWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameDefeatWidget()> if (!DefeatWidget)"));
 		return;
 	}
 
-	InGameDefeatWidget->AddToViewport();
+	DefeatWidget->AddToViewport();
 }
 void AInGameMode::DeactivateInGameDefeatWidget()
 {
-	if (!InGameDefeatWidget)
+	if (!DefeatWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameDefeatWidget()> if (!InGameDefeatWidget)"));
+		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameDefeatWidget()> if (!DefeatWidget)"));
 		return;
 	}
 
-	InGameDefeatWidget->RemoveFromViewport();
+	DefeatWidget->RemoveFromViewport();
 }
 
 void AInGameMode::ActivateBuildingToolTipWidget()

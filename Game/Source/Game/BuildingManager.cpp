@@ -1,39 +1,31 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BuildingManager.h"
 
-
-/*** 직접 정의한 헤더 전방 선언 : Start ***/
 #include "Building/Building.h"
-#include "Building/Floor.h"
-
+#include "Building/Wall.h"
+#include "Building/Stairs.h"
 #include "Building/Gate.h"
 #include "Building/InorganicMine.h"
-#include "Building/NuclearFusionPowerPlant.h"
 #include "Building/OrganicMine.h"
-#include "Building/ResearchInstitute.h"
-#include "Building/Stairs.h"
+#include "Building/NuclearFusionPowerPlant.h"
 #include "Building/AssaultRifleTurret.h"
 #include "Building/SniperRifleTurret.h"
 #include "Building/RocketLauncherTurret.h"
 
-#include "Building/Wall.h"
-#include "Building/WeaponFactory.h"
-
-#include "Network/Packet.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
-/*** 직접 정의한 헤더 전방 선언 : End ***/
 
-
-/*** Basic Function : Start ***/
 ABuildingManager::ABuildingManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	ID = 1;
+}
+ABuildingManager::~ABuildingManager()
+{
+
 }
 
 void ABuildingManager::BeginPlay()
@@ -50,9 +42,7 @@ void ABuildingManager::BeginPlay()
 		UWorld* const world = GetWorld();
 		if (!world)
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 			UE_LOG(LogTemp, Warning, TEXT("<APioneer::BeginPlay()> if (!world)"));
-#endif
 			return;
 		}
 
@@ -72,15 +62,12 @@ void ABuildingManager::BeginPlay()
 		tutorial = false;
 	}
 	
-	
 	if (tutorial)
 	{
 		UWorld* const world = GetWorld();
 		if (!world)
 		{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 			UE_LOG(LogTemp, Warning, TEXT("<APioneer::BeginPlay()> if (!world)"));
-#endif
 			return;
 		}
 
@@ -92,24 +79,18 @@ void ABuildingManager::BeginPlay()
 		}
 	}
 }
-
 void ABuildingManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
-/*** Basic Function : End ***/
 
-
-/*** ABuildingManager : Start ***/
 class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 {
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<ABuildingManager::SpawnBuilding(...)> if (!world)"));
-#endif
 		return nullptr;
 	}
 
@@ -123,10 +104,6 @@ class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 
 	switch ((EBuildingType)Value)
 	{
-	case EBuildingType::Floor:
-		building = world->SpawnActor<AFloor>(AFloor::StaticClass(), myTrans, SpawnParams);
-		break;
-
 	case EBuildingType::Wall:
 		building = world->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
 		break;
@@ -154,17 +131,8 @@ class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 	case EBuildingType::RocketLauncherTurret:
 		building = world->SpawnActor<ARocketLauncherTurret>(ARocketLauncherTurret::StaticClass(), myTrans, SpawnParams);
 		break;
-
-	case EBuildingType::ResearchInstitute:
-		building = world->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::WeaponFactory:
-		building = world->SpawnActor<AWeaponFactory>(AWeaponFactory::StaticClass(), myTrans, SpawnParams);
-		break;
 	default:
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneer::SpawnBuilding(...)> switch ((EBuildingType)Value) default:"));
-#endif
 		break;
 	}
 
@@ -181,9 +149,7 @@ void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuil
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneer::RecvSpawnBuilding(...)> if (!world)"));
-#endif
 		return;
 	}
 
@@ -197,10 +163,6 @@ void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuil
 
 	switch ((EBuildingType)InfoOfBuilding_Spawn.Numbering)
 	{
-	case EBuildingType::Floor:
-		building = world->SpawnActor<AFloor>(AFloor::StaticClass(), myTrans, SpawnParams);
-		break;
-
 	case EBuildingType::Wall:
 		building = world->SpawnActor<AWall>(AWall::StaticClass(), myTrans, SpawnParams);
 		break;
@@ -228,20 +190,10 @@ void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuil
 	case EBuildingType::RocketLauncherTurret:
 		building = world->SpawnActor<ARocketLauncherTurret>(ARocketLauncherTurret::StaticClass(), myTrans, SpawnParams);
 		break;
-
-	case EBuildingType::ResearchInstitute:
-		building = world->SpawnActor<AResearchInstitute>(AResearchInstitute::StaticClass(), myTrans, SpawnParams);
-		break;
-	case EBuildingType::WeaponFactory:
-		building = world->SpawnActor<AWeaponFactory>(AWeaponFactory::StaticClass(), myTrans, SpawnParams);
-		break;
 	default:
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("<APioneer::RecvSpawnBuilding(...)> switch ((EBuildingType)Value) default:"));
-#endif
 		break;
 	}
-
 
 	if (building)
 	{
@@ -251,9 +203,7 @@ void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuil
 		if (Buildings.Contains(InfoOfBuilding_Spawn.ID) == false)
 			Buildings.Add(InfoOfBuilding_Spawn.ID, building);
 
-
 		building->SetBuildingManager(this);
-
 		building->CheckConstructable();
 	}
 }
@@ -262,7 +212,6 @@ void ABuildingManager::AddInBuildings(class ABuilding* Building)
 {
 	if (!Building)
 	{
-
 		return;
 	}
 
@@ -286,7 +235,6 @@ void ABuildingManager::AddInBuildings(class ABuilding* Building)
 	{
 		tutorial = false;
 	}
-	
 
 	if (tutorial)
 	{
@@ -297,4 +245,3 @@ void ABuildingManager::AddInBuildings(class ABuilding* Building)
 		ID++;
 	}
 }
-/*** ABuildingManager : End ***/

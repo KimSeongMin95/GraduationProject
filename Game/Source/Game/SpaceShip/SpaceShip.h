@@ -2,37 +2,26 @@
 
 #pragma once
 
-
-/*** 언리얼엔진 헤더 선언 : Start ***/
-#include "Engine/World.h"
+//#include "Engine/World.h"
+#include "EngineUtils.h" // TActorIterator<>
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
-
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
-
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-
 #include "Animation/Skeleton.h"
 #include "Animation/AnimSequence.h"
 #include "Engine/Public/TimerManager.h" // GetWorldTimerManager()
-#include "EngineUtils.h" // TActorIterator<>
-
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
-
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
-/*** 언리얼엔진 헤더 선언 : End ***/
-
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SpaceShip.generated.h"
-
 
 UENUM()
 enum class ESpaceShipState : int8
@@ -52,62 +41,45 @@ class GAME_API ASpaceShip : public AActor
 {
 	GENERATED_BODY()
 	
-/*** Basic Function : Start ***/
 public:	
 	ASpaceShip();
+	virtual ~ASpaceShip();
 
 protected:
 	virtual void BeginPlay() override;
-
-public:	
 	virtual void Tick(float DeltaTime) override;
-/*** Basic Function : End ***/
 
-
-/*** ASpaceShip : Start ***/
 private:
 	UPROPERTY(VisibleAnywhere, Category = "ASpaceShip")
-		/** 물리작용 */
-		class UBoxComponent* PhysicsBox = nullptr;
+		class UBoxComponent* PhysicsBox = nullptr; /** 물리작용에 사용할 RootComponent입니다. */
 
 	UPROPERTY(EditAnywhere, Category = "ASpaceShip")
 		class UArrowComponent* PioneerSpawnPoint = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Meshes")
-		/** 애니메이션을 수행하는 스켈레탈메시입니다. */
-		class USkeletalMeshComponent* SkeletalMesh = nullptr;
+		class USkeletalMeshComponent* SkeletalMesh = nullptr; /** 애니메이션을 수행하는 스켈레탈메시입니다. */
 
 	UPROPERTY(VisibleAnywhere, Category = "Meshes")
 		class USkeleton* Skeleton = nullptr;
-
 	UPROPERTY(VisibleAnywhere, Category = "Meshes")
-		/** 날개를 펼치고 접는 애니메이션입니다. */
-		class UAnimSequence* AnimSequence = nullptr;
+		class UAnimSequence* AnimSequence = nullptr; /** 날개를 펼치고 접는 애니메이션입니다. */
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
-		/** 카메라의 위치를 조정합니다. */
-		class USpringArmComponent* SpringArmComp = nullptr; 
-
+		class USpringArmComponent* SpringArmComp = nullptr; /** 카메라의 위치를 조정합니다. */
 	UPROPERTY(VisibleAnywhere, Category = Camera)
-		/** 따라다니는 카메라입니다. */
-		class UCameraComponent* CameraComp = nullptr; 
+		class UCameraComponent* CameraComp = nullptr; /** 따라다니는 카메라입니다. */
 
 	UPROPERTY(EditAnywhere, Category = "ParticleSystem")
 		class UParticleSystemComponent* EngineParticleSystem = nullptr;
-
 	UPROPERTY(EditAnywhere, Category = "ParticleSystem")
 		class UParticleSystemComponent* EngineParticleSystem2 = nullptr;
-
-
 	UPROPERTY(EditAnywhere, Category = "ParticleSystem")
 		class UParticleSystemComponent* EngineParticleSystem3 = nullptr;
-
 
 	UPROPERTY(VisibleAnywhere, Category = "Pioneer")
 		class APioneerManager* PioneerManager = nullptr;
 
 	FVector InitLocation;
-
 
 	///////////
 	// 사운드
@@ -147,21 +119,16 @@ public:
 	float SpringArmCompPitch;
 	float AdjustmentPitch;
 
-
-	///////////
+	////////////
 	// 네트워크
-	///////////
+	////////////
 	bool bHiddenInGame;
 	bool bSimulatePhysics;
 	float ScaleOfEngineParticleSystem;
 	float AccelerationZ;
 	bool bEngine;
 
-
 private:
-	///////////////////////
-	// 작동
-	///////////////////////
 	UFUNCTION(Category = "ASpaceShip")
 		void Flying();
 	UFUNCTION(Category = "ASpaceShip")
@@ -173,7 +140,6 @@ private:
 
 protected:
 	void InitPhysicsBox(FVector BoxExtent = FVector::ZeroVector, FVector Location = FVector::ZeroVector);
-	//void InitStaticMesh(const TCHAR* ReferencePath, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 	void InitSkeletalMesh(const TCHAR* ReferencePath, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 	void InitSkeleton(const TCHAR* ReferencePath);
 	void InitPhysicsAsset(const TCHAR* ReferencePath);
@@ -182,11 +148,11 @@ protected:
 	void InitEngineParticleSystem(class UParticleSystemComponent* ParticleSystemComponent, const TCHAR* ReferencePath, bool bAutoActivate = false, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
 
 public:
-	//////////////////////////
-	// OnlineGameMode에서 호출
-	//////////////////////////
-	void SetPioneerManager(class APioneerManager* pPioneerManager);
-
+	///////////////////////////
+	// AInGameMode에서 호출
+	///////////////////////////
+	UFUNCTION(Category = "ASpaceShip")
+		void SetPioneerManager(class APioneerManager* pPioneerManager);
 	UFUNCTION(Category = "ASpaceShip")
 		void StartLanding();
 	UFUNCTION(Category = "ASpaceShip")
@@ -197,32 +163,27 @@ public:
 	//////////////////////////
 	// Helper 함수들
 	//////////////////////////
-	/** 바닥을 향해 수직으로 Ray를 쏴서 거리를 계산 */
-	float CalculateDistanceToLand();
+	float CalculateDistanceToLand(); /** 바닥을 향해 수직으로 Ray를 쏴서 거리를 계산합니다. */
 
-	/** 착륙할 때, 가속도를 계산합니다. */
 	void ManageAcceleration(float MinLimitOfVelocityZ = 1.0f, float MaxLimitOfVelocityZ = 1.0f, float Power = 1.0f);
 
-	/** 엔진 파티클을 켜고 끕니다. */
 	void OnEngines();
 	void OffEngines();
-
 	void OnEngine3();
+
 	void ForMainScreen();
 	void TickForMainScreen(float DeltaTime);
 
-	/** 엔진 파티클의 Scale을 조정합니다. */
-	void SetScaleOfEngineParticleSystem(float Scale = 0.015f);
+	void SetScaleOfEngineParticleSystem(float Scale = 0.015f); /** 엔진 파티클의 Scale을 조정합니다. */
 
 	void PlayLandingAnimation();
 	void PlayTakingOffAnimation();
 
 	void SetInitLocation(FVector Location);
 
-	///////////
+	////////////
 	// 네트워크
-	///////////
+	////////////
 	void SetInfoOfSpaceShip(class cInfoOfSpaceShip& InfoOfSpaceShip);
 	class cInfoOfSpaceShip GetInfoOfSpaceShip();
-/*** ASpaceShip : End ***/
 };
