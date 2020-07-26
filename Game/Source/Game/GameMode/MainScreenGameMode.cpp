@@ -79,7 +79,6 @@ void AMainScreenGameMode::BeginPlay()
 	CopyRightWidget = NewObject<UCopyRightWidget>(this, FName("CopyRightWidget"));
 	CopyRightWidget->InitWidget(world, "WidgetBlueprint'/Game/UMG/CopyRight.CopyRight_C'", false);
 }
-
 void AMainScreenGameMode::StartPlay()
 {
 	Super::StartPlay();
@@ -100,7 +99,6 @@ void AMainScreenGameMode::StartPlay()
 		PioneerController->SetViewTargetWithBlend(SpaceShip); // 초기엔 우주선을 보도록 합니다.
 	}
 }
-
 void AMainScreenGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -108,13 +106,7 @@ void AMainScreenGameMode::Tick(float DeltaTime)
 	if (SpaceShip)
 		SpaceShip->TickForMainScreen(DeltaTime);
 }
-/*** Basic Function : End ***/
 
-
-/*** AMainScreenGameMode : Start ***/
-/////////////////////////////////////////////////
-// 필수
-/////////////////////////////////////////////////
 void AMainScreenGameMode::FindPioneerController()
 {
 	UWorld* const world = GetWorld();

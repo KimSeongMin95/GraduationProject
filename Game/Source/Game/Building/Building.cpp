@@ -23,9 +23,10 @@ ABuilding::ABuilding()
 
 	IdxOfUnderWall = 0;
 
+	InitRootComp();
+
 	InitHelthPointBar();
 
-	InitRootComp();
 	InitStat();
 	InitConstructBuilding();
 	InitBuilding();

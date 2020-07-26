@@ -20,7 +20,7 @@
 UENUM()
 enum class EBuildingType : uint8
 {
-	Wall,
+	Wall = 1,
 	Stairs,
 	Gate,
 	InorganicMine,
@@ -138,11 +138,12 @@ public:
 		int IdxOfUnderWall; /** Wall 위에 터렛을 건설할 때, 아래의 Wall의 인덱스를 저장하는 용도로 사용합니다. */
 
 protected:
+	void InitRootComp();
+
 	virtual void InitHelthPointBar() override;
 	virtual void BeginPlayHelthPointBar() final;
 	virtual void TickHelthPointBar() final;
 
-	void InitRootComp();
 	virtual void InitStat();
 	virtual void InitConstructBuilding();
 	virtual void InitBuilding();
