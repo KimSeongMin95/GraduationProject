@@ -2,6 +2,8 @@
 
 #include "BuildingToolTipWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UBuildingToolTipWidget::UBuildingToolTipWidget()
 {	
 	Name = nullptr;

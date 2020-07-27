@@ -3,7 +3,7 @@
 #include "NetworkHeader.h"
 #include "NetworkConfig.h"
 
-class CConsole sealed
+class CConsole final
 {
 public:
 	CConsole();

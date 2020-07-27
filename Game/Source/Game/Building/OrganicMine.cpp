@@ -2,6 +2,8 @@
 
 #include "OrganicMine.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AOrganicMine::AOrganicMine()
 {
 	BuildingType = EBuildingType::OrganicMine;

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "Network/GamePacket.h"
+
 #include "CoreMinimal.h"
 #include "Widget/WidgetBase.h"
 #include "ScoreBoardWidget.generated.h"

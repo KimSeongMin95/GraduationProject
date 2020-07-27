@@ -2,6 +2,8 @@
 
 #include "OnlineGameWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UOnlineGameWidget::UOnlineGameWidget()
 {
 	ScrollBox = nullptr;
@@ -22,12 +24,7 @@ bool UOnlineGameWidget::InitWidget(UWorld* const World, const FString ReferenceP
 
 	if (!WidgetTree)
 	{
-#if UE_BUILD_DEVELOPMENT && UE_GAME
-		printf_s("[Error] <UOnlineGameWidget::InitWidget(...)> if (!WidgetTree) \n");
-#endif
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
 		UE_LOG(LogTemp, Error, TEXT("<UOnlineGameWidget::InitWidget(...)> if (!WidgetTree)"));
-#endif
 		return false;
 	}
 
@@ -39,16 +36,16 @@ bool UOnlineGameWidget::InitWidget(UWorld* const World, const FString ReferenceP
 	return true;
 }
 
-void UOnlineGameWidget::RevealGame(cInfoOfGame& InfoOfGame)
+void UOnlineGameWidget::RevealGame(CGamePacket& GamePacket)
 {
 	// 게임 방장의 소켓 번호
-	int socketID = InfoOfGame.Leader.SocketByMainServer;
+	int socketID = GamePacket.Leader.SocketByMainServer;
 
 	// 이미 존재하면 정보만 바꿉니다.
 	if (mapOnlineGameWidget.find(socketID) != mapOnlineGameWidget.end())
 	{
 		int idx = mapOnlineGameWidget.at(socketID);
-		vecOnlineGameWidget.at(idx).SetText(InfoOfGame);
+		vecOnlineGameWidget.at(idx).SetText(GamePacket);
 
 		return;
 	}
@@ -59,7 +56,7 @@ void UOnlineGameWidget::RevealGame(cInfoOfGame& InfoOfGame)
 		// 아직 숨겨져 있다면
 		if (vecOnlineGameWidget.at(i).IsVisible() == false)
 		{
-			vecOnlineGameWidget.at(i).SetText(InfoOfGame);
+			vecOnlineGameWidget.at(i).SetText(GamePacket);
 			vecOnlineGameWidget.at(i).SetVisible(true);
 
 			mapOnlineGameWidget.emplace(std::pair<int, int>(socketID, i));
@@ -71,19 +68,14 @@ void UOnlineGameWidget::RevealGame(cInfoOfGame& InfoOfGame)
 	}
 }
 
-UMyButton* UOnlineGameWidget::BindButton(cInfoOfGame& InfoOfGame)
+UMyButton* UOnlineGameWidget::BindButton(CGamePacket& GamePacket)
 {
 	// 게임 방장의 소켓 번호
-	int socketID = InfoOfGame.Leader.SocketByMainServer;
+	int socketID = GamePacket.Leader.SocketByMainServer;
 
 	if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())
 	{
-#if UE_BUILD_DEVELOPMENT && UE_GAME
-		printf_s("[Error] <UOnlineGameWidget::BindButton(...)> if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end()) \n");
-#endif
-#if UE_BUILD_DEVELOPMENT && UE_EDITOR
-		UE_LOG(LogTemp, Error, TEXT("<UOnlineGameWidget::BindButton(...)> if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())"));
-#endif		
+		UE_LOG(LogTemp, Error, TEXT("<UOnlineGameWidget::BindButton(...)> if (mapOnlineGameWidget.find(socketID) == mapOnlineGameWidget.end())"));	
 		return nullptr;
 	}
 

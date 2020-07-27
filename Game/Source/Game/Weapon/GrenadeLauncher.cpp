@@ -2,6 +2,7 @@
 
 #include "GrenadeLauncher.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Projectile/Splash/ProjectileGrenadeLauncher.h"
 
 AGrenadeLauncher::AGrenadeLauncher()

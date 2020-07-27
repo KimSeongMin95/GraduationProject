@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#include "Network/MainPacket.h"
+
 #include "CoreMinimal.h"
 #include "Widget/WidgetBase.h"
 #include "OnlineGameWidget.generated.h"
@@ -33,10 +35,10 @@ public:
 public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) final;
 
-	void RevealGame(cInfoOfGame& InfoOfGame);
+	void RevealGame(CGamePacket& GamePacket);
 	void Clear();
 
-	UMyButton* BindButton(cInfoOfGame& InfoOfGame);
+	UMyButton* BindButton(CGamePacket& GamePacket);
 
 	bool Empty();
 };
@@ -146,7 +148,7 @@ public:
 		EditableTextBox->WidgetStyle.SetBackgroundColor(backgroundColor);
 	}
 
-	void SetText(cInfoOfGame& InfoOfGame)
+	void SetText(CGamePacket& GamePacket)
 	{
 		if (!State || !Title || !Leader || !Stage || !Players || !Button)
 		{
@@ -154,13 +156,13 @@ public:
 			return;
 		}
 
-		State->SetText(FText::FromString(FString(UTF8_TO_TCHAR(InfoOfGame.State.c_str()))));
-		FString title(UTF8_TO_TCHAR(InfoOfGame.Title.c_str()));
+		State->SetText(FText::FromString(FString(UTF8_TO_TCHAR(GamePacket.State.c_str()))));
+		FString title(UTF8_TO_TCHAR(GamePacket.Title.c_str()));
 		title.ReplaceCharInline(_T('_'), _T(' '));
 		Title->SetText(FText::FromString(title));
-		Leader->SetText(FText::FromString(FString(UTF8_TO_TCHAR(InfoOfGame.Leader.ID.c_str()))));
-		Stage->SetText(FText::FromString(FString::FromInt(InfoOfGame.Stage)));
-		FString tPlayers = FString::FromInt(InfoOfGame.Players.Size() + 1) + " / " + FString::FromInt(InfoOfGame.nMax);
+		Leader->SetText(FText::FromString(FString(UTF8_TO_TCHAR(GamePacket.Leader.ID.c_str()))));
+		Stage->SetText(FText::FromString(FString::FromInt(GamePacket.Stage)));
+		FString tPlayers = FString::FromInt(GamePacket.Players.Size() + 1) + " / " + FString::FromInt(GamePacket.nMax);
 		Players->SetText(FText::FromString(tPlayers));
 	}
 

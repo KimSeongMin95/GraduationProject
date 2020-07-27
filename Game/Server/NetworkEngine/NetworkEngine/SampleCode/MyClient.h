@@ -5,7 +5,7 @@
 #include "MyPacket.h"
 #include "../NetworkComponent/ThreadSafetyQueue.h"
 
-class CMyClient sealed
+class CMyClient final
 {
 public:
 	CMyClient();
@@ -27,6 +27,11 @@ public:
 
 public:
 	static bool Initialize(const char* const IPv4, const USHORT& Port);
+	static bool IsNetworkOn();
+	static void Close();
+
+	static void ConnectCBF(CCompletionKey CompletionKey);
+	static void DisconnectCBF(CCompletionKey CompletionKey);
 
 	static void SendLogin();
 	static void RecvAccept(stringstream& RecvStream, const SOCKET& Socket);

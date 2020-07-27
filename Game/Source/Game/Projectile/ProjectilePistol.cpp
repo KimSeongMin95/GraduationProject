@@ -3,6 +3,7 @@
 
 #include "ProjectilePistol.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Character/Enemy.h"
 #include "Building/Building.h"
 

@@ -2,6 +2,8 @@
 
 #include "MenuWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UMenuWidget::UMenuWidget()
 {
 

@@ -1,71 +1,39 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
-#include "Packet.h"
+#include "NetworkComponent/NetworkHeader.h"
+#include "MainPacket.h"
+#include "GamePacketHeader.h"
+#include "GamePacket.h"
+#include "NetworkComponent/ThreadSafetyQueue.h"
+#include "NetworkComponent/CompletionKey.h"
 
 #include "CoreMinimal.h"
 
-// ∆–≈∂ √≥∏Æ «‘ºˆ ∆˜¿Œ≈Õ
-struct FuncProcess
+class GAME_API CGameServer final
 {
-	// RecvStream¿∫ ºˆΩ≈«— ¡§∫∏, pSocket¿∫ Overlapped I/O ¿€æ˜¿Ã πﬂª˝«— IOCP º“ƒœ ±∏¡∂√º ¡§∫∏
-	void(*funcProcessPacket)(stringstream& RecvStream, SOCKET Socket);
-	FuncProcess()
-	{
-		funcProcessPacket = nullptr;
-	}
-};
+public:
+	CGameServer();
+	~CGameServer();
 
-/**
- * ∞‘¿” ≈¨∂Û¿Ãæ∆ÆøÕ ¡¢º” π◊ ∆–≈∂ √≥∏Æ∏¶ ¥„¥Á«œ¥¬ ≈¨∑°Ω∫ (∞‘¿” º≠πˆ)
- */
-class GAME_API cGameServer
-{
+	static CGameServer* GetSingleton();
+
 private:
-	FuncProcess	fnProcess[100];	// ∆–≈∂ √≥∏Æ ±∏¡∂√º
+	static unique_ptr<class CNetworkComponent> Server;
 
-	static int ServerPort;
+	static unsigned int ServerPort;
 	static CRITICAL_SECTION csServerPort;
 
-protected:
-	SOCKET			 ListenSocket;			// º≠πˆ ∏ÆΩº º“ƒœ
-	HANDLE			 hIOCP;					// IOCP ∞¥√º «⁄µÈ
-
-	bool			 bAccept;				// ø‰√ª µø¿€ «√∑°±◊
-	CRITICAL_SECTION csAccept;				//
-	HANDLE			 hAcceptThreadHandle;	// Accept Ω∫∑πµÂ «⁄µÈ	
-
-	bool			 bIOThread;
-	HANDLE*			 hIOThreadHandle;		// IO Ω∫∑πµÂ «⁄µÈ		
-	DWORD			 nIOThreadCnt;			// IO Ω∫∑πµÂ ∞≥ºˆ
-
-
 public:
-	/** ∞‘¿”º≠πˆ¿« ¿”Ω√ º“ƒœ */
 	static SOCKET SocketID;
 	static CRITICAL_SECTION csSocketID;
 
 	static int PossessedID;
 	static CRITICAL_SECTION csPossessedID;
 
-
-	// WSAAccept(...)«— ∏µÁ ≈¨∂Û¿Ãæ∆Æ¿« new stCompletionKey()∏¶ ¿˙¿Â
-	static unordered_map<SOCKET, stCompletionKey*> GameClients;
-	static CRITICAL_SECTION csGameClients;
-
-	// ºˆΩ≈«— µ•¿Ã≈Õ∏¶ µ¶ø° ¿¸∫Œ ¿˚¿Á
-	static unordered_map<SOCKET, deque<char*>*> MapOfRecvDeque;
-	static CRITICAL_SECTION csMapOfRecvDeque;
-
-	// WSASend(...)∏¶ Ω««‡«œ∏È ++, Ω««‡¿Ã øœ∑·µ«∞≈≥™ Ω«∆–«œ∏È --
-	static unsigned int CountOfSend;
-	static CRITICAL_SECTION csCountOfSend;
-
-	/**************************************************/
-
-	// Connected ≈¨∂Û¿Ãæ∆Æ¿« InfoOfPlayer ¿˙¿Â
-	static unordered_map<SOCKET, cInfoOfPlayer> InfoOfClients;
+	// Player
+	static unordered_map<SOCKET, CPlayerPacket> InfoOfClients;
 	static CRITICAL_SECTION csInfoOfClients;
 
 	static unordered_map<SOCKET, cInfoOfScoreBoard> InfosOfScoreBoard;
@@ -74,179 +42,74 @@ public:
 	static unordered_map<SOCKET, SOCKET> Observers;
 	static CRITICAL_SECTION csObservers;
 
-
-	///////////////////////////////////////////
-	// Pioneer ºº∫–»≠
-	///////////////////////////////////////////
+	// Pioneer 
 	static unordered_map<int, cInfoOfPioneer_Socket> InfosOfPioneer_Socket;
 	static CRITICAL_SECTION csInfosOfPioneer_Socket;
-
 	static unordered_map<int, cInfoOfPioneer_Animation> InfosOfPioneer_Animation;
 	static CRITICAL_SECTION csInfosOfPioneer_Animation;
-
 	static unordered_map<int, cInfoOfPioneer_Stat> InfosOfPioneer_Stat;
 	static CRITICAL_SECTION csInfosOfPioneer_Stat;
 
-
-	///////////////////////////////////////////
-	// Building ºº∫–»≠
-	///////////////////////////////////////////
+	// Building
 	static unordered_map<int, cInfoOfBuilding_Spawn> InfoOfBuilding_Spawn;
 	static CRITICAL_SECTION csInfoOfBuilding_Spawn;
-
 	static unordered_map<int, cInfoOfBuilding_Stat> InfoOfBuilding_Stat;
 	static CRITICAL_SECTION csInfoOfBuilding_Stat;
 
-
-	///////////////////////////////////////////
-	// Enemy ºº∫–»≠
-	///////////////////////////////////////////
+	// Enemy
 	static unordered_map<int, cInfoOfEnemy_Spawn> InfoOfEnemies_Spawn;
 	static CRITICAL_SECTION csInfoOfEnemies_Spawn;
-
 	static unordered_map<int, cInfoOfEnemy_Animation> InfoOfEnemies_Animation;
 	static CRITICAL_SECTION csInfoOfEnemies_Animation;
-
 	static unordered_map<int, cInfoOfEnemy_Stat> InfoOfEnemies_Stat;
 	static CRITICAL_SECTION csInfoOfEnemies_Stat;
 
+	// ÏàòÏã†Ìïú Ìå®ÌÇ∑ÏùÑ Ï†ÅÏû¨ÌïòÎäî Ïä§Î†àÎìúÏóê ÏïàÏ†ÑÌïú ÌÅêÏûÖÎãàÎã§.
+	static CThreadSafetyQueue<int> tsqDiedPioneer;
+	static CThreadSafetyQueue<cInfoOfPioneer_Animation> tsqInfoOfPioneer_Animation;
+	static CThreadSafetyQueue<cInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
+	static CThreadSafetyQueue<cInfoOfPioneer_Stat> tsqInfoOfPioneer_Stat;
+	static CThreadSafetyQueue<cInfoOfProjectile> tsqInfoOfProjectile;
+	static CThreadSafetyQueue<cInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
 
 public:
-	////////////////////////
-	// ±‚∫ª
-	////////////////////////
-	cGameServer();
-	~cGameServer();
+	static bool Initialize();
+	static bool IsNetworkOn();
+	static void Close();
 
-	// √ ±‚»≠ Ω«∆–Ω√ Ω««‡
-	void CloseListenSocketAndCleanupWSA();
+	static void ConnectCBF(CCompletionKey CompletionKey);
+	static void DisconnectCBF(CCompletionKey CompletionKey);
 
-	// º“ƒœ µÓ∑œ π◊ º≠πˆ ¡§∫∏ º≥¡§
-	bool Init();
-
-	// Accept Ω∫∑πµÂ ª˝º∫
-	bool CreateAcceptThread();
-
-	// º≠πˆ Ω√¿€
-	void AcceptThread();
-
-	// IO Ω∫∑πµÂ ª˝º∫
-	bool CreateIOThread();
-
-	// ¿€æ˜ Ω∫∑πµÂ
-	void IOThread();
-
-	// ≈¨∂Û¿Ãæ∆Æ ¡¢º” ¡æ∑·
-	static void CloseSocket(SOCKET Socket, stOverlappedMsg* OverlappedMsg);
-
-	// º≠πˆ ¡æ∑·
-	void Close();
-
-	// ≈¨∂Û¿Ãæ∆Æø°∞‘ º€Ω≈
-	static void Send(stringstream& SendStream, SOCKET Socket);
-
-	// ≈¨∂Û¿Ãæ∆Æ ºˆΩ≈ ¥Î±‚
-	static void Recv(SOCKET Socket, stOverlappedMsg* ReceivedOverlappedMsg);
-
-	///////////////////////////////////////////
-	// stringstream¿« ∏« æ’ø° size∏¶ √ﬂ∞°
-	///////////////////////////////////////////
-	static bool AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
-
-	///////////////////////////////////////////
-	// º“ƒœ πˆ∆€ ≈©±‚ ∫Ø∞Ê
-	///////////////////////////////////////////
-	void SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf);
-
-	///////////////////////////////////////////
-	// ºˆΩ≈«— µ•¿Ã≈Õ∏¶ ¿˙¿Â«œ¥¬ µ¶ø°º≠ µ•¿Ã≈Õ∏¶ »πµÊ
-	///////////////////////////////////////////
-	void GetDataInRecvDeque(deque<char*>* RecvDeque, char* DataBuffer);
-
-	///////////////////////////////////////////
-	// ∆–≈∂¿ª √≥∏Æ«’¥œ¥Ÿ.
-	///////////////////////////////////////////
-	void ProcessReceivedPacket(char* DataBuffer, SOCKET Socket);
-
-	////////////////////////////////////////////////
-	// ¥ÎøÎ∑Æ ∆–≈∂ ∫–«“ 
-	////////////////////////////////////////////////
-	template<typename T>
-	static void DivideHugePacket(SOCKET Socket, stringstream& SendStream, EPacketType PacketType, T& queue);
-
-	//////////////////////////////////////////////////
-	//// (¿”Ω√) ∆–≈∂ ªÁ¿Ã¡ÓøÕ Ω«¡¶ ±Ê¿Ã ∞À¡ıøÎ «‘ºˆ
-	//////////////////////////////////////////////////
-	//static void VerifyPacket(char* DataBuffer, bool send);
-
-	// ΩÃ±€≈œ ∞¥√º ∞°¡Æø¿±‚
-	static cGameServer* GetSingleton()
-	{
-		static cGameServer gameServer;
-		return &gameServer;
-	}
-
-
-	////////////////////////
-	// »Æ¿Œ
-	////////////////////////
-	bool IsServerOn();
-	int GetServerPort();
-
-	////////////////////////
-	// ≈ÎΩ≈
-	////////////////////////
-	static void Broadcast(stringstream& SendStream);
-	static void BroadcastExceptOne(stringstream& SendStream, SOCKET Except);
-
-	static void Connected(stringstream& RecvStream, SOCKET Socket);
-
-	static void ScoreBoard(stringstream& RecvStream, SOCKET Socket);
-
+	///////////////////////////////////
+	// Game Server <--> Game Clients
+	///////////////////////////////////
+	static void Connected(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void ScoreBoard(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip);
-
-	static void Observation(stringstream& RecvStream, SOCKET Socket);
-	static int SizeOfObservers();
-	static void InsertAtObersers(SOCKET Socket);
-
+	static void Observation(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer);
 	static void SendSpawnedPioneer(SOCKET Socket);
-
-	static void DiedPioneer(stringstream& RecvStream, SOCKET Socket);
-	static cThreadSafetyQueue<int> tsqDiedPioneer;
-
-	static void InfoOfPioneer_Animation(stringstream& RecvStream, SOCKET Socket);
-	static cThreadSafetyQueue<cInfoOfPioneer_Animation> tsqInfoOfPioneer_Animation;
-
-	static void PossessPioneer(stringstream& RecvStream, SOCKET Socket);
-	bool PossessingPioneer(cInfoOfPioneer_Socket Socket);
-	static cThreadSafetyQueue<cInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
-
-	static void InfoOfPioneer_Stat(stringstream& RecvStream, SOCKET Socket);
-	static cThreadSafetyQueue<cInfoOfPioneer_Stat> tsqInfoOfPioneer_Stat;
-
+	static void DiedPioneer(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void InfoOfPioneer_Animation(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void PossessPioneer(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static bool PossessingPioneer(cInfoOfPioneer_Socket Socket);
+	static void InfoOfPioneer_Stat(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile);
-	static void InfoOfProjectile(stringstream& RecvStream, SOCKET Socket);
-	static cThreadSafetyQueue<cInfoOfProjectile> tsqInfoOfProjectile;
-
+	static void InfoOfProjectile(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendInfoOfResources(cInfoOfResources InfoOfResources);
-
 	static void SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn Spawn);
 	static void SendInfoOfBuilding_Spawned(SOCKET Socket);
-	static void RecvInfoOfBuilding_Spawn(stringstream& RecvStream, SOCKET Socket);
-	static cThreadSafetyQueue<cInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
-
-	static void SendInfoOfBuilding_Stat(stringstream& RecvStream, SOCKET Socket);
-
+	static void RecvInfoOfBuilding_Spawn(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendInfoOfBuilding_Stat(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendDestroyBuilding(int IDOfBuilding);
-
-
 	static void SendSpawnEnemy(cInfoOfEnemy InfoOfEnemy);
 	static void SendSpawnedEnemy(SOCKET Socket);
-
-	static void SendInfoOfEnemy_Animation(stringstream& RecvStream, SOCKET Socket);
-
-	static void SendInfoOfEnemy_Stat(stringstream& RecvStream, SOCKET Socket);
-
+	static void SendInfoOfEnemy_Animation(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendInfoOfEnemy_Stat(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendDestroyEnemy(int IDOfEnemy, int IDOfPioneer, int Exp);
+
+	//
+	static unsigned int GetServerPort();
+	static int SizeOfObservers();
+	static void InsertAtObersers(SOCKET Socket);
 };

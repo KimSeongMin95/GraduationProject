@@ -4,7 +4,7 @@
 
 #include "NetworkInterface.h"
 
-class CServer sealed : public INetworkInterface
+class CServer final : public INetworkInterface
 {
 public:
 	CServer();

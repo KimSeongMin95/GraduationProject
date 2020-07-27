@@ -1,4 +1,4 @@
-
+﻿
 #include "Console.h"
 #include "Server.h"
 #include "Client.h"
@@ -9,7 +9,7 @@ CNetworkComponent::CNetworkComponent(ENetworkComponentType NCT /*= NetworkCompon
 {
 	this->NCT = NCT;
 
-	// ��Ʈ��ũ�� ���� �Ǵ� Ŭ���̾�Ʈ�� �ʱ�ȭ�մϴ�.
+	// 네트워크를 서버 또는 클라이언트로 초기화합니다.
 	switch (NCT)
 	{
 	case ENetworkComponentType::NCT_Server:

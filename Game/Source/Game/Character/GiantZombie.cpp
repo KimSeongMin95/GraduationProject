@@ -2,6 +2,8 @@
 
 #include "GiantZombie.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AGiantZombie::AGiantZombie()
 {
 	EnemyType = EEnemyType::GiantZombie;

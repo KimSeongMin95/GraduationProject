@@ -4,6 +4,7 @@
 
 #include "Character/Enemy.h"
 #include "EnemyManager.h"
+#include "Network/NetworkComponent/Console.h"
 #include "Network/GameClient.h"
 #include "Etc/OccupationPanel.h"
 #include "Etc/MyTriggerBox.h"
@@ -54,7 +55,7 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (cGameClient::GetSingleton()->IsClientSocketOn())
+	if (CGameClient::GetSingleton()->IsNetworkOn())
 	{
 		Destroy();
 	}

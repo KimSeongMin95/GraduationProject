@@ -2,6 +2,8 @@
 
 #include "DialogWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UDialogWidget::UDialogWidget()
 {
 

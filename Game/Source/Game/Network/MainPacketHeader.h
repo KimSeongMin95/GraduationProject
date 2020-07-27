@@ -1,0 +1,18 @@
+#pragma once
+
+#include "Network/NetworkComponent/NetworkHeader.h"
+
+enum class EMainPacketHeader : uint16_t
+{
+	LOGIN,
+	CREATE_GAME,
+	FIND_GAMES,
+	WAITING_GAME,
+	JOIN_ONLINE_GAME,
+	DESTROY_WAITING_GAME,
+	EXIT_WAITING_GAME,
+	MODIFY_WAITING_GAME,
+	START_WAITING_GAME,
+	ACTIVATE_GAME_SERVER,
+	REQUEST_INFO_OF_GAME_SERVER
+};

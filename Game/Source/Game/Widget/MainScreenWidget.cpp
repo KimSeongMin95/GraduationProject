@@ -2,6 +2,8 @@
 
 #include "MainScreenWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UMainScreenWidget::UMainScreenWidget()
 {
 	

@@ -5,6 +5,7 @@
 #include "Etc/MyTriggerBox.h"
 #include "Widget/DialogWidget.h"
 #include "GameMode/InGameMode.h"
+#include "Network/NetworkComponent/Console.h"
 
 AMyDialog::AMyDialog()
 {

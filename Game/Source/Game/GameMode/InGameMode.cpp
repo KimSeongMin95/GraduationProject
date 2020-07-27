@@ -14,6 +14,7 @@
 #include "SpaceShip/SpaceShip.h"
 #include "BuildingManager.h"
 #include "EnemyManager.h"
+#include "Network/NetworkComponent/Console.h"
 
 const float AInGameMode::CellSize = 64.0f;
 
@@ -49,10 +50,12 @@ AInGameMode::AInGameMode()
 	DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
 
 	PlayerControllerClass = APioneerController::StaticClass();
+
+	CConsole::GetSingleton()->AllocConsole();
 }
 AInGameMode::~AInGameMode()
 {
-
+	//CConsole::GetSingleton()->FreeConsole();
 }
 
 void AInGameMode::BeginPlay()

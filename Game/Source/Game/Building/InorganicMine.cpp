@@ -2,6 +2,8 @@
 
 #include "InorganicMine.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AInorganicMine::AInorganicMine()
 {
 	BuildingType = EBuildingType::InorganicMine;

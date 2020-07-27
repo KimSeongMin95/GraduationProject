@@ -2,6 +2,8 @@
 
 #include "PathFinding.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 bool PathFinding::bMoveInterrupt = false;
 
 /** PioneerController에서 길찾기 알고리즘을 선택해서 실행합니다. */

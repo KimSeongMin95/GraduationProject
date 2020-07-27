@@ -2,7 +2,7 @@
 
 #include "NetworkHeader.h"
 
-class CPacket sealed
+class CPacket final
 {
 private:
 	uint16_t Length;   // 전체크기

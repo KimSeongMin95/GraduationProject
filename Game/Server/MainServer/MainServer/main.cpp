@@ -14,7 +14,7 @@ int main()
 
     do
     {
-        mainServer->SetIPv4AndPort(IPv4, Port);
+        INetworkInterface::SetIPv4AndPort(IPv4, Port);
     } while (mainServer->Initialize(IPv4, Port) == false);
 
     while (true);

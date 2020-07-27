@@ -1,13 +1,13 @@
-/**************************************************************************
-* ÀúÀÛÀÚ(author) && ÀúÀÛ±ÇÀÚ(Copyright holder): ±è¼º¹Î(Kim Seongmin)
-* Current Affiliation(20/07/23): È«ÀÍ´ëÇĞ±³ ¼¼Á¾Ä·ÆÛ½º °ÔÀÓ¼ÒÇÁÆ®¿ş¾î Àü°ø 4ÇĞ³â
-* NetworkComponent: IOCP ¸ğµ¨À» »ç¿ëÇÏ¿© Á÷Á¢ °³¹ßÇÑ TCP ³×Æ®¿öÅ© ¿£ÁøÀÔ´Ï´Ù.
+ï»¿/**************************************************************************
+* ì €ì‘ì(author) && ì €ì‘ê¶Œì(Copyright holder): ê¹€ì„±ë¯¼(Kim Seongmin)
+* Current Affiliation(20/07/23): í™ìµëŒ€í•™êµ ì„¸ì¢…ìº í¼ìŠ¤ ê²Œì„ì†Œí”„íŠ¸ì›¨ì–´ ì „ê³µ 4í•™ë…„
+* NetworkComponent: IOCP ëª¨ë¸ì„ ì‚¬ìš©í•˜ì—¬ ì§ì ‘ ê°œë°œí•œ TCP ë„¤íŠ¸ì›Œí¬ ì—”ì§„ì…ë‹ˆë‹¤.
 * E-mail: ksm950310@naver.com
-* License: X (´©±¸³ª ÀÚÀ¯·Ó°Ô »ç¿ëÇÏ¼Åµµ ÁÁ½À´Ï´Ù.)
+* License: X (ëˆ„êµ¬ë‚˜ ììœ ë¡­ê²Œ ì‚¬ìš©í•˜ì…”ë„ ì¢‹ìŠµë‹ˆë‹¤.)
 * Github: https://github.com/KimSeongMin95/GraduationProject
-* Caution: ÄÚµå¿¡ ¹ö±×°¡ Á¸ÀçÇÒ ¼ö ÀÖ½À´Ï´Ù. ÀÌ Á¡ À¯ÀÇÇÏ½Ã±â ¹Ù¶ø´Ï´Ù.
-* (ÄÚµå°¡ ¸¶À½¿¡ µéÀ¸½Ã¸é, Á¦°¡ °ÔÀÓ ÇÁ·Î±×·¡¸Ó·Î Ãë¾÷ÇÒ ¼ö ÀÖ°Ô ¿¬¶ô ºÎÅ¹µå¸³´Ï´Ù.)
-* (ÀÏ´Ü Å¬¶óÀÌ¾ğÆ® ÇÁ·Î±×·¡¸Ó¸¦ Áö¸ÁÇÏ°í ÀÖ½À´Ï´Ù. °¨»çÇÕ´Ï´Ù!)
+* Caution: ì½”ë“œì— ë²„ê·¸ê°€ ì¡´ì¬í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤. ì´ ì  ìœ ì˜í•˜ì‹œê¸° ë°”ëë‹ˆë‹¤.
+* (ì½”ë“œê°€ ë§ˆìŒì— ë“¤ìœ¼ì‹œë©´, ì œê°€ ê²Œì„ í”„ë¡œê·¸ë˜ë¨¸ë¡œ ì·¨ì—…í•  ìˆ˜ ìˆê²Œ ì—°ë½ ë¶€íƒë“œë¦½ë‹ˆë‹¤.)
+* (ì¼ë‹¨ í´ë¼ì´ì–¸íŠ¸ í”„ë¡œê·¸ë˜ë¨¸ë¥¼ ì§€ë§í•˜ê³  ìˆìŠµë‹ˆë‹¤. ê°ì‚¬í•©ë‹ˆë‹¤!)
 ***************************************************************************/
 
 #pragma once
@@ -25,7 +25,7 @@ public:
 	virtual ~INetworkInterface() {}
 
 public:
-	friend class CNetworkComponent; // CNetworkComponent¿¡¼­¸¸ ÀÎÅÍÆäÀÌ½º ÇÔ¼ö¸¦ È£ÃâÇÒ ¼ö ÀÖµµ·Ï ÇÕ´Ï´Ù.
+	friend class CNetworkComponent; // CNetworkComponentì—ì„œë§Œ ì¸í„°í˜ì´ìŠ¤ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•  ìˆ˜ ìˆë„ë¡ í•©ë‹ˆë‹¤.
 
 protected:
 	virtual bool Initialize(const char* const IPv4, const USHORT& Port) = 0;
@@ -41,25 +41,27 @@ protected:
 	virtual void BroadcastExceptOne(CPacket& Packet, const SOCKET& Except) {}
 
 protected:
-	// ¼ÒÄÏÀ» È®ÀÎÇÏ°í ´İ½À´Ï´Ù.
+	// ì†Œì¼“ì„ í™•ì¸í•˜ê³  ë‹«ìŠµë‹ˆë‹¤.
 	void CloseSocketWithCheck(SOCKET& Socket);
 	void CloseSocketWithCheck(const SOCKET& Socket);
 
-	// ¼ÒÄÏÀ» ´İ°í winsock ¶óÀÌºê·¯¸®¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+	// ì†Œì¼“ì„ ë‹«ê³  winsock ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ í•´ì œí•©ë‹ˆë‹¤.
 	void CloseSocketAndWSACleanup(SOCKET& Socket);
 
-	// ÇÚµéÀ» È®ÀÎÇÏ°í ´İ½À´Ï´Ù.
+	// í•¸ë“¤ì„ í™•ì¸í•˜ê³  ë‹«ìŠµë‹ˆë‹¤.
 	void CloseHandleWithCheck(HANDLE& Handle);
 
-	// ¼ÒÄÏÀÇ ¹öÆÛ Å©±â¸¦ º¯°æÇÕ´Ï´Ù.
+	// ì†Œì¼“ì˜ ë²„í¼ í¬ê¸°ë¥¼ ë³€ê²½í•©ë‹ˆë‹¤.
 	void SetSockOpt(const SOCKET& Socket, const int& SizeOfSendBuf, const int& SizeOfRecvBuf);
 
 public:
+	static void SetIPv4AndPort(char* IPv4, USHORT& Port);
+
 	static void GetKoreaStandardTime(stringstream& TimeStream);
 };
 
-// ¼ö½ÅÇÑ ÆĞÅ¶À» Ã³¸®ÇÏ´Â ÇÔ¼ö Æ÷ÀÎÅÍ
-class CProcessingFuncPtr sealed
+// ìˆ˜ì‹ í•œ íŒ¨í‚·ì„ ì²˜ë¦¬í•˜ëŠ” í•¨ìˆ˜ í¬ì¸í„°
+class CProcessingFuncPtr final
 {
 public:
 	CProcessingFuncPtr();
@@ -72,8 +74,8 @@ public:
 	void ExecuteFunc(stringstream& RecvStream, const SOCKET& Socket);
 };
 
-// Å¬¶óÀÌ¾ğÆ®°¡ Á¢¼ÓÇÏ¸é ½ÇÇàÇÒ Äİ¹éÇÔ¼ö Æ÷ÀÎÅÍ
-class CCallBackFuncPtr sealed
+// í´ë¼ì´ì–¸íŠ¸ê°€ ì ‘ì†í•˜ë©´ ì‹¤í–‰í•  ì½œë°±í•¨ìˆ˜ í¬ì¸í„°
+class CCallBackFuncPtr final
 {
 public:
 	CCallBackFuncPtr();

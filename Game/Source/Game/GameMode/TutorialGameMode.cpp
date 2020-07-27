@@ -3,6 +3,7 @@
 
 #include "TutorialGameMode.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "PioneerManager.h"
 #include "SpaceShip/SpaceShip.h"
 

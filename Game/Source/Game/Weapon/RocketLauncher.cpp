@@ -2,6 +2,7 @@
 
 #include "RocketLauncher.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Projectile/Splash/ProjectileRocketLauncher.h"
 
 ARocketLauncher::ARocketLauncher()

@@ -48,33 +48,44 @@ CMainServer* CMainServer::GetSingleton()
 	return &mainServer;
 }
 
-void CMainServer::SetIPv4AndPort(char* IPv4, USHORT& Port)
-{
-	CONSOLE_LOG("\n /*********************************************/ \n");
-
-	CONSOLE_LOG("IPv4를 입력하세요. (예시: 58.125.236.74) \n");
-	CONSOLE_LOG("IPv4: ");
-	std::cin >> IPv4;
-	CONSOLE_LOG("입력받은 IPv4: %s \n", IPv4);
-
-	CONSOLE_LOG("Port를 입력하세요. (예시: 8000) \n");
-	CONSOLE_LOG("Port: ");
-	std::cin >> Port;
-	CONSOLE_LOG("입력받은 Port: %d \n", Port);
-
-	CONSOLE_LOG("/*********************************************/ \n\n");
-}
-
 bool CMainServer::Initialize(const char* const IPv4, const USHORT& Port)
 {
 	if (!Server)
 	{
-		CONSOLE_LOG("[Error] <CMyServer::Initialize(...)> if (!Server) \n");
+		CONSOLE_LOG("[Error] <CMainServer::Initialize(...)> if (!Server) \n");
 		return false;
 	}
 	/****************************************/
 
 	return Server->Initialize(IPv4, Port);
+}
+bool CMainServer::IsNetworkOn()
+{
+	CONSOLE_LOG("[START] <CMainServer::IsNetworkOn()>\n");
+
+	if (!Server)
+	{
+		CONSOLE_LOG("[Error] <CMainServer::IsNetworkOn())> if (!Server) \n");
+		return false;
+	}
+	/****************************************/
+
+	return Server->IsNetworkOn();
+}
+void CMainServer::Close()
+{
+	CONSOLE_LOG("[START] <CMainServer::Close()>\n");
+
+	if (!Server)
+	{
+		CONSOLE_LOG("[Error] <CMainServer::Close())> if (!Server) \n");
+		return;
+	}
+	/****************************************/
+
+	Server->Close();
+
+	CONSOLE_LOG("[END] <CMainServer::Close()>\n");
 }
 
 void CMainServer::ConnectCBF(CCompletionKey CompletionKey)

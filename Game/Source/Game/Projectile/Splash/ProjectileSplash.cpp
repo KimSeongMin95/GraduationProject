@@ -2,6 +2,7 @@
 
 #include "ProjectileSplash.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Character/Enemy.h"
 
 AProjectileSplash::AProjectileSplash()

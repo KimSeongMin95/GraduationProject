@@ -14,6 +14,7 @@
 #include "Character/Maynard.h"
 #include "Character/AlienAnimal.h"
 #include "EnemySpawner.h"
+#include "Network/NetworkComponent/Console.h"
 #include "Network/GameServer.h"
 
 AEnemyManager::AEnemyManager()
@@ -42,7 +43,7 @@ void AEnemyManager::BeginPlay()
 	}
 
 	// 에디터에서 월드상에 배치한 Building들을 관리하기 위해 추가합니다.
-	if (cGameServer::GetSingleton()->IsServerOn())
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
 		for (TActorIterator<AEnemy> ActorItr(world); ActorItr; ++ActorItr)
 		{
@@ -54,7 +55,7 @@ void AEnemyManager::BeginPlay()
 
 			(*ActorItr)->SetEnemyManager(this);
 
-			cGameServer::GetSingleton()->SendSpawnEnemy((*ActorItr)->GetInfoOfEnemy());
+			CGameServer::GetSingleton()->SendSpawnEnemy((*ActorItr)->GetInfoOfEnemy());
 		}
 	}
 	
@@ -140,9 +141,9 @@ class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 		enemy->SetEnemyManager(this);
 
 
-		if (cGameServer::GetSingleton()->IsServerOn())
+		if (CGameServer::GetSingleton()->IsNetworkOn())
 		{
-			cGameServer::GetSingleton()->SendSpawnEnemy(enemy->GetInfoOfEnemy());
+			CGameServer::GetSingleton()->SendSpawnEnemy(enemy->GetInfoOfEnemy());
 		}
 		
 	}

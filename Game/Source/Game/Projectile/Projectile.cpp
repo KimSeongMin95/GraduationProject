@@ -2,6 +2,8 @@
 
 #include "Projectile.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AProjectile::AProjectile()
 {
 	TotalDamage = 0.0f;

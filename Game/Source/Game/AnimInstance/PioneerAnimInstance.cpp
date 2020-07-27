@@ -2,6 +2,7 @@
 
 #include "PioneerAnimInstance.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Character/Pioneer.h"
 
 UPioneerAnimInstance::UPioneerAnimInstance()

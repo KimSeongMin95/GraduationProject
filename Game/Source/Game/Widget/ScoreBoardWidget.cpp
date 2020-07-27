@@ -2,6 +2,8 @@
 
 #include "ScoreBoardWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UScoreBoardWidget::UScoreBoardWidget()
 {
 

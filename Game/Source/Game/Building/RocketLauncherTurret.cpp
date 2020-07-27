@@ -2,6 +2,8 @@
 
 #include "RocketLauncherTurret.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 ARocketLauncherTurret::ARocketLauncherTurret()
 {
 	InitHelthPointBar();

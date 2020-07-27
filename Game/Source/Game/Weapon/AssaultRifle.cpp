@@ -2,6 +2,7 @@
 
 #include "AssaultRifle.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Projectile/ProjectileAssaultRifle.h"
 
 AAssaultRifle::AAssaultRifle()

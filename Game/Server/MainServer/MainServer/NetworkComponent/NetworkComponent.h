@@ -1,13 +1,13 @@
-/**************************************************************************
-* ÀúÀÛÀÚ(author) && ÀúÀÛ±ÇÀÚ(Copyright holder): ±è¼º¹Î(Kim Seongmin)
-* Current Affiliation(20/07/23): È«ÀÍ´ëÇĞ±³ ¼¼Á¾Ä·ÆÛ½º °ÔÀÓ¼ÒÇÁÆ®¿ş¾î Àü°ø 4ÇĞ³â
-* NetworkComponent: IOCP ¸ğµ¨À» »ç¿ëÇÏ¿© Á÷Á¢ °³¹ßÇÑ TCP ³×Æ®¿öÅ© ¿£ÁøÀÔ´Ï´Ù.
+ï»¿/**************************************************************************
+* ì €ì‘ì(author) && ì €ì‘ê¶Œì(Copyright holder): ê¹€ì„±ë¯¼(Kim Seongmin)
+* Current Affiliation(20/07/23): í™ìµëŒ€í•™êµ ì„¸ì¢…ìº í¼ìŠ¤ ê²Œì„ì†Œí”„íŠ¸ì›¨ì–´ ì „ê³µ 4í•™ë…„
+* NetworkComponent: IOCP ëª¨ë¸ì„ ì‚¬ìš©í•˜ì—¬ ì§ì ‘ ê°œë°œí•œ TCP ë„¤íŠ¸ì›Œí¬ ì—”ì§„ì…ë‹ˆë‹¤.
 * E-mail: ksm950310@naver.com
-* License: X (´©±¸³ª ÀÚÀ¯·Ó°Ô »ç¿ëÇÏ¼Åµµ ÁÁ½À´Ï´Ù.)
+* License: X (ëˆ„êµ¬ë‚˜ ììœ ë¡­ê²Œ ì‚¬ìš©í•˜ì…”ë„ ì¢‹ìŠµë‹ˆë‹¤.)
 * Github: https://github.com/KimSeongMin95/GraduationProject
-* Caution: ÄÚµå¿¡ ¹ö±×°¡ Á¸ÀçÇÒ ¼ö ÀÖ½À´Ï´Ù. ÀÌ Á¡ À¯ÀÇÇÏ½Ã±â ¹Ù¶ø´Ï´Ù.
-* (ÄÚµå°¡ ¸¶À½¿¡ µéÀ¸½Ã¸é, Á¦°¡ °ÔÀÓ ÇÁ·Î±×·¡¸Ó·Î Ãë¾÷ÇÒ ¼ö ÀÖ°Ô ¿¬¶ô ºÎÅ¹µå¸³´Ï´Ù.)
-* (ÀÏ´Ü Å¬¶óÀÌ¾ğÆ® ÇÁ·Î±×·¡¸Ó¸¦ Áö¸ÁÇÏ°í ÀÖ½À´Ï´Ù. °¨»çÇÕ´Ï´Ù!)
+* Caution: ì½”ë“œì— ë²„ê·¸ê°€ ì¡´ì¬í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤. ì´ ì  ìœ ì˜í•˜ì‹œê¸° ë°”ëë‹ˆë‹¤.
+* (ì½”ë“œê°€ ë§ˆìŒì— ë“¤ìœ¼ì‹œë©´, ì œê°€ ê²Œì„ í”„ë¡œê·¸ë˜ë¨¸ë¡œ ì·¨ì—…í•  ìˆ˜ ìˆê²Œ ì—°ë½ ë¶€íƒë“œë¦½ë‹ˆë‹¤.)
+* (ì¼ë‹¨ í´ë¼ì´ì–¸íŠ¸ í”„ë¡œê·¸ë˜ë¨¸ë¥¼ ì§€ë§í•˜ê³  ìˆìŠµë‹ˆë‹¤. ê°ì‚¬í•©ë‹ˆë‹¤!)
 ***************************************************************************/
 
 #pragma once
@@ -21,7 +21,7 @@ enum class ENetworkComponentType : uint16_t
 	NCT_Client
 };
 
-class CNetworkComponent sealed : private INetworkInterface
+class CNetworkComponent final : private INetworkInterface
 {
 public:
 	CNetworkComponent(ENetworkComponentType NCT = ENetworkComponentType::NCT_None);
@@ -34,7 +34,7 @@ private:
 
 public:
 	/////////////////////////////////////////////////////////
-	// INetworkInterface virtual Functions (¼­¹ö & Å¬¶ó °øÅë)
+	// INetworkInterface virtual Functions (ì„œë²„ & í´ë¼ ê³µí†µ)
 	/////////////////////////////////////////////////////////
 	virtual bool Initialize(const char* const IPv4, const USHORT& Port) final;
 	virtual bool IsNetworkOn() final;
@@ -46,7 +46,7 @@ public:
 	virtual void Send(CPacket& Packet, const SOCKET& Socket = NULL) final;
 
 	/////////////////////////////////////////////////////////
-	// INetworkInterface virtual Functions (¼­¹ö)
+	// INetworkInterface virtual Functions (ì„œë²„)
 	/////////////////////////////////////////////////////////
 	virtual void Broadcast(CPacket& Packet) final;
 	virtual void BroadcastExceptOne(CPacket& Packet, const SOCKET& Except) final;

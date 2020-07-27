@@ -2,6 +2,7 @@
 
 #include "Weapon.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
 
@@ -92,7 +93,7 @@ bool AWeapon::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 		WeaponMesh->PlayAnimation(FireAnimSequence, false);
 
 	// AI가 중복되어 발사하지 않도록
-	if (cGameClient::GetSingleton()->IsClientSocketOn() && SocketIDOfPioneer == 0)
+	if (CGameClient::GetSingleton()->IsNetworkOn() && SocketIDOfPioneer == 0)
 	{
 		return false;
 	}
@@ -102,26 +103,26 @@ bool AWeapon::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 
 void AWeapon::FireNetwork(int IDOfPioneer, const FTransform& Transform)
 {
-	if (cGameServer::GetSingleton()->IsServerOn())
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
 		cInfoOfProjectile infoOfProjectile;
 		infoOfProjectile.ID = IDOfPioneer;
 		infoOfProjectile.Numbering = WeaponNumbering;
 		infoOfProjectile.SetActorTransform(Transform);
 
-		cGameServer::GetSingleton()->SendInfoOfProjectile(infoOfProjectile);
+		CGameServer::GetSingleton()->SendInfoOfProjectile(infoOfProjectile);
 
 		return;
 	}
 
-	if (cGameClient::GetSingleton()->IsClientSocketOn())
+	if (CGameClient::GetSingleton()->IsNetworkOn())
 	{
 		cInfoOfProjectile infoOfProjectile;
 		infoOfProjectile.ID = IDOfPioneer;
 		infoOfProjectile.Numbering = WeaponNumbering;
 		infoOfProjectile.SetActorTransform(Transform);
 
-		cGameClient::GetSingleton()->SendInfoOfProjectile(infoOfProjectile);
+		CGameClient::GetSingleton()->SendInfoOfProjectile(infoOfProjectile);
 
 		return;
 	}

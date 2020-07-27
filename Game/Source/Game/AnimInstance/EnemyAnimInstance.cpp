@@ -2,6 +2,7 @@
 
 #include "EnemyAnimInstance.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Character/Enemy.h"
 
 UEnemyAnimInstance::UEnemyAnimInstance()

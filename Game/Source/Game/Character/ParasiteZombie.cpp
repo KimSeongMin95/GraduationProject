@@ -2,6 +2,8 @@
 
 #include "ParasiteZombie.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AParasiteZombie::AParasiteZombie()
 {
 	EnemyType = EEnemyType::ParasiteZombie;

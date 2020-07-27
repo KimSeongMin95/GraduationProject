@@ -2,6 +2,8 @@
 
 #include "CopyRightWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UCopyRightWidget::UCopyRightWidget()
 {
 

@@ -1,236 +1,101 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
-
-/*** ¾ð¸®¾ó¿£Áø Çì´õ ¼±¾ð : Start ***/
 #include "DateTime.h"
-/*** ¾ð¸®¾ó¿£Áø Çì´õ ¼±¾ð : End ***/
 
-#include "Packet.h"
+#include "NetworkComponent/NetworkHeader.h"
+#include "GamePacketHeader.h"
+#include "GamePacket.h"
+#include "NetworkComponent/ThreadSafetyQueue.h"
+#include "NetworkComponent/CompletionKey.h"
 
 #include "CoreMinimal.h"
 
-
-/**
- * °ÔÀÓ ¼­¹ö¿Í Á¢¼Ó ¹× ÆÐÅ¶ Ã³¸®¸¦ ´ã´çÇÏ´Â Å¬·¡½º (°ÔÀÓ Å¬¶óÀÌ¾ðÆ®)
- */
-class GAME_API cGameClient
+class GAME_API CGameClient final
 {
+public:
+	CGameClient();
+	~CGameClient();
+
+	static CGameClient* GetSingleton();
+
 private:
-	SOCKET	ServerSocket;			// ¼­¹ö¿Í ¿¬°áÇÒ ¼ÒÄÏ	
+	static unique_ptr<class CNetworkComponent> Client;
 
-	bool	bAccept;				// ¿äÃ» µ¿ÀÛ ÇÃ·¡±× (¸ÞÀÎ ½º·¹µå)
-	CRITICAL_SECTION csAccept;		// Å©¸®Æ¼ÄÃ ¼½¼Ç
-	HANDLE	hMainHandle;			// ¸ÞÀÎ ½º·¹µå ÇÚµé	
-
-	bool bIsInitialized;
-	bool bIsConnected;
-	bool bIsClientSocketOn;
-
-
-	deque<char*> RecvDeque;
-
-	bool bServerOn;
-	CRITICAL_SECTION csServerOn;
-
-
-
-	// Ping ½Ã°£ ÃøÁ¤
-	FDateTime StartTime;
-	int Ping;
-	CRITICAL_SECTION csPing;
-
-	
-
-protected:
-
+	// Ping ì‹œê°„ ì¸¡ì •
+	static FDateTime StartTime;
+	static int Ping;
+	static CRITICAL_SECTION csPing;
 
 public:
-	cInfoOfScoreBoard MyInfoOfScoreBoard;
-	CRITICAL_SECTION csMyInfoOfScoreBoard;
+	static cInfoOfScoreBoard MyInfoOfScoreBoard;
+	static CRITICAL_SECTION csMyInfoOfScoreBoard;
 
-	int PossessedID;
-	CRITICAL_SECTION csPossessedID;
+	static int PossessedID;
+	static CRITICAL_SECTION csPossessedID;
+
+	static CThreadSafetyQueue<cInfoOfScoreBoard> tsqScoreBoard;
+	static CThreadSafetyQueue<cInfoOfSpaceShip> tsqSpaceShip;
+	static CThreadSafetyQueue<cInfoOfPioneer> tsqSpawnPioneer;
+	static CThreadSafetyQueue<int> tsqDiedPioneer;
+	static CThreadSafetyQueue<cInfoOfPioneer_Animation> tsqInfoOfPioneer_Animation;
+	static CThreadSafetyQueue<cInfoOfPioneer_Socket> tsqPossessPioneer;
+	static CThreadSafetyQueue<cInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
+	static CThreadSafetyQueue<cInfoOfPioneer_Stat> tsqInfoOfPioneer_Stat;
+	static CThreadSafetyQueue<cInfoOfProjectile> tsqInfoOfProjectile;
+	static CThreadSafetyQueue<cInfoOfResources> tsqInfoOfResources;
+	static CThreadSafetyQueue<cInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
+	static CThreadSafetyQueue<cInfoOfBuilding> tsqInfoOfBuilding;
+	static CThreadSafetyQueue<cInfoOfBuilding_Stat> tsqInfoOfBuilding_Stat;
+	static CThreadSafetyQueue<int> tsqDestroyBuilding;
+	static CThreadSafetyQueue<cInfoOfEnemy> tsqSpawnEnemy;
+	static CThreadSafetyQueue<cInfoOfEnemy_Animation> tsqInfoOfEnemy_Animation;
+	static CThreadSafetyQueue<cInfoOfEnemy_Stat> tsqInfoOfEnemy_Stat;
+	static CThreadSafetyQueue<int> tsqDestroyEnemy;
+	static CThreadSafetyQueue<int> tsqExp;
 
 public:
-	/////////////////////////////////////
-	// cClientSocket
-	/////////////////////////////////////
-	cGameClient();
-	~cGameClient();
+	static bool Initialize(const char* const IPv4, const USHORT& Port);
+	static bool IsNetworkOn();
+	static void Close();
 
-	// ¼ÒÄÏ µî·Ï ¹× ¼³Á¤
-	bool Initialize();
+	static void ConnectCBF(CCompletionKey CompletionKey);
+	static void DisconnectCBF(CCompletionKey CompletionKey);
 
-	// ¼­¹ö¿Í ¿¬°á
-	bool Connect(const char * pszIP, int nPort);
-
-	// ¼ÒÄÏ Á¾·á
-	void Close();
-	
-	// ¼Û½Å
-	void Send(stringstream& SendStream);
-
-
-	///////////////////////////////////////////
-	// ¼ÒÄÏ ¹öÆÛ Å©±â º¯°æ
-	///////////////////////////////////////////
-	void SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf);
-
-	///////////////////////////////////////////
-	// stringstreamÀÇ ¸Ç ¾Õ¿¡ size¸¦ Ãß°¡
-	///////////////////////////////////////////
-	bool AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
-
-	///////////////////////////////////////////
-	// recvDeque¿¡ ¼ö½ÅÇÑ µ¥ÀÌÅÍ¸¦ ÀûÀç
-	///////////////////////////////////////////
-	void PushRecvBufferInDeque(char* RecvBuffer, int RecvLen);
-
-	///////////////////////////////////////////
-	// ¼ö½ÅÇÑ µ¥ÀÌÅÍ¸¦ ÀúÀåÇÏ´Â µ¦¿¡¼­ µ¥ÀÌÅÍ¸¦ È¹µæ
-	///////////////////////////////////////////
-	void GetDataInRecvDeque(char* DataBuffer);
-
-	///////////////////////////////////////////
-	// ÆÐÅ¶À» Ã³¸®ÇÕ´Ï´Ù.
-	///////////////////////////////////////////
-	void ProcessReceivedPacket(char* DataBuffer);
-
-
-	// ½º·¹µå ½ÃÀÛ ¹× Á¾·á
-	bool BeginMainThread();
-	void RunMainThread();
-
-	// ½Ì±ÛÅÏ °´Ã¼ °¡Á®¿À±â
-	static cGameClient* GetSingleton()
-	{
-		static cGameClient gameClient;
-		return &gameClient;
-	}
-
-	bool IsInitialized() { return bIsInitialized; }
-	bool IsConnected() { return bIsConnected; }
-	bool IsClientSocketOn() { return bIsClientSocketOn; }
-
-	bool IsServerOn();
-
-	/////////////////////////////////////
-	// Game Server / Game Clients
-	/////////////////////////////////////
-	void SendConnected();
-	void RecvConnected(stringstream& RecvStream);
-
-	void SendScoreBoard();
-	void RecvScoreBoard(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfScoreBoard> tsqScoreBoard;
-
-	void RecvSpaceShip(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfSpaceShip> tsqSpaceShip;
-
-	void SendObservation();
-
-	void RecvSpawnPioneer(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfPioneer> tsqSpawnPioneer;
-
-	void SendDiedPioneer(int ID);
-	void RecvDiedPioneer(stringstream& RecvStream);
-	cThreadSafetyQueue<int> tsqDiedPioneer; // ID ÀúÀå?
-
-	void SendInfoOfPioneer_Animation(class APioneer* PioneerOfPlayer);
-	void RecvInfoOfPioneer_Animation(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfPioneer_Animation> tsqInfoOfPioneer_Animation;
-
-	void SendPossessPioneer(cInfoOfPioneer_Socket Socket);
-	void RecvPossessPioneer(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfPioneer_Socket> tsqPossessPioneer;
-
-	void RecvInfoOfPioneer_Socket(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
-
-	void SendInfoOfPioneer_Stat(class APioneer* PioneerOfPlayer);
-	void RecvInfoOfPioneer_Stat(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfPioneer_Stat> tsqInfoOfPioneer_Stat;
-
-	void SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile);
-	void RecvInfoOfProjectile(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfProjectile> tsqInfoOfProjectile;
-
-	void RecvInfoOfResources(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfResources> tsqInfoOfResources;
-
-	void SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn);
-	void RecvInfoOfBuilding_Spawn(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
-
-	void RecvInfoOfBuilding_Spawned(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfBuilding> tsqInfoOfBuilding;
-
-	void SendInfoOfBuilding_Stat();
-	void RecvInfoOfBuilding_Stat(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfBuilding_Stat> tsqInfoOfBuilding_Stat;
-
-	void RecvDestroyBuilding(stringstream& RecvStream);
-	cThreadSafetyQueue<int> tsqDestroyBuilding;
-
-
-	void RecvSpawnEnemy(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfEnemy> tsqSpawnEnemy;
-
-	void SendInfoOfEnemy_Animation();
-	void RecvInfoOfEnemy_Animation(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfEnemy_Animation> tsqInfoOfEnemy_Animation;
-
-	void SendInfoOfEnemy_Stat();
-	void RecvInfoOfEnemy_Stat(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfEnemy_Stat> tsqInfoOfEnemy_Stat;
-
-	void RecvDestroyEnemy(stringstream& RecvStream);
-	cThreadSafetyQueue<int> tsqDestroyEnemy;
-	cThreadSafetyQueue<int> tsqExp;
-
-	////////////////////////////////////////////////
-	// (ÀÓ½Ã) ÆÐÅ¶ »çÀÌÁî¿Í ½ÇÁ¦ ±æÀÌ °ËÁõ¿ë ÇÔ¼ö
-	////////////////////////////////////////////////
-	void VerifyPacket(char* DataBuffer, bool send)
-	{
-		if (!DataBuffer)
-		{
-			printf_s("[ERROR] <cClientSocketInGame::VerifyPacket(...)> if (!DataBuffer) \n");
-			return;
-		}
-
-		int len = (int)strlen(DataBuffer);
-
-		if (len < 4)
-		{
-			printf_s("[ERROR] <cClientSocketInGame::VerifyPacket(...)> if (len < 4) \n");
-			return;
-		}
-
-		char buffer[MAX_BUFFER + 1];
-		CopyMemory(buffer, DataBuffer, len);
-		buffer[len] = '\0';
-
-		for (int i = 0; i < len; i++)
-		{
-			if (buffer[i] == '\n')
-				buffer[i] = '_';
-		}
-
-		char sizeBuffer[5]; // [1234\0]
-		CopyMemory(sizeBuffer, buffer, 4); // ¾Õ 4ÀÚ¸® µ¥ÀÌÅÍ¸¸ sizeBuffer¿¡ º¹»çÇÕ´Ï´Ù.
-		sizeBuffer[4] = '\0';
-
-		stringstream sizeStream;
-		sizeStream << sizeBuffer;
-		int sizeOfPacket = 0;
-		sizeStream >> sizeOfPacket;
-
-		if (sizeOfPacket != len)
-		{
-			printf_s("\n\n\n\n\n\n\n\n\n\n type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
-		}
-	}
+	///////////////////////////////////
+	// Game Server <--> Game Clients
+	///////////////////////////////////
+	static void SendConnected();
+	static void RecvConnected(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendScoreBoard();
+	static void RecvScoreBoard(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void RecvSpaceShip(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendObservation();
+	static void RecvSpawnPioneer(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendDiedPioneer(int ID);
+	static void RecvDiedPioneer(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendInfoOfPioneer_Animation(class APioneer* PioneerOfPlayer);
+	static void RecvInfoOfPioneer_Animation(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendPossessPioneer(cInfoOfPioneer_Socket Socket);
+	static void RecvPossessPioneer(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void RecvInfoOfPioneer_Socket(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendInfoOfPioneer_Stat(class APioneer* PioneerOfPlayer);
+	static void RecvInfoOfPioneer_Stat(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile);
+	static void RecvInfoOfProjectile(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void RecvInfoOfResources(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn);
+	static void RecvInfoOfBuilding_Spawn(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void RecvInfoOfBuilding_Spawned(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendInfoOfBuilding_Stat();
+	static void RecvInfoOfBuilding_Stat(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void RecvDestroyBuilding(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void RecvSpawnEnemy(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendInfoOfEnemy_Animation();
+	static void RecvInfoOfEnemy_Animation(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendInfoOfEnemy_Stat();
+	static void RecvInfoOfEnemy_Stat(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void RecvDestroyEnemy(stringstream& RecvStream, const SOCKET& Socket = NULL);
 };
+

@@ -2,6 +2,8 @@
 
 #include "WaitingGameWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UWaitingGameWidget::UWaitingGameWidget()
 {
 	State = nullptr;
@@ -59,7 +61,7 @@ bool UWaitingGameWidget::InitWidget(UWorld* const World, const FString Reference
 }
 
 
-void UWaitingGameWidget::SetText(cInfoOfGame& InfoOfGame)
+void UWaitingGameWidget::SetText(CGamePacket& InfoOfGame)
 {
 	if (!State || !Title || !Leader || !Stage || !Players || !Maximum)
 	{
@@ -148,26 +150,21 @@ void UWaitingGameWidget::SetJoinButtonVisibility(bool bVisible)
 		JoinButton->SetVisibility(ESlateVisibility::Hidden);
 }
 
-void UWaitingGameWidget::ShowLeader(cInfoOfPlayer CopiedMyInfo)
+void UWaitingGameWidget::ShowLeader(CPlayerPacket CopiedMyInfoOfPlayer)
 {
-	vecWaitingGameWidget.at(0).SetText(CopiedMyInfo);
+	vecWaitingGameWidget.at(0).SetText(CopiedMyInfoOfPlayer);
 	vecWaitingGameWidget.at(0).SetVisible(true);
 
 	if (!Leader)
 	{
-
-		printf_s("[Error] <UWaitingGameWidget::ShowLeader(...)> if (!Leader) \n");
-
-
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::ShowLeader(...)> if (!Leader)"));
-			
+		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::ShowLeader(...)> if (!Leader)"));	
 		return;
 	}
 
-	Leader->SetText(FText::FromString(FString(UTF8_TO_TCHAR(CopiedMyInfo.ID.c_str()))));
+	Leader->SetText(FText::FromString(FString(UTF8_TO_TCHAR(CopiedMyInfoOfPlayer.ID.c_str()))));
 }
 
-void UWaitingGameWidget::RevealGame(cInfoOfGame& InfoOfGame)
+void UWaitingGameWidget::RevealGame(CGamePacket& InfoOfGame)
 {
 	SetText(InfoOfGame);
 
@@ -317,9 +314,9 @@ int UWaitingGameWidget::CheckTextOfMaximum(int NumOfCurrent /*= 1*/)
 	return max;
 }
 
-cInfoOfGame UWaitingGameWidget::GetModifiedInfo(cInfoOfGame CopiedMyInfoOfGame)
+CGamePacket UWaitingGameWidget::GetModifiedInfo(CGamePacket CopiedMyInfoOfGame)
 {
-	cInfoOfGame infoOfGame = CopiedMyInfoOfGame;
+	CGamePacket infoOfGame = CopiedMyInfoOfGame;
 
 	if (!Title || !Stage || !Maximum)
 	{
@@ -334,7 +331,7 @@ cInfoOfGame UWaitingGameWidget::GetModifiedInfo(cInfoOfGame CopiedMyInfoOfGame)
 	return infoOfGame;
 }
 
-void UWaitingGameWidget::SetModifiedInfo(cInfoOfGame& InfoOfGame)
+void UWaitingGameWidget::SetModifiedInfo(CGamePacket& InfoOfGame)
 {
 	if (!Title || !Stage || !Maximum)
 	{

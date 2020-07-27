@@ -2,6 +2,7 @@
 
 #include "BaseAIController.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Character/BaseCharacter.h"
 
 ABaseAIController::ABaseAIController()

@@ -2,6 +2,8 @@
 
 #include "OnlineWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UOnlineWidget::UOnlineWidget()
 {
 	ID = nullptr;

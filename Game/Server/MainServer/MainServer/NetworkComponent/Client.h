@@ -2,7 +2,7 @@
 
 #include "NetworkInterface.h"
 
-class CClient sealed : public INetworkInterface
+class CClient final : public INetworkInterface
 {
 public:
 	CClient();

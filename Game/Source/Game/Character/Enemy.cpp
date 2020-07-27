@@ -7,6 +7,7 @@
 #include "Building/Building.h"
 #include "Building/Turret.h"
 #include "Building/Gate.h"
+#include "Network/NetworkComponent/Console.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
 #include "EnemyManager.h"
@@ -48,7 +49,7 @@ void AEnemy::BeginPlay()
 	if (!GetOwner())
 	{
 		// 게임클라이언트라면 게임서버에서 SpawnEnemy으로 생성하기 때문에 소멸시킵니다.
-		if (cGameClient::GetSingleton()->IsClientSocketOn())
+		if (CGameClient::GetSingleton()->IsNetworkOn())
 		{
 			Destroy();
 			return;
@@ -360,9 +361,9 @@ void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 		}
 	}
 
-	if (cGameServer::GetSingleton()->IsServerOn())
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
-		cGameServer::GetSingleton()->SendDestroyEnemy(ID, IDOfPioneer, Exp);
+		CGameServer::GetSingleton()->SendDestroyEnemy(ID, IDOfPioneer, Exp);
 
 		if (PioneerManager)
 		{
@@ -378,7 +379,7 @@ void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 		}
 	}
 	
-	if (!cGameServer::GetSingleton()->IsServerOn() && !cGameClient::GetSingleton()->IsClientSocketOn())
+	if (!CGameServer::GetSingleton()->IsNetworkOn() && !CGameClient::GetSingleton()->IsNetworkOn())
 	{
 		if (PioneerManager)
 		{

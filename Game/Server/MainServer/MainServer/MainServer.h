@@ -24,8 +24,9 @@ public:
 	static CRITICAL_SECTION csInfoOfGames;
 
 public:
-	static void SetIPv4AndPort(char* IPv4, USHORT& Port);
 	static bool Initialize(const char* const IPv4, const USHORT& Port);
+	static bool IsNetworkOn();
+	static void Close();
 
 	static void ConnectCBF(CCompletionKey CompletionKey);
 	static void DisconnectCBF(CCompletionKey CompletionKey);

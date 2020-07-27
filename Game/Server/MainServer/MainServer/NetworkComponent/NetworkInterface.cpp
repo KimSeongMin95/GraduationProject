@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Console.h"
 
 #include "NetworkInterface.h"
@@ -36,7 +36,7 @@ void INetworkInterface::CloseHandleWithCheck(HANDLE& Handle)
 
 void INetworkInterface::SetSockOpt(const SOCKET& Socket, const int& SizeOfSendBuf, const int& SizeOfRecvBuf)
 {
-	/* Á¤º¸
+	/* ì •ë³´
 	The maximum send buffer size is 1,048,576 bytes.
 	The default value of the SO_SNDBUF option is 32,767.
 	For a TCP socket, the maximum length that you can specify is 1 GB.
@@ -45,16 +45,16 @@ void INetworkInterface::SetSockOpt(const SOCKET& Socket, const int& SizeOfSendBu
 	The send buffer size defined by the SO_SNDBUF option.
 	*/
 
-	/* °ËÁõ
+	/* ê²€ì¦
 	1048576B == 1024KB
-	TCP¿¡¼± send buffer¿Í recv buffer ¸ğµÎ 1048576 * 256±îÁö °¡´ÉÇÕ´Ï´Ù.
+	TCPì—ì„  send bufferì™€ recv buffer ëª¨ë‘ 1048576 * 256ê¹Œì§€ ê°€ëŠ¥í•©ë‹ˆë‹¤.
 	*/
 	CONSOLE_LOG("[Start] <SetSockOpt(...)> \n");
 
 	int optval;
 	int optlen = sizeof(optval);
 
-	// ¼º°ø½Ã 0À» ½ÇÆĞ½Ã -1¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
+	// ì„±ê³µì‹œ 0ì„ ì‹¤íŒ¨ì‹œ -1ë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
 	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)&optval, &optlen) == 0)
 	{
 		CONSOLE_LOG("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
@@ -87,6 +87,23 @@ void INetworkInterface::SetSockOpt(const SOCKET& Socket, const int& SizeOfSendBu
 	CONSOLE_LOG("[End] <SetSockOpt(...)> \n");
 }
 
+void INetworkInterface::SetIPv4AndPort(char* IPv4, USHORT& Port)
+{
+	CONSOLE_LOG("\n /*********************************************/ \n");
+
+	CONSOLE_LOG("IPv4ë¥¼ ì…ë ¥í•˜ì„¸ìš”. (ì˜ˆì‹œ: 58.125.236.74) \n");
+	CONSOLE_LOG("IPv4: ");
+	std::cin >> IPv4;
+	CONSOLE_LOG("ì…ë ¥ë°›ì€ IPv4: %s \n", IPv4);
+
+	CONSOLE_LOG("Portë¥¼ ì…ë ¥í•˜ì„¸ìš”. (ì˜ˆì‹œ: 8000) \n");
+	CONSOLE_LOG("Port: ");
+	std::cin >> Port;
+	CONSOLE_LOG("ì…ë ¥ë°›ì€ Port: %d \n", Port);
+
+	CONSOLE_LOG("/*********************************************/ \n\n");
+}
+
 void INetworkInterface::GetKoreaStandardTime(stringstream& TimeStream)
 {
 	time_t rawTime;
@@ -94,23 +111,23 @@ void INetworkInterface::GetKoreaStandardTime(stringstream& TimeStream)
 
 	//tm gmt_tm;
 	//gmtime_s(&gmt_tm, &rawTime);
-	//str << "[GMT(¼¼°èÇ¥ÁØ½Ã°£): ";
-	//str << (gmt_tm.tm_year + 1900) << "³â ";
-	//str << (gmt_tm.tm_mon + 1) << "¿ù ";
-	//str << gmt_tm.tm_mday << "ÀÏ ";
-	//str << gmt_tm.tm_hour << "½Ã ";
-	//str << gmt_tm.tm_min << "ºĞ ";
-	//str << gmt_tm.tm_sec << "ÃÊ]" << endl;
+	//str << "[GMT(ì„¸ê³„í‘œì¤€ì‹œê°„): ";
+	//str << (gmt_tm.tm_year + 1900) << "ë…„ ";
+	//str << (gmt_tm.tm_mon + 1) << "ì›” ";
+	//str << gmt_tm.tm_mday << "ì¼ ";
+	//str << gmt_tm.tm_hour << "ì‹œ ";
+	//str << gmt_tm.tm_min << "ë¶„ ";
+	//str << gmt_tm.tm_sec << "ì´ˆ]" << endl;
 
 	tm kst_tm;
 	localtime_s(&kst_tm, &rawTime);
-	//TimeStream << "[KST(ÇÑ±¹½Ã°£): ";
-	TimeStream << (kst_tm.tm_year + 1900) << "³âµµ ";
-	TimeStream << (kst_tm.tm_mon + 1) << "¿ù ";
-	TimeStream << kst_tm.tm_mday << "ÀÏ ";
-	TimeStream << kst_tm.tm_hour << "½Ã ";
-	TimeStream << kst_tm.tm_min << "ºĞ ";
-	TimeStream << kst_tm.tm_sec << "ÃÊ ";
+	//TimeStream << "[KST(í•œêµ­ì‹œê°„): ";
+	TimeStream << (kst_tm.tm_year + 1900) << "ë…„ë„ ";
+	TimeStream << (kst_tm.tm_mon + 1) << "ì›” ";
+	TimeStream << kst_tm.tm_mday << "ì¼ ";
+	TimeStream << kst_tm.tm_hour << "ì‹œ ";
+	TimeStream << kst_tm.tm_min << "ë¶„ ";
+	TimeStream << kst_tm.tm_sec << "ì´ˆ ";
 }
 
 

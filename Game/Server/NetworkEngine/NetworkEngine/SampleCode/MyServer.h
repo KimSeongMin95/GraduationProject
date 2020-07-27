@@ -4,7 +4,7 @@
 #include "MyPacketHeader.h"
 #include "MyPacket.h"
 
-class CMyServer sealed
+class CMyServer final
 {
 public:
 	CMyServer();
@@ -20,6 +20,8 @@ public:
 
 public:
 	static bool Initialize(const char* const IPv4, const USHORT& Port);
+	static bool IsNetworkOn();
+	static void Close();
 
 	static void ConnectCBF(CCompletionKey CompletionKey);
 	static void DisconnectCBF(CCompletionKey CompletionKey);

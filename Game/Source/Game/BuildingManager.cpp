@@ -12,7 +12,7 @@
 #include "Building/AssaultRifleTurret.h"
 #include "Building/SniperRifleTurret.h"
 #include "Building/RocketLauncherTurret.h"
-
+#include "Network/NetworkComponent/Console.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
 
@@ -35,7 +35,7 @@ void ABuildingManager::BeginPlay()
 	// 에디터에서 월드상에 배치한 Building들을 관리하기 위해 추가합니다.
 	bool tutorial = true;
 
-	if (cGameServer::GetSingleton()->IsServerOn())
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
 		tutorial = false;
 
@@ -52,12 +52,12 @@ void ABuildingManager::BeginPlay()
 
 			AddInBuildings(*ActorItr);
 
-			cGameServer::GetSingleton()->SendInfoOfBuilding_Spawn((*ActorItr)->GetInfoOfBuilding_Spawn());
+			CGameServer::GetSingleton()->SendInfoOfBuilding_Spawn((*ActorItr)->GetInfoOfBuilding_Spawn());
 		}
 	}
 
 
-	if (cGameClient::GetSingleton()->IsClientSocketOn())
+	if (CGameClient::GetSingleton()->IsNetworkOn())
 	{
 		tutorial = false;
 	}
@@ -217,21 +217,20 @@ void ABuildingManager::AddInBuildings(class ABuilding* Building)
 
 	// 서버만 Buildings에 저장합니다.
 	bool tutorial = true;
-	if (cGameServer::GetSingleton())
+
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
-		if (cGameServer::GetSingleton()->IsServerOn())
-		{
-			tutorial = false;
+		tutorial = false;
 
-			Building->ID = ID;
+		Building->ID = ID;
 
-			Buildings.Add(ID, Building);
+		Buildings.Add(ID, Building);
 
-			ID++;
-		}
+		ID++;
 	}
+	
 
-	if (cGameClient::GetSingleton()->IsClientSocketOn())
+	if (CGameClient::GetSingleton()->IsNetworkOn())
 	{
 		tutorial = false;
 	}

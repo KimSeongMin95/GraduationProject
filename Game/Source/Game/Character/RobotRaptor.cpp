@@ -2,6 +2,8 @@
 
 #include "RobotRaptor.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 ARobotRaptor::ARobotRaptor()
 {
 	EnemyType = EEnemyType::RobotRaptor;

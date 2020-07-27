@@ -2,6 +2,8 @@
 
 #include "DefeatWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UDefeatWidget::UDefeatWidget()
 {
 

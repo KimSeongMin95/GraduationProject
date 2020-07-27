@@ -2,6 +2,8 @@
 
 #include "InGameWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+#include "Network/GamePacket.h"
 #include "Character/Pioneer.h"
 #include "Weapon/Weapon.h"
 

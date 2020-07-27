@@ -18,6 +18,7 @@
 #include "BuildingManager.h"
 #include "Landscape.h"
 #include "Character/Enemy.h"
+#include "Network/NetworkComponent/Console.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
 #include "Etc/WorldViewCameraActor.h"
@@ -499,7 +500,7 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 			//////////////////////////////////////////////////////////
 			// 게임서버는와 게임클라이언트는 자신의 죽음과 관전상태를 알립니다.
 			//////////////////////////////////////////////////////////
-			if (cGameServer::GetSingleton()->IsServerOn())
+			if (CGameServer::GetSingleton()->IsNetworkOn())
 			{
 				// AI와 게임서버가 조종하는 Pioneer만 알리기 위해
 				if (SocketID <= 1)
@@ -507,23 +508,23 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 					stringstream sendStream;
 					sendStream << ID << endl;
 
-					cGameServer::GetSingleton()->DiedPioneer(sendStream, NULL);
+					CGameServer::GetSingleton()->DiedPioneer(sendStream, NULL);
 
 					// 조종하던 Pioneer라면
 					if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 					{
-						cGameServer::GetSingleton()->InsertAtObersers(cGameServer::GetSingleton()->SocketID);
+						CGameServer::GetSingleton()->InsertAtObersers(CGameServer::GetSingleton()->SocketID);
 					}
 				}
 			}
-			else if (cGameClient::GetSingleton()->IsClientSocketOn())
+			else if (CGameClient::GetSingleton()->IsNetworkOn())
 			{
 				// 조종하던 Pioneer라면
 				if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 				{
-					cGameClient::GetSingleton()->SendDiedPioneer(ID);
+					CGameClient::GetSingleton()->SendDiedPioneer(ID);
 
-					cGameClient::GetSingleton()->SendObservation();
+					CGameClient::GetSingleton()->SendObservation();
 				}
 			}
 		}
@@ -1186,12 +1187,12 @@ void APioneer::PlaceBuilding()
 		bool tutorial = true;
 
 		// 게임서버라면
-		if (cGameServer::GetSingleton()->IsServerOn())
+		if (CGameServer::GetSingleton()->IsNetworkOn())
 		{
 			if (BuildingManager)
 				BuildingManager->AddInBuildings(Building);
 
-			cGameServer::GetSingleton()->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
+			CGameServer::GetSingleton()->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
 
 			APioneerManager::Resources.NumOfMineral -= Building->NeedMineral;
 			APioneerManager::Resources.NumOfOrganic -= Building->NeedOrganicMatter;
@@ -1200,10 +1201,10 @@ void APioneer::PlaceBuilding()
 		}
 		
 		// 게임클라이언트라면
-		if (cGameClient::GetSingleton()->IsClientSocketOn())
+		if (CGameClient::GetSingleton()->IsNetworkOn())
 		{
 			// 요청을 서버에 보내고 서버에서 SpawnBuilding을 받으면 건설합니다.
-			cGameClient::GetSingleton()->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
+			CGameClient::GetSingleton()->SendInfoOfBuilding_Spawn(Building->GetInfoOfBuilding_Spawn());
 
 			Building->Destroy();
 

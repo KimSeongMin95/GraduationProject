@@ -2,6 +2,8 @@
 
 #include "AssaultRifleTurret.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AAssaultRifleTurret::AAssaultRifleTurret()
 {
 	InitHelthPointBar();

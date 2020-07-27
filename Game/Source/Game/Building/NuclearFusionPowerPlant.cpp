@@ -2,6 +2,8 @@
 
 #include "NuclearFusionPowerPlant.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 ANuclearFusionPowerPlant::ANuclearFusionPowerPlant()
 {
 	BuildingType = EBuildingType::NuclearFusionPowerPlant;

@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#include "Network/MainPacket.h"
+
 #include "CoreMinimal.h"
 #include "Widget/WidgetBase.h"
 #include "WaitingGameWidget.generated.h"
@@ -60,7 +62,7 @@ public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) final;
 
 
-	void SetText(cInfoOfGame& InfoOfGame);
+	void SetText(CGamePacket& InfoOfGame);
 	void SetLeader(bool bLeader);
 	void SetIsReadOnly(bool bReadOnly);
 
@@ -69,9 +71,9 @@ public:
 	void SetJoinButtonVisibility(bool bVisible);
 
 
-	void ShowLeader(cInfoOfPlayer CopiedMyInfo);
+	void ShowLeader(CPlayerPacket CopiedMyInfoOfPlayer);
 
-	void RevealGame(cInfoOfGame& InfoOfGame);
+	void RevealGame(CGamePacket& InfoOfGame);
 	void Clear();
 
 	bool IsLeader();
@@ -81,8 +83,8 @@ public:
 	void CheckTextOfStage();
 	int CheckTextOfMaximum(int NumOfCurrent = 1);
 
-	cInfoOfGame GetModifiedInfo(cInfoOfGame CopiedMyInfoOfGame);
-	void SetModifiedInfo(cInfoOfGame& InfoOfGame);
+	CGamePacket GetModifiedInfo(CGamePacket CopiedMyInfoOfGame);
+	void SetModifiedInfo(CGamePacket& InfoOfGame);
 
 	void SetTextOfCount(int num);
 	void SetCountVisibility(bool bVisible);
@@ -150,7 +152,7 @@ public:
 			gridSlot->SetColumn(Num % 5);
 		}
 	}
-	void SetText(const cInfoOfPlayer InfoOfPlayer)
+	void SetText(const CPlayerPacket PlayerPacket)
 	{
 		if (!Player)
 		{
@@ -158,7 +160,7 @@ public:
 			return;
 		}
 
-		Player->SetText(FText::FromString(FString(UTF8_TO_TCHAR(InfoOfPlayer.ID.c_str()))));
+		Player->SetText(FText::FromString(FString(UTF8_TO_TCHAR(PlayerPacket.ID.c_str()))));
 	}
 	void SetVisible(bool bVisible)
 	{

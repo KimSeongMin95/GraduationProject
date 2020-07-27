@@ -5,6 +5,7 @@
 #include "Etc/WorldViewCameraActor.h"
 #include "Character/Pioneer.h"
 #include "Controller/PioneerController.h"
+#include "Network/NetworkComponent/Console.h"
 #include "Network/MainClient.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
@@ -113,10 +114,10 @@ void APioneerManager::FindPioneersInWorld()
 			ActorItr->ID = KeyID;
 
 			// 이미 생성된 Pioneer를 게임서버에 알립니다.
-			if (cGameServer::GetSingleton()->IsServerOn())
+			if (CGameServer::GetSingleton()->IsNetworkOn())
 			{
 				cInfoOfPioneer infoOfPioneer = ActorItr->GetInfoOfPioneer();
-				cGameServer::GetSingleton()->SendSpawnPioneer(infoOfPioneer);
+				CGameServer::GetSingleton()->SendSpawnPioneer(infoOfPioneer);
 			}
 
 			KeyID++;
@@ -195,10 +196,10 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	}
 
 	// Pioneer 생성을 게임클라이언트들에게 알립니다.
-	if (cGameServer::GetSingleton()->IsServerOn())
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
 		cInfoOfPioneer infoOfPioneer = pioneer->GetInfoOfPioneer();
-		cGameServer::GetSingleton()->SendSpawnPioneer(infoOfPioneer);
+		CGameServer::GetSingleton()->SendSpawnPioneer(infoOfPioneer);
 	}
 	
 	KeyID++;
@@ -511,15 +512,15 @@ void APioneerManager::PossessObservingPioneer()
 
 	cInfoOfPioneer_Socket socket;
 	socket.ID = IdCurrentlyBeingObserved;
-	socket.NameOfID = cMainClient::GetSingleton()->CopyMyInfo().ID;
+	socket.NameOfID = CMainClient::GetSingleton()->CopyMyInfoOfPlayer().ID;
 
 
-	if (cGameServer::GetSingleton()->IsServerOn())
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
-		socket.SocketID = cGameServer::GetSingleton()->SocketID;
+		socket.SocketID = CGameServer::GetSingleton()->SocketID;
 
 		// 빙의 할 수 있는지 확인합니다.
-		bool result = cGameServer::GetSingleton()->PossessingPioneer(socket);
+		bool result = CGameServer::GetSingleton()->PossessingPioneer(socket);
 
 		if (result)
 		{
@@ -544,9 +545,9 @@ void APioneerManager::PossessObservingPioneer()
 		return;
 	}
 
-	if (cGameClient::GetSingleton()->IsClientSocketOn())
+	if (CGameClient::GetSingleton()->IsNetworkOn())
 	{
-		cGameClient::GetSingleton()->SendPossessPioneer(socket);
+		CGameClient::GetSingleton()->SendPossessPioneer(socket);
 
 		return;
 	}
@@ -586,7 +587,7 @@ void APioneerManager::PossessObservingPioneerByRecv(const class cInfoOfPioneer_S
 	{
 		IdCurrentlyBeingObserved = 0;
 
-		if (cGameClient::GetSingleton()->IsClientSocketOn())
+		if (CGameClient::GetSingleton()->IsNetworkOn())
 		{
 			pioneer->SetInfoOfPioneer_Socket(const_cast<cInfoOfPioneer_Socket&>(Socket));
 		}

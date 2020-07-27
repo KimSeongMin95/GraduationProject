@@ -1,205 +1,88 @@
-#pragma once
+Ôªø#pragma once
 
-
+#include "NetworkComponent/NetworkHeader.h"
+#include "MainPacketHeader.h"
+#include "MainPacket.h"
+#include "NetworkComponent/ThreadSafetyQueue.h"
+#include "NetworkComponent/CompletionKey.h"
 
 #include "CoreMinimal.h"
 
-#include "Runtime/Core/Public/HAL/Runnable.h"
-
-#include "Packet.h"
-
-
-/**
- * ∏ﬁ¿Œ º≠πˆøÕ ¡¢º” π◊ ∆–≈∂ √≥∏Æ∏¶ ¥„¥Á«œ¥¬ ≈¨∑°Ω∫ (∏ﬁ¿Œ ≈¨∂Û¿Ãæ∆Æ)
- */
-class GAME_API cMainClient : public FRunnable
+class GAME_API CMainClient final
 {
+public:
+	CMainClient();
+	~CMainClient();
+
+	static CMainClient* GetSingleton();
+
 private:
-	SOCKET	ServerSocket;				// º≠πˆøÕ ø¨∞·«“ º“ƒœ	
-	
+	static unique_ptr<class CNetworkComponent> Client;
 
-	// FRunnable Thread members	
-	FRunnableThread* Thread = nullptr;
-	FThreadSafeCounter StopTaskCounter;
+	// Player
+	static CPlayerPacket MyInfoOfPlayer;
+	static CRITICAL_SECTION csMyInfoOfPlayer;
 
-	bool bIsInitialized;
-	bool bIsConnected;
-
-	deque<char*> RecvDeque;
-
-	class cInfoOfPlayer MyInfo;
-	CRITICAL_SECTION csMyInfo;
-
-	class cInfoOfGame MyInfoOfGame;
-	CRITICAL_SECTION csMyInfoOfGame;
-
-protected:
-	/////////////////////////////////////
-	// FRunnable override «‘ºˆ
-	/////////////////////////////////////
-	virtual bool Init();
-	virtual uint32 Run();
-	virtual void Stop();
-	virtual void Exit();
+	// Game
+	static CGamePacket MyInfoOfGame;
+	static CRITICAL_SECTION csMyInfoOfGame;
 
 public:
-	/////////////////////////////////////
-	// cMainClient
-	/////////////////////////////////////
-	cMainClient();
-	~cMainClient();
+	// ÏàòÏã†Ìïú Ìå®ÌÇ∑ÏùÑ Ï†ÅÏû¨ÌïòÎäî Ïä§Î†àÎìúÏóê ÏïàÏ†ÑÌïú ÌÅêÏûÖÎãàÎã§.
+	static CThreadSafetyQueue<CGamePacket> tsqFindGames;
+	static CThreadSafetyQueue<CGamePacket> tsqWaitingGame;
+	static CThreadSafetyQueue<bool> tsqDestroyWaitingGame;
+	static CThreadSafetyQueue<CGamePacket> tsqModifyWaitingGame;
+	static CThreadSafetyQueue<bool> tsqStartWaitingGame;
+	static CThreadSafetyQueue<CPlayerPacket> tsqRequestInfoOfGameServer;
 
-	// º“ƒœ µÓ∑œ π◊ º≥¡§
-	bool Initialize();
+public:
+	static bool Initialize(const char* const IPv4, const USHORT& Port);
+	static bool IsNetworkOn();
+	static void Close();	
 
-	// º≠πˆøÕ ø¨∞·
-	bool Connect(const char * pszIP, int nPort);
+	static void ConnectCBF(CCompletionKey CompletionKey);
+	static void DisconnectCBF(CCompletionKey CompletionKey);
 
-	// º“ƒœ ¡æ∑·
-	void Close();
+	///////////////////////////////////
+	// Main Server <--> Main Clients
+	///////////////////////////////////
+	static void SendLogin(const FText ID);
+	static void RecvLogin(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendCreateGame();
+	static void SendFindGames();
+	static void RecvFindGames(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendJoinOnlineGame(int SocketIDOfLeader);
+	static void RecvWaitingGame(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendDestroyWaitingGame();
+	static void RecvDestroyWaitingGame(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendExitWaitingGame();
+	static void SendModifyWaitingGame();
+	static void RecvModifyWaitingGame(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	static void SendStartWaitingGame();
+	static void RecvStartWaitingGame(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	
+	//////////////////////////////////////////////////
+	// Main Server <--> Game Server && Game Clients
+	//////////////////////////////////////////////////
+	static void SendActivateGameServer(int PortOfGameServer);
+	static void SendRequestInfoOfGameServer();
+	static void RecvRequestInfoOfGameServer(stringstream& RecvStream, const SOCKET& Socket = NULL);
+	
+	////////////
+	// MyInfo
+	////////////
+	static void SetMyInfoOfPlayer(const CPlayerPacket& PlayerPacket);
+	static CPlayerPacket CopyMyInfoOfPlayer();
+	static void InitMyInfoOfPlayer();
+	static void InitMyInfoOfPlayerSpecificPart();
 
-	// º€Ω≈
-	void Send(stringstream& SendStream);
-
-
-	///////////////////////////////////////////
-	// º“ƒœ πˆ∆€ ≈©±‚ ∫Ø∞Ê
-	///////////////////////////////////////////
-	void SetSockOpt(SOCKET Socket, int SendBuf, int RecvBuf);
-
-	///////////////////////////////////////////
-	// stringstream¿« ∏« æ’ø° size∏¶ √ﬂ∞°
-	///////////////////////////////////////////
-	bool AddSizeInStream(stringstream& DataStream, stringstream& FinalStream);
-
-	///////////////////////////////////////////
-	// recvDequeø° ºˆΩ≈«— µ•¿Ã≈Õ∏¶ ¿˚¿Á
-	///////////////////////////////////////////
-	void PushRecvBufferInDeque(char* RecvBuffer, int RecvLen);
-
-	///////////////////////////////////////////
-	// ºˆΩ≈«— µ•¿Ã≈Õ∏¶ ¿˙¿Â«œ¥¬ µ¶ø°º≠ µ•¿Ã≈Õ∏¶ »πµÊ
-	///////////////////////////////////////////
-	void GetDataInRecvDeque(char* DataBuffer);
-
-	///////////////////////////////////////////
-	// ∆–≈∂¿ª √≥∏Æ«’¥œ¥Ÿ.
-	///////////////////////////////////////////
-	void ProcessReceivedPacket(char* DataBuffer);
-
-
-	// Ω∫∑πµÂ Ω√¿€ π◊ ¡æ∑·
-	bool StartListen();
-	void StopListen();
-
-	// ΩÃ±€≈œ ∞¥√º ∞°¡Æø¿±‚
-	static cMainClient* GetSingleton()
-	{
-		static cMainClient mainClient;
-		return &mainClient;
-	}
-
-	bool IsInitialized() { return bIsInitialized; }
-	bool IsConnected() { return bIsConnected; }
-
-
-	///////////////////////////////////////////
-	// Main Server / Main Clients
-	///////////////////////////////////////////
-	void SendLogin(const FText ID);
-	void RecvLogin(stringstream& RecvStream);
-
-	void SendCreateGame();
-
-	void SendFindGames();
-	void RecvFindGames(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfGame> tsqFindGames;
-
-	void SendJoinOnlineGame(int SocketIDOfLeader);
-
-	void RecvWaitingGame(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfGame> tsqWaitingGame;
-
-	void SendDestroyWaitingGame();
-	void RecvDestroyWaitingGame(stringstream& RecvStream);
-	cThreadSafetyQueue<bool> tsqDestroyWaitingGame;
-
-	void SendExitWaitingGame();
-
-	void SendModifyWaitingGame();
-	void RecvModifyWaitingGame(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfGame> tsqModifyWaitingGame;
-
-	void SendStartWaitingGame();
-	void RecvStartWaitingGame(stringstream& RecvStream);
-	cThreadSafetyQueue<bool> tsqStartWaitingGame;
-
-
-	///////////////////////////////////////////
-	// Game Server / Game Clients
-	///////////////////////////////////////////
-	void SendActivateGameServer(int PortOfGameServer);
-
-	void SendRequestInfoOfGameServer();
-	void RecvRequestInfoOfGameServer(stringstream& RecvStream);
-	cThreadSafetyQueue<cInfoOfPlayer> tsqRequestInfoOfGameServer;
-
-
-	/////////////////////////////////////
-	// Set-Get
-	/////////////////////////////////////
-	void SetMyInfo(cInfoOfPlayer& InfoOfPlayer);
-	cInfoOfPlayer CopyMyInfo();
-	void InitMyInfo();
-
-	void SetMyInfoOfGame(cInfoOfGame& InfoOfGame);
-	cInfoOfGame CopyMyInfoOfGame();
-	void InitMyInfoOfGame();
-
-
-
-
-	////////////////////////////////////////////////
-	// (¿”Ω√) ∆–≈∂ ªÁ¿Ã¡ÓøÕ Ω«¡¶ ±Ê¿Ã ∞À¡ıøÎ «‘ºˆ
-	////////////////////////////////////////////////
-	void VerifyPacket(char* DataBuffer, bool send)
-	{
-		if (!DataBuffer)
-		{
-			printf_s("[ERROR] <cMainClient::VerifyPacket(...)> if (!DataBuffer) \n");
-			return;
-		}
-
-		int len = (int)strlen(DataBuffer);
-
-		if (len < 4)
-		{
-			printf_s("[ERROR] <cMainClient::VerifyPacket(...)> if (len < 4) \n");
-			return;
-		}
-
-		char buffer[MAX_BUFFER + 1];
-		CopyMemory(buffer, DataBuffer, len);
-		buffer[len] = '\0';
-
-		for (int i = 0; i < len; i++)
-		{
-			if (buffer[i] == '\n')
-				buffer[i] = '_';
-		}
-
-		char sizeBuffer[5]; // [1234\0]
-		CopyMemory(sizeBuffer, buffer, 4); // æ’ 4¿⁄∏Æ µ•¿Ã≈Õ∏∏ sizeBufferø° ∫πªÁ«’¥œ¥Ÿ.
-		sizeBuffer[4] = '\0';
-
-		stringstream sizeStream;
-		sizeStream << sizeBuffer;
-		int sizeOfPacket = 0;
-		sizeStream >> sizeOfPacket;
-
-		if (sizeOfPacket != len)
-		{
-			printf_s("\n\n\n\n\n\n\n\n\n\n type: %s \n packet: %s \n sizeOfPacket: %d \n len: %d \n\n\n\n\n\n\n\n\n\n\n", send ? "Send" : "Recv", buffer, sizeOfPacket, len);
-		}
-	}
+	static void SetMyInfoOfGame(const CGamePacket& GamePacket);
+	static CGamePacket CopyMyInfoOfGame();
+	static void InitMyInfoOfGame();
 };
+
+
+
+
+

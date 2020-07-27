@@ -6,6 +6,7 @@
 #include "Projectile/ProjectileAssaultRifle.h"
 #include "Projectile/ProjectileSniperRifle.h"
 #include "Projectile/Splash/ProjectileRocketLauncher.h"
+#include "Network/NetworkComponent/Console.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
 #include "EnemyManager.h"
@@ -397,7 +398,7 @@ void ATurret::Fire()
 		BuildingSkMC_Head->PlayAnimation(AnimSequence, false);
 
 	// 게임클라이언트에서는 애니메이션까지만 실행하고 실제로는 발사하지 않습니다.
-	if (cGameClient::GetSingleton()->IsClientSocketOn())
+	if (CGameClient::GetSingleton()->IsNetworkOn())
 	{
 		return;
 	}
@@ -455,14 +456,14 @@ void ATurret::Fire()
 
 	projectile->SetGenerateOverlapEventsOfHitRange(true);
 
-	if (cGameServer::GetSingleton()->IsServerOn())
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
 		cInfoOfProjectile infoOfProjectile;
 		infoOfProjectile.ID = 0;
 		infoOfProjectile.Numbering = numbering;
 		infoOfProjectile.SetActorTransform(myTrans);
 
-		cGameServer::GetSingleton()->SendInfoOfProjectile(infoOfProjectile);
+		CGameServer::GetSingleton()->SendInfoOfProjectile(infoOfProjectile);
 
 		return;
 	}
@@ -490,9 +491,9 @@ void ATurret::TickOfUnderWall()
 		}
 	}
 
-	if (cGameServer::GetSingleton()->IsServerOn())
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
-		cGameServer::GetSingleton()->SendDestroyBuilding(ID);
+		CGameServer::GetSingleton()->SendDestroyBuilding(ID);
 	}
 
 	Destroy();

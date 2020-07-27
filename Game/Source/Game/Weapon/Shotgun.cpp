@@ -2,6 +2,7 @@
 
 #include "Shotgun.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Projectile/ProjectileShotgun.h"
 
 AShotgun::AShotgun()

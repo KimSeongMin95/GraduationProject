@@ -2,6 +2,8 @@
 
 #include "Maynard.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AMaynard::AMaynard()
 {
 	EnemyType = EEnemyType::Maynard;

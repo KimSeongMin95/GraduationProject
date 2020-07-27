@@ -6,6 +6,7 @@
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/Input/SButton.h"
 #include "Components/ButtonSlot.h"
+#include "Network/NetworkComponent/Console.h"
 
 TSharedRef<SWidget> UMyButton::RebuildWidget()
 {

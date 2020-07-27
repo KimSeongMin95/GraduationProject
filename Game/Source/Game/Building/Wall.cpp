@@ -2,6 +2,8 @@
 
 #include "Wall.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AWall::AWall()
 {
 	BuildingType = EBuildingType::Wall;

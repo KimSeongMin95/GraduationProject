@@ -2,6 +2,8 @@
 
 #include "SniperRifleTurret.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 ASniperRifleTurret::ASniperRifleTurret()
 {
 	InitHelthPointBar();

@@ -12,7 +12,7 @@
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
 
-#include "Network/Packet.h"
+#include "Network/GamePacketHeader.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"

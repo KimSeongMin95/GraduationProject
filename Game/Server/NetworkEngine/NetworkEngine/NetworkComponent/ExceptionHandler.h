@@ -3,7 +3,7 @@
 #include "Console.h"
 
 template <typename T>
-class CExceptionHandler sealed
+class CExceptionHandler final
 {
 public:
 	CExceptionHandler() = delete;

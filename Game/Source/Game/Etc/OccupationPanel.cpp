@@ -2,6 +2,7 @@
 
 #include "OccupationPanel.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Character/Pioneer.h"
 
 AOccupationPanel::AOccupationPanel()

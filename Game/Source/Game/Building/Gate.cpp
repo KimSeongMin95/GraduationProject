@@ -6,6 +6,8 @@
 #include "Character/Pioneer.h"
 #include "Character/Enemy.h"
 #include "PioneerManager.h"
+#include "Network/GamePacket.h"
+#include "Network/NetworkComponent/Console.h"
 
 AGate::AGate()
 {

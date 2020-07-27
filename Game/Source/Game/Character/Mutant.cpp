@@ -2,6 +2,8 @@
 
 #include "Mutant.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AMutant::AMutant()
 {
 	EnemyType = EEnemyType::Mutant;

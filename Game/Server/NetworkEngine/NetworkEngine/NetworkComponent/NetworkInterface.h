@@ -55,11 +55,13 @@ protected:
 	void SetSockOpt(const SOCKET& Socket, const int& SizeOfSendBuf, const int& SizeOfRecvBuf);
 
 public:
+	static void SetIPv4AndPort(char* IPv4, USHORT& Port);
+
 	static void GetKoreaStandardTime(stringstream& TimeStream);
 };
 
 // 수신한 패킷을 처리하는 함수 포인터
-class CProcessingFuncPtr sealed
+class CProcessingFuncPtr final
 {
 public:
 	CProcessingFuncPtr();
@@ -73,7 +75,7 @@ public:
 };
 
 // 클라이언트가 접속하면 실행할 콜백함수 포인터
-class CCallBackFuncPtr sealed
+class CCallBackFuncPtr final
 {
 public:
 	CCallBackFuncPtr();

@@ -2,6 +2,8 @@
 
 #include "DeveloperWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 UDeveloperWidget::UDeveloperWidget()
 {
 

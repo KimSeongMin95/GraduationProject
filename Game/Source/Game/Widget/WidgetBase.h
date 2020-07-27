@@ -17,7 +17,8 @@
 #include "Components/EditableText.h"
 #include "Components/MultiLineEditableText.h"
 
-#include "Network/Packet.h"
+#include "Network/MainPacketHeader.h"
+#include "Network/GamePacketHeader.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"

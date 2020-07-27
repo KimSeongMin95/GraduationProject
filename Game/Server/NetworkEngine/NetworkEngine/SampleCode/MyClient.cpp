@@ -25,6 +25,9 @@ CMyClient::CMyClient()
 	Client = make_unique<CNetworkComponent>(ENetworkComponentType::NCT_Client);
 	if (Client)
 	{
+		Client->RegisterConCBF(ConnectCBF);
+		Client->RegisterDisconCBF(DisconnectCBF);
+
 		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Accept, RecvAccept);
 		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Reject, RecvReject);
 		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Create, RecvCreate);
@@ -53,6 +56,51 @@ bool CMyClient::Initialize(const char* const IPv4, const USHORT& Port)
 	/****************************************/
 
 	return Client->Initialize(IPv4, Port);
+}
+bool CMyClient::IsNetworkOn()
+{
+	CONSOLE_LOG("[START] <CMyClient::IsNetworkOn()>\n");
+
+	if (!Client)
+	{
+		CONSOLE_LOG("[Error] <CMyClient::IsNetworkOn())> if (!Client) \n");
+		return false;
+	}
+	/****************************************/
+
+	return Client->IsNetworkOn();
+}
+void CMyClient::Close()
+{
+	CONSOLE_LOG("[START] <CMyClient::Close()>\n");
+
+	if (!Client)
+	{
+		CONSOLE_LOG("[Error] <CMyClient::Close())> if (!Client) \n");
+		return;
+	}
+	/****************************************/
+
+	Client->Close();
+
+	CONSOLE_LOG("[END] <CMyClient::Close()>\n");
+}
+
+void CMyClient::ConnectCBF(CCompletionKey CompletionKey)
+{
+	CONSOLE_LOG("[Start] <CMyClient::ConnectCBF(...)> \n");
+
+	CompletionKey.PrintInfo("\t <CMyClient::ConnectCBF(...)>");
+
+	CONSOLE_LOG("[End] <CMyClient::ConnectCBF(...)> \n");
+}
+void CMyClient::DisconnectCBF(CCompletionKey CompletionKey)
+{
+	CONSOLE_LOG("[Start] <CMyClient::DisconnectCBF(...)> \n");
+
+	CompletionKey.PrintInfo("\t <CMyClient::ConnectCBF(...)>");
+
+	CONSOLE_LOG("[End] <CMyClient::DisconnectCBF(...)> \n");
 }
 
 void CMyClient::SendLogin()

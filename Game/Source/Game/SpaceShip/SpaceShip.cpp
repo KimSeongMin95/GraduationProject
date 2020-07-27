@@ -5,7 +5,8 @@
 #include "PioneerManager.h"
 #include "Character/Pioneer.h"
 #include "Landscape.h"
-#include "Network/Packet.h"
+#include "Network/NetworkComponent/Console.h"
+#include "Network/GamePacket.h"
 
 ASpaceShip::ASpaceShip()
 {

@@ -2,6 +2,7 @@
 
 #include "WarrokWKurniawan.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "GameMode/InGameMode.h"
 
 AWarrokWKurniawan::AWarrokWKurniawan()

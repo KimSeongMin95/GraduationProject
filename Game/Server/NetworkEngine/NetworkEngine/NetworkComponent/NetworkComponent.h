@@ -21,7 +21,7 @@ enum class ENetworkComponentType : uint16_t
 	NCT_Client
 };
 
-class CNetworkComponent sealed : private INetworkInterface
+class CNetworkComponent final : private INetworkInterface
 {
 public:
 	CNetworkComponent(ENetworkComponentType NCT = ENetworkComponentType::NCT_None);

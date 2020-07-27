@@ -2,6 +2,7 @@
 
 #include "Building.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Projectile/Projectile.h"
 #include "Character/BaseCharacter.h"
 #include "Network/GameServer.h"
@@ -45,7 +46,7 @@ void ABuilding::BeginPlay()
 	if (!GetOwner())
 	{
 		// 게임서버에서 SpawnBuilding으로 건물을 생성하기 때문에 플레이어가 게임클라이언트라면 건물을 소멸시킵니다.
-		if (cGameClient::GetSingleton()->IsClientSocketOn())
+		if (CGameClient::GetSingleton()->IsNetworkOn())
 		{
 			Destroy();
 			return;
@@ -470,8 +471,8 @@ void ABuilding::SetHealthPoint(float Value)
 		}
 	}
 
-	if (cGameServer::GetSingleton()->IsServerOn())
-		cGameServer::GetSingleton()->SendDestroyBuilding(ID);
+	if (CGameServer::GetSingleton()->IsNetworkOn())
+		CGameServer::GetSingleton()->SendDestroyBuilding(ID);
 
 	Destroy();
 }

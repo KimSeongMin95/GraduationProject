@@ -3,6 +3,7 @@
 
 #include "SniperRifle.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Projectile/ProjectileSniperRifle.h"
 
 ASniperRifle::ASniperRifle()

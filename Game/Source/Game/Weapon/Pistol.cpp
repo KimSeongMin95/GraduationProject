@@ -2,6 +2,7 @@
 
 #include "Pistol.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Projectile/ProjectilePistol.h"
 
 APistol::APistol()

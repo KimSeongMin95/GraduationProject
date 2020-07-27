@@ -9,6 +9,8 @@
 #include "PioneerManager.h"
 #include "Etc/WorldViewCameraActor.h"
 #include "Building/Building.h"
+#include "Network/NetworkComponent/Console.h"
+#include "Network/GamePacket.h"
 
 APioneerController::APioneerController()
 {

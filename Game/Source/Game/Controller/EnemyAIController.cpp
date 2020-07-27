@@ -2,6 +2,8 @@
 
 #include "EnemyAIController.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AEnemyAIController::AEnemyAIController()
 {
 

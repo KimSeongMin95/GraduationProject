@@ -2,6 +2,8 @@
 
 #include "SlowZombie.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 ASlowZombie::ASlowZombie()
 {
 	EnemyType = EEnemyType::SlowZombie;

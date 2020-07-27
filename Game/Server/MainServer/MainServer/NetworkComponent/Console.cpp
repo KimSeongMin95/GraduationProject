@@ -1,4 +1,4 @@
-
+﻿
 #include "Console.h"
 
 CConsole::CConsole()
@@ -9,7 +9,7 @@ CConsole::CConsole()
 void CConsole::AllocConsole()
 {
 #if BUILD_CONFIG_DEBUG
-	if (fp_console) // �̹� �Ҵ�Ǿ� ������ �ܼ��� �� �Ҵ����� �ʽ��ϴ�.
+	if (fp_console) // 이미 할당되어 있으면 콘솔을 더 할당하지 않습니다.
 		return;
 
 	if (::AllocConsole())
@@ -22,7 +22,7 @@ void CConsole::AllocConsole()
 void CConsole::FreeConsole()
 {
 #if BUILD_CONFIG_DEBUG
-	if (fp_console) // �Ҵ�Ǿ� ���� ���� �Ҹ��ŵ�ϴ�.
+	if (fp_console) // 할당되어 있을 때만 소멸시킵니다.
 	{
 		fclose(fp_console);
 		fp_console = nullptr;

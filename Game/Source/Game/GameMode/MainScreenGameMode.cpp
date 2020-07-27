@@ -1,11 +1,12 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "MainScreenGameMode.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Network/MainClient.h"
 #include "Network/GameServer.h"
 #include "Network/GameClient.h"
+
 #include "GameMode/OnlineGameMode.h"
 #include "Widget/MainScreenWidget.h"
 #include "Widget/OnlineWidget.h"
@@ -31,19 +32,21 @@ AMainScreenGameMode::AMainScreenGameMode()
 	DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
 
 	PlayerControllerClass = APioneerController::StaticClass();
+
+	CConsole::GetSingleton()->AllocConsole();
 }
 AMainScreenGameMode::~AMainScreenGameMode()
 {
-
+	//CConsole::GetSingleton()->FreeConsole();
 }
 
 void AMainScreenGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	cMainClient::GetSingleton()->Close();
-	cGameServer::GetSingleton()->Close();
-	cGameClient::GetSingleton()->Close();
+	CMainClient::GetSingleton()->Close();
+	CGameServer::GetSingleton()->Close();
+	CGameClient::GetSingleton()->Close();
 
 
 	//////////////////////////
@@ -200,7 +203,7 @@ void AMainScreenGameMode::ActivateOnlineWidget()
 
 	OnlineState = EOnlineState::Online;
 
-	cMainClient::GetSingleton()->Close();
+	CMainClient::GetSingleton()->Close();
 
 	ClearAllRecvedQueue();
 
@@ -380,36 +383,20 @@ void AMainScreenGameMode::SendLogin()
 		return;
 	}
 
-	// 아직 초기화되지 않았다면
-	if (cMainClient::GetSingleton()->IsInitialized() == false)
-	{
-		if (cMainClient::GetSingleton()->Initialize() == false)
-		{
-			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_SendLogin()> if (cMainClient::GetSingleton()->Init() == false)"));
-			return;
-		}
-	}
-
 	// 아직 메인서버에 연결되지 않았다면
-	if (cMainClient::GetSingleton()->IsConnected() == false)
+	if (CMainClient::GetSingleton()->IsNetworkOn() == false)
 	{
-		if (cMainClient::GetSingleton()->Connect(TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort())) == false)
+		if (CMainClient::GetSingleton()->Initialize(TCHAR_TO_ANSI(*OnlineWidget->GetIPv4()->GetText().ToString()), FTextToInt(OnlineWidget->GetPort())) == false)
 		{
 			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_SendLogin()> if (!bIsConnected)"));
 			UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port: %s"), *OnlineWidget->GetIPv4()->GetText().ToString(), *OnlineWidget->GetPort()->GetText().ToString());
 			return;
 		}
 	}
-
 	UE_LOG(LogTemp, Log, TEXT("[INFO] <AMainScreenGameMode::SendLogin()> IOCP Main Server connect success!"));
 
-	if (cMainClient::GetSingleton()->StartListen() == false)
-	{
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::_SendLogin()> if (cMainClient::GetSingleton()->StartListen() == false)"));
-		return;
-	}
 
-	cMainClient::GetSingleton()->SendLogin(OnlineWidget->GetID()->GetText());
+	CMainClient::GetSingleton()->SendLogin(OnlineWidget->GetID()->GetText());
 
 	DeactivateOnlineWidget();
 	ActivateOnlineGameWidget();
@@ -434,16 +421,16 @@ void AMainScreenGameMode::SendCreateGame()
 	WaitingGameWidget->SetBackButtonVisibility(true);
 	WaitingGameWidget->SetStartButtonVisibility(true);
 	WaitingGameWidget->SetJoinButtonVisibility(false);
-	WaitingGameWidget->ShowLeader(cMainClient::GetSingleton()->CopyMyInfo());
+	WaitingGameWidget->ShowLeader(CMainClient::GetSingleton()->CopyMyInfoOfPlayer());
 
 	ActivateWaitingGameWidget();
 
-	cMainClient::GetSingleton()->SendCreateGame();
+	CMainClient::GetSingleton()->SendCreateGame();
 }
 
 void AMainScreenGameMode::SendFindGames()
 {
-	cMainClient::GetSingleton()->SendFindGames();
+	CMainClient::GetSingleton()->SendFindGames();
 }
 
 void AMainScreenGameMode::RecvFindGames()
@@ -455,18 +442,18 @@ void AMainScreenGameMode::RecvFindGames()
 	}
 
 	// Recv한게 없으면 그냥 함수를 종료합니다.
-	if (cMainClient::GetSingleton()->tsqFindGames.empty())
+	if (CMainClient::GetSingleton()->tsqFindGames.empty())
 	{
 		// 현재 모든 방이 안보일 경우 보내달라고 요청합니다.
 		if (OnlineGameWidget->Empty())
-			cMainClient::GetSingleton()->SendFindGames();
+			CMainClient::GetSingleton()->SendFindGames();
 
 		return;
 	}
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfGame> copiedQueue = cMainClient::GetSingleton()->tsqFindGames.copy_clear();
+	std::queue<CGamePacket> copiedQueue = CMainClient::GetSingleton()->tsqFindGames.copy_clear();
 
 	// 방 보이게 하기
 	while (copiedQueue.empty() == false)
@@ -531,7 +518,7 @@ void AMainScreenGameMode::SendJoinWaitingGame(int SocketIDOfLeader)
 
 	ActivateWaitingGameWidget();
 
-	cMainClient::GetSingleton()->SendJoinOnlineGame(SocketIDOfLeader);
+	CMainClient::GetSingleton()->SendJoinOnlineGame(SocketIDOfLeader);
 }
 void AMainScreenGameMode::RecvWaitingGame()
 {
@@ -541,12 +528,12 @@ void AMainScreenGameMode::RecvWaitingGame()
 		return;
 	}
 
-	if (cMainClient::GetSingleton()->tsqWaitingGame.empty())
+	if (CMainClient::GetSingleton()->tsqWaitingGame.empty())
 		return;
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfGame> copiedQueue = cMainClient::GetSingleton()->tsqWaitingGame.copy_clear();
+	std::queue<CGamePacket> copiedQueue = CMainClient::GetSingleton()->tsqWaitingGame.copy_clear();
 
 	// 게임방이 시작 카운트다운 중일때 새로 들어온 사람을 위해 Join 버튼을 활성화 시킵니다.
 	if (OnlineState == EOnlineState::PlayerOfWaitingGame)
@@ -577,11 +564,11 @@ void AMainScreenGameMode::ClearWaitingGame()
 	}
 
 	// RecvedQueue를 초기화해줍니다.
-	cMainClient::GetSingleton()->tsqWaitingGame.clear();
-	cMainClient::GetSingleton()->tsqDestroyWaitingGame.clear();
-	cMainClient::GetSingleton()->tsqModifyWaitingGame.clear();
-	cMainClient::GetSingleton()->tsqStartWaitingGame.clear();
-	cMainClient::GetSingleton()->tsqRequestInfoOfGameServer.clear();
+	CMainClient::GetSingleton()->tsqWaitingGame.clear();
+	CMainClient::GetSingleton()->tsqDestroyWaitingGame.clear();
+	CMainClient::GetSingleton()->tsqModifyWaitingGame.clear();
+	CMainClient::GetSingleton()->tsqStartWaitingGame.clear();
+	CMainClient::GetSingleton()->tsqRequestInfoOfGameServer.clear();
 
 	// 대기방 초기화
 	WaitingGameWidget->Clear();
@@ -611,7 +598,7 @@ void AMainScreenGameMode::SendJoinPlayingGame(int SocketIDOfLeader)
 
 	ActivateWaitingGameWidget();
 
-	cMainClient::GetSingleton()->SendJoinOnlineGame(SocketIDOfLeader);
+	CMainClient::GetSingleton()->SendJoinOnlineGame(SocketIDOfLeader);
 }
 
 void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
@@ -628,15 +615,15 @@ void AMainScreenGameMode::SendDestroyOrExitWaitingGame()
 	// 방장이 나간 것이라면 대기방 종료를 알립니다.
 	if (WaitingGameWidget->IsLeader())
 	{
-		cMainClient::GetSingleton()->SendDestroyWaitingGame();
+		CMainClient::GetSingleton()->SendDestroyWaitingGame();
 
-		cGameServer::GetSingleton()->Close();
+		CGameServer::GetSingleton()->Close();
 	}
 	else // 플레이어가 나간 것이라면
 	{
-		cMainClient::GetSingleton()->SendExitWaitingGame();
+		CMainClient::GetSingleton()->SendExitWaitingGame();
 
-		cGameClient::GetSingleton()->Close();
+		CGameClient::GetSingleton()->Close();
 	}
 }
 
@@ -644,18 +631,18 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 {
 	if (!WaitingGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::RecvDestroyWaitingGame()> if (!cMainClient::GetSingleton())"));
+		UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::RecvDestroyWaitingGame()> if (!CMainClient::GetSingleton()->GetSingleton())"));
 		return;
 	}
 
-	if (cMainClient::GetSingleton()->tsqDestroyWaitingGame.empty())
+	if (CMainClient::GetSingleton()->tsqDestroyWaitingGame.empty())
 		return;
 
 	/***********************************************************************/
 
 	OnlineState = EOnlineState::Idle;
 
-	std::queue<bool> copiedQueue = cMainClient::GetSingleton()->tsqDestroyWaitingGame.copy_clear();
+	std::queue<bool> copiedQueue = CMainClient::GetSingleton()->tsqDestroyWaitingGame.copy_clear();
 
 	// 가장 최신에 받은 것만 처리합니다.
 	WaitingGameWidget->SetDestroyedVisibility(copiedQueue.back());
@@ -667,7 +654,7 @@ void AMainScreenGameMode::RecvDestroyWaitingGame()
 	// 게임 시작 카운트 다운을 세는 타이머를 종료합니다.
 	ClearTimerOfCountStartedGame();
 
-	cGameClient::GetSingleton()->Close();
+	CGameClient::GetSingleton()->Close();
 }
 
 void AMainScreenGameMode::CheckModifyWaitingGame()
@@ -694,15 +681,15 @@ void AMainScreenGameMode::SendModifyWaitingGame()
 	}
 
 	// 먼저 속한 게임방 정보를 복사
-	cInfoOfGame copied = cMainClient::GetSingleton()->CopyMyInfoOfGame();
+	CGamePacket copied = CMainClient::GetSingleton()->CopyMyInfoOfGame();
 
 	// 수정된 정보를 적용
-	cInfoOfGame modified = WaitingGameWidget->GetModifiedInfo(copied);
+	CGamePacket modified = WaitingGameWidget->GetModifiedInfo(copied);
 
 	// 다시 저장
-	cMainClient::GetSingleton()->SetMyInfoOfGame(modified);
+	CMainClient::GetSingleton()->SetMyInfoOfGame(modified);
 
-	cMainClient::GetSingleton()->SendModifyWaitingGame();
+	CMainClient::GetSingleton()->SendModifyWaitingGame();
 }
 void AMainScreenGameMode::RecvModifyWaitingGame()
 {
@@ -712,12 +699,12 @@ void AMainScreenGameMode::RecvModifyWaitingGame()
 		return;
 	}
 
-	if (cMainClient::GetSingleton()->tsqModifyWaitingGame.empty())
+	if (CMainClient::GetSingleton()->tsqModifyWaitingGame.empty())
 		return;
 
 	/***********************************************************************/
 
-	std::queue<cInfoOfGame> copiedQueue = cMainClient::GetSingleton()->tsqModifyWaitingGame.copy_clear();
+	std::queue<CGamePacket> copiedQueue = CMainClient::GetSingleton()->tsqModifyWaitingGame.copy_clear();
 
 	// 가장 최신에 받은 것만 처리합니다.
 	WaitingGameWidget->SetModifiedInfo(copiedQueue.back());
@@ -737,7 +724,7 @@ void AMainScreenGameMode::_SendStartWaitingGame()
 
 	/***********************************************************************/
 
-	cMainClient::GetSingleton()->SendStartWaitingGame();
+	CMainClient::GetSingleton()->SendStartWaitingGame();
 
 	WaitingGameWidget->SetStartButtonVisibility(false);
 	WaitingGameWidget->SetTextOfCount(5);
@@ -753,14 +740,14 @@ void AMainScreenGameMode::RecvStartWaitingGame()
 		return;
 	}
 
-	if (cMainClient::GetSingleton()->tsqStartWaitingGame.empty())
+	if (CMainClient::GetSingleton()->tsqStartWaitingGame.empty())
 		return;
 
 	/***********************************************************************/
 
 	OnlineState = EOnlineState::Counting;
 
-	cMainClient::GetSingleton()->tsqStartWaitingGame.clear();
+	CMainClient::GetSingleton()->tsqStartWaitingGame.clear();
 
 	WaitingGameWidget->SetTextOfCount(5);
 	WaitingGameWidget->SetCountVisibility(true);
@@ -804,7 +791,7 @@ void AMainScreenGameMode::CountStartedGame()
 	}
 	else // 참가자면
 	{
-		cMainClient::GetSingleton()->SendRequestInfoOfGameServer();
+		CMainClient::GetSingleton()->SendRequestInfoOfGameServer();
 	}
 
 	// 카운드 다운 시작
@@ -838,7 +825,7 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 	if (Count == 1)
 	{
 		// 게임서버나 게임클라이언트가 정상적으로 연결되었다면 Back 버튼을 숨깁니다.
-		if (cGameServer::GetSingleton()->IsServerOn() == true || cGameClient::GetSingleton()->IsClientSocketOn() == true)
+		if (CGameServer::GetSingleton()->IsNetworkOn() == true || CGameClient::GetSingleton()->IsNetworkOn() == true)
 		{
 			WaitingGameWidget->SetBackButtonVisibility(false);
 		}
@@ -847,7 +834,7 @@ void AMainScreenGameMode::TimerOfCountStartedGame()
 	{
 		ClearTimerOfCountStartedGame();
 
-		cInfoOfGame copied = cMainClient::GetSingleton()->CopyMyInfoOfGame();
+		CGamePacket copied = CMainClient::GetSingleton()->CopyMyInfoOfGame();
 
 		StartOnlineGame(copied.Stage);
 		return;
@@ -882,20 +869,20 @@ void AMainScreenGameMode::StartOnlineGame(unsigned int Stage)
 
 void AMainScreenGameMode::StartGameServer()
 {
-	if (cGameServer::GetSingleton()->IsServerOn())
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("<AMainScreenGameMode::StartGameServer()> Already server is on."));
 		return;
 	}
 	
-	cGameServer::GetSingleton()->Init();
+	CGameServer::GetSingleton()->Initialize();
 
 	// 구동 성공시
-	if (cGameServer::GetSingleton()->IsServerOn())
+	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
 		// 게임 서버 정보를 메인 서버로 전송
-		int GameServerPort = cGameServer::GetSingleton()->GetServerPort();
-		cMainClient::GetSingleton()->SendActivateGameServer(GameServerPort);
+		int GameServerPort = CGameServer::GetSingleton()->GetServerPort();
+		CMainClient::GetSingleton()->SendActivateGameServer(GameServerPort);
 
 		UE_LOG(LogTemp, Warning, TEXT("<AMainScreenGameMode::StartGameServer()> Server is on."));
 	}
@@ -903,65 +890,41 @@ void AMainScreenGameMode::StartGameServer()
 void AMainScreenGameMode::GameClientConnectGameServer()
 {
 	// 이미 연결되었으면 함수를 더이상 실행하지 않습니다.
-	if (cGameClient::GetSingleton()->IsClientSocketOn())
+	if (CGameClient::GetSingleton()->IsNetworkOn())
 		return;
 
-	if (cMainClient::GetSingleton()->tsqRequestInfoOfGameServer.empty())
+	if (CMainClient::GetSingleton()->tsqRequestInfoOfGameServer.empty())
 	{
 		// 요청을 보냅니다.
-		cMainClient::GetSingleton()->SendRequestInfoOfGameServer();
+		CMainClient::GetSingleton()->SendRequestInfoOfGameServer();
 		return;
 	}
 
-	cInfoOfPlayer infoOfPlayer = cMainClient::GetSingleton()->tsqRequestInfoOfGameServer.back();
-	cMainClient::GetSingleton()->tsqRequestInfoOfGameServer.clear();
-
-	// 아직 초기화되지 않았다면
-	if (cGameClient::GetSingleton()->IsInitialized() == false)
-	{
-		if (cGameClient::GetSingleton()->Initialize() == false)
-		{
-			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::GameClientConnectGameServer()> if (cGameClient::GetSingleton()->Init() == false)"));
-			return;
-		}
-	}
+	CPlayerPacket playerPacket = CMainClient::GetSingleton()->tsqRequestInfoOfGameServer.back();
+	CMainClient::GetSingleton()->tsqRequestInfoOfGameServer.clear();
 
 	// 아직 게임서버에 연결되지 않았다면
-	if (cGameClient::GetSingleton()->IsConnected() == false)
+	if (CGameClient::GetSingleton()->IsNetworkOn() == false)
 	{
-		if (cGameClient::GetSingleton()->Connect(infoOfPlayer.IPv4Addr.c_str(), infoOfPlayer.PortOfGameServer) == false)
+		if (CGameClient::GetSingleton()->Initialize(playerPacket.IPv4Addr.c_str(), playerPacket.PortOfGameServer) == false)
 		{
 
 			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::GameClientConnectGameServer()> Fail to connect(...)"));
-			UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port : %d"), *FString(infoOfPlayer.IPv4Addr.c_str()), infoOfPlayer.PortOfGameServer);
-				
+			UE_LOG(LogTemp, Error, TEXT("IPv4: %s, Port : %d"), *FString(playerPacket.IPv4Addr.c_str()), playerPacket.PortOfGameServer);
 			return;
 		}
 	}
-
 	UE_LOG(LogTemp, Warning, TEXT("<AMainScreenGameMode::GameClientConnectGameServer()> IOCP Game Server connect success!"));
-	
-	// 아직 Recv 스레드가 구동되지 않았다면
-	if (cGameClient::GetSingleton()->IsClientSocketOn() == false)
-	{
-		if (cGameClient::GetSingleton()->BeginMainThread() == false)
-		{
-			UE_LOG(LogTemp, Error, TEXT("<AMainScreenGameMode::GameClientConnectGameServer()> if (cGameClient::GetSingleton()->BeginMainThread() == false)"));
-			return;
-		}
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("<AMainScreenGameMode::GameClientConnectGameServer()> cMainClient::GetSingleton() is on."));
 }
 
 void AMainScreenGameMode::ClearAllRecvedQueue()
 {
-	cMainClient::GetSingleton()->tsqFindGames.clear();
-	cMainClient::GetSingleton()->tsqWaitingGame.clear();
-	cMainClient::GetSingleton()->tsqDestroyWaitingGame.clear();
-	cMainClient::GetSingleton()->tsqModifyWaitingGame.clear();
-	cMainClient::GetSingleton()->tsqStartWaitingGame.clear();
-	cMainClient::GetSingleton()->tsqRequestInfoOfGameServer.clear();
+	CMainClient::GetSingleton()->tsqFindGames.clear();
+	CMainClient::GetSingleton()->tsqWaitingGame.clear();
+	CMainClient::GetSingleton()->tsqDestroyWaitingGame.clear();
+	CMainClient::GetSingleton()->tsqModifyWaitingGame.clear();
+	CMainClient::GetSingleton()->tsqStartWaitingGame.clear();
+	CMainClient::GetSingleton()->tsqRequestInfoOfGameServer.clear();
 }
 
 void AMainScreenGameMode::RecvAndApply()
@@ -1031,7 +994,7 @@ void AMainScreenGameMode::ClearTimerOfRecvAndApply()
 	if (GetWorldTimerManager().IsTimerActive(thRecvAndApply))
 		GetWorldTimerManager().ClearTimer(thRecvAndApply);
 }
-/*** AMainScreenGameMode : End ***/
+
 
 
 

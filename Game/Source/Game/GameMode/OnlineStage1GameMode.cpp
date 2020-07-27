@@ -2,9 +2,9 @@
 
 #include "OnlineStage1GameMode.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "PioneerManager.h"
 #include "SpaceShip/SpaceShip.h"
-
 
 AOnlineStage1GameMode::AOnlineStage1GameMode()
 {
@@ -33,7 +33,6 @@ void AOnlineStage1GameMode::StartPlay()
 void AOnlineStage1GameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	SpaceShip->SetInitLocation(FVector(-8279.5f, -8563.8f, 2000.0f));
 }
 
 void AOnlineStage1GameMode::TickOfSpaceShip(float DeltaTime)

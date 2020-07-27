@@ -2,6 +2,8 @@
 
 #include "PioneerAIController.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 APioneerAIController::APioneerAIController()
 {
 

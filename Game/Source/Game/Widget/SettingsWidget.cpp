@@ -2,6 +2,8 @@
 
 #include "SettingsWidget.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 USettingsWidget::USettingsWidget()
 {
 	

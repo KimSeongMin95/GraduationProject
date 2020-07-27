@@ -2,6 +2,7 @@
 
 #include "ProjectileGrenadeLauncher.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Character/Enemy.h"
 
 AProjectileGrenadeLauncher::AProjectileGrenadeLauncher()

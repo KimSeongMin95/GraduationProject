@@ -46,6 +46,34 @@ bool CMyServer::Initialize(const char* const IPv4, const USHORT& Port)
 
 	return Server->Initialize(IPv4, Port);
 }
+bool CMyServer::IsNetworkOn()
+{
+	CONSOLE_LOG("[START] <CMyServer::IsNetworkOn()>\n");
+
+	if (!Server)
+	{
+		CONSOLE_LOG("[Error] <CMyServer::IsNetworkOn())> if (!Server) \n");
+		return false;
+	}
+	/****************************************/
+
+	return Server->IsNetworkOn();
+}
+void CMyServer::Close()
+{
+	CONSOLE_LOG("[START] <CMyServer::Close()>\n");
+
+	if (!Server)
+	{
+		CONSOLE_LOG("[Error] <CMyServer::Close())> if (!Server) \n");
+		return;
+	}
+	/****************************************/
+
+	Server->Close();
+
+	CONSOLE_LOG("[END] <CMyServer::Close()>\n");
+}
 
 void CMyServer::ConnectCBF(CCompletionKey CompletionKey)
 {

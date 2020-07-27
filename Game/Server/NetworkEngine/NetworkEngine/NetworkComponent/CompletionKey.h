@@ -2,7 +2,7 @@
 
 #include "NetworkHeader.h"
 
-class CCompletionKey sealed
+class CCompletionKey final
 {
 public:
 	CCompletionKey();

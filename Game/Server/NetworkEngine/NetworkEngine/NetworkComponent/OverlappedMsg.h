@@ -3,7 +3,7 @@
 #include "NetworkHeader.h"
 #include "NetworkConfig.h"
 
-class COverlappedMsg sealed
+class COverlappedMsg final
 {
 public:
 	COverlappedMsg();

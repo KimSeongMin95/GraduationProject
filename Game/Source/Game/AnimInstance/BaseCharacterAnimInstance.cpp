@@ -3,6 +3,7 @@
 
 #include "BaseCharacterAnimInstance.h"
 
+#include "Network/NetworkComponent/Console.h"
 #include "Character/BaseCharacter.h"
 #include "Character/Pioneer.h"
 #include "Character/Enemy.h"

@@ -2,6 +2,8 @@
 
 #include "TreeMan.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 ATreeMan::ATreeMan()
 {
 	EnemyType = EEnemyType::TreeMan;

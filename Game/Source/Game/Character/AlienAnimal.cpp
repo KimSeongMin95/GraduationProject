@@ -2,6 +2,8 @@
 
 #include "AlienAnimal.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AAlienAnimal::AAlienAnimal()
 {
 	// 충돌 캡슐의 크기를 설정합니다.

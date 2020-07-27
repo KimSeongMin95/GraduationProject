@@ -3,6 +3,7 @@
 #include "MyTriggerBox.h"
 
 #include "Character/Pioneer.h"
+#include "Network/NetworkComponent/Console.h"
 
 AMyTriggerBox::AMyTriggerBox()
 {

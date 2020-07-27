@@ -4,7 +4,7 @@
 #include "NetworkConfig.h"
 
 template <typename T>
-class CThreadSafetyQueue sealed
+class CThreadSafetyQueue final
 {
 public:
 	CThreadSafetyQueue();

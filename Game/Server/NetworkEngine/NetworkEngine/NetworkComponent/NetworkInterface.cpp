@@ -87,6 +87,23 @@ void INetworkInterface::SetSockOpt(const SOCKET& Socket, const int& SizeOfSendBu
 	CONSOLE_LOG("[End] <SetSockOpt(...)> \n");
 }
 
+void INetworkInterface::SetIPv4AndPort(char* IPv4, USHORT& Port)
+{
+	CONSOLE_LOG("\n /*********************************************/ \n");
+
+	CONSOLE_LOG("IPv4를 입력하세요. (예시: 58.125.236.74) \n");
+	CONSOLE_LOG("IPv4: ");
+	std::cin >> IPv4;
+	CONSOLE_LOG("입력받은 IPv4: %s \n", IPv4);
+
+	CONSOLE_LOG("Port를 입력하세요. (예시: 8000) \n");
+	CONSOLE_LOG("Port: ");
+	std::cin >> Port;
+	CONSOLE_LOG("입력받은 Port: %d \n", Port);
+
+	CONSOLE_LOG("/*********************************************/ \n\n");
+}
+
 void INetworkInterface::GetKoreaStandardTime(stringstream& TimeStream)
 {
 	time_t rawTime;

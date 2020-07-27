@@ -1,4 +1,4 @@
-
+ï»¿
 #include "ExceptionHandler.h"
 #include "Console.h"
 
@@ -22,7 +22,7 @@ CClient::CClient()
 
 	hClientThreadHandle = NULL;
 
-	// Å©¸®Æ¼ÄÃ ¼½¼Ç¿¡ ½ºÇÉ¶ôÀ» °É°í ÃÊ±âÈ­¿¡ ¼º°øÇÒ¶§±îÁö ½ÃµµÇÕ´Ï´Ù.
+	// í¬ë¦¬í‹°ì»¬ ì„¹ì…˜ì— ìŠ¤í•€ë½ì„ ê±¸ê³  ì´ˆê¸°í™”ì— ì„±ê³µí• ë•Œê¹Œì§€ ì‹œë„í•©ë‹ˆë‹¤.
 	while (InitializeCriticalSectionAndSpinCount(&csServer, SPIN_COUNT) == false);
 }
 CClient::~CClient()
@@ -41,7 +41,7 @@ CClient* CClient::GetSingleton()
 
 bool CClient::Initialize(const char* const IPv4, const USHORT& Port)
 {
-	// ÀÌ¹Ì Å¬¶óÀÌ¾ğÆ®°¡ ±¸µ¿ÁßÀÌ¶ó¸é ¸ÕÀú ±¸µ¿À» Á¾·áÇÕ´Ï´Ù.
+	// ì´ë¯¸ í´ë¼ì´ì–¸íŠ¸ê°€ êµ¬ë™ì¤‘ì´ë¼ë©´ ë¨¼ì € êµ¬ë™ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.
 	if (IsNetworkOn())
 	{
 		CONSOLE_LOG("[Info] <CClient::Initialize()> if (IsNetworkOn()) \n");
@@ -52,7 +52,7 @@ bool CClient::Initialize(const char* const IPv4, const USHORT& Port)
 
 	WSADATA wsaData;
 
-	// winsock ¶óÀÌºê·¯¸®¸¦ 2.2 ¹öÀüÀ¸·Î ÃÊ±âÈ­ÇÕ´Ï´Ù.
+	// winsock ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ 2.2 ë²„ì „ìœ¼ë¡œ ì´ˆê¸°í™”í•©ë‹ˆë‹¤.
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
 		CONSOLE_LOG("[Fail]  WSAStartup(...); \n");
@@ -60,7 +60,7 @@ bool CClient::Initialize(const char* const IPv4, const USHORT& Port)
 	}
 	CONSOLE_LOG("\t [Success] WSAStartup(...) \n");
 
-	// TCP ¼ÒÄÏÀ» »ı¼ºÇÕ´Ï´Ù.
+	// TCP ì†Œì¼“ì„ ìƒì„±í•©ë‹ˆë‹¤.
 	ServerSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (ServerSocket == INVALID_SOCKET)
 	{
@@ -72,7 +72,7 @@ bool CClient::Initialize(const char* const IPv4, const USHORT& Port)
 
 	SetSockOpt(ServerSocket, 1048576, 1048576);
 
-	// ¼­¹öÀÇ ÁÖ¼Ò Á¤º¸¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+	// ì„œë²„ì˜ ì£¼ì†Œ ì •ë³´ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤.
 	SOCKADDR_IN serverAddr;
 	serverAddr.sin_family = AF_INET;
 	if (inet_pton(AF_INET, IPv4, &serverAddr.sin_addr.s_addr) != 1)
@@ -83,12 +83,12 @@ bool CClient::Initialize(const char* const IPv4, const USHORT& Port)
 	}
 	serverAddr.sin_port = htons(Port);
 
-	// ¼­¹öÀÇ ÁÖ¼Ò Á¤º¸¸¦ Ãâ·ÂÇÕ´Ï´Ù.
+	// ì„œë²„ì˜ ì£¼ì†Œ ì •ë³´ë¥¼ ì¶œë ¥í•©ë‹ˆë‹¤.
 	char bufOfIPv4Addr[32] = { 0, };
 	CONSOLE_LOG("\t IPv4: %s \n", inet_ntop(AF_INET, &serverAddr.sin_addr, bufOfIPv4Addr, sizeof(bufOfIPv4Addr)));
 	CONSOLE_LOG("\t Port: %d \n", ntohs(serverAddr.sin_port));
 
-	// ¼­¹ö¿¡ Á¢¼ÓÀ» ½ÃµµÇÕ´Ï´Ù.
+	// ì„œë²„ì— ì ‘ì†ì„ ì‹œë„í•©ë‹ˆë‹¤.
 	if (connect(ServerSocket, (sockaddr*)&serverAddr, sizeof(sockaddr)) == SOCKET_ERROR)
 	{
 		CONSOLE_LOG("[Fail] connect(...) \n");
@@ -97,7 +97,7 @@ bool CClient::Initialize(const char* const IPv4, const USHORT& Port)
 	}
 	CONSOLE_LOG("\t [Success] connect(...) \n");
 
-	// Å¬¶óÀÌ¾ğÆ® ½º·¹µå¸¦ »ı¼ºÇÕ´Ï´Ù.
+	// í´ë¼ì´ì–¸íŠ¸ ìŠ¤ë ˆë“œë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
 	if (CreateClientThread() == false)
 	{
 		CONSOLE_LOG("[Fail] CreateClientThread()\n");
@@ -106,20 +106,20 @@ bool CClient::Initialize(const char* const IPv4, const USHORT& Port)
 	}
 	CONSOLE_LOG("\t [Success] CreateClientThread()\n");
 
-	// ÀÌÁ¦ Å¬¶óÀÌ¾ğÆ® ±¸µ¿À» ½ÂÀÎÇÕ´Ï´Ù.
+	// ì´ì œ í´ë¼ì´ì–¸íŠ¸ êµ¬ë™ì„ ìŠ¹ì¸í•©ë‹ˆë‹¤.
 	EnterCriticalSection(&csAccept);
 	bAccept = true;
 	LeaveCriticalSection(&csAccept);
 
-	// ¹Ì¸® »ı¼ºÇÑ ½º·¹µå¸¦ Àç°³ÇÕ´Ï´Ù.
+	// ë¯¸ë¦¬ ìƒì„±í•œ ìŠ¤ë ˆë“œë¥¼ ì¬ê°œí•©ë‹ˆë‹¤.
 	ResumeThread(hClientThreadHandle);
 
-	// ¼­¹öÀÇ Á¤º¸¸¦ ÀúÀå
+	// ì„œë²„ì˜ ì •ë³´ë¥¼ ì €ì¥
 	EnterCriticalSection(&csServer);
 	Server.Socket = ServerSocket;
 	Server.IPv4Addr = string(IPv4);
 	Server.Port = (unsigned int)Port;
-	ConCBF.ExecuteFunc(Server); // ¼­¹ö¿¡ Á¢¼ÓÇÏ¸é ½ÇÇàÇÒ Äİ¹éÇÔ¼ö ½ÇÇàÇÕ´Ï´Ù.
+	ConCBF.ExecuteFunc(Server); // ì„œë²„ì— ì ‘ì†í•˜ë©´ ì‹¤í–‰í•  ì½œë°±í•¨ìˆ˜ ì‹¤í–‰í•©ë‹ˆë‹¤.
 	LeaveCriticalSection(&csServer);
 
 	CONSOLE_LOG("[End] <CClient::Initialize()> \n");
@@ -130,7 +130,7 @@ bool CClient::CreateClientThread()
 {
 	unsigned int threadId;
 
-	// _beginthreadex()´Â ::CloseHandleÀ» ³»ºÎ¿¡¼­ È£ÃâÇÏÁö ¾Ê±â ¶§¹®¿¡, ½º·¹µå Á¾·á½Ã »ç¿ëÀÚ°¡ Á÷Á¢ CloseHandle()ÇØÁÖ¾î¾ß ÇÕ´Ï´Ù. ½º·¹µå°¡ Á¾·áµÇ¸é _endthreadex()°¡ ÀÚµ¿À¸·Î È£ÃâµË´Ï´Ù.
+	// _beginthreadex()ëŠ” ::CloseHandleì„ ë‚´ë¶€ì—ì„œ í˜¸ì¶œí•˜ì§€ ì•Šê¸° ë•Œë¬¸ì—, ìŠ¤ë ˆë“œ ì¢…ë£Œì‹œ ì‚¬ìš©ìê°€ ì§ì ‘ CloseHandle()í•´ì£¼ì–´ì•¼ í•©ë‹ˆë‹¤. ìŠ¤ë ˆë“œê°€ ì¢…ë£Œë˜ë©´ _endthreadex()ê°€ ìë™ìœ¼ë¡œ í˜¸ì¶œë©ë‹ˆë‹¤.
 	hClientThreadHandle = (HANDLE*)_beginthreadex(NULL, 0, &CallRunClientThread, this, CREATE_SUSPENDED, &threadId);
 	if (hClientThreadHandle == NULL || hClientThreadHandle == INVALID_HANDLE_VALUE)
 	{
@@ -143,19 +143,19 @@ bool CClient::CreateClientThread()
 
 void CClient::RunClientThread()
 {
-	int nRecvLen = 0; // ¼ö½ÅÇÑ ¹ÙÀÌÆ® Å©±â¸¦ ÀúÀåÇÕ´Ï´Ù.
-	char recvBuffer[MAX_BUFFER + 1]; // ¼ö½ÅÇÒ µ¥ÀÌÅÍ¸¦ ÀúÀåÇÒ ¹öÆÛÀÔ´Ï´Ù.
-	char bufOfPackets[MAX_BUFFER + 1]; // RecvDequeÀ¸·ÎºÎÅÍ È¹µæÇÏ´Â ÆĞÅ¶µéÀ» ÀúÀåÇÕ´Ï´Ù.
+	int nRecvLen = 0; // ìˆ˜ì‹ í•œ ë°”ì´íŠ¸ í¬ê¸°ë¥¼ ì €ì¥í•©ë‹ˆë‹¤.
+	char recvBuffer[MAX_BUFFER + 1]; // ìˆ˜ì‹ í•  ë°ì´í„°ë¥¼ ì €ì¥í•  ë²„í¼ì…ë‹ˆë‹¤.
+	char bufOfPackets[MAX_BUFFER + 1]; // RecvDequeìœ¼ë¡œë¶€í„° íšë“í•˜ëŠ” íŒ¨í‚·ë“¤ì„ ì €ì¥í•©ë‹ˆë‹¤.
 
-	// Å¬¶óÀÌ¾ğÆ®¸¦ Á¤»óÀûÀ¸·Î ±¸µ¿ÇÕ´Ï´Ù.
+	// í´ë¼ì´ì–¸íŠ¸ë¥¼ ì •ìƒì ìœ¼ë¡œ êµ¬ë™í•©ë‹ˆë‹¤.
 	while (true)
 	{
 		nRecvLen = 0;
 
-		// SendCompletionRoutineÀ» À§ÇØ Àá½Ã Alertable Wait »óÅÂ·Î ¸¸µì´Ï´Ù.
+		// SendCompletionRoutineì„ ìœ„í•´ ì ì‹œ Alertable Wait ìƒíƒœë¡œ ë§Œë“­ë‹ˆë‹¤.
 		SleepEx(1, true);
 
-		// Å¬¶óÀÌ¾ğÆ® ½º·¹µå Á¾·á È®ÀÎ
+		// í´ë¼ì´ì–¸íŠ¸ ìŠ¤ë ˆë“œ ì¢…ë£Œ í™•ì¸
 		EnterCriticalSection(&csAccept);
 		if (!bAccept)
 		{
@@ -166,11 +166,11 @@ void CClient::RunClientThread()
 		}
 		LeaveCriticalSection(&csAccept);
 
-		///* FIONREAD ¼³¸í
-		//FIONREAD´Â ³×Æ®¿öÅ© ÀÔ·Â ¹öÆÛ¿¡¼­ ±â´Ù¸®°í ÀÖ´Â ¼ÒÄÏ s·ÎºÎÅÍ ÀĞÀ» ¼ö ÀÖ´Â µ¥ÀÌÅÍÀÇ Å©±â(amount)¸¦ ¾ò¾î³»´Âµ¥ »ç¿ëµË´Ï´Ù.
-		//ioctlsocket(...) ÇÔ¼öÀÇ argp ¸Å°³º¯¼ö·Î ÀĞÀ» ¼ö ÀÖ´Â µ¥ÀÌÅÍÀÇ Å©±â¸¦ È¹µæÇÒ ¼ö ÀÖ½À´Ï´Ù.
-		//¿¬°á ÁöÇâÇü(stream oriented) ¼ÒÄÏ(¿¹:SOCK_STREAM)ÀÏ °æ¿ì, recv ÇÔ¼öÀÇ È£Ãâ·Î ÀĞÀ» ¼ö ÀÖ´Â µ¥ÀÌÅÍÀÇ Å©±â(amount)¸¦ È¹µæÇÒ ¼ö ÀÖ½À´Ï´Ù.
-		//¸¸¾à ¼ÒÄÏÀÌ ¸Ş½ÃÁö ÁöÇâÇü(message oriented) ¼ÒÄÏ(¿¹:SOCK_DGRAM)ÀÏ °æ¿ì, ¼ÒÄÏ¿¡ Å¥µÈ Ã¹ ¹øÂ° µ¥ÀÌÅÍ±×·¥ÀÇ Å©±â¸¦ ¹İÈ¯ ÇÕ´Ï´Ù.
+		///* FIONREAD ì„¤ëª…
+		//FIONREADëŠ” ë„¤íŠ¸ì›Œí¬ ì…ë ¥ ë²„í¼ì—ì„œ ê¸°ë‹¤ë¦¬ê³  ìˆëŠ” ì†Œì¼“ së¡œë¶€í„° ì½ì„ ìˆ˜ ìˆëŠ” ë°ì´í„°ì˜ í¬ê¸°(amount)ë¥¼ ì–»ì–´ë‚´ëŠ”ë° ì‚¬ìš©ë©ë‹ˆë‹¤.
+		//ioctlsocket(...) í•¨ìˆ˜ì˜ argp ë§¤ê°œë³€ìˆ˜ë¡œ ì½ì„ ìˆ˜ ìˆëŠ” ë°ì´í„°ì˜ í¬ê¸°ë¥¼ íšë“í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+		//ì—°ê²° ì§€í–¥í˜•(stream oriented) ì†Œì¼“(ì˜ˆ:SOCK_STREAM)ì¼ ê²½ìš°, recv í•¨ìˆ˜ì˜ í˜¸ì¶œë¡œ ì½ì„ ìˆ˜ ìˆëŠ” ë°ì´í„°ì˜ í¬ê¸°(amount)ë¥¼ íšë“í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+		//ë§Œì•½ ì†Œì¼“ì´ ë©”ì‹œì§€ ì§€í–¥í˜•(message oriented) ì†Œì¼“(ì˜ˆ:SOCK_DGRAM)ì¼ ê²½ìš°, ì†Œì¼“ì— íëœ ì²« ë²ˆì§¸ ë°ì´í„°ê·¸ë¨ì˜ í¬ê¸°ë¥¼ ë°˜í™˜ í•©ë‹ˆë‹¤.
 		//*/
 		//u_long amount = 0;
 		//if (ioctlsocket(ServerSocket, FIONREAD, &amount) == -1)
@@ -179,36 +179,36 @@ void CClient::RunClientThread()
 		//	continue;
 		//}
 
-		// ¼ö½Å
+		// ìˆ˜ì‹ 
 		nRecvLen = recv(ServerSocket, (CHAR*)&recvBuffer, MAX_BUFFER, 0);
 		if (nRecvLen == SOCKET_ERROR || nRecvLen == 0)
 		{
-			// ¼­¹ö¿Í Á¢¼ÓÀÌ Á¾·áµÇ¸é ½ÇÇàÇÒ Äİ¹éÇÔ¼ö¸¦ ½ÇÇàÇÕ´Ï´Ù.
+			// ì„œë²„ì™€ ì ‘ì†ì´ ì¢…ë£Œë˜ë©´ ì‹¤í–‰í•  ì½œë°±í•¨ìˆ˜ë¥¼ ì‹¤í–‰í•©ë‹ˆë‹¤.
 			DisconCBF.ExecuteFunc(GetCompletionKey());
 			continue;
 		}
 		recvBuffer[nRecvLen] = '\0';
 
-		// RecvDequeÀÌ ºñ¾îÀÖ°í ¼ö½ÅÇÑ µ¥ÀÌÅÍ°¡ ¿ÂÀüÇÑ ÆĞÅ¶ÀÌ¶ó¸é RecvDequeÀ» °ÅÄ¡Áö ¾Ê°í ¹Ù·Î Ã³¸®ÇÏ¿© ¼º´ÉÀ» Çâ»ó½ÃÅµ´Ï´Ù.
+		// RecvDequeì´ ë¹„ì–´ìˆê³  ìˆ˜ì‹ í•œ ë°ì´í„°ê°€ ì˜¨ì „í•œ íŒ¨í‚·ì´ë¼ë©´ RecvDequeì„ ê±°ì¹˜ì§€ ì•Šê³  ë°”ë¡œ ì²˜ë¦¬í•˜ì—¬ ì„±ëŠ¥ì„ í–¥ìƒì‹œí‚µë‹ˆë‹¤.
 		if (RecvDeque.empty() == true && recvBuffer[nRecvLen - 1] == (char)3)
 		{
-			// ¼ö½ÅÇÑ ÆĞÅ¶µéÀ» ÆĞÅ¶À¸·Î ºĞÇÒÇÏ°í ÃÖÁ¾ÀûÀ¸·Î ÆĞÅ¶À» Ã³¸®ÇÕ´Ï´Ù.
+			// ìˆ˜ì‹ í•œ íŒ¨í‚·ë“¤ì„ íŒ¨í‚·ìœ¼ë¡œ ë¶„í• í•˜ê³  ìµœì¢…ì ìœ¼ë¡œ íŒ¨í‚·ì„ ì²˜ë¦¬í•©ë‹ˆë‹¤.
 			DividePacketsAndProcessThePacket(recvBuffer);
 		}
-		else // ±×·¸Áö ¾Ê´Ù¸é ´ÙÀ½°ú °°Àº Ã³¸®¸¦ ÁøÇàÇÕ´Ï´Ù.
+		else // ê·¸ë ‡ì§€ ì•Šë‹¤ë©´ ë‹¤ìŒê³¼ ê°™ì€ ì²˜ë¦¬ë¥¼ ì§„í–‰í•©ë‹ˆë‹¤.
 		{
-			// RecvDequeÀÇ µŞºÎºĞ¿¡ ¼ö½ÅÇÑ µ¥ÀÌÅÍ¸¦ ÀûÀçÇÕ´Ï´Ù.
+			// RecvDequeì˜ ë’·ë¶€ë¶„ì— ìˆ˜ì‹ í•œ ë°ì´í„°ë¥¼ ì ì¬í•©ë‹ˆë‹¤.
 			LoadUpReceivedDataToRecvDeque(recvBuffer, nRecvLen);
 
-			// RecvDequeÀ¸·ÎºÎÅÍ ÆĞÅ¶µéÀ» È¹µæÇÕ´Ï´Ù.
+			// RecvDequeìœ¼ë¡œë¶€í„° íŒ¨í‚·ë“¤ì„ íšë“í•©ë‹ˆë‹¤.
 			GetPacketsFromRecvDeque(bufOfPackets);
 
-			// È¹µæÇÑ ÆĞÅ¶µéÀ» ÆĞÅ¶À¸·Î ºĞÇÒÇÏ°í ÃÖÁ¾ÀûÀ¸·Î ÆĞÅ¶À» Ã³¸®ÇÕ´Ï´Ù.
+			// íšë“í•œ íŒ¨í‚·ë“¤ì„ íŒ¨í‚·ìœ¼ë¡œ ë¶„í• í•˜ê³  ìµœì¢…ì ìœ¼ë¡œ íŒ¨í‚·ì„ ì²˜ë¦¬í•©ë‹ˆë‹¤.
 			DividePacketsAndProcessThePacket(bufOfPackets);
 		}
 
 
-		// ³²¾ÆÀÖ´ø WSASend(...)¸¦ ´Ù º¸³»±â À§ÇØ Alertable Wait »óÅÂ·Î ¸¸µì´Ï´Ù.
+		// ë‚¨ì•„ìˆë˜ WSASend(...)ë¥¼ ë‹¤ ë³´ë‚´ê¸° ìœ„í•´ Alertable Wait ìƒíƒœë¡œ ë§Œë“­ë‹ˆë‹¤.
 		SleepEx(1, true);
 	}
 }
@@ -235,10 +235,10 @@ void CClient::Close()
 {
 	CONSOLE_LOG("[Start] <CClient::Close()>\n");
 
-	// Å¬¶óÀÌ¾ğÆ®¸¦ Á¾·áÇÏ¸é ³²¾ÆÀÖ´ø WSASend(...)¸¦ ´Ù º¸³»±â À§ÇØ Alertable Wait »óÅÂ·Î ¸¸µì´Ï´Ù.
+	// í´ë¼ì´ì–¸íŠ¸ë¥¼ ì¢…ë£Œí•˜ë©´ ë‚¨ì•„ìˆë˜ WSASend(...)ë¥¼ ë‹¤ ë³´ë‚´ê¸° ìœ„í•´ Alertable Wait ìƒíƒœë¡œ ë§Œë“­ë‹ˆë‹¤.
 	SleepEx(1, true);
 
-	// ¼­¹ö°¡ ±¸µ¿ÁßÀÏ¶§¸¸ Á¾·áÇÏµµ·Ï ÇÕ´Ï´Ù.
+	// ì„œë²„ê°€ êµ¬ë™ì¤‘ì¼ë•Œë§Œ ì¢…ë£Œí•˜ë„ë¡ í•©ë‹ˆë‹¤.
 	EnterCriticalSection(&csAccept);
 	if (!bAccept)
 	{
@@ -250,23 +250,23 @@ void CClient::Close()
 	LeaveCriticalSection(&csAccept);
 	/****************************************/
 
-	// ¼­¹ö¿Í Á¢¼ÓÀÌ Á¾·áµÇ¸é ½ÇÇàÇÒ Äİ¹éÇÔ¼ö¸¦ ½ÇÇàÇÕ´Ï´Ù.
+	// ì„œë²„ì™€ ì ‘ì†ì´ ì¢…ë£Œë˜ë©´ ì‹¤í–‰í•  ì½œë°±í•¨ìˆ˜ë¥¼ ì‹¤í–‰í•©ë‹ˆë‹¤.
 	DisconCBF.ExecuteFunc(GetCompletionKey());
 
-	// ¼­¹öÀÇ Á¤º¸¸¦ ÃÊ±âÈ­ÇÕ´Ï´Ù.
+	// ì„œë²„ì˜ ì •ë³´ë¥¼ ì´ˆê¸°í™”í•©ë‹ˆë‹¤.
 	EnterCriticalSection(&csServer);
 	Server = CCompletionKey();
 	LeaveCriticalSection(&csServer);
 
-	// ¸ÕÀú ´õÀÌ»ó Åë½ÅÇÏÁö ¸øÇÏµµ·Ï ServerSocketÀ» ´İ½À´Ï´Ù.
+	// ë¨¼ì € ë”ì´ìƒ í†µì‹ í•˜ì§€ ëª»í•˜ë„ë¡ ServerSocketì„ ë‹«ìŠµë‹ˆë‹¤.
 	CloseSocketWithCheck(ServerSocket);
 
-	// ±× ´ÙÀ½, Å¬¶óÀÌ¾ğÆ® ½º·¹µåÀÇ Á¾·á¸¦ È®ÀÎÇÕ´Ï´Ù.
+	// ê·¸ ë‹¤ìŒ, í´ë¼ì´ì–¸íŠ¸ ìŠ¤ë ˆë“œì˜ ì¢…ë£Œë¥¼ í™•ì¸í•©ë‹ˆë‹¤.
 	if (hClientThreadHandle != NULL && hClientThreadHandle != INVALID_HANDLE_VALUE)
 	{
 		DWORD result = WaitForSingleObject(hClientThreadHandle, INFINITE);
 
-		if (result == WAIT_OBJECT_0) // hClientThreadHandleÀÌ signalÀÌ¸é
+		if (result == WAIT_OBJECT_0) // hClientThreadHandleì´ signalì´ë©´
 		{
 			CloseHandle(hClientThreadHandle);
 			CONSOLE_LOG("\t CloseHandle(hClientThreadHandle);\n");
@@ -283,12 +283,12 @@ void CClient::Close()
 		hClientThreadHandle = NULL;
 	}
 
-	// winsock ¶óÀÌºê·¯¸®¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+	// winsock ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ í•´ì œí•©ë‹ˆë‹¤.
 	WSACleanup();
 
 	/****************************************/
 
-	// ÀûÀçµÈ ¼ö½ÅÇÑ ¸ğµç µ¥ÀÌÅÍ¸¦ Á¦°ÅÇÕ´Ï´Ù.
+	// ì ì¬ëœ ìˆ˜ì‹ í•œ ëª¨ë“  ë°ì´í„°ë¥¼ ì œê±°í•©ë‹ˆë‹¤.
 	RecvDeque.clear();
 
 	CONSOLE_LOG("[END] <CClient::Close()>\n");
@@ -331,7 +331,7 @@ void CALLBACK SendCompletionRoutine(
 
 	if (COverlappedMsg* om = (COverlappedMsg*)lpOverlapped)
 	{
-		if (om->SendBytes != cbTransferred) // »çÀÌÁî°¡ ´Ù¸£´Ù¸é Á¦´ë·Î Àü¼ÛÀÌ µÇÁö ¾ÊÀº°ÍÀÌ¹Ç·Î ÀÏ´Ü ÄÜ¼Ö¿¡ ¾Ë¸³´Ï´Ù.
+		if (om->SendBytes != cbTransferred) // ì‚¬ì´ì¦ˆê°€ ë‹¤ë¥´ë‹¤ë©´ ì œëŒ€ë¡œ ì „ì†¡ì´ ë˜ì§€ ì•Šì€ê²ƒì´ë¯€ë¡œ ì¼ë‹¨ ì½˜ì†”ì— ì•Œë¦½ë‹ˆë‹¤.
 		{
 			CONSOLE_LOG("\n\n\n\n\n");
 			CONSOLE_LOG("[Error] <CClient::SendCompletionRoutine()> if (overlappedMsg->sendBytes != cbTransferred) \n");
@@ -340,7 +340,7 @@ void CALLBACK SendCompletionRoutine(
 			CONSOLE_LOG("\n\n\n\n\n");
 		}
 
-		// ÇÒ´çÀ» ÇØÁ¦ÇÕ´Ï´Ù.
+		// í• ë‹¹ì„ í•´ì œí•©ë‹ˆë‹¤.
 		delete om;
 		om = nullptr;
 	}
@@ -352,14 +352,14 @@ void CClient::Send(CPacket& Packet, const SOCKET& Socket /*= NULL*/)
 {
 	CONSOLE_LOG("[Start] <CClient::Send(...)>\n");
 
-	// µ¥ÀÌÅÍ´Â (idxOfStart, idxOfEnd]ÀÇ ¹üÀ§¸¦ °¡Áö´Â °ÍÀ¸·Î Á¤ÀÇÇÕ´Ï´Ù.
+	// ë°ì´í„°ëŠ” (idxOfStart, idxOfEnd]ì˜ ë²”ìœ„ë¥¼ ê°€ì§€ëŠ” ê²ƒìœ¼ë¡œ ì •ì˜í•©ë‹ˆë‹¤.
 	uint32_t idxOfStart = 0;
 	uint32_t idxOfEnd = 0;
 
-	const string& strOfData = Packet.GetData().str(); // stringstream.str()Àº return by valueÀÌ±â ¶§¹®¿¡ ¾îÂ¿ ¼ö ¾øÀÌ ¼º´ÉÀÌ ÁÁÁö ¾Ê½À´Ï´Ù.
-	const char* c_StrOfData = strOfData.c_str(); // c_str()Àº stringÀÇ ¼ö¸íÀ» µû¶ó°¡±â ¶§¹®¿¡ ÀÌ Á¡À» À¯ÀÇÇÏ¿© »ç¿ëÇØ¾ß ÇÕ´Ï´Ù.
+	const string& strOfData = Packet.GetData().str(); // stringstream.str()ì€ return by valueì´ê¸° ë•Œë¬¸ì— ì–´ì©” ìˆ˜ ì—†ì´ ì„±ëŠ¥ì´ ì¢‹ì§€ ì•ŠìŠµë‹ˆë‹¤.
+	const char* c_StrOfData = strOfData.c_str(); // c_str()ì€ stringì˜ ìˆ˜ëª…ì„ ë”°ë¼ê°€ê¸° ë•Œë¬¸ì— ì´ ì ì„ ìœ ì˜í•˜ì—¬ ì‚¬ìš©í•´ì•¼ í•©ë‹ˆë‹¤.
 
-	// ÃÖ´ëÅ©±âÀÇ ÆĞÅ¶: [("4095") ("256") (Data)(End)('\0')] ÀÌ¹Ç·Î MAX_BUFFER - (4 + 1 + 3 + 1) - 1 - 1
+	// ìµœëŒ€í¬ê¸°ì˜ íŒ¨í‚·: [("4095") ("256") (Data)(End)('\0')] ì´ë¯€ë¡œ MAX_BUFFER - (4 + 1 + 3 + 1) - 1 - 1
 	uint16_t maxSizeOfData = MAX_BUFFER - (uint16_t)(to_string(MAX_BUFFER).length() + 1 + to_string(MAX_HEADER).length() + 1) - 1 - 1;
 	size_t totalSizeOfData = strlen(c_StrOfData);
 
@@ -369,10 +369,10 @@ void CClient::Send(CPacket& Packet, const SOCKET& Socket /*= NULL*/)
 
 		const uint16_t sizeOfData = idxOfEnd - idxOfStart;
 
-		// ³²Àº µ¥ÀÌÅÍ¿¡ '\n'¸¸ Á¸ÀçÇÒ ¶§¿¡ ´ëÇÑ ¿¹¿ÜÃ³¸®¸¦ ÁøÇàÇÕ´Ï´Ù.
+		// ë‚¨ì€ ë°ì´í„°ì— '\n'ë§Œ ì¡´ì¬í•  ë•Œì— ëŒ€í•œ ì˜ˆì™¸ì²˜ë¦¬ë¥¼ ì§„í–‰í•©ë‹ˆë‹¤.
 		if (1 <= sizeOfData && sizeOfData <= 4)
 		{
-			// ¸ğµÎ °°´Ù¸é Àü¼ÛÇÒ ÇÊ¿ä°¡ ¾øÀ¸¹Ç·Î ¼Û½ÅÇÏÁö ¾Ê°í Á¾·áÇÕ´Ï´Ù.
+			// ëª¨ë‘ ê°™ë‹¤ë©´ ì „ì†¡í•  í•„ìš”ê°€ ì—†ìœ¼ë¯€ë¡œ ì†¡ì‹ í•˜ì§€ ì•Šê³  ì¢…ë£Œí•©ë‹ˆë‹¤.
 			if (strncmp(&c_StrOfData[idxOfStart], "\n\n\n\n", sizeOfData) == 0)
 			{
 				return;
@@ -386,7 +386,7 @@ void CClient::Send(CPacket& Packet, const SOCKET& Socket /*= NULL*/)
 
 		COverlappedMsg* overlappedMsg = GetOverlappedMsgForSend(strOfLengthAndHeader, lenOfLengthAndHeader, c_StrOfData, idxOfStart, sizeOfData);
 
-		// Ã³¸®°¡ ³¡³­ ÆĞÅ¶À» ¼Û½ÅÇÕ´Ï´Ù.
+		// ì²˜ë¦¬ê°€ ëë‚œ íŒ¨í‚·ì„ ì†¡ì‹ í•©ë‹ˆë‹¤.
 		Send(overlappedMsg);
 
 		idxOfStart = idxOfEnd;
@@ -408,13 +408,13 @@ void CClient::Send(COverlappedMsg* OverlappedMsg)
 	DWORD dwFlags = 0;
 
 	int nResult = WSASend(
-		ServerSocket,				  // s: ¿¬°á ¼ÒÄÏÀ» °¡¸®Å°´Â ¼ÒÄÏ ÁöÁ¤ ¹øÈ£ÀÔ´Ï´Ù.
-		&(OverlappedMsg->DataBuf),	  // lpBuffers: WSABUF(:4300)±¸Á¶Ã¼ ¹è¿­ÀÇ Æ÷ÀÎÅÍ·Î °¢°¢ÀÇ WSABUF ±¸Á¶Ã¼´Â ¹öÆÛ¿Í ¹öÆÛÀÇ Å©±â¸¦ °¡¸®Åµ´Ï´Ù.
-		1,							  // dwBufferCount: lpBuffers¿¡ ÀÖ´Â WSABUF(:4300)±¸Á¶Ã¼ÀÇ °³¼öÀÔ´Ï´Ù.
-		NULL,						  // lpNumberOfBytesSent: ÇÔ¼öÀÇ È£Ãâ·Î Àü¼ÛµÈ µ¥ÀÌÅÍÀÇ ¹ÙÀÌÆ® Å©±â¸¦ ³Ñ°ÜÁİ´Ï´Ù. ¸¸¾à ¸Å°³ º¯¼ö lpOverlapped°¡ NULLÀÌ ¾Æ´Ï¶ó¸é, ÀÌ ¸Å°³ º¯¼öÀÇ °ªÀº NULL·Î ÇØ¾ß (ÀáÀçÀûÀÎ)Àß¸øµÈ ¹İÈ¯À» ÇÇÇÒ ¼ö ÀÖ½À´Ï´Ù.
-		dwFlags,					  // dwFlags: WSASend ÇÔ¼ö¸¦ ¾î¶² ¹æ½ÄÀ¸·Î È£Ãâ ÇÒ°ÍÀÎÁö¸¦ ÁöÁ¤ÇÕ´Ï´Ù.
-		&(OverlappedMsg->Overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)±¸Á¶Ã¼ÀÇ Æ÷ÀÎÅÍÀÔ´Ï´Ù. ºñ (overlapped)ÁßÃ¸ ¼ÒÄÏ¿¡¼­´Â ¹«½ÃµË´Ï´Ù.
-		SendCompletionRoutine		  // lpCompletionRoutine: µ¥ÀÌÅÍ Àü¼ÛÀÌ ¿Ï·á µÇ¾úÀ» ¶§ È£ÃâÇÒ ¿Ï·á ·çÆ¾ (completion routine)ÀÇ Æ÷ÀÎÅÍÀÔ´Ï´Ù. ºñ ÁßÃ¸ ¼ÒÄÏ¿¡¼­´Â ¹«½ÃµË´Ï´Ù.
+		ServerSocket,				  // s: ì—°ê²° ì†Œì¼“ì„ ê°€ë¦¬í‚¤ëŠ” ì†Œì¼“ ì§€ì • ë²ˆí˜¸ì…ë‹ˆë‹¤.
+		&(OverlappedMsg->DataBuf),	  // lpBuffers: WSABUF(:4300)êµ¬ì¡°ì²´ ë°°ì—´ì˜ í¬ì¸í„°ë¡œ ê°ê°ì˜ WSABUF êµ¬ì¡°ì²´ëŠ” ë²„í¼ì™€ ë²„í¼ì˜ í¬ê¸°ë¥¼ ê°€ë¦¬í‚µë‹ˆë‹¤.
+		1,							  // dwBufferCount: lpBuffersì— ìˆëŠ” WSABUF(:4300)êµ¬ì¡°ì²´ì˜ ê°œìˆ˜ì…ë‹ˆë‹¤.
+		NULL,						  // lpNumberOfBytesSent: í•¨ìˆ˜ì˜ í˜¸ì¶œë¡œ ì „ì†¡ëœ ë°ì´í„°ì˜ ë°”ì´íŠ¸ í¬ê¸°ë¥¼ ë„˜ê²¨ì¤ë‹ˆë‹¤. ë§Œì•½ ë§¤ê°œ ë³€ìˆ˜ lpOverlappedê°€ NULLì´ ì•„ë‹ˆë¼ë©´, ì´ ë§¤ê°œ ë³€ìˆ˜ì˜ ê°’ì€ NULLë¡œ í•´ì•¼ (ì ì¬ì ì¸)ì˜ëª»ëœ ë°˜í™˜ì„ í”¼í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+		dwFlags,					  // dwFlags: WSASend í•¨ìˆ˜ë¥¼ ì–´ë–¤ ë°©ì‹ìœ¼ë¡œ í˜¸ì¶œ í• ê²ƒì¸ì§€ë¥¼ ì§€ì •í•©ë‹ˆë‹¤.
+		&(OverlappedMsg->Overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)êµ¬ì¡°ì²´ì˜ í¬ì¸í„°ì…ë‹ˆë‹¤. ë¹„ (overlapped)ì¤‘ì²© ì†Œì¼“ì—ì„œëŠ” ë¬´ì‹œë©ë‹ˆë‹¤.
+		SendCompletionRoutine		  // lpCompletionRoutine: ë°ì´í„° ì „ì†¡ì´ ì™„ë£Œ ë˜ì—ˆì„ ë•Œ í˜¸ì¶œí•  ì™„ë£Œ ë£¨í‹´ (completion routine)ì˜ í¬ì¸í„°ì…ë‹ˆë‹¤. ë¹„ ì¤‘ì²© ì†Œì¼“ì—ì„œëŠ” ë¬´ì‹œë©ë‹ˆë‹¤.
 	);
 
 	if (nResult == 0)
@@ -427,7 +427,7 @@ void CClient::Send(COverlappedMsg* OverlappedMsg)
 		{
 			CONSOLE_LOG("[Error] <CClient::Send(...)> Fail to WSASend(...) : %d \n", WSAGetLastError());
 
-			// ÇÒ´çÀ» ÇØÁ¦ÇÕ´Ï´Ù.
+			// í• ë‹¹ì„ í•´ì œí•©ë‹ˆë‹¤.
 			delete OverlappedMsg;
 			OverlappedMsg = nullptr;
 		}
@@ -447,8 +447,8 @@ void CClient::LoadUpReceivedDataToRecvDeque(const char* const RecvBuffer, const 
 	}
 	/****************************************/
 
-	// µ¥ÀÌÅÍ°¡ MAX_BUFFER ±×´ë·Î 4096°³ ²Ë Ã¤¿ö¼­ ¿À´Â °æ¿ì¿¡ ´ëºñÇÏ±â À§ÇÏ¿© +1·Î '\0' °ø°£À» ¸¸µé¾îÁİ´Ï´Ù. (±×·¡µµ ¼Û½ÅÇÒ¶§´Â 4095°³±îÁö¸¸ Ã¤¿ö¼­ °©´Ï´Ù.)
-	RecvDeque.emplace_back(make_unique<char[]>(MAX_BUFFER + 1)); // µŞºÎºĞ¿¡ ¼øÂ÷ÀûÀ¸·Î ÀûÀçÇÕ´Ï´Ù.
+	// ë°ì´í„°ê°€ MAX_BUFFER ê·¸ëŒ€ë¡œ 4096ê°œ ê½‰ ì±„ì›Œì„œ ì˜¤ëŠ” ê²½ìš°ì— ëŒ€ë¹„í•˜ê¸° ìœ„í•˜ì—¬ +1ë¡œ '\0' ê³µê°„ì„ ë§Œë“¤ì–´ì¤ë‹ˆë‹¤. (ê·¸ë˜ë„ ì†¡ì‹ í• ë•ŒëŠ” 4095ê°œê¹Œì§€ë§Œ ì±„ì›Œì„œ ê°‘ë‹ˆë‹¤.)
+	RecvDeque.emplace_back(make_unique<char[]>(MAX_BUFFER + 1)); // ë’·ë¶€ë¶„ì— ìˆœì°¨ì ìœ¼ë¡œ ì ì¬í•©ë‹ˆë‹¤.
 
 	RecvDeque.back().get()[MAX_BUFFER] = '\0';
 	CopyMemory(RecvDeque.back().get(), RecvBuffer, RecvLen);
@@ -464,14 +464,14 @@ void CClient::GetPacketsFromRecvDeque(char* const BufOfPackets)
 	}
 	/****************************************/
 
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	BufOfPackets[MAX_BUFFER] = '\0';
 	BufOfPackets[0] = '\0';
 
 	size_t idxOfCur = 0;
 	size_t idxOfEnd = 0;
 
-	// RecvDequeÀÌ ºñ°Å³ª BufOfPackets¿¡ ¿ÂÀüÇÑ ÆĞÅ¶¸¸ÀÌ º¹»çµÇ¾î ´õÀÌ»ó °ø°£ÀÌ ¾øÀ»¶§±îÁö ÁøÇàÇÕ´Ï´Ù.
+	// RecvDequeì´ ë¹„ê±°ë‚˜ BufOfPacketsì— ì˜¨ì „í•œ íŒ¨í‚·ë§Œì´ ë³µì‚¬ë˜ì–´ ë”ì´ìƒ ê³µê°„ì´ ì—†ì„ë•Œê¹Œì§€ ì§„í–‰í•©ë‹ˆë‹¤.
 	while (true)
 	{
 		//
@@ -481,17 +481,17 @@ void CClient::GetPacketsFromRecvDeque(char* const BufOfPackets)
 			idxOfCur += strlen(RecvDeque.front().get());
 			BufOfPackets[idxOfCur] = '\0';
 
-			// ÆĞÅ¶ÀÇ ³¡À» Ã¼Å©ÇÕ´Ï´Ù.
+			// íŒ¨í‚·ì˜ ëì„ ì²´í¬í•©ë‹ˆë‹¤.
 			if (BufOfPackets[idxOfCur - 1] == (char)3)
 				idxOfEnd = idxOfCur;
 
 			RecvDeque.pop_front();
 		}
 
-		// RecvDequeÀÌ ºñ°Å³ª BufOfPackets Å©±â¸¦ ÃÊ°úÇÑ´Ù¸é
+		// RecvDequeì´ ë¹„ê±°ë‚˜ BufOfPackets í¬ê¸°ë¥¼ ì´ˆê³¼í•œë‹¤ë©´
 		if (RecvDeque.empty() || (idxOfCur + strlen(RecvDeque.front().get())) >= MAX_BUFFER + 1)
 		{
-			if (idxOfEnd != idxOfCur) // ³¡ÀÌ ´Ù¸£´Ù¸é ÆĞÅ¶ÀÌ Àß·ÁÀÖ´Â °ÍÀÌ¹Ç·Î Àß¸° ºÎºĞÀ» ´Ù½Ã ³Ö¾îÁİ´Ï´Ù.
+			if (idxOfEnd != idxOfCur) // ëì´ ë‹¤ë¥´ë‹¤ë©´ íŒ¨í‚·ì´ ì˜ë ¤ìˆëŠ” ê²ƒì´ë¯€ë¡œ ì˜ë¦° ë¶€ë¶„ì„ ë‹¤ì‹œ ë„£ì–´ì¤ë‹ˆë‹¤.
 			{
 				RecvDeque.emplace_front(make_unique<char[]>(MAX_BUFFER + 1));
 
@@ -523,7 +523,7 @@ void CClient::DividePacketsAndProcessThePacket(const char* const BufOfPackets)
 	while (idxOfCur < strlen(BufOfPackets))
 	{
 		char sizeBuffer[5]; // [1234\0]
-		CopyMemory(sizeBuffer, &BufOfPackets[idxOfCur], 4); // ¾Õ 4ÀÚ¸® µ¥ÀÌÅÍ¸¸ sizeBuffer¿¡ º¹»çÇÕ´Ï´Ù.
+		CopyMemory(sizeBuffer, &BufOfPackets[idxOfCur], 4); // ì• 4ìë¦¬ ë°ì´í„°ë§Œ sizeBufferì— ë³µì‚¬í•©ë‹ˆë‹¤.
 		sizeBuffer[4] = '\0';
 
 		stringstream sizeStream;
@@ -531,18 +531,18 @@ void CClient::DividePacketsAndProcessThePacket(const char* const BufOfPackets)
 		uint16_t sizeOfPacket = 0;
 		sizeStream >> sizeOfPacket;
 
-		// ÆĞÅ¶ÀÇ ÀüÃ¼Å©±â°¡ 0ÀÌ°Å³ª ³¡ÀÌ ¾ø°Å³ª ³²Àº ¹öÆÛ Å©±âº¸´Ù Å¬ °æ¿ì ¿À·ù°¡ ¹ß»ıÇÑ °ÍÀÌ¹Ç·Î ÆĞÅ¶ Ã³¸®¸¦ Áß´ÜÇÕ´Ï´Ù.
+		// íŒ¨í‚·ì˜ ì „ì²´í¬ê¸°ê°€ 0ì´ê±°ë‚˜ ëì´ ì—†ê±°ë‚˜ ë‚¨ì€ ë²„í¼ í¬ê¸°ë³´ë‹¤ í´ ê²½ìš° ì˜¤ë¥˜ê°€ ë°œìƒí•œ ê²ƒì´ë¯€ë¡œ íŒ¨í‚· ì²˜ë¦¬ë¥¼ ì¤‘ë‹¨í•©ë‹ˆë‹¤.
 		if (sizeOfPacket == 0 || BufOfPackets[sizeOfPacket - 1] != (char)3 || sizeOfPacket > strlen(&BufOfPackets[idxOfCur]))
 		{
 			CONSOLE_LOG("\n\n\n\n\n[Error] <CClient::IOThread()> sizeOfPacket: %d \n\n\n\n\n\n", (int)sizeOfPacket);
 			break;;
 		}
 
-		// ÆĞÅ¶À» ÀÚ¸£¸é¼­ ÀÓ½Ã ¹öÆÛ¿¡ º¹»çÇÕ´Ï´Ù.(º¹»çÇÒ ¶§ ÆĞÅ¶ÀÇ ³¡Àº Á¦°ÅÇÕ´Ï´Ù.)
+		// íŒ¨í‚·ì„ ìë¥´ë©´ì„œ ì„ì‹œ ë²„í¼ì— ë³µì‚¬í•©ë‹ˆë‹¤.(ë³µì‚¬í•  ë•Œ íŒ¨í‚·ì˜ ëì€ ì œê±°í•©ë‹ˆë‹¤.)
 		CopyMemory(bufOfPacket, &BufOfPackets[idxOfCur], sizeOfPacket - 1);
 		bufOfPacket[sizeOfPacket - 1] = '\0';
 
-		// ÆĞÅ¶À» Ã³¸®ÇÕ´Ï´Ù.
+		// íŒ¨í‚·ì„ ì²˜ë¦¬í•©ë‹ˆë‹¤.
 		ProcessThePacket(bufOfPacket);
 
 		idxOfCur += sizeOfPacket;
@@ -561,24 +561,24 @@ void CClient::ProcessThePacket(const char* const BufOfPacket)
 	stringstream recvStream;
 	recvStream << BufOfPacket;
 
-	// ÆĞÅ¶ÀÇ ÀüÃ¼Å©±â¸¦ È¹µæÇÕ´Ï´Ù.
+	// íŒ¨í‚·ì˜ ì „ì²´í¬ê¸°ë¥¼ íšë“í•©ë‹ˆë‹¤.
 	uint16_t sizeOfRecvStream = 0;
 	recvStream >> sizeOfRecvStream;
 	CONSOLE_LOG("\t sizeOfRecvStream: %d \n", (int)sizeOfRecvStream);
 
-	// ÀüÃ¼Å©±â ¿¹¿Ü¸¦ Ã³¸®ÇÕ´Ï´Ù.
+	// ì „ì²´í¬ê¸° ì˜ˆì™¸ë¥¼ ì²˜ë¦¬í•©ë‹ˆë‹¤.
 	if (sizeOfRecvStream == 0)
 	{
 		CONSOLE_LOG("[ERROR] <CClient::RegisterHeaderAndStaticFunc(...)> if (sizeOfRecvStream == 0) \n");
 		return;
 	}
 
-	// ÆĞÅ¶ÀÇ Çì´õ¸¦ È¹µæÇÕ´Ï´Ù.
+	// íŒ¨í‚·ì˜ í—¤ë”ë¥¼ íšë“í•©ë‹ˆë‹¤.
 	uint16_t header = -1;
 	recvStream >> header;
 	CONSOLE_LOG("\t packetHeader: %d \n", (int)header);
 
-	// Çì´õ ¹üÀ§ÀÇ ¿¹¿Ü¸¦ Ã³¸®ÇÕ´Ï´Ù.
+	// í—¤ë” ë²”ìœ„ì˜ ì˜ˆì™¸ë¥¼ ì²˜ë¦¬í•©ë‹ˆë‹¤.
 	if (header >= MAX_HEADER || header < 0)
 	{
 		CONSOLE_LOG("[ERROR] <CClient::RegisterHeaderAndStaticFunc(...)> if (header >= MAX_HEADER || header < 0) \n");
@@ -590,25 +590,25 @@ void CClient::ProcessThePacket(const char* const BufOfPacket)
 
 void CClient::SetSizeOfDataForSend(const uint32_t& IdxOfStart, uint32_t& IdxOfEnd, const uint16_t& MaxSizeOfData, const char* const C_StrOfData)
 {
-	// ¸ÕÀú IdxOfEnd¸¦ µ¥ÀÌÅÍÀÇ Å©±â·Î ¼³Á¤ÇÕ´Ï´Ù.
+	// ë¨¼ì € IdxOfEndë¥¼ ë°ì´í„°ì˜ í¬ê¸°ë¡œ ì„¤ì •í•©ë‹ˆë‹¤.
 	IdxOfEnd = (uint16_t)strlen(C_StrOfData);
 
-	// µ¥ÀÌÅÍ°¡ ÃÖ´ëÅ©±â¸¦ ÃÊ°úÇÏ¸é µ¥ÀÌÅÍ¸¦ ÀÚ¸£±â À§ÇØ IdxOfEnd¸¦ ÃÖ´ëÅ©±â ÀÌ³»·Î Á¶ÀıÇÕ´Ï´Ù.
+	// ë°ì´í„°ê°€ ìµœëŒ€í¬ê¸°ë¥¼ ì´ˆê³¼í•˜ë©´ ë°ì´í„°ë¥¼ ìë¥´ê¸° ìœ„í•´ IdxOfEndë¥¼ ìµœëŒ€í¬ê¸° ì´ë‚´ë¡œ ì¡°ì ˆí•©ë‹ˆë‹¤.
 	if ((IdxOfEnd - IdxOfStart) > MaxSizeOfData)
 	{
 		for (uint32_t cur = (IdxOfStart + MaxSizeOfData - 1); cur > IdxOfStart; cur--)
 		{
-			// µ¥ÀÌÅÍÀÇ ³¡À» '\n'À¸·Î Àß ¼³Á¤Çß´Ù¸é, Ã£Áö ¸øÇÏ´Â »óÈ²ÀÌ ¿Ã ¼ö ¾øÀ¸¹Ç·Î ¿À·ù°¡ ¹ß»ıÇÑ °ÍÀÌ±â ¶§¹®¿¡ ¼Û½ÅÇÏÁö ¾Ê°í Á¾·áÇÕ´Ï´Ù.
+			// ë°ì´í„°ì˜ ëì„ '\n'ìœ¼ë¡œ ì˜ ì„¤ì •í–ˆë‹¤ë©´, ì°¾ì§€ ëª»í•˜ëŠ” ìƒí™©ì´ ì˜¬ ìˆ˜ ì—†ìœ¼ë¯€ë¡œ ì˜¤ë¥˜ê°€ ë°œìƒí•œ ê²ƒì´ê¸° ë•Œë¬¸ì— ì†¡ì‹ í•˜ì§€ ì•Šê³  ì¢…ë£Œí•©ë‹ˆë‹¤.
 			if (cur <= IdxOfStart)
 			{
 				CONSOLE_LOG("\n\n\n\n\n[ERROR] <CClient::Send(...)> if (cur <= idxOfStart) \n\n\n\n\n\n");
 				return;
 			}
 
-			// Å½»öÇÏ´ø Áß µ¥ÀÌÅÍ ³¡À» ¹ß°ßÇÏ¸é
+			// íƒìƒ‰í•˜ë˜ ì¤‘ ë°ì´í„° ëì„ ë°œê²¬í•˜ë©´
 			if (C_StrOfData[cur] == '\n')
 			{
-				IdxOfEnd = cur + 1; // ³¡ ´ÙÀ½À» °¡¸®Å°µµ·Ï ÇÕ´Ï´Ù.
+				IdxOfEnd = cur + 1; // ë ë‹¤ìŒì„ ê°€ë¦¬í‚¤ë„ë¡ í•©ë‹ˆë‹¤.
 				return;
 			}
 		}
@@ -619,11 +619,11 @@ COverlappedMsg* CClient::GetOverlappedMsgForSend(const string& StrOfLengthAndHea
 {
 	COverlappedMsg* overlappedMsg = CExceptionHandler<COverlappedMsg>::MustDynamicAlloc();
 
-	CopyMemory(overlappedMsg->MessageBuffer, StrOfLengthAndHeader.c_str(), LenOfLengthAndHeader); // ÀüÃ¼Å©±â¿Í Çì´õ
-	CopyMemory(&overlappedMsg->MessageBuffer[LenOfLengthAndHeader], &C_StrOfData[IdxOfStart], sizeOfData); // µ¥ÀÌÅÍ
+	CopyMemory(overlappedMsg->MessageBuffer, StrOfLengthAndHeader.c_str(), LenOfLengthAndHeader); // ì „ì²´í¬ê¸°ì™€ í—¤ë”
+	CopyMemory(&overlappedMsg->MessageBuffer[LenOfLengthAndHeader], &C_StrOfData[IdxOfStart], sizeOfData); // ë°ì´í„°
 	stringstream endStream;
 	endStream << (char)3;
-	CopyMemory(&overlappedMsg->MessageBuffer[LenOfLengthAndHeader + sizeOfData], endStream.str().c_str(), 1); // ³¡
+	CopyMemory(&overlappedMsg->MessageBuffer[LenOfLengthAndHeader + sizeOfData], endStream.str().c_str(), 1); // ë
 	overlappedMsg->MessageBuffer[LenOfLengthAndHeader + sizeOfData + 1] = '\0';
 	overlappedMsg->DataBuf.len = (ULONG)(LenOfLengthAndHeader + sizeOfData + 1);
 	overlappedMsg->DataBuf.buf = overlappedMsg->MessageBuffer;

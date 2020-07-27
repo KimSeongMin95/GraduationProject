@@ -12,8 +12,22 @@
 
 #pragma once
 
+#define WIN32_LEAN_AND_MEAN
+
 //// 멀티바이트 집합 사용시 define
 //#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
+//////////////////////////////////////////////////////////////////
+//// 언리얼엔진도 Windows.h를 사용하기 때문에 naming 충돌을 피하기 위해
+//// AllowWindowsPlatformTypes.h과 prewindowsapi.h를 선언하고
+//// 윈도우즈 헤더들을 선언한 뒤에 PostWindowsApi.h와 HideWindowsPlatformTypes.h를 선언해야 됩니다.
+//////////////////////////////////////////////////////////////////
+//
+//// put this at the top of your .h file above #includes
+//// UE4: allow Windows platform types to avoid naming collisions
+//// must be undone at the bottom of this file!
+//#include "AllowWindowsPlatformTypes.h"
+//#include "prewindowsapi.h"
 
 // winsock2 사용을 위해 아래의 코멘트를 추가합니다.
 #pragma comment(lib, "ws2_32.lib")
@@ -29,6 +43,8 @@
 #include <process.h>
 #include <memory>
 
+#include <intrin.h> // For: Interlock
+
 #include <deque>
 #include <map>
 #include <unordered_map>
@@ -38,5 +54,11 @@
 #include <algorithm>
 
 #include <ctime>
+
+//// put this at the bottom of the .h file
+//// UE4: disallow windows platform types
+//// this was enabled at the top of the file
+//#include "PostWindowsApi.h"
+//#include "HideWindowsPlatformTypes.h"
 
 using namespace std;

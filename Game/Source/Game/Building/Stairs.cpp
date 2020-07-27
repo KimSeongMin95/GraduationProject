@@ -2,6 +2,8 @@
 
 #include "Stairs.h"
 
+#include "Network/NetworkComponent/Console.h"
+
 AStairs::AStairs()
 {
 	BuildingType = EBuildingType::Stairs;
