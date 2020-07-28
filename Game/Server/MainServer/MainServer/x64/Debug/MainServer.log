@@ -1,0 +1,11 @@
+﻿  main.cpp
+  MainServer.cpp
+  Client.cpp
+  CompletionKey.cpp
+  Console.cpp
+  NetworkComponent.cpp
+  NetworkInterface.cpp
+  OverlappedMsg.cpp
+  Packet.cpp
+  Server.cpp
+  MainServer.vcxproj -> C:\Github\GraduationProject\Game\Server\MainServer\x64\Debug\MainServer.exe

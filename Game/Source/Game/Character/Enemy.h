@@ -107,12 +107,12 @@ public:
 	////////////
 	// 네트워크
 	////////////
-	void SetInfoOfEnemy_Spawn(class cInfoOfEnemy_Spawn& Spawn);
-	class cInfoOfEnemy_Spawn GetInfoOfEnemy_Spawn();
-	void SetInfoOfEnemy_Animation(class cInfoOfEnemy_Animation& Animation);
-	class cInfoOfEnemy_Animation GetInfoOfEnemy_Animation();
-	void SetInfoOfEnemy_Stat(class cInfoOfEnemy_Stat& Stat);
-	class cInfoOfEnemy_Stat GetInfoOfEnemy_Stat();
-	void SetInfoOfEnemy(class cInfoOfEnemy& InfoOfEnemy);
-	class cInfoOfEnemy GetInfoOfEnemy();
+	void SetInfoOfEnemy_Spawn(class CInfoOfEnemy_Spawn& Spawn);
+	class CInfoOfEnemy_Spawn GetInfoOfEnemy_Spawn();
+	void SetInfoOfEnemy_Animation(class CInfoOfEnemy_Animation& Animation);
+	class CInfoOfEnemy_Animation GetInfoOfEnemy_Animation();
+	void SetInfoOfEnemy_Stat(class CInfoOfEnemy_Stat& Stat);
+	class CInfoOfEnemy_Stat GetInfoOfEnemy_Stat();
+	void SetInfoOfEnemy(class CInfoOfEnemy& InfoOfEnemy);
+	class CInfoOfEnemy GetInfoOfEnemy();
 };

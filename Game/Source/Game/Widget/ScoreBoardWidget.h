@@ -27,7 +27,7 @@ protected:
 		class UEditableTextBox* ServerDestroyed = nullptr;
 
 public:
-	std::vector<CScoreBoardWidget> vecInGameScoreBoardWidget;
+	std::vector<CScoreBoardWidget> veCInGameScoreBoardWidget;
 
 	int RevealableIndex;
 
@@ -35,7 +35,7 @@ public:
 public:
 	virtual bool InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport) final;
 
-	void RevealScores(queue<cInfoOfScoreBoard>& CopiedQueue);
+	void RevealScores(queue<CInfoOfScoreBoard>& CopiedQueue);
 	void Clear();
 
 	void SetServerDestroyedVisibility(bool bVisible);
@@ -159,7 +159,7 @@ public:
 		Num->SetText(FText::FromString(FString::FromInt(n)));
 	}
 
-	void SetText(cInfoOfScoreBoard& infoOfScoreBoard)
+	void SetText(CInfoOfScoreBoard& infoOfScoreBoard)
 	{
 		if (!Ping || !ID || !State || !Level || !Kill || !Death)
 		{

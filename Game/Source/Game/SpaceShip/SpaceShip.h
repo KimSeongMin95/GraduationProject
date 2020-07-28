@@ -184,6 +184,6 @@ public:
 	////////////
 	// 네트워크
 	////////////
-	void SetInfoOfSpaceShip(class cInfoOfSpaceShip& InfoOfSpaceShip);
-	class cInfoOfSpaceShip GetInfoOfSpaceShip();
+	void SetInfoOfSpaceShip(class CInfoOfSpaceShip& InfoOfSpaceShip);
+	class CInfoOfSpaceShip GetInfoOfSpaceShip();
 };

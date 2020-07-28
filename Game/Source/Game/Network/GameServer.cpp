@@ -20,37 +20,37 @@ CRITICAL_SECTION CGameServer::csPossessedID;
 unordered_map<SOCKET, CPlayerPacket> CGameServer::InfoOfClients;
 CRITICAL_SECTION CGameServer::csInfoOfClients;
 
-unordered_map<SOCKET, cInfoOfScoreBoard> CGameServer::InfosOfScoreBoard;
+unordered_map<SOCKET, CInfoOfScoreBoard> CGameServer::InfosOfScoreBoard;
 CRITICAL_SECTION CGameServer::csInfosOfScoreBoard;
 
 unordered_map<SOCKET, SOCKET> CGameServer::Observers;
 CRITICAL_SECTION CGameServer::csObservers;
 
-unordered_map<int, cInfoOfPioneer_Socket> CGameServer::InfosOfPioneer_Socket;
+unordered_map<int, CInfoOfPioneer_Socket> CGameServer::InfosOfPioneer_Socket;
 CRITICAL_SECTION CGameServer::csInfosOfPioneer_Socket;
-unordered_map<int, cInfoOfPioneer_Animation> CGameServer::InfosOfPioneer_Animation;
+unordered_map<int, CInfoOfPioneer_Animation> CGameServer::InfosOfPioneer_Animation;
 CRITICAL_SECTION CGameServer::csInfosOfPioneer_Animation;
-unordered_map<int, cInfoOfPioneer_Stat> CGameServer::InfosOfPioneer_Stat;
+unordered_map<int, CInfoOfPioneer_Stat> CGameServer::InfosOfPioneer_Stat;
 CRITICAL_SECTION CGameServer::csInfosOfPioneer_Stat;
 
-unordered_map<int, cInfoOfBuilding_Spawn> CGameServer::InfoOfBuilding_Spawn;
+unordered_map<int, CInfoOfBuilding_Spawn> CGameServer::InfoOfBuilding_Spawn;
 CRITICAL_SECTION CGameServer::csInfoOfBuilding_Spawn;
-unordered_map<int, cInfoOfBuilding_Stat> CGameServer::InfoOfBuilding_Stat;
+unordered_map<int, CInfoOfBuilding_Stat> CGameServer::InfoOfBuilding_Stat;
 CRITICAL_SECTION CGameServer::csInfoOfBuilding_Stat;
 
-unordered_map<int, cInfoOfEnemy_Spawn> CGameServer::InfoOfEnemies_Spawn;
+unordered_map<int, CInfoOfEnemy_Spawn> CGameServer::InfoOfEnemies_Spawn;
 CRITICAL_SECTION CGameServer::csInfoOfEnemies_Spawn;
-unordered_map<int, cInfoOfEnemy_Animation> CGameServer::InfoOfEnemies_Animation;
+unordered_map<int, CInfoOfEnemy_Animation> CGameServer::InfoOfEnemies_Animation;
 CRITICAL_SECTION CGameServer::csInfoOfEnemies_Animation;
-unordered_map<int, cInfoOfEnemy_Stat> CGameServer::InfoOfEnemies_Stat;
+unordered_map<int, CInfoOfEnemy_Stat> CGameServer::InfoOfEnemies_Stat;
 CRITICAL_SECTION CGameServer::csInfoOfEnemies_Stat;
 
 CThreadSafetyQueue<int> CGameServer::tsqDiedPioneer;
-CThreadSafetyQueue<cInfoOfPioneer_Animation> CGameServer::tsqInfoOfPioneer_Animation;
-CThreadSafetyQueue<cInfoOfPioneer_Socket> CGameServer::tsqInfoOfPioneer_Socket;
-CThreadSafetyQueue<cInfoOfPioneer_Stat> CGameServer::tsqInfoOfPioneer_Stat;
-CThreadSafetyQueue<cInfoOfProjectile> CGameServer::tsqInfoOfProjectile;
-CThreadSafetyQueue<cInfoOfBuilding_Spawn> CGameServer::tsqInfoOfBuilding_Spawn;
+CThreadSafetyQueue<CInfoOfPioneer_Animation> CGameServer::tsqInfoOfPioneer_Animation;
+CThreadSafetyQueue<CInfoOfPioneer_Socket> CGameServer::tsqInfoOfPioneer_Socket;
+CThreadSafetyQueue<CInfoOfPioneer_Stat> CGameServer::tsqInfoOfPioneer_Stat;
+CThreadSafetyQueue<CInfoOfProjectile> CGameServer::tsqInfoOfProjectile;
+CThreadSafetyQueue<CInfoOfBuilding_Spawn> CGameServer::tsqInfoOfBuilding_Spawn;
 
 CGameServer::CGameServer()
 {
@@ -138,7 +138,7 @@ bool CGameServer::Initialize()
 	InfoOfClients[SocketID] = playerPacket;
 	LeaveCriticalSection(&csInfoOfClients);
 
-	cInfoOfScoreBoard infoOfScoreBoard;
+	CInfoOfScoreBoard infoOfScoreBoard;
 	infoOfScoreBoard.ID = playerPacket.ID;
 
 	EnterCriticalSection(&csInfosOfScoreBoard);
@@ -315,7 +315,7 @@ void CGameServer::Connected(stringstream& RecvStream, const SOCKET& Socket /*= N
 	}
 
 	EnterCriticalSection(&csInfosOfScoreBoard);
-	InfosOfScoreBoard.emplace(Socket, cInfoOfScoreBoard());
+	InfosOfScoreBoard.emplace(Socket, CInfoOfScoreBoard());
 	LeaveCriticalSection(&csInfosOfScoreBoard);
 
 	/// 수신
@@ -359,9 +359,9 @@ void CGameServer::ScoreBoard(stringstream& RecvStream, const SOCKET& Socket /*= 
 	CONSOLE_LOG("[Recv by %d] <CGameServer::ScoreBoard(...)>\n", (int)Socket);
 
 	/// 수신
-	vector<cInfoOfScoreBoard> vec;
+	vector<CInfoOfScoreBoard> vec;
 
-	cInfoOfScoreBoard infoOfScoreBoard;
+	CInfoOfScoreBoard infoOfScoreBoard;
 	RecvStream >> infoOfScoreBoard;
 
 	EnterCriticalSection(&csInfosOfScoreBoard);
@@ -391,7 +391,7 @@ void CGameServer::ScoreBoard(stringstream& RecvStream, const SOCKET& Socket /*= 
 
 	CONSOLE_LOG("[Send to %d] <CGameServer::ScoreBoard(...)>\n\n", (int)Socket);
 }
-void CGameServer::SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip)
+void CGameServer::SendSpaceShip(CInfoOfSpaceShip InfoOfSpaceShip)
 {
 	CONSOLE_LOG("[Start] <CGameServer::SendSpaceShip()>\n");
 
@@ -412,7 +412,7 @@ void CGameServer::Observation(stringstream& RecvStream, const SOCKET& Socket /*=
 
 	CONSOLE_LOG("[End] <CGameServer::Observation(...)>\n\n");
 }
-void CGameServer::SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer)
+void CGameServer::SendSpawnPioneer(CInfoOfPioneer InfoOfPioneer)
 {
 	CONSOLE_LOG("[Start] <CGameServer::SendSpawnPioneer(...)>\n");
 
@@ -441,13 +441,13 @@ void CGameServer::SendSpawnedPioneer(SOCKET Socket)
 {
 	CONSOLE_LOG("[Start] <CGameServer::SendSpawnedPioneer(...)>\n");
 
-	map<int, cInfoOfPioneer> copiedMap;
+	map<int, CInfoOfPioneer> copiedMap;
 
 	// 소켓
 	EnterCriticalSection(&csInfosOfPioneer_Socket);
 	for (auto& kvp : InfosOfPioneer_Socket)
 	{
-		copiedMap[kvp.first] = cInfoOfPioneer();
+		copiedMap[kvp.first] = CInfoOfPioneer();
 		copiedMap.at(kvp.first).ID = kvp.first;
 		copiedMap.at(kvp.first).Socket = kvp.second;
 	}
@@ -563,7 +563,7 @@ void CGameServer::InfoOfPioneer_Animation(stringstream& RecvStream, const SOCKET
 	CONSOLE_LOG("[Recv by %d] <CGameServer::InfoOfPioneer_Animation(...)>\n", (int)Socket);
 
 	/// 수신
-	cInfoOfPioneer_Animation animation;
+	CInfoOfPioneer_Animation animation;
 	RecvStream >> animation; // 관전중인 게임클라이언트는 animation.ID == 0 입니다.
 
 	EnterCriticalSection(&csInfosOfPioneer_Animation);
@@ -596,7 +596,7 @@ void CGameServer::PossessPioneer(stringstream& RecvStream, const SOCKET& Socket 
 	CONSOLE_LOG("[Recv by %d] <CGameServer::PossessPioneer(...)>\n", (int)Socket);
 
 	/// 수신
-	cInfoOfPioneer_Socket socket;
+	CInfoOfPioneer_Socket socket;
 	RecvStream >> socket;
 
 	// SocketID만 게임서버에서 설정합니다.
@@ -605,7 +605,7 @@ void CGameServer::PossessPioneer(stringstream& RecvStream, const SOCKET& Socket 
 	EnterCriticalSection(&csInfosOfPioneer_Socket);
 	if (InfosOfPioneer_Socket.find(socket.ID) == InfosOfPioneer_Socket.end()) // 존재하지 않으면
 	{
-		socket = cInfoOfPioneer_Socket();
+		socket = CInfoOfPioneer_Socket();
 		CONSOLE_LOG("\t if (InfosOfPioneer_Socket.find(requestedID) == InfosOfPioneer_Socket.end()) \n");
 	}
 	else
@@ -631,7 +631,7 @@ void CGameServer::PossessPioneer(stringstream& RecvStream, const SOCKET& Socket 
 		}
 		else
 		{
-			socket = cInfoOfPioneer_Socket();
+			socket = CInfoOfPioneer_Socket();
 
 
 			CONSOLE_LOG("\t if (InfosOfPioneer_Socket.at(requestedID).SocketID != 0 || InfosOfPioneer_Socket.at(requestedID).bDying == true \n");
@@ -647,7 +647,7 @@ void CGameServer::PossessPioneer(stringstream& RecvStream, const SOCKET& Socket 
 
 	CONSOLE_LOG("[Send to %d] <CGameServer::PossessPioneer(...)>\n\n", (int)Socket);
 }
-bool CGameServer::PossessingPioneer(cInfoOfPioneer_Socket Socket)
+bool CGameServer::PossessingPioneer(CInfoOfPioneer_Socket Socket)
 {
 	CONSOLE_LOG("[Start] <CGameServer::PossessingPioneer(...)>\n\n");
 
@@ -711,7 +711,7 @@ void CGameServer::InfoOfPioneer_Stat(stringstream& RecvStream, const SOCKET& Soc
 	CONSOLE_LOG("[Recv by %d] <CGameServer::InfoOfPioneer_Stat(...)>\n", (int)Socket);
 
 	/// 수신
-	cInfoOfPioneer_Stat stat;
+	CInfoOfPioneer_Stat stat;
 	RecvStream >> stat; // 관전중인 게임클라이언트는 stat.ID == 0 입니다.
 
 	EnterCriticalSection(&csInfosOfPioneer_Stat);
@@ -739,7 +739,7 @@ void CGameServer::InfoOfPioneer_Stat(stringstream& RecvStream, const SOCKET& Soc
 
 	CONSOLE_LOG("[End] <CGameServer::InfoOfPioneer_Stat(...)>\n\n");
 }
-void CGameServer::SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile)
+void CGameServer::SendInfoOfProjectile(CInfoOfProjectile InfoOfProjectile)
 {
 	CONSOLE_LOG("[Start] <CGameServer::SendInfoOfProjectile(...)>\n");
 
@@ -754,7 +754,7 @@ void CGameServer::InfoOfProjectile(stringstream& RecvStream, const SOCKET& Socke
 {
 	CONSOLE_LOG("[Recv by %d] <CGameServer::InfoOfProjectile(...)>\n", (int)Socket);
 
-	cInfoOfProjectile infoOfProjectile;
+	CInfoOfProjectile infoOfProjectile;
 	RecvStream >> infoOfProjectile;
 	tsqInfoOfProjectile.push(infoOfProjectile);
 
@@ -765,7 +765,7 @@ void CGameServer::InfoOfProjectile(stringstream& RecvStream, const SOCKET& Socke
 
 	CONSOLE_LOG("[End] <CGameServer::InfoOfProjectile(...)>\n");
 }
-void CGameServer::SendInfoOfResources(cInfoOfResources InfoOfResources)
+void CGameServer::SendInfoOfResources(CInfoOfResources InfoOfResources)
 {
 	CONSOLE_LOG("[Start] <CGameServer::SendInfoOfResources(...)>\n");
 
@@ -776,7 +776,7 @@ void CGameServer::SendInfoOfResources(cInfoOfResources InfoOfResources)
 
 	CONSOLE_LOG("[End] <CGameServer::SendInfoOfResources(...)>\n");
 }
-void CGameServer::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn Spawn)
+void CGameServer::SendInfoOfBuilding_Spawn(CInfoOfBuilding_Spawn Spawn)
 {
 	CONSOLE_LOG("[Start] <CGameServer::SendInfoOfBuilding_Spawn(...)>\n");
 
@@ -785,7 +785,7 @@ void CGameServer::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn Spawn)
 	LeaveCriticalSection(&csInfoOfBuilding_Spawn);
 
 	EnterCriticalSection(&csInfoOfBuilding_Stat);
-	InfoOfBuilding_Stat[Spawn.ID] = cInfoOfBuilding_Stat();
+	InfoOfBuilding_Stat[Spawn.ID] = CInfoOfBuilding_Stat();
 	LeaveCriticalSection(&csInfoOfBuilding_Stat);
 
 	/// 송신
@@ -799,14 +799,14 @@ void CGameServer::SendInfoOfBuilding_Spawned(SOCKET Socket)
 {
 	CONSOLE_LOG("[Start] <CGameServer::SendInfoOfBuilding_Spawned(...)>\n");
 
-	map<int, cInfoOfBuilding> copiedMap;
+	map<int, CInfoOfBuilding> copiedMap;
 
 	EnterCriticalSection(&csInfoOfBuilding_Spawn);
 	EnterCriticalSection(&csInfoOfBuilding_Stat);
 	for (auto& kvp : InfoOfBuilding_Spawn)
 	{
 		// 생성
-		copiedMap[kvp.first] = cInfoOfBuilding();
+		copiedMap[kvp.first] = CInfoOfBuilding();
 		copiedMap.at(kvp.first).ID = kvp.first;
 		copiedMap.at(kvp.first).Spawn = kvp.second;
 
@@ -837,7 +837,7 @@ void CGameServer::RecvInfoOfBuilding_Spawn(stringstream& RecvStream, const SOCKE
 {
 	CONSOLE_LOG("[Recv by %d] <CGameServer::RecvInfoOfBuilding_Spawn(...)>\n", (int)Socket);
 
-	cInfoOfBuilding_Spawn infoOfBuilding_Spawn;
+	CInfoOfBuilding_Spawn infoOfBuilding_Spawn;
 
 	if (RecvStream >> infoOfBuilding_Spawn)
 	{
@@ -883,7 +883,7 @@ void CGameServer::SendDestroyBuilding(int IDOfBuilding)
 
 	CONSOLE_LOG("[End] <CGameServer::SendDestroyBuilding(...)>\n");
 }
-void CGameServer::SendSpawnEnemy(cInfoOfEnemy InfoOfEnemy)
+void CGameServer::SendSpawnEnemy(CInfoOfEnemy InfoOfEnemy)
 {
 	CONSOLE_LOG("[Start] <CGameServer::SendSpawnEnemy(...)>\n");
 
@@ -910,7 +910,7 @@ void CGameServer::SendSpawnedEnemy(SOCKET Socket)
 {
 	CONSOLE_LOG("[Start] <CGameServer::SendSpawnedEnemy(...)>\n");
 
-	map<int, cInfoOfEnemy> copiedMap;
+	map<int, CInfoOfEnemy> copiedMap;
 
 	EnterCriticalSection(&csInfoOfEnemies_Spawn);
 	EnterCriticalSection(&csInfoOfEnemies_Animation);
@@ -918,7 +918,7 @@ void CGameServer::SendSpawnedEnemy(SOCKET Socket)
 	for (auto& kvp : InfoOfEnemies_Spawn)
 	{
 		// 생성
-		copiedMap[kvp.first] = cInfoOfEnemy();
+		copiedMap[kvp.first] = CInfoOfEnemy();
 		copiedMap.at(kvp.first).ID = kvp.first;
 		copiedMap.at(kvp.first).Spawn = kvp.second;
 

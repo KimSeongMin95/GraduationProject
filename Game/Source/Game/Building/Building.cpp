@@ -659,7 +659,7 @@ void ABuilding::Destroying()
 	Destroy();
 }
 
-void ABuilding::SetInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn)
+void ABuilding::SetInfoOfBuilding_Spawn(class CInfoOfBuilding_Spawn& Spawn)
 {
 	ID = Spawn.ID;
 
@@ -672,9 +672,9 @@ void ABuilding::SetInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn)
 
 	IdxOfUnderWall = Spawn.IdxOfUnderWall;
 }
-class cInfoOfBuilding_Spawn ABuilding::GetInfoOfBuilding_Spawn()
+class CInfoOfBuilding_Spawn ABuilding::GetInfoOfBuilding_Spawn()
 {
-	cInfoOfBuilding_Spawn infoOfBuilding_Spawn;
+	CInfoOfBuilding_Spawn infoOfBuilding_Spawn;
 
 	infoOfBuilding_Spawn.ID = ID;
 	infoOfBuilding_Spawn.Numbering = (int)BuildingType;
@@ -685,7 +685,7 @@ class cInfoOfBuilding_Spawn ABuilding::GetInfoOfBuilding_Spawn()
 
 	return infoOfBuilding_Spawn;
 }
-void ABuilding::SetInfoOfBuilding_Stat(class cInfoOfBuilding_Stat& Stat)
+void ABuilding::SetInfoOfBuilding_Stat(class CInfoOfBuilding_Stat& Stat)
 {
 	EBuildingState newBuildingState = (EBuildingState)Stat.BuildingState;
 
@@ -697,9 +697,9 @@ void ABuilding::SetInfoOfBuilding_Stat(class cInfoOfBuilding_Stat& Stat)
 	HealthPoint = Stat.HealthPoint;
 	SetHealthPoint(NULL);
 }
-class cInfoOfBuilding_Stat ABuilding::GetInfoOfBuilding_Stat()
+class CInfoOfBuilding_Stat ABuilding::GetInfoOfBuilding_Stat()
 {
-	cInfoOfBuilding_Stat Stat;
+	CInfoOfBuilding_Stat Stat;
 
 	Stat.ID = ID;
 	Stat.BuildingState = (int)BuildingState;
@@ -707,14 +707,14 @@ class cInfoOfBuilding_Stat ABuilding::GetInfoOfBuilding_Stat()
 
 	return Stat;
 }
-void ABuilding::SetInfoOfBuilding(class cInfoOfBuilding& InfoOfBuilding)
+void ABuilding::SetInfoOfBuilding(class CInfoOfBuilding& InfoOfBuilding)
 {
 	SetInfoOfBuilding_Spawn(InfoOfBuilding.Spawn);
 	SetInfoOfBuilding_Stat(InfoOfBuilding.Stat);
 }
-class cInfoOfBuilding ABuilding::GetInfoOfBuilding()
+class CInfoOfBuilding ABuilding::GetInfoOfBuilding()
 {
-	cInfoOfBuilding infoOfBuilding(ID, GetInfoOfBuilding_Spawn(), GetInfoOfBuilding_Stat());
+	CInfoOfBuilding infoOfBuilding(ID, GetInfoOfBuilding_Spawn(), GetInfoOfBuilding_Stat());
 
 	return infoOfBuilding;
 }

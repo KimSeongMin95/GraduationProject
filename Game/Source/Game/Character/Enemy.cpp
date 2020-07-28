@@ -730,22 +730,22 @@ void AEnemy::Victory()
 ///////////
 // 네트워크
 ///////////
-void AEnemy::SetInfoOfEnemy_Spawn(class cInfoOfEnemy_Spawn& Spawn)
+void AEnemy::SetInfoOfEnemy_Spawn(CInfoOfEnemy_Spawn& Spawn)
 {
 	ID = Spawn.ID;
 
 	EnemyType = (EEnemyType)Spawn.EnemyType;
 }
-class cInfoOfEnemy_Spawn AEnemy::GetInfoOfEnemy_Spawn()
+CInfoOfEnemy_Spawn AEnemy::GetInfoOfEnemy_Spawn()
 {
-	cInfoOfEnemy_Spawn spawn;
+	CInfoOfEnemy_Spawn spawn;
 
 	spawn.ID = ID;
 	spawn.EnemyType = (int)EnemyType;
 
 	return spawn;
 }
-void AEnemy::SetInfoOfEnemy_Animation(class cInfoOfEnemy_Animation& Animation)
+void AEnemy::SetInfoOfEnemy_Animation(CInfoOfEnemy_Animation& Animation)
 {
 	SetActorTransform(Animation.GetActorTransform());
 
@@ -757,9 +757,9 @@ void AEnemy::SetInfoOfEnemy_Animation(class cInfoOfEnemy_Animation& Animation)
 
 	State = (EFiniteState)Animation.State;
 }
-class cInfoOfEnemy_Animation AEnemy::GetInfoOfEnemy_Animation()
+CInfoOfEnemy_Animation AEnemy::GetInfoOfEnemy_Animation()
 {
-	cInfoOfEnemy_Animation animation;
+	CInfoOfEnemy_Animation animation;
 
 	animation.ID = ID;
 	animation.SetActorTransform(GetActorTransform());
@@ -774,7 +774,7 @@ class cInfoOfEnemy_Animation AEnemy::GetInfoOfEnemy_Animation()
 
 	return animation;
 }
-void AEnemy::SetInfoOfEnemy_Stat(class cInfoOfEnemy_Stat& Stat)
+void AEnemy::SetInfoOfEnemy_Stat(CInfoOfEnemy_Stat& Stat)
 {
 	HealthPoint = Stat.HealthPoint;
 	SetHealthPoint(NULL);
@@ -786,9 +786,9 @@ void AEnemy::SetInfoOfEnemy_Stat(class cInfoOfEnemy_Stat& Stat)
 	DetectRange = Stat.DetectRange;
 	AttackRange = Stat.AttackRange;
 }
-class cInfoOfEnemy_Stat AEnemy::GetInfoOfEnemy_Stat()
+CInfoOfEnemy_Stat AEnemy::GetInfoOfEnemy_Stat()
 {
-	cInfoOfEnemy_Stat stat;
+	CInfoOfEnemy_Stat stat;
 
 	stat.ID = ID;
 	stat.HealthPoint = HealthPoint;
@@ -803,15 +803,15 @@ class cInfoOfEnemy_Stat AEnemy::GetInfoOfEnemy_Stat()
 	return stat;
 }
 
-void AEnemy::SetInfoOfEnemy(class cInfoOfEnemy& InfoOfEnemy)
+void AEnemy::SetInfoOfEnemy(CInfoOfEnemy& InfoOfEnemy)
 {
 	SetInfoOfEnemy_Spawn(InfoOfEnemy.Spawn);
 	SetInfoOfEnemy_Animation(InfoOfEnemy.Animation);
 	SetInfoOfEnemy_Stat(InfoOfEnemy.Stat);
 }
-class cInfoOfEnemy AEnemy::GetInfoOfEnemy()
+CInfoOfEnemy AEnemy::GetInfoOfEnemy()
 {
-	cInfoOfEnemy infoOfEnemy(ID, GetInfoOfEnemy_Spawn(), GetInfoOfEnemy_Animation(), GetInfoOfEnemy_Stat());
+	CInfoOfEnemy infoOfEnemy(ID, GetInfoOfEnemy_Spawn(), GetInfoOfEnemy_Animation(), GetInfoOfEnemy_Stat());
 
 	return infoOfEnemy;
 }

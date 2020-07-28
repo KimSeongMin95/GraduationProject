@@ -85,7 +85,7 @@ public:
 
 	int32 IdCurrentlyBeingObserved;
 
-	static class cInfoOfResources Resources; /** 자원량 */
+	static class CInfoOfResources Resources; /** 자원량 */
 
 	UPROPERTY(EditAnywhere, Category = "PioneerManager")
 		
@@ -106,7 +106,7 @@ public:
 	void SetInGameWidget(class UInGameWidget* pInGameWidget);
 
 	void SpawnPioneer(FTransform Transform);
-	void SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer);
+	void SpawnPioneerByRecv(class CInfoOfPioneer& InfoOfPioneer);
 
 	FORCEINLINE class AWorldViewCameraActor* GetFreeViewCamera() { return FreeViewCamera; }
 	FORCEINLINE class AWorldViewCameraActor* GetCameraOfCurrentPioneer() { return CameraOfCurrentPioneer; }
@@ -120,7 +120,7 @@ public:
 	void SwitchToFreeViewpoint();
 
 	void PossessObservingPioneer(); // 빙의 (서버, 클라이언트, 싱글플레이)
-	void PossessObservingPioneerByRecv(const class cInfoOfPioneer_Socket& Socket); // 서버로부터 빙의 허가를 받습니다.
+	void PossessObservingPioneerByRecv(const class CInfoOfPioneer_Socket& Socket); // 서버로부터 빙의 허가를 받습니다.
 	UFUNCTION()
 		void SetTimerForPossessPioneer(class APioneer* Pioneer);
 	FTimerHandle TimerOfPossessPioneer;

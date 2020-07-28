@@ -29,29 +29,29 @@ private:
 	static CRITICAL_SECTION csPing;
 
 public:
-	static cInfoOfScoreBoard MyInfoOfScoreBoard;
+	static CInfoOfScoreBoard MyInfoOfScoreBoard;
 	static CRITICAL_SECTION csMyInfoOfScoreBoard;
 
 	static int PossessedID;
 	static CRITICAL_SECTION csPossessedID;
 
-	static CThreadSafetyQueue<cInfoOfScoreBoard> tsqScoreBoard;
-	static CThreadSafetyQueue<cInfoOfSpaceShip> tsqSpaceShip;
-	static CThreadSafetyQueue<cInfoOfPioneer> tsqSpawnPioneer;
+	static CThreadSafetyQueue<CInfoOfScoreBoard> tsqScoreBoard;
+	static CThreadSafetyQueue<CInfoOfSpaceShip> tsqSpaceShip;
+	static CThreadSafetyQueue<CInfoOfPioneer> tsqSpawnPioneer;
 	static CThreadSafetyQueue<int> tsqDiedPioneer;
-	static CThreadSafetyQueue<cInfoOfPioneer_Animation> tsqInfoOfPioneer_Animation;
-	static CThreadSafetyQueue<cInfoOfPioneer_Socket> tsqPossessPioneer;
-	static CThreadSafetyQueue<cInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
-	static CThreadSafetyQueue<cInfoOfPioneer_Stat> tsqInfoOfPioneer_Stat;
-	static CThreadSafetyQueue<cInfoOfProjectile> tsqInfoOfProjectile;
-	static CThreadSafetyQueue<cInfoOfResources> tsqInfoOfResources;
-	static CThreadSafetyQueue<cInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
-	static CThreadSafetyQueue<cInfoOfBuilding> tsqInfoOfBuilding;
-	static CThreadSafetyQueue<cInfoOfBuilding_Stat> tsqInfoOfBuilding_Stat;
+	static CThreadSafetyQueue<CInfoOfPioneer_Animation> tsqInfoOfPioneer_Animation;
+	static CThreadSafetyQueue<CInfoOfPioneer_Socket> tsqPossessPioneer;
+	static CThreadSafetyQueue<CInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
+	static CThreadSafetyQueue<CInfoOfPioneer_Stat> tsqInfoOfPioneer_Stat;
+	static CThreadSafetyQueue<CInfoOfProjectile> tsqInfoOfProjectile;
+	static CThreadSafetyQueue<CInfoOfResources> tsqInfoOfResources;
+	static CThreadSafetyQueue<CInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
+	static CThreadSafetyQueue<CInfoOfBuilding> tsqInfoOfBuilding;
+	static CThreadSafetyQueue<CInfoOfBuilding_Stat> tsqInfoOfBuilding_Stat;
 	static CThreadSafetyQueue<int> tsqDestroyBuilding;
-	static CThreadSafetyQueue<cInfoOfEnemy> tsqSpawnEnemy;
-	static CThreadSafetyQueue<cInfoOfEnemy_Animation> tsqInfoOfEnemy_Animation;
-	static CThreadSafetyQueue<cInfoOfEnemy_Stat> tsqInfoOfEnemy_Stat;
+	static CThreadSafetyQueue<CInfoOfEnemy> tsqSpawnEnemy;
+	static CThreadSafetyQueue<CInfoOfEnemy_Animation> tsqInfoOfEnemy_Animation;
+	static CThreadSafetyQueue<CInfoOfEnemy_Stat> tsqInfoOfEnemy_Stat;
 	static CThreadSafetyQueue<int> tsqDestroyEnemy;
 	static CThreadSafetyQueue<int> tsqExp;
 
@@ -77,15 +77,15 @@ public:
 	static void RecvDiedPioneer(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendInfoOfPioneer_Animation(class APioneer* PioneerOfPlayer);
 	static void RecvInfoOfPioneer_Animation(stringstream& RecvStream, const SOCKET& Socket = NULL);
-	static void SendPossessPioneer(cInfoOfPioneer_Socket Socket);
+	static void SendPossessPioneer(CInfoOfPioneer_Socket Socket);
 	static void RecvPossessPioneer(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void RecvInfoOfPioneer_Socket(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendInfoOfPioneer_Stat(class APioneer* PioneerOfPlayer);
 	static void RecvInfoOfPioneer_Stat(stringstream& RecvStream, const SOCKET& Socket = NULL);
-	static void SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile);
+	static void SendInfoOfProjectile(CInfoOfProjectile InfoOfProjectile);
 	static void RecvInfoOfProjectile(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void RecvInfoOfResources(stringstream& RecvStream, const SOCKET& Socket = NULL);
-	static void SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn);
+	static void SendInfoOfBuilding_Spawn(CInfoOfBuilding_Spawn InfoOfBuilding_Spawn);
 	static void RecvInfoOfBuilding_Spawn(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void RecvInfoOfBuilding_Spawned(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendInfoOfBuilding_Stat();

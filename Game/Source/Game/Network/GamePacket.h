@@ -6,7 +6,7 @@
 
 #include "CoreMinimal.h"
 
-class GAME_API cInfoOfScoreBoard
+class GAME_API CInfoOfScoreBoard
 {
 public:
 	int Ping;
@@ -17,7 +17,7 @@ public:
 	int Death;
 
 public:
-	cInfoOfScoreBoard()
+	CInfoOfScoreBoard()
 	{
 		Ping = 0;
 		ID = "NULL";
@@ -26,13 +26,13 @@ public:
 		Kill = 0;
 		Death = 0;
 	}
-	~cInfoOfScoreBoard()
+	~CInfoOfScoreBoard()
 	{
 
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfScoreBoard& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfScoreBoard& Info)
 	{
 		Stream << Info.Ping << ' ';
 		Stream << CPacket::ReplaceCharInString(Info.ID, ' ', '_') << ' ';
@@ -45,7 +45,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfScoreBoard& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfScoreBoard& Info)
 	{
 		Stream >> Info.Ping;
 		Stream >> Info.ID;
@@ -61,11 +61,11 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfScoreBoard> Ping: %d, ID: %s, State: %s, Level: %d, Kill: %d, Death: %d \n", TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), Ping, ID.c_str(), State.c_str(), Level, Kill, Death);
+		CONSOLE_LOG("%s%s<CInfoOfScoreBoard> Ping: %d, ID: %s, State: %s, Level: %d, Kill: %d, Death: %d \n", TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), Ping, ID.c_str(), State.c_str(), Level, Kill, Death);
 	}
 
 	// For Sort()
-	bool operator<(cInfoOfScoreBoard& other) const
+	bool operator<(CInfoOfScoreBoard& other) const
 	{
 		if (this->Kill == other.Kill)
 			return this->Level > other.Level;
@@ -75,7 +75,7 @@ public:
 };
 
 
-class GAME_API cInfoOfSpaceShip
+class GAME_API CInfoOfSpaceShip
 {
 public:
 	int State;
@@ -91,7 +91,7 @@ public:
 	bool bEngine;
 
 public:
-	cInfoOfSpaceShip()
+	CInfoOfSpaceShip()
 	{
 		State = 0;
 
@@ -105,12 +105,12 @@ public:
 		AccelerationZ = 980.0f;
 		bEngine = false;
 	}
-	~cInfoOfSpaceShip()
+	~CInfoOfSpaceShip()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfSpaceShip& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfSpaceShip& Info)
 	{
 		Stream << Info.State << ' ';
 		Stream << Info.LocX << ' ';
@@ -126,7 +126,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfSpaceShip& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfSpaceShip& Info)
 	{
 		Stream >> Info.State;
 		Stream >> Info.LocX;
@@ -144,7 +144,7 @@ public:
 	
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfSpaceShip> State: %d, LocX: %f, LocY: %f, LocZ: %f, bHiddenInGame: %s, bSimulatePhysics: %s, ScaleOfEngineParticleSystem: %f, AccelerationZ: %f, bEngine: %s \n",
+		CONSOLE_LOG("%s%s<CInfoOfSpaceShip> State: %d, LocX: %f, LocY: %f, LocZ: %f, bHiddenInGame: %s, bSimulatePhysics: %s, ScaleOfEngineParticleSystem: %f, AccelerationZ: %f, bEngine: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), State, LocX, LocY, LocZ, (bHiddenInGame == true) ? "true" : "false", (bSimulatePhysics == true) ? "true" : "false", ScaleOfEngineParticleSystem, AccelerationZ, (bEngine == true) ? "true" : "false");
 	}
 
@@ -165,7 +165,7 @@ public:
 };
 
 
-class GAME_API cInfoOfPioneer_Socket
+class GAME_API CInfoOfPioneer_Socket
 {
 public:
 	int ID;
@@ -174,19 +174,19 @@ public:
 	string NameOfID;
 
 public:
-	cInfoOfPioneer_Socket()
+	CInfoOfPioneer_Socket()
 	{
 		ID = 0;
 
 		SocketID = 0;
 		NameOfID = "AI";
 	}
-	~cInfoOfPioneer_Socket()
+	~CInfoOfPioneer_Socket()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer_Socket& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfPioneer_Socket& Info)
 	{
 		Stream << Info.ID << ' ';
 
@@ -198,7 +198,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfPioneer_Socket& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfPioneer_Socket& Info)
 	{
 		Stream >> Info.ID;
 
@@ -211,12 +211,12 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfPioneer_Socket> ID: %d, SocketID : %d, NameOfID: %s \n",
+		CONSOLE_LOG("%s%s<CInfoOfPioneer_Socket> ID: %d, SocketID : %d, NameOfID: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, SocketID, NameOfID.c_str());
 	}
 };
 
-class GAME_API cInfoOfPioneer_Animation
+class GAME_API CInfoOfPioneer_Animation
 {
 public:
 	int ID;
@@ -257,7 +257,7 @@ public:
 
 
 public:
-	cInfoOfPioneer_Animation()
+	CInfoOfPioneer_Animation()
 	{
 		ID = 0;
 
@@ -293,12 +293,12 @@ public:
 
 		bArmedWeapon = false;
 	}
-	~cInfoOfPioneer_Animation()
+	~CInfoOfPioneer_Animation()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer_Animation& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfPioneer_Animation& Info)
 	{
 		Stream << Info.ID << ' ';
 
@@ -330,7 +330,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfPioneer_Animation& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfPioneer_Animation& Info)
 	{
 		Stream >> Info.ID;
 
@@ -363,11 +363,11 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfPioneer_Animation> ID: %d, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
+		CONSOLE_LOG("%s%s<CInfoOfPioneer_Animation> ID: %d, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
-		CONSOLE_LOG("%s%s<cInfoOfPioneer_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, bHasPistolType: %s, bHasRifleType : %s, bHasLauncherType: %s, bFired: %s, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f  \n",
+		CONSOLE_LOG("%s%s<CInfoOfPioneer_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, bHasPistolType: %s, bHasRifleType : %s, bHasLauncherType: %s, bFired: %s, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f  \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), VelocityX, VelocityY, VelocityZ, (bHasPistolType == true) ? "true" : "false", (bHasRifleType == true) ? "true" : "false", (bHasLauncherType == true) ? "true" : "false", (bFired == true) ? "true" : "false", BoneSpineRotX, BoneSpineRotY, BoneSpineRotZ);
-		CONSOLE_LOG("%s%s<cInfoOfPioneer_Animation> IdxOfCurrentWeapon: %d, bArmedWeapon: %s \n",
+		CONSOLE_LOG("%s%s<CInfoOfPioneer_Animation> IdxOfCurrentWeapon: %d, bArmedWeapon: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), IdxOfCurrentWeapon, (bArmedWeapon == true) ? "true" : "false");
 	}
 
@@ -393,7 +393,7 @@ public:
 	}
 };
 
-class GAME_API cInfoOfPioneer_Stat
+class GAME_API CInfoOfPioneer_Stat
 {
 public:
 	int ID;
@@ -415,7 +415,7 @@ public:
 
 
 public:
-	cInfoOfPioneer_Stat()
+	CInfoOfPioneer_Stat()
 	{
 		ID = 0;
 
@@ -434,12 +434,12 @@ public:
 		Exp = 0.0f;
 		Level = 1;
 	}
-	~cInfoOfPioneer_Stat()
+	~CInfoOfPioneer_Stat()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer_Stat& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfPioneer_Stat& Info)
 	{
 		Stream << Info.ID << ' ';
 
@@ -459,7 +459,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfPioneer_Stat& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfPioneer_Stat& Info)
 	{
 		Stream >> Info.ID;
 
@@ -480,39 +480,39 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfPioneer_Stat> ID: %d, HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f, Exp: %f, Level: %d \n",
+		CONSOLE_LOG("%s%s<CInfoOfPioneer_Stat> ID: %d, HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f, Exp: %f, Level: %d \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, HealthPoint, MaxHealthPoint, MoveSpeed, AttackSpeed, AttackPower, SightRange, DetectRange, AttackRange, Exp, Level);
 	}
 
 };
 
 // 전부 합친거
-class GAME_API cInfoOfPioneer
+class GAME_API CInfoOfPioneer
 {
 public:
 	int ID;
 
-	cInfoOfPioneer_Socket Socket;
-	cInfoOfPioneer_Animation Animation;
-	cInfoOfPioneer_Stat Stat;
+	CInfoOfPioneer_Socket Socket;
+	CInfoOfPioneer_Animation Animation;
+	CInfoOfPioneer_Stat Stat;
 
 public:
-	cInfoOfPioneer()
+	CInfoOfPioneer()
 	{
 		ID = 0;
 
 
 	}
-	cInfoOfPioneer(int ID, cInfoOfPioneer_Socket Socket, cInfoOfPioneer_Animation Animation, cInfoOfPioneer_Stat Stat)
+	CInfoOfPioneer(int ID, CInfoOfPioneer_Socket Socket, CInfoOfPioneer_Animation Animation, CInfoOfPioneer_Stat Stat)
 		: ID(ID), Socket(Socket), Animation(Animation), Stat(Stat)
 	{
 	}
-	~cInfoOfPioneer()
+	~CInfoOfPioneer()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfPioneer& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfPioneer& Info)
 	{
 		Stream << Info.ID << ' ';
 
@@ -524,7 +524,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfPioneer& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfPioneer& Info)
 	{
 		Stream >> Info.ID;
 
@@ -543,7 +543,7 @@ public:
 	}
 };
 
-class GAME_API cInfoOfProjectile
+class GAME_API CInfoOfProjectile
 {
 public:
 	int ID; // Pioneer::ID;
@@ -563,7 +563,7 @@ public:
 	float LocZ;
 
 public:
-	cInfoOfProjectile()
+	CInfoOfProjectile()
 	{
 		ID = 0;
 
@@ -581,12 +581,12 @@ public:
 		LocY = 0.0f;
 		LocZ = 0.0f;
 	}
-	~cInfoOfProjectile()
+	~CInfoOfProjectile()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfProjectile& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfProjectile& Info)
 	{
 		Stream << Info.ID << ' ';
 
@@ -608,7 +608,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfProjectile& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfProjectile& Info)
 	{
 		Stream >> Info.ID;
 
@@ -631,9 +631,9 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfProjectile> ID: %d, Numbering : %d \n",
+		CONSOLE_LOG("%s%s<CInfoOfProjectile> ID: %d, Numbering : %d \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, Numbering);
-		CONSOLE_LOG("%s%s<cInfoOfProjectile> ScaleX: %f, ScaleY : %f, ScaleZ: %f, RotX: %f, RotY : %f, RotZ: %f, LocX: %f, LocY : %f, LocZ: %f \n",
+		CONSOLE_LOG("%s%s<CInfoOfProjectile> ScaleX: %f, ScaleY : %f, ScaleZ: %f, RotX: %f, RotY : %f, RotZ: %f, LocX: %f, LocY : %f, LocZ: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ScaleX, ScaleY, ScaleZ, RotX, RotY, RotZ, LocX, LocY, LocZ);
 	}
 
@@ -665,7 +665,7 @@ public:
 	}
 };
 
-class GAME_API cInfoOfResources
+class GAME_API CInfoOfResources
 {
 public:
 	float NumOfMineral;
@@ -673,18 +673,18 @@ public:
 	float NumOfEnergy;
 
 public:
-	cInfoOfResources()
+	CInfoOfResources()
 	{
 		NumOfMineral = 100.0f;
 		NumOfOrganic = 50.0f;
 		NumOfEnergy = 100.0f;
 	}
-	~cInfoOfResources()
+	~CInfoOfResources()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfResources& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfResources& Info)
 	{
 		Stream << Info.NumOfMineral << ' ';
 		Stream << Info.NumOfOrganic << ' ';
@@ -694,7 +694,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfResources& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfResources& Info)
 	{
 		Stream >> Info.NumOfMineral;
 		Stream >> Info.NumOfOrganic;
@@ -705,13 +705,13 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfResources> NumOfMineral: %f, NumOfOrganic: %f, NumOfEnergy: %f \n",
+		CONSOLE_LOG("%s%s<CInfoOfResources> NumOfMineral: %f, NumOfOrganic: %f, NumOfEnergy: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), NumOfMineral, NumOfOrganic, NumOfEnergy);
 	}
 };
 
 
-class GAME_API cInfoOfBuilding_Spawn
+class GAME_API CInfoOfBuilding_Spawn
 {
 public:
 	int ID; // BuildingManager::ID
@@ -738,7 +738,7 @@ public:
 	int IdxOfUnderWall;
 
 public:
-	cInfoOfBuilding_Spawn()
+	CInfoOfBuilding_Spawn()
 	{
 		ID = 0;
 
@@ -761,12 +761,12 @@ public:
 
 		IdxOfUnderWall = 0;
 	}
-	~cInfoOfBuilding_Spawn()
+	~CInfoOfBuilding_Spawn()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfBuilding_Spawn& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfBuilding_Spawn& Info)
 	{
 		Stream << Info.ID << ' ';
 
@@ -793,7 +793,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfBuilding_Spawn& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfBuilding_Spawn& Info)
 	{
 		Stream >> Info.ID;
 
@@ -821,9 +821,9 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfBuilding_Spawn> ID: %d, Numbering : %d, NeedMineral: %f, NeedOrganicMatter: %f \n",
+		CONSOLE_LOG("%s%s<CInfoOfBuilding_Spawn> ID: %d, Numbering : %d, NeedMineral: %f, NeedOrganicMatter: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, Numbering, NeedMineral, NeedOrganicMatter);
-		CONSOLE_LOG("%s%s<cInfoOfBuilding_Spawn> ScaleX: %f, ScaleY : %f, ScaleZ: %f, RotX: %f, RotY : %f, RotZ: %f, LocX: %f, LocY : %f, LocZ: %f \n",
+		CONSOLE_LOG("%s%s<CInfoOfBuilding_Spawn> ScaleX: %f, ScaleY : %f, ScaleZ: %f, RotX: %f, RotY : %f, RotZ: %f, LocX: %f, LocY : %f, LocZ: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ScaleX, ScaleY, ScaleZ, RotX, RotY, RotZ, LocX, LocY, LocZ);
 	}
 
@@ -856,7 +856,7 @@ public:
 };
 
 
-class GAME_API cInfoOfBuilding_Stat
+class GAME_API CInfoOfBuilding_Stat
 {
 public:
 	int ID; // BuildingManager::ID
@@ -864,18 +864,18 @@ public:
 	float HealthPoint;
 
 public:
-	cInfoOfBuilding_Stat()
+	CInfoOfBuilding_Stat()
 	{
 		ID = 0;
 		BuildingState = 1;
 		HealthPoint = 100.0f;
 	}
-	~cInfoOfBuilding_Stat()
+	~CInfoOfBuilding_Stat()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfBuilding_Stat& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfBuilding_Stat& Info)
 	{
 		Stream << Info.ID << ' ';
 		Stream << Info.BuildingState << ' ';
@@ -885,7 +885,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfBuilding_Stat& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfBuilding_Stat& Info)
 	{
 		Stream >> Info.ID;
 		Stream >> Info.BuildingState;
@@ -896,37 +896,37 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfBuilding_Stat> ID: %d, BuildingState : %d, HealthPoint: %f \n",
+		CONSOLE_LOG("%s%s<CInfoOfBuilding_Stat> ID: %d, BuildingState : %d, HealthPoint: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, BuildingState, HealthPoint);
 	}
 
 };
 
-class GAME_API cInfoOfBuilding
+class GAME_API CInfoOfBuilding
 {
 public:
 	int ID;
 
-	cInfoOfBuilding_Spawn Spawn;
-	cInfoOfBuilding_Stat Stat;
+	CInfoOfBuilding_Spawn Spawn;
+	CInfoOfBuilding_Stat Stat;
 
 public:
-	cInfoOfBuilding()
+	CInfoOfBuilding()
 	{
 		ID = 0;
 
 
 	}
-	cInfoOfBuilding(int ID, cInfoOfBuilding_Spawn Spawn, cInfoOfBuilding_Stat Stat)
+	CInfoOfBuilding(int ID, CInfoOfBuilding_Spawn Spawn, CInfoOfBuilding_Stat Stat)
 		: ID(ID), Spawn(Spawn), Stat(Stat)
 	{
 	}
-	~cInfoOfBuilding()
+	~CInfoOfBuilding()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfBuilding& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfBuilding& Info)
 	{
 		Stream << Info.ID << ' ';
 		Stream << Info.Spawn << ' ';
@@ -936,7 +936,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfBuilding& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfBuilding& Info)
 	{
 		Stream >> Info.ID;
 		Stream >> Info.Spawn;
@@ -954,24 +954,24 @@ public:
 };
 
 
-class GAME_API cInfoOfEnemy_Spawn
+class GAME_API CInfoOfEnemy_Spawn
 {
 public:
 	int ID;
 	int EnemyType;
 
 public:
-	cInfoOfEnemy_Spawn()
+	CInfoOfEnemy_Spawn()
 	{
 		ID = 0;
 		EnemyType = 0;
 	}
-	~cInfoOfEnemy_Spawn()
+	~CInfoOfEnemy_Spawn()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy_Spawn& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfEnemy_Spawn& Info)
 	{
 		Stream << Info.ID << ' ';
 		Stream << Info.EnemyType << ' ';
@@ -980,7 +980,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfEnemy_Spawn& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfEnemy_Spawn& Info)
 	{
 		Stream >> Info.ID;
 		Stream >> Info.EnemyType;
@@ -990,12 +990,12 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfEnemy_Spawn> ID: %d, EnemyType : %d \n",
+		CONSOLE_LOG("%s%s<CInfoOfEnemy_Spawn> ID: %d, EnemyType : %d \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, EnemyType);
 	}
 };
 
-class GAME_API cInfoOfEnemy_Animation
+class GAME_API CInfoOfEnemy_Animation
 {
 public:
 	int ID;
@@ -1021,7 +1021,7 @@ public:
 	int State;
 
 public:
-	cInfoOfEnemy_Animation()
+	CInfoOfEnemy_Animation()
 	{
 		ID = 0;
 
@@ -1043,12 +1043,12 @@ public:
 
 		State = 0;
 	}
-	~cInfoOfEnemy_Animation()
+	~CInfoOfEnemy_Animation()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy_Animation& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfEnemy_Animation& Info)
 	{
 		Stream << Info.ID << ' ';
 		Stream << Info.RotX << ' ';
@@ -1069,7 +1069,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfEnemy_Animation& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfEnemy_Animation& Info)
 	{
 		Stream >> Info.ID;
 		Stream >> Info.RotX;
@@ -1091,9 +1091,9 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfEnemy_Animation> ID: %d, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
+		CONSOLE_LOG("%s%s<CInfoOfEnemy_Animation> ID: %d, RotX: %f, RotY: %f, RotZ: %f, LocX: %f, LocY: %f, LocZ: %f, TargetRotX: %f, TargetRotY: %f, TargetRotZ: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, RotX, RotY, RotZ, LocX, LocY, LocZ, TargetRotX, TargetRotY, TargetRotZ);
-		CONSOLE_LOG("%s%s<cInfoOfEnemy_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, State: %d \n",
+		CONSOLE_LOG("%s%s<CInfoOfEnemy_Animation> VelocityX: %f, VelocityY: %f, VelocityZ: %f, State: %d \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), VelocityX, VelocityY, VelocityZ, State);
 	}
 
@@ -1119,7 +1119,7 @@ public:
 	}
 };
 
-class GAME_API cInfoOfEnemy_Stat
+class GAME_API CInfoOfEnemy_Stat
 {
 public:
 	int ID;
@@ -1137,7 +1137,7 @@ public:
 	float AttackRange;
 
 public:
-	cInfoOfEnemy_Stat()
+	CInfoOfEnemy_Stat()
 	{
 		ID = 0;
 
@@ -1153,12 +1153,12 @@ public:
 		DetectRange = 32.0f;
 		AttackRange = 4.0f;
 	}
-	~cInfoOfEnemy_Stat()
+	~CInfoOfEnemy_Stat()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy_Stat& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfEnemy_Stat& Info)
 	{
 		Stream << Info.ID << ' ';
 		Stream << Info.HealthPoint << ' ';
@@ -1174,7 +1174,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfEnemy_Stat& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfEnemy_Stat& Info)
 	{
 		Stream >> Info.ID;
 		Stream >> Info.HealthPoint;
@@ -1191,38 +1191,38 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfEnemy_Stat> ID: %d, HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f \n",
+		CONSOLE_LOG("%s%s<CInfoOfEnemy_Stat> ID: %d, HealthPoint: %f, MaxHealthPoint : %f, MoveSpeed: %f, AttackSpeed: %f, AttackPower: %f, SightRange: %f, DetectRange: %f, AttackRange: %f \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, HealthPoint, MaxHealthPoint, MoveSpeed, AttackSpeed, AttackPower, SightRange, DetectRange, AttackRange);
 	}
 
 };
 
-class GAME_API cInfoOfEnemy
+class GAME_API CInfoOfEnemy
 {
 public:
 	int ID;
 
-	cInfoOfEnemy_Spawn Spawn;
-	cInfoOfEnemy_Animation Animation;
-	cInfoOfEnemy_Stat Stat;
+	CInfoOfEnemy_Spawn Spawn;
+	CInfoOfEnemy_Animation Animation;
+	CInfoOfEnemy_Stat Stat;
 
 public:
-	cInfoOfEnemy()
+	CInfoOfEnemy()
 	{
 		ID = 0;
 
 
 	}
-	cInfoOfEnemy(int ID, cInfoOfEnemy_Spawn Spawn, cInfoOfEnemy_Animation Animation, cInfoOfEnemy_Stat Stat)
+	CInfoOfEnemy(int ID, CInfoOfEnemy_Spawn Spawn, CInfoOfEnemy_Animation Animation, CInfoOfEnemy_Stat Stat)
 		: ID(ID), Spawn(Spawn), Animation(Animation), Stat(Stat)
 	{
 	}
-	~cInfoOfEnemy()
+	~CInfoOfEnemy()
 	{
 	}
 
 	// Send
-	friend ostream& operator<<(ostream& Stream, cInfoOfEnemy& Info)
+	friend ostream& operator<<(ostream& Stream, CInfoOfEnemy& Info)
 	{
 		Stream << Info.ID << ' ';
 		Stream << Info.Spawn << ' ';
@@ -1233,7 +1233,7 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, cInfoOfEnemy& Info)
+	friend istream& operator>>(istream& Stream, CInfoOfEnemy& Info)
 	{
 		Stream >> Info.ID;
 		Stream >> Info.Spawn;

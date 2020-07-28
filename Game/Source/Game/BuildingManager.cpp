@@ -144,7 +144,7 @@ class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 	return building;
 }
 
-void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuilding_Spawn)
+void ABuildingManager::RecvSpawnBuilding(class CInfoOfBuilding_Spawn& InfoOfBuilding_Spawn)
 {
 	UWorld* const world = GetWorld();
 	if (!world)

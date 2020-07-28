@@ -33,7 +33,7 @@ public:
 public:
 	class ABuilding* SpawnBuilding(int Value);
 
-	void RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuilding_Spawn);
+	void RecvSpawnBuilding(class CInfoOfBuilding_Spawn& InfoOfBuilding_Spawn);
 
 	void AddInBuildings(class ABuilding* Building);
 };

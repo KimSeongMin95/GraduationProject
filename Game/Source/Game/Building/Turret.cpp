@@ -458,7 +458,7 @@ void ATurret::Fire()
 
 	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
-		cInfoOfProjectile infoOfProjectile;
+		CInfoOfProjectile infoOfProjectile;
 		infoOfProjectile.ID = 0;
 		infoOfProjectile.Numbering = numbering;
 		infoOfProjectile.SetActorTransform(myTrans);

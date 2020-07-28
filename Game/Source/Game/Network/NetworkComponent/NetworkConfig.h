@@ -6,7 +6,7 @@
 #define MAX_HEADER 256  // 헤더 종류 최대개수
 #define SPIN_COUNT 2048	// CriticalSection의 스핀락 카운트
 
-// 빌드 환경 설정
+// 빌드 환경 설정 (1로 설정하면 로그를 볼 수 있습니다.)
 #define BUILD_CONFIG_DEBUG 0
 #define BUILD_CONFIG_DEVELOPMENT 0
 #define BUILD_CONFIG_SHIPPING 0

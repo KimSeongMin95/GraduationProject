@@ -10,13 +10,6 @@
 #include "GameMode/InGameMode.h"
 #include "OnlineGameMode.generated.h"
 
-UENUM()
-enum class EOnlineGameState : uint8
-{
-	Disconnected,
-	Connected
-};
-
 UCLASS()
 class GAME_API AOnlineGameMode : public AInGameMode
 {
@@ -32,18 +25,11 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	EOnlineGameState OnlineGameState;
-
-protected:
-	virtual void TickOfSpaceShip(float DeltaTime) override;
-
-	void SpawnProjectile(class cInfoOfProjectile& InfoOfProjectile);
-
-	/////////////////////////////////////////////////
+	/////////////////////////
 	// 네트워크 통신 (Server)
-	/////////////////////////////////////////////////
+	/////////////////////////
 	UFUNCTION(Category = "AOnlineGameMode")
-		void TickOfServerSocketInGame(float DeltaTime);
+		void TickOfGameServer(float DeltaTime);
 
 	void GetScoreBoard(float DeltaTime); 
 	void SendInfoOfSpaceShip(float DeltaTime); 
@@ -60,11 +46,11 @@ protected:
 	void SetInfoOfEnemy_Animation(float DeltaTime);
 	void SetInfoOfEnemy_Stat(float DeltaTime);
 
-	/////////////////////////////////////////////////
+	/////////////////////////
 	// 네트워크 통신 (Client)
-	/////////////////////////////////////////////////
+	/////////////////////////
 	UFUNCTION(Category = "AOnlineGameMode")
-		void TickOfClientSocketInGame(float DeltaTime);
+		void TickOfGameClient(float DeltaTime);
 
 	void SendScoreBoard(float DeltaTime);
 	void RecvScoreBoard(float DeltaTime);
@@ -92,9 +78,12 @@ protected:
 	void RecvDestroyEnemy(float DeltaTime);
 	void RecvExp(float DeltaTime);
 
-	/////////////////////////////////////////////////
+	//////////////////////
 	// 승리/패배 조건 확인
-	/////////////////////////////////////////////////
+	//////////////////////
 	virtual void CheckVictoryCondition(float DeltaTime);
 	void CheckDefeatCondition(float DeltaTime);
+
+	// 투사체 생성
+	void SpawnProjectile(class CInfoOfProjectile& InfoOfProjectile);
 };

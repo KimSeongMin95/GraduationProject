@@ -11,11 +11,10 @@ AWeapon::AWeapon()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Empty WeaponMesh 생성후 RootComponent에 부착.
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
 	WeaponMesh->SetupAttachment(RootComponent);
 
-	// 발사될 Projectile의 Transform 값을 저장할 ArrowComponent 생성후 Mesh에 부착
+	// 발사될 Projectile의 Transform 값을 저장할 ArrowComponent를 생성하고 WeaponMesh에 부착합니다.
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>("Arrow");
 	ArrowComponent->SetupAttachment(WeaponMesh);
 }
@@ -105,7 +104,7 @@ void AWeapon::FireNetwork(int IDOfPioneer, const FTransform& Transform)
 {
 	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
-		cInfoOfProjectile infoOfProjectile;
+		CInfoOfProjectile infoOfProjectile;
 		infoOfProjectile.ID = IDOfPioneer;
 		infoOfProjectile.Numbering = WeaponNumbering;
 		infoOfProjectile.SetActorTransform(Transform);
@@ -117,7 +116,7 @@ void AWeapon::FireNetwork(int IDOfPioneer, const FTransform& Transform)
 
 	if (CGameClient::GetSingleton()->IsNetworkOn())
 	{
-		cInfoOfProjectile infoOfProjectile;
+		CInfoOfProjectile infoOfProjectile;
 		infoOfProjectile.ID = IDOfPioneer;
 		infoOfProjectile.Numbering = WeaponNumbering;
 		infoOfProjectile.SetActorTransform(Transform);

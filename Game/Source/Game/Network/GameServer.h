@@ -36,41 +36,41 @@ public:
 	static unordered_map<SOCKET, CPlayerPacket> InfoOfClients;
 	static CRITICAL_SECTION csInfoOfClients;
 
-	static unordered_map<SOCKET, cInfoOfScoreBoard> InfosOfScoreBoard;
+	static unordered_map<SOCKET, CInfoOfScoreBoard> InfosOfScoreBoard;
 	static CRITICAL_SECTION csInfosOfScoreBoard;
 
 	static unordered_map<SOCKET, SOCKET> Observers;
 	static CRITICAL_SECTION csObservers;
 
 	// Pioneer 
-	static unordered_map<int, cInfoOfPioneer_Socket> InfosOfPioneer_Socket;
+	static unordered_map<int, CInfoOfPioneer_Socket> InfosOfPioneer_Socket;
 	static CRITICAL_SECTION csInfosOfPioneer_Socket;
-	static unordered_map<int, cInfoOfPioneer_Animation> InfosOfPioneer_Animation;
+	static unordered_map<int, CInfoOfPioneer_Animation> InfosOfPioneer_Animation;
 	static CRITICAL_SECTION csInfosOfPioneer_Animation;
-	static unordered_map<int, cInfoOfPioneer_Stat> InfosOfPioneer_Stat;
+	static unordered_map<int, CInfoOfPioneer_Stat> InfosOfPioneer_Stat;
 	static CRITICAL_SECTION csInfosOfPioneer_Stat;
 
 	// Building
-	static unordered_map<int, cInfoOfBuilding_Spawn> InfoOfBuilding_Spawn;
+	static unordered_map<int, CInfoOfBuilding_Spawn> InfoOfBuilding_Spawn;
 	static CRITICAL_SECTION csInfoOfBuilding_Spawn;
-	static unordered_map<int, cInfoOfBuilding_Stat> InfoOfBuilding_Stat;
+	static unordered_map<int, CInfoOfBuilding_Stat> InfoOfBuilding_Stat;
 	static CRITICAL_SECTION csInfoOfBuilding_Stat;
 
 	// Enemy
-	static unordered_map<int, cInfoOfEnemy_Spawn> InfoOfEnemies_Spawn;
+	static unordered_map<int, CInfoOfEnemy_Spawn> InfoOfEnemies_Spawn;
 	static CRITICAL_SECTION csInfoOfEnemies_Spawn;
-	static unordered_map<int, cInfoOfEnemy_Animation> InfoOfEnemies_Animation;
+	static unordered_map<int, CInfoOfEnemy_Animation> InfoOfEnemies_Animation;
 	static CRITICAL_SECTION csInfoOfEnemies_Animation;
-	static unordered_map<int, cInfoOfEnemy_Stat> InfoOfEnemies_Stat;
+	static unordered_map<int, CInfoOfEnemy_Stat> InfoOfEnemies_Stat;
 	static CRITICAL_SECTION csInfoOfEnemies_Stat;
 
 	// 수신한 패킷을 적재하는 스레드에 안전한 큐입니다.
 	static CThreadSafetyQueue<int> tsqDiedPioneer;
-	static CThreadSafetyQueue<cInfoOfPioneer_Animation> tsqInfoOfPioneer_Animation;
-	static CThreadSafetyQueue<cInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
-	static CThreadSafetyQueue<cInfoOfPioneer_Stat> tsqInfoOfPioneer_Stat;
-	static CThreadSafetyQueue<cInfoOfProjectile> tsqInfoOfProjectile;
-	static CThreadSafetyQueue<cInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
+	static CThreadSafetyQueue<CInfoOfPioneer_Animation> tsqInfoOfPioneer_Animation;
+	static CThreadSafetyQueue<CInfoOfPioneer_Socket> tsqInfoOfPioneer_Socket;
+	static CThreadSafetyQueue<CInfoOfPioneer_Stat> tsqInfoOfPioneer_Stat;
+	static CThreadSafetyQueue<CInfoOfProjectile> tsqInfoOfProjectile;
+	static CThreadSafetyQueue<CInfoOfBuilding_Spawn> tsqInfoOfBuilding_Spawn;
 
 public:
 	static bool Initialize();
@@ -85,24 +85,24 @@ public:
 	///////////////////////////////////
 	static void Connected(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void ScoreBoard(stringstream& RecvStream, const SOCKET& Socket = NULL);
-	static void SendSpaceShip(cInfoOfSpaceShip InfoOfSpaceShip);
+	static void SendSpaceShip(CInfoOfSpaceShip InfoOfSpaceShip);
 	static void Observation(stringstream& RecvStream, const SOCKET& Socket = NULL);
-	static void SendSpawnPioneer(cInfoOfPioneer InfoOfPioneer);
+	static void SendSpawnPioneer(CInfoOfPioneer InfoOfPioneer);
 	static void SendSpawnedPioneer(SOCKET Socket);
 	static void DiedPioneer(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void InfoOfPioneer_Animation(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void PossessPioneer(stringstream& RecvStream, const SOCKET& Socket = NULL);
-	static bool PossessingPioneer(cInfoOfPioneer_Socket Socket);
+	static bool PossessingPioneer(CInfoOfPioneer_Socket Socket);
 	static void InfoOfPioneer_Stat(stringstream& RecvStream, const SOCKET& Socket = NULL);
-	static void SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile);
+	static void SendInfoOfProjectile(CInfoOfProjectile InfoOfProjectile);
 	static void InfoOfProjectile(stringstream& RecvStream, const SOCKET& Socket = NULL);
-	static void SendInfoOfResources(cInfoOfResources InfoOfResources);
-	static void SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn Spawn);
+	static void SendInfoOfResources(CInfoOfResources InfoOfResources);
+	static void SendInfoOfBuilding_Spawn(CInfoOfBuilding_Spawn Spawn);
 	static void SendInfoOfBuilding_Spawned(SOCKET Socket);
 	static void RecvInfoOfBuilding_Spawn(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendInfoOfBuilding_Stat(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendDestroyBuilding(int IDOfBuilding);
-	static void SendSpawnEnemy(cInfoOfEnemy InfoOfEnemy);
+	static void SendSpawnEnemy(CInfoOfEnemy InfoOfEnemy);
 	static void SendSpawnedEnemy(SOCKET Socket);
 	static void SendInfoOfEnemy_Animation(stringstream& RecvStream, const SOCKET& Socket = NULL);
 	static void SendInfoOfEnemy_Stat(stringstream& RecvStream, const SOCKET& Socket = NULL);

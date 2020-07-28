@@ -709,7 +709,7 @@ void ASpaceShip::SetInitLocation(FVector Location)
 ///////////
 // 네트워크
 ///////////
-void ASpaceShip::SetInfoOfSpaceShip(class cInfoOfSpaceShip& InfoOfSpaceShip)
+void ASpaceShip::SetInfoOfSpaceShip(class CInfoOfSpaceShip& InfoOfSpaceShip)
 {
 	// 다른 경우에만
 	ESpaceShipState newState = (ESpaceShipState)InfoOfSpaceShip.State;
@@ -775,9 +775,9 @@ void ASpaceShip::SetInfoOfSpaceShip(class cInfoOfSpaceShip& InfoOfSpaceShip)
 		OffEngines();
 	}
 }
-class cInfoOfSpaceShip ASpaceShip::GetInfoOfSpaceShip()
+class CInfoOfSpaceShip ASpaceShip::GetInfoOfSpaceShip()
 {
-	cInfoOfSpaceShip infoOfSpaceShip;
+	CInfoOfSpaceShip infoOfSpaceShip;
 	infoOfSpaceShip.SetInfo((int)State, GetActorLocation(), bHiddenInGame, bSimulatePhysics, ScaleOfEngineParticleSystem, AccelerationZ, bEngine);
 
 	return infoOfSpaceShip;

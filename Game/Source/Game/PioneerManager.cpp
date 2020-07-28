@@ -13,7 +13,7 @@
 #include "Weapon/Weapon.h"
 #include "BuildingManager.h"
 
-class cInfoOfResources APioneerManager::Resources;
+class CInfoOfResources APioneerManager::Resources;
 
 APioneerManager::APioneerManager()
 {
@@ -32,7 +32,7 @@ APioneerManager::APioneerManager()
 
 	IdCurrentlyBeingObserved = 0;
 
-	Resources = cInfoOfResources();
+	Resources = CInfoOfResources();
 
 	SceneCapture2D = nullptr;
 
@@ -116,7 +116,7 @@ void APioneerManager::FindPioneersInWorld()
 			// 이미 생성된 Pioneer를 게임서버에 알립니다.
 			if (CGameServer::GetSingleton()->IsNetworkOn())
 			{
-				cInfoOfPioneer infoOfPioneer = ActorItr->GetInfoOfPioneer();
+				CInfoOfPioneer infoOfPioneer = ActorItr->GetInfoOfPioneer();
 				CGameServer::GetSingleton()->SendSpawnPioneer(infoOfPioneer);
 			}
 
@@ -198,7 +198,7 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	// Pioneer 생성을 게임클라이언트들에게 알립니다.
 	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{
-		cInfoOfPioneer infoOfPioneer = pioneer->GetInfoOfPioneer();
+		CInfoOfPioneer infoOfPioneer = pioneer->GetInfoOfPioneer();
 		CGameServer::GetSingleton()->SendSpawnPioneer(infoOfPioneer);
 	}
 	
@@ -212,7 +212,7 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	pioneer->SetGenerateOverlapEventsOfCapsuleComp(true);
 }
 
-void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
+void APioneerManager::SpawnPioneerByRecv(class CInfoOfPioneer& InfoOfPioneer)
 {
 	// 이미 존재하면 생성하지 않고 값만 설정합니다.
 	if (Pioneers.Contains(InfoOfPioneer.ID))
@@ -510,7 +510,7 @@ void APioneerManager::PossessObservingPioneer()
 
 	ViewpointState = EViewpointState::WaitingPermission;
 
-	cInfoOfPioneer_Socket socket;
+	CInfoOfPioneer_Socket socket;
 	socket.ID = IdCurrentlyBeingObserved;
 	socket.NameOfID = CMainClient::GetSingleton()->CopyMyInfoOfPlayer().ID;
 
@@ -555,7 +555,7 @@ void APioneerManager::PossessObservingPioneer()
 	// 싱글플레이에선 바로 빙의
 	PossessObservingPioneerByRecv(socket);
 }
-void APioneerManager::PossessObservingPioneerByRecv(const class cInfoOfPioneer_Socket& Socket)
+void APioneerManager::PossessObservingPioneerByRecv(const CInfoOfPioneer_Socket& Socket)
 {
 	if (!PioneerController)
 	{
@@ -589,7 +589,7 @@ void APioneerManager::PossessObservingPioneerByRecv(const class cInfoOfPioneer_S
 
 		if (CGameClient::GetSingleton()->IsNetworkOn())
 		{
-			pioneer->SetInfoOfPioneer_Socket(const_cast<cInfoOfPioneer_Socket&>(Socket));
+			pioneer->SetInfoOfPioneer_Socket(const_cast<CInfoOfPioneer_Socket&>(Socket));
 		}
 		
 		PioneerOfPlayer = pioneer;

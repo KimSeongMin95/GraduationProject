@@ -54,11 +54,11 @@ protected:
 		class UStaticMeshComponent* HelmetMesh = nullptr;
 
 public:
-	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
 		int ID;
-	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
 		int SocketID;
-	UPROPERTY(EditAnywhere, Category = "PioneerManager")
+	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
 		FString NameOfID;
 
 	UPROPERTY(VisibleAnywhere, Category = "AnimInstance")
@@ -79,7 +79,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = Camera)
 		int CameraLagSpeed; /** 부드러운 카메라 전환 속도입니다. */
 
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 		TArray<class AWeapon*> Weapons; /** Weapon들을 관리할 TArray 입니다. */
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 		int IdxOfCurrentWeapon; /** 현재 무기의 인덱스를 저장합니다. */
@@ -88,10 +88,10 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Building")
 		bool bConstructingMode;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Level")
 		int Level;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 		FVector PositionOfBase;
 
 	UPROPERTY(VisibleAnywhere)
@@ -118,7 +118,7 @@ protected:
 	void InitEquipments();
 
 	UFUNCTION(Category = Camera)
-		void SetCameraBoomSettings(); /** Tick()에서 호출합니다. */
+		void SetCameraBoomSettings(); /** 카메라 설정을 변경합니다. */
 
 	UFUNCTION(Category = "Cursor")
 		void SetCursorToWorld(float DeltaTime); /** CursorToWorld의 월드좌표와 월드회전을 설정합니다. */
@@ -148,7 +148,7 @@ public:
 		void DestroyCharacter();
 
 	UFUNCTION(Category = "PioneerManager")
-		bool CopyTopDownCameraTo(AActor* CameraToBeCopied); 	/** PioneerManager의 CameraOfCurrentPioneer의 Transform을 TopDownCameraTo로 설정합니다. */
+		bool CopyTopDownCameraTo(AActor* CameraToBeCopied); /** PioneerManager의 CameraOfCurrentPioneer의 Transform을 TopDownCameraTo로 설정합니다. */
 
 	UFUNCTION(BlueprintCallable, Category = "AnimInstance")
 		bool HasPistolType();
@@ -184,7 +184,6 @@ public:
 
 	UFUNCTION(Category = "Level")
 		void CalculateLevel();
-
 	UFUNCTION(Category = "Level")
 		void StartTimerOfHealSelf();
 	UFUNCTION(Category = "Level")
@@ -193,15 +192,12 @@ public:
 	////////////
 	// 네트워크
 	////////////
-	void SetInfoOfPioneer_Socket(class cInfoOfPioneer_Socket& Socket);
-	class cInfoOfPioneer_Socket GetInfoOfPioneer_Socket();
-
-	void SetInfoOfPioneer_Animation(class cInfoOfPioneer_Animation& Animation);
-	class cInfoOfPioneer_Animation GetInfoOfPioneer_Animation();
-
-	void SetInfoOfPioneer_Stat(class cInfoOfPioneer_Stat& Stat);
-	class cInfoOfPioneer_Stat GetInfoOfPioneer_Stat();
-
-	void SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer);
-	class cInfoOfPioneer GetInfoOfPioneer();
+	void SetInfoOfPioneer_Socket(class CInfoOfPioneer_Socket& Socket);
+	class CInfoOfPioneer_Socket GetInfoOfPioneer_Socket();
+	void SetInfoOfPioneer_Animation(class CInfoOfPioneer_Animation& Animation);
+	class CInfoOfPioneer_Animation GetInfoOfPioneer_Animation();
+	void SetInfoOfPioneer_Stat(class CInfoOfPioneer_Stat& Stat);
+	class CInfoOfPioneer_Stat GetInfoOfPioneer_Stat();
+	void SetInfoOfPioneer(class CInfoOfPioneer& InfoOfPioneer);
+	class CInfoOfPioneer GetInfoOfPioneer();
 };

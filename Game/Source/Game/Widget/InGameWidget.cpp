@@ -174,7 +174,7 @@ void UInGameWidget::SetObservingButtonVisibility(bool bVisible)
 	}
 }
 
-void UInGameWidget::SetTextOfResources(int nPioneer, const class cInfoOfResources& Resources)
+void UInGameWidget::SetTextOfResources(int nPioneer, const CInfoOfResources& Resources)
 {
 	if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy)
 	{

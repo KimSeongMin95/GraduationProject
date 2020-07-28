@@ -9,12 +9,12 @@ UScoreBoardWidget::UScoreBoardWidget()
 
 	ScrollBox = nullptr;
 	ServerDestroyed = nullptr;
-	vecInGameScoreBoardWidget.clear();
+	veCInGameScoreBoardWidget.clear();
 	RevealableIndex = 0;
 }
 UScoreBoardWidget::~UScoreBoardWidget()
 {
-	vecInGameScoreBoardWidget.clear();
+	veCInGameScoreBoardWidget.clear();
 }
 
 bool UScoreBoardWidget::InitWidget(UWorld* const World, const FString ReferencePath, bool bAddToViewport)
@@ -33,12 +33,12 @@ bool UScoreBoardWidget::InitWidget(UWorld* const World, const FString ReferenceP
 	ServerDestroyed = WidgetTree->FindWidget<UEditableTextBox>(FName(TEXT("EditableTextBox_ServerDestroyed")));
 
 	for (int i = 0; i < 100; i++)
-		vecInGameScoreBoardWidget.emplace_back(CScoreBoardWidget(WidgetTree, ScrollBox, i + 1));
+		veCInGameScoreBoardWidget.emplace_back(CScoreBoardWidget(WidgetTree, ScrollBox, i + 1));
 
 	return true;
 }
 
-void UScoreBoardWidget::RevealScores(queue<cInfoOfScoreBoard>& CopiedQueue)
+void UScoreBoardWidget::RevealScores(queue<CInfoOfScoreBoard>& CopiedQueue)
 {
 	Clear();
 
@@ -46,8 +46,8 @@ void UScoreBoardWidget::RevealScores(queue<cInfoOfScoreBoard>& CopiedQueue)
 
 	while (CopiedQueue.empty() == false)
 	{
-		vecInGameScoreBoardWidget.at(idx).SetText(CopiedQueue.front());
-		vecInGameScoreBoardWidget.at(idx).SetVisible(true);
+		veCInGameScoreBoardWidget.at(idx).SetText(CopiedQueue.front());
+		veCInGameScoreBoardWidget.at(idx).SetVisible(true);
 		CopiedQueue.pop();
 		idx++;
 	}
@@ -55,7 +55,7 @@ void UScoreBoardWidget::RevealScores(queue<cInfoOfScoreBoard>& CopiedQueue)
 
 void UScoreBoardWidget::Clear()
 {
-	for (CScoreBoardWidget& element : vecInGameScoreBoardWidget)
+	for (CScoreBoardWidget& element : veCInGameScoreBoardWidget)
 	{
 		if (element.IsVisible())
 			element.SetVisible(false);

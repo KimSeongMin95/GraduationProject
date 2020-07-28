@@ -37,5 +37,5 @@ public:
 public:
 	class AEnemy* SpawnEnemy(int EnemyType, FTransform Transform);
 
-	void RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy);
+	void RecvSpawnEnemy(class CInfoOfEnemy& InfoOfEnemy);
 };

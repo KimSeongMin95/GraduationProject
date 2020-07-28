@@ -188,10 +188,10 @@ public:
 	////////////
 	// 네트워크
 	////////////
-	void SetInfoOfBuilding_Spawn(class cInfoOfBuilding_Spawn& Spawn);
-	class cInfoOfBuilding_Spawn GetInfoOfBuilding_Spawn();
-	void SetInfoOfBuilding_Stat(class cInfoOfBuilding_Stat& Stat);
-	class cInfoOfBuilding_Stat GetInfoOfBuilding_Stat();
-	void SetInfoOfBuilding(class cInfoOfBuilding& InfoOfBuilding);
-	class cInfoOfBuilding GetInfoOfBuilding();
+	void SetInfoOfBuilding_Spawn(class CInfoOfBuilding_Spawn& Spawn);
+	class CInfoOfBuilding_Spawn GetInfoOfBuilding_Spawn();
+	void SetInfoOfBuilding_Stat(class CInfoOfBuilding_Stat& Stat);
+	class CInfoOfBuilding_Stat GetInfoOfBuilding_Stat();
+	void SetInfoOfBuilding(class CInfoOfBuilding& InfoOfBuilding);
+	class CInfoOfBuilding GetInfoOfBuilding();
 };

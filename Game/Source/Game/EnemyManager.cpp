@@ -153,7 +153,7 @@ class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 	return enemy;
 }
 
-void AEnemyManager::RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy)
+void AEnemyManager::RecvSpawnEnemy(CInfoOfEnemy& InfoOfEnemy)
 {
 	UWorld* const world = GetWorld();
 	if (!world)

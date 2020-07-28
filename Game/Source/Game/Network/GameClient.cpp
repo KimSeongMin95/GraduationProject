@@ -12,29 +12,29 @@ FDateTime CGameClient::StartTime;
 int CGameClient::Ping;
 CRITICAL_SECTION CGameClient::csPing;
 
-cInfoOfScoreBoard CGameClient::MyInfoOfScoreBoard;
+CInfoOfScoreBoard CGameClient::MyInfoOfScoreBoard;
 CRITICAL_SECTION CGameClient::csMyInfoOfScoreBoard;
 
 int CGameClient::PossessedID;
 CRITICAL_SECTION CGameClient::csPossessedID;
 
-CThreadSafetyQueue<cInfoOfScoreBoard> CGameClient::tsqScoreBoard;
-CThreadSafetyQueue<cInfoOfSpaceShip> CGameClient::tsqSpaceShip;
-CThreadSafetyQueue<cInfoOfPioneer> CGameClient::tsqSpawnPioneer;
+CThreadSafetyQueue<CInfoOfScoreBoard> CGameClient::tsqScoreBoard;
+CThreadSafetyQueue<CInfoOfSpaceShip> CGameClient::tsqSpaceShip;
+CThreadSafetyQueue<CInfoOfPioneer> CGameClient::tsqSpawnPioneer;
 CThreadSafetyQueue<int> CGameClient::tsqDiedPioneer;
-CThreadSafetyQueue<cInfoOfPioneer_Animation> CGameClient::tsqInfoOfPioneer_Animation;
-CThreadSafetyQueue<cInfoOfPioneer_Socket> CGameClient::tsqPossessPioneer;
-CThreadSafetyQueue<cInfoOfPioneer_Socket> CGameClient::tsqInfoOfPioneer_Socket;
-CThreadSafetyQueue<cInfoOfPioneer_Stat> CGameClient::tsqInfoOfPioneer_Stat;
-CThreadSafetyQueue<cInfoOfProjectile> CGameClient::tsqInfoOfProjectile;
-CThreadSafetyQueue<cInfoOfResources> CGameClient::tsqInfoOfResources;
-CThreadSafetyQueue<cInfoOfBuilding_Spawn> CGameClient::tsqInfoOfBuilding_Spawn;
-CThreadSafetyQueue<cInfoOfBuilding> CGameClient::tsqInfoOfBuilding;
-CThreadSafetyQueue<cInfoOfBuilding_Stat> CGameClient::tsqInfoOfBuilding_Stat;
+CThreadSafetyQueue<CInfoOfPioneer_Animation> CGameClient::tsqInfoOfPioneer_Animation;
+CThreadSafetyQueue<CInfoOfPioneer_Socket> CGameClient::tsqPossessPioneer;
+CThreadSafetyQueue<CInfoOfPioneer_Socket> CGameClient::tsqInfoOfPioneer_Socket;
+CThreadSafetyQueue<CInfoOfPioneer_Stat> CGameClient::tsqInfoOfPioneer_Stat;
+CThreadSafetyQueue<CInfoOfProjectile> CGameClient::tsqInfoOfProjectile;
+CThreadSafetyQueue<CInfoOfResources> CGameClient::tsqInfoOfResources;
+CThreadSafetyQueue<CInfoOfBuilding_Spawn> CGameClient::tsqInfoOfBuilding_Spawn;
+CThreadSafetyQueue<CInfoOfBuilding> CGameClient::tsqInfoOfBuilding;
+CThreadSafetyQueue<CInfoOfBuilding_Stat> CGameClient::tsqInfoOfBuilding_Stat;
 CThreadSafetyQueue<int> CGameClient::tsqDestroyBuilding;
-CThreadSafetyQueue<cInfoOfEnemy> CGameClient::tsqSpawnEnemy;
-CThreadSafetyQueue<cInfoOfEnemy_Animation> CGameClient::tsqInfoOfEnemy_Animation;
-CThreadSafetyQueue<cInfoOfEnemy_Stat> CGameClient::tsqInfoOfEnemy_Stat;
+CThreadSafetyQueue<CInfoOfEnemy> CGameClient::tsqSpawnEnemy;
+CThreadSafetyQueue<CInfoOfEnemy_Animation> CGameClient::tsqInfoOfEnemy_Animation;
+CThreadSafetyQueue<CInfoOfEnemy_Stat> CGameClient::tsqInfoOfEnemy_Stat;
 CThreadSafetyQueue<int> CGameClient::tsqDestroyEnemy;
 CThreadSafetyQueue<int> CGameClient::tsqExp;
 
@@ -45,7 +45,7 @@ CGameClient::CGameClient()
 	StartTime = FDateTime::UtcNow();
 	Ping = 0;
 
-	MyInfoOfScoreBoard = cInfoOfScoreBoard();
+	MyInfoOfScoreBoard = CInfoOfScoreBoard();
 
 	PossessedID = 0;
 
@@ -154,7 +154,7 @@ void CGameClient::Close()
 	LeaveCriticalSection(&csPing);
 
 	EnterCriticalSection(&csMyInfoOfScoreBoard);
-	MyInfoOfScoreBoard = cInfoOfScoreBoard();
+	MyInfoOfScoreBoard = CInfoOfScoreBoard();
 	LeaveCriticalSection(&csMyInfoOfScoreBoard);
 
 	EnterCriticalSection(&csPossessedID);
@@ -236,7 +236,7 @@ void CGameClient::SendScoreBoard()
 	EnterCriticalSection(&csPing);
 	MyInfoOfScoreBoard.Ping = Ping;
 	LeaveCriticalSection(&csPing);
-	cInfoOfScoreBoard infoOfScoreBoard = MyInfoOfScoreBoard;
+	CInfoOfScoreBoard infoOfScoreBoard = MyInfoOfScoreBoard;
 	LeaveCriticalSection(&csMyInfoOfScoreBoard);
 
 	CPacket scoreboardPacket((uint16_t)EGamePacketHeader::SCORE_BOARD);
@@ -249,7 +249,7 @@ void CGameClient::RecvScoreBoard(stringstream& RecvStream, const SOCKET& Socket 
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvScoreBoard(...)>\n");
 
-	cInfoOfScoreBoard infoOfScoreBoard;
+	CInfoOfScoreBoard infoOfScoreBoard;
 
 	while (RecvStream >> infoOfScoreBoard)
 	{
@@ -262,7 +262,7 @@ void CGameClient::RecvSpaceShip(stringstream& RecvStream, const SOCKET& Socket /
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvSpaceShip(...)>\n");
 
-	cInfoOfSpaceShip infoOfSpaceShip;
+	CInfoOfSpaceShip infoOfSpaceShip;
 	RecvStream >> infoOfSpaceShip;
 	tsqSpaceShip.push(infoOfSpaceShip);
 
@@ -283,7 +283,7 @@ void CGameClient::RecvSpawnPioneer(stringstream& RecvStream, const SOCKET& Socke
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvSpawnPioneer(...)>\n");
 
-	cInfoOfPioneer infoOfPioneer;
+	CInfoOfPioneer infoOfPioneer;
 	RecvStream >> infoOfPioneer;
 	tsqSpawnPioneer.push(infoOfPioneer);
 	infoOfPioneer.PrintInfo();
@@ -322,7 +322,7 @@ void CGameClient::SendInfoOfPioneer_Animation(class APioneer* PioneerOfPlayer)
 {
 	CONSOLE_LOG("[Start] <CGameClient::SendInfoOfPioneer_Animation()>\n");
 
-	cInfoOfPioneer_Animation animtion;
+	CInfoOfPioneer_Animation animtion;
 	
 	if (PioneerOfPlayer)
 	{
@@ -339,7 +339,7 @@ void CGameClient::RecvInfoOfPioneer_Animation(stringstream& RecvStream, const SO
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvInfoOfPioneer_Animation(...)>\n");
 
-	cInfoOfPioneer_Animation animation;
+	CInfoOfPioneer_Animation animation;
 
 	while (RecvStream >> animation)
 	{
@@ -348,7 +348,7 @@ void CGameClient::RecvInfoOfPioneer_Animation(stringstream& RecvStream, const SO
 
 	CONSOLE_LOG("[End] <CGameClient::RecvInfoOfPioneer_Animation(...)>\n");
 }
-void CGameClient::SendPossessPioneer(cInfoOfPioneer_Socket Socket)
+void CGameClient::SendPossessPioneer(CInfoOfPioneer_Socket Socket)
 {
 	CONSOLE_LOG("[Start] <CGameClient::SendPossessPioneer()>\n");
 
@@ -364,7 +364,7 @@ void CGameClient::RecvPossessPioneer(stringstream& RecvStream, const SOCKET& Soc
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvPossessPioneer(...)>\n");
 
-	cInfoOfPioneer_Socket socket;
+	CInfoOfPioneer_Socket socket;
 	RecvStream >> socket;
 	tsqPossessPioneer.push(socket);
 	socket.PrintInfo();
@@ -386,7 +386,7 @@ void CGameClient::RecvInfoOfPioneer_Socket(stringstream& RecvStream, const SOCKE
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvInfoOfPioneer_Socket(...)>\n");
 
-	cInfoOfPioneer_Socket socket;
+	CInfoOfPioneer_Socket socket;
 	RecvStream >> socket;
 	tsqInfoOfPioneer_Socket.push(socket);
 	socket.PrintInfo();
@@ -397,7 +397,7 @@ void CGameClient::SendInfoOfPioneer_Stat(class APioneer* PioneerOfPlayer)
 {
 	CONSOLE_LOG("[Start] <CGameClient::SendInfoOfPioneer_Stat()>\n");
 
-	cInfoOfPioneer_Stat stat;
+	CInfoOfPioneer_Stat stat;
 
 	if (PioneerOfPlayer)
 	{
@@ -414,7 +414,7 @@ void CGameClient::RecvInfoOfPioneer_Stat(stringstream& RecvStream, const SOCKET&
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvInfoOfPioneer_Stat(...)>\n");
 
-	cInfoOfPioneer_Stat stat;
+	CInfoOfPioneer_Stat stat;
 
 	while (RecvStream >> stat)
 	{
@@ -423,7 +423,7 @@ void CGameClient::RecvInfoOfPioneer_Stat(stringstream& RecvStream, const SOCKET&
 
 	CONSOLE_LOG("[End] <CGameClient::RecvInfoOfPioneer_Stat(...)>\n");
 }
-void CGameClient::SendInfoOfProjectile(cInfoOfProjectile InfoOfProjectile)
+void CGameClient::SendInfoOfProjectile(CInfoOfProjectile InfoOfProjectile)
 {
 	CONSOLE_LOG("[Start] <CGameClient::SendInfoOfProjectile()>\n");
 
@@ -437,7 +437,7 @@ void CGameClient::RecvInfoOfProjectile(stringstream& RecvStream, const SOCKET& S
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvInfoOfProjectile(...)>\n");
 
-	cInfoOfProjectile infoOfProjectile;
+	CInfoOfProjectile infoOfProjectile;
 	RecvStream >> infoOfProjectile;
 	tsqInfoOfProjectile.push(infoOfProjectile);
 
@@ -447,14 +447,14 @@ void CGameClient::RecvInfoOfResources(stringstream& RecvStream, const SOCKET& So
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvInfoOfResources(...)>\n");
 
-	cInfoOfResources infoOfResources;
+	CInfoOfResources infoOfResources;
 
 	if (RecvStream >> infoOfResources)
 		tsqInfoOfResources.push(infoOfResources);
 
 	CONSOLE_LOG("[End] <CGameClient::RecvInfoOfResources(...)>\n");
 }
-void CGameClient::SendInfoOfBuilding_Spawn(cInfoOfBuilding_Spawn InfoOfBuilding_Spawn)
+void CGameClient::SendInfoOfBuilding_Spawn(CInfoOfBuilding_Spawn InfoOfBuilding_Spawn)
 {
 	CONSOLE_LOG("[Start] <CGameClient::SendInfoOfBuilding_Spawn()>\n");
 
@@ -468,7 +468,7 @@ void CGameClient::RecvInfoOfBuilding_Spawn(stringstream& RecvStream, const SOCKE
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvInfoOfBuilding_Spawn(...)>\n");
 
-	cInfoOfBuilding_Spawn spawn;
+	CInfoOfBuilding_Spawn spawn;
 
 	if (RecvStream >> spawn)
 	{
@@ -482,7 +482,7 @@ void CGameClient::RecvInfoOfBuilding_Spawned(stringstream& RecvStream, const SOC
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvInfoOfBuilding_Spawned(...)>\n");
 
-	cInfoOfBuilding infoOfBuilding;
+	CInfoOfBuilding infoOfBuilding;
 
 	if (RecvStream >> infoOfBuilding)
 	{
@@ -505,7 +505,7 @@ void CGameClient::RecvInfoOfBuilding_Stat(stringstream& RecvStream, const SOCKET
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvInfoOfBuilding_Stat(...)>\n");
 
-	cInfoOfBuilding_Stat stat;
+	CInfoOfBuilding_Stat stat;
 
 	while (RecvStream >> stat)
 	{
@@ -532,7 +532,7 @@ void CGameClient::RecvSpawnEnemy(stringstream& RecvStream, const SOCKET& Socket 
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvSpawnEnemy(...)>\n");
 
-	cInfoOfEnemy infoOfEnemy;
+	CInfoOfEnemy infoOfEnemy;
 	RecvStream >> infoOfEnemy;
 	tsqSpawnEnemy.push(infoOfEnemy);
 	infoOfEnemy.PrintInfo();
@@ -552,7 +552,7 @@ void CGameClient::RecvInfoOfEnemy_Animation(stringstream& RecvStream, const SOCK
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvInfoOfEnemy_Animation(...)>\n");
 
-	cInfoOfEnemy_Animation animation;
+	CInfoOfEnemy_Animation animation;
 
 	while (RecvStream >> animation)
 	{
@@ -574,7 +574,7 @@ void CGameClient::RecvInfoOfEnemy_Stat(stringstream& RecvStream, const SOCKET& S
 {
 	CONSOLE_LOG("[Start] <CGameClient::RecvInfoOfEnemy_Stat(...)>\n");
 
-	cInfoOfEnemy_Stat stat;
+	CInfoOfEnemy_Stat stat;
 
 	while (RecvStream >> stat)
 	{

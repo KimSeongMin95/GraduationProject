@@ -1251,7 +1251,6 @@ void APioneer::CalculateLevel()
 			GetCharacterMovement()->MaxWalkSpeed = 64.0f * MoveSpeed; // 움직일 때 걷는 속도
 	}
 }
-
 void APioneer::StartTimerOfHealSelf()
 {
 	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfHealSelf))
@@ -1268,7 +1267,7 @@ void APioneer::HealSelf()
 ////////////
 // 네트워크
 ////////////
-void APioneer::SetInfoOfPioneer_Socket(class cInfoOfPioneer_Socket& Socket)
+void APioneer::SetInfoOfPioneer_Socket(class CInfoOfPioneer_Socket& Socket)
 {
 	SocketID = Socket.SocketID;
 	NameOfID = FString(UTF8_TO_TCHAR(Socket.NameOfID.c_str()));
@@ -1276,9 +1275,9 @@ void APioneer::SetInfoOfPioneer_Socket(class cInfoOfPioneer_Socket& Socket)
 	if (EditableTextBoxForID)
 		EditableTextBoxForID->SetText(FText::FromString(NameOfID));
 }
-class cInfoOfPioneer_Socket APioneer::GetInfoOfPioneer_Socket()
+class CInfoOfPioneer_Socket APioneer::GetInfoOfPioneer_Socket()
 {
-	cInfoOfPioneer_Socket socket;
+	CInfoOfPioneer_Socket socket;
 
 	socket.ID = ID;
 	socket.SocketID = SocketID;
@@ -1286,7 +1285,7 @@ class cInfoOfPioneer_Socket APioneer::GetInfoOfPioneer_Socket()
 
 	return socket;
 }
-void APioneer::SetInfoOfPioneer_Animation(class cInfoOfPioneer_Animation& Animation)
+void APioneer::SetInfoOfPioneer_Animation(class CInfoOfPioneer_Animation& Animation)
 {
 	SetActorTransform(Animation.GetActorTransform());
 	TargetRotation = FRotator(Animation.TargetRotX, Animation.TargetRotY, Animation.TargetRotZ);
@@ -1310,9 +1309,9 @@ void APioneer::SetInfoOfPioneer_Animation(class cInfoOfPioneer_Animation& Animat
 		Disarming();
 	}
 }
-class cInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
+class CInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
 {
-	cInfoOfPioneer_Animation animation;
+	CInfoOfPioneer_Animation animation;
 
 	animation.ID = ID;
 	animation.SetActorTransform(GetActorTransform());
@@ -1335,7 +1334,7 @@ class cInfoOfPioneer_Animation APioneer::GetInfoOfPioneer_Animation()
 
 	return animation;
 }
-void APioneer::SetInfoOfPioneer_Stat(class cInfoOfPioneer_Stat& Stat)
+void APioneer::SetInfoOfPioneer_Stat(class CInfoOfPioneer_Stat& Stat)
 {
 	HealthPoint = Stat.HealthPoint;
 	SetHealthPoint(NULL);
@@ -1349,9 +1348,9 @@ void APioneer::SetInfoOfPioneer_Stat(class cInfoOfPioneer_Stat& Stat)
 	Exp = Stat.Exp;
 	Level = Stat.Level;
 }
-class cInfoOfPioneer_Stat APioneer::GetInfoOfPioneer_Stat()
+class CInfoOfPioneer_Stat APioneer::GetInfoOfPioneer_Stat()
 {
-	cInfoOfPioneer_Stat stat;
+	CInfoOfPioneer_Stat stat;
 
 	stat.ID = ID;
 	stat.HealthPoint = HealthPoint;
@@ -1367,15 +1366,15 @@ class cInfoOfPioneer_Stat APioneer::GetInfoOfPioneer_Stat()
 
 	return stat;
 }
-void APioneer::SetInfoOfPioneer(class cInfoOfPioneer& InfoOfPioneer)
+void APioneer::SetInfoOfPioneer(class CInfoOfPioneer& InfoOfPioneer)
 {
 	SetInfoOfPioneer_Socket(InfoOfPioneer.Socket);
 	SetInfoOfPioneer_Animation(InfoOfPioneer.Animation);
 	SetInfoOfPioneer_Stat(InfoOfPioneer.Stat);
 }
-class cInfoOfPioneer APioneer::GetInfoOfPioneer()
+class CInfoOfPioneer APioneer::GetInfoOfPioneer()
 {
-	cInfoOfPioneer infoOfPioneer(ID, GetInfoOfPioneer_Socket(), GetInfoOfPioneer_Animation(), GetInfoOfPioneer_Stat());
+	CInfoOfPioneer infoOfPioneer(ID, GetInfoOfPioneer_Socket(), GetInfoOfPioneer_Animation(), GetInfoOfPioneer_Stat());
 	return infoOfPioneer;
 }
 
