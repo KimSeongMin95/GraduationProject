@@ -5,9 +5,7 @@
 enum class EMyPacketHeader : uint16_t
 {
 	Login,
-	Accept,
-	Reject,
-	Create,
-	Move,
+	Data,
+	HugeData,
 	Exit
 };

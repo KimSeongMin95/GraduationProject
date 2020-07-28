@@ -208,7 +208,7 @@ void UWaitingGameWidget::Clear()
 	bIsLeader = false;
 
 	State->SetText(FText::FromString(TEXT("대기중")));
-	Title->SetText(FText::FromString(TEXT("같이 게임합시다~!")));
+	Title->SetText(FText::FromString(TEXT("함께 재밌게 게임을 해보아요!")));
 	Leader->SetText(FText::FromString(TEXT("ID")));
 	Players->SetText(FText::FromString("1"));
 	Stage->SetText(FText::FromString("1"));

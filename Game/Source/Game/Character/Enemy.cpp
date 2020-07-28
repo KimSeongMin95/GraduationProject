@@ -491,7 +491,7 @@ bool AEnemy::CheckNoObstacle(AActor* Target)
 void AEnemy::FindTheTargetActor(float DeltaTime)
 {
 	TimerOfFindTheTargetActor += DeltaTime;
-	if (TimerOfFindTheTargetActor < 1.5f)
+	if (TimerOfFindTheTargetActor < 0.75f)
 		return;
 	TimerOfFindTheTargetActor = 0.0f;
 	/*******************************************/

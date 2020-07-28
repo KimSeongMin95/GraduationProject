@@ -27,7 +27,8 @@ AOnlineGameMode::AOnlineGameMode()
 }
 AOnlineGameMode::~AOnlineGameMode()
 {
-
+	CGameServer::GetSingleton()->Close();
+	CGameClient::GetSingleton()->Close();
 }
 
 void AOnlineGameMode::BeginPlay()
@@ -159,7 +160,7 @@ void AOnlineGameMode::GetScoreBoard(float DeltaTime)
 {
 	static float timer = 0.0f;
 	timer += DeltaTime;
-	//if (timer < 0.25f) 
+	if (timer < 0.25f) 
 		return;
 	timer = 0.0f;
 

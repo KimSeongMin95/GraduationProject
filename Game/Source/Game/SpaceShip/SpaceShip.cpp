@@ -634,6 +634,7 @@ void ASpaceShip::TickForMainScreen(float DeltaTime)
 
 	FVector location = GetActorLocation();
 	location.Y += 2.0f * 4096.0f * DeltaTime;
+	location.Z = InitLocation.Z;
 	if (location.Y >= 500000.0f)
 	{
 		location.Y = -500000.0f;

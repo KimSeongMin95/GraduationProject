@@ -15,8 +15,8 @@ public:
 public:
 	static unique_ptr<class CNetworkComponent> Server;
 
-	static map<SOCKET, CInfoOfClient> InfoOfClients;
-	static CRITICAL_SECTION csInfoOfClients;
+	static map<SOCKET, > ;
+	static CRITICAL_SECTION ;
 
 public:
 	static bool Initialize(const char* const IPv4, const USHORT& Port);
@@ -27,5 +27,6 @@ public:
 	static void DisconnectCBF(CCompletionKey CompletionKey);
 
 	static void Login(stringstream& RecvStream, const SOCKET& Socket);
-	static void Move(stringstream& RecvStream, const SOCKET& Socket);
+	static void Data(stringstream& RecvStream, const SOCKET& Socket);
+	static void Huge(stringstream& RecvStream, const SOCKET& Socket);
 };
