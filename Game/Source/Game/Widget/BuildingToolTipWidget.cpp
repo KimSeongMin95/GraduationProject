@@ -34,7 +34,7 @@ bool UBuildingToolTipWidget::InitWidget(UWorld* const World, const FString Refer
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UBuildingToolTipWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UBuildingToolTipWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 
@@ -64,7 +64,7 @@ void UBuildingToolTipWidget::SetText(int BuildingType)
 		!NeedOfOrganic_Num || !ProductionOfOrganic_Num || !ConsumeOfOrganic_Num ||
 		!NeedOfEnergy_Num || !ProductionOfEnergy_Num || !ConsumeOfEnergy_Num)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfResources(...)> if (!...)"));		
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfResources(...)> if (!...)"));		
 		return;
 	}
 

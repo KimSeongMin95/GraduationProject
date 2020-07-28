@@ -756,12 +756,11 @@ void CGameServer::InfoOfProjectile(stringstream& RecvStream, const SOCKET& Socke
 
 	cInfoOfProjectile infoOfProjectile;
 	RecvStream >> infoOfProjectile;
-
 	tsqInfoOfProjectile.push(infoOfProjectile);
 
 	/// 송신
 	CPacket infoOfProjectilePacket((uint16_t)EGamePacketHeader::INFO_OF_PROJECTILE);
-	infoOfProjectilePacket.GetData() << InfoOfProjectile << endl;
+	infoOfProjectilePacket.GetData() << infoOfProjectile << endl;
 	if (Server) Server->BroadcastExceptOne(infoOfProjectilePacket, Socket);
 
 	CONSOLE_LOG("[End] <CGameServer::InfoOfProjectile(...)>\n");
@@ -802,7 +801,6 @@ void CGameServer::SendInfoOfBuilding_Spawned(SOCKET Socket)
 
 	map<int, cInfoOfBuilding> copiedMap;
 
-	
 	EnterCriticalSection(&csInfoOfBuilding_Spawn);
 	EnterCriticalSection(&csInfoOfBuilding_Stat);
 	for (auto& kvp : InfoOfBuilding_Spawn)

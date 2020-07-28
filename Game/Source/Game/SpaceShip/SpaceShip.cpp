@@ -154,7 +154,7 @@ void ASpaceShip::InitPhysicsBox(FVector BoxExtent /*= FVector::ZeroVector*/, FVe
 {
 	if (!PhysicsBox)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitPhysicsBox(...)> if (!PhysicsBox)"));
+		MY_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitPhysicsBox(...)> if (!PhysicsBox)"));
 		return;
 	}
 
@@ -166,7 +166,7 @@ void ASpaceShip::InitSkeletalMesh(const TCHAR* ReferencePath, FVector Scale /*= 
 {
 	if (!SkeletalMesh)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitSkeletalMesh(...)> if (!SkeletalMesh)"));
+		MY_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitSkeletalMesh(...)> if (!SkeletalMesh)"));
 		return;
 	}
 
@@ -209,7 +209,7 @@ void ASpaceShip::InitAnimSequence(const TCHAR* ReferencePath, bool bIsLooping /*
 {
 	if (!SkeletalMesh || !Skeleton)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitAnimSequence(...)> if (!SkeletalMesh || !Skeleton)"));
+		MY_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitAnimSequence(...)> if (!SkeletalMesh || !Skeleton)"));
 		return;
 	}
 
@@ -228,7 +228,7 @@ void ASpaceShip::InitSpringArmComp(float TargetArmLength /*= 2500.0f*/, FRotator
 {
 	if (!SpringArmComp)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitSpringArmComp(...)> if (!SpringArmComp)"));
+		MY_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitSpringArmComp(...)> if (!SpringArmComp)"));
 		return;
 	}
 
@@ -242,7 +242,7 @@ void ASpaceShip::InitEngineParticleSystem(class UParticleSystemComponent* Partic
 {
 	if (!ParticleSystemComponent)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitEngineParticleSystem(...)> if (!ParticleSystemComponent)"));
+		MY_LOG(LogTemp, Error, TEXT("<ASpaceShip::InitEngineParticleSystem(...)> if (!ParticleSystemComponent)"));
 		return;
 	}
 
@@ -271,7 +271,7 @@ void ASpaceShip::Flying()
 
 	if (!PhysicsBox || !PioneerSpawnPoint || !SkeletalMesh || !Skeleton || !AnimSequence || !SpringArmComp || !CameraComp || !EngineParticleSystem || !EngineParticleSystem2)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::Flying(...)> if (!PhysicsBox || !PioneerSpawnPoint || !SkeletalMesh || !Skeleton || !AnimSequence || !SpringArmComp || !CameraComp || !EngineParticleSystem || !EngineParticleSystem2)"));
+		MY_LOG(LogTemp, Error, TEXT("<ASpaceShip::Flying(...)> if (!PhysicsBox || !PioneerSpawnPoint || !SkeletalMesh || !Skeleton || !AnimSequence || !SpringArmComp || !CameraComp || !EngineParticleSystem || !EngineParticleSystem2)"));
 		return;
 	}
 
@@ -395,7 +395,7 @@ void ASpaceShip::Spawning()
 		if (GetWorldTimerManager().IsTimerActive(TimerHandle))
 			GetWorldTimerManager().ClearTimer(TimerHandle);
 
-		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::Spawning()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<ASpaceShip::Spawning()> if (!PioneerManager)"));
 		return;
 	}
 
@@ -496,11 +496,11 @@ float ASpaceShip::CalculateDistanceToLand()
 		
 		for (auto& hit : hitResults)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-			//UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
-			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//MY_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+			//MY_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+			//MY_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+			//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
 
 			// 지면과 충돌하는 것만 구합니다.
 			if (hit.Actor->IsA(ALandscape::StaticClass()))
@@ -645,7 +645,7 @@ void ASpaceShip::SetScaleOfEngineParticleSystem(float Scale /*= 0.015f*/)
 {
 	if (!EngineParticleSystem || !EngineParticleSystem2)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::SetScaleOfEngineParticleSystem(...)> if (!EngineParticleSystem || !EngineParticleSystem2)"));
+		MY_LOG(LogTemp, Error, TEXT("<ASpaceShip::SetScaleOfEngineParticleSystem(...)> if (!EngineParticleSystem || !EngineParticleSystem2)"));
 		return;
 	}
 
@@ -665,7 +665,7 @@ void ASpaceShip::PlayLandingAnimation()
 
 	if (!SkeletalMesh)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::PlayLandingAnimation(...)> if (!SkeletalMesh)"));
+		MY_LOG(LogTemp, Error, TEXT("<ASpaceShip::PlayLandingAnimation(...)> if (!SkeletalMesh)"));
 		return;
 	}
 
@@ -684,7 +684,7 @@ void ASpaceShip::PlayTakingOffAnimation()
 {
 	if (!SkeletalMesh)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ASpaceShip::PlayTakingOffAnimation(...)> if (!SkeletalMesh)"));
+		MY_LOG(LogTemp, Error, TEXT("<ASpaceShip::PlayTakingOffAnimation(...)> if (!SkeletalMesh)"));
 		return;
 	}
 

@@ -71,7 +71,7 @@ void AWarrokWKurniawan::Victory()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AWarrokWKurniawan::Victory()> if (!world)"));		
+		MY_LOG(LogTemp, Error, TEXT("<AWarrokWKurniawan::Victory()> if (!world)"));		
 		return;
 	}
 

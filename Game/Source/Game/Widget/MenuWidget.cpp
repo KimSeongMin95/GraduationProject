@@ -20,7 +20,7 @@ bool UMenuWidget::InitWidget(UWorld* const World, const FString ReferencePath, b
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UMenuWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UMenuWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 

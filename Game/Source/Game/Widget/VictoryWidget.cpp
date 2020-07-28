@@ -21,7 +21,7 @@ bool UVictoryWidget::InitWidget(UWorld* const World, const FString ReferencePath
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UVictoryWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UVictoryWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 

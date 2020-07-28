@@ -110,12 +110,12 @@ bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 {
 	if (!Enemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<ATurret::CheckEnemyInAttackRange(...)> if (!Enemy)"));
+		MY_LOG(LogTemp, Warning, TEXT("<ATurret::CheckEnemyInAttackRange(...)> if (!Enemy)"));
 		return false;
 	}
 	if (!ParentOfHead)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ATurret::CheckEnemyInAttackRange(...)> if (!ParentOfHead)"));
+		MY_LOG(LogTemp, Error, TEXT("<ATurret::CheckEnemyInAttackRange(...)> if (!ParentOfHead)"));
 		return false;
 	}
 
@@ -141,12 +141,12 @@ bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 
 		for (auto& hit : hitResults)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-			//UE_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
-			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//MY_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
+			//MY_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+			//MY_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+			//MY_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+			//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
 
 			if (hit.Actor == this)
 				continue;
@@ -192,7 +192,7 @@ void ATurret::TickOfFindEnemy(float DeltaTime)
 		UWorld* const world = GetWorld();
 		if (!world)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<ATurret::TickOfFindEnemy()> if (!world)"));
+			MY_LOG(LogTemp, Error, TEXT("<ATurret::TickOfFindEnemy()> if (!world)"));
 			return;
 		}
 
@@ -255,7 +255,7 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 
 	if (!ParentOfHead)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ATurret::RotateTargetRotation(...)> if (!ParentOfHead)"));
+		MY_LOG(LogTemp, Error, TEXT("<ATurret::RotateTargetRotation(...)> if (!ParentOfHead)"));
 		return;
 	}
 	/*******************************************/
@@ -351,7 +351,7 @@ void ATurret::LookAtTheLocation()
 {
 	if (!ParentOfHead)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ATurret::RotateTargetRotation(...)> if (!ParentOfHead)"));
+		MY_LOG(LogTemp, Error, TEXT("<ATurret::RotateTargetRotation(...)> if (!ParentOfHead)"));
 		return;
 	}
 	if (!EnemyManager)
@@ -386,7 +386,7 @@ void ATurret::Fire()
 
 	if (!EnemyManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ATurret::Fire()> if (!EnemyManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<ATurret::Fire()> if (!EnemyManager)"));
 		return;
 	}
 
@@ -407,7 +407,7 @@ void ATurret::Fire()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ATurret::Fire()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<ATurret::Fire()> if (!world)"));
 		return;
 	}
 

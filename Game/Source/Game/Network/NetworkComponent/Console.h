@@ -3,9 +3,6 @@
 #include "NetworkHeader.h"
 #include "NetworkConfig.h"
 
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-
 #if BUILD_CONFIG_DEBUG && BUILD_CONFIG_EDITOR
 #define MY_LOG(CategoryName, Verbosity, Format, ...) UE_LOG(CategoryName, Verbosity, Format, ##__VA_ARGS__)
 #else
@@ -23,12 +20,14 @@ private:
 public:
 	// 콘솔창
 	void AllocConsole();
+	void AllocConsoleTest();
 	void FreeConsole();
 
 	static CConsole* GetSingleton();
 
 	// printf_s(...)의 래퍼 함수
 	static void Log(const char* format, ...);
+	static void LogTest(const char* format, ...);
 
 	// 소켓 함수 오류 출력 후 종료
 	static void ErrorMessageQuit(const char* msg);
@@ -37,6 +36,7 @@ public:
 	static void ErrorMessageDisplay(const char* msg);
 };
 #define CONSOLE_LOG CConsole::Log
+#define CONSOLE_LOGTEST CConsole::LogTest
 
 
 //void CheckBuildConriguration()

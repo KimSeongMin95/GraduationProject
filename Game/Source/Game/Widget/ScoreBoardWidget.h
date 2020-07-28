@@ -60,14 +60,14 @@ public:
 		if (!WidgetTree || !ScrollBox)
 		{
 
-			UE_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::CScoreBoardWidget(...)> if (!WidgetTree || !ScrollBox)"));
+			MY_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::CScoreBoardWidget(...)> if (!WidgetTree || !ScrollBox)"));
 			return;
 		}
 
 		Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::CScoreBoardWidget(...)> if (!Line)"));
+			MY_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::CScoreBoardWidget(...)> if (!Line)"));
 			return;
 		}
 		ScrollBox->AddChild(Line);
@@ -112,7 +112,7 @@ public:
 		*EditableTextBox = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
 		if (!*EditableTextBox)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox)"));
+			MY_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox)"));
 			return;
 		}
 		Line->AddChild(*EditableTextBox);
@@ -152,7 +152,7 @@ public:
 	{
 		if (!Num)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::SetNum(...)> if (!Num)"));
+			MY_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::SetNum(...)> if (!Num)"));
 			return;
 		}
 
@@ -163,7 +163,7 @@ public:
 	{
 		if (!Ping || !ID || !State || !Level || !Kill || !Death)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::SetText(...)> if (!Ping || !ID || !State || !Level || !Kill || !Death)"));
+			MY_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::SetText(...)> if (!Ping || !ID || !State || !Level || !Kill || !Death)"));
 			return;
 		}
 
@@ -179,7 +179,7 @@ public:
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::SetVisible(...)> if (!Line)"));
+			MY_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::SetVisible(...)> if (!Line)"));
 			return;
 		}
 
@@ -192,7 +192,7 @@ public:
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::IsVisible()> if (!Line)"));
+			MY_LOG(LogTemp, Error, TEXT("<CScoreBoardWidget::IsVisible()> if (!Line)"));
 			return false;
 		}
 

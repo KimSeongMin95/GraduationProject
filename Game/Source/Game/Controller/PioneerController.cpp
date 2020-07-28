@@ -117,7 +117,7 @@ void APioneerController::OnPossess(APawn* InPawn)
 {
 	if (!InPawn)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::OnPossess(...)> if (!InPawn)"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::OnPossess(...)> if (!InPawn)"));
 		return;
 	}
 
@@ -135,7 +135,7 @@ void APioneerController::OnUnPossess()
 
 	if (!GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::OnUnPossess(...)> if (!GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::OnUnPossess(...)> if (!GetPawn())"));
 		return;
 	}
 
@@ -150,7 +150,7 @@ void APioneerController::MoveToMouseCursor()
 {
 	if (!Pioneer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveToMouseCursor()> if (!Pioneer)"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveToMouseCursor()> if (!Pioneer)"));
 		return;
 	}
 
@@ -184,7 +184,7 @@ void APioneerController::MoveForward(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveForward(...)> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveForward(...)> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 	
@@ -208,7 +208,7 @@ void APioneerController::MoveRight(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveRight(...)> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::MoveRight(...)> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 	
@@ -237,7 +237,7 @@ void APioneerController::ZoomInOrZoomOut(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ZoomInOrZoomOut(...)> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::ZoomInOrZoomOut(...)> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 
@@ -255,7 +255,7 @@ void APioneerController::FireWeapon(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::FireWeapon(...)> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::FireWeapon(...)> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 
@@ -268,7 +268,7 @@ void APioneerController::ChangePreviousWeapon()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ChangePreviousWeapon()> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::ChangePreviousWeapon()> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 
@@ -285,7 +285,7 @@ void APioneerController::ChangeNextWeapon()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ChangeNextWeapon()> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::ChangeNextWeapon()> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 	
@@ -302,7 +302,7 @@ void APioneerController::ArmOrDisArmWeapon()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ArmOrDisArmWeapon()> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::ArmOrDisArmWeapon()> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 
@@ -331,7 +331,7 @@ void APioneerController::ConstructingMode()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ConstructingMode()> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::ConstructingMode()> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 
@@ -347,7 +347,7 @@ void APioneerController::ESC_ConstructingMode()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::ESC_ConstructingMode()> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::ESC_ConstructingMode()> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 
@@ -369,7 +369,7 @@ void APioneerController::SpawnBuilding(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::SpawnBuilding(...)> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::SpawnBuilding(...)> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 
@@ -387,7 +387,7 @@ void APioneerController::RotatingBuilding(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::RotatingBuilding(...)> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::RotatingBuilding(...)> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 
@@ -400,7 +400,7 @@ void APioneerController::PlaceBuilding()
 {
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::PlaceBuilding()> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::PlaceBuilding()> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 
@@ -426,7 +426,7 @@ void APioneerController::Menu()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerController::Menu()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerController::Menu()> if (!world)"));
 		return;
 	}
 
@@ -445,7 +445,7 @@ void APioneerController::ScoreBoard(float Value)
 			UWorld* const world = GetWorld();
 			if (!world)
 			{
-				UE_LOG(LogTemp, Error, TEXT("<APioneerController::ScoreBoard(...)> if (!world)"));	
+				MY_LOG(LogTemp, Error, TEXT("<APioneerController::ScoreBoard(...)> if (!world)"));	
 				return;
 			}
 
@@ -464,7 +464,7 @@ void APioneerController::ScoreBoard(float Value)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ScoreBoard(...)> if (!world)"));	
+		MY_LOG(LogTemp, Error, TEXT("<APioneerController::ScoreBoard(...)> if (!world)"));	
 		return;
 	}
 
@@ -480,7 +480,7 @@ void APioneerController::ObservingLeft()
 {
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingLeft()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingLeft()> if (!PioneerManager)"));
 		return;
 	}
 
@@ -494,7 +494,7 @@ void APioneerController::ObservingRight()
 {
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingRight()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingRight()> if (!PioneerManager)"));
 		return;
 	}
 
@@ -508,7 +508,7 @@ void APioneerController::ObservingFree()
 {
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingFree()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingFree()> if (!PioneerManager)"));
 		return;
 	}
 
@@ -527,7 +527,7 @@ void APioneerController::ObservingPossess()
 {
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingPossess()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerController::ObservingPossess()> if (!PioneerManager)"));
 		return;
 	}
 
@@ -546,7 +546,7 @@ void APioneerController::FreeViewPoint_MoveForward(float Value)
 
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveForward(...)> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveForward(...)> if (!PioneerManager)"));
 		return;
 	}
 
@@ -571,7 +571,7 @@ void APioneerController::FreeViewPoint_MoveRight(float Value)
 
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveRight(...)> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveRight(...)> if (!PioneerManager)"));
 		return;
 	}
 
@@ -596,7 +596,7 @@ void APioneerController::FreeViewPoint_MoveUp(float Value)
 
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveUp(...)> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerController::FreeViewPoint_MoveUp(...)> if (!PioneerManager)"));
 		return;
 	}
 
@@ -622,7 +622,7 @@ void APioneerController::EasterEgg(float Value)
 
 	if (!Pioneer || !GetPawn())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerController::EasterEgg()> if (!Pioneer || !GetPawn())"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerController::EasterEgg()> if (!Pioneer || !GetPawn())"));
 		return;
 	}
 

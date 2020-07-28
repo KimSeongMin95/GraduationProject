@@ -18,6 +18,18 @@ void CConsole::AllocConsole()
 	}
 #endif
 }
+void CConsole::AllocConsoleTest()
+{
+#if BUILD_CONFIG_TEST
+	if (fp_console) // 이미 할당되어 있으면 콘솔을 더 할당하지 않습니다.
+		return;
+
+	if (::AllocConsole())
+	{
+		freopen_s(&fp_console, "CONOUT$", "w", stdout);
+	}
+#endif
+}
 
 void CConsole::FreeConsole()
 {
@@ -41,7 +53,20 @@ CConsole* CConsole::GetSingleton()
 void CConsole::Log(const char* format, ...)
 {
 #if BUILD_CONFIG_DEBUG && !BUILD_CONFIG_EDITOR
-	char buff[MAX_BUFFER];
+	char buff[MAX_BUFFER * 2];
+
+	va_list arglist;
+	va_start(arglist, format);
+	vsprintf_s(buff, format, arglist);
+	va_end(arglist);
+
+	printf_s(buff);
+#endif
+}
+void CConsole::LogTest(const char* format, ...)
+{
+#if BUILD_CONFIG_TEST
+	char buff[MAX_BUFFER * 2];
 
 	va_list arglist;
 	va_start(arglist, format);

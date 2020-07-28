@@ -39,7 +39,7 @@ void ATutorialGameMode::TickOfSpaceShip(float DeltaTime)
 {
 	if (!SpaceShip)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ATutorialGameMode::TickOfSpaceShip(...)> if (!SpaceShip)"));	
+		MY_LOG(LogTemp, Error, TEXT("<ATutorialGameMode::TickOfSpaceShip(...)> if (!SpaceShip)"));	
 		return;
 	}
 	/***********************************************************/

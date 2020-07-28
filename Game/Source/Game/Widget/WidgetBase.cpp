@@ -18,14 +18,14 @@ bool UWidgetBase::InitWidget(UWorld* const World, const FString ReferencePath, b
 	if (!World)
 	{
 
-		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::InitWidget(...)> if (!World)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWidgetBase::InitWidget(...)> if (!World)"));
 		return false;
 	}
 
 	UClass* widget = LoadObject<UClass>(this, *ReferencePath);
 	if (!widget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::InitWidget(...)> if (!widget)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWidgetBase::InitWidget(...)> if (!widget)"));
 		return false;
 	}
 
@@ -33,7 +33,7 @@ bool UWidgetBase::InitWidget(UWorld* const World, const FString ReferencePath, b
 
 	if (!UserWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::InitWidget(...)> if (!UserWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWidgetBase::InitWidget(...)> if (!UserWidget)"));
 		return false;
 	}
 
@@ -49,7 +49,7 @@ void UWidgetBase::AddToViewport()
 {
 	if (!UserWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::AddToViewport()> if (!UserWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWidgetBase::AddToViewport()> if (!UserWidget)"));
 		return;
 	}
 
@@ -61,7 +61,7 @@ void UWidgetBase::RemoveFromViewport()
 {
 	if (!UserWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::RemoveFromViewport()> if (!UserWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWidgetBase::RemoveFromViewport()> if (!UserWidget)"));
 		return;
 	}
 
@@ -74,7 +74,7 @@ void UWidgetBase::ToggleViewport()
 {
 	if (!UserWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWidgetBase::ToggleViewport()> if (!UserWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWidgetBase::ToggleViewport()> if (!UserWidget)"));
 		return;
 	}
 

@@ -70,7 +70,7 @@ void AProjectile::InitHitRange(float Radius)
 {
 	if (!HitRange)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AProjectile::InitHitRange(...)> if (!HitRange)"));
+		MY_LOG(LogTemp, Error, TEXT("<AProjectile::InitHitRange(...)> if (!HitRange)"));
 		return;
 	}
 
@@ -102,7 +102,7 @@ void AProjectile::InitProjectileMovement(float InitialSpeed, float MaxSpeed, flo
 {
 	if (!ProjectileMovement)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AProjectile::InitProjectileMovement(...)> if (!ProjectileMovement)"));
+		MY_LOG(LogTemp, Error, TEXT("<AProjectile::InitProjectileMovement(...)> if (!ProjectileMovement)"));
 		return;
 	}
 
@@ -118,7 +118,7 @@ void AProjectile::InitParticleSystem(class UParticleSystemComponent* ParticleSys
 {
 	if (!ParticleSystem)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AProjectile::InitParticleSystem(...)> if (!ParticleSystem)"));
+		MY_LOG(LogTemp, Error, TEXT("<AProjectile::InitParticleSystem(...)> if (!ParticleSystem)"));
 		return;
 	}
 

@@ -83,7 +83,7 @@ void ABaseCharacter::BeginPlayHelthPointBar()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!world)"));
 		return;
 	}
 
@@ -103,17 +103,17 @@ void ABaseCharacter::BeginPlayHelthPointBar()
 			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
 			if (!ProgressBar)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!ProgressBar)"));
+				MY_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!ProgressBar)"));
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!WidgetTree)"));
+			MY_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!WidgetTree)"));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
+		MY_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
 	}
 
 	HelthPointBar->SetWidget(HelthPointBarUserWidget);
@@ -331,7 +331,7 @@ void ABaseCharacter::PossessAIController()
 {
 	if (!AIController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::PossessAIController()> if (!AIController)"));		
+		MY_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::PossessAIController()> if (!AIController)"));		
 		return;
 	}
 
@@ -346,7 +346,7 @@ void ABaseCharacter::UnPossessAIController()
 {
 	if (!AIController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::UnPossessAIController()> if (!AIController)"));	
+		MY_LOG(LogTemp, Warning, TEXT("<ABaseCharacter::UnPossessAIController()> if (!AIController)"));	
 		return;
 	}
 

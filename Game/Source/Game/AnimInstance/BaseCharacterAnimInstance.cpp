@@ -40,12 +40,12 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 
 	if (!TryGetPawnOwner())
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!TryGetPawnOwner())"));
+		MY_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!TryGetPawnOwner())"));
 		return;
 	}
 	if (!BaseCharacter)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!BaseCharacter)"));
+		MY_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!BaseCharacter)"));
 
 		if (APawn* Owner = TryGetPawnOwner())
 		{

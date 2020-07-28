@@ -87,7 +87,7 @@ void AEnemySpawner::TickOfSpawnEnemy(float DeltaTime)
 	
 	if (!EnemyManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AEnemySpawner::TickOfSpawnEnemy(...)> if (!EnemyManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<AEnemySpawner::TickOfSpawnEnemy(...)> if (!EnemyManager)"));
 		return;
 	}
 

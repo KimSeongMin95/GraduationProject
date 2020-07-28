@@ -37,7 +37,7 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 
 	if (!TryGetPawnOwner())
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> if (!TryGetPawnOwner())"));
+		MY_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> if (!TryGetPawnOwner())"));
 		return;
 	}
 	if (!Pioneer)
@@ -49,7 +49,7 @@ void UPioneerAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 				Pioneer = Cast<APioneer>(Owner);
 		}
 
-		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> if (!Pioneer)"));
+		MY_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::NativeUpdateAnimation(...)> if (!Pioneer)"));
 		return;
 	}
 
@@ -66,12 +66,12 @@ void UPioneerAnimInstance::FireEnd()
 {
 	if (!TryGetPawnOwner())
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::FireEnd()> if (!TryGetPawnOwner())"));
+		MY_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::FireEnd()> if (!TryGetPawnOwner())"));
 		return;
 	}
 	if (!Pioneer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::FireEnd()> if (!Pioneer)"));
+		MY_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::FireEnd()> if (!Pioneer)"));
 		return;
 	}
 
@@ -82,12 +82,12 @@ void UPioneerAnimInstance::DestroyCharacter()
 {
 	if (!TryGetPawnOwner())
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::DestroyCharacter()> if (!TryGetPawnOwner())"));
+		MY_LOG(LogTemp, Error, TEXT("<UPioneerAnimInstance::DestroyCharacter()> if (!TryGetPawnOwner())"));
 		return;
 	}
 	if (!Pioneer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::DestroyCharacter()> if (!Pioneer)"));
+		MY_LOG(LogTemp, Warning, TEXT("<UPioneerAnimInstance::DestroyCharacter()> if (!Pioneer)"));
 		return;
 	}
 

@@ -144,7 +144,7 @@ void APioneer::InitAIController()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::InitAIController()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneer::InitAIController()> if (!world)"));
 		return;
 	}
 
@@ -242,7 +242,7 @@ void APioneer::InitSkeletalAnimation()
 	UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
 	if (!animBP)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::InitSkeletalAnimation()> if (!animBP)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneer::InitSkeletalAnimation()> if (!animBP)"));
 	}
 	else
 		GetMesh()->SetAnimInstanceClass(animBP);
@@ -301,7 +301,7 @@ void APioneer::InitWeapon()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::InitWeapon()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneer::InitWeapon()> if (!world)"));
 		return;
 	}
 
@@ -383,7 +383,7 @@ void APioneer::SetCameraBoomSettings()
 {
 	if (!CameraBoom)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::SetCameraBoomSettings()> if (!CameraBoom)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneer::SetCameraBoomSettings()> if (!CameraBoom)"));
 		return;
 	}
 
@@ -457,12 +457,12 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 					Bone_Spine_01_Rotation = FRotator::ZeroRotator;
 				}
 
-				//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-				//UE_LOG(LogTemp, Warning, TEXT("GetName %s"), *TraceHitResult.GetActor()->GetName());
-				//UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *TraceHitResult.GetActor()->GetName());
-				//UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *TraceHitResult.Component->GetName());
-				//UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), TraceHitResult.Distance);
-				//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+				//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
+				//MY_LOG(LogTemp, Warning, TEXT("GetName %s"), *TraceHitResult.GetActor()->GetName());
+				//MY_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *TraceHitResult.GetActor()->GetName());
+				//MY_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *TraceHitResult.Component->GetName());
+				//MY_LOG(LogTemp, Warning, TEXT("Distance: %f"), TraceHitResult.Distance);
+				//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
 			}
 		}
 		else
@@ -484,7 +484,7 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Fatal, TEXT("<APioneer::SetHealthPoint(...)> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Fatal, TEXT("<APioneer::SetHealthPoint(...)> if (!PioneerManager)"));
 	}
 
 	if (PioneerManager)
@@ -530,7 +530,7 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 		}
 		else
 		{
-			//UE_LOG(LogTemp, Fatal, TEXT("<APioneer::SetHealthPoint(...)> if (!PioneerManager->Pioneers.Contains(ID))"));
+			//MY_LOG(LogTemp, Fatal, TEXT("<APioneer::SetHealthPoint(...)> if (!PioneerManager->Pioneers.Contains(ID))"));
 			bDying = true;
 			return;
 		}
@@ -589,12 +589,12 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 
 		for (auto& hit : hitResults)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-			//UE_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
-			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//MY_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
+			//MY_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+			//MY_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+			//MY_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+			//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
 
 			if (hit.Actor == this)
 				continue;
@@ -791,11 +791,11 @@ void APioneer::AttackingOfFSM(float DeltaTime)
 			Bone_Spine_01_Rotation.Yaw = 75.0f;
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-	//UE_LOG(LogTemp, Warning, TEXT("Bone_Spine_01_Rotation.Pitch: %f"), Bone_Spine_01_Rotation.Pitch);
-	//UE_LOG(LogTemp, Warning, TEXT("Bone_Spine_01_Rotation.Yaw: %f"), Bone_Spine_01_Rotation.Yaw);
-	//UE_LOG(LogTemp, Warning, TEXT("Bone_Spine_01_Rotation.Roll: %f"), Bone_Spine_01_Rotation.Roll);
-	//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+	//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
+	//MY_LOG(LogTemp, Warning, TEXT("Bone_Spine_01_Rotation.Pitch: %f"), Bone_Spine_01_Rotation.Pitch);
+	//MY_LOG(LogTemp, Warning, TEXT("Bone_Spine_01_Rotation.Yaw: %f"), Bone_Spine_01_Rotation.Yaw);
+	//MY_LOG(LogTemp, Warning, TEXT("Bone_Spine_01_Rotation.Roll: %f"), Bone_Spine_01_Rotation.Roll);
+	//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
 }
 void APioneer::RunFSM(float DeltaTime)
 {
@@ -869,7 +869,7 @@ void APioneer::DestroyCharacter()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::DestroyCharacter()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneer::DestroyCharacter()> if (!PioneerManager)"));
 	}
 
 	Destroy();
@@ -879,12 +879,12 @@ bool APioneer::CopyTopDownCameraTo(AActor* CameraToBeCopied)
 {
 	if (!TopDownCameraComponent)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::CopyTopDownCameraTo(...)> if (!TopDownCameraComponent)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneer::CopyTopDownCameraTo(...)> if (!TopDownCameraComponent)"));
 		return false;
 	}
 	if (!CameraToBeCopied)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::CopyTopDownCameraTo(...)> if (!CameraToBeCopied)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneer::CopyTopDownCameraTo(...)> if (!CameraToBeCopied)"));
 		return false;
 	}
 
@@ -938,7 +938,7 @@ void APioneer::SetWeaponType()
 	// 현재 무기를 든 상태여야 무기를 변경할 수 있습니다.
 	if (!CurrentWeapon)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::SetWeaponType()> if (!CurrentWeapon)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneer::SetWeaponType()> if (!CurrentWeapon)"));
 		return;
 	}
 
@@ -956,7 +956,7 @@ void APioneer::SetWeaponType()
 		break;
 	default:
 
-		UE_LOG(LogTemp, Warning, TEXT("<APioneer::SetWeaponType()> switch (CurrentWeapon->WeaponType) default:"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneer::SetWeaponType()> switch (CurrentWeapon->WeaponType) default:"));
 		break;
 	}
 }
@@ -965,13 +965,13 @@ void APioneer::ChangeWeapon(int Value)
 	// 현재 무기를 든 상태여야 무기를 변경할 수 있습니다.
 	if (!CurrentWeapon)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::ChangeWeapon(...)> if (!CurrentWeapon)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneer::ChangeWeapon(...)> if (!CurrentWeapon)"));
 		return;
 	}
 	// Weapon이 2개 이상 있어야 무기를 변경할 수 있습니다.
 	if (Weapons.Num() <= 1)
 	{
-		UE_LOG(LogTemp, Log, TEXT("<APioneer::ChangeWeapon(...)> if (Weapons.Num() <= 1)"));
+		MY_LOG(LogTemp, Log, TEXT("<APioneer::ChangeWeapon(...)> if (Weapons.Num() <= 1)"));
 		return;
 	}
 
@@ -1005,7 +1005,7 @@ void APioneer::Arming()
 	// IdxOfCurrentWeapon가 유효하지 않으면
 	if (Weapons.IsValidIndex(IdxOfCurrentWeapon) == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneer::Arming()> if (Weapons.IsValidIndex(IdxOfCurrentWeapon) == false)"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneer::Arming()> if (Weapons.IsValidIndex(IdxOfCurrentWeapon) == false)"));
 
 		CurrentWeapon = nullptr;
 
@@ -1041,7 +1041,7 @@ void APioneer::Arming()
 
 	if (!CurrentWeapon)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneer::Arming()> if (!CurrentWeapon)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneer::Arming()> if (!CurrentWeapon)"));
 		return;
 	}
 
@@ -1074,7 +1074,7 @@ void APioneer::SpawnBuilding(int Value)
 		UWorld* const world = GetWorld();
 		if (!world)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<APioneer::SpawnBuilding(...)> if (!world)"));
+			MY_LOG(LogTemp, Error, TEXT("<APioneer::SpawnBuilding(...)> if (!world)"));
 			return;
 		}
 
@@ -1095,12 +1095,12 @@ void APioneer::OnConstructingMode(float DeltaTime)
 {
 	if (!bConstructingMode || !CursorToWorld || !Building)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneer::OnConstructingMode()> if (!bConstructingMode || !CursorToWorld || !Building)"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneer::OnConstructingMode()> if (!bConstructingMode || !CursorToWorld || !Building)"));
 		return;
 	}
 	if (GetController() == AIController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneer::OnConstructingMode()> if (GetController() == AIController)"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneer::OnConstructingMode()> if (GetController() == AIController)"));
 		return;
 	}
 
@@ -1138,11 +1138,11 @@ void APioneer::OnConstructingMode(float DeltaTime)
 
 		for (auto& hit : hitResults)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-			//UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
-			//UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
-			//UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
+			//MY_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+			//MY_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+			//MY_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+			//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
 
 			// Building이 터렛이라면 Wall 위에 건설할 수 있도록 합니다.
 			if (ATurret* turret = dynamic_cast<ATurret*>(Building))

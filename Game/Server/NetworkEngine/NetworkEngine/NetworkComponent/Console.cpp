@@ -8,7 +8,19 @@ CConsole::CConsole()
 
 void CConsole::AllocConsole()
 {
-#if BUILD_CONFIG_DEBUG
+#if BUILD_CONFIG_DEBUG && !BUILD_CONFIG_EDITOR
+	if (fp_console) // 이미 할당되어 있으면 콘솔을 더 할당하지 않습니다.
+		return;
+
+	if (::AllocConsole())
+	{
+		freopen_s(&fp_console, "CONOUT$", "w", stdout);
+	}
+#endif
+}
+void CConsole::AllocConsoleTest()
+{
+#if BUILD_CONFIG_TEST
 	if (fp_console) // 이미 할당되어 있으면 콘솔을 더 할당하지 않습니다.
 		return;
 
@@ -21,7 +33,7 @@ void CConsole::AllocConsole()
 
 void CConsole::FreeConsole()
 {
-#if BUILD_CONFIG_DEBUG
+#if BUILD_CONFIG_DEBUG && !BUILD_CONFIG_EDITOR
 	if (fp_console) // 할당되어 있을 때만 소멸시킵니다.
 	{
 		fclose(fp_console);
@@ -40,8 +52,21 @@ CConsole* CConsole::GetSingleton()
 
 void CConsole::Log(const char* format, ...)
 {
-#if BUILD_CONFIG_DEBUG
-	char buff[MAX_BUFFER];
+#if BUILD_CONFIG_DEBUG && !BUILD_CONFIG_EDITOR
+	char buff[MAX_BUFFER * 2];
+
+	va_list arglist;
+	va_start(arglist, format);
+	vsprintf_s(buff, format, arglist);
+	va_end(arglist);
+
+	printf_s(buff);
+#endif
+}
+void CConsole::LogTest(const char* format, ...)
+{
+#if BUILD_CONFIG_TEST
+	char buff[MAX_BUFFER * 2];
 
 	va_list arglist;
 	va_start(arglist, format);
@@ -54,7 +79,7 @@ void CConsole::Log(const char* format, ...)
 
 void CConsole::ErrorMessageQuit(const char* msg)
 {
-#if BUILD_CONFIG_DEBUG
+#if BUILD_CONFIG_DEBUG && !BUILD_CONFIG_EDITOR
 	LPVOID lpMsgBuf;
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -69,7 +94,7 @@ void CConsole::ErrorMessageQuit(const char* msg)
 
 void CConsole::ErrorMessageDisplay(const char* msg)
 {
-#if BUILD_CONFIG_DEBUG
+#if BUILD_CONFIG_DEBUG && !BUILD_CONFIG_EDITOR
 	LPVOID lpMsgBuf;
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,

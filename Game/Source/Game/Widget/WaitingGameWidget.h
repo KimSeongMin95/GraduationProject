@@ -104,14 +104,14 @@ public:
 	{
 		if (!WidgetTree || !UniformGridPanel)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CWaitingGameWidget::CWaitingGameWidget(...)> if (!WidgetTree || !UniformGridPanel)"));
+			MY_LOG(LogTemp, Error, TEXT("<CWaitingGameWidget::CWaitingGameWidget(...)> if (!WidgetTree || !UniformGridPanel)"));
 			return;
 		}
 
 		Player = WidgetTree->ConstructWidget<UEditableTextBox>(UEditableTextBox::StaticClass());
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CWaitingGameWidget::CWaitingGameWidget(...)> if (!Player)"));
+			MY_LOG(LogTemp, Error, TEXT("<CWaitingGameWidget::CWaitingGameWidget(...)> if (!Player)"));
 			return;
 		}
 		UniformGridPanel->AddChild(Player);
@@ -156,7 +156,7 @@ public:
 	{
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CWaitingGameWidget::SetText(...)> if (!Player)"));
+			MY_LOG(LogTemp, Error, TEXT("<CWaitingGameWidget::SetText(...)> if (!Player)"));
 			return;
 		}
 
@@ -166,7 +166,7 @@ public:
 	{
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CWaitingGameWidget::SetVisible(...)> if (!Player)"));
+			MY_LOG(LogTemp, Error, TEXT("<CWaitingGameWidget::SetVisible(...)> if (!Player)"));
 			return;
 		}
 
@@ -179,7 +179,7 @@ public:
 	{
 		if (!Player)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<CWaitingGameWidget::IsVisible()> if (!Player)"));
+			MY_LOG(LogTemp, Error, TEXT("<CWaitingGameWidget::IsVisible()> if (!Player)"));
 			return false;
 		}
 

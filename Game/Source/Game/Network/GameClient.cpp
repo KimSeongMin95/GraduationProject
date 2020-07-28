@@ -85,6 +85,17 @@ CGameClient::CGameClient()
 }
 CGameClient::~CGameClient()
 {
+	// 게임클라이언트를 종료하기 전에 조종하던 Pioneer가 죽게끔 알립니다.
+	if (IsNetworkOn())
+	{
+		EnterCriticalSection(&csPossessedID);
+		int possessedID = PossessedID;
+		PossessedID = 0;
+		LeaveCriticalSection(&csPossessedID);
+
+		SendDiedPioneer(possessedID);
+	}
+
 	DeleteCriticalSection(&csPing);
 	DeleteCriticalSection(&csMyInfoOfScoreBoard);
 	DeleteCriticalSection(&csPossessedID);
@@ -132,17 +143,6 @@ void CGameClient::Close()
 	/****************************************/
 
 	Client->Close();
-
-	// 게임클라이언트를 종료하기 전에 조종하던 Pioneer가 죽게끔 알립니다.
-	if (IsNetworkOn())
-	{
-		EnterCriticalSection(&csPossessedID);
-		int possessedID = PossessedID;
-		PossessedID = 0;
-		LeaveCriticalSection(&csPossessedID);
-
-		SendDiedPioneer(possessedID);
-	}
 
 	///////////
 	// 초기화

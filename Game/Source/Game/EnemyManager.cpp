@@ -38,7 +38,7 @@ void AEnemyManager::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::BeginPlay()> if (!world)"));
+		MY_LOG(LogTemp, Warning, TEXT("<AEnemyManager::BeginPlay()> if (!world)"));
 		return;
 	}
 
@@ -76,14 +76,14 @@ class AEnemy* AEnemyManager::SpawnEnemy(int EnemyType, FTransform Transform)
 	// 적을 생성할 수 있는 최대 개수를 제한합니다.
 	if (Enemies.Num() >= LimitOfEnemySpawn)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::SpawnEnemy(...)> if (Enemies.Num() >= LimitOfEnemySpawn)"));
+		MY_LOG(LogTemp, Warning, TEXT("<AEnemyManager::SpawnEnemy(...)> if (Enemies.Num() >= LimitOfEnemySpawn)"));
 		return nullptr;
 	}
 
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::SpawnEnemy(...)> if (!world)"));
+		MY_LOG(LogTemp, Warning, TEXT("<AEnemyManager::SpawnEnemy(...)> if (!world)"));
 		return nullptr;
 	}
 
@@ -158,7 +158,7 @@ void AEnemyManager::RecvSpawnEnemy(class cInfoOfEnemy& InfoOfEnemy)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<AEnemyManager::RecvSpawnEnemy(...)> if (!world)"));
+		MY_LOG(LogTemp, Warning, TEXT("<AEnemyManager::RecvSpawnEnemy(...)> if (!world)"));
 		return;
 	}
 

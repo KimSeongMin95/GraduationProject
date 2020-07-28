@@ -33,7 +33,7 @@ bool UWaitingGameWidget::InitWidget(UWorld* const World, const FString Reference
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 
@@ -65,7 +65,7 @@ void UWaitingGameWidget::SetText(CGamePacket& InfoOfGame)
 {
 	if (!State || !Title || !Leader || !Stage || !Players || !Maximum)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetText(...)> if (!State || !Title || !Leader || !Stage || !Players || !Maximum)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetText(...)> if (!State || !Title || !Leader || !Stage || !Players || !Maximum)"));
 		return;
 	}
 
@@ -102,7 +102,7 @@ void UWaitingGameWidget::SetIsReadOnly(bool bReadOnly)
 {
 	if (!Title || !Stage)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetIsReadOnly(...)> if (!Title || !Stage || !Maximum)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetIsReadOnly(...)> if (!Title || !Stage || !Maximum)"));
 		return;
 	}
 
@@ -114,7 +114,7 @@ void UWaitingGameWidget::SetBackButtonVisibility(bool bVisible)
 {
 	if (!BackButton)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetBackButtonVisibility(...)> if (!BackButton)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetBackButtonVisibility(...)> if (!BackButton)"));
 		return;
 	}
 
@@ -127,7 +127,7 @@ void UWaitingGameWidget::SetStartButtonVisibility(bool bVisible)
 {
 	if (!StartButton)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetStartButtonVisibility(...)> if (!StartButton)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetStartButtonVisibility(...)> if (!StartButton)"));
 		return;
 	}
 
@@ -140,7 +140,7 @@ void UWaitingGameWidget::SetJoinButtonVisibility(bool bVisible)
 {
 	if (!JoinButton)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetJoinButtonVisibility(...)> if (!JoinButton)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetJoinButtonVisibility(...)> if (!JoinButton)"));
 		return;
 	}
 
@@ -157,7 +157,7 @@ void UWaitingGameWidget::ShowLeader(CPlayerPacket CopiedMyInfoOfPlayer)
 
 	if (!Leader)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::ShowLeader(...)> if (!Leader)"));	
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::ShowLeader(...)> if (!Leader)"));	
 		return;
 	}
 
@@ -201,7 +201,7 @@ void UWaitingGameWidget::Clear()
 {
 	if (!State || !Title || !Leader || !Stage || !Players || !Maximum)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::Clear()> if (!State || !Title || !Leader || !Stage || !Players || !Maximum)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::Clear()> if (!State || !Title || !Leader || !Stage || !Players || !Maximum)"));
 		return;
 	}
 
@@ -235,7 +235,7 @@ void UWaitingGameWidget::SetDestroyedVisibility(bool bVisible)
 {
 	if (!Destroyed)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetDestroyedVisibility(...)> if (!Destroyed)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetDestroyedVisibility(...)> if (!Destroyed)"));
 		return;
 	}
 
@@ -250,7 +250,7 @@ void UWaitingGameWidget::CheckTextOfTitle()
 {
 	if (!Title)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::CheckTextOfTitle(...)> if (!Title)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::CheckTextOfTitle(...)> if (!Title)"));
 		return;
 	}
 
@@ -274,7 +274,7 @@ void UWaitingGameWidget::CheckTextOfStage()
 {
 	if (!Stage)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::CheckTextOfStage(...)> if (!Stage)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::CheckTextOfStage(...)> if (!Stage)"));
 		return;
 	}
 
@@ -295,7 +295,7 @@ int UWaitingGameWidget::CheckTextOfMaximum(int NumOfCurrent /*= 1*/)
 {
 	if (!Maximum)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::CheckTextOfMaximum(...)> if (!Maximum)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::CheckTextOfMaximum(...)> if (!Maximum)"));
 		return 30;
 	}
 
@@ -320,7 +320,7 @@ CGamePacket UWaitingGameWidget::GetModifiedInfo(CGamePacket CopiedMyInfoOfGame)
 
 	if (!Title || !Stage || !Maximum)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::GetModifiedInfo(...)> if (!Title || !Stage || !Maximum)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::GetModifiedInfo(...)> if (!Title || !Stage || !Maximum)"));
 		return infoOfGame;
 	}
 
@@ -335,7 +335,7 @@ void UWaitingGameWidget::SetModifiedInfo(CGamePacket& InfoOfGame)
 {
 	if (!Title || !Stage || !Maximum)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetModifiedInfo(...)> if (!Title || !Stage || !Maximum)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetModifiedInfo(...)> if (!Title || !Stage || !Maximum)"));
 		return;
 	}
 
@@ -353,7 +353,7 @@ void UWaitingGameWidget::SetTextOfCount(int num)
 {
 	if (!Count)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetTextOfCount(...)> if (!Count)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetTextOfCount(...)> if (!Count)"));
 		return;
 	}
 
@@ -363,7 +363,7 @@ void UWaitingGameWidget::SetCountVisibility(bool bVisible)
 {
 	if (!Count)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetCountVisibility(...)> if (!Count)"));
+		MY_LOG(LogTemp, Error, TEXT("<UWaitingGameWidget::SetCountVisibility(...)> if (!Count)"));
 		return;
 	}
 

@@ -59,7 +59,7 @@ void AEnemy::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AEnemy::BeginPlay()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<AEnemy::BeginPlay()> if (!world)"));
 		return;
 	}
 
@@ -113,7 +113,7 @@ void AEnemy::InitAIController()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AEnemy::InitAIController()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<AEnemy::InitAIController()> if (!world)"));
 		return;
 	}
 
@@ -135,7 +135,7 @@ void AEnemy::InitCharacterMovement()
 
 void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-//	UE_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_DetectRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
+//	MY_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_DetectRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
 
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
@@ -176,9 +176,9 @@ void AEnemy::OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedCom
 		}
 	}
 
-	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Add(OtherActor): %s"), *OtherActor->GetName());
-	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Num(): %d"), OverlappedCharacterInDetectRange.Num());
-	//UE_LOG(LogTemp, Log, TEXT("_______"));
+	//MY_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Add(OtherActor): %s"), *OtherActor->GetName());
+	//MY_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Num(): %d"), OverlappedCharacterInDetectRange.Num());
+	//MY_LOG(LogTemp, Log, TEXT("_______"));
 }
 void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
@@ -208,14 +208,14 @@ void AEnemy::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp,
 		OverlappedBuildingInDetectRange.RemoveSingle(OtherActor);
 	}
 
-	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.RemoveSingle(OtherActor): %s"), *OtherActor->GetName());
-	//UE_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Num(): %d"), OverlappedCharacterInDetectRange.Num());
-	//UE_LOG(LogTemp, Log, TEXT("_______"));
+	//MY_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.RemoveSingle(OtherActor): %s"), *OtherActor->GetName());
+	//MY_LOG(LogTemp, Log, TEXT("OverlappedCharacterInDetectRange.Num(): %d"), OverlappedCharacterInDetectRange.Num());
+	//MY_LOG(LogTemp, Log, TEXT("_______"));
 }
 
 void AEnemy::OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-//	UE_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_AttackRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
+//	MY_LOG(LogTemp, Log, TEXT("<AEnemy::OnOverlapBegin_AttackRange(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
 
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
@@ -306,7 +306,7 @@ void AEnemy::InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FStri
 		UClass* animBP = LoadObject<UClass>(NULL, *referencePathOfBP_AnimInstance);
 		if (!animBP)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<AEnemy::InitSkeletalAnimation(...)> if (!animBP)"));
+			MY_LOG(LogTemp, Error, TEXT("<AEnemy::InitSkeletalAnimation(...)> if (!animBP)"));
 		}
 		else
 			GetMesh()->SetAnimInstanceClass(animBP);
@@ -341,7 +341,7 @@ void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 
 	if (!EnemyManager)
 	{
-		UE_LOG(LogTemp, Fatal, TEXT("<AEnemy::SetHealthPoint(...)> if (!EnemyManager)"));
+		MY_LOG(LogTemp, Fatal, TEXT("<AEnemy::SetHealthPoint(...)> if (!EnemyManager)"));
 	}
 
 	if (EnemyManager)
@@ -355,7 +355,7 @@ void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 		}
 		else
 		{
-			//UE_LOG(LogTemp, Fatal, TEXT("<AEnemy::SetHealthPoint(...)> if (!EnemyManager->Enemies.Contains(ID))"));
+			//MY_LOG(LogTemp, Fatal, TEXT("<AEnemy::SetHealthPoint(...)> if (!EnemyManager->Enemies.Contains(ID))"));
 			bDying = true;
 			return;
 		}
@@ -442,12 +442,12 @@ bool AEnemy::CheckNoObstacle(AActor* Target)
 
 		for (auto& hit : hitResults)
 		{
-//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
-//			UE_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
-//			UE_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
-//			UE_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
-//			UE_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
-//			UE_LOG(LogTemp, Warning, TEXT("_______________________"));
+//			MY_LOG(LogTemp, Warning, TEXT("_______________________"));
+//			MY_LOG(LogTemp, Warning, TEXT("Target GetName %s"), *Target->GetName());
+//			MY_LOG(LogTemp, Warning, TEXT("GetActor GetName %s"), *hit.GetActor()->GetName());
+//			MY_LOG(LogTemp, Warning, TEXT("Component GetName %s"), *hit.Component->GetName());
+//			MY_LOG(LogTemp, Warning, TEXT("hit.Distance: %f"), hit.Distance);
+//			MY_LOG(LogTemp, Warning, TEXT("_______________________"));
 
 			if (hit.Actor == this)
 				continue;

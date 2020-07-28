@@ -62,13 +62,13 @@ public:
 	{
 		if (!WidgetTree || !ScrollBox)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::COnlineGameWidget(...)> if (!WidgetTree || !ScrollBox)"));
+			MY_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::COnlineGameWidget(...)> if (!WidgetTree || !ScrollBox)"));
 			return;
 		}
 		Line = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::COnlineGameWidget(...)> if (!Line)"));		
+			MY_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::COnlineGameWidget(...)> if (!Line)"));		
 			return;
 		}
 		ScrollBox->AddChild(Line);
@@ -86,7 +86,7 @@ public:
 		Button = WidgetTree->ConstructWidget<UMyButton>(UMyButton::StaticClass());
 		if (!Button)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::COnlineGameWidget(...)> if (!Button)"));
+			MY_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::COnlineGameWidget(...)> if (!Button)"));
 			return;
 		}
 		Line->AddChild(Button);
@@ -123,7 +123,7 @@ public:
 		if (!*EditableTextBox)
 		{
 
-			UE_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox)"));
+			MY_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::ConstructEditableTextBox(...)> if (!*EditableTextBox)"));
 			return;
 		}
 		Line->AddChild(*EditableTextBox);
@@ -152,7 +152,7 @@ public:
 	{
 		if (!State || !Title || !Leader || !Stage || !Players || !Button)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::SetText(...)> if (!State || !Title || !Leader || !Stage || !Players || !Button)"));
+			MY_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::SetText(...)> if (!State || !Title || !Leader || !Stage || !Players || !Button)"));
 			return;
 		}
 
@@ -170,7 +170,7 @@ public:
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::SetVisible(...)> if (!Line)"));
+			MY_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::SetVisible(...)> if (!Line)"));
 			return;
 		}
 
@@ -183,7 +183,7 @@ public:
 	{
 		if (!Line)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::IsVisible(...)> if (!Line)"));
+			MY_LOG(LogTemp, Error, TEXT("<COnlineGameWidget::IsVisible(...)> if (!Line)"));
 			return false;
 		}
 

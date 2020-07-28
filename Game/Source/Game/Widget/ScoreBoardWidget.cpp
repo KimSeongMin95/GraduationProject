@@ -24,7 +24,7 @@ bool UScoreBoardWidget::InitWidget(UWorld* const World, const FString ReferenceP
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UScoreBoardWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UScoreBoardWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 
@@ -68,7 +68,7 @@ void UScoreBoardWidget::SetServerDestroyedVisibility(bool bVisible)
 {
 	if (!ServerDestroyed)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameMenuWidget::SetServerDestroyedVisibility(...)> if (!ServerDestroyed)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameMenuWidget::SetServerDestroyedVisibility(...)> if (!ServerDestroyed)"));
 		return;
 	}
 

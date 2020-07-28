@@ -55,7 +55,7 @@ void AMyDialog::ShowDialog()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AMyDialog::ShowDialog()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<AMyDialog::ShowDialog()> if (!world)"));
 		return;
 	}
 

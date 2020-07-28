@@ -62,7 +62,7 @@ bool APistol::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APistol::Fire(...)> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<APistol::Fire(...)> if (!world)"));
 		return false;
 	}
 

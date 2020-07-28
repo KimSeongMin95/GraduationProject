@@ -61,7 +61,7 @@ bool ARocketLauncher::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ARocketLauncher::Fire(...)> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<ARocketLauncher::Fire(...)> if (!world)"));
 		return false;
 	}
 

@@ -21,7 +21,7 @@ bool UDefeatWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UDefeatWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UDefeatWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 

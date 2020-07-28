@@ -21,7 +21,7 @@ bool UMainScreenWidget::InitWidget(UWorld* const World, const FString ReferenceP
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UMainScreenWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UMainScreenWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 

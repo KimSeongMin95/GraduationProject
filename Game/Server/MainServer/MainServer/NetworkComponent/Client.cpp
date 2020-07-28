@@ -145,7 +145,7 @@ void CClient::RunClientThread()
 {
 	int nRecvLen = 0; // 수신한 바이트 크기를 저장합니다.
 	char recvBuffer[MAX_BUFFER + 1]; // 수신할 데이터를 저장할 버퍼입니다.
-	char bufOfPackets[MAX_BUFFER + 1]; // RecvDeque으로부터 획득하는 패킷들을 저장합니다.
+	char bufOfPackets[2 * MAX_BUFFER + 1]; // RecvDeque으로부터 획득하는 패킷들을 저장합니다.
 
 	// 클라이언트를 정상적으로 구동합니다.
 	while (true)
@@ -449,7 +449,6 @@ void CClient::LoadUpReceivedDataToRecvDeque(const char* const RecvBuffer, const 
 
 	// 데이터가 MAX_BUFFER 그대로 4096개 꽉 채워서 오는 경우에 대비하기 위하여 +1로 '\0' 공간을 만들어줍니다. (그래도 송신할때는 4095개까지만 채워서 갑니다.)
 	RecvDeque.emplace_back(make_unique<char[]>(MAX_BUFFER + 1)); // 뒷부분에 순차적으로 적재합니다.
-
 	RecvDeque.back().get()[MAX_BUFFER] = '\0';
 	CopyMemory(RecvDeque.back().get(), RecvBuffer, RecvLen);
 	RecvDeque.back().get()[RecvLen] = '\0';
@@ -465,46 +464,89 @@ void CClient::GetPacketsFromRecvDeque(char* const BufOfPackets)
 	/****************************************/
 
 	// 초기화
-	BufOfPackets[MAX_BUFFER] = '\0';
 	BufOfPackets[0] = '\0';
+	BufOfPackets[MAX_BUFFER] = '\0';
+	BufOfPackets[MAX_BUFFER * 2] = '\0';
 
 	size_t idxOfCur = 0;
 	size_t idxOfEnd = 0;
 
-	// RecvDeque이 비거나 BufOfPackets에 온전한 패킷만이 복사되어 더이상 공간이 없을때까지 진행합니다.
-	while (true)
+	while (RecvDeque.empty() == false)
 	{
-		//
-		if ((idxOfCur + strlen(RecvDeque.front().get())) < MAX_BUFFER + 1)
+		// 무조건 꺼냅니다.
+		CopyMemory(&BufOfPackets[idxOfCur], RecvDeque.front().get(), strlen(RecvDeque.front().get()));
+		idxOfCur += strlen(RecvDeque.front().get());
+		BufOfPackets[idxOfCur] = '\0';
+		RecvDeque.pop_front();
+
+		// 
+		if (idxOfCur >= MAX_BUFFER)
 		{
-			CopyMemory(&BufOfPackets[idxOfCur], RecvDeque.front().get(), strlen(RecvDeque.front().get()));
-			idxOfCur += strlen(RecvDeque.front().get());
-			BufOfPackets[idxOfCur] = '\0';
-
-			// 패킷의 끝을 체크합니다.
-			if (BufOfPackets[idxOfCur - 1] == (char)3)
-				idxOfEnd = idxOfCur;
-
-			RecvDeque.pop_front();
-		}
-
-		// RecvDeque이 비거나 BufOfPackets 크기를 초과한다면
-		if (RecvDeque.empty() || (idxOfCur + strlen(RecvDeque.front().get())) >= MAX_BUFFER + 1)
-		{
-			if (idxOfEnd != idxOfCur) // 끝이 다르다면 패킷이 잘려있는 것이므로 잘린 부분을 다시 넣어줍니다.
-			{
-				RecvDeque.emplace_front(make_unique<char[]>(MAX_BUFFER + 1));
-
-				RecvDeque.front().get()[MAX_BUFFER] = '\0';
-				CopyMemory(RecvDeque.front().get(), &BufOfPackets[idxOfEnd], idxOfCur - idxOfEnd);
-				RecvDeque.front().get()[idxOfCur - idxOfEnd] = '\0';
-
-				BufOfPackets[idxOfEnd] = '\0';
-			}
 			break;
 		}
 	}
 
+	// 3가지 경우의 수가 존재합니다.
+	if (idxOfCur == 0) // 패킷이 존재하지 않으므로 바로 종료합니다.
+	{
+		return;
+	}
+	else if (idxOfCur < MAX_BUFFER) // RecvDeque이 비어있는 상태이므로 idxOfCur를 기준으로 패킷의 끝을 찾습니다.
+	{
+		idxOfEnd = idxOfCur - 1;
+	}
+	else if (idxOfCur >= MAX_BUFFER) // MAX_BUFFER 크기를 채운 상태이므로 MAX_BUFFER를 기준으로 패킷의 끝을 찾습니다.
+	{
+		idxOfEnd = MAX_BUFFER - 1;
+	}
+
+	// MAX_BUFFER 이내에 존재하는 패킷의 끝을 체크합니다.
+	for (; idxOfEnd > 0; idxOfEnd--)
+	{
+		if (BufOfPackets[idxOfEnd] == (char)3)
+		{
+			idxOfEnd++;
+			break;
+		}
+	}
+
+	// 같다면, 온전한 패킷들만 존재하므로 나머지가 없어서 다시 RecvDeque에 적재할 필요가 없습니다.
+	if (idxOfEnd == idxOfCur)
+	{
+		return;
+	}
+
+	// 나머지 부분을 다시 적재합니다.
+	size_t remaining = idxOfCur - idxOfEnd;
+	if (remaining <= MAX_BUFFER)
+	{
+		RecvDeque.emplace_front(make_unique<char[]>(MAX_BUFFER + 1));
+		RecvDeque.front().get()[MAX_BUFFER] = '\0';
+		CopyMemory(RecvDeque.front().get(), &BufOfPackets[idxOfEnd], remaining);
+		RecvDeque.front().get()[remaining] = '\0';
+
+		BufOfPackets[idxOfEnd] = '\0';
+	}
+	else // 나머지 부분의 크기가 MAX_BUFFER를 초과하면 분할해서 다시 적재해야 합니다.
+	{
+		size_t halfOfRemaining = (size_t)(remaining * 0.5);
+
+		// 뒤의 절반을 먼저 적재합니다.
+		RecvDeque.emplace_front(make_unique<char[]>(MAX_BUFFER + 1));
+		RecvDeque.front().get()[MAX_BUFFER] = '\0';
+		CopyMemory(RecvDeque.front().get(), &BufOfPackets[idxOfEnd + halfOfRemaining], remaining - halfOfRemaining);
+		RecvDeque.front().get()[remaining - halfOfRemaining] = '\0';
+
+		// 그다음 앞의 절반을 적재합니다.
+		RecvDeque.emplace_front(make_unique<char[]>(MAX_BUFFER + 1));
+		RecvDeque.front().get()[MAX_BUFFER] = '\0';
+		CopyMemory(RecvDeque.front().get(), &BufOfPackets[idxOfEnd], halfOfRemaining);
+		RecvDeque.front().get()[halfOfRemaining] = '\0';
+
+		BufOfPackets[idxOfEnd] = '\0';
+	}
+
+	CONSOLE_LOG("[Final] <CClient::GetPacketsFromRecvDeque(...)> %s \n", BufOfPackets);
 }
 
 void CClient::DividePacketsAndProcessThePacket(const char* const BufOfPackets)
@@ -531,10 +573,20 @@ void CClient::DividePacketsAndProcessThePacket(const char* const BufOfPackets)
 		uint16_t sizeOfPacket = 0;
 		sizeStream >> sizeOfPacket;
 
-		// 패킷의 전체크기가 0이거나 끝이 없거나 남은 버퍼 크기보다 클 경우 오류가 발생한 것이므로 패킷 처리를 중단합니다.
-		if (sizeOfPacket == 0 || BufOfPackets[sizeOfPacket - 1] != (char)3 || sizeOfPacket > strlen(&BufOfPackets[idxOfCur]))
+		// 패킷의 전체크기가 0이거나 남은 버퍼 크기보다 크거나 끝이 없는 경우, 오류가 발생한 것이므로 패킷 처리를 중단합니다.
+		if (sizeOfPacket == 0)
 		{
-			CONSOLE_LOG("\n\n\n\n\n[Error] <CClient::IOThread()> sizeOfPacket: %d \n\n\n\n\n\n", (int)sizeOfPacket);
+			CONSOLE_LOG("\n\n\n\n\n[Error] <CClient::IOThread()> if (sizeOfPacket == 0) \n\n\n\n\n\n");
+			break;;
+		}
+		if (sizeOfPacket > strlen(&BufOfPackets[idxOfCur]))
+		{
+			CONSOLE_LOG("\n\n\n\n\n[Error] <CClient::IOThread()> if (sizeOfPacket > strlen(&BufOfPackets[idxOfCur])) sizeOfPacket: %d \n\n\n\n\n\n", (int)sizeOfPacket);
+			break;;
+		}
+		if (BufOfPackets[idxOfCur + sizeOfPacket - 1] != (char)3)
+		{
+			CONSOLE_LOG("\n\n\n\n\n[Error] <CClient::IOThread()> if (BufOfPackets[sizeOfPacket - 1] != (char)3) sizeOfPacket: %d \n\n\n\n\n\n", (int)sizeOfPacket);
 			break;;
 		}
 
@@ -557,6 +609,8 @@ void CClient::ProcessThePacket(const char* const BufOfPacket)
 		return;
 	}
 	/****************************************/
+
+	CONSOLE_LOG("<CClient::ProcessThePacket(...)> %s \n", BufOfPacket);
 
 	stringstream recvStream;
 	recvStream << BufOfPacket;

@@ -74,7 +74,7 @@ void APioneerManager::SpawnWorldViewCameraActor(class AWorldViewCameraActor** Wo
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SpawnWorldViewCameraActor(...)> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::SpawnWorldViewCameraActor(...)> if (!world)"));
 		return;
 	}
 
@@ -98,7 +98,7 @@ void APioneerManager::FindPioneersInWorld()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::FindPioneersInWorld()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::FindPioneersInWorld()> if (!world)"));
 		return;
 	}
 
@@ -129,7 +129,7 @@ void APioneerManager::FindSceneCapture2D()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::FindSceneCapture2D()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::FindSceneCapture2D()> if (!world)"));
 		return;
 	}
 
@@ -157,7 +157,7 @@ void APioneerManager::SpawnPioneer(FTransform Transform)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SpawnPioneer(...)> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::SpawnPioneer(...)> if (!world)"));
 		return;
 	}
 
@@ -217,7 +217,7 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 	// 이미 존재하면 생성하지 않고 값만 설정합니다.
 	if (Pioneers.Contains(InfoOfPioneer.ID))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneerManager::SpawnPioneerByRecv(...)> if (Pioneers.Contains(InfoOfPioneer.ID))"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneerManager::SpawnPioneerByRecv(...)> if (Pioneers.Contains(InfoOfPioneer.ID))"));
 		Pioneers[InfoOfPioneer.ID]->SetInfoOfPioneer(InfoOfPioneer);
 		return;
 	}
@@ -225,7 +225,7 @@ void APioneerManager::SpawnPioneerByRecv(class cInfoOfPioneer& InfoOfPioneer)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SpawnPioneerByRecv(...)> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::SpawnPioneerByRecv(...)> if (!world)"));
 		return;
 	}
 	/*******************************************************************/
@@ -277,12 +277,12 @@ void APioneerManager::TickOfObservation()
 	}
 	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfObservation(...)> if (!PioneerController)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfObservation(...)> if (!PioneerController)"));
 		return;
 	}
 	if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfObservation(...)> if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfObservation(...)> if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)"));
 		return;
 	}
 	/***********************************************************************/
@@ -296,7 +296,7 @@ void APioneerManager::TickOfObservation()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfObservation(...)> if (!WorldViewCameraOfCurrentPioneer)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfObservation(...)> if (!WorldViewCameraOfCurrentPioneer)"));
 	}
 
 }
@@ -305,7 +305,7 @@ void APioneerManager::Observation()
 {
 	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::Observation(...)> if (!PioneerController)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::Observation(...)> if (!PioneerController)"));
 		return;
 	}
 	/***********************************************************************/
@@ -360,7 +360,7 @@ void APioneerManager::ObserveLeft()
 {
 	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveLeft(...)> if (!PioneerController)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveLeft(...)> if (!PioneerController)"));
 		return;
 	}
 	/***********************************************************************/
@@ -383,7 +383,7 @@ void APioneerManager::ObserveLeft()
 	else
 	{
 
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveLeft(...)> if (keys.IsValidIndex(currentIdx) == false)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveLeft(...)> if (keys.IsValidIndex(currentIdx) == false)"));
 	
 	}
 
@@ -393,7 +393,7 @@ void APioneerManager::ObserveRight()
 {
 	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveRight(...)> if (!PioneerController)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveRight(...)> if (!PioneerController)"));
 		return;
 	}
 	/***********************************************************************/
@@ -415,7 +415,7 @@ void APioneerManager::ObserveRight()
 		IdCurrentlyBeingObserved = keys[currentIdx];
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveRight(...)> if (keys.IsValidIndex(currentIdx) == false)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::ObserveRight(...)> if (keys.IsValidIndex(currentIdx) == false)"));
 	}
 	Observation();
 }
@@ -428,12 +428,12 @@ void APioneerManager::SwitchToFreeViewpoint()
 	}
 	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (!PioneerController)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (!PioneerController)"));
 		return;
 	}
 	if (!FreeViewCamera)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (!FreeViewCamera)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (!FreeViewCamera)"));
 		return;
 	}
 	/***********************************************************************/
@@ -444,7 +444,7 @@ void APioneerManager::SwitchToFreeViewpoint()
 	{
 		if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)
 		{
-			UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)"));
+			MY_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (ViewTarget->CopyTopDownCameraTo(CameraOfCurrentPioneer) == false)"));
 			return;
 		}
 
@@ -454,7 +454,7 @@ void APioneerManager::SwitchToFreeViewpoint()
 	{
 		if (!PioneerController->GetViewTarget())
 		{
-			UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (!PioneerController->GetViewTarget())"));
+			MY_LOG(LogTemp, Error, TEXT("<APioneerManager::SwitchToFreeViewpoint()> if (!PioneerController->GetViewTarget())"));
 			return;
 		}
 
@@ -484,17 +484,17 @@ void APioneerManager::PossessObservingPioneer()
 {
 	if (!ViewTarget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (!ViewTarget)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (!ViewTarget)"));
 		return;
 	}
 	if (!Pioneers.Contains(IdCurrentlyBeingObserved))
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (!Pioneers.Contains(IdCurrentlyBeingObserved))"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (!Pioneers.Contains(IdCurrentlyBeingObserved))"));
 		return;
 	}
 	if (Pioneers[IdCurrentlyBeingObserved]->bDying)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (Pioneers[IdCurrentlyBeingObserved]->bDying)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneer()> if (Pioneers[IdCurrentlyBeingObserved]->bDying)"));
 		return;
 	}
 	/***********************************************************************/
@@ -559,12 +559,12 @@ void APioneerManager::PossessObservingPioneerByRecv(const class cInfoOfPioneer_S
 {
 	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneerByRecv(...)> if (!PioneerController)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneerByRecv(...)> if (!PioneerController)"));
 		return;
 	}
 	if (!Pioneers.Contains(Socket.ID))
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneerByRecv(...)> if (!Pioneers.Contains(Socket.ID))"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::PossessObservingPioneerByRecv(...)> if (!Pioneers.Contains(Socket.ID))"));
 		
 		// 존재하지 않으면 자유시점 모드로 전환합니다.
 		SwitchToFreeViewpoint();
@@ -617,12 +617,12 @@ void APioneerManager::SetTimerForPossessPioneer(class APioneer* Pioneer)
 {
 	if (!Pioneer)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SetTimerForPossessPioneer(...)> if (!Pioneer)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::SetTimerForPossessPioneer(...)> if (!Pioneer)"));
 		return;
 	}
 	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::SetTimerForPossessPioneer(...)> if (!PioneerController)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::SetTimerForPossessPioneer(...)> if (!PioneerController)"));
 		return;
 	}
 
@@ -639,7 +639,7 @@ void APioneerManager::TickOfViewTarget()
 {
 	if (!InGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfViewTarget()> if (!InGameWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfViewTarget()> if (!InGameWidget)"));
 		return;
 	}
 	if (!ViewTarget)
@@ -677,7 +677,7 @@ void APioneerManager::TickOfResources()
 {
 	if (!InGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfResources()> if (!InGameWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<APioneerManager::TickOfResources()> if (!InGameWidget)"));
 		return;
 	}
 

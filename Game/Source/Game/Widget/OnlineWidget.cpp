@@ -23,7 +23,7 @@ bool UOnlineWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UOnlineWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UOnlineWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 
@@ -39,7 +39,7 @@ void UOnlineWidget::CheckTextOfID()
 {
 	if (!ID)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UOnlineWidget::CheckTextOfID()> if (!ID)"));
+		MY_LOG(LogTemp, Error, TEXT("<UOnlineWidget::CheckTextOfID()> if (!ID)"));
 		return;
 	}
 
@@ -65,7 +65,7 @@ void UOnlineWidget::CheckTextOfPort()
 {
 	if (!Port)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UOnlineWidget::CheckTextOfPort()> if (!Port)"));
+		MY_LOG(LogTemp, Error, TEXT("<UOnlineWidget::CheckTextOfPort()> if (!Port)"));
 		return;
 	}
 

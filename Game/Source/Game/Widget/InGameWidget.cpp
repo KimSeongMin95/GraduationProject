@@ -58,7 +58,7 @@ bool UInGameWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 
@@ -107,7 +107,7 @@ void UInGameWidget::SetArrowButtonsVisibility(bool bVisible)
 {
 	if (!LeftArrowButton || !RightArrowButton)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetArrowButtonsVisibility(...)> if (!LeftArrowButton || !RightArrowButton)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetArrowButtonsVisibility(...)> if (!LeftArrowButton || !RightArrowButton)"));
 		return;
 	}
 
@@ -126,7 +126,7 @@ void UInGameWidget::SetPossessButtonVisibility(bool bVisible)
 {
 	if (!PossessButton)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetPossessButtonVisibility(...)> if (!PossessButton)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetPossessButtonVisibility(...)> if (!PossessButton)"));
 		return;
 	}
 
@@ -143,7 +143,7 @@ void UInGameWidget::SetFreeViewpointButtonVisibility(bool bVisible)
 {
 	if (!FreeViewpointButton)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetFreeViewpointButtonVisibility(...)> if (!FreeViewpointButton)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetFreeViewpointButtonVisibility(...)> if (!FreeViewpointButton)"));
 		return;
 	}
 
@@ -160,7 +160,7 @@ void UInGameWidget::SetObservingButtonVisibility(bool bVisible)
 {
 	if (!ObservingButton)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetObservingButtonVisibility(...)> if (!ObservingButton)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetObservingButtonVisibility(...)> if (!ObservingButton)"));
 		return;
 	}
 
@@ -178,7 +178,7 @@ void UInGameWidget::SetTextOfResources(int nPioneer, const class cInfoOfResource
 {
 	if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfResources(...)> if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfResources(...)> if (!NumOfPioneer || !NumOfMineral || !NumOfOrganic || !NumOfEnergy)"));
 		return;
 	}
 
@@ -192,7 +192,7 @@ void UInGameWidget::SetBuildingBoxVisibility(bool bVisible)
 {
 	if (!BuildingBox)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetBuildingBoxVisibility(...)> if (!BuildingBox)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetBuildingBoxVisibility(...)> if (!BuildingBox)"));
 		return;
 	}
 
@@ -210,7 +210,7 @@ void UInGameWidget::SetPioneerBoxVisibility(bool bVisible)
 {
 	if (!PioneerBox)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetPioneerBoxVisibility(...)> if (!PioneerBox)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetPioneerBoxVisibility(...)> if (!PioneerBox)"));
 		return;
 	}
 
@@ -227,13 +227,13 @@ void UInGameWidget::SetTextOfPioneerBox(class APioneer* Pioneer)
 {
 	if (!Pioneer)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfPioneerBox(...)> if (!Pioneer)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfPioneerBox(...)> if (!Pioneer)"));
 		return;
 	}
 	if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !LevelOfPioneer ||
 		!ExpOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfPioneerBox(...)> if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !LevelOfPioneer ||!ExpOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfPioneerBox(...)> if (!HealthOfPioneer || !IDOfPioneer || !MoveSpeedOfPioneer || !LevelOfPioneer ||!ExpOfPioneer || !SightRangeOfPioneer || !DetectRangeOfPioneer || !AttackRangeOfPioneer)"));
 		return;
 	}
 
@@ -266,7 +266,7 @@ void UInGameWidget::SetWeaponBoxVisibility(bool bVisible)
 {
 	if (!WeaponBox)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetWeaponBoxVisibility(...)> if (!WeaponBox)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetWeaponBoxVisibility(...)> if (!WeaponBox)"));
 		return;
 	}
 
@@ -283,17 +283,17 @@ void UInGameWidget::SetTextOfWeaponBox(class AWeapon* Weapon)
 {
 	if (!Weapon)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfWeaponBox(...)> if (!Weapon)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfWeaponBox(...)> if (!Weapon)"));
 		return;
 	}
 	if (!ImageOfPistol || !ImageOfAssaultRifle || !ImageOfShotgun || !ImageOfSniperRifle || !ImageOfGrenadeLauncher || !ImageOfRocketLauncher)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfWeaponBox(...)> if (!ImageOfPistol || !ImageOfAssaultRifle || !ImageOfShotgun || !ImageOfSniperRifle || !ImageOfGrenadeLauncher || !ImageOfRocketLauncher)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfWeaponBox(...)> if (!ImageOfPistol || !ImageOfAssaultRifle || !ImageOfShotgun || !ImageOfSniperRifle || !ImageOfGrenadeLauncher || !ImageOfRocketLauncher)"));
 		return;
 	}
 	if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfWeaponBox(...)> if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon)"));
+		MY_LOG(LogTemp, Error, TEXT("<UInGameWidget::SetTextOfWeaponBox(...)> if (!LimitedLevelOfWeapon || !AttackPowerOfWeapon || !AttackSpeedOfWeapon || !AttackRangeOfWeapon || !ReloadTimeOfWeapon)"));
 		return;
 	}
 

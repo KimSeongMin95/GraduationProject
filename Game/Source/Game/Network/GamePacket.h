@@ -211,7 +211,7 @@ public:
 
 	void PrintInfo(const TCHAR* Space = _T("    "), const TCHAR* Space2 = _T(""))
 	{
-		CONSOLE_LOG("%s%s<cInfoOfPioneer_Socket> ID: %d, SocketID : %d, NameOfID: %s\n",
+		CONSOLE_LOG("%s%s<cInfoOfPioneer_Socket> ID: %d, SocketID : %d, NameOfID: %s \n",
 			TCHAR_TO_ANSI(Space), TCHAR_TO_ANSI(Space2), ID, SocketID, NameOfID.c_str());
 	}
 };

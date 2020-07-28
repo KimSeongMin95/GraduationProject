@@ -63,7 +63,7 @@ void AProjectileSplash::SetSplashRange(float Radius)
 {
 	if (!SplashRange)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AProjectileRocketLauncher::InitSplashRange: if (!SplashRange)"));
+		MY_LOG(LogTemp, Warning, TEXT("AProjectileRocketLauncher::InitSplashRange: if (!SplashRange)"));
 		return;
 	}
 

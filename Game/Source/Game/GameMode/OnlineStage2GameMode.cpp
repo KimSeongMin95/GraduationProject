@@ -45,7 +45,7 @@ void AOnlineStage2GameMode::TickOfSpaceShip(float DeltaTime)
 {
 	if (!SpaceShip)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineStage2GameMode::TickOfSpaceShip()> if (!SpaceShip)"));
+		MY_LOG(LogTemp, Error, TEXT("<AOnlineStage2GameMode::TickOfSpaceShip()> if (!SpaceShip)"));
 		return;
 	}
 	/***********************************************************/
@@ -96,7 +96,7 @@ void AOnlineStage2GameMode::FindQcuupationPanel()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<AOnlineGameMode2::FindQcuupationPanel()> if (!world)"));
+		MY_LOG(LogTemp, Warning, TEXT("<AOnlineGameMode2::FindQcuupationPanel()> if (!world)"));
 		return;
 	}
 

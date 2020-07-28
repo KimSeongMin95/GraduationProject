@@ -21,7 +21,7 @@ bool USettingsWidget::InitWidget(UWorld* const World, const FString ReferencePat
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<USettingsWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<USettingsWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 

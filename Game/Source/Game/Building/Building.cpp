@@ -98,7 +98,7 @@ void ABuilding::BeginPlayHelthPointBar()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!world)"));
 		return;
 	}
 
@@ -118,17 +118,17 @@ void ABuilding::BeginPlayHelthPointBar()
 			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
 			if (!ProgressBar)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!ProgressBar)"));
+				MY_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!ProgressBar)"));
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!WidgetTree)"));
+			MY_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!WidgetTree)"));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
+		MY_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
 	}
 
 	HelthPointBar->SetWidget(HelthPointBarUserWidget);
@@ -234,9 +234,9 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 		center.Z = -1.0f * (minBounds.Z * Scale.Z);
 		(*StaticMeshComp)->SetRelativeLocation(center + Location);
 
-		//UE_LOG(LogTemp, Log, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
-		//UE_LOG(LogTemp, Log, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
-		//UE_LOG(LogTemp, Log, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
+		//MY_LOG(LogTemp, Log, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		//MY_LOG(LogTemp, Log, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
+		//MY_LOG(LogTemp, Log, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
 	}
 
 	ConstructBuildingSMCs.Add(*StaticMeshComp);
@@ -291,9 +291,9 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 		TArrayOfUMaterialInterface.Object = (*StaticMeshComp)->GetMaterials();
 		BuildingSMCsMaterials.Add(TArrayOfUMaterialInterface);
 
-		//UE_LOG(LogTemp, Log, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
-		//UE_LOG(LogTemp, Log, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
-		//UE_LOG(LogTemp, Log, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
+		//MY_LOG(LogTemp, Log, TEXT("%s minBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), minBounds.X, minBounds.Y, minBounds.Z);
+		//MY_LOG(LogTemp, Log, TEXT("%s maxBounds: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), maxBounds.X, maxBounds.Y, maxBounds.Z);
+		//MY_LOG(LogTemp, Log, TEXT("%s center: %f, %f, %f"), *(*StaticMeshComp)->GetFName().ToString(), center.X, center.Y, center.Z);
 	}
 
 	BuildingSMCs.Add(*StaticMeshComp);
@@ -335,7 +335,7 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp,
 
 void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//UE_LOG(LogTemp, Log, TEXT("<ABuilding::OnOverlapBegin_Building(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
+	//MY_LOG(LogTemp, Log, TEXT("<ABuilding::OnOverlapBegin_Building(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
  
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
@@ -450,7 +450,9 @@ void ABuilding::SetHealthPoint(float Value)
 	/************************************/
 
 	if (!BuildingManager)
-		UE_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager)"));
+	{
+		MY_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager)"));
+	}
 
 	BuildingState = EBuildingState::Destroying;
 
@@ -465,7 +467,7 @@ void ABuilding::SetHealthPoint(float Value)
 		}
 		else
 		{
-			//UE_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager->Buildings.Contains(ID))"));
+			//MY_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager->Buildings.Contains(ID))"));
 			Destroy();
 			return;
 		}
@@ -497,7 +499,7 @@ void ABuilding::SetConstructableMaterial()
 {
 	if (!ConstructableMaterial)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<ABuilding::SetConstructableMaterial()> if (!ConstructableMaterial)"));
+		MY_LOG(LogTemp, Warning, TEXT("<ABuilding::SetConstructableMaterial()> if (!ConstructableMaterial)"));
 		return;
 	}
 	for (auto& BuildingSMC : BuildingSMCs)
@@ -519,7 +521,7 @@ void ABuilding::SetUnConstructableMaterial()
 {
 	if (!UnConstructableMaterial)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<ABuilding::SetUnConstructableMaterial()> if (!UnConstructableMaterial)"));
+		MY_LOG(LogTemp, Warning, TEXT("<ABuilding::SetUnConstructableMaterial()> if (!UnConstructableMaterial)"));
 		return;
 	}
 	for (auto& BuildingSMC : BuildingSMCs)

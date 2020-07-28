@@ -21,7 +21,7 @@ bool UDialogWidget::InitWidget(UWorld* const World, const FString ReferencePath,
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UDialogWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UDialogWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 
@@ -35,7 +35,7 @@ void UDialogWidget::SetText(FText Text)
 {
 	if (!MultiLineEditableText)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UDialogWidget::SetText(...)> if (!MultiLineEditableText)"));
+		MY_LOG(LogTemp, Error, TEXT("<UDialogWidget::SetText(...)> if (!MultiLineEditableText)"));
 	}
 
 	MultiLineEditableText->SetText(Text);

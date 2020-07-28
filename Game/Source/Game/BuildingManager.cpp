@@ -42,7 +42,7 @@ void ABuildingManager::BeginPlay()
 		UWorld* const world = GetWorld();
 		if (!world)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("<APioneer::BeginPlay()> if (!world)"));
+			MY_LOG(LogTemp, Warning, TEXT("<APioneer::BeginPlay()> if (!world)"));
 			return;
 		}
 
@@ -67,7 +67,7 @@ void ABuildingManager::BeginPlay()
 		UWorld* const world = GetWorld();
 		if (!world)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("<APioneer::BeginPlay()> if (!world)"));
+			MY_LOG(LogTemp, Warning, TEXT("<APioneer::BeginPlay()> if (!world)"));
 			return;
 		}
 
@@ -90,7 +90,7 @@ class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<ABuildingManager::SpawnBuilding(...)> if (!world)"));
+		MY_LOG(LogTemp, Warning, TEXT("<ABuildingManager::SpawnBuilding(...)> if (!world)"));
 		return nullptr;
 	}
 
@@ -132,7 +132,7 @@ class ABuilding* ABuildingManager::SpawnBuilding(int Value)
 		building = world->SpawnActor<ARocketLauncherTurret>(ARocketLauncherTurret::StaticClass(), myTrans, SpawnParams);
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("<APioneer::SpawnBuilding(...)> switch ((EBuildingType)Value) default:"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneer::SpawnBuilding(...)> switch ((EBuildingType)Value) default:"));
 		break;
 	}
 
@@ -149,7 +149,7 @@ void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuil
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<APioneer::RecvSpawnBuilding(...)> if (!world)"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneer::RecvSpawnBuilding(...)> if (!world)"));
 		return;
 	}
 
@@ -191,7 +191,7 @@ void ABuildingManager::RecvSpawnBuilding(class cInfoOfBuilding_Spawn& InfoOfBuil
 		building = world->SpawnActor<ARocketLauncherTurret>(ARocketLauncherTurret::StaticClass(), myTrans, SpawnParams);
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("<APioneer::RecvSpawnBuilding(...)> switch ((EBuildingType)Value) default:"));
+		MY_LOG(LogTemp, Warning, TEXT("<APioneer::RecvSpawnBuilding(...)> switch ((EBuildingType)Value) default:"));
 		break;
 	}
 

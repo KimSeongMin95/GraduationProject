@@ -39,7 +39,7 @@ void AOnlineStage1GameMode::TickOfSpaceShip(float DeltaTime)
 {
 	if (!SpaceShip)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AOnlineStage1GameMode::TickOfSpaceShip()> if (!SpaceShip)"));
+		MY_LOG(LogTemp, Error, TEXT("<AOnlineStage1GameMode::TickOfSpaceShip()> if (!SpaceShip)"));
 		return;
 	}
 	/***********************************************************/

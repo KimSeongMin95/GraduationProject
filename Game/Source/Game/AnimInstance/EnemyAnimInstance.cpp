@@ -35,7 +35,7 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 
 	if (!TryGetPawnOwner())
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!TryGetPawnOwner())"));
+		MY_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!TryGetPawnOwner())"));
 		return;
 	}
 
@@ -48,7 +48,7 @@ void UEnemyAnimInstance::NativeUpdateAnimation(float DeltaTimeX)
 				Enemy = Cast<AEnemy>(Owner);
 		}
 
-		UE_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!Enemy)"));
+		MY_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::NativeUpdateAnimation(...)> if (!Enemy)"));
 		return;
 	}
 
@@ -82,12 +82,12 @@ void UEnemyAnimInstance::DestroyCharacter()
 {
 	if (!TryGetPawnOwner())
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::DestroyCharacter()> if (!TryGetPawnOwner())"));
+		MY_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::DestroyCharacter()> if (!TryGetPawnOwner())"));
 		return;
 	}
 	if (!Enemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::DestroyCharacter()> if (!Enemy)"));
+		MY_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::DestroyCharacter()> if (!Enemy)"));
 		return;
 	}
 
@@ -101,12 +101,12 @@ void UEnemyAnimInstance::DamageToTargetActor()
 {
 	if (!TryGetPawnOwner())
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::DamageToTargetActor()> if (!TryGetPawnOwner())"));
+		MY_LOG(LogTemp, Error, TEXT("<UEnemyAnimInstance::DamageToTargetActor()> if (!TryGetPawnOwner())"));
 		return;
 	}
 	if (!Enemy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::DamageToTargetActor()> if (!Enemy)"));
+		MY_LOG(LogTemp, Warning, TEXT("<UEnemyAnimInstance::DamageToTargetActor()> if (!Enemy)"));
 		return;
 	}
 

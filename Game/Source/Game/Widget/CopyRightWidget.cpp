@@ -21,7 +21,7 @@ bool UCopyRightWidget::InitWidget(UWorld* const World, const FString ReferencePa
 
 	if (!WidgetTree)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<UCopyRightWidget::InitWidget(...)> if (!WidgetTree)"));
+		MY_LOG(LogTemp, Error, TEXT("<UCopyRightWidget::InitWidget(...)> if (!WidgetTree)"));
 		return false;
 	}
 

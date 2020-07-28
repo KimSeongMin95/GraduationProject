@@ -51,11 +51,12 @@ AInGameMode::AInGameMode()
 
 	PlayerControllerClass = APioneerController::StaticClass();
 
-	CConsole::GetSingleton()->AllocConsole();
+	//CConsole::GetSingleton()->AllocConsole();
+	CConsole::GetSingleton()->AllocConsoleTest();
 }
 AInGameMode::~AInGameMode()
 {
-	//CConsole::GetSingleton()->FreeConsole();
+	
 }
 
 void AInGameMode::BeginPlay()
@@ -65,7 +66,7 @@ void AInGameMode::BeginPlay()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<ATutorialGameMode::BeginPlay()> if (!world)"));		
+		MY_LOG(LogTemp, Error, TEXT("<ATutorialGameMode::BeginPlay()> if (!world)"));		
 		return;
 	}
 
@@ -131,14 +132,14 @@ void AInGameMode::FindPioneerController()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::FindPioneerController()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::FindPioneerController()> if (!world)"));
 		return;
 	}
 
 	// UWorld에서 APioneerController를 찾습니다.
 	for (TActorIterator<APioneerController> ActorItr(world); ActorItr; ++ActorItr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("<AInGameMode::FindPioneerController()> found APioneerController."));
+		MY_LOG(LogTemp, Log, TEXT("<AInGameMode::FindPioneerController()> found APioneerController."));
 		PioneerController = *ActorItr;
 	}
 }
@@ -148,7 +149,7 @@ void AInGameMode::SpawnPioneerManager()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::SpawnPioneerManager()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::SpawnPioneerManager()> if (!world)"));
 		return;
 	}
 
@@ -165,7 +166,7 @@ void AInGameMode::SpawnSpaceShip()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::SpawnSpaceShip(...)> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::SpawnSpaceShip(...)> if (!world)"));
 		return;
 	}
 
@@ -181,7 +182,7 @@ void AInGameMode::SpawnBuildingManager()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::SpawnBuildingManager()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::SpawnBuildingManager()> if (!world)"));
 		return;
 	}
 
@@ -197,7 +198,7 @@ void AInGameMode::SpawnEnemyManager()
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::SpawnEnemyManager()> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::SpawnEnemyManager()> if (!world)"));
 		return;
 	}
 
@@ -221,7 +222,7 @@ void AInGameMode::ActivateInGameWidget()
 {
 	if (!InGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameWidget()> if (!InGameWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameWidget()> if (!InGameWidget)"));
 		return;
 	}
 
@@ -231,7 +232,7 @@ void AInGameMode::DeactivateInGameWidget()
 {
 	if (!InGameWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameWidget()> if (!InGameWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameWidget()> if (!InGameWidget)"));
 		return;
 	}
 
@@ -242,7 +243,7 @@ void AInGameMode::ActivateInGameMenuWidget()
 {
 	if (!MenuWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameMenuWidget()> if (!MenuWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameMenuWidget()> if (!MenuWidget)"));
 		return;
 	}
 
@@ -252,7 +253,7 @@ void AInGameMode::DeactivateInGameMenuWidget()
 {
 	if (!MenuWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameMenuWidget()> if (!MenuWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameMenuWidget()> if (!MenuWidget)"));
 		return;
 	}
 
@@ -262,7 +263,7 @@ void AInGameMode::ToggleInGameMenuWidget()
 {
 	if (!MenuWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_ToggleInGameMenuWidget()> if (!MenuWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::_ToggleInGameMenuWidget()> if (!MenuWidget)"));
 		return;
 	}
 
@@ -273,7 +274,7 @@ void AInGameMode::ActivateInGameScoreBoardWidget()
 {
 	if (!ScoreBoardWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameScoreBoardWidget()> if (!ScoreBoardWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameScoreBoardWidget()> if (!ScoreBoardWidget)"));
 		return;
 	}
 
@@ -283,7 +284,7 @@ void AInGameMode::DeactivateInGameScoreBoardWidget()
 {
 	if (!ScoreBoardWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameScoreBoardWidget()> if (!ScoreBoardWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameScoreBoardWidget()> if (!ScoreBoardWidget)"));
 		return;
 	}
 
@@ -293,7 +294,7 @@ void AInGameMode::ToggleInGameScoreBoardWidget()
 {
 	if (!ScoreBoardWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_ToggleInGameScoreBoardWidget()> if (!ScoreBoardWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::_ToggleInGameScoreBoardWidget()> if (!ScoreBoardWidget)"));
 		return;
 	}
 
@@ -304,7 +305,7 @@ void AInGameMode::LeftArrowInGameWidget()
 {
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_LeftArrowInGameWidget()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::_LeftArrowInGameWidget()> if (!PioneerManager)"));
 		return;
 	}
 
@@ -314,7 +315,7 @@ void AInGameMode::RightArrowInGameWidget()
 {
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_RightArrowInGameWidget()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::_RightArrowInGameWidget()> if (!PioneerManager)"));
 		return;
 	}
 
@@ -325,7 +326,7 @@ void AInGameMode::PossessInGameWidget()
 {
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_PossessInGameWidget()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::_PossessInGameWidget()> if (!PioneerManager)"));
 		return;
 	}
 
@@ -336,7 +337,7 @@ void AInGameMode::FreeViewpointInGameWidget()
 {
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_FreeViewpointInGameWidget()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::_FreeViewpointInGameWidget()> if (!PioneerManager)"));
 		return;
 	}
 
@@ -347,7 +348,7 @@ void AInGameMode::ObservingInGameWidget()
 {
 	if (!PioneerManager)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_ObservingInGameWidget()> if (!PioneerManager)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::_ObservingInGameWidget()> if (!PioneerManager)"));
 		return;
 	}
 
@@ -358,7 +359,7 @@ void AInGameMode::SpawnBuildingInGameWidget(int Value)
 {
 	if (!PioneerController)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_SpawnBuildingInGameWidget(...)> if (!PioneerController)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::_SpawnBuildingInGameWidget(...)> if (!PioneerController)"));
 		return;
 	}
 
@@ -371,7 +372,7 @@ void AInGameMode::ActivateInGameVictoryWidget()
 {
 	if (!VictoryWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameVictoryWidget()> if (!VictoryWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameVictoryWidget()> if (!VictoryWidget)"));
 		return;
 	}
 
@@ -381,7 +382,7 @@ void AInGameMode::DeactivateInGameVictoryWidget()
 {
 	if (!VictoryWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameVictoryWidget()> if (!VictoryWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameVictoryWidget()> if (!VictoryWidget)"));
 		return;
 	}
 
@@ -391,7 +392,7 @@ void AInGameMode::ActivateInGameDefeatWidget()
 {
 	if (!DefeatWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameDefeatWidget()> if (!DefeatWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateInGameDefeatWidget()> if (!DefeatWidget)"));
 		return;
 	}
 
@@ -401,7 +402,7 @@ void AInGameMode::DeactivateInGameDefeatWidget()
 {
 	if (!DefeatWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameDefeatWidget()> if (!DefeatWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateInGameDefeatWidget()> if (!DefeatWidget)"));
 		return;
 	}
 
@@ -412,7 +413,7 @@ void AInGameMode::ActivateBuildingToolTipWidget()
 {
 	if (!BuildingToolTipWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
 
 		return;
 	}
@@ -423,7 +424,7 @@ void AInGameMode::DeactivateBuildingToolTipWidget()
 {
 	if (!BuildingToolTipWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
 		return;
 	}
 
@@ -433,7 +434,7 @@ void AInGameMode::SetTextOfBuildingToolTipWidget(int BuildingType)
 {
 	if (!BuildingToolTipWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_SetTextOfBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::_SetTextOfBuildingToolTipWidget()> if (!BuildingToolTipWidget)"));
 		return;
 	}
 
@@ -444,7 +445,7 @@ void AInGameMode::ActivateDialogWidget(float TimeOfDuration)
 {
 	if (!DialogWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateDialogWidget()> if (!DialogWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::ActivateDialogWidget()> if (!DialogWidget)"));
 		return;
 	}
 
@@ -458,7 +459,7 @@ void AInGameMode::DeactivateDialogWidget()
 {
 	if (!DialogWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateDialogWidget()> if (!DialogWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::DeactivateDialogWidget()> if (!DialogWidget)"));
 		return;
 	}
 
@@ -468,7 +469,7 @@ void AInGameMode::SetTextOfDialogWidget(FText Text)
 {
 	if (!DialogWidget)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AInGameMode::_SetTextOfBuildingToolTipWidget()> if (!DialogWidget)"));
+		MY_LOG(LogTemp, Error, TEXT("<AInGameMode::_SetTextOfBuildingToolTipWidget()> if (!DialogWidget)"));
 		return;
 	}
 

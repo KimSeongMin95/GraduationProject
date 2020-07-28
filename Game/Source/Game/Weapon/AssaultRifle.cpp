@@ -61,7 +61,7 @@ bool AAssaultRifle::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 	UWorld* const world = GetWorld();
 	if (!world)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AAssaultRifle::Fire(...)> if (!world)"));
+		MY_LOG(LogTemp, Error, TEXT("<AAssaultRifle::Fire(...)> if (!world)"));
 		return false;
 	}
 

@@ -149,7 +149,7 @@ void AGate::TickOfOpenAndCloseTheGate(float DeltaTime)
 {
 	if (!BuildingSMC_2)
 	{
-		UE_LOG(LogTemp, Error, TEXT("<AGate::TickOfOpenAndCloseTheGate(...)> if (!BuildingSMC_2)"));
+		MY_LOG(LogTemp, Error, TEXT("<AGate::TickOfOpenAndCloseTheGate(...)> if (!BuildingSMC_2)"));
 		return;
 	}
 
