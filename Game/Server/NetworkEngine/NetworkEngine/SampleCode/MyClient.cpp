@@ -8,36 +8,22 @@
 
 unique_ptr<CNetworkComponent> CMyClient::Client;
 
-CInfoOfClient CMyClient::MyInfoOfClient;
-CRITICAL_SECTION CMyClient::csMyInfoOfClient;
-
-CThreadSafetyQueue<bool> CMyClient::AcceptTSQ;
-CThreadSafetyQueue<bool> CMyClient::RejectTSQ;
-CThreadSafetyQueue<CInfoOfClient> CMyClient::CreateTSQ;
-CThreadSafetyQueue<CInfoOfClient> CMyClient::MoveTSQ;
-CThreadSafetyQueue<CInfoOfClient> CMyClient::ExitTSQ;
+CThreadSafetyQueue<CPlayerPacket> CMyClient::tsqPlayerPacket;
 
 CMyClient::CMyClient()
 {
-	// 크리티컬 섹션에 스핀락을 걸고 초기화에 성공할때까지 시도합니다.
-	while (InitializeCriticalSectionAndSpinCount(&csMyInfoOfClient, SPIN_COUNT) == false);
-
 	Client = make_unique<CNetworkComponent>(ENetworkComponentType::NCT_Client);
 	if (Client)
 	{
-		Client->RegisterConCBF(ConnectCBF);
-		Client->RegisterDisconCBF(DisconnectCBF);
+		Client->RegisterConCBF(ConnectCBF); // 서버에 접속하면 실행할 정적 콜백함수를 등록합니다.
+		Client->RegisterDisconCBF(DisconnectCBF); // 서버와 접속을 종료하면 실행할 정적 콜백함수를 등록합니다.
 
-		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Accept, RecvAccept);
-		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Reject, RecvReject);
-		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Create, RecvCreate);
-		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Move, RecvMove);
-		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Exit, RecvExit);
+		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Data, RecvData); // 패킷의 헤더에 대응하여 실행할 정적 함수를 등록합니다.
+		Client->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::BigData, RecvBigData); // 패킷의 헤더에 대응하여 실행할 정적 함수를 등록합니다.
 	}
 }
 CMyClient::~CMyClient()
 {
-	DeleteCriticalSection(&csMyInfoOfClient);
 }
 
 CMyClient* CMyClient::GetSingleton()
@@ -89,7 +75,6 @@ void CMyClient::Close()
 void CMyClient::ConnectCBF(CCompletionKey CompletionKey)
 {
 	CONSOLE_LOG("[Start] <CMyClient::ConnectCBF(...)> \n");
-
 	CompletionKey.PrintInfo("\t <CMyClient::ConnectCBF(...)>");
 
 	CONSOLE_LOG("[End] <CMyClient::ConnectCBF(...)> \n");
@@ -97,109 +82,72 @@ void CMyClient::ConnectCBF(CCompletionKey CompletionKey)
 void CMyClient::DisconnectCBF(CCompletionKey CompletionKey)
 {
 	CONSOLE_LOG("[Start] <CMyClient::DisconnectCBF(...)> \n");
-
-	CompletionKey.PrintInfo("\t <CMyClient::ConnectCBF(...)>");
+	CompletionKey.PrintInfo("\t <CMyClient::DisconnectCBF(...)>");
 
 	CONSOLE_LOG("[End] <CMyClient::DisconnectCBF(...)> \n");
 }
 
-void CMyClient::SendLogin()
+void CMyClient::SendData()
 {
-	CONSOLE_LOG("[Start] <CMyClient::SendLogin()> \n");
+	CONSOLE_LOG("[Start] <CMyClient::SendData()> \n");
 
-	EnterCriticalSection(&csMyInfoOfClient);
-	CInfoOfClient infoOfClient = MyInfoOfClient;
-	LeaveCriticalSection(&csMyInfoOfClient);
+	CPlayerPacket player("Hello world.", 1, 2, 3);
+	player.PrintInfo("\t <CMyClient::SendData()>");
 
-	CPacket packet((uint16_t)EMyPacketHeader::Login);
-	packet.GetData() << infoOfClient << endl;
-	if (Client) Client->Send(packet);
+	CPacket dataPacket((uint16_t)EMyPacketHeader::Data);
+	dataPacket.GetData() << player << endl;
+	if (Client) Client->Send(dataPacket);
 
-	infoOfClient.PrintInfo("\t <CMyClient::SendLogin()>");
-	CONSOLE_LOG("[End] <CMyClient::SendLogin()> \n");
+	CONSOLE_LOG("[End] <CMyClient::SendData()> \n");
 }
-void CMyClient::RecvAccept(stringstream& RecvStream, const SOCKET& Socket)
+void CMyClient::RecvData(stringstream& RecvStream, const SOCKET& Socket)
 {
-	AcceptTSQ.push(true);
-	CONSOLE_LOG("[Info] <CMyClient::RecvAccept(...)> AcceptTSQ.push(true); \n");
-}
-void CMyClient::RecvReject(stringstream& RecvStream, const SOCKET& Socket)
-{
-	RejectTSQ.push(true);
-	CONSOLE_LOG("[Info] <CMyClient::RecvReject(...)> RejectTSQ.push(true); \n");
-}
-void CMyClient::RecvCreate(stringstream& RecvStream, const SOCKET& Socket)
-{
-	CONSOLE_LOG("[Start] <CMyClient::RecvCreate(...)> \n");
+	CONSOLE_LOG("[Start] <CMyClient::RecvData(...)> \n");
 
-	CInfoOfClient infoOfClient;
-	while (RecvStream >> infoOfClient)
+	CPlayerPacket player;
+	if (RecvStream >> player)
 	{
-		CreateTSQ.push(infoOfClient);
-		CONSOLE_LOG("[Info] <CMyClient::RecvCreate(...)> CreateTSQ.push(infoOfClient); \n");
-		infoOfClient.PrintInfo("\t <CMyClient::RecvCreate(...)>");
+		tsqPlayerPacket.push(player);
+		player.PrintInfo("\t <CMyClient::RecvData(...)>");
 	}
 
-	CONSOLE_LOG("[End] <CMyClient::RecvCreate(...)> \n");
+	CONSOLE_LOG("[End] <CMyClient::RecvData(...)> \n");
 }
-void CMyClient::SendMove()
+void CMyClient::SendBigData()
 {
-	CONSOLE_LOG("[Start] <CMyClient::SendMove()> \n");
+	CONSOLE_LOG("[Start] <CMyClient::SendBigData()> \n");
 
-	EnterCriticalSection(&csMyInfoOfClient);
-	CInfoOfClient infoOfClient = MyInfoOfClient;
-	LeaveCriticalSection(&csMyInfoOfClient);
-
-	CPacket packet((uint16_t)EMyPacketHeader::Move);
-	packet.GetData() << infoOfClient << endl;
-	if (Client) Client->Send(packet);
-
-	infoOfClient.PrintInfo("\t <CMyClient::SendMove()>");
-	CONSOLE_LOG("[End] <CMyClient::SendMove()> \n");
-}
-void CMyClient::RecvMove(stringstream& RecvStream, const SOCKET& Socket)
-{
-	CONSOLE_LOG("[Start] <CMyClient::RecvMove(...)> \n");
-
-	CInfoOfClient infoOfClient;
-	RecvStream >> infoOfClient;
-
-	MoveTSQ.push(infoOfClient);
-	CONSOLE_LOG("[Info] <CMyClient::RecvMove(...)> MoveTSQ.push(infoOfClient); \n");
-	infoOfClient.PrintInfo("\t <CMyClient::RecvMove(...)>");
-
-	CONSOLE_LOG("[End] <CMyClient::RecvMove(...)> \n");
-}
-void CMyClient::RecvExit(stringstream& RecvStream, const SOCKET& Socket)
-{
-	CONSOLE_LOG("[Start] <CMyClient::RecvExit(...)> \n");
-
-	CInfoOfClient infoOfClient;
-	RecvStream >> infoOfClient;
-
-	ExitTSQ.push(infoOfClient);
-	CONSOLE_LOG("[Info] <CMyClient::RecvExit(...)> ExitTSQ.push(infoOfClient); \n");
-	infoOfClient.PrintInfo("\t <CMyClient::RecvExit(...)>");
-
-	CONSOLE_LOG("[End] <CMyClient::RecvExit(...)> \n");
-}
-
-void CMyClient::SetID(const char* c_str)
-{
-	EnterCriticalSection(&csMyInfoOfClient);
-	MyInfoOfClient.ID = c_str;
-	LeaveCriticalSection(&csMyInfoOfClient);
-}
-void CMyClient::SetRandomPos()
-{
 	random_device rd;
 	mt19937_64 rand(rd());
 	uniform_int_distribution<int> range(0, 10);
 
-	EnterCriticalSection(&csMyInfoOfClient);
-	MyInfoOfClient.PosX = (float)range(rand);
-	MyInfoOfClient.PosY = (float)range(rand);
-	MyInfoOfClient.PosZ = (float)range(rand);
-	MyInfoOfClient.PrintInfo("\t <CMyClient::SetRandomPos()>");
-	LeaveCriticalSection(&csMyInfoOfClient);
+	CPlayerPacket player;
+	CPacket dataPacket((uint16_t)EMyPacketHeader::BigData);
+
+	for (int i = 0; i < 26; i++)
+	{
+		player.Message = "Hello world.";
+		player.PosX = (float)range(rand);
+		player.PosY = (float)range(rand);
+		player.PosZ = (float)range(rand);
+		player.PrintInfo("\t <CMyClient::SendBigData()>");
+
+		dataPacket.GetData() << player << endl;
+	}
+	if (Client) Client->Send(dataPacket);
+
+	CONSOLE_LOG("[End] <CMyClient::SendBigData()> \n");
+}
+void CMyClient::RecvBigData(stringstream& RecvStream, const SOCKET& Socket)
+{
+	CONSOLE_LOG("[Start] <CMyClient::RecvBigData(...)> \n");
+
+	CPlayerPacket player;
+	while (RecvStream >> player)
+	{
+		tsqPlayerPacket.push(player);
+		player.PrintInfo("\t <CMyClient::RecvBigData(...)>");
+	}
+
+	CONSOLE_LOG("[End] <CMyClient::RecvBigData(...)> \n");
 }

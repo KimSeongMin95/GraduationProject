@@ -20,42 +20,35 @@ int main()
 		//while (server->Server->Initialize("127.0.0.1", 8000) == false);
 		while (server->Initialize(nullptr, 8000) == false);
 
-		while (true) Sleep(3600000);
+		while (true) Sleep(3600000); // 메인 스레드가 바쁜대기를 하도록 합니다.
 		break;
 	}
 	case 2:
 	{
-		// 클라
+		// 클라이언트
 		CMyClient* client = CMyClient::GetSingleton();
 		while (client->Initialize("127.0.0.1", 8000) == false);
 
 		while (true)
 		{
+			Sleep(2000);
+
 			unsigned int choose = -1;
 
-			cout << "\n [Choose] 0: SetID(), 1: SendLogin(), 2: SendMove(), 3: Exit \n" << endl;
+			cout << "\n [Choose] 1: SendData(), 2: SendBigData(), 3: Exit \n" << endl;
 
 			cin >> choose;
 
 			switch (choose)
 			{
-			case 0:
-			{
-				char id[256];
-				cout << "[Input ID (띄어쓰기가 없어야 합니다.)] ";
-				cin >> id;
-				client->SetID(id);
-				break;
-			}
 			case 1:
 			{
-				client->SendLogin();
+				client->SendData();
 				break;
 			}
 			case 2:
 			{
-				client->SetRandomPos();
-				client->SendMove();
+				client->SendBigData();
 				break;
 			}
 			case 3:
@@ -69,7 +62,7 @@ int main()
 		break;
 	}
 	default:
-		cout << "제대로 고르지 않아서 종료합니다." << endl;
+		cout << "선택지를 제대로 고르지 않아서 종료합니다." << endl;
 		break;
 	}
 

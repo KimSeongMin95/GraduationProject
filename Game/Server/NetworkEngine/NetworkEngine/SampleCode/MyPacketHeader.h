@@ -4,8 +4,6 @@
 
 enum class EMyPacketHeader : uint16_t
 {
-	Login,
 	Data,
-	HugeData,
-	Exit
+	BigData
 };

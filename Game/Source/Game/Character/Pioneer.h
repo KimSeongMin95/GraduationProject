@@ -6,7 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Materials/Material.h"
-#include "Engine/Classes/Kismet/GameplayStatics.h" // For UGameplayStatics::DeprojectScreenToWorld(...)
+#include "Engine/Classes/Kismet/GameplayStatics.h" // For: UGameplayStatics::DeprojectScreenToWorld(...)
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
@@ -28,10 +28,10 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")
-		class APioneerManager* PioneerManager = nullptr;
+		class APioneerManager* PioneerManager = nullptr; /** Pioneer를 생성하고 관리합니다. */
 
 	UPROPERTY(VisibleAnywhere, Category = "BuildingManager")
-		class ABuildingManager* BuildingManager = nullptr;
+		class ABuildingManager* BuildingManager = nullptr; /** Building을 생성하고 관리합니다. */
 
 	FTimerHandle TimerHandleOfHealSelf;
 
@@ -42,16 +42,16 @@ protected:
 		class UCameraComponent* TopDownCameraComponent = nullptr; /** 탑다운 시점의 카메라입니다. */
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Cursor")
-		class UDecalComponent* CursorToWorld = nullptr; /** A decal that projects to the cursor location. */
+		class UDecalComponent* CursorToWorld = nullptr; /** 커서 위치에 투영시킬 Decal입니다. */
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-		class AWeapon* CurrentWeapon = nullptr;
+		class AWeapon* CurrentWeapon = nullptr; /** 현재 장착중인 무기입니다. */
 
 	UPROPERTY(VisibleAnywhere, Category = "Building")
-		class ABuilding* Building = nullptr;
+		class ABuilding* Building = nullptr; /** 건설할 건물입니다. */
 
 	UPROPERTY(VisibleAnywhere, Category = "Equipments")
-		class UStaticMeshComponent* HelmetMesh = nullptr;
+		class UStaticMeshComponent* HelmetMesh = nullptr; /** 개척자의 헬멧 메시입니다. */
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "PioneerManager")

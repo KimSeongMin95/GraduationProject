@@ -4,22 +4,22 @@
 #include "../NetworkComponent/Packet.h"
 #include "../NetworkComponent/Console.h"
 
-class CInfoOfClient
+class CPlayerPacket
 {
 public:
-	CInfoOfClient()
+	CPlayerPacket()
 	{
-		ID = "ID";
+		Message = "Message";
 		PosX = 0.0f;
 		PosY = 0.0f;
 		PosZ = 0.0f;
 	}
-	~CInfoOfClient()
-	{
-	}
+	CPlayerPacket(string Message, float PosX, float PosY, float PosZ)
+		: Message(Message), PosX(PosX), PosY(PosY), PosZ(PosZ) {}
+	~CPlayerPacket() {}
 
 public:
-	string ID;
+	string Message;
 
 	float PosX;
 	float PosY;
@@ -27,9 +27,9 @@ public:
 
 public:
 	// Send
-	friend ostream& operator<<(ostream& Stream, CInfoOfClient& ref)
+	friend ostream& operator<<(ostream& Stream, CPlayerPacket& ref)
 	{
-		Stream << CPacket::ReplaceCharInString(ref.ID, ' ', '_') << ' ';
+		Stream << CPacket::ReplaceCharInString(ref.Message, ' ', '_') << ' ';
 		Stream << ref.PosX << ' ';
 		Stream << ref.PosY << ' ';
 		Stream << ref.PosZ << ' ';
@@ -38,10 +38,10 @@ public:
 	}
 
 	// Recv
-	friend istream& operator>>(istream& Stream, CInfoOfClient& ref)
+	friend istream& operator>>(istream& Stream, CPlayerPacket& ref)
 	{
-		Stream >> ref.ID;
-		ref.ID = CPacket::ReplaceCharInString(ref.ID, '_', ' ');
+		Stream >> ref.Message;
+		ref.Message = CPacket::ReplaceCharInString(ref.Message, '_', ' ');
 		Stream >> ref.PosX;
 		Stream >> ref.PosY;
 		Stream >> ref.PosZ;
@@ -52,6 +52,6 @@ public:
 	// Print
 	void PrintInfo(const char* c_str)
 	{
-		CONSOLE_LOG("%s ID: %s, PosX: %f, PosX: %f, PosX: %f \n", c_str, ID.c_str(), PosX, PosY, PosZ);
+		CONSOLE_LOG("%s Message: %s, PosX: %f, PosX: %f, PosX: %f \n", c_str, Message.c_str(), PosX, PosY, PosZ);
 	}
 };

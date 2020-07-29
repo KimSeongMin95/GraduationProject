@@ -3,40 +3,72 @@
 #include "NetworkHeader.h"
 #include "NetworkConfig.h"
 
+class CConsole final
+{
+public:
+	CConsole();
+
+	static CConsole* GetSingleton();
+
+private:
+	FILE* fp_console;
+
+public:
+	// 콘솔창을 활성화합니다.
+	void AllocConsole();
+	void _AllocConsole();
+
+	// 콘솔창을 비활성화합니다. (제거하지는 않습니다.)
+	void FreeConsole();
+	void _FreeConsole();
+
+	// printf_s(...)의 래퍼 함수입니다.
+	static void Log(const char* format, ...);
+	static void _Log(const char* format, ...);
+
+	// 소켓 함수 오류를 메세지 박스로 출력합니다.
+	static void ErrorMessageDisplay(const char* msg);
+	static void _ErrorMessageDisplay(const char* msg);
+};
+
+#if ACTIVATE_CONSOLE
+#define CONSOLE_ALLOC() CConsole::GetSingleton()->AllocConsole()
+#define CONSOLE_FREE() CConsole::GetSingleton()->FreeConsole()
+#else
+#define CONSOLE_ALLOC() CConsole::GetSingleton()->_AllocConsole()
+#define CONSOLE_FREE() CConsole::GetSingleton()->_FreeConsole()
+#endif
+
+#if BUILD_CONFIG_DEBUG && BUILD_CONFIG_GAME
+#define CONSOLE_LOG CConsole::Log
+#define CONSOLE_MSG CConsole::ErrorMessageDisplay
+#else
+#define CONSOLE_LOG CConsole::_Log
+#define CONSOLE_MSG CConsole::_ErrorMessageDisplay
+#endif
+
 #if BUILD_CONFIG_DEBUG && BUILD_CONFIG_EDITOR
 #define MY_LOG(CategoryName, Verbosity, Format, ...) UE_LOG(CategoryName, Verbosity, Format, ##__VA_ARGS__)
 #else
 #define MY_LOG(CategoryName, Verbosity, Format, ...) 
 #endif
 
-class CConsole final
-{
-public:
-	CConsole();
+#if BUILD_CONFIG_NETWORK
+#define CONSOLE_LOG_NETWORK CConsole::Log
+#define CONSOLE_MSG_NETWORK CConsole::ErrorMessageDisplay
+#else
+#define CONSOLE_LOG_NETWORK CConsole::_Log
+#define CONSOLE_MSG_NETWORK CConsole::_ErrorMessageDisplay
+#endif
 
-private:
-	FILE* fp_console;
+#if BUILD_CONFIG_TEST
+#define CONSOLE_LOG_TEST CConsole::Log
+#define CONSOLE_MSG_TEST CConsole::ErrorMessageDisplay
+#else
+#define CONSOLE_LOG_TEST CConsole::_Log
+#define CONSOLE_MSG_TEST CConsole::_ErrorMessageDisplay
+#endif
 
-public:
-	// 콘솔창
-	void AllocConsole();
-	void AllocConsoleTest();
-	void FreeConsole();
-
-	static CConsole* GetSingleton();
-
-	// printf_s(...)의 래퍼 함수
-	static void Log(const char* format, ...);
-	static void LogTest(const char* format, ...);
-
-	// 소켓 함수 오류 출력 후 종료
-	static void ErrorMessageQuit(const char* msg);
-
-	// 소켓 함수 오류 출력
-	static void ErrorMessageDisplay(const char* msg);
-};
-#define CONSOLE_LOG CConsole::Log
-#define CONSOLE_LOGTEST CConsole::LogTest
 
 
 //void CheckBuildConriguration()

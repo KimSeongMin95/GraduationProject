@@ -50,9 +50,6 @@ AInGameMode::AInGameMode()
 	DefaultPawnClass = nullptr; // DefaultPawn이 생성되지 않게 합니다.
 
 	PlayerControllerClass = APioneerController::StaticClass();
-
-	//CConsole::GetSingleton()->AllocConsole();
-	CConsole::GetSingleton()->AllocConsoleTest();
 }
 AInGameMode::~AInGameMode()
 {

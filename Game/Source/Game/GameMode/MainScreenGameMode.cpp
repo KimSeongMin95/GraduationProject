@@ -33,8 +33,7 @@ AMainScreenGameMode::AMainScreenGameMode()
 
 	PlayerControllerClass = APioneerController::StaticClass();
 
-	//CConsole::GetSingleton()->AllocConsole();
-	CConsole::GetSingleton()->AllocConsoleTest();
+	CONSOLE_ALLOC();
 }
 AMainScreenGameMode::~AMainScreenGameMode()
 {

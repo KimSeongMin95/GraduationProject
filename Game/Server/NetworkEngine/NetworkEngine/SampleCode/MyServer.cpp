@@ -6,27 +6,27 @@
 
 unique_ptr<CNetworkComponent> CMyServer::Server;
 
-map<SOCKET, CInfoOfClient> CMyServer::InfoOfClients;
-CRITICAL_SECTION CMyServer::csInfoOfClients;
+unordered_map<SOCKET, CPlayerPacket> CMyServer::Players;
+CRITICAL_SECTION CMyServer::csPlayers;
 
 CMyServer::CMyServer()
 {
 	// 크리티컬 섹션에 스핀락을 걸고 초기화에 성공할때까지 시도합니다.
-	while (InitializeCriticalSectionAndSpinCount(&csInfoOfClients, SPIN_COUNT) == false);
+	while (InitializeCriticalSectionAndSpinCount(&csPlayers, SPIN_COUNT) == false);
 
 	Server = make_unique<CNetworkComponent>(ENetworkComponentType::NCT_Server);
 	if (Server)
 	{
-		Server->RegisterConCBF(ConnectCBF);
-		Server->RegisterDisconCBF(DisconnectCBF);
+		Server->RegisterConCBF(ConnectCBF); // 클라이언트가 접속하면 실행할 정적 콜백함수를 등록합니다.
+		Server->RegisterDisconCBF(DisconnectCBF); // 클라이언트가 접속을 종료하면 실행할 정적 콜백함수를 등록합니다.
 
-		Server->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Login, Login);
-		Server->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Move, Move);
+		Server->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::Data, Data); // 패킷의 헤더에 대응하여 실행할 정적 함수를 등록합니다.
+		Server->RegisterHeaderAndStaticFunc((uint16_t)EMyPacketHeader::BigData, BigData); // 패킷의 헤더에 대응하여 실행할 정적 함수를 등록합니다.
 	}
 }
 CMyServer::~CMyServer()
 {
-	DeleteCriticalSection(&csInfoOfClients);
+	DeleteCriticalSection(&csPlayers);
 }
 
 CMyServer* CMyServer::GetSingleton()
@@ -78,139 +78,87 @@ void CMyServer::Close()
 void CMyServer::ConnectCBF(CCompletionKey CompletionKey)
 {
 	CONSOLE_LOG("[Start] <CMyServer::ConnectCBF(...)> \n");
-
 	CompletionKey.PrintInfo("\t <CMyServer::ConnectCBF(...)>");
+
+	random_device rd;
+	mt19937_64 rand(rd());
+	uniform_int_distribution<int> range(0, 10);
+
+	string msg = to_string(CompletionKey.Socket) + string(" is connected.");
+	CPlayerPacket player(msg, (float)range(rand), (float)range(rand), (float)range(rand));
+	player.PrintInfo("\t <CMyServer::ConnectCBF(...)>");
+
+	EnterCriticalSection(&csPlayers);
+	if (Players.find(CompletionKey.Socket) == Players.end())
+	{
+		Players.emplace(CompletionKey.Socket, player);
+	}
+	LeaveCriticalSection(&csPlayers);
+
+	CPacket dataPacket((uint16_t)EMyPacketHeader::Data);
+	dataPacket.GetData() << player << endl;
+	if (Server) Server->Broadcast(dataPacket);
 
 	CONSOLE_LOG("[End] <CMyServer::ConnectCBF(...)> \n");
 }
 void CMyServer::DisconnectCBF(CCompletionKey CompletionKey)
 {
 	CONSOLE_LOG("[Start] <CMyServer::DisconnectCBF(...)> \n");
+	CompletionKey.PrintInfo("\t <CMyServer::DisconnectCBF(...)>");
 
-	CInfoOfClient infoOfClient;
-	EnterCriticalSection(&csInfoOfClients);
-	if (InfoOfClients.find(CompletionKey.Socket) != InfoOfClients.end())
+	CPlayerPacket player;
+	EnterCriticalSection(&csPlayers);
+	if (Players.find(CompletionKey.Socket) != Players.end())
 	{
-		infoOfClient = InfoOfClients.at(CompletionKey.Socket);
-		InfoOfClients.erase(CompletionKey.Socket);
+		player = Players.at(CompletionKey.Socket);
+		player.Message = to_string(CompletionKey.Socket) + string(" is disconnected.");
+		player.PrintInfo("\t <CMyServer::DisconnectCBF(...)>");
+		Players.erase(CompletionKey.Socket);
 	}
 	else
 	{
-		LeaveCriticalSection(&csInfoOfClients);
+		LeaveCriticalSection(&csPlayers);
 		return;
 	}
-	LeaveCriticalSection(&csInfoOfClients);
+	LeaveCriticalSection(&csPlayers);
 
-
-	CPacket packet((uint16_t)EMyPacketHeader::Exit);
-	packet.GetData() << infoOfClient << endl;
-	infoOfClient.PrintInfo("\t <CMyServer::DisconnectCBF(...)>");
-
-	EnterCriticalSection(&csInfoOfClients);
-	for (auto kvp : InfoOfClients)
-	{
-
-		if (kvp.first == CompletionKey.Socket)
-			continue;
-
-		if (Server) Server->Send(packet, kvp.first);
-	}
-	LeaveCriticalSection(&csInfoOfClients);
+	CPacket dataPacket((uint16_t)EMyPacketHeader::Data);
+	dataPacket.GetData() << player << endl;
+	if (Server) Server->BroadcastExceptOne(dataPacket, CompletionKey.Socket);
 
 	CONSOLE_LOG("[End] <CMyServer::DisconnectCBF(...)> \n");
 }
 
-void CMyServer::Login(stringstream& RecvStream, const SOCKET& Socket)
+void CMyServer::Data(stringstream& RecvStream, const SOCKET& Socket)
 {
-	CONSOLE_LOG("[Start] <CMyServer::Login(...)> \n");
+	CONSOLE_LOG("[Start] <CMyServer::Data(...)> \n");
 
-
-	CInfoOfClient infoOfClient;
-	RecvStream >> infoOfClient;
-	infoOfClient.PrintInfo("\t <CMyServer::Login(...)>");
-
-	EnterCriticalSection(&csInfoOfClients);
-	for (auto kvp : InfoOfClients)
+	CPlayerPacket player;
+	if (RecvStream >> player)
 	{
+		player.PrintInfo("\t <CMyServer::Data(...)>");
 
-		if (infoOfClient.ID.compare(kvp.second.ID) == 0)
-		{
-			LeaveCriticalSection(&csInfoOfClients);
-
-			CPacket packet((uint16_t)EMyPacketHeader::Reject);
-			if (Server) Server->Send(packet, Socket);
-
-			CONSOLE_LOG("\t <CMyServer::Login(...)> Reject. \n");
-			CONSOLE_LOG("[End] <CMyServer::Login(...)> \n");
-			return;
-		}
+		CPacket dataPacket((uint16_t)EMyPacketHeader::Data);
+		dataPacket.GetData() << player << endl;
+		if (Server) Server->Send(dataPacket, Socket);
 	}
-	InfoOfClients[Socket] = infoOfClient;
-	LeaveCriticalSection(&csInfoOfClients);
 
-	CPacket packet((uint16_t)EMyPacketHeader::Accept);
-	if (Server) Server->Send(packet, Socket);
-
-
-	CPacket packet1((uint16_t)EMyPacketHeader::Create);
-	EnterCriticalSection(&csInfoOfClients);
-	for (auto kvp : InfoOfClients)
-	{
-		packet1.GetData() << kvp.second << endl;
-	}
-	LeaveCriticalSection(&csInfoOfClients);
-	if (Server) Server->Send(packet1, Socket);
-
-
-	CPacket packet2((uint16_t)EMyPacketHeader::Create);
-	packet2.GetData() << infoOfClient << endl;
-	EnterCriticalSection(&csInfoOfClients);
-	for (auto kvp : InfoOfClients)
-	{
-		if (kvp.first == Socket)
-			continue;
-
-		if (Server) Server->Send(packet2, kvp.first);
-	}
-	LeaveCriticalSection(&csInfoOfClients);
-
-	CONSOLE_LOG("[End] <CMyServer::Login(...)> \n");
+	CONSOLE_LOG("[End] <CMyServer::Data(...)> \n");
 }
-void CMyServer::Move(stringstream& RecvStream, const SOCKET& Socket)
+void CMyServer::BigData(stringstream& RecvStream, const SOCKET& Socket)
 {
-	CONSOLE_LOG("[Start] <CMyServer::Move(...)> \n");
+	CONSOLE_LOG("[Start] <CMyServer::BigData(...)> \n");
 
-
-	CInfoOfClient infoOfClient;
-	RecvStream >> infoOfClient;
-	infoOfClient.PrintInfo("\t <CMyServer::Move(...)>");
-
-
-	EnterCriticalSection(&csInfoOfClients);
-	if (InfoOfClients.find(Socket) == InfoOfClients.end())
+	CPlayerPacket player;
+	while (RecvStream >> player)
 	{
-		LeaveCriticalSection(&csInfoOfClients);
-		return;
+		player.PrintInfo("\t <CMyServer::BigData(...)>");
+
+		CPacket bidDataPacket((uint16_t)EMyPacketHeader::BigData);
+		bidDataPacket.GetData() << player << endl;
+		if (Server) Server->Send(bidDataPacket, Socket);
 	}
-	InfoOfClients.at(Socket) = infoOfClient;
-	LeaveCriticalSection(&csInfoOfClients);
 
-
-	CPacket packet((uint16_t)EMyPacketHeader::Move);
-	packet.GetData() << infoOfClient << endl;
-
-	EnterCriticalSection(&csInfoOfClients);
-	for (auto kvp : InfoOfClients)
-	{
-
-		if (kvp.first == Socket)
-			continue;
-
-		if (Server) Server->Send(packet, kvp.first);
-	}
-	LeaveCriticalSection(&csInfoOfClients);
-
-	CONSOLE_LOG("[End] <CMyServer::Move(...)> \n");
+	CONSOLE_LOG("[End] <CMyServer::BigData(...)> \n");
 }
-
 

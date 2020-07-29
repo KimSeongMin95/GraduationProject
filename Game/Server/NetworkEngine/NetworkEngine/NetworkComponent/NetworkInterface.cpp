@@ -49,7 +49,7 @@ void INetworkInterface::SetSockOpt(const SOCKET& Socket, const int& SizeOfSendBu
 	1048576B == 1024KB
 	TCP에선 send buffer와 recv buffer 모두 1048576 * 256까지 가능합니다.
 	*/
-	CONSOLE_LOG("[Start] <SetSockOpt(...)> \n");
+	CONSOLE_LOG_NETWORK("[Start] <SetSockOpt(...)> \n");
 
 	int optval;
 	int optlen = sizeof(optval);
@@ -57,34 +57,34 @@ void INetworkInterface::SetSockOpt(const SOCKET& Socket, const int& SizeOfSendBu
 	// 성공시 0을 실패시 -1를 반환합니다.
 	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)&optval, &optlen) == 0)
 	{
-		CONSOLE_LOG("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+		CONSOLE_LOG_NETWORK("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
 	}
 	if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)&optval, &optlen) == 0)
 	{
-		CONSOLE_LOG("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+		CONSOLE_LOG_NETWORK("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
 	}
 
 	optval = SizeOfSendBuf;
 	if (setsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)&optval, sizeof(optval)) == 0)
 	{
-		CONSOLE_LOG("\t Socket: %d, setsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+		CONSOLE_LOG_NETWORK("\t Socket: %d, setsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
 	}
 	optval = SizeOfRecvBuf;
 	if (setsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)&optval, sizeof(optval)) == 0)
 	{
-		CONSOLE_LOG("\t Socket: %d, setsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+		CONSOLE_LOG_NETWORK("\t Socket: %d, setsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
 	}
 
 	if (getsockopt(Socket, SOL_SOCKET, SO_SNDBUF, (char*)&optval, &optlen) == 0)
 	{
-		CONSOLE_LOG("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
+		CONSOLE_LOG_NETWORK("\t Socket: %d, getsockopt SO_SNDBUF: %d \n", (int)Socket, optval);
 	}
 	if (getsockopt(Socket, SOL_SOCKET, SO_RCVBUF, (char*)&optval, &optlen) == 0)
 	{
-		CONSOLE_LOG("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
+		CONSOLE_LOG_NETWORK("\t Socket: %d, getsockopt SO_RCVBUF: %d \n", (int)Socket, optval);
 	}
 
-	CONSOLE_LOG("[End] <SetSockOpt(...)> \n");
+	CONSOLE_LOG_NETWORK("[End] <SetSockOpt(...)> \n");
 }
 
 void INetworkInterface::SetIPv4AndPort(char* IPv4, USHORT& Port)

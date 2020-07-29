@@ -44,9 +44,8 @@
 #include <process.h>
 #include <memory>
 
-#include <intrin.h> // For: Interlock
-
 #include <deque>
+#include <forward_list>
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
@@ -55,6 +54,7 @@
 #include <algorithm>
 
 #include <ctime>
+#include <random>
 
 //// put this at the bottom of the .h file
 //// UE4: disallow windows platform types

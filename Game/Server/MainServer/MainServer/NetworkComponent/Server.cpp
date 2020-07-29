@@ -63,31 +63,31 @@ bool CServer::Initialize(const char* const IPv4, const USHORT& Port)
 	// 이미 서버가 구동중이라면 먼저 구동을 종료합니다.
 	if (IsNetworkOn())
 	{
-		CONSOLE_LOG("[Info] <CServer::Initialize()> if (IsNetworkOn()) \n");
+		CONSOLE_LOG_NETWORK("[Info] <CServer::Initialize()> if (IsNetworkOn()) \n");
 		Close();
 	}
-	CONSOLE_LOG("\n\n/********** CServer **********/ \n");
-	CONSOLE_LOG("[Start] <CServer::Initialize()> \n");
+	CONSOLE_LOG_NETWORK("\n\n/********** CServer **********/ \n");
+	CONSOLE_LOG_NETWORK("[Start] <CServer::Initialize()> \n");
 
 	WSADATA wsaData;
 
 	// winsock 라이브러리를 2.2 버전으로 초기화합니다.
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
-		CONSOLE_LOG("[Fail] WSAStartup(...); \n");
+		CONSOLE_LOG_NETWORK("[Fail] WSAStartup(...); \n");
 		return false;
 	}
-	CONSOLE_LOG("\t [Success] WSAStartup(...) \n");
+	CONSOLE_LOG_NETWORK("\t [Success] WSAStartup(...) \n");
 
 	// TCP 소켓을 생성합니다.
 	ListenSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (ListenSocket == INVALID_SOCKET)
 	{
-		CONSOLE_LOG("[Fail] WSASocket(...); \n");
+		CONSOLE_LOG_NETWORK("[Fail] WSASocket(...); \n");
 		WSACleanup();
 		return false;
 	}
-	CONSOLE_LOG("\t [Success] WSASocket(...)\n");
+	CONSOLE_LOG_NETWORK("\t [Success] WSASocket(...)\n");
 
 	// 서버의 주소 정보를 설정합니다.
 	SOCKADDR_IN serverAddr;
@@ -101,7 +101,7 @@ bool CServer::Initialize(const char* const IPv4, const USHORT& Port)
 		//serverAddr.sin_addr.S_un.S_addr = inet_addr(IPv4);
 		if (inet_pton(AF_INET, IPv4, &serverAddr.sin_addr.S_un.S_addr) != 1)
 		{
-			CONSOLE_LOG("[Fail] inet_pton(...) \n");
+			CONSOLE_LOG_NETWORK("[Fail] inet_pton(...) \n");
 			CloseSocketAndWSACleanup(ListenSocket);
 			return false;
 		}
@@ -110,51 +110,51 @@ bool CServer::Initialize(const char* const IPv4, const USHORT& Port)
 
 	// 서버의 주소 정보를 출력합니다.
 	char bufOfIPv4Addr[32] = { 0, };
-	CONSOLE_LOG("\t IPv4: %s \n", inet_ntop(AF_INET, &serverAddr.sin_addr, bufOfIPv4Addr, sizeof(bufOfIPv4Addr)));
-	CONSOLE_LOG("\t Port: %d \n", ntohs(serverAddr.sin_port));
+	CONSOLE_LOG_NETWORK("\t IPv4: %s \n", inet_ntop(AF_INET, &serverAddr.sin_addr, bufOfIPv4Addr, sizeof(bufOfIPv4Addr)));
+	CONSOLE_LOG_NETWORK("\t Port: %d \n", ntohs(serverAddr.sin_port));
 
 	// 소켓에 서버의 주소 정보를 설정합니다. (boost bind 와 구별하기 위해 ::bind를 사용합니다.)
 	if (::bind(ListenSocket, (struct sockaddr*)&serverAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
-		CONSOLE_LOG("[Fail] ::bind(...) \n");
+		CONSOLE_LOG_NETWORK("[Fail] ::bind(...) \n");
 		CloseSocketAndWSACleanup(ListenSocket);
 		return false;
 	}
-	CONSOLE_LOG("\t [Success] ::bind(...) \n");
+	CONSOLE_LOG_NETWORK("\t [Success] ::bind(...) \n");
 
 	// 접속 대기열을 생성합니다.
 	if (listen(ListenSocket, SOMAXCONN) == SOCKET_ERROR)
 	{
-		CONSOLE_LOG("[Fail] listen(...) \n");
+		CONSOLE_LOG_NETWORK("[Fail] listen(...) \n");
 		CloseSocketAndWSACleanup(ListenSocket);
 		return false;
 	}
-	CONSOLE_LOG("\t [Success] listen(...)\n");
+	CONSOLE_LOG_NETWORK("\t [Success] listen(...)\n");
 
 	// Completion Port 객체를 생성합니다.
 	hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 	if (hIOCP == NULL || hIOCP == INVALID_HANDLE_VALUE) // 정상적으로 구동이 진행되는지를 확인합니다.
 	{
-		CONSOLE_LOG("[Error] CreateIoCompletionPort(...) if (hIOCP == NULL || hIOCP == INVALID_HANDLE_VALUE) \n");
+		CONSOLE_LOG_NETWORK("[Error] CreateIoCompletionPort(...) if (hIOCP == NULL || hIOCP == INVALID_HANDLE_VALUE) \n");
 		CloseSocketAndWSACleanup(ListenSocket);
 		return false;
 	}
-	CONSOLE_LOG("\t [Success] CreateIoCompletionPort(...)\n");
+	CONSOLE_LOG_NETWORK("\t [Success] CreateIoCompletionPort(...)\n");
 
 	// Accept 스레드를 생성합니다.
 	if (CreateAcceptThread() == false)
 	{
-		CONSOLE_LOG("[Fail] CreateAcceptThread()\n");
+		CONSOLE_LOG_NETWORK("[Fail] CreateAcceptThread()\n");
 		CloseHandleWithCheck(hIOCP);
 		CloseSocketAndWSACleanup(ListenSocket);
 		return false;
 	}
-	CONSOLE_LOG("\t [Success] CreateAcceptThread()\n");
+	CONSOLE_LOG_NETWORK("\t [Success] CreateAcceptThread()\n");
 
 	// IO 스레드를 생성합니다.
 	if (CreateIOThread() == false)
 	{
-		CONSOLE_LOG("[Fail] CreateIOThread()\n");
+		CONSOLE_LOG_NETWORK("[Fail] CreateIOThread()\n");
 		ResumeThread(hAcceptThreadHandle);
 		WaitForSingleObject(hAcceptThreadHandle, INFINITE);
 		CloseHandleWithCheck(hAcceptThreadHandle);
@@ -162,7 +162,7 @@ bool CServer::Initialize(const char* const IPv4, const USHORT& Port)
 		CloseSocketAndWSACleanup(ListenSocket);
 		return false;
 	}
-	CONSOLE_LOG("\t [Success] CreateIOThread()\n");
+	CONSOLE_LOG_NETWORK("\t [Success] CreateIOThread()\n");
 
 	// 값을 초기화 합니다.
 	InterlockedExchange(&CountOfSend, 0);
@@ -179,7 +179,7 @@ bool CServer::Initialize(const char* const IPv4, const USHORT& Port)
 		ResumeThread(hIOThreadHandle[idx]);
 	}
 
-	CONSOLE_LOG("[End] <CServer::Initialize()> \n");
+	CONSOLE_LOG_NETWORK("[End] <CServer::Initialize()> \n");
 	return true;
 }
 
@@ -193,7 +193,7 @@ bool CServer::CreateAcceptThread()
 	hAcceptThreadHandle = (HANDLE*)_beginthreadex(NULL, 0, &CallRunAcceptThread, this, CREATE_SUSPENDED, &threadId);
 	if (hAcceptThreadHandle == NULL || hAcceptThreadHandle == INVALID_HANDLE_VALUE)
 	{
-		CONSOLE_LOG("[Error] <CServer::CreateAcceptThread()> if (hAcceptThreadHandle == NULL || hAcceptThreadHandle == INVALID_HANDLE_VALUE) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CServer::CreateAcceptThread()> if (hAcceptThreadHandle == NULL || hAcceptThreadHandle == INVALID_HANDLE_VALUE) \n");
 		return false;
 	}
 
@@ -216,8 +216,8 @@ void CServer::RunAcceptThread()
 		if (!bAccept)
 		{
 			LeaveCriticalSection(&csAccept);
-			CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> if (!bAccept) \n");
-			CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> Accept thread is closed! \n");
+			CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> if (!bAccept) \n");
+			CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> Accept thread is closed! \n");
 			return;
 		}
 		LeaveCriticalSection(&csAccept);
@@ -226,10 +226,10 @@ void CServer::RunAcceptThread()
 		clientSocket = WSAAccept(ListenSocket, (struct sockaddr*)&clientAddr, &addrLen, NULL, NULL);
 		if (clientSocket == INVALID_SOCKET)
 		{
-			CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> if (clientSocket == INVALID_SOCKET) \n");
+			CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> if (clientSocket == INVALID_SOCKET) \n");
 			continue;
 		}
-		CONSOLE_LOG("[Success] <CServer::RunAcceptThread()> WSAAccept(...), SocketID: %d \n", int(clientSocket));
+		CONSOLE_LOG_NETWORK("[Success] <CServer::RunAcceptThread()> WSAAccept(...), SocketID: %d \n", int(clientSocket));
 
 		SetSockOpt(clientSocket, 1048576, 1048576);
 
@@ -237,9 +237,9 @@ void CServer::RunAcceptThread()
 
 		// 접속한 클라이언트의 소켓을 저장합니다.
 		EnterCriticalSection(&csClients);
-		CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> Clients.size(): %d\n", (int)Clients.size());
+		CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> Clients.size(): %d\n", (int)Clients.size());
 		Clients.emplace(clientSocket);
-		CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> Clients.size(): %d\n", (int)Clients.size());
+		CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> Clients.size(): %d\n", (int)Clients.size());
 		LeaveCriticalSection(&csClients);
 
 		// 나중에 CloseSocket(...)에서 ClientsCK로부터 할당을 해제합니다. 서버를 강제종료하면 Close()에서 ClientsCK로부터 할당을 해제합니다.
@@ -251,7 +251,6 @@ void CServer::RunAcceptThread()
 		//completionKey->IPv4Addr = string(inet_ntoa(clientAddr.sin_addr)); // 네트워크바이트 순서로 된 정32비트 정수를 다시 문자열로 돌려주는 함수입니다.
 		completionKey->IPv4Addr = string(bufOfIPv4Addr);
 		completionKey->Port = (USHORT)ntohs(clientAddr.sin_port);
-		completionKey->PrintInfo("[Info] <CServer::RunAcceptThread()>");
 
 		// 접속한 클라이언트의 정보가 담긴 completionKey를 저장합니다.
 		EnterCriticalSection(&csClientsCK);
@@ -259,9 +258,9 @@ void CServer::RunAcceptThread()
 		{
 			ClientsCK.erase(clientSocket);
 		}
-		CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> ClientsCK.size(): %d\n", (int)ClientsCK.size());
+		CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> ClientsCK.size(): %d\n", (int)ClientsCK.size());
 		ClientsCK[clientSocket] = completionKey;
-		CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> ClientsCK.size(): %d\n", (int)ClientsCK.size());
+		CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> ClientsCK.size(): %d\n", (int)ClientsCK.size());
 		LeaveCriticalSection(&csClientsCK);
 
 		// 나중에 CloseSocket(...)에서 ClientsOM로부터 할당을 해제합니다. 서버를 강제종료하면 close()에서 ClientsOM로부터 할당을 해제합니다.
@@ -273,9 +272,9 @@ void CServer::RunAcceptThread()
 		{
 			ClientsOM.erase(clientSocket);
 		}
-		CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> ClientsOM.size(): %d\n", (int)ClientsOM.size());
+		CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> ClientsOM.size(): %d\n", (int)ClientsOM.size());
 		ClientsOM[clientSocket] = overlappedMsg;
-		CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> ClientsOM.size(): %d\n", (int)ClientsOM.size());
+		CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> ClientsOM.size(): %d\n", (int)ClientsOM.size());
 		LeaveCriticalSection(&csClientsOM);
 
 		// 접속한 클라이언트로부터 수신한 모든 데이터를 적재할 RecvDeque을 저장합니다.
@@ -284,9 +283,9 @@ void CServer::RunAcceptThread()
 		{
 			RecvDeques.erase(clientSocket);
 		}
-		CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> RecvDeques.size(): %d\n", (int)RecvDeques.size());
+		CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> RecvDeques.size(): %d\n", (int)RecvDeques.size());
 		RecvDeques.emplace(clientSocket, make_shared<deque<unique_ptr<char[]>>>()); // 나중에 CloseSocket(...)에서 RecvDeques로부터 할당을 해제합니다. 서버를 강제종료하면 close()에서 RecvDeques로부터 할당을 해제합니다.
-		CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> RecvDeques.size(): %d\n", (int)RecvDeques.size());
+		CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> RecvDeques.size(): %d\n", (int)RecvDeques.size());
 		LeaveCriticalSection(&csRecvDeques);
 		/****************************************/
 
@@ -311,18 +310,18 @@ void CServer::RunAcceptThread()
 		{
 			if (WSAGetLastError() == WSA_IO_PENDING)
 			{
-				CONSOLE_LOG("[Info] <CServer::RunAcceptThread()> WSA_IO_PENDING \n");
+				CONSOLE_LOG_NETWORK("[Info] <CServer::RunAcceptThread()> WSA_IO_PENDING \n");
 			}
 			else // 실패하면
 			{
-				CONSOLE_LOG("[Error] <CServer::RunAcceptThread()> Fail to IO Pending: %d \n", WSAGetLastError());
+				CONSOLE_LOG_NETWORK("[Error] <CServer::RunAcceptThread()> Fail to IO Pending: %d \n", WSAGetLastError());
 				CloseSocket(clientSocket);
 				continue;
 			}
 		}
 		else
 		{
-			CONSOLE_LOG("[Success] <CServer::RunAcceptThread()> WSARecv(...) \n");
+			CONSOLE_LOG_NETWORK("[Success] <CServer::RunAcceptThread()> WSARecv(...) \n");
 		}
 	}
 }
@@ -336,7 +335,7 @@ bool CServer::CreateIOThread()
 	SYSTEM_INFO sysInfo;
 	GetSystemInfo(&sysInfo);
 
-	CONSOLE_LOG("[Info] <CServer::CreateIOThread()> num of CPU: %d\n", (int)sysInfo.dwNumberOfProcessors);
+	CONSOLE_LOG_NETWORK("[Info] <CServer::CreateIOThread()> num of CPU: %d\n", (int)sysInfo.dwNumberOfProcessors);
 
 	// CPU 개수의 2배로 IO 스레드를 생성합니다.
 	nIOThreadCnt = 2 * sysInfo.dwNumberOfProcessors;
@@ -348,7 +347,7 @@ bool CServer::CreateIOThread()
 		hIOThreadHandle[n] = (HANDLE*)_beginthreadex(NULL, 0, &CallRunIOThread, this, CREATE_SUSPENDED, &threadId);
 		if (hIOThreadHandle[n] == NULL || hIOThreadHandle[n] == INVALID_HANDLE_VALUE)
 		{
-			CONSOLE_LOG("[Error] <CServer::CreateIOThread()> if (hIOThreadHandle[i] == NULL || hIOThreadHandle[i] == INVALID_HANDLE_VALUE) \n");
+			CONSOLE_LOG_NETWORK("[Error] <CServer::CreateIOThread()> if (hIOThreadHandle[i] == NULL || hIOThreadHandle[i] == INVALID_HANDLE_VALUE) \n");
 
 			// 이미 생성한 스레드들을 종료하고 핸들을 초기화합니다.
 			for (DWORD idx = 0; idx < n; idx++)
@@ -365,7 +364,7 @@ bool CServer::CreateIOThread()
 
 		threadCount++;
 	}
-	CONSOLE_LOG("[Info] <CServer::CreateIOThread()> Start Worker %d Threads\n", threadCount);
+	CONSOLE_LOG_NETWORK("[Info] <CServer::CreateIOThread()> Start Worker %d Threads\n", threadCount);
 
 	return true;
 }
@@ -395,7 +394,7 @@ void CServer::RunIOThread()
 		// Close()에서 PostQueuedCompletionStatus(hIOCP, 0, NULL, NULL);로 강제종료합니다.
 		if (!completionKey || !overlappedMsg)
 		{
-			CONSOLE_LOG("[Info] <CServer::RunIOThread()> if (!completionKey || !overlappedMsg) \n");
+			CONSOLE_LOG_NETWORK("[Info] <CServer::RunIOThread()> if (!completionKey || !overlappedMsg) \n");
 			return;
 		}
 
@@ -407,9 +406,9 @@ void CServer::RunIOThread()
 		{
 			// 비정상 접속 끊김은 GetQueuedCompletionStatus 함수에서 False를 리턴합니다.
 			if (!bResult)
-				CONSOLE_LOG("[Info] <CServer::RunIOThread()> socket(%d) connection is abnormally disconnected. \n\n", (int)socket);
+				CONSOLE_LOG_NETWORK("[Info] <CServer::RunIOThread()> socket(%d) connection is abnormally disconnected. \n\n", (int)socket);
 			else
-				CONSOLE_LOG("[Info] <CServer::RunIOThread()> socket(%d) connection is normally disconnected. \n\n", (int)socket);
+				CONSOLE_LOG_NETWORK("[Info] <CServer::RunIOThread()> socket(%d) connection is normally disconnected. \n\n", (int)socket);
 
 			CloseSocket(socket);
 			continue;
@@ -419,10 +418,10 @@ void CServer::RunIOThread()
 		if (ProcessingSendingInIOThread(BytesTransferred, overlappedMsg) == true)
 			continue;
 
-		//CONSOLE_LOG("[Info] <CServer::RunIOThread()> SocketID: %d \n", (int)completionKey->socket);
-		//CONSOLE_LOG("[Info] <CServer::RunIOThread()> ThreadID: %d \n", (int)GetCurrentThreadId());
-		//CONSOLE_LOG("[Info] <CServer::RunIOThread()> BytesTransferred: %d \n", (int)BytesTransferred);
-		//CONSOLE_LOG("[Info] <CServer::RunIOThread()> overlappedMsg->recvBytes: %d \n", overlappedMsg->recvBytes);
+		//CONSOLE_LOG_NETWORK("[Info] <CServer::RunIOThread()> SocketID: %d \n", (int)completionKey->socket);
+		//CONSOLE_LOG_NETWORK("[Info] <CServer::RunIOThread()> ThreadID: %d \n", (int)GetCurrentThreadId());
+		//CONSOLE_LOG_NETWORK("[Info] <CServer::RunIOThread()> BytesTransferred: %d \n", (int)BytesTransferred);
+		//CONSOLE_LOG_NETWORK("[Info] <CServer::RunIOThread()> overlappedMsg->recvBytes: %d \n", overlappedMsg->recvBytes);
 
 		// RecvDeque의 공유 포인터를 획득합니다.
 		shared_ptr<deque<unique_ptr<char[]>>> RecvDeque = GetRecvDeque(socket);
@@ -479,7 +478,7 @@ CCompletionKey CServer::GetCompletionKey(const SOCKET& Socket)
 
 void CServer::CloseSocket(const SOCKET& Socket)
 {
-	CONSOLE_LOG("[Start] <CServer::CloseSocket(...)> \n");
+	CONSOLE_LOG_NETWORK("[Start] <CServer::CloseSocket(...)> \n");
 
 	// 클라이언트와 접속이 종료되면 실행할 콜백함수를 실행합니다.
 	DisconCBF.ExecuteFunc(GetCompletionKey(Socket));
@@ -488,9 +487,9 @@ void CServer::CloseSocket(const SOCKET& Socket)
 	EnterCriticalSection(&csClients);
 	if (Clients.find(Socket) != Clients.end())
 	{
-		CONSOLE_LOG("\t Clients.size(): %d\n", (int)Clients.size());
+		CONSOLE_LOG_NETWORK("\t Clients.size(): %d\n", (int)Clients.size());
 		Clients.erase(Socket);
-		CONSOLE_LOG("\t Clients.size(): %d\n", (int)Clients.size());
+		CONSOLE_LOG_NETWORK("\t Clients.size(): %d\n", (int)Clients.size());
 	}
 	LeaveCriticalSection(&csClients);
 
@@ -498,9 +497,9 @@ void CServer::CloseSocket(const SOCKET& Socket)
 	EnterCriticalSection(&csClientsCK);
 	if (ClientsCK.find(Socket) != ClientsCK.end())
 	{
-		CONSOLE_LOG("\t ClientsCK.size(): %d\n", (int)ClientsCK.size());
+		CONSOLE_LOG_NETWORK("\t ClientsCK.size(): %d\n", (int)ClientsCK.size());
 		ClientsCK.erase(Socket);
-		CONSOLE_LOG("\t ClientsCK.size(): %d\n", (int)ClientsCK.size());
+		CONSOLE_LOG_NETWORK("\t ClientsCK.size(): %d\n", (int)ClientsCK.size());
 	}
 	LeaveCriticalSection(&csClientsCK);
 
@@ -508,9 +507,9 @@ void CServer::CloseSocket(const SOCKET& Socket)
 	EnterCriticalSection(&csClientsOM);
 	if (ClientsOM.find(Socket) != ClientsOM.end())
 	{
-		CONSOLE_LOG("\t ClientsOM.size(): %d\n", (int)ClientsOM.size());
+		CONSOLE_LOG_NETWORK("\t ClientsOM.size(): %d\n", (int)ClientsOM.size());
 		ClientsOM.erase(Socket);
-		CONSOLE_LOG("\t ClientsOM.size(): %d\n", (int)ClientsOM.size());
+		CONSOLE_LOG_NETWORK("\t ClientsOM.size(): %d\n", (int)ClientsOM.size());
 	}
 	LeaveCriticalSection(&csClientsOM);
 
@@ -518,9 +517,9 @@ void CServer::CloseSocket(const SOCKET& Socket)
 	EnterCriticalSection(&csRecvDeques);
 	if (RecvDeques.find(Socket) != RecvDeques.end())
 	{
-		CONSOLE_LOG("\t RecvDeques.size(): %d\n", (int)RecvDeques.size());
+		CONSOLE_LOG_NETWORK("\t RecvDeques.size(): %d\n", (int)RecvDeques.size());
 		RecvDeques.erase(Socket);
-		CONSOLE_LOG("\t RecvDeques.size(): %d\n", (int)RecvDeques.size());
+		CONSOLE_LOG_NETWORK("\t RecvDeques.size(): %d\n", (int)RecvDeques.size());
 	}
 	LeaveCriticalSection(&csRecvDeques);
 
@@ -529,7 +528,7 @@ void CServer::CloseSocket(const SOCKET& Socket)
 	// 닫으려는 소켓의 정보를 제거하는 동안 새로 접속한 클라이언트의 소켓이 같을 경우 문제가 발생하기 때문에 가장 마지막에 소켓을 닫습니다.
 	CloseSocketWithCheck(Socket);
 
-	CONSOLE_LOG("[End] <CServer::CloseSocket(...)>\n");
+	CONSOLE_LOG_NETWORK("[End] <CServer::CloseSocket(...)>\n");
 }
 
 void CServer::Close()
@@ -539,14 +538,14 @@ void CServer::Close()
 	if (!bAccept)
 	{
 		LeaveCriticalSection(&csAccept);
-		CONSOLE_LOG("[Info] <CServer::Close()> if (!bAccept) \n");
+		CONSOLE_LOG_NETWORK("[Info] <CServer::Close()> if (!bAccept) \n");
 		return;
 	}
 	bAccept = false;
 	LeaveCriticalSection(&csAccept);
 	/****************************************/
 
-	CONSOLE_LOG("[Start] <CServer::Close()> \n");
+	CONSOLE_LOG_NETWORK("[Start] <CServer::Close()> \n");
 
 	// 먼저 더이상 클라이언트가 접속하지 못하도록 서버의 ListenSocket을 닫습니다.
 	CloseSocketWithCheck(ListenSocket);
@@ -559,15 +558,15 @@ void CServer::Close()
 		if (result == WAIT_OBJECT_0) // hAcceptThreadHandle이 signal이면
 		{
 			CloseHandle(hAcceptThreadHandle);
-			CONSOLE_LOG("\t CloseHandle(hAcceptThreadHandle);\n");
+			CONSOLE_LOG_NETWORK("\t CloseHandle(hAcceptThreadHandle);\n");
 		}
 		else if (result == WAIT_TIMEOUT)
 		{
-			CONSOLE_LOG("\t WaitForSingleObject(...) result: WAIT_TIMEOUT\n");
+			CONSOLE_LOG_NETWORK("\t WaitForSingleObject(...) result: WAIT_TIMEOUT\n");
 		}
 		else
 		{
-			CONSOLE_LOG("[Error] <CServer::Close()> WaitForSingleObject(...) failed: %d\n", (int)GetLastError());
+			CONSOLE_LOG_NETWORK("[Error] <CServer::Close()> WaitForSingleObject(...) failed: %d\n", (int)GetLastError());
 		}
 
 		hAcceptThreadHandle = NULL;
@@ -592,7 +591,7 @@ void CServer::Close()
 	for (DWORD i = 0; i < nIOThreadCnt; i++)
 	{
 		PostQueuedCompletionStatus(hIOCP, 0, NULL, NULL);
-		CONSOLE_LOG("\t PostQueuedCompletionStatus(...) nIOThreadCnt: %d, i: %d\n", (int)nIOThreadCnt, (int)i);
+		CONSOLE_LOG_NETWORK("\t PostQueuedCompletionStatus(...) nIOThreadCnt: %d, i: %d\n", (int)nIOThreadCnt, (int)i);
 	}
 	if (nIOThreadCnt > 0 && hIOThreadHandle)
 	{
@@ -608,15 +607,15 @@ void CServer::Close()
 		}
 		else if (result == WAIT_TIMEOUT)
 		{
-			CONSOLE_LOG("\t WaitForMultipleObjects(...) result: WAIT_TIMEOUT\n");
+			CONSOLE_LOG_NETWORK("\t WaitForMultipleObjects(...) result: WAIT_TIMEOUT\n");
 		}
 		else
 		{
-			CONSOLE_LOG("[Error] <CServer::Close()> WaitForMultipleObjects(...) failed: %d\n", (int)GetLastError());
+			CONSOLE_LOG_NETWORK("[Error] <CServer::Close()> WaitForMultipleObjects(...) failed: %d\n", (int)GetLastError());
 		}
 
 		nIOThreadCnt = 0;
-		CONSOLE_LOG("\t nIOThreadCnt: %d\n", (int)nIOThreadCnt);
+		CONSOLE_LOG_NETWORK("\t nIOThreadCnt: %d\n", (int)nIOThreadCnt);
 	}
 
 	// 생성한 Completion Port 객체를 닫습니다.
@@ -642,14 +641,14 @@ void CServer::Close()
 	RecvDeques.clear();
 	LeaveCriticalSection(&csRecvDeques);
 
-	CONSOLE_LOG("[End] <CServer::Close()>\n");
+	CONSOLE_LOG_NETWORK("[End] <CServer::Close()>\n");
 }
 
 void CServer::RegisterHeaderAndStaticFunc(const uint16_t& PacketHeader, void(*StaticFunc)(stringstream&, const SOCKET&))
 {
 	if (PacketHeader >= MAX_HEADER || PacketHeader < 0)
 	{
-		CONSOLE_LOG("[Error] <CServer::RegisterHeaderAndStaticFunc(...)> if (PacketHeader >= MAX_HEADER || PacketHeader < 0) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CServer::RegisterHeaderAndStaticFunc(...)> if (PacketHeader >= MAX_HEADER || PacketHeader < 0) \n");
 		return;
 	}
 	/****************************************/
@@ -669,7 +668,7 @@ void CServer::RegisterDisconCBF(void(*StaticCBFunc)(CCompletionKey))
 
 void CServer::Send(CPacket& Packet, const SOCKET& Socket /*= NULL*/)
 {
-	CONSOLE_LOG("[Start] <CServer::Send(...)>\n");
+	CONSOLE_LOG_NETWORK("[Start] <CServer::Send(...)>\n");
 
 	// 데이터는 (idxOfStart, idxOfEnd]의 범위를 가지는 것으로 정의합니다.
 	uint32_t idxOfStart = 0;
@@ -712,19 +711,13 @@ void CServer::Send(CPacket& Packet, const SOCKET& Socket /*= NULL*/)
 
 	} while (idxOfStart < totalSizeOfData);
 
-	CONSOLE_LOG("[End] <CServer::Send(...)>\n");
+	CONSOLE_LOG_NETWORK("[End] <CServer::Send(...)>\n");
 }
 
 void CServer::Broadcast(CPacket& Packet)
 {
-	vector<SOCKET> sockets;
-
 	EnterCriticalSection(&csClients);
-	sockets.resize(Clients.size());
-	for (const SOCKET& sock : Clients)
-	{
-		sockets.emplace_back(sock);
-	}
+	vector<SOCKET> sockets(Clients.begin(), Clients.end());
 	LeaveCriticalSection(&csClients);
 
 	for (const SOCKET& sock : sockets)
@@ -732,16 +725,15 @@ void CServer::Broadcast(CPacket& Packet)
 }
 void CServer::BroadcastExceptOne(CPacket& Packet, const SOCKET& Except)
 {
-	vector<SOCKET> sockets;
+	forward_list<SOCKET> sockets;
 
 	EnterCriticalSection(&csClients);
-	sockets.resize(Clients.size());
 	for (const SOCKET& sock : Clients)
 	{
 		if (sock == Except)
 			continue;
 
-		sockets.emplace_back(sock);
+		sockets.emplace_front(sock);
 	}
 	LeaveCriticalSection(&csClients);
 
@@ -753,12 +745,12 @@ void CServer::Send(COverlappedMsg* OverlappedMsg, const SOCKET& Socket)
 {
 	if (!OverlappedMsg)
 	{
-		CONSOLE_LOG("[Error] <CServer::Send(...)> if (!OverlappedMsg) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CServer::Send(...)> if (!OverlappedMsg) \n");
 		return;
 	}
 	/****************************************/
 
-	CONSOLE_LOG("<CServer::Send(...)> %s \n", OverlappedMsg->MessageBuffer);
+	CONSOLE_LOG_NETWORK("<CServer::Send(...)> %s \n", OverlappedMsg->MessageBuffer);
 
 	DWORD dwFlags = 0;
 
@@ -774,7 +766,7 @@ void CServer::Send(COverlappedMsg* OverlappedMsg, const SOCKET& Socket)
 
 	if (nResult == 0)
 	{
-		CONSOLE_LOG("[Info] <CServer::Send(...)> Success to WSASend(...) \n");
+		CONSOLE_LOG_NETWORK("[Info] <CServer::Send(...)> Success to WSASend(...) \n");
 
 		// 카운트를 하나 증가시킵니다.
 		InterlockedIncrement(&CountOfSend);
@@ -783,7 +775,7 @@ void CServer::Send(COverlappedMsg* OverlappedMsg, const SOCKET& Socket)
 	{
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
-			CONSOLE_LOG("[Error] <CServer::Send(...)> Fail to WSASend(...) : %d \n", WSAGetLastError());
+			CONSOLE_LOG_NETWORK("[Error] <CServer::Send(...)> Fail to WSASend(...) : %d \n", WSAGetLastError());
 
 			// 할당을 해제합니다.
 			delete OverlappedMsg;
@@ -794,7 +786,7 @@ void CServer::Send(COverlappedMsg* OverlappedMsg, const SOCKET& Socket)
 		}
 		else
 		{
-			CONSOLE_LOG("[Info] <CServer::Send(...)> WSASend: WSA_IO_PENDING \n");
+			CONSOLE_LOG_NETWORK("[Info] <CServer::Send(...)> WSASend: WSA_IO_PENDING \n");
 
 			// 카운트를 하나 증가시킵니다.
 			InterlockedIncrement(&CountOfSend);
@@ -823,12 +815,12 @@ void CServer::Recv(const SOCKET& Socket, COverlappedMsg* OverlappedMsg)
 	{
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
-			CONSOLE_LOG("[Fail] <CServer::Recv(...)> WSARecv(...) : %d\n", WSAGetLastError());
+			CONSOLE_LOG_NETWORK("[Fail] <CServer::Recv(...)> WSARecv(...) : %d\n", WSAGetLastError());
 			CloseSocket(Socket);
 		}
 		else
 		{
-			CONSOLE_LOG("[Info] <CServer::Recv(...)> WSARecv: WSA_IO_PENDING \n");
+			CONSOLE_LOG_NETWORK("[Info] <CServer::Recv(...)> WSARecv: WSA_IO_PENDING \n");
 		}
 	}
 }
@@ -839,20 +831,20 @@ bool CServer::ProcessingSendingInIOThread(const DWORD& BytesTransferred, COverla
 		return false;
 	/****************************************/
 
-	CONSOLE_LOG("<CServer::ProcessingSendingInIOThread(...)> %s \n", OverlappedMsg->MessageBuffer);
+	CONSOLE_LOG_NETWORK("<CServer::ProcessingSendingInIOThread(...)> %s \n", OverlappedMsg->MessageBuffer);
 
 	// 사이즈가 같으면 제대로 전송이 완료된 것입니다.
 	if (OverlappedMsg->SendBytes == BytesTransferred)
 	{
-		CONSOLE_LOG("[Info] <CServer::ProcessingSendingInIOThread(...)> if (overlappedMsg->sendBytes == BytesTransferred) \n");
+		CONSOLE_LOG_NETWORK("[Info] <CServer::ProcessingSendingInIOThread(...)> if (overlappedMsg->sendBytes == BytesTransferred) \n");
 	}
 	else // 사이즈가 다르다면 제대로 전송이 되지 않은것이므로 일단 콘솔에 알립니다.
 	{
-		CONSOLE_LOG("\n\n\n\n\n");
-		CONSOLE_LOG("[Error] <CServer::ProcessingSendingInIOThread(...)> if (overlappedMsg->sendBytes != BytesTransferred) \n");
-		CONSOLE_LOG("[Error] <CServer::ProcessingSendingInIOThread(...)> overlappedMsg->SendBytes: %d \n", OverlappedMsg->SendBytes);
-		CONSOLE_LOG("[Error] <CServer::ProcessingSendingInIOThread(...)> BytesTransferred: %d \n", (int)BytesTransferred);
-		CONSOLE_LOG("\n\n\n\n\n");
+		CONSOLE_LOG_NETWORK("\n\n\n\n\n");
+		CONSOLE_LOG_NETWORK("[Error] <CServer::ProcessingSendingInIOThread(...)> if (overlappedMsg->sendBytes != BytesTransferred) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CServer::ProcessingSendingInIOThread(...)> overlappedMsg->SendBytes: %d \n", OverlappedMsg->SendBytes);
+		CONSOLE_LOG_NETWORK("[Error] <CServer::ProcessingSendingInIOThread(...)> BytesTransferred: %d \n", (int)BytesTransferred);
+		CONSOLE_LOG_NETWORK("\n\n\n\n\n");
 	}
 
 	// 할당을 해제합니다.
@@ -871,7 +863,7 @@ shared_ptr<deque<unique_ptr<char[]>>> CServer::GetRecvDeque(const SOCKET& Socket
 	if (RecvDeques.find(Socket) == RecvDeques.end())
 	{
 		LeaveCriticalSection(&csRecvDeques);
-		CONSOLE_LOG("[Error] <CServer::GetRecvDeque(...)> if (RecvDeques.find(Socket) == RecvDeques.end()) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CServer::GetRecvDeque(...)> if (RecvDeques.find(Socket) == RecvDeques.end()) \n");
 		return nullptr;
 	}
 	shared_ptr<deque<unique_ptr<char[]>>> recvDeque = RecvDeques.at(Socket);
@@ -884,7 +876,7 @@ void CServer::LoadUpReceivedDataToRecvDeque(const SOCKET& Socket, COverlappedMsg
 {
 	if (!OverlappedMsg || !RecvDeque)
 	{
-		CONSOLE_LOG("[Error] <CServer::LoadUpReceivedDataToRecvDeque(...)> if (!OverlappedMsg || !RecvDeque) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CServer::LoadUpReceivedDataToRecvDeque(...)> if (!OverlappedMsg || !RecvDeque) \n");
 		return;
 	}
 	/****************************************/
@@ -900,7 +892,7 @@ void CServer::GetPacketsFromRecvDeque(char* const BufOfPackets, shared_ptr<deque
 {
 	if (!BufOfPackets || !RecvDeque)
 	{
-		CONSOLE_LOG("[Error] <CServer::GetPacketsFromRecvDeque(...)> if (!BufOfPackets || !RecvDeque) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CServer::GetPacketsFromRecvDeque(...)> if (!BufOfPackets || !RecvDeque) \n");
 		return;
 	}
 	/****************************************/
@@ -993,7 +985,7 @@ void CServer::DividePacketsAndProcessThePacket(const char* const BufOfPackets, c
 {
 	if (!BufOfPackets)
 	{
-		CONSOLE_LOG("[Error] <CServer::DivideDataToPacketAndProcessThePacket(...)> if (!BufOfPackets) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CServer::DivideDataToPacketAndProcessThePacket(...)> if (!BufOfPackets) \n");
 		return;
 	}
 	/****************************************/
@@ -1016,17 +1008,17 @@ void CServer::DividePacketsAndProcessThePacket(const char* const BufOfPackets, c
 		// 패킷의 전체크기가 0이거나 끝이 없거나 남은 버퍼 크기보다 클 경우 오류가 발생한 것이므로 패킷 처리를 중단합니다.
 		if (sizeOfPacket == 0)
 		{
-			CONSOLE_LOG("\n\n\n\n\n[Error] <CServer::IOThread()> if (sizeOfPacket == 0) \n\n\n\n\n\n");
+			CONSOLE_LOG_NETWORK("\n\n\n\n\n[Error] <CServer::IOThread()> if (sizeOfPacket == 0) \n\n\n\n\n\n");
 			break;;
 		}
 		if (sizeOfPacket > strlen(&BufOfPackets[idxOfCur]))
 		{
-			CONSOLE_LOG("\n\n\n\n\n[Error] <CServer::IOThread()> if (sizeOfPacket > strlen(&BufOfPackets[idxOfCur])) sizeOfPacket: %d \n\n\n\n\n\n", (int)sizeOfPacket);
+			CONSOLE_LOG_NETWORK("\n\n\n\n\n[Error] <CServer::IOThread()> if (sizeOfPacket > strlen(&BufOfPackets[idxOfCur])) sizeOfPacket: %d \n\n\n\n\n\n", (int)sizeOfPacket);
 			break;;
 		}
 		if (BufOfPackets[idxOfCur + sizeOfPacket - 1] != (char)3)
 		{
-			CONSOLE_LOG("\n\n\n\n\n[Error] <CServer::IOThread()> if (BufOfPackets[sizeOfPacket - 1] != (char)3) sizeOfPacket: %d \n\n\n\n\n\n", (int)sizeOfPacket);
+			CONSOLE_LOG_NETWORK("\n\n\n\n\n[Error] <CServer::IOThread()> if (BufOfPackets[sizeOfPacket - 1] != (char)3) sizeOfPacket: %d \n\n\n\n\n\n", (int)sizeOfPacket);
 			break;;
 		}
 
@@ -1045,7 +1037,7 @@ void CServer::ProcessThePacket(const char* const BufOfPacket, const SOCKET& Sock
 {
 	if (!BufOfPacket)
 	{
-		CONSOLE_LOG("[Error] <CServer::ProcessThePacket(...)> if (!BufOfPacket) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CServer::ProcessThePacket(...)> if (!BufOfPacket) \n");
 		return;
 	}
 	/****************************************/
@@ -1056,24 +1048,24 @@ void CServer::ProcessThePacket(const char* const BufOfPacket, const SOCKET& Sock
 	// 패킷의 전체크기를 획득합니다.
 	uint16_t sizeOfRecvStream = 0;
 	recvStream >> sizeOfRecvStream;
-	CONSOLE_LOG("\t sizeOfRecvStream: %d \n", (int)sizeOfRecvStream);
+	CONSOLE_LOG_NETWORK("\t sizeOfRecvStream: %d \n", (int)sizeOfRecvStream);
 
 	// 전체크기 예외를 처리합니다.
 	if (sizeOfRecvStream == 0)
 	{
-		CONSOLE_LOG("[ERROR] <CClient::RegisterHeaderAndStaticFunc(...)> if (sizeOfRecvStream == 0) \n");
+		CONSOLE_LOG_NETWORK("[ERROR] <CClient::RegisterHeaderAndStaticFunc(...)> if (sizeOfRecvStream == 0) \n");
 		return;
 	}
 
 	// 패킷의 헤더를 획득합니다.
 	uint16_t header = -1;
 	recvStream >> header;
-	CONSOLE_LOG("\t packetHeader: %d \n", (int)header);
+	CONSOLE_LOG_NETWORK("\t packetHeader: %d \n", (int)header);
 
 	// 헤더 범위의 예외를 처리합니다.
 	if (header >= MAX_HEADER || header < 0)
 	{
-		CONSOLE_LOG("[ERROR] <CClient::RegisterHeaderAndStaticFunc(...)> if (header >= MAX_HEADER || header < 0) \n");
+		CONSOLE_LOG_NETWORK("[ERROR] <CClient::RegisterHeaderAndStaticFunc(...)> if (header >= MAX_HEADER || header < 0) \n");
 		return;
 	}
 
@@ -1093,7 +1085,7 @@ void CServer::SetSizeOfDataForSend(const uint32_t& IdxOfStart, uint32_t& IdxOfEn
 			// 데이터의 끝을 '\n'으로 잘 설정했다면, 찾지 못하는 상황이 올 수 없으므로 오류가 발생한 것이기 때문에 송신하지 않고 종료합니다.
 			if (cur <= IdxOfStart)
 			{
-				CONSOLE_LOG("\n\n\n\n\n[ERROR] <CServer::Send(...)> if (cur <= idxOfStart) \n\n\n\n\n\n");
+				CONSOLE_LOG_NETWORK("\n\n\n\n\n[ERROR] <CServer::Send(...)> if (cur <= idxOfStart) \n\n\n\n\n\n");
 				return;
 			}
 

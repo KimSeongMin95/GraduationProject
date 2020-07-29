@@ -24,7 +24,7 @@ CNetworkComponent::CNetworkComponent(ENetworkComponentType NCT /*= NetworkCompon
 	}
 	default:
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::CNetworkComponent(...)> default: \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::CNetworkComponent(...)> default: \n");
 		break;
 	}
 	}
@@ -38,7 +38,7 @@ bool CNetworkComponent::Initialize(const char* const IPv4, const USHORT& Port)
 {
 	if (!Network)
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::Initialize(...)> if (!Network) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::Initialize(...)> if (!Network) \n");
 		return false;
 	}
 	/******************************************/
@@ -50,7 +50,7 @@ bool CNetworkComponent::IsNetworkOn()
 {
 	if (!Network)
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::IsNetworkOn()> if (!Network) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::IsNetworkOn()> if (!Network) \n");
 		return false;
 	}
 	/******************************************/
@@ -62,7 +62,7 @@ CCompletionKey CNetworkComponent::GetCompletionKey(const SOCKET& Socket /*= NULL
 {
 	if (!Network)
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::GetCompletionKey(...)> if (!Network) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::GetCompletionKey(...)> if (!Network) \n");
 		return CCompletionKey();
 	}
 	/******************************************/
@@ -74,7 +74,7 @@ void CNetworkComponent::Close()
 {
 	if (!Network)
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::Close()> if (!Network) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::Close()> if (!Network) \n");
 		return;
 	}
 	/******************************************/
@@ -86,7 +86,7 @@ void CNetworkComponent::RegisterHeaderAndStaticFunc(const uint16_t& PacketHeader
 {
 	if (!Network)
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::RegisterHeaderAndStaticFunc(...)> if (!Network) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::RegisterHeaderAndStaticFunc(...)> if (!Network) \n");
 		return;
 	}
 	/******************************************/
@@ -98,7 +98,7 @@ void CNetworkComponent::RegisterConCBF(void(*StaticCBFunc)(CCompletionKey))
 {
 	if (!Network)
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::RegisterConCBF(...)> if (!Network) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::RegisterConCBF(...)> if (!Network) \n");
 		return;
 	}
 	/******************************************/
@@ -110,7 +110,7 @@ void CNetworkComponent::RegisterDisconCBF(void(*StaticCBFunc)(CCompletionKey))
 {
 	if (!Network)
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::RegisterDisconCBF(...)> if (!Network) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::RegisterDisconCBF(...)> if (!Network) \n");
 		return;
 	}
 	/******************************************/
@@ -122,7 +122,7 @@ void CNetworkComponent::Send(CPacket& Packet, const SOCKET& Socket /*= NULL*/)
 {
 	if (!Network)
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::Send(...)> if (!Network) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::Send(...)> if (!Network) \n");
 		return;
 	}
 	/******************************************/
@@ -135,7 +135,7 @@ void CNetworkComponent::Broadcast(CPacket& Packet)
 {
 	if (!Network)
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::Broadcast(...)> if (!Network) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::Broadcast(...)> if (!Network) \n");
 		return;
 	}
 	/******************************************/
@@ -148,7 +148,7 @@ void CNetworkComponent::BroadcastExceptOne(CPacket& Packet, const SOCKET& Except
 {
 	if (!Network)
 	{
-		CONSOLE_LOG("[Error] <CNetworkComponent::BroadcastExceptOne(...)> if (!Network) \n");
+		CONSOLE_LOG_NETWORK("[Error] <CNetworkComponent::BroadcastExceptOne(...)> if (!Network) \n");
 		return;
 	}
 	/******************************************/
