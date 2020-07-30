@@ -24,6 +24,9 @@ ATurret::ATurret()
 	TargetRotation = FRotator::ZeroRotator;
 
 	IdxOfTarget = 0;
+
+	TimerOfFindEnemy = 0.0f;
+	TimerOfRotation = 0.0f;
 }
 ATurret::~ATurret()
 {
@@ -181,11 +184,10 @@ bool ATurret::CheckEnemyInAttackRange(class AEnemy* Enemy)
 
 void ATurret::TickOfFindEnemy(float DeltaTime)
 {
-	static float timer = 0.0f;
-	timer += DeltaTime;
-	if (timer < 1.0f)
+	TimerOfFindEnemy += DeltaTime;
+	if (TimerOfFindEnemy < 0.5f)
 		return;
-	timer = 0.0f;
+	TimerOfFindEnemy = 0.0f;
 
 	if (!EnemyManager)
 	{
@@ -247,11 +249,10 @@ void ATurret::RotateTargetRotation(float DeltaTime)
 	if (!bRotateTargetRotation)
 		return;
 
-	static float timer = 0.0f;
-	timer += DeltaTime;
-	if (timer < 0.033f)
+	TimerOfRotation += DeltaTime;
+	if (TimerOfRotation < 0.016f)
 		return;
-	timer = 0.0f;
+	TimerOfRotation = 0.0f;
 
 	if (!ParentOfHead)
 	{

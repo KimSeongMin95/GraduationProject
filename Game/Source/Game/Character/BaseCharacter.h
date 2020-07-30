@@ -99,6 +99,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float Exp;
 
+	UPROPERTY(VisibleAnywhere)
+		float TimerOfRotation;
+
 protected:
 	virtual void InitHelthPointBar() override;
 	virtual void BeginPlayHelthPointBar() final;
@@ -117,19 +120,19 @@ protected:
 		virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION(Category = "Rotation")
-		virtual void RotateTargetRotation(float DeltaTime);
+		virtual void RotateTargetRotation(const float& DeltaTime);
 
 	UFUNCTION(Category = "CharacterMovement")
 		float DistanceToActor(AActor* Actor);
 
 public:
-	void SetGenerateOverlapEventsOfCapsuleComp(bool bGenerate);
+	void SetGenerateOverlapEventsOfCapsuleComp(const bool& bGenerate);
 
 	FORCEINLINE AActor* GetTargetActor() const { return TargetActor; }
 	FORCEINLINE USphereComponent* GetDetectRangeSphereComp() const { return DetectRangeSphereComp; }
 
 	UFUNCTION(Category = "Stat")
-		virtual void SetHealthPoint(float Value, int IDOfPioneer = 0);
+		virtual void SetHealthPoint(const float& Value, const int& IDOfPioneer = 0);
 
 	UFUNCTION(Category = "AIController")
 		void PossessAIController(); /** AIController에 Possess 합니다. */
@@ -140,26 +143,26 @@ public:
 		void StopMovement();
 
 	UFUNCTION(Category = "Rotation")
-		void LookAtTheLocation(FVector Location); /** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
+		void LookAtTheLocation(const FVector& Location); /** 캐릭터의 방향을 Location을 바라보도록 회전합니다. */
 
 	UFUNCTION()
 		virtual bool CheckNoObstacle(AActor* Target);
 
 	UFUNCTION()
-		virtual void FindTheTargetActor(float DeltaTime); /** TargetActor를 찾습니다. */
+		virtual void FindTheTargetActor(const float& DeltaTime); /** TargetActor를 찾습니다. */
 	UFUNCTION()
 		void TracingTargetActor(); /** TargetActor 위치로 이동합니다. */
 	UFUNCTION()
 		void MoveRandomlyPosition(); /** 랜덤한 위치로 이동합니다 */
 	UFUNCTION()
-		void MoveThePosition(FVector newPosition); /** 지정한 위치로 이동합니다 */
+		void MoveThePosition(const FVector& newPosition); /** 지정한 위치로 이동합니다 */
 
 	UFUNCTION()
-		virtual void IdlingOfFSM(float DeltaTime);
+		virtual void IdlingOfFSM(const float& DeltaTime);
 	UFUNCTION()
-		virtual void TracingOfFSM(float DeltaTime);
+		virtual void TracingOfFSM(const float& DeltaTime);
 	UFUNCTION()
-		virtual void AttackingOfFSM(float DeltaTime);
+		virtual void AttackingOfFSM(const float& DeltaTime);
 	UFUNCTION()
-		virtual void RunFSM(float DeltaTime);
+		virtual void RunFSM(const float& DeltaTime);
 };

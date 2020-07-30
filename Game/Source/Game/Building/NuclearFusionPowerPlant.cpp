@@ -46,8 +46,6 @@ void ANuclearFusionPowerPlant::InitStat()
 	MaxHealthPoint = 1000.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
-	Size = FVector2D(1.0f, 1.0f);
-
 	NeedMineral = 600.0f;
 	NeedOrganicMatter = 300.0f;
 

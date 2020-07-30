@@ -213,16 +213,15 @@ void ABaseCharacter::OnOverlapEnd_DetectRange(class UPrimitiveComponent* Overlap
 	// virtual
 }
 
-void ABaseCharacter::RotateTargetRotation(float DeltaTime)
+void ABaseCharacter::RotateTargetRotation(const float& DeltaTime)
 {
 	if (!bRotateTargetRotation)
 		return;
 
-	static float timer = 0.0f;
-	timer += DeltaTime;
-	if (timer < 0.01f)
+	TimerOfRotation += DeltaTime;
+	if (TimerOfRotation < 0.016f)
 		return;
-	timer = 0.0f;
+	TimerOfRotation = 0.0f;
 
 	/*******************************************/
 
@@ -281,13 +280,13 @@ float ABaseCharacter::DistanceToActor(AActor* Actor)
 	return FVector::Distance(this->GetActorLocation(), Actor->GetActorLocation());
 }
 
-void ABaseCharacter::SetGenerateOverlapEventsOfCapsuleComp(bool bGenerate)
+void ABaseCharacter::SetGenerateOverlapEventsOfCapsuleComp(const bool& bGenerate)
 {
 	if (GetCapsuleComponent())
 		GetCapsuleComponent()->SetGenerateOverlapEvents(bGenerate);
 }
 
-void ABaseCharacter::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
+void ABaseCharacter::SetHealthPoint(const float& Value, const int& IDOfPioneer /*= 0*/)
 {
 	if (GetCharacterMovement())
 	{
@@ -372,7 +371,7 @@ void ABaseCharacter::StopMovement()
 		GetController()->StopMovement();
 }
 
-void ABaseCharacter::LookAtTheLocation(FVector Location)
+void ABaseCharacter::LookAtTheLocation(const FVector& Location)
 {
 	// 현재 Actor의 위치
 	FVector location = GetActorLocation();
@@ -400,7 +399,7 @@ bool ABaseCharacter::CheckNoObstacle(AActor* Target)
 	return false;
 }
 
-void ABaseCharacter::FindTheTargetActor(float DeltaTime)
+void ABaseCharacter::FindTheTargetActor(const float& DeltaTime)
 {
 	// virtual
 }
@@ -448,7 +447,7 @@ void ABaseCharacter::MoveRandomlyPosition()
 
 	LookAtTheLocation(newPosition);
 }
-void ABaseCharacter::MoveThePosition(FVector newPosition)
+void ABaseCharacter::MoveThePosition(const FVector& newPosition)
 {
 	if (!GetController())
 		return;
@@ -458,19 +457,19 @@ void ABaseCharacter::MoveThePosition(FVector newPosition)
 	LookAtTheLocation(newPosition);
 }
 
-void ABaseCharacter::IdlingOfFSM(float DeltaTime)
+void ABaseCharacter::IdlingOfFSM(const float& DeltaTime)
 {
 	// virtual
 }
-void ABaseCharacter::TracingOfFSM(float DeltaTime)
+void ABaseCharacter::TracingOfFSM(const float& DeltaTime)
 {
 	// virtual
 }
-void ABaseCharacter::AttackingOfFSM(float DeltaTime)
+void ABaseCharacter::AttackingOfFSM(const float& DeltaTime)
 {
 	// virtual
 }
-void ABaseCharacter::RunFSM(float DeltaTime)
+void ABaseCharacter::RunFSM(const float& DeltaTime)
 {
 	// virtual
 }

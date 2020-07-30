@@ -34,10 +34,10 @@ enum class EBuildingType : uint8
 UENUM()
 enum class EBuildingState : uint8
 {
-	Constructable = 0,	/** 건설할 수 있는지 확인하는 상태 */
-	Constructing = 1,	/** 건설중인 상태 */
-	Constructed = 2,	/** 건설이 완료된 상태*/
-	Destroying = 3		/** 생명력이 0이하가 되어 소멸되는 상태 */
+	Constructable = 0, /** 건설할 수 있는지 확인하는 상태 */
+	Constructing = 1,  /** 건설중인 상태 */
+	Constructed = 2,   /** 건설이 완료된 상태*/
+	Destroying = 3	   /** 생명력이 0이하가 되어 소멸되는 상태 */
 };
 
 USTRUCT()
@@ -79,17 +79,20 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		TArray<class AActor*> OverlappedActors; /** 충돌한 액터들을 모두 저장하고 벗어나면 제거합니다. */
 
-	UPROPERTY(VisibleAnywhere, Category = "Building")
+	UPROPERTY(VisibleAnywhere, Category = "Material")
 		TArray<FTArrayOfUMaterialInterface> BuildingSMCsMaterials; /** StaticMeshs의 원본 머터리얼들을 저장합니다. */
-	UPROPERTY(VisibleAnywhere, Category = "Building")
+	UPROPERTY(VisibleAnywhere, Category = "Material")
 		TArray<FTArrayOfUMaterialInterface> BuildingSkMCsMaterials; /** SkeltalMeshs의 원본 머터리얼들을 저장합니다. */
 
-	UPROPERTY(VisibleAnywhere)
-		class UMaterial* ConstructableMaterial = nullptr; /** EBuildingState::Constructable일 때 사용할 연두색 반투명한 머터리얼 */
-	UPROPERTY(VisibleAnywhere)
-		class UMaterial* UnConstructableMaterial = nullptr; /** EBuildingState::Constructable일 때 사용할 빨간색 반투명한 머터리얼 */
+	UPROPERTY(VisibleAnywhere, Category = "Material")
+		class UMaterial* ConstructableMaterial = nullptr; /** EBuildingState::Constructable일 때 사용할 연두색 반투명한 머터리얼입니다. */
+	UPROPERTY(VisibleAnywhere, Category = "Material")
+		class UMaterial* UnConstructableMaterial = nullptr; /** EBuildingState::Constructable일 때 사용할 빨간색 반투명한 머터리얼입니다. */
 	
-	FTimerHandle TimerOfConstructing;
+	UPROPERTY(VisibleAnywhere)
+		FTimerHandle TimerHandleOfConstructing;
+	UPROPERTY(VisibleAnywhere)
+		float TimerOfConsumeAndProduct;
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "BuildingManager")
@@ -99,7 +102,7 @@ public:
 		bool bDying;
 
 	UPROPERTY(VisibleAnywhere)
-		int ID; /** BuildingManager에서 관리할 고유한 식별자 */
+		int ID; /** BuildingManager에서 관리할 고유한 식별자입니다. */
 
 	UPROPERTY(VisibleAnywhere)
 		EBuildingState BuildingState;
@@ -115,8 +118,6 @@ public:
 		float MaxHealthPoint; /** 완성된 생명력 */
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float TickHealthPoint; /** 1초당 증가하는 생명력 */
-	UPROPERTY(EditAnywhere, Category = "Stat")
-		FVector2D Size; /** 크기 (NxN) */
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		float NeedMineral; /** 건설재료 무기물 (kg) */
 	UPROPERTY(EditAnywhere, Category = "Stat")
@@ -149,9 +150,9 @@ protected:
 	virtual void InitBuilding();
 	void InitMaterial();
 
-	void AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
-	void AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
-	void AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	void AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, const FVector& Scale = FVector::ZeroVector, const FRotator& Rotation = FRotator::ZeroRotator, const FVector& Location = FVector::ZeroVector);
+	void AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, const FVector& Scale = FVector::ZeroVector, const FRotator& Rotation = FRotator::ZeroRotator, const FVector& Location = FVector::ZeroVector);
+	void AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, const FVector& Scale = FVector::ZeroVector, const FRotator& Rotation = FRotator::ZeroRotator, const FVector& Location = FVector::ZeroVector);
 
 	UFUNCTION(Category = "Overlap")
 		virtual void OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -159,13 +160,13 @@ protected:
 		virtual void OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	void TickOfConstructable();
-	void TickOfConsumeAndProduct(float DeltaTime);
+	void TickOfConsumeAndProduct(const float& DeltaTime);
 
 public:
 	FORCEINLINE void SetBuildingManager(class ABuildingManager* pBuildingManager) { this->BuildingManager = pBuildingManager; }
 
 	UFUNCTION(Category = "Stat")
-		void SetHealthPoint(float Value);
+		void SetHealthPoint(const float& Value);
 	UFUNCTION(Category = "Building")
 		void SetBuildingMaterials();
 	UFUNCTION(Category = "Building")
@@ -174,16 +175,16 @@ public:
 		void SetUnConstructableMaterial();
 
 	UFUNCTION(Category = "Rotation")
-		void Rotating(float Value);
+		void Rotating(const float& Value);
 
 	UFUNCTION(Category = "ABuilding")
-		bool Constructing(); /** EBuildingState::Constructable -> Constructing */
+		bool Constructing(); /** Constructable -> Constructing */
 	UFUNCTION(Category = "ABuilding")
-		void CheckConstructable(); /** EBuildingState::Constructable -> Constructing */
+		void CheckConstructable(); /** Constructable -> Constructing */
 	UFUNCTION(Category = "ABuilding")
-		void CompleteConstructing(); /** EBuildingState::Constructing -> Constructed */
+		void CompleteConstructing(); /** Constructing -> Constructed */
 	UFUNCTION(Category = "ABuilding")
-		void Destroying(); /** EBuildingState::Destroying */
+		void Destroying(); /** Destroying */
 
 	////////////
 	// 네트워크

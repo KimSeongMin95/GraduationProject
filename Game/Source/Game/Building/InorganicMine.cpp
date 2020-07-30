@@ -48,8 +48,6 @@ void AInorganicMine::InitStat()
 	MaxHealthPoint = 1000.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
-	Size = FVector2D(1.0f, 1.0f);
-
 	NeedMineral = 480.0f;
 	NeedOrganicMatter = 240.0f;
 

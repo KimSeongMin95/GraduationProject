@@ -285,7 +285,7 @@ void AEnemy::OnOverlapEnd_AttackRange(class UPrimitiveComponent* OverlappedComp,
 	}
 }
 
-void AEnemy::RotateTargetRotation(float DeltaTime)
+void AEnemy::RotateTargetRotation(const float& DeltaTime)
 {
 	// 회전을 할 필요가 없으면 실행하지 않습니다.
 	if (!bRotateTargetRotation)
@@ -294,8 +294,8 @@ void AEnemy::RotateTargetRotation(float DeltaTime)
 	Super::RotateTargetRotation(DeltaTime);
 }
 
-void AEnemy::InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FString ReferencePathOfBP_AnimInstance,
-	FVector Scale /*= FVector::ZeroVector*/, FRotator Rotation /*= FRotator::ZeroRotator*/, FVector Location /*= FVector::ZeroVector*/)
+void AEnemy::InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FString& ReferencePathOfBP_AnimInstance,
+	const FVector& Scale /*= FVector::ZeroVector*/, const FRotator& Rotation /*= FRotator::ZeroRotator*/, const FVector& Location /*= FVector::ZeroVector*/)
 {
 	// USkeletalMeshComponent에 USkeletalMesh을 설정합니다.
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(ReferencePathOfMesh);
@@ -329,7 +329,7 @@ void AEnemy::InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FStri
 	}
 }
 
-void AEnemy::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
+void AEnemy::SetHealthPoint(const float& Value, const int& IDOfPioneer /*= 0*/)
 {
 	HealthPoint += Value;
 	if (HealthPoint > 0.0f)
@@ -488,7 +488,7 @@ bool AEnemy::CheckNoObstacle(AActor* Target)
 	return false;
 }
 
-void AEnemy::FindTheTargetActor(float DeltaTime)
+void AEnemy::FindTheTargetActor(const float& DeltaTime)
 {
 	TimerOfFindTheTargetActor += DeltaTime;
 	if (TimerOfFindTheTargetActor < 0.75f)
@@ -599,7 +599,7 @@ void AEnemy::FindTheTargetActor(float DeltaTime)
 	}
 }
 
-void AEnemy::IdlingOfFSM(float DeltaTime)
+void AEnemy::IdlingOfFSM(const float& DeltaTime)
 {
 	TimerOfIdlingOfFSM += DeltaTime;
 	if (TimerOfIdlingOfFSM < 10.0f)
@@ -610,7 +610,7 @@ void AEnemy::IdlingOfFSM(float DeltaTime)
 	StopMovement();
 	MoveRandomlyPosition();
 }
-void AEnemy::TracingOfFSM(float DeltaTime)
+void AEnemy::TracingOfFSM(const float& DeltaTime)
 {
 	TimerOfTracingOfFSM += DeltaTime;
 	if (TimerOfTracingOfFSM < 0.33f)
@@ -640,7 +640,7 @@ void AEnemy::TracingOfFSM(float DeltaTime)
 		TracingTargetActor();
 	}
 }
-void AEnemy::AttackingOfFSM(float DeltaTime)
+void AEnemy::AttackingOfFSM(const float& DeltaTime)
 {
 	TimerOfAttackingOfFSM += DeltaTime;
 	if (TimerOfAttackingOfFSM < 1.0f)
@@ -661,7 +661,7 @@ void AEnemy::AttackingOfFSM(float DeltaTime)
 	StopMovement();
 	LookAtTheLocation(TargetActor->GetActorLocation());
 }
-void AEnemy::RunFSM(float DeltaTime)
+void AEnemy::RunFSM(const float& DeltaTime)
 {
 	FindTheTargetActor(DeltaTime);
 
@@ -730,7 +730,7 @@ void AEnemy::Victory()
 ///////////
 // 네트워크
 ///////////
-void AEnemy::SetInfoOfEnemy_Spawn(CInfoOfEnemy_Spawn& Spawn)
+void AEnemy::SetInfoOfEnemy_Spawn(class CInfoOfEnemy_Spawn& Spawn)
 {
 	ID = Spawn.ID;
 
@@ -745,7 +745,7 @@ CInfoOfEnemy_Spawn AEnemy::GetInfoOfEnemy_Spawn()
 
 	return spawn;
 }
-void AEnemy::SetInfoOfEnemy_Animation(CInfoOfEnemy_Animation& Animation)
+void AEnemy::SetInfoOfEnemy_Animation(class CInfoOfEnemy_Animation& Animation)
 {
 	SetActorTransform(Animation.GetActorTransform());
 
@@ -774,7 +774,7 @@ CInfoOfEnemy_Animation AEnemy::GetInfoOfEnemy_Animation()
 
 	return animation;
 }
-void AEnemy::SetInfoOfEnemy_Stat(CInfoOfEnemy_Stat& Stat)
+void AEnemy::SetInfoOfEnemy_Stat(class CInfoOfEnemy_Stat& Stat)
 {
 	HealthPoint = Stat.HealthPoint;
 	SetHealthPoint(NULL);
@@ -803,7 +803,7 @@ CInfoOfEnemy_Stat AEnemy::GetInfoOfEnemy_Stat()
 	return stat;
 }
 
-void AEnemy::SetInfoOfEnemy(CInfoOfEnemy& InfoOfEnemy)
+void AEnemy::SetInfoOfEnemy(class CInfoOfEnemy& InfoOfEnemy)
 {
 	SetInfoOfEnemy_Spawn(InfoOfEnemy.Spawn);
 	SetInfoOfEnemy_Animation(InfoOfEnemy.Animation);

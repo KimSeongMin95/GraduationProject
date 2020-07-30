@@ -48,8 +48,6 @@ void AWall::InitStat()
 	MaxHealthPoint = 750.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
-	Size = FVector2D(1.0f, 1.0f);
-
 	NeedMineral = 100.0f;
 	NeedOrganicMatter = 0.0f;
 

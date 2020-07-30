@@ -37,6 +37,8 @@ APioneer::APioneer()
 	PositionOfBase = FVector::ZeroVector;
 
 	Bone_Spine_01_Rotation = FRotator::ZeroRotator;
+	
+	TimerOfCursor = 0.0f;
 
 	// 충돌 캡슐의 크기를 설정합니다.
 	GetCapsuleComponent()->InitCapsuleSize(33.0f, 96.0f);
@@ -88,7 +90,6 @@ void APioneer::Tick(float DeltaTime)
 
 	RotateTargetRotation(DeltaTime);
 
-	// 회전시 떨림을 방지하기 위해 카메라 위치 조정은 가장 마지막에 실행합니다.
 	SetCameraBoomSettings();
 }
 void APioneer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -205,7 +206,7 @@ void APioneer::OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedCom
 	}
 }
 
-void APioneer::RotateTargetRotation(float DeltaTime)
+void APioneer::RotateTargetRotation(const float& DeltaTime)
 {
 	// 무기가 없거나 회전을 할 필요가 없으면 실행하지 않습니다.
 	if (!CurrentWeapon || !bRotateTargetRotation)
@@ -236,8 +237,7 @@ void APioneer::InitSkeletalAnimation()
 		GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		GetMesh()->SetCanEverAffectNavigation(false);
 	}
-	// AnimInstance와 AnimationBlueprint는 AnimClass로써 같은 역할을 합니다.
-	// 블루프린트를 사용하겠습니다. (주의할 점은 .BP_PioneerAnimation_C로 UAnimBluprint가 아닌 UClass를 불러옴으로써 바로 적용해야 합니다.)
+
 	FString animBP_Reference = "UClass'/Game/Characters/Pioneer/Animations/BP_PioneerAnimation.BP_PioneerAnimation_C'";
 	UClass* animBP = LoadObject<UClass>(NULL, *animBP_Reference);
 	if (!animBP)
@@ -245,7 +245,9 @@ void APioneer::InitSkeletalAnimation()
 		MY_LOG(LogTemp, Error, TEXT("<APioneer::InitSkeletalAnimation()> if (!animBP)"));
 	}
 	else
+	{
 		GetMesh()->SetAnimInstanceClass(animBP);
+	}
 
 	bHasPistolType = false;
 	bHasRifleType = false;
@@ -282,8 +284,6 @@ void APioneer::InitCamera()
 }
 void APioneer::InitCursor()
 {
-	// Create a decal in the world to show the cursor's location
-	// A material that is rendered onto the surface of a mesh. A kind of 'bumper sticker' for a model.
 	// 월드상의 커서의 위치를 표시할 데칼을 생성합니다.
 	// 데칼은 메시의 표면에 렌더링될 머터리얼입니다.
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
@@ -307,49 +307,46 @@ void APioneer::InitWeapon()
 
 	/* 주의: Weapon을 생성할 때, Owner를 this로 설정해주어야 발사할 때 충돌감지를 벗어날 수 있습니다.
 	주의: AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 합니다. */
-
-	FTransform myTrans = FTransform::Identity;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = Instigator;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // Spawn 위치에서 충돌이 발생했을 때 처리를 설정합니다.
 
-	// 개척자는 기본적으로 권총을 가지고 있음
-	APistol* Pistol = world->SpawnActor<APistol>(APistol::StaticClass(), myTrans, SpawnParams);
-	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
-	//Pistol->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
+	// 개척자는 기본적으로 권총을 가지고 있습니다.
+	APistol* Pistol = world->SpawnActor<APistol>(APistol::StaticClass(), FTransform::Identity, SpawnParams);
+	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("PistolSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 합니다.
 	if (Weapons.Contains(Pistol) == false)
 	{
 		IdxOfCurrentWeapon = Weapons.Add(Pistol);
 		Arming();
 	}
 
-	AAssaultRifle* assaultRifle = world->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), myTrans, SpawnParams);
-	assaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
+	AAssaultRifle* assaultRifle = world->SpawnActor<AAssaultRifle>(AAssaultRifle::StaticClass(), FTransform::Identity, SpawnParams);
+	assaultRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("AssaultRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 합니다.
 	assaultRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(assaultRifle) == false)
 		Weapons.Add(assaultRifle);
 
-	AShotgun* shotgun = world->SpawnActor<AShotgun>(AShotgun::StaticClass(), myTrans, SpawnParams);
-	shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ShotgunSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
+	AShotgun* shotgun = world->SpawnActor<AShotgun>(AShotgun::StaticClass(), FTransform::Identity, SpawnParams);
+	shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ShotgunSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 합니다.
 	shotgun->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(shotgun) == false)
 		Weapons.Add(shotgun);
 
-	ASniperRifle* sniperRifle = world->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), myTrans, SpawnParams);
-	sniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
+	ASniperRifle* sniperRifle = world->SpawnActor<ASniperRifle>(ASniperRifle::StaticClass(), FTransform::Identity, SpawnParams);
+	sniperRifle->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("SniperRifleSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 합니다.
 	sniperRifle->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(sniperRifle) == false)
 		Weapons.Add(sniperRifle);
 
-	AGrenadeLauncher* grenadeLauncher = world->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), myTrans, SpawnParams);
-	grenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
+	AGrenadeLauncher* grenadeLauncher = world->SpawnActor<AGrenadeLauncher>(AGrenadeLauncher::StaticClass(), FTransform::Identity, SpawnParams);
+	grenadeLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GrenadeLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 합니다.
 	grenadeLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(grenadeLauncher) == false)
 		Weapons.Add(grenadeLauncher);
 
-	ARocketLauncher* rocketLauncher = world->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), myTrans, SpawnParams);
-	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 함
+	ARocketLauncher* rocketLauncher = world->SpawnActor<ARocketLauncher>(ARocketLauncher::StaticClass(), FTransform::Identity, SpawnParams);
+	rocketLauncher->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("RocketLauncherSocket")); // AttachToComponent 때문에 생성자가 아닌 BeginPlay()에서 실행해야 합니다.
 	rocketLauncher->SetActorHiddenInGame(true); // 보이지 않게 숨깁니다.
 	if (Weapons.Contains(rocketLauncher) == false)
 		Weapons.Add(rocketLauncher);
@@ -387,32 +384,29 @@ void APioneer::SetCameraBoomSettings()
 		return;
 	}
 
-	// 개척민 현재 위치를 찾습니다.
-	FVector rootComponentLocation = RootComponent->GetComponentLocation();
+	FVector rootCompLoc = RootComponent->GetComponentLocation();
 
 	// Pioneer의 현재 위치에서 position 만큼 더하고 rotation을 설정합니다.
-	CameraBoom->SetWorldLocationAndRotation(
-		FVector(rootComponentLocation.X + CameraBoomLocation.X, rootComponentLocation.Y + CameraBoomLocation.Y, rootComponentLocation.Z + CameraBoomLocation.Z),
-		CameraBoomRotation);
-
+	CameraBoom->SetWorldLocationAndRotation(FVector(rootCompLoc.X + CameraBoomLocation.X, rootCompLoc.Y + CameraBoomLocation.Y, rootCompLoc.Z + CameraBoomLocation.Z), CameraBoomRotation);
 	CameraBoom->TargetArmLength = TargetArmLength; // 캐릭터 뒤에서 해당 간격으로 따라다니는 카메라
 	CameraBoom->CameraLagSpeed = CameraLagSpeed;
 }
-void APioneer::SetCursorToWorld(float DeltaTime)
+void APioneer::SetCursorToWorld(const float& DeltaTime)
 {
 	if (!CursorToWorld || !GetController())
+	{
 		return;
+	}
 	if (GetController() == AIController)
 	{
 		CursorToWorld->SetVisibility(false);
 		return;
 	}
 
-	static float timer = 0.0f;
-	timer += DeltaTime;
-	if (timer < 0.033f)
+	TimerOfCursor += DeltaTime;
+	if (TimerOfCursor < 0.016f)
 		return;
-	timer = 0.0f;
+	TimerOfCursor = 0.0f;
 
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
@@ -420,6 +414,7 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 		PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
 		FVector CursorFV = TraceHitResult.ImpactNormal;
 		FRotator CursorR = CursorFV.Rotation();
+
 		CursorToWorld->SetWorldLocation(TraceHitResult.Location);
 		CursorToWorld->SetWorldRotation(CursorR);
 		if (CursorToWorld->IsVisible() == false)
@@ -430,7 +425,7 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 		{
 			LookAtTheLocation(CursorToWorld->GetComponentLocation());
 
-			// 적이라면
+			// 커서 위치에 적이 존재한다면
 			PC->GetHitResultUnderCursor(ECC_Pawn, true, TraceHitResult);
 			if (TraceHitResult.GetActor())
 			{
@@ -441,6 +436,7 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 						FVector vec = enemy->GetActorLocation() - CurrentWeapon->GetActorLocation();
 						vec.Normalize();
 
+						// 개척자의 허리를 회전시켜 적을 공격할 수 있도록 합니다.
 						Bone_Spine_01_Rotation = vec.Rotation();
 						Bone_Spine_01_Rotation.Yaw = -Bone_Spine_01_Rotation.Pitch;
 						Bone_Spine_01_Rotation.Pitch = 0.0f;
@@ -472,7 +468,7 @@ void APioneer::SetCursorToWorld(float DeltaTime)
 	}
 }
 
-void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
+void APioneer::SetHealthPoint(const float& Value, const int& IDOfPioneer /*= 0*/)
 {
 	HealthPoint += Value;
 	if (HealthPoint > 0.0f)
@@ -481,11 +477,6 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 		return;
 	bDying = true;
 	/************************************/
-
-	if (!PioneerManager)
-	{
-		MY_LOG(LogTemp, Fatal, TEXT("<APioneer::SetHealthPoint(...)> if (!PioneerManager)"));
-	}
 
 	if (PioneerManager)
 	{
@@ -497,9 +488,7 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 			PioneerManager->Pioneers.Compact();
 			PioneerManager->Pioneers.Shrink();
 
-			//////////////////////////////////////////////////////////
-			// 게임서버는와 게임클라이언트는 자신의 죽음과 관전상태를 알립니다.
-			//////////////////////////////////////////////////////////
+			// 게임서버와 게임클라이언트는 자신의 죽음과 관전상태를 알립니다.
 			if (CGameServer::GetSingleton()->IsNetworkOn())
 			{
 				// AI와 게임서버가 조종하는 Pioneer만 알리기 위해
@@ -523,14 +512,12 @@ void APioneer::SetHealthPoint(float Value, int IDOfPioneer /*= 0*/)
 				if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 				{
 					CGameClient::GetSingleton()->SendDiedPioneer(ID);
-
 					CGameClient::GetSingleton()->SendObservation();
 				}
 			}
 		}
 		else
 		{
-			//MY_LOG(LogTemp, Fatal, TEXT("<APioneer::SetHealthPoint(...)> if (!PioneerManager->Pioneers.Contains(ID))"));
 			bDying = true;
 			return;
 		}
@@ -605,7 +592,7 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 			if (hit.Actor->IsA(ALandscape::StaticClass()))
 				continue;
 
-			// 충돌하는 것이 해당 Enemy면
+			// 충돌한 것이 해당 Enemy면
 			if (hit.Actor == Target)
 			{
 				if (AEnemy* enemy = dynamic_cast<AEnemy*>(Target))
@@ -616,8 +603,7 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 					}
 				}
 			}
-			else if (hit.Actor->IsA(AGate::StaticClass()) &&
-				hit.Component->IsA(USphereComponent::StaticClass()))
+			else if (hit.Actor->IsA(AGate::StaticClass()) && hit.Component->IsA(USphereComponent::StaticClass()))
 			{
 				continue;
 			}
@@ -631,10 +617,10 @@ bool APioneer::CheckNoObstacle(AActor* Target)
 	return false;
 }
 
-void APioneer::FindTheTargetActor(float DeltaTime)
+void APioneer::FindTheTargetActor(const float& DeltaTime)
 {
 	TimerOfFindTheTargetActor += DeltaTime;
-	if (TimerOfFindTheTargetActor < 1.5f)
+	if (TimerOfFindTheTargetActor < 0.75f)
 		return;
 	TimerOfFindTheTargetActor = 0.0f;
 	/*******************************************/
@@ -645,7 +631,6 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 	if (FVector::Distance(PositionOfBase, GetActorLocation()) > (DetectRange * 64.0f))
 	{
 		State = EFiniteState::Idle;
-		//MoveThePosition(FVector(-7859.1f, -8184.9f, 178.8f));
 		MoveThePosition(PositionOfBase);
 		return;
 	}
@@ -667,7 +652,6 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 				TargetActor = enemy;
 			}
 			closestActor = enemy;
-
 			continue;
 		}
 
@@ -709,7 +693,7 @@ void APioneer::FindTheTargetActor(float DeltaTime)
 	}
 }
 
-void APioneer::IdlingOfFSM(float DeltaTime)
+void APioneer::IdlingOfFSM(const float& DeltaTime)
 {
 	TimerOfIdlingOfFSM += DeltaTime;
 	if (TimerOfIdlingOfFSM < 3.0f)
@@ -723,7 +707,7 @@ void APioneer::IdlingOfFSM(float DeltaTime)
 
 	Bone_Spine_01_Rotation = FRotator::ZeroRotator;
 }
-void APioneer::TracingOfFSM(float DeltaTime)
+void APioneer::TracingOfFSM(const float& DeltaTime)
 {
 	TimerOfTracingOfFSM += DeltaTime;
 	if (TimerOfTracingOfFSM < 0.5f)
@@ -750,7 +734,7 @@ void APioneer::TracingOfFSM(float DeltaTime)
 		Bone_Spine_01_Rotation = FRotator::ZeroRotator;
 	}
 }
-void APioneer::AttackingOfFSM(float DeltaTime)
+void APioneer::AttackingOfFSM(const float& DeltaTime)
 {
 	TimerOfAttackingOfFSM += DeltaTime;
 	if (TimerOfAttackingOfFSM < 0.2f)
@@ -774,7 +758,6 @@ void APioneer::AttackingOfFSM(float DeltaTime)
 
 	FireWeapon();
 
-	// 허리 숙이기
 	if (CurrentWeapon)
 	{
 		FVector vec = TargetActor->GetActorLocation() - CurrentWeapon->GetActorLocation();
@@ -797,7 +780,7 @@ void APioneer::AttackingOfFSM(float DeltaTime)
 	//MY_LOG(LogTemp, Warning, TEXT("Bone_Spine_01_Rotation.Roll: %f"), Bone_Spine_01_Rotation.Roll);
 	//MY_LOG(LogTemp, Warning, TEXT("_______________________"));
 }
-void APioneer::RunFSM(float DeltaTime)
+void APioneer::RunFSM(const float& DeltaTime)
 {
 	FindTheTargetActor(DeltaTime);
 
@@ -832,35 +815,17 @@ void APioneer::DestroyCharacter()
 			weapon->Destroy();
 	}
 
-	if (GetMesh())
-		GetMesh()->DestroyComponent();
-
-	if (GetCharacterMovement())
-		GetCharacterMovement()->DestroyComponent();
-
-	if (HelmetMesh)
-		HelmetMesh->DestroyComponent();
-
 	if (PioneerManager)
 	{
-		// 조정하던 Pioneer라면
 		if (PioneerManager->PioneerOfPlayer == this)
 		{
-			// 일단 CameraOfCurrentPioneer로 카메라 전환
 			if (APioneerController* pioneerController = dynamic_cast<APioneerController*>(GetController()))
 			{
 				CopyTopDownCameraTo(PioneerManager->GetCameraOfCurrentPioneer());
 
-				// 먼저 카메라 변경
 				pioneerController->SetViewTarget(PioneerManager->GetCameraOfCurrentPioneer());
-
-				// 카메라타겟 활성화를 자동관리하지 않도록 합니다. (true일 때, 폰에 빙의하면 자동으로 뷰타겟을 변경?)
 				pioneerController->bAutoManageActiveCameraTarget = false;
-
-				// 빙의 해제
 				pioneerController->OnUnPossess();
-
-				// 관전모드 시작
 				PioneerManager->Observation();
 			}
 
@@ -905,7 +870,7 @@ bool APioneer::HasLauncherType()
 	return bHasLauncherType;
 }
 
-void APioneer::ZoomInOrZoomOut(float Value)
+void APioneer::ZoomInOrZoomOut(const float& Value)
 {
 	TargetArmLength += Value * 64.0f;
 
@@ -960,7 +925,7 @@ void APioneer::SetWeaponType()
 		break;
 	}
 }
-void APioneer::ChangeWeapon(int Value)
+void APioneer::ChangeWeapon(const int& Value)
 {
 	// 현재 무기를 든 상태여야 무기를 변경할 수 있습니다.
 	if (!CurrentWeapon)
@@ -1065,7 +1030,7 @@ void APioneer::Disarming()
 		GetCharacterMovement()->bOrientRotationToMovement = true; // 무기를 들지 않으면 이동 방향에 캐릭터 메시가 따라 회전합니다.
 }
 
-void APioneer::SpawnBuilding(int Value)
+void APioneer::SpawnBuilding(const int& Value)
 {
 	DestroyBuilding();
 
@@ -1091,7 +1056,7 @@ void APioneer::SpawnBuilding(int Value)
 		Building->SetActorLocation(GetActorLocation());
 	}
 }
-void APioneer::OnConstructingMode(float DeltaTime)
+void APioneer::OnConstructingMode(const float& DeltaTime)
 {
 	if (!bConstructingMode || !CursorToWorld || !Building)
 	{
@@ -1169,7 +1134,7 @@ void APioneer::OnConstructingMode(float DeltaTime)
 		}
 	}
 }
-void APioneer::RotatingBuilding(float Value)
+void APioneer::RotatingBuilding(const float& Value)
 {
 	if (!Building || !bConstructingMode)
 		return;

@@ -72,22 +72,22 @@ protected:
 	virtual void OnOverlapBegin_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void OnOverlapEnd_DetectRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
-	virtual void RotateTargetRotation(float DeltaTime) final;
+	virtual void RotateTargetRotation(const float& DeltaTime) final;
 
-	virtual void InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FString ReferencePathOfBP_AnimInstance,
-		FVector Scale = FVector::ZeroVector, FRotator Rotation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	virtual void InitSkeletalAnimation(const TCHAR* ReferencePathOfMesh, const FString& ReferencePathOfBP_AnimInstance,
+		const FVector& Scale = FVector::ZeroVector, const FRotator& Rotation = FRotator::ZeroRotator, const FVector& Location = FVector::ZeroVector);
 
 public:
-	virtual void SetHealthPoint(float Value, int IDOfPioneer = 0) final;
+	virtual void SetHealthPoint(const float& Value, const int& IDOfPioneer = 0) final;
 
 	virtual bool CheckNoObstacle(AActor* Target) final;
 
-	virtual void FindTheTargetActor(float DeltaTime) final;
+	virtual void FindTheTargetActor(const float& DeltaTime) final;
 
-	virtual void IdlingOfFSM(float DeltaTime) final;
-	virtual void TracingOfFSM(float DeltaTime) final;
-	virtual void AttackingOfFSM(float DeltaTime) final;
-	virtual void RunFSM(float DeltaTime) final;
+	virtual void IdlingOfFSM(const float& DeltaTime) final;
+	virtual void TracingOfFSM(const float& DeltaTime) final;
+	virtual void AttackingOfFSM(const float& DeltaTime) final;
+	virtual void RunFSM(const float& DeltaTime) final;
 
 	UFUNCTION(Category = "AttackRange")
 		virtual void OnOverlapBegin_AttackRange(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

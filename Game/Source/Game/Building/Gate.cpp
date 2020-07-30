@@ -56,8 +56,6 @@ void AGate::InitStat()
 	MaxHealthPoint = 1500.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
-	Size = FVector2D(1.0f, 1.0f);
-
 	NeedMineral = 400.0f;
 	NeedOrganicMatter = 200.0f;
 

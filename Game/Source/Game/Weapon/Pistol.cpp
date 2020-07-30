@@ -54,7 +54,7 @@ void APistol::InitWeapon()
 	InitFireAnimSequence(TEXT("AnimSequence'/Game/Items/Weapons/Animations/Fire_Pistol_W.Fire_Pistol_W'"));
 }
 
-bool APistol::Fire(int IDOfPioneer, int SocketIDOfPioneer)
+bool APistol::Fire(const int& IDOfPioneer, const int& SocketIDOfPioneer)
 {
 	if (Super::Fire(IDOfPioneer, SocketIDOfPioneer) == false)
 		return false;

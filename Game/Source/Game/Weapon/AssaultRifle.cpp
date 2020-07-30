@@ -53,7 +53,7 @@ void AAssaultRifle::InitWeapon()
 	InitFireAnimSequence(TEXT("AnimSequence'/Game/Items/Weapons/Animations/Fire_Rifle_W.Fire_Rifle_W'"));
 }
 
-bool AAssaultRifle::Fire(int IDOfPioneer, int SocketIDOfPioneer)
+bool AAssaultRifle::Fire(const int& IDOfPioneer, const int& SocketIDOfPioneer)
 {
 	if (Super::Fire(IDOfPioneer, SocketIDOfPioneer) == false)
 		return false;

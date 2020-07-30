@@ -48,8 +48,6 @@ void ARocketLauncherTurret::InitStat()
 	MaxHealthPoint = 800.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
-	Size = FVector2D(1.0f, 1.0f);
-
 	NeedMineral = 760.0f;
 	NeedOrganicMatter = 320.0f;
 

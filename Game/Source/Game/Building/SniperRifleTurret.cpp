@@ -49,8 +49,6 @@ void ASniperRifleTurret::InitStat()
 	MaxHealthPoint = 600.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
-	Size = FVector2D(1.0f, 1.0f);
-
 	NeedMineral = 480.0f;
 	NeedOrganicMatter = 160.0f;
 

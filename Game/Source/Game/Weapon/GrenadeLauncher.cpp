@@ -53,7 +53,7 @@ void AGrenadeLauncher::InitWeapon()
 	InitFireAnimSequence(TEXT("AnimSequence'/Game/Items/Weapons/Animations/Fire_GrenadeLauncher_W.Fire_GrenadeLauncher_W'"));
 }
 
-bool AGrenadeLauncher::Fire(int IDOfPioneer, int SocketIDOfPioneer)
+bool AGrenadeLauncher::Fire(const int& IDOfPioneer, const int& SocketIDOfPioneer)
 {
 	if (Super::Fire(IDOfPioneer, SocketIDOfPioneer) == false)
 		return false;

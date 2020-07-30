@@ -48,8 +48,6 @@ void AAssaultRifleTurret::InitStat()
 	MaxHealthPoint = 400.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
-	Size = FVector2D(1.0f, 1.0f);
-
 	NeedMineral = 240.0f;
 	NeedOrganicMatter = 80.0f;
 

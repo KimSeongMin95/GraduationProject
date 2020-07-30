@@ -14,6 +14,8 @@ ABuilding::ABuilding()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	TimerOfConsumeAndProduct = 0.0f;
+
 	BuildingState = EBuildingState::Constructable;
 
 	bDying = false;
@@ -156,8 +158,6 @@ void ABuilding::InitStat()
 	MaxHealthPoint = 100.0f;
 	TickHealthPoint = (MaxHealthPoint - HealthPoint) / ConstructionTime;
 
-	Size = FVector2D(1.0f, 1.0f);
-
 	NeedMineral = 0.0f;
 	NeedOrganicMatter = 0.0f;
 
@@ -192,7 +192,9 @@ void ABuilding::InitMaterial()
 	}
 }
 
-void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale, FRotator Rotation, FVector Location)
+void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, 
+	const TCHAR* CompName, const TCHAR* ObjectToFind, 
+	const FVector& Scale, const FRotator& Rotation, const FVector& Location)
 {
 	(*StaticMeshComp) = CreateDefaultSubobject<UStaticMeshComponent>(CompName);
 	(*StaticMeshComp)->SetupAttachment(RootComponent);
@@ -202,9 +204,7 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 	(*StaticMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel4);
 	(*StaticMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
-
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
-
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap);
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Overlap);
@@ -241,7 +241,9 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, c
 
 	ConstructBuildingSMCs.Add(*StaticMeshComp);
 }
-void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHAR* CompName, const TCHAR* ObjectToFind, FVector Scale, FRotator Rotation, FVector Location)
+void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, 
+	const TCHAR* CompName, const TCHAR* ObjectToFind, 
+	const FVector& Scale, const FRotator& Rotation, const FVector& Location)
 {
 	(*StaticMeshComp) = CreateDefaultSubobject<UStaticMeshComponent>(CompName);
 	(*StaticMeshComp)->SetupAttachment(RootComponent);
@@ -256,28 +258,19 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 	(*StaticMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
-
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap);
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Overlap);
 	(*StaticMeshComp)->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel5, ECollisionResponse::ECR_Overlap);
 
-	//// NavMesh에 업데이트 되도록 CanEverAffectNavigation을 true로 변경합니다. (default: true)
-	//(*StaticMeshComp)->SetCanEverAffectNavigation(true);
-
-	// static 키워드를 제거하여 인스턴스마다 애셋(리소스)를 매 번 새로 로드합니다. (주의: static이 붙으면 다 같은 모델이 됩니다.)
 	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshComp(ObjectToFind);
 	if (staticMeshComp.Succeeded())
 	{
 		(*StaticMeshComp)->SetStaticMesh(staticMeshComp.Object);
 
-		// StaticMesh의 원본 사이즈를 측정합니다.
 		FVector minBounds, maxBounds;
 		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
 
-		// RootComponent인 SphereComponent가 StaticMesh의 하단 정중앙으로 오게끔 설정해야 합니다.
-		// 순서는 S->R->T 순으로 해야 원점에서 벗어나지 않습니다.
 		(*StaticMeshComp)->SetRelativeScale3D(Scale);
 		(*StaticMeshComp)->SetRelativeRotation(Rotation);
 		FVector center;
@@ -300,7 +293,7 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp, const TCHA
 }
 void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp,
 	const TCHAR* CompName, const TCHAR* ObjectToFind,
-	FVector Scale, FRotator Rotation, FVector Location)
+	const FVector& Scale, const FRotator& Rotation, const FVector& Location)
 {
 	(*SkeletalMeshComp) = CreateDefaultSubobject<USkeletalMeshComponent>(CompName);
 	(*SkeletalMeshComp)->SetupAttachment(RootComponent);
@@ -311,10 +304,6 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp,
 	(*SkeletalMeshComp)->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel4);
 	(*SkeletalMeshComp)->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
-	//// NavMesh에 업데이트 되도록 CanEverAffectNavigation을 true로 변경합니다. (default: true)
-	//(*StaticMeshComp)->SetCanEverAffectNavigation(true);
-
-	// static 키워드를 제거하여 인스턴스마다 애셋(리소스)를 매 번 새로 로드합니다. (주의: static이 붙으면 다 같은 모델이 됩니다.)
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshComp(ObjectToFind);
 	if (skeletalMeshComp.Succeeded())
 	{
@@ -335,8 +324,6 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp,
 
 void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//MY_LOG(LogTemp, Log, TEXT("<ABuilding::OnOverlapBegin_Building(...)> Character FName: %s"), *OtherActor->GetFName().ToString());
- 
 	if ((OtherActor == nullptr) || (OtherComp == nullptr))
 		return;
 	if (OtherActor == this)
@@ -404,13 +391,12 @@ void ABuilding::TickOfConstructable()
 			SetConstructableMaterial();
 	}
 }
-void ABuilding::TickOfConsumeAndProduct(float DeltaTime)
+void ABuilding::TickOfConsumeAndProduct(const float& DeltaTime)
 {
-	static float timer = 0.0f;
-	timer += DeltaTime;
-	if (timer < 1.0f)
+	TimerOfConsumeAndProduct += DeltaTime;
+	if (TimerOfConsumeAndProduct < 1.0f)
 		return;
-	timer -= 1.0f;
+	TimerOfConsumeAndProduct -= 1.0f;
 
 	if (BuildingState == EBuildingState::Constructing)
 	{
@@ -439,7 +425,7 @@ void ABuilding::TickOfConsumeAndProduct(float DeltaTime)
 	}
 }
 
-void ABuilding::SetHealthPoint(float Value)
+void ABuilding::SetHealthPoint(const float& Value)
 {
 	HealthPoint += Value;
 	if (HealthPoint > 0.0f)
@@ -540,7 +526,7 @@ void ABuilding::SetUnConstructableMaterial()
 	}
 }
 
-void ABuilding::Rotating(float Value)
+void ABuilding::Rotating(const float& Value)
 {
 	FRotator rot = RootComponent->RelativeRotation;
 	rot.Yaw += Value;
@@ -593,8 +579,8 @@ bool ABuilding::Constructing()
 	}
 
 	// CheckConstructable()으로 실행했다면 Timer를 종료합니다.
-	if (GetWorldTimerManager().IsTimerActive(TimerOfConstructing))
-		GetWorldTimerManager().ClearTimer(TimerOfConstructing);
+	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfConstructing))
+		GetWorldTimerManager().ClearTimer(TimerHandleOfConstructing);
 
 	// 건설완성 타이머를 실행합니다.
 	FTimerHandle timer;
@@ -604,15 +590,15 @@ bool ABuilding::Constructing()
 }
 void ABuilding::CheckConstructable()
 {
-	if (GetWorldTimerManager().IsTimerActive(TimerOfConstructing))
-		GetWorldTimerManager().ClearTimer(TimerOfConstructing);
+	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfConstructing))
+		GetWorldTimerManager().ClearTimer(TimerHandleOfConstructing);
 
 	// 겹쳐서 건설할 수 없으면 건설가능여부를 계속 체크합니다.
 	if (Constructing() == false)
 	{
 		FTimerDelegate timerDel;
 		timerDel.BindUFunction(this, FName("Constructing"));
-		GetWorldTimerManager().SetTimer(TimerOfConstructing, timerDel, 0.5f, true);
+		GetWorldTimerManager().SetTimer(TimerHandleOfConstructing, timerDel, 0.5f, true);
 	}
 }
 void ABuilding::CompleteConstructing()

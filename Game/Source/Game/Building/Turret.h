@@ -73,6 +73,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "ATurret")
 		int IdxOfTarget;
 
+	UPROPERTY(VisibleAnywhere)
+		float TimerOfFindEnemy;
+	UPROPERTY(VisibleAnywhere)
+		float TimerOfRotation;
+
 protected:
 	virtual void InitHelthPointBar();
 

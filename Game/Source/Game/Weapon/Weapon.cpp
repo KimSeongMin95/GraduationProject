@@ -45,14 +45,13 @@ void AWeapon::InitWeapon()
 }
 void AWeapon::InitWeaponMesh(const TCHAR* ReferencePath)
 {
-	// Weapon SkeletalMesh Asset을 가져와서 적용
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(ReferencePath);
 	if (skeletalMeshAsset.Succeeded())
 	{
 		WeaponMesh->SetSkeletalMesh(skeletalMeshAsset.Object);
 	}
 }
-void AWeapon::InitArrowComponent(FRotator Rotatation, FVector Location)
+void AWeapon::InitArrowComponent(const FRotator& Rotatation, const FVector& Location)
 {
 	if (!ArrowComponent)
 		return;
@@ -62,7 +61,6 @@ void AWeapon::InitArrowComponent(FRotator Rotatation, FVector Location)
 }
 void AWeapon::InitSkeleton(const TCHAR* ReferencePath)
 {
-	// SkeletalMesh가 사용하는 Skeleton Asset을 가져와서 적용
 	ConstructorHelpers::FObjectFinder<USkeleton> skeletonAsset(ReferencePath);
 	if (skeletonAsset.Succeeded())
 	{
@@ -71,7 +69,7 @@ void AWeapon::InitSkeleton(const TCHAR* ReferencePath)
 }
 void AWeapon::InitFireAnimSequence(const TCHAR* ReferencePath)
 {
-	// 총 쏘는 애니메이션을 가져와서 적용
+	// 총을 발사하는 애니메이션을 가져와서 적용합니다.
 	ConstructorHelpers::FObjectFinder<UAnimSequence> fireAnimSequenceAsset(ReferencePath);
 	if (fireAnimSequenceAsset.Succeeded())
 	{
@@ -80,18 +78,18 @@ void AWeapon::InitFireAnimSequence(const TCHAR* ReferencePath)
 	}
 }
 
-bool AWeapon::Fire(int IDOfPioneer, int SocketIDOfPioneer)
+bool AWeapon::Fire(const int& IDOfPioneer, const int& SocketIDOfPioneer)
 {
 	if (FireCoolTime < (1.0f / AttackSpeed))
 		return false;
 	else
 		FireCoolTime = 0.0f;
 
-	// Fire 애니메이션 실행
+	// Fire 애니메이션을 실행합니다.
 	if (WeaponMesh)
 		WeaponMesh->PlayAnimation(FireAnimSequence, false);
 
-	// AI가 중복되어 발사하지 않도록
+	// AI가 중복되어 발사하지 않도록합니다.
 	if (CGameClient::GetSingleton()->IsNetworkOn() && SocketIDOfPioneer == 0)
 	{
 		return false;
@@ -100,7 +98,7 @@ bool AWeapon::Fire(int IDOfPioneer, int SocketIDOfPioneer)
 	return true;
 }
 
-void AWeapon::FireNetwork(int IDOfPioneer, const FTransform& Transform)
+void AWeapon::FireNetwork(const int& IDOfPioneer, const FTransform& Transform)
 {
 	if (CGameServer::GetSingleton()->IsNetworkOn())
 	{

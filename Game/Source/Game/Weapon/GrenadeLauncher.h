@@ -24,5 +24,5 @@ private:
 	virtual void InitWeapon() final;
 
 public:
-	virtual bool Fire(int IDOfPioneer, int SocketIDOfPioneer) final;
+	virtual bool Fire(const int& IDOfPioneer, const int& SocketIDOfPioneer) final;
 };

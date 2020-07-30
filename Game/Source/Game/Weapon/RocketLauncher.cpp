@@ -53,7 +53,7 @@ void ARocketLauncher::InitWeapon()
 	InitFireAnimSequence(TEXT("AnimSequence'/Game/Items/Weapons/Animations/Fire_RocketLauncher_W.Fire_RocketLauncher_W'"));
 }
 
-bool ARocketLauncher::Fire(int IDOfPioneer, int SocketIDOfPioneer)
+bool ARocketLauncher::Fire(const int& IDOfPioneer, const int& SocketIDOfPioneer)
 {
 	if (Super::Fire(IDOfPioneer, SocketIDOfPioneer) == false)
 		return false;

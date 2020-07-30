@@ -2,21 +2,16 @@
 
 #pragma once
 
-
-/*** 언리얼엔진 헤더 선언 : Start ***/
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Engine/SkeletalMesh.h"
 #include "Animation/Skeleton.h"
 #include "Animation/AnimSequence.h"
 #include "UObject/ConstructorHelpers.h" // For ConstructorHelpers::FObjectFinder<> 에셋을 불러옵니다.
-/*** 언리얼엔진 헤더 선언 : End ***/
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
-
-// DECLARE_DELEGATE(FFireDelegate);
 
 UENUM()
 enum class EWeaponType : uint8
@@ -50,8 +45,10 @@ private:
 		class UAnimSequence* FireAnimSequence = nullptr; /** WeaponMesh의 무기를 발사하는 AinmSequence입니다.*/
 
 public:
-	EWeaponType WeaponType;
-	int WeaponNumbering;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+		EWeaponType WeaponType; /** 무기를 권총류, 소총류, 중화기류로 구분합니다. */
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+		int WeaponNumbering; /** 각 무기의 지정된 식별자입니다. */
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
 		int LimitedLevel; /** 제한 레벨 */
@@ -71,13 +68,13 @@ public:
 		float MaximumNumOfBullets; /** 최대 총알 개수 */
 
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
-		FName SocketName; /** Pioneer의 Skeleton Socket에 붙이기 위한 소켓명 */
+		FName SocketName; /** Pioneer의 Skeleton Socket에 붙이기 위한 소켓명입니다. */
 
 protected:
 	virtual void InitStat();
 	virtual void InitWeapon();
 	void InitWeaponMesh(const TCHAR* ReferencePath);
-	void InitArrowComponent(FRotator Rotatation = FRotator::ZeroRotator, FVector Location = FVector::ZeroVector);
+	void InitArrowComponent(const FRotator& Rotatation = FRotator::ZeroRotator, const FVector& Location = FVector::ZeroVector);
 	void InitSkeleton(const TCHAR* ReferencePath);
 	void InitFireAnimSequence(const TCHAR* ReferencePath);
 
@@ -88,8 +85,8 @@ public:
 	FORCEINLINE class UAnimSequence* GetFireAnimSequence() const { return FireAnimSequence; }
 
 	UFUNCTION()
-		virtual bool Fire(int IDOfPioneer, int SocketIDOfPioneer); /** 무기를 발사합니다. */
+		virtual bool Fire(const int& IDOfPioneer, const int& SocketIDOfPioneer); /** 무기를 발사합니다. */
 	UFUNCTION()
-		void FireNetwork(int IDOfPioneer, const FTransform& Transform);
+		void FireNetwork(const int& IDOfPioneer, const FTransform& Transform);
 
 };

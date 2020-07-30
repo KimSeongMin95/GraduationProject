@@ -55,7 +55,7 @@ void AShotgun::InitWeapon()
 	InitFireAnimSequence(TEXT("AnimSequence'/Game/Items/Weapons/Animations/Fire_Shotgun_W.Fire_Shotgun_W'"));
 }
 
-bool AShotgun::Fire(int IDOfPioneer, int SocketIDOfPioneer)
+bool AShotgun::Fire(const int& IDOfPioneer, const int& SocketIDOfPioneer)
 {
 	if (Super::Fire(IDOfPioneer, SocketIDOfPioneer) == false)
 		return false;
