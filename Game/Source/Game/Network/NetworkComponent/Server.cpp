@@ -388,11 +388,11 @@ void CServer::RunIOThread()
 		// 이 GetQueuedCompletionStatus로 인해 쓰레드들이 WaitingThread Queue에 대기상태로 들어가게 됩니다.
 		// 완료된 Overlapped I/O 작업이 발생하면 IOCP Queue 에서 완료된 작업을 가져와 처리를 합니다.
 		bResult = GetQueuedCompletionStatus(
-			hIOCP,							// IOCP 핸들
-			&BytesTransferred,				// 실제로 전송된 바이트
+			hIOCP,				// IOCP 핸들
+			&BytesTransferred,		// 실제로 전송된 바이트
 			(PULONG_PTR)&completionKey,	// completion key
 			(LPOVERLAPPED*)&overlappedMsg,	// overlapped I/O 객체
-			INFINITE						// 대기 시간
+			INFINITE			// 대기 시간
 		);
 
 		// Close()에서 PostQueuedCompletionStatus(hIOCP, 0, NULL, NULL);로 강제종료합니다.
@@ -758,13 +758,13 @@ void CServer::Send(COverlappedMsg* OverlappedMsg, const SOCKET& Socket)
 	DWORD dwFlags = 0;
 
 	int nResult = WSASend(
-		Socket,						  // s: 연결 소켓을 가리키는 소켓 지정 번호입니다.
-		&(OverlappedMsg->DataBuf),	  // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킵니다.
-		1,							  // dwBufferCount: lpBuffers에 있는 WSABUF(:4300)구조체의 개수입니다.
-		NULL,						  // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨줍니다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 (잠재적인)잘못된 반환을 피할 수 있습니다.
-		dwFlags,					  // dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정합니다.
+		Socket,			      // s: 연결 소켓을 가리키는 소켓 지정 번호입니다.
+		&(OverlappedMsg->DataBuf),    // lpBuffers: WSABUF(:4300)구조체 배열의 포인터로 각각의 WSABUF 구조체는 버퍼와 버퍼의 크기를 가리킵니다.
+		1,			      // dwBufferCount: lpBuffers에 있는 WSABUF(:4300)구조체의 개수입니다.
+		NULL,			      // lpNumberOfBytesSent: 함수의 호출로 전송된 데이터의 바이트 크기를 넘겨줍니다. 만약 매개 변수 lpOverlapped가 NULL이 아니라면, 이 매개 변수의 값은 NULL로 해야 (잠재적인)잘못된 반환을 피할 수 있습니다.
+		dwFlags,		      // dwFlags: WSASend 함수를 어떤 방식으로 호출 할것인지를 지정합니다.
 		&(OverlappedMsg->Overlapped), // lpOverlapped: WSAOVERLAPPED(:4300)구조체의 포인터입니다. 비 (overlapped)중첩 소켓에서는 무시됩니다.
-		NULL						  // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터입니다. 비 중첩 소켓에서는 무시됩니다.
+		NULL			      // lpCompletionRoutine: 데이터 전송이 완료 되었을 때 호출할 완료 루틴 (completion routine)의 포인터입니다. 비 중첩 소켓에서는 무시됩니다.
 	);
 
 	if (nResult == 0)
