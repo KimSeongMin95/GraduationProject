@@ -13,19 +13,19 @@ public:
 	static CServer* GetSingleton();
 
 private:
-	CProcessingFuncPtr   ProcFuncs[MAX_HEADER]; // 수신한 패킷을 처리하는 함수 포인터
-	CCallBackFuncPtr	 ConCBF;				// 클라이언트가 접속하면 실행할 콜백함수 포인터
-	CCallBackFuncPtr	 DisconCBF;			    // 클라이언트와 접속이 종료되면 실행할 콜백함수 포인터
+	CProcessingFuncPtr  ProcFuncs[MAX_HEADER]; // 수신한 패킷을 처리하는 함수 포인터
+	CCallBackFuncPtr    ConCBF;		   // 클라이언트가 접속하면 실행할 콜백함수 포인터
+	CCallBackFuncPtr    DisconCBF;		   // 클라이언트와 접속이 종료되면 실행할 콜백함수 포인터
 
-	SOCKET				 ListenSocket;		    // 서버의 리슨 소켓
-	HANDLE				 hIOCP;				    // IOCP 객체 핸들
+	SOCKET ListenSocket;		      // 서버의 리슨 소켓
+	HANDLE hIOCP;			      // IOCP 객체 핸들
 
-	bool				 bAccept;			    // 서버 구동 확인용
-	CRITICAL_SECTION	 csAccept;			    // 서버 구동 확인 동기화
-	HANDLE				 hAcceptThreadHandle;   // Accept 스레드 핸들	
+	bool bAccept;			      // 서버 구동 확인용
+	CRITICAL_SECTION csAccept;	      // 서버 구동 확인 동기화
+	HANDLE hAcceptThreadHandle;           // Accept 스레드 핸들	
 
-	unique_ptr<HANDLE[]> hIOThreadHandle;	    // IO 스레드 핸들		
-	DWORD				 nIOThreadCnt;		    // IO 스레드 개수
+	unique_ptr<HANDLE[]> hIOThreadHandle; // IO 스레드 핸들		
+	DWORD nIOThreadCnt;		      // IO 스레드 개수
 
 	// 접속한 모든 클라이언트의 소켓을 저장합니다.
 	unordered_set <SOCKET> Clients;
