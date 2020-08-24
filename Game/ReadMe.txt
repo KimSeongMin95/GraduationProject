@@ -3,7 +3,7 @@
     /Config
     /Content    // 대용량이라 구글 드라이브에서 따로 다운 받아야 합니다.
     /Source
-    Game.uproject
+    /Game.uproject
 
 2. 추가 요소
     /Server    // Version: Visual Studio 2019
