@@ -33,12 +33,6 @@ CClient::~CClient()
 	DeleteCriticalSection(&csServer);
 }
 
-CClient* CClient::GetSingleton()
-{
-	static CClient client;
-	return &client;
-}
-
 bool CClient::Initialize(const char* const IPv4, const USHORT& Port)
 {
 	// 이미 클라이언트가 구동중이라면 먼저 구동을 종료합니다.

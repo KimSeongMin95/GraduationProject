@@ -10,10 +10,11 @@
 
 class GAME_API CMainClient final
 {
-public:
+private:
 	CMainClient();
 	~CMainClient();
 
+public:
 	static CMainClient* GetSingleton();
 
 private:

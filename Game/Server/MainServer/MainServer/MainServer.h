@@ -6,10 +6,11 @@
 
 class CMainServer sealed
 {
-public:
+private:
 	CMainServer();
 	~CMainServer();
 
+public:
 	static CMainServer* GetSingleton();
 
 public:

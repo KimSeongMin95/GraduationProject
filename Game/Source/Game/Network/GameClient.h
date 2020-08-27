@@ -14,10 +14,11 @@
 
 class GAME_API CGameClient final
 {
-public:
+private:
 	CGameClient();
 	~CGameClient();
 
+public:
 	static CGameClient* GetSingleton();
 
 private:

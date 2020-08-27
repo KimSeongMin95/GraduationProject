@@ -13,10 +13,11 @@
 
 class GAME_API CGameServer final
 {
-public:
+private:
 	CGameServer();
 	~CGameServer();
 
+public:
 	static CGameServer* GetSingleton();
 
 private:

@@ -8,8 +8,6 @@ public:
 	CClient();
 	virtual ~CClient();
 
-	static CClient* GetSingleton();
-
 private:
 	CProcessingFuncPtr  ProcFuncs[MAX_HEADER]; // 수신한 패킷을 처리하는 함수 포인터
 	CCallBackFuncPtr	ConCBF;				   // 서버에 접속하면 실행할 콜백함수 포인터

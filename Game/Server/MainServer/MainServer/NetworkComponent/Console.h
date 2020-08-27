@@ -5,9 +5,10 @@
 
 class CConsole final
 {
-public:
+private:
 	CConsole();
 
+public:
 	static CConsole* GetSingleton();
 
 private:

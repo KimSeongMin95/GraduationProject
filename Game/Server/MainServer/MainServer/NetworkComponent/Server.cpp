@@ -52,12 +52,6 @@ CServer::~CServer()
 	DeleteCriticalSection(&csRecvDeques);
 }
 
-CServer* CServer::GetSingleton()
-{
-	static CServer server;
-	return &server;
-}
-
 bool CServer::Initialize(const char* const IPv4, const USHORT& Port)
 {
 	// 이미 서버가 구동중이라면 먼저 구동을 종료합니다.

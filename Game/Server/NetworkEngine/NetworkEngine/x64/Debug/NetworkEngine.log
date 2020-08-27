@@ -1,0 +1,11 @@
+﻿  Client.cpp
+  CompletionKey.cpp
+  Console.cpp
+  NetworkComponent.cpp
+  NetworkInterface.cpp
+  OverlappedMsg.cpp
+  Server.cpp
+  MyClient.cpp
+  MyServer.cpp
+  main.cpp
+  NetworkEngine.vcxproj -> C:\GitHub\GraduationProject\Game\Server\NetworkEngine\x64\Debug\NetworkEngine.exe

@@ -6,10 +6,11 @@
 
 class CMyServer final
 {
-public:
+private:
 	CMyServer();
 	~CMyServer();
 
+public:
 	static CMyServer* GetSingleton();
 
 public:

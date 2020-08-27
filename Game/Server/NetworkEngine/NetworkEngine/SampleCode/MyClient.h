@@ -7,10 +7,11 @@
 
 class CMyClient final
 {
-public:
+private:
 	CMyClient();
 	~CMyClient();
 
+public:
 	static CMyClient* GetSingleton();
 
 public:
