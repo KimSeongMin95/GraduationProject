@@ -9,7 +9,7 @@
 <br>
 
 # [유튜브 영상]
-- 전시 영상: <br>
+- 전시 영상: https://www.youtube.com/watch?v=r2KwCwumyJs&feature=youtu.be <br>
 - 심사 영상: https://www.youtube.com/watch?v=WXYt6SJVHv8 <br>
 <br>
 
