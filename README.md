@@ -9,6 +9,7 @@
 <br>
 
 # [실행 방법]
--- 다운로드 주소: https://drive.google.com/file/d/1ZmONn6bQx_pGNw7KuLs-IZtj2V5AYcv6/view?usp=sharing
--- 
-
+-- 실행 파일 다운로드: https://drive.google.com/file/d/1ZmONn6bQx_pGNw7KuLs-IZtj2V5AYcv6/view?usp=sharing <br>
+-- 튜토리얼 플레이: 압축 해제 -> Game.exe 실행 -> 튜토리얼 -> 
+-- 온라인 플레이: MainServer(Release).exe 실행 -> 
+<br>
