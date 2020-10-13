@@ -9,7 +9,8 @@
 <br>
 
 # [유튜브 영상]
-- 유튜브 주소: 
+- 전시 영상: <br>
+- 심사 영상: https://www.youtube.com/watch?v=WXYt6SJVHv8 <br>
 <br>
 
 # [실행 방법]
