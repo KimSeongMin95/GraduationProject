@@ -15,9 +15,9 @@
 # [실행 방법]
 - 실행 파일 다운로드: https://drive.google.com/file/d/1ZmONn6bQx_pGNw7KuLs-IZtj2V5AYcv6/view?usp=sharing <br>
 - 튜토리얼 플레이: 압축 해제 -> Game.exe 실행 -> 튜토리얼 <br>
-- 온라인 싱글 플레이: MainServer(Release).exe 실행 -> 나타난 DOS창에서 127.0.0.1와 8000을 입력 -> Game.exe 실행 -> 온라인 클릭 -> ID 입력 후 접속(한글 가능) -> 게임방 생성 -> 스테이지 설정 -> 시작 <br>
-- 온라인 멀티 플레이: 방장이 MainServer(Release).exe 실행(공유기로 인해 내부/외부 IP로 나눠진 경우, 방장 불가능) -> 나타난 DOS창에서 방장의 IP와 임의의 Port를 입력 -> 모두 Game.exe 실행 -> 각자 ID 입력, 방장이 설정한 IP와 Port 번호 입력 -> 방장이 게임방 생성, 나머지는 새로고침하고 게임방 참가 -> 스테이지 설정 -> 시작 <br>
-- MainServer 오류: Visual Studio 2019용 Visual C++ 재배포 가능 패키지를 다운 받아 설치 -> [주소: https://support.microsoft.com/ko-kr/help/2977003/the-latest-supported-visual-c-downloads] -> x64: vc_redist.x64.exe 또는 x86: vc_redist.x86.exe 다운 -> 설치 <br>
+- 온라인 싱글 플레이: MainServer(Release).exe 실행 -> 나타난 DOS창에서 127.0.0.1와 8000을 입력 -> Game.exe 실행 -> 온라인 클릭 -> ID 입력 -> 접속 -> 게임방 생성 -> 스테이지 설정 -> 시작 <br>
+- 온라인 멀티 플레이: 방장이 MainServer(Release).exe 실행(공유기로 인해 내부/외부 IP로 나눠진 경우, 방장 불가능) -> 방장만 나타난 DOS창에서 방장 컴퓨터의 IP와 임의의 Port를 입력 -> 모두 Game.exe 실행 -> 각자 ID 입력 -> 방장의 IP와 설정한 Port 번호 입력 -> 방장이 게임방 생성 / 나머지는 새로고침하고 게임방 참가 -> 스테이지 설정 -> 시작 <br>
+- MainServer 오류: Visual Studio 2019용 Microsoft Visual C++ 재배포 가능 패키지를 다운 받아 설치 -> [주소: https://support.microsoft.com/ko-kr/help/2977003/the-latest-supported-visual-c-downloads] -> x64: vc_redist.x64.exe 또는 x86: vc_redist.x86.exe 다운 -> 설치 <br>
 <br>
 
 # [조작법]
