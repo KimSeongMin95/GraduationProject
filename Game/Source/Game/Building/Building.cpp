@@ -15,21 +15,14 @@ ABuilding::ABuilding()
 	PrimaryActorTick.bCanEverTick = true;
 
 	TimerOfConsumeAndProduct = 0.0f;
-
 	BuildingState = EBuildingState::Constructable;
-
 	bDying = false;
-
 	ID = 0;
-
 	BuildingManager = nullptr;
-
 	IdxOfUnderWall = 0;
 
 	InitRootComp();
-
 	InitHelthPointBar();
-
 	InitStat();
 	InitConstructBuilding();
 	InitBuilding();
@@ -44,18 +37,16 @@ void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Pioneer°¡ »ı¼ºÇÑ°Ô ¾Æ´Ñ °ÍÀÎÁö È®ÀÎÇÕ´Ï´Ù.
+	// Pioneerê°€ ìƒì„±í•œê²Œ ì•„ë‹Œ ê²ƒì¸ì§€ í™•ì¸í•©ë‹ˆë‹¤.
 	if (!GetOwner())
 	{
-		// °ÔÀÓ¼­¹ö¿¡¼­ SpawnBuildingÀ¸·Î °Ç¹°À» »ı¼ºÇÏ±â ¶§¹®¿¡ ÇÃ·¹ÀÌ¾î°¡ °ÔÀÓÅ¬¶óÀÌ¾ğÆ®¶ó¸é °Ç¹°À» ¼Ò¸ê½ÃÅµ´Ï´Ù.
+		// ê²Œì„ì„œë²„ì—ì„œ SpawnBuildingìœ¼ë¡œ ê±´ë¬¼ì„ ìƒì„±í•˜ê¸° ë•Œë¬¸ì— í”Œë ˆì´ì–´ê°€ ê²Œì„í´ë¼ì´ì–¸íŠ¸ë¼ë©´ ê±´ë¬¼ì„ ì†Œë©¸ì‹œí‚µë‹ˆë‹¤.
 		if (CGameClient::GetSingleton()->IsNetworkOn())
 		{
 			Destroy();
 			return;
 		}
-		
 		BuildingState = EBuildingState::Constructed;
-
 		CompleteConstructing();
 	}
 
@@ -66,7 +57,6 @@ void ABuilding::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	TickHelthPointBar();
-
 	TickOfConstructable();
 	TickOfConsumeAndProduct(DeltaTime);
 }
@@ -76,7 +66,7 @@ void ABuilding::InitHelthPointBar()
 	HelthPointBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelthPointBar"));
 	//HelthPointBar = NewObject<UWidgetComponent>(this, UWidgetComponent::StaticClass());
 	HelthPointBar->SetupAttachment(RootComponent);
-	HelthPointBar->bAbsoluteRotation = true; // Àı´ëÀûÀÎ È¸Àü°ªÀ» Àû¿ëÇÕ´Ï´Ù.
+	HelthPointBar->bAbsoluteRotation = true; // ì ˆëŒ€ì ì¸ íšŒì „ê°’ì„ ì ìš©í•©ë‹ˆë‹¤.
 
 	HelthPointBar->SetGenerateOverlapEvents(false);
 	HelthPointBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -88,11 +78,11 @@ void ABuilding::InitHelthPointBar()
 
 	HelthPointBar->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 	//HelthPointBar->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-	HelthPointBar->SetRelativeRotation(FRotator(45.0f, 180.0f, 0.0f)); // Ç×»ó ÇÃ·¹ÀÌ¾î¿¡°Ô º¸ÀÌµµ·Ï È¸Àü °ªÀ» World·Î ÇØ¾ß ÇÕ´Ï´Ù.
+	HelthPointBar->SetRelativeRotation(FRotator(45.0f, 180.0f, 0.0f)); // í•­ìƒ í”Œë ˆì´ì–´ì—ê²Œ ë³´ì´ë„ë¡ íšŒì „ ê°’ì„ Worldë¡œ í•´ì•¼ í•©ë‹ˆë‹¤.
 	HelthPointBar->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	HelthPointBar->SetDrawSize(FVector2D(100, 30));
 
-	// ScreenÀº ºäÆ÷Æ®¿¡¼­ UIÃ³·³ ¶ç¿öÁÖ´Â °ÍÀÌ°í World´Â °ÔÀÓ ³»¿¡¼­ UIÃ³·³ ¶ç¿öÁÖ´Â °ÍÀÔ´Ï´Ù.
+	// Screenì€ ë·°í¬íŠ¸ì—ì„œ UIì²˜ëŸ¼ ë„ì›Œì£¼ëŠ” ê²ƒì´ê³  WorldëŠ” ê²Œì„ ë‚´ì—ì„œ UIì²˜ëŸ¼ ë„ì›Œì£¼ëŠ” ê²ƒì…ë‹ˆë‹¤.
 	HelthPointBar->SetWidgetSpace(EWidgetSpace::World);
 }
 void ABuilding::BeginPlayHelthPointBar()
@@ -104,7 +94,7 @@ void ABuilding::BeginPlayHelthPointBar()
 		return;
 	}
 
-	/*** ÁÖÀÇ: Blueprint ¾Ö¼ÂÀº µÚ¿¡ _C¸¦ ºÙ¿©Áà¼­ Å¬·¡½º¸¦ °¡Á®¿Í¾ß ÇÕ´Ï´Ù. ***/
+	/*** ì£¼ì˜: Blueprint ì• ì…‹ì€ ë’¤ì— _Cë¥¼ ë¶™ì—¬ì¤˜ì„œ í´ë˜ìŠ¤ë¥¼ ê°€ì ¸ì™€ì•¼ í•©ë‹ˆë‹¤. ***/
 	FString HelthPointBarBP_Reference = "WidgetBlueprint'/Game/Characters/HelthPointBar.HelthPointBar_C'";
 	UClass* HelthPointBarBP = LoadObject<UClass>(this, *HelthPointBarBP_Reference);
 
@@ -115,30 +105,20 @@ void ABuilding::BeginPlayHelthPointBar()
 		UWidgetTree* WidgetTree = HelthPointBarUserWidget->WidgetTree;
 		if (WidgetTree)
 		{
-			//// ÀÌ ¹æ¹ıÀº »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù.
+			//// ì´ ë°©ë²•ì€ ì‚¬ìš©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.
 			// ProgreeBar = Cast<UProgressBar>(HelthPointBarUserWidget->GetWidgetFromName(FName(TEXT("ProgressBar_153"))));
 			ProgressBar = WidgetTree->FindWidget<UProgressBar>(FName(TEXT("ProgressBar_153")));
-			if (!ProgressBar)
-			{
-				MY_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!ProgressBar)"));
-			}
+			if (!ProgressBar) MY_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!ProgressBar)"));
 		}
-		else
-		{
-			MY_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!WidgetTree)"));
-		}
+		else MY_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!WidgetTree)"));
 	}
-	else
-	{
-		MY_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
-	}
+	else MY_LOG(LogTemp, Warning, TEXT("<ABuilding::BeginPlayHelthPointBar()> if (!HelthPointBarUserWidget)"));
 
 	HelthPointBar->SetWidget(HelthPointBarUserWidget);
 }
 void ABuilding::TickHelthPointBar()
 {
-	if (ProgressBar)
-		ProgressBar->SetPercent(HealthPoint / MaxHealthPoint);
+	if (ProgressBar) ProgressBar->SetPercent(HealthPoint / MaxHealthPoint);
 }
 
 void ABuilding::InitRootComp()
@@ -180,16 +160,10 @@ void ABuilding::InitBuilding()
 void ABuilding::InitMaterial()
 {
 	static ConstructorHelpers::FObjectFinder<UMaterial> constructableMaterial(TEXT("Material'/Game/Buildings/Constructable.Constructable'"));
-	if (constructableMaterial.Succeeded())
-	{
-		ConstructableMaterial = constructableMaterial.Object;
-	}
+	if (constructableMaterial.Succeeded()) ConstructableMaterial = constructableMaterial.Object;
 
 	static ConstructorHelpers::FObjectFinder<UMaterial> unConstructableMaterial(TEXT("Material'/Game/Buildings/UnConstructable.UnConstructable'"));
-	if (unConstructableMaterial.Succeeded())
-	{
-		UnConstructableMaterial = unConstructableMaterial.Object;
-	}
+	if (unConstructableMaterial.Succeeded()) UnConstructableMaterial = unConstructableMaterial.Object;
 }
 
 void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp, 
@@ -211,21 +185,21 @@ void ABuilding::AddConstructBuildingSMC(UStaticMeshComponent** StaticMeshComp,
 
 	(*StaticMeshComp)->SetHiddenInGame(true);
 
-	//// NavMesh¿¡ ¾÷µ¥ÀÌÆ® µÇµµ·Ï CanEverAffectNavigationÀ» true·Î º¯°æÇÕ´Ï´Ù. (default: true)
+	//// NavMeshì— ì—…ë°ì´íŠ¸ ë˜ë„ë¡ CanEverAffectNavigationì„ trueë¡œ ë³€ê²½í•©ë‹ˆë‹¤. (default: true)
 	//(*StaticMeshComp)->SetCanEverAffectNavigation(true);
 
-	// static Å°¿öµå¸¦ Á¦°ÅÇÏ¿© ÀÎ½ºÅÏ½º¸¶´Ù ¾Ö¼Â(¸®¼Ò½º)¸¦ ¸Å ¹ø »õ·Î ·ÎµåÇÕ´Ï´Ù. (ÁÖÀÇ: staticÀÌ ºÙÀ¸¸é ´Ù °°Àº ¸ğµ¨ÀÌ µË´Ï´Ù.)
+	// static í‚¤ì›Œë“œë¥¼ ì œê±°í•˜ì—¬ ì¸ìŠ¤í„´ìŠ¤ë§ˆë‹¤ ì• ì…‹(ë¦¬ì†ŒìŠ¤)ë¥¼ ë§¤ ë²ˆ ìƒˆë¡œ ë¡œë“œí•©ë‹ˆë‹¤. (ì£¼ì˜: staticì´ ë¶™ìœ¼ë©´ ë‹¤ ê°™ì€ ëª¨ë¸ì´ ë©ë‹ˆë‹¤.)
 	ConstructorHelpers::FObjectFinder<UStaticMesh> staticMesh(ObjectToFind);
 	if (staticMesh.Succeeded())
 	{
 		(*StaticMeshComp)->SetStaticMesh(staticMesh.Object);
 
-		// StaticMeshÀÇ ¿øº» »çÀÌÁî¸¦ ÃøÁ¤ÇÕ´Ï´Ù.
+		// StaticMeshì˜ ì›ë³¸ ì‚¬ì´ì¦ˆë¥¼ ì¸¡ì •í•©ë‹ˆë‹¤.
 		FVector minBounds, maxBounds;
 		(*StaticMeshComp)->GetLocalBounds(minBounds, maxBounds);
 
-		// RootComponentÀÎ SphereComponent°¡ StaticMeshÀÇ ÇÏ´Ü Á¤Áß¾ÓÀ¸·Î ¿À°Ô²û ¼³Á¤ÇØ¾ß ÇÕ´Ï´Ù.
-		// ¼ø¼­´Â S->R->T ¼øÀ¸·Î ÇØ¾ß ¿øÁ¡¿¡¼­ ¹ş¾î³ªÁö ¾Ê½À´Ï´Ù.
+		// RootComponentì¸ SphereComponentê°€ StaticMeshì˜ í•˜ë‹¨ ì •ì¤‘ì•™ìœ¼ë¡œ ì˜¤ê²Œë” ì„¤ì •í•´ì•¼ í•©ë‹ˆë‹¤.
+		// ìˆœì„œëŠ” S->R->T ìˆœìœ¼ë¡œ í•´ì•¼ ì›ì ì—ì„œ ë²—ì–´ë‚˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 		(*StaticMeshComp)->SetRelativeScale3D(Scale);
 		(*StaticMeshComp)->SetRelativeRotation(Rotation);
 		FVector center;
@@ -279,7 +253,7 @@ void ABuilding::AddBuildingSMC(UStaticMeshComponent** StaticMeshComp,
 		center.Z = -1.0f * (minBounds.Z * Scale.Z);
 		(*StaticMeshComp)->SetRelativeLocation(center + Location);
 
-		// ¿øº» ¸ÓÅÍ¸®¾óÀ» ÀúÀåÇÕ´Ï´Ù.
+		// ì›ë³¸ ë¨¸í„°ë¦¬ì–¼ì„ ì €ì¥í•©ë‹ˆë‹¤.
 		FTArrayOfUMaterialInterface TArrayOfUMaterialInterface;
 		TArrayOfUMaterialInterface.Object = (*StaticMeshComp)->GetMaterials();
 		BuildingSMCsMaterials.Add(TArrayOfUMaterialInterface);
@@ -313,7 +287,7 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp,
 		(*SkeletalMeshComp)->SetRelativeRotation(Rotation);
 		(*SkeletalMeshComp)->SetRelativeLocation(Location);
 
-		// ¿øº» ¸ÓÅÍ¸®¾óÀ» ÀúÀåÇÕ´Ï´Ù.
+		// ì›ë³¸ ë¨¸í„°ë¦¬ì–¼ì„ ì €ì¥í•©ë‹ˆë‹¤.
 		FTArrayOfUMaterialInterface TArrayOfUMaterialInterface;
 		TArrayOfUMaterialInterface.Object = (*SkeletalMeshComp)->GetMaterials();
 		BuildingSkMCsMaterials.Add(TArrayOfUMaterialInterface);
@@ -324,99 +298,70 @@ void ABuilding::AddBuildingSkMC(USkeletalMeshComponent** SkeletalMeshComp,
 
 void ABuilding::OnOverlapBegin_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if ((OtherActor == nullptr) || (OtherComp == nullptr))
-		return;
-	if (OtherActor == this)
-		return;
-	if (BuildingState != EBuildingState::Constructable)
-		return;
+	if ((OtherActor == nullptr) || (OtherComp == nullptr)) return;
+	if (OtherActor == this) return;
+	if (BuildingState != EBuildingState::Constructable) return;
 	/**************************************************/
 
 	if (OtherActor->IsA(ABaseCharacter::StaticClass()))
 	{
 		if (ABaseCharacter* baseCharacter = dynamic_cast<ABaseCharacter*>(OtherActor))
 		{
-			if (baseCharacter->GetCapsuleComponent() == OtherComp)
-			{
-				OverlappedActors.Add(OtherActor);
-			}
+			if (baseCharacter->GetCapsuleComponent() == OtherComp) OverlappedActors.Add(OtherActor);
 		}
 	}
-	else if (OtherActor->IsA(ABuilding::StaticClass()))
-	{
-		OverlappedActors.Add(OtherActor);
-	}
-	else if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
-	{
-		OverlappedActors.Add(OtherActor);
-	}
+	else if (OtherActor->IsA(ABuilding::StaticClass())) OverlappedActors.Add(OtherActor);
+	else if (OtherActor->IsA(AStaticMeshActor::StaticClass())) OverlappedActors.Add(OtherActor);
 }
 void ABuilding::OnOverlapEnd_Building(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if ((OtherActor == nullptr) || (OtherComp == nullptr))
-		return;
-	if (OtherActor == this)
-		return;
-	if (BuildingState != EBuildingState::Constructable)
-		return;
+	if ((OtherActor == nullptr) || (OtherComp == nullptr)) return;
+	if (OtherActor == this) return;
+	if (BuildingState != EBuildingState::Constructable) return;
 	/**************************************************/
 
 	if (OtherActor->IsA(ABaseCharacter::StaticClass()))
 	{
 		if (ABaseCharacter* baseCharacter = dynamic_cast<ABaseCharacter*>(OtherActor))
 		{
-			if (baseCharacter->GetCapsuleComponent() == OtherComp)
-			{
-				OverlappedActors.RemoveSingle(OtherActor);
-			}
+			if (baseCharacter->GetCapsuleComponent() == OtherComp) OverlappedActors.RemoveSingle(OtherActor);
 		}
 	}
-	else if (OtherActor->IsA(ABuilding::StaticClass()))
-	{
-		OverlappedActors.RemoveSingle(OtherActor);
-	}
-	else if (OtherActor->IsA(AStaticMeshActor::StaticClass()))
-	{
-		OverlappedActors.RemoveSingle(OtherActor);
-	}
+	else if (OtherActor->IsA(ABuilding::StaticClass())) OverlappedActors.RemoveSingle(OtherActor);
+	else if (OtherActor->IsA(AStaticMeshActor::StaticClass())) OverlappedActors.RemoveSingle(OtherActor);
 }
 
 void ABuilding::TickOfConstructable()
 {
 	if (BuildingState == EBuildingState::Constructable)
 	{
-		if (OverlappedActors.Num() > 0)
-			SetUnConstructableMaterial();
-		else
-			SetConstructableMaterial();
+		if (OverlappedActors.Num() > 0) SetUnConstructableMaterial();
+		else SetConstructableMaterial();
 	}
 }
 void ABuilding::TickOfConsumeAndProduct(const float& DeltaTime)
 {
 	TimerOfConsumeAndProduct += DeltaTime;
-	if (TimerOfConsumeAndProduct < 1.0f)
-		return;
+	if (TimerOfConsumeAndProduct < 1.0f) return;
 	TimerOfConsumeAndProduct -= 1.0f;
 
 	if (BuildingState == EBuildingState::Constructing)
 	{
 		HealthPoint += TickHealthPoint;
-		if (HealthPoint > MaxHealthPoint)
-			HealthPoint = MaxHealthPoint;
+		if (HealthPoint > MaxHealthPoint) HealthPoint = MaxHealthPoint;
 	}
-	// °Ç¼³ÀÌ ¿Ï·áµÈ °æ¿ì¿¡¸¸ ½ÇÇàÇÕ´Ï´Ù.
+	// ê±´ì„¤ì´ ì™„ë£Œëœ ê²½ìš°ì—ë§Œ ì‹¤í–‰í•©ë‹ˆë‹¤.
 	else if (BuildingState == EBuildingState::Constructed)
 	{
-		// ÀúÀåµÈ Àü·ÂÀÌ ¼Òºñ Àü·Âº¸´Ù ¸¹À¸¸é »ı»êÇÒ ¼ö ÀÖ½À´Ï´Ù.
+		// ì €ì¥ëœ ì „ë ¥ì´ ì†Œë¹„ ì „ë ¥ë³´ë‹¤ ë§ìœ¼ë©´ ìƒì‚°í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
 		if (APioneerManager::Resources.NumOfEnergy >= ConsumeElectricPower)
 		{
 			APioneerManager::Resources.NumOfMineral += ProductionMineral;
 			APioneerManager::Resources.NumOfOrganic += ProductionOrganicMatter;
 			APioneerManager::Resources.NumOfEnergy -= ConsumeElectricPower;
 		}
-		// ÀúÀåµÈ ÀÚ¿øÀÌ ¼Òºñ ÀÚ¿øº¸´Ù ¸¹À¸¸é Àü±â¸¦ »ı»êÇÒ ¼ö ÀÖ½À´Ï´Ù.
-		if (APioneerManager::Resources.NumOfMineral >= ConsumeMineral
-			&& APioneerManager::Resources.NumOfOrganic >= ConsumeOrganicMatter)
+		// ì €ì¥ëœ ìì›ì´ ì†Œë¹„ ìì›ë³´ë‹¤ ë§ìœ¼ë©´ ì „ê¸°ë¥¼ ìƒì‚°í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+		if (APioneerManager::Resources.NumOfMineral >= ConsumeMineral && APioneerManager::Resources.NumOfOrganic >= ConsumeOrganicMatter)
 		{
 			APioneerManager::Resources.NumOfMineral -= ConsumeMineral;
 			APioneerManager::Resources.NumOfOrganic -= ConsumeOrganicMatter;
@@ -428,17 +373,12 @@ void ABuilding::TickOfConsumeAndProduct(const float& DeltaTime)
 void ABuilding::SetHealthPoint(const float& Value)
 {
 	HealthPoint += Value;
-	if (HealthPoint > 0.0f)
-		return;
-	if (bDying)
-		return;
+	if (HealthPoint > 0.0f) return;
+	if (bDying) return;
 	bDying = true;
 	/************************************/
 
-	if (!BuildingManager)
-	{
-		MY_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager)"));
-	}
+	if (!BuildingManager) MY_LOG(LogTemp, Fatal, TEXT("<ABuilding::SetHealthPoint(...)> if (!BuildingManager)"));
 
 	BuildingState = EBuildingState::Destroying;
 
@@ -459,8 +399,7 @@ void ABuilding::SetHealthPoint(const float& Value)
 		}
 	}
 
-	if (CGameServer::GetSingleton()->IsNetworkOn())
-		CGameServer::GetSingleton()->SendDestroyBuilding(ID);
+	if (CGameServer::GetSingleton()->IsNetworkOn()) CGameServer::GetSingleton()->SendDestroyBuilding(ID);
 
 	Destroy();
 }
@@ -531,23 +470,20 @@ void ABuilding::Rotating(const float& Value)
 	FRotator rot = RootComponent->RelativeRotation;
 	rot.Yaw += Value;
 
-	if (rot.Yaw < 0.0f)
-		rot.Yaw += 360.0f;
-	else if (rot.Yaw > 360.0f)
-		rot.Yaw -= 360.0f;
+	if (rot.Yaw < 0.0f) rot.Yaw += 360.0f;
+	else if (rot.Yaw > 360.0f) rot.Yaw -= 360.0f;
 
 	RootComponent->SetRelativeRotation(rot);
 }
 
 bool ABuilding::Constructing()
 {
-	if (OverlappedActors.Num() > 0)
-		return false;
+	if (OverlappedActors.Num() > 0) return false;
 
 	// Constructable --> Constructing
 	BuildingState = EBuildingState::Constructing;
 
-	// Constructable Buildingµé ºñÈ°¼ºÈ­
+	// Constructable Buildingë“¤ ë¹„í™œì„±í™”
 	for (auto& BuildingSMC : BuildingSMCs)
 	{
 		if (BuildingSMC)
@@ -567,7 +503,7 @@ bool ABuilding::Constructing()
 		}
 	}
 
-	// Constructing Buildingµé È°¼ºÈ­
+	// Constructing Buildingë“¤ í™œì„±í™”
 	for (auto& ConstructBuildingSMC : ConstructBuildingSMCs)
 	{
 		if (ConstructBuildingSMC)
@@ -578,11 +514,10 @@ bool ABuilding::Constructing()
 		}
 	}
 
-	// CheckConstructable()À¸·Î ½ÇÇàÇß´Ù¸é Timer¸¦ Á¾·áÇÕ´Ï´Ù.
-	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfConstructing))
-		GetWorldTimerManager().ClearTimer(TimerHandleOfConstructing);
+	// CheckConstructable()ìœ¼ë¡œ ì‹¤í–‰í–ˆë‹¤ë©´ Timerë¥¼ ì¢…ë£Œí•©ë‹ˆë‹¤.
+	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfConstructing)) GetWorldTimerManager().ClearTimer(TimerHandleOfConstructing);
 
-	// °Ç¼³¿Ï¼º Å¸ÀÌ¸Ó¸¦ ½ÇÇàÇÕ´Ï´Ù.
+	// ê±´ì„¤ì™„ì„± íƒ€ì´ë¨¸ë¥¼ ì‹¤í–‰í•©ë‹ˆë‹¤.
 	FTimerHandle timer;
 	GetWorldTimerManager().SetTimer(timer, this, &ABuilding::CompleteConstructing, ConstructionTime, false);
 
@@ -590,10 +525,9 @@ bool ABuilding::Constructing()
 }
 void ABuilding::CheckConstructable()
 {
-	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfConstructing))
-		GetWorldTimerManager().ClearTimer(TimerHandleOfConstructing);
+	if (GetWorldTimerManager().IsTimerActive(TimerHandleOfConstructing)) GetWorldTimerManager().ClearTimer(TimerHandleOfConstructing);
 
-	// °ãÃÄ¼­ °Ç¼³ÇÒ ¼ö ¾øÀ¸¸é °Ç¼³°¡´É¿©ºÎ¸¦ °è¼Ó Ã¼Å©ÇÕ´Ï´Ù.
+	// ê²¹ì³ì„œ ê±´ì„¤í•  ìˆ˜ ì—†ìœ¼ë©´ ê±´ì„¤ê°€ëŠ¥ì—¬ë¶€ë¥¼ ê³„ì† ì²´í¬í•©ë‹ˆë‹¤.
 	if (Constructing() == false)
 	{
 		FTimerDelegate timerDel;
@@ -606,17 +540,14 @@ void ABuilding::CompleteConstructing()
 	// Constructing --> Constructed
 	BuildingState = EBuildingState::Constructed;
 
-	// Constructing Buildingµé ¼Ò¸ê
+	// Constructing Buildingë“¤ ì†Œë©¸
 	for (auto& ConstructBuildingSMC : ConstructBuildingSMCs)
 	{
-		if (ConstructBuildingSMC)
-		{
-			ConstructBuildingSMC->DestroyComponent();
-		}
+		if (ConstructBuildingSMC) ConstructBuildingSMC->DestroyComponent();
 	}
 	ConstructBuildingSMCs.Reset();
 
-	// Constructed Buildingµé È°¼ºÈ­
+	// Constructed Buildingë“¤ í™œì„±í™”
 	for (auto& BuildingSMC : BuildingSMCs)
 	{
 		if (BuildingSMC)
@@ -630,10 +561,7 @@ void ABuilding::CompleteConstructing()
 	}
 	for (auto& BuildingSkMC : BuildingSkMCs)
 	{
-		if (BuildingSkMC)
-		{
-			BuildingSkMC->SetHiddenInGame(false);
-		}
+		if (BuildingSkMC) BuildingSkMC->SetHiddenInGame(false);
 	}
 
 	SetBuildingMaterials();
