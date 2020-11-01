@@ -127,8 +127,7 @@ void CNetworkComponent::Send(CPacket& Packet, const SOCKET& Socket /*= NULL*/)
 	}
 	/******************************************/
 
-	if (Network->IsNetworkOn())
-		Network->Send(Packet, Socket);
+	if (Network->IsNetworkOn()) Network->Send(Packet, Socket);
 }
 
 void CNetworkComponent::Broadcast(CPacket& Packet)
@@ -140,8 +139,7 @@ void CNetworkComponent::Broadcast(CPacket& Packet)
 	}
 	/******************************************/
 
-	if (Network->IsNetworkOn())
-		Network->Broadcast(Packet);
+	if (Network->IsNetworkOn()) Network->Broadcast(Packet);
 }
 
 void CNetworkComponent::BroadcastExceptOne(CPacket& Packet, const SOCKET& Except)
@@ -153,6 +151,5 @@ void CNetworkComponent::BroadcastExceptOne(CPacket& Packet, const SOCKET& Except
 	}
 	/******************************************/
 
-	if (Network->IsNetworkOn())
-		Network->BroadcastExceptOne(Packet, Except);
+	if (Network->IsNetworkOn()) Network->BroadcastExceptOne(Packet, Except);
 }
