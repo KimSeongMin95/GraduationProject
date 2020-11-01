@@ -14,7 +14,7 @@ AWeapon::AWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
 	WeaponMesh->SetupAttachment(RootComponent);
 
-	// ¹ß»çµÉ ProjectileÀÇ Transform °ªÀ» ÀúÀåÇÒ ArrowComponent¸¦ »ı¼ºÇÏ°í WeaponMesh¿¡ ºÎÂøÇÕ´Ï´Ù.
+	// ë°œì‚¬ë  Projectileì˜ Transform ê°’ì„ ì €ì¥í•  ArrowComponentë¥¼ ìƒì„±í•˜ê³  WeaponMeshì— ë¶€ì°©í•©ë‹ˆë‹¤.
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>("Arrow");
 	ArrowComponent->SetupAttachment(WeaponMesh);
 }
@@ -53,8 +53,7 @@ void AWeapon::InitWeaponMesh(const TCHAR* ReferencePath)
 }
 void AWeapon::InitArrowComponent(const FRotator& Rotatation, const FVector& Location)
 {
-	if (!ArrowComponent)
-		return;
+	if (!ArrowComponent) return;
 
 	ArrowComponent->SetRelativeRotation(Rotatation);
 	ArrowComponent->SetRelativeLocation(Location);
@@ -69,7 +68,7 @@ void AWeapon::InitSkeleton(const TCHAR* ReferencePath)
 }
 void AWeapon::InitFireAnimSequence(const TCHAR* ReferencePath)
 {
-	// ÃÑÀ» ¹ß»çÇÏ´Â ¾Ö´Ï¸ŞÀÌ¼ÇÀ» °¡Á®¿Í¼­ Àû¿ëÇÕ´Ï´Ù.
+	// ì´ì„ ë°œì‚¬í•˜ëŠ” ì• ë‹ˆë©”ì´ì…˜ì„ ê°€ì ¸ì™€ì„œ ì ìš©í•©ë‹ˆë‹¤.
 	ConstructorHelpers::FObjectFinder<UAnimSequence> fireAnimSequenceAsset(ReferencePath);
 	if (fireAnimSequenceAsset.Succeeded())
 	{
@@ -80,20 +79,14 @@ void AWeapon::InitFireAnimSequence(const TCHAR* ReferencePath)
 
 bool AWeapon::Fire(const int& IDOfPioneer, const int& SocketIDOfPioneer)
 {
-	if (FireCoolTime < (1.0f / AttackSpeed))
-		return false;
-	else
-		FireCoolTime = 0.0f;
+	if (FireCoolTime < (1.0f / AttackSpeed)) return false;
+	else FireCoolTime = 0.0f;
 
-	// Fire ¾Ö´Ï¸ŞÀÌ¼ÇÀ» ½ÇÇàÇÕ´Ï´Ù.
-	if (WeaponMesh)
-		WeaponMesh->PlayAnimation(FireAnimSequence, false);
+	// Fire ì• ë‹ˆë©”ì´ì…˜ì„ ì‹¤í–‰í•©ë‹ˆë‹¤.
+	if (WeaponMesh) WeaponMesh->PlayAnimation(FireAnimSequence, false);
 
-	// AI°¡ Áßº¹µÇ¾î ¹ß»çÇÏÁö ¾Êµµ·ÏÇÕ´Ï´Ù.
-	if (CGameClient::GetSingleton()->IsNetworkOn() && SocketIDOfPioneer == 0)
-	{
-		return false;
-	}
+	// AIê°€ ì¤‘ë³µë˜ì–´ ë°œì‚¬í•˜ì§€ ì•Šë„ë¡í•©ë‹ˆë‹¤.
+	if (CGameClient::GetSingleton()->IsNetworkOn() && SocketIDOfPioneer == 0) return false;
 
 	return true;
 }
