@@ -41,8 +41,7 @@ private:
 	unordered_map<SOCKET, shared_ptr<deque<unique_ptr<char[]>>>> RecvDeques;
 	CRITICAL_SECTION csRecvDeques;
 
-	/** 송신한 모든 패킷의 완료를 확인하기 위해 WSASend(...)를 실행하면 ++, 실행이 완료되거나 실패하면 -- 되게 합니다.
-	메모리 동기화에 interlock을 사용합니다.*/
+	// 송신한 모든 패킷의 완료를 확인하기 위해 WSASend(...)를 실행하면 ++, 실행이 완료되거나 실패하면 -- 되게 합니다.
 	uint32_t CountOfSend;
 	CRITICAL_SECTION csCountOfSend;
 
