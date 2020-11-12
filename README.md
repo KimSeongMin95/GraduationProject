@@ -25,7 +25,7 @@
 
 # [온라인 싱글 플레이] <br>
 1. MainServer(Release).exe 실행 <br>
-2. 나타난 DOS창에서 127.0.0.1와 8000을 입력 <br>
+2. 나타난 DOS창에서 127.0.0.1 입력 후 8000 입력 <br>
 3. Game.exe 실행 <br>
 4. 온라인 클릭 <br>
 5. ID 입력 <br>
@@ -33,9 +33,10 @@
 7. 게임방 생성 <br>
 8. 스테이지 설정 <br>
 9. 시작 <br>
-- MainServer 오류: Visual Studio 2019용 Microsoft Visual C++ 재배포 가능 패키지를 다운 받아 설치 <br>
+10. 네트워크 액세스 허용 <br>
+- MainServer 오류 발생 시: Visual Studio 2019용 Microsoft Visual C++ 재배포 가능 패키지를 다운 받아 설치 <br>
 다운로드 주소: https://support.microsoft.com/ko-kr/help/2977003/the-latest-supported-visual-c-downloads <br>
-설치: vc_redist.x64.exe 또는 vc_redist.x86.exe 다운받아 설치 <br>
+설치 파일: vc_redist.x64.exe 또는 vc_redist.x86.exe <br>
 <br>
 
 # [온라인 멀티 플레이] <br>
