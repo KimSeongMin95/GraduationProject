@@ -85,3 +85,47 @@
 - 건물 선택 취소: ESC키 <br>
 - 무장 토글: 마우스 휠클릭 <br>
 <br>
+
+# [사용한 애셋들의 출처(저작권) 명시]
+1. 3D 모델 & 애니메이션 (3D Models & Animations)
+- EpicGames 무료 에셋
+- Mixamo: https://www.mixamo.com/
+- Free3d: https://free3d.com/ko/
+- Turbosquid: https://www.turbosquid.com/
+- Sketchfab: https://sketchfab.com/
+- Cgtrader: https://www.cgtrader.com/
+
+2. 이미지 (Image)
+- Main UI(Personal Use): https://www.cleanpng.com/png-starcraft-ii-legacy-of-the-void-dota-2-defense-of-799826/preview.html
+- Resource Icon
+Mineral: https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%EC%9D%98-%EB%B3%B4%EC%84%9D-graceful-%EB%AF%B8%EB%84%A4%EB%9E%84-%EB%8F%8C/112703
+Organic: https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%EC%9C%A0%EA%B8%B0%EB%86%8D-%EC%8B%9D%ED%92%88-%EC%95%8C%EB%A0%88%EB%A5%B4%EA%B8%B0-%EC%9C%A0%EB%B0%9C-%ED%95%AD%EC%9B%90/49217
+Energy(Attribution 4.0 International (CC BY 4.0)): https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%ED%99%98%EA%B2%BD-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%A0%84%EB%A0%A5-%EC%97%90%EB%84%88%EC%A7%80/103835
+Pioneer: https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%EA%B3%B5%EA%B0%84%EC%9D%B4-%EC%9A%B0%EC%A3%BC-%EB%B9%84%ED%96%89%EC%82%AC/115164
+Pioneer2(Attribution 3.0 Unported (CC BY 3.0)): http://www.iconarchive.com/show/outer-space-icons-by-chanut/Pioneer-icon.html
+- Victory & Defeat: https://favpng.com/png_view/league-of-legends-league-of-legends-age-of-empires-ii-desktop-wallpaper-twitch-wallpaper-png/CwBPyf0F
+- Continue: https://ya-webdesign.com/image/continue-button-png/483820.html
+- Dialog: Ther Are Billions Source
+
+3. 사운드 (Sound)
+- 발사체 (Projectile): EpicGames 무료 에셋
+- They Are Billions Incoming Menace: https://www.youtube.com/watch?v=mcnrX_N_yws&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7
+- They Are Billions Reconquest: https://www.youtube.com/watch?v=8LC6XfP0PAo&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=17
+- They Are Billions Strong Walls: https://www.youtube.com/watch?v=zEzBG3MgPJU&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=4
+- They Are Billions The Goddess of Destiny: https://www.youtube.com/watch?v=Gtsdh-Vq2tM&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=15
+- They Are Billions The New Empire: https://www.youtube.com/watch?v=GQt-tQ-Y6ZQ&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=7
+- They Are Billions The Throne Room: https://www.youtube.com/watch?v=mcnrX_N_yws&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=1
+- They Are Billions They Are Billions!: https://www.youtube.com/watch?v=ZFbV-JPc6cI&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=2
+- They Are Billions We Are Done For: https://www.youtube.com/watch?v=i72RR9ZFFUs&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=6
+- Star Trek 2009: https://www.youtube.com/watch?v=BlHyt_I1rFc
+ 
+4. 폰트 (Font)
+- Neo둥근모(SIL Open Font License 1.1): https://dalgona.github.io/neodgm/
+  https://github.com/Dalgona/neodgm/releases
+
+5. 코드 (Code)
+- UnrealEngine Documents.
+- Google Searches.
+- Youtube Lectures.
+- 설정 (Settings): Youtube Lecture.
+- 네트워크 기초 (Basic Network): https://github.com/LimSungMin/SungminWorld
