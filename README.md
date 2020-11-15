@@ -21,7 +21,7 @@
 <br>
 
 # [실행 파일]
-- 실행 파일 다운로드: https://drive.google.com/file/d/1ZmONn6bQx_pGNw7KuLs-IZtj2V5AYcv6/view?usp=sharing <br>
+- 실행 파일 다운로드:  <br>
 <br>
 
 # [튜토리얼 플레이] <br>
