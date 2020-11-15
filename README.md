@@ -94,6 +94,7 @@
 - Turbosquid: https://www.turbosquid.com/
 - Sketchfab: https://sketchfab.com/
 - Cgtrader: https://www.cgtrader.com/
+<br>
 
 2. 이미지 (Image)
 - Main UI(Personal Use): https://www.cleanpng.com/png-starcraft-ii-legacy-of-the-void-dota-2-defense-of-799826/preview.html
@@ -106,6 +107,7 @@ Pioneer2(Attribution 3.0 Unported (CC BY 3.0)): http://www.iconarchive.com/show/
 - Victory & Defeat: https://favpng.com/png_view/league-of-legends-league-of-legends-age-of-empires-ii-desktop-wallpaper-twitch-wallpaper-png/CwBPyf0F
 - Continue: https://ya-webdesign.com/image/continue-button-png/483820.html
 - Dialog: Ther Are Billions Source
+<br>
 
 3. 사운드 (Sound)
 - 발사체 (Projectile): EpicGames 무료 에셋
@@ -118,10 +120,12 @@ Pioneer2(Attribution 3.0 Unported (CC BY 3.0)): http://www.iconarchive.com/show/
 - They Are Billions They Are Billions!: https://www.youtube.com/watch?v=ZFbV-JPc6cI&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=2
 - They Are Billions We Are Done For: https://www.youtube.com/watch?v=i72RR9ZFFUs&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=6
 - Star Trek 2009: https://www.youtube.com/watch?v=BlHyt_I1rFc
+<br>
  
 4. 폰트 (Font)
 - Neo둥근모(SIL Open Font License 1.1): https://dalgona.github.io/neodgm/
   https://github.com/Dalgona/neodgm/releases
+<br>
 
 5. 코드 (Code)
 - UnrealEngine Documents.
@@ -129,3 +133,4 @@ Pioneer2(Attribution 3.0 Unported (CC BY 3.0)): http://www.iconarchive.com/show/
 - Youtube Lectures.
 - 설정 (Settings): Youtube Lecture.
 - 네트워크 기초 (Basic Network): https://github.com/LimSungMin/SungminWorld
+<br>
