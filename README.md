@@ -5,9 +5,10 @@
 - 지도: 강신진 교수님 <br>
 - 기간: 2019-09-18 ~ 2020-05-25 <br>
 - E-mail: ksm950310@naver.com <br>
-- 제목: Spaceship Pioneers <br>
+- 타이틀: Spaceship Pioneers <br>
 - 플랫폼: PC <br>
 - 장르: 슈팅, RTS <br>
+- 타겟 플레이어: 전 연령 <br>
 - 시점: 3D 쿼터뷰 <br>
 - 스토리 <br>
 우주 개척시대. 인류는 다른 행성으로 활동 영역을 넓혀 가고 있습니다. 어느 날, 개척 중인 행성에서 적 몬스터에게 공격을 받고 지원 요청 신호를 보냅니다. 신호를 받은 다른 행성의 개척자 소수가 지원하러 갑니다. 플레이어는 개척자를 조종하여 적 몬스터를 처치하고 최후의 기지를 방어하는 동시에 빼앗긴 구역들을 탈환하며 영역을 확장해야 합니다. 마지막으로 보스를 처치하거나 모든 구역을 점령하면 승리합니다. <br>
@@ -16,8 +17,12 @@
 <br>
 
 # [유튜브 영상]
-- 전시 영상: https://www.youtube.com/watch?v=r2KwCwumyJs&feature=youtu.be <br>
+- 졸업작품 전시 영상: https://youtu.be/Dl8L36DYVKc <br>
 - 심사 영상: https://www.youtube.com/watch?v=WXYt6SJVHv8 <br>
+<br>
+
+# [기획적/기술적 특징]
+- 
 <br>
 
 # [실행 파일]
