@@ -25,19 +25,19 @@
 1. 클라이언트 <br>
 - 인공지능 <br>
 플레이어가 조종할 수 있는 아군 캐릭터인 개척자와 적인 몬스터의 인공지능을 [대기, 추적, 공격, 죽음]의 상태를 가진 간단한 FSM으로 구현하였습니다. <br>
-<br>
+
 - 애니메이션 <br>
 개척자와 몬스터의 UAnimInstance 클래스를 부모로 하는 애니메이션 블루프린트를 정의하고 각 상태에 해당하는 애니메이션 시퀀스를 적절히 블렌딩하여 애니메이션이 재생되도록 구현하였습니다. <br>
 개척자를 생성하는 우주선은 한 가지의 애니메이션만 사용하므로 C++ 코드로 UAnimSequence를 USkeleton에 설정하였고 애니메이션이 재생되도록 간단히 구현하였습니다. <br>
-<br>
+
 - 관전 <br>
 플레이어는 개척자를 관전하는 상태로 게임을 시작합니다. <br>
 AController의 SetViewTargetWithBlend 함수로 카메라를 부드럽게 전환하여 플레이어가 관전하는 대상을 변경할 수 있도록 구현하였습니다. <br>
-<br>
+
 - 조종 <br>
 생성된 개척자와 몬스터는 각 AAIController에 빙의되어 조종되도록 하였습니다. <br>
 플레이어가 관전 중이던 AI개척자를 조종하면 AAIController가 UnPossess를 한 뒤에 APlayerController가 Possess하도록 하였습니다. <br>
-<br>
+
 - 충돌 및 겹침 <br>
 서로 통과하지 말아야 하는 오브젝트들은 CollisionResponseToChannel을 Block으로 설정하여 충돌하도록 하였습니다. <br>
 개척자와 몬스터는 USphereComponent로 탐지 범위와 공격 범위를 가지면서 Overlap Event를 활성화하여 겹친 오브젝트를 파악할 수 있도록 하였습니다. <br>
