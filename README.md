@@ -17,7 +17,7 @@
 <br>
 
 # [유튜브 영상]
-- 졸업작품 전시 영상: https://youtu.be/Dl8L36DYVKc <br>
+- 졸업작품 전시 영상: https://www.youtube.com/watch?v=Dl8L36DYVKc <br>
 - 심사 영상: https://www.youtube.com/watch?v=WXYt6SJVHv8 <br>
 <br>
 
