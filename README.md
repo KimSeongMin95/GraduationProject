@@ -17,8 +17,7 @@
 <br>
 
 # [유튜브 영상]
-- 졸업작품 전시 영상: https://www.youtube.com/watch?v=Dl8L36DYVKc <br>
-- 심사 영상: https://www.youtube.com/watch?v=WXYt6SJVHv8 <br>
+- 졸업작품 전시 영상(음소거): https://www.youtube.com/watch?v=Dl8L36DYVKc <br>
 <br>
 
 # [기술적 특징]
