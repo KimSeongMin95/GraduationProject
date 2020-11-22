@@ -198,15 +198,8 @@ Pioneer2(Attribution 3.0 Unported (CC BY 3.0)): http://www.iconarchive.com/show/
 
 3. 사운드 (Sound)
 - 발사체 (Projectile): EpicGames 무료 에셋
-- They Are Billions Incoming Menace: https://www.youtube.com/watch?v=mcnrX_N_yws&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7
-- They Are Billions Reconquest: https://www.youtube.com/watch?v=8LC6XfP0PAo&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=17
-- They Are Billions Strong Walls: https://www.youtube.com/watch?v=zEzBG3MgPJU&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=4
-- They Are Billions The Goddess of Destiny: https://www.youtube.com/watch?v=Gtsdh-Vq2tM&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=15
-- They Are Billions The New Empire: https://www.youtube.com/watch?v=GQt-tQ-Y6ZQ&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=7
-- They Are Billions The Throne Room: https://www.youtube.com/watch?v=mcnrX_N_yws&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=1
-- They Are Billions They Are Billions!: https://www.youtube.com/watch?v=ZFbV-JPc6cI&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=2
-- They Are Billions We Are Done For: https://www.youtube.com/watch?v=i72RR9ZFFUs&list=PLqcUjE-I-0rKNzEtu2oGt-Et8S3uE8Gb7&index=6
-- Star Trek 2009: https://www.youtube.com/watch?v=BlHyt_I1rFc
+- MainScreen BGM: https://www.bensound.com/royalty-free-music/track/epic
+- InGame BGM: https://www.bensound.com/royalty-free-music/track/evolution-epic-nature
 <br>
  
 4. 폰트 (Font)
