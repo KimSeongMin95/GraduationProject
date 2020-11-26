@@ -212,6 +212,6 @@ Pioneer2(Attribution 3.0 Unported (CC BY 3.0)): http://www.iconarchive.com/show/
 - UnrealEngine Documents.
 - Google Searches.
 - Youtube Lectures.
-- 설정 (Settings): Youtube Lecture.
+- 설정 (Settings): https://www.youtube.com/watch?v=U_nCvY1OsdE
 - 네트워크 기초 (Basic Network): https://github.com/LimSungMin/SungminWorld
 <br>
