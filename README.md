@@ -15,7 +15,7 @@
 - 핵심목표 <br>
 모든 건물이 파괴되지 않도록 방어하며 적의 보스를 처치하거나 모든 구역을 점령해야 합니다. <br>
 - [먼저, 이 게임은 영리목적 아닌 교육 및 학습을 위하여 개발된 졸업작품임을 밝힙니다.] <br>
-- (First of all, I would like to announce that this game is a graduation work developed for education and learning, not for profit.) <br>
+- [First of all, I would like to announce that this game is a graduation work developed for education and learning, not for profit.] <br>
 <br>
 
 # [유튜브 영상]
