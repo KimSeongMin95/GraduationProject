@@ -185,16 +185,15 @@ UGameplayStatics의 OpenLevel 함수로 레벨을 해당 온라인 스테이지�
 <br>
 
 2. 이미지 (Image)
-- Main UI(Personal Use by Yareni): https://www.cleanpng.com/png-starcraft-ii-legacy-of-the-void-dota-2-defense-of-799826/preview.html
+- Main UI(Personal Use) by Yareni: https://www.cleanpng.com/png-starcraft-ii-legacy-of-the-void-dota-2-defense-of-799826/preview.html
 - Resource Icon
-Mineral(Free for commercial use by Rudityas W Anggoro): https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%EC%9D%98-%EB%B3%B4%EC%84%9D-graceful-%EB%AF%B8%EB%84%A4%EB%9E%84-%EB%8F%8C/112703
-Organic(Free for commercial use by Vandelay Design): https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%EC%9C%A0%EA%B8%B0%EB%86%8D-%EC%8B%9D%ED%92%88-%EC%95%8C%EB%A0%88%EB%A5%B4%EA%B8%B0-%EC%9C%A0%EB%B0%9C-%ED%95%AD%EC%9B%90/49217
-Energy(Attribution 4.0 International (CC BY 4.0) by Jeremiah): https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%ED%99%98%EA%B2%BD-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%A0%84%EB%A0%A5-%EC%97%90%EB%84%88%EC%A7%80/103835
-Pioneer(Free for commercial use by Cosmin Negoita): https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%EA%B3%B5%EA%B0%84%EC%9D%B4-%EC%9A%B0%EC%A3%BC-%EB%B9%84%ED%96%89%EC%82%AC/115164
-Pioneer2(Attribution 3.0 Unported (CC BY 3.0) by Chanut is Industries): http://www.iconarchive.com/show/outer-space-icons-by-chanut/Pioneer-icon.html
-- Victory & Defeat ( by cameron2000): https://favpng.com/png_view/league-of-legends-league-of-legends-age-of-empires-ii-desktop-wallpaper-twitch-wallpaper-png/CwBPyf0F
-- Continue: https://ya-webdesign.com/image/continue-button-png/483820.html
-- Dialog: Ther Are Billions Source
+Mineral(Free for commercial use) by Rudityas W Anggoro: https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%EC%9D%98-%EB%B3%B4%EC%84%9D-graceful-%EB%AF%B8%EB%84%A4%EB%9E%84-%EB%8F%8C/112703
+Organic(Free for commercial use) by Vandelay Design: https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%EC%9C%A0%EA%B8%B0%EB%86%8D-%EC%8B%9D%ED%92%88-%EC%95%8C%EB%A0%88%EB%A5%B4%EA%B8%B0-%EC%9C%A0%EB%B0%9C-%ED%95%AD%EC%9B%90/49217
+Energy(Attribution 4.0 International (CC BY 4.0)) by Jeremiah: https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%ED%99%98%EA%B2%BD-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%A0%84%EB%A0%A5-%EC%97%90%EB%84%88%EC%A7%80/103835
+Pioneer(Free for commercial use) by Cosmin Negoita: https://icon-icons.com/ko/%EC%95%84%EC%9D%B4%EC%BD%98/%EA%B3%B5%EA%B0%84%EC%9D%B4-%EC%9A%B0%EC%A3%BC-%EB%B9%84%ED%96%89%EC%82%AC/115164
+Pioneer2(Attribution 3.0 Unported (CC BY 3.0)) by Chanut is Industries: http://www.iconarchive.com/show/outer-space-icons-by-chanut/Pioneer-icon.html
+- Victory & Defeat(can be used for personal use unless stated otherwise) by cameron2000: https://favpng.com/png_view/league-of-legends-league-of-legends-age-of-empires-ii-desktop-wallpaper-twitch-wallpaper-png/CwBPyf0F
+- Continue Button(Non-commercial use) by YAWD: https://ya-webdesign.com/image/continue-button-png/1845688.html
 <br>
 
 3. 사운드 (Sound)
