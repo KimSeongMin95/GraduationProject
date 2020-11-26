@@ -204,8 +204,8 @@ Pioneer2(Attribution 3.0 Unported (CC BY 3.0)): http://www.iconarchive.com/show/
 <br>
  
 4. 폰트 (Font)
-- Neo둥근모(SIL Open Font License 1.1): https://dalgona.github.io/neodgm/
-  https://github.com/Dalgona/neodgm/releases
+- Neo둥근모(SIL Open Font License 1.1): https://dalgona.github.io/neodgm/ or
+  https://github.com/Dalgona/neodgm/releases or https://neodgm.dalgona.dev/
 <br>
 
 5. 코드 (Code)
