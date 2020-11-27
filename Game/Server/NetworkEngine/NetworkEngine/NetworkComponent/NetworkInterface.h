@@ -1,13 +1,3 @@
-/*****************************************************************************
-* 저작자(author) && 저작권자(Copyright holder): 김성민(Kim Seongmin)
-* Current Affiliation(2020-11-27): 홍익대학교 세종캠퍼스 게임소프트웨어 전공 4학년
-* NetworkComponent: IOCP API를 사용하여 직접 개발한 TCP 네트워크 엔진입니다.
-* Program: VisualStudio 2019
-* E-mail: ksm950310@naver.com
-* License: X (누구나 자유롭게 사용하셔도 좋습니다.)
-* Github: https://github.com/KimSeongMin95/GraduationProject
-* 사용법: NetworkComponent 객체를 생성하여 서버나 클라이언트로 사용할 수 있습니다.
-******************************************************************************/
 
 #pragma once
 
