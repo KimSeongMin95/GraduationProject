@@ -174,7 +174,7 @@ UGameplayStatics의 OpenLevel 함수로 레벨을 해당 온라인 스테이지�
 - 무장 토글: 마우스 휠클릭 <br>
 <br>
 
-# [사용한 애셋들의 출처(저작권) 명시]
+# [사용한 셋들의 출처(저작권) 명시]
 1. 3D 모델 & 애니메이션 (3D Models & Animations)
 - EpicGames 무료 에셋
 - Mixamo: https://www.mixamo.com/
