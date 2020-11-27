@@ -1,15 +1,3 @@
-/**************************************************************************
-* ÀúÀÛÀÚ(author) && ÀúÀÛ±ÇÀÚ(Copyright holder): ±è¼º¹Î(Kim Seongmin)
-* Current Affiliation(20/07/23): È«ÀÍ´ëÇĞ±³ ¼¼Á¾Ä·ÆÛ½º °ÔÀÓ¼ÒÇÁÆ®¿ş¾î Àü°ø 4ÇĞ³â
-* NetworkComponent: IOCP ¸ğµ¨À» »ç¿ëÇÏ¿© Á÷Á¢ °³¹ßÇÑ TCP ³×Æ®¿öÅ© ¿£ÁøÀÔ´Ï´Ù.
-* Program: VisualStudio 2019
-* E-mail: ksm950310@naver.com
-* License: X (´©±¸³ª ÀÚÀ¯·Ó°Ô »ç¿ëÇÏ¼Åµµ ÁÁ½À´Ï´Ù.)
-* Github: https://github.com/KimSeongMin95/GraduationProject
-* »ç¿ë¹ı: NetworkComponent °´Ã¼¸¦ »ı¼ºÇÏ¿© ¼­¹ö³ª Å¬¶óÀÌ¾ğÆ®·Î »ç¿ëÇÒ ¼ö ÀÖ½À´Ï´Ù.
-* (ÄÚµå°¡ ¸¶À½¿¡ µéÀ¸½Ã¸é, Á¦°¡ °ÔÀÓ ÇÁ·Î±×·¡¸Ó·Î Ãë¾÷ÇÒ ¼ö ÀÖ°Ô ¿¬¶ô ºÎÅ¹µå¸³´Ï´Ù.)
-* (ÀÏ´Ü Å¬¶óÀÌ¾ğÆ® ÇÁ·Î±×·¡¸Ó¸¦ Áö¸ÁÇÏ°í ÀÖ½À´Ï´Ù. °¨»çÇÕ´Ï´Ù!)
-***************************************************************************/
 
 #pragma once
 
@@ -35,7 +23,7 @@ private:
 
 public:
 	/////////////////////////////////////////////////////////
-	// INetworkInterface virtual Functions (¼­¹ö & Å¬¶ó °øÅë)
+	// INetworkInterface virtual Functions (ì„œë²„ & í´ë¼ ê³µí†µ)
 	/////////////////////////////////////////////////////////
 	virtual bool Initialize(const char* const IPv4, const USHORT& Port) final;
 	virtual bool IsNetworkOn() final;
@@ -47,7 +35,7 @@ public:
 	virtual void Send(CPacket& Packet, const SOCKET& Socket = NULL) final;
 
 	/////////////////////////////////////////////////////////
-	// INetworkInterface virtual Functions (¼­¹ö)
+	// INetworkInterface virtual Functions (ì„œë²„)
 	/////////////////////////////////////////////////////////
 	virtual void Broadcast(CPacket& Packet) final;
 	virtual void BroadcastExceptOne(CPacket& Packet, const SOCKET& Except) final;
