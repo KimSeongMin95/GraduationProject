@@ -79,7 +79,7 @@ AController의 SetViewTargetWithBlend 함수로 카메라를 부드럽게 전환
 
 2. 서버 <br>
 - IOCP API <br>
-당시 언리얼 엔진의 데디케이티드 서버에 대한 지식이 없었고 직접 서버를 구현해보고 싶었기에 IOCP API를 사용하여 1개의 Accept 스레드와 다수의 IO 스레드로 TCP 서버를 구현하였습니다. <br>
+IOCP API를 사용하여 1개의 Accept 스레드와 다수의 IO 스레드로 TCP 서버를 구현하였습니다. <br>
 C++ STL의 deque 컨테이너로 수신한 데이터를 관리하고 패킷 크기에 맞게 분할하여 데이터를 처리하도록 구현하였습니다. <br>
 클라이언트의 정상/비정상 접속 종료에 대한 처리를 하였습니다. <br>
 
@@ -135,7 +135,7 @@ UGameplayStatics의 OpenLevel 함수로 레벨을 해당 온라인 스테이지�
 <br>
 
 # [온라인 멀티 플레이] <br>
-- 개발자 MainServer(데디케이티드) IP: 58.233.177.231 (제 컴퓨터의 IP가 변경되면 수정하여 다시 표기하겠습니다.) <br>
+- 개발자 MainServer(데디케이티드) IP: xxx.xxx.xxx.xxx (제 컴퓨터의 IP가 변경되면 수정하여 다시 표기하겠습니다.) <br>
 - 개발자 MainServer(데디케이티드) Port: 8000 
 1. 모두 Game.exe 실행 <br>
 2. 온라인 클릭 <br>
